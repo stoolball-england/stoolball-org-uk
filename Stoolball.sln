@@ -1,0 +1,104 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29728.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Web.Tests", "Stoolball.Web.Tests\Stoolball.Web.Tests.csproj", "{39945245-3B64-4248-9106-12E0007B1B3D}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Documentation", "Documentation\", "{1646054B-9ADC-4ED9-B5F9-CA534D515E1A}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.7.2"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_49206"
+		Debug.AspNetCompiler.PhysicalPath = "Documentation\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_49206\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_49206"
+		Release.AspNetCompiler.PhysicalPath = "Documentation\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_49206\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "49206"
+		SlnRelativePath = "Documentation\"
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9A267BDF-FFAB-44C3-BC17-2457CD63DD4A}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball", "Stoolball\Stoolball.csproj", "{4F0709D1-9E82-4016-8003-0E67D6F8CB60}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Umbraco.Migrations", "Stoolball.Umbraco.Migrations\Stoolball.Umbraco.Migrations.csproj", "{0289E095-F560-4FF9-87A0-B06BF796B944}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Tests", "Stoolball.Tests\Stoolball.Tests.csproj", "{41DCF0BE-6E18-4F62-986E-DDAB0E76E9A0}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Cypress", "Cypress\", "{3B93C365-F093-4D95-AAAD-52733848BB74}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_53957"
+		Debug.AspNetCompiler.PhysicalPath = "Cypress\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_53957\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_53957"
+		Release.AspNetCompiler.PhysicalPath = "Cypress\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_53957\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "53957"
+		SlnRelativePath = "Cypress\"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Web", "Stoolball.Web\Stoolball.Web.csproj", "{F66102A7-55A0-423A-AAD3-19D89147B5C7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{39945245-3B64-4248-9106-12E0007B1B3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39945245-3B64-4248-9106-12E0007B1B3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39945245-3B64-4248-9106-12E0007B1B3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39945245-3B64-4248-9106-12E0007B1B3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1646054B-9ADC-4ED9-B5F9-CA534D515E1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1646054B-9ADC-4ED9-B5F9-CA534D515E1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1646054B-9ADC-4ED9-B5F9-CA534D515E1A}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{1646054B-9ADC-4ED9-B5F9-CA534D515E1A}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{4F0709D1-9E82-4016-8003-0E67D6F8CB60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F0709D1-9E82-4016-8003-0E67D6F8CB60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F0709D1-9E82-4016-8003-0E67D6F8CB60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F0709D1-9E82-4016-8003-0E67D6F8CB60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0289E095-F560-4FF9-87A0-B06BF796B944}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0289E095-F560-4FF9-87A0-B06BF796B944}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0289E095-F560-4FF9-87A0-B06BF796B944}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0289E095-F560-4FF9-87A0-B06BF796B944}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41DCF0BE-6E18-4F62-986E-DDAB0E76E9A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41DCF0BE-6E18-4F62-986E-DDAB0E76E9A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41DCF0BE-6E18-4F62-986E-DDAB0E76E9A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41DCF0BE-6E18-4F62-986E-DDAB0E76E9A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B93C365-F093-4D95-AAAD-52733848BB74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B93C365-F093-4D95-AAAD-52733848BB74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B93C365-F093-4D95-AAAD-52733848BB74}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B93C365-F093-4D95-AAAD-52733848BB74}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{F66102A7-55A0-423A-AAD3-19D89147B5C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F66102A7-55A0-423A-AAD3-19D89147B5C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F66102A7-55A0-423A-AAD3-19D89147B5C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F66102A7-55A0-423A-AAD3-19D89147B5C7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {929EBC3F-E4A8-4CE3-917C-19816F5E6C79}
+	EndGlobalSection
+EndGlobal

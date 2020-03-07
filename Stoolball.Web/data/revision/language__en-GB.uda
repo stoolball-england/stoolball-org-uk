@@ -1,0 +1,12 @@
+{
+  "IsoCode": "en-GB",
+  "Alias": "en-GB",
+  "IsDefault": true,
+  "IsMandatory": true,
+  "FallbackLanguageId": null,
+  "Udi": "umb://language/en-GB",
+  "Dependencies": [],
+  "Name": "English (United Kingdom)",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.LanguageArtifact",
+  "__version": "3.3.0"
+}
