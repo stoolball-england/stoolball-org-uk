@@ -707,6 +707,7 @@
     <Content Include="Views\Partials\Forms\Emails\Example-Template.cshtml" />
     <Content Include="Views\MacroPartials\RenderUmbracoFormScripts.cshtml" />
     <Content Include="Views\MacroPartials\InsertUmbracoFormWithTheme.cshtml" />
+    <None Include="Secret.Email.Web.live.xdt.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
