@@ -1,0 +1,58 @@
+{
+  "DefaultTemplate": "umb://template/2085112cf5d9471389ea030a78464a13",
+  "AllowedTemplates": [
+    "umb://template/2085112cf5d9471389ea030a78464a13"
+  ],
+  "Icon": "icon-male-and-female color-blue",
+  "Thumbnail": "folder.png",
+  "Description": "Allows a member to manage their account settings",
+  "IsContainer": false,
+  "Permissions": {
+    "AllowVaryingByCulture": false,
+    "AllowVaryingBySegment": false,
+    "AllowedAtRoot": false,
+    "IsElementType": false,
+    "AllowedChildContentTypes": [
+      "umb://document-type/18a88801b9b8403d951be0a5bd2c0687",
+      "umb://document-type/d02eb9b16d4c4bb59f212f5daa4681e7"
+    ]
+  },
+  "Parent": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
+  "CompositionContentTypes": [
+    "umb://document-type/d9999f5ac07b4f379d013f0316d8678c"
+  ],
+  "PropertyGroups": [],
+  "PropertyTypes": [],
+  "Udi": "umb://document-type/9d4a4f9e28df449882067990797df794",
+  "Dependencies": [
+    {
+      "Udi": "umb://document-type/18a88801b9b8403d951be0a5bd2c0687",
+      "Ordering": false,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/d02eb9b16d4c4bb59f212f5daa4681e7",
+      "Ordering": false,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/d9999f5ac07b4f379d013f0316d8678c",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/2085112cf5d9471389ea030a78464a13",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "My Account",
+  "Alias": "myAccount",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
+  "__version": "3.3.0"
+}

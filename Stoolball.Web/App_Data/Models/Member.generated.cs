@@ -45,6 +45,20 @@ namespace Umbraco.Web.PublishedModels
 		// properties
 
 		///<summary>
+		/// Approval token: Used during email validation when registering a new member
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("approvalToken")]
+		public string ApprovalToken => this.Value<string>("approvalToken");
+
+		///<summary>
+		/// Approval token expiry: The date and time the approval token expires
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("approvalTokenExpiry")]
+		public global::System.DateTime ApprovalTokenExpiry => this.Value<global::System.DateTime>("approvalTokenExpiry");
+
+		///<summary>
 		/// Is Approved
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]

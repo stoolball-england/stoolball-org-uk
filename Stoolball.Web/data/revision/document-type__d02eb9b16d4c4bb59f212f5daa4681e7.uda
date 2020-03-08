@@ -1,0 +1,166 @@
+{
+  "DefaultTemplate": "umb://template/f0485339ac8b45ab8347d716b192422f",
+  "AllowedTemplates": [
+    "umb://template/f0485339ac8b45ab8347d716b192422f"
+  ],
+  "Icon": "icon-add color-blue",
+  "Thumbnail": "folder.png",
+  "Description": "Create a new member account",
+  "IsContainer": false,
+  "Permissions": {
+    "AllowVaryingByCulture": false,
+    "AllowVaryingBySegment": false,
+    "AllowedAtRoot": false,
+    "IsElementType": false,
+    "AllowedChildContentTypes": []
+  },
+  "Parent": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
+  "CompositionContentTypes": [
+    "umb://document-type/d9999f5ac07b4f379d013f0316d8678c"
+  ],
+  "PropertyGroups": [
+    {
+      "Key": "5f8277c3-71e4-4b2e-993b-3fee5f0c5c37",
+      "Name": "Page content",
+      "SortOrder": 0,
+      "PropertyTypes": [
+        {
+          "Key": "3dd4bf33-4601-4630-8501-794909252831",
+          "Alias": "registrationSuccessful",
+          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+          "Description": "Displays when a member registers successfully and must now activate their account, or is already registered. You can use {{EMAIL}} to tell them where we sent the email to.",
+          "Mandatory": true,
+          "Name": "Registration successful",
+          "SortOrder": 1,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
+          "Key": "d5933674-3f63-439d-8bf0-d89379001157",
+          "Alias": "alreadyLoggedIn",
+          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+          "Description": "Displays instead of the form when a member is already logged in. You can use {{NAME}} to insert the member's name.",
+          "Mandatory": true,
+          "Name": "Already logged in",
+          "SortOrder": 0,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
+          "Key": "ee79c4b4-0964-4a28-a3d3-672addf60bc6",
+          "Alias": "registerButton",
+          "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+          "Description": "Label for the form submit button",
+          "Mandatory": true,
+          "Name": "Register button",
+          "SortOrder": 2,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        }
+      ]
+    },
+    {
+      "Key": "5fc95c3e-a48e-441d-9342-4d4c44225919",
+      "Name": "'Already registered' email",
+      "SortOrder": 2,
+      "PropertyTypes": [
+        {
+          "Key": "546777c7-e6ea-4bf5-80d3-4a285b3d49a2",
+          "Alias": "alreadyRegisteredSubject",
+          "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+          "Description": "The subject line of the email. You can use {{NAME}} to insert the member's name.",
+          "Mandatory": true,
+          "Name": "Email subject",
+          "SortOrder": 0,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
+          "Key": "5ac736df-f374-42ea-944a-e4163048b536",
+          "Alias": "alreadyRegisteredBody",
+          "DataType": "umb://data-type/dcd611c7e61140e79072c7eea977a13e",
+          "Description": "The body of the email. You can use {{NAME}}, {{EMAIL}} and {{DOMAIN}} to insert values.",
+          "Mandatory": true,
+          "Name": "Email body",
+          "SortOrder": 1,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        }
+      ]
+    },
+    {
+      "Key": "d96a93b9-3ccc-4681-b447-25d359d74e9f",
+      "Name": "'Approve member' email",
+      "SortOrder": 1,
+      "PropertyTypes": [
+        {
+          "Key": "d16b9946-1a88-4960-b5c6-26be2bc13b44",
+          "Alias": "approveMemberSubject",
+          "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+          "Description": "The subject line of the email. You can use {{NAME}} to insert the member's name.",
+          "Mandatory": true,
+          "Name": "Email subject",
+          "SortOrder": 0,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
+          "Key": "d1951b43-746e-45c8-b954-765d55b283b4",
+          "Alias": "approveMemberBody",
+          "DataType": "umb://data-type/dcd611c7e61140e79072c7eea977a13e",
+          "Description": "The body of the email. You can use {{NAME}}, {{EMAIL}}, {{TOKEN}} and {{DOMAIN}} to insert values.",
+          "Mandatory": true,
+          "Name": "Email body",
+          "SortOrder": 1,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        }
+      ]
+    }
+  ],
+  "PropertyTypes": [],
+  "Udi": "umb://document-type/d02eb9b16d4c4bb59f212f5daa4681e7",
+  "Dependencies": [
+    {
+      "Udi": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://data-type/dcd611c7e61140e79072c7eea977a13e",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/d9999f5ac07b4f379d013f0316d8678c",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/f0485339ac8b45ab8347d716b192422f",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Register Member",
+  "Alias": "registerMember",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
+  "__version": "3.3.0"
+}

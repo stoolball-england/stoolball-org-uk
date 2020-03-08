@@ -1,0 +1,21 @@
+﻿@import "../Content/bootstrap/_functions.scss";
+@import "../Content/bootstrap/_mixins.scss";
+@import "../Content/bootstrap/_variables.scss";
+@import "../Content/bootstrap/_forms.scss";
+@import "../Content/bootstrap/_buttons.scss";
+
+/* Bootstrap and .NET JQuery validation are applying different rules in some cases, 
+   so re-use the Bootstrap styles but on different selectors, and in a way that invalid wins 
+   if both are matched.
+*/
+.input-validation-error, [aria-invalid='true'], .was-validated .input-validation-error:valid {
+    @extend .form-control.is-invalid;
+}
+
+[aria-invalid='false'] {
+    @extend .form-control.is-valid;
+}
+
+.field-validation-error {
+    color: $red;
+}

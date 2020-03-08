@@ -1,0 +1,10 @@
+{
+  "ContainedObjectType": "a2cb7800-f571-4787-9638-bc48539a0efb",
+  "Parent": null,
+  "Udi": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
+  "Dependencies": [],
+  "Name": "Account",
+  "Alias": null,
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContainerArtifact",
+  "__version": "3.3.0"
+}

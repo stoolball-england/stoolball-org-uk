@@ -1,5 +1,9 @@
 ﻿[
   {
+    "outputFile": "css/forms.css",
+    "inputFile": "css/forms.scss"
+  },
+  {
     "outputFile": "css/base.css",
     "inputFile": "css/base.scss"
   }

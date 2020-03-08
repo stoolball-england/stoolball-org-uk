@@ -1,2 +1,6 @@
 ﻿@import "../Content/bootstrap/bootstrap-reboot.scss";
 @import "../Content/bootstrap/bootstrap-grid.scss";
+@import "../Content/bootstrap/_nav.scss";
+
+/* Add some spacing to sitewide nav */
+.nav-pills a { margin-right: $spacer/2 }

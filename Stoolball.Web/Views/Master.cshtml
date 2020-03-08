@@ -2,18 +2,25 @@
 @using ClientDependency.Core.Mvc 
 @{
 	Layout = null;
+    Html.RequiresCss("~/css/base.css");
 }
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="~/css/base.min.css" />
     <title>@Model.Name</title>
     @RenderSection("head", false)
+    @Html.RenderCssHere()
 </head>
 <body>
     <div class="container-xl">
+        <header>
+            <nav class="nav nav-pills">
+                <a href="/" class="nav-link active">Home</a>
+                <a href="/account/create" class="nav-link active">Create an account</a>
+            </nav>
+        </header>
         @RenderBody()
     </div>
     @Html.RenderJsHere()

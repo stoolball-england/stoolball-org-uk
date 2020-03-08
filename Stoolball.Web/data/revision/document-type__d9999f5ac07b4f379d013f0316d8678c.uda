@@ -1,0 +1,56 @@
+{
+  "DefaultTemplate": null,
+  "AllowedTemplates": [],
+  "Icon": "icon-document",
+  "Thumbnail": "folder.png",
+  "Description": "Metadata which applies to all pages",
+  "IsContainer": false,
+  "Permissions": {
+    "AllowVaryingByCulture": false,
+    "AllowVaryingBySegment": false,
+    "AllowedAtRoot": false,
+    "IsElementType": false,
+    "AllowedChildContentTypes": []
+  },
+  "Parent": "umb://document-type-container/adb1648975db4732b1178ed4e821552f",
+  "CompositionContentTypes": [],
+  "PropertyGroups": [
+    {
+      "Key": "75780a9e-91ec-4d6a-bceb-ca4f9ce9064e",
+      "Name": "Metadata",
+      "SortOrder": 100,
+      "PropertyTypes": [
+        {
+          "Key": "b61b217d-a2c4-4334-98b0-b61b31be4a55",
+          "Alias": "umbracoUrlName",
+          "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+          "Description": "Sets the URL for this page. Defaults to the page title.",
+          "Mandatory": false,
+          "Name": "URL segment",
+          "SortOrder": 0,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        }
+      ]
+    }
+  ],
+  "PropertyTypes": [],
+  "Udi": "umb://document-type/d9999f5ac07b4f379d013f0316d8678c",
+  "Dependencies": [
+    {
+      "Udi": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type-container/adb1648975db4732b1178ed4e821552f",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "_Metadata",
+  "Alias": "metadata",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
+  "__version": "3.3.0"
+}

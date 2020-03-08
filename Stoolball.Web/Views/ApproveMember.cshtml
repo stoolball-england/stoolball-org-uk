@@ -1,0 +1,13 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.ApproveMemberModel>
+@using ContentModels = Stoolball.Web.Account;
+
+<h1>@Model.Name</h1>
+
+@if (Model.MemberWasApproved)
+{
+    @Html.Raw(Model.ApprovalSuccessful.ToHtmlString().Replace("{{NAME}}", Model.MemberName))
+}
+else
+{
+    @Model.ApprovalFailed
+}

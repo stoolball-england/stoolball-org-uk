@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/RegisterMember.cshtml",
+  "Master": null,
+  "Udi": "umb://template/f0485339ac8b45ab8347d716b192422f",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/RegisterMember.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Register Member",
+  "Alias": "RegisterMember",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.3.0"
+}
