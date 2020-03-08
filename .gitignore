@@ -378,6 +378,9 @@ media
 Stoolball.Web/Content
 Stoolball.Web/Scripts
 
+# CSS files are built from scss
+*.css
+
 # Exclude files containing secrets
 UmbracoDeploy*.config
 Stoolball.Web/Web.config

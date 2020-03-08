@@ -1,0 +1,33 @@
+{
+  "DefaultTemplate": "umb://template/efeee16ea1be47c891a7501c7f598ade",
+  "AllowedTemplates": [
+    "umb://template/efeee16ea1be47c891a7501c7f598ade"
+  ],
+  "Icon": "icon-home color-black",
+  "Thumbnail": "folder.png",
+  "Description": "Stoolball England home page",
+  "IsContainer": false,
+  "Permissions": {
+    "AllowVaryingByCulture": false,
+    "AllowVaryingBySegment": false,
+    "AllowedAtRoot": true,
+    "IsElementType": false,
+    "AllowedChildContentTypes": []
+  },
+  "Parent": null,
+  "CompositionContentTypes": [],
+  "PropertyGroups": [],
+  "PropertyTypes": [],
+  "Udi": "umb://document-type/e7c3c3747a964291b0c362dd6315ffce",
+  "Dependencies": [
+    {
+      "Udi": "umb://template/efeee16ea1be47c891a7501c7f598ade",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Home",
+  "Alias": "home",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
+  "__version": "3.3.0"
+}
