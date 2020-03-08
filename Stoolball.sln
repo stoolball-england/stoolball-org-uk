@@ -62,7 +62,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Web", "Stoolball.
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Scripts", "Scripts\", "{799B3778-98D9-4DE1-B9F8-CF3EB55CA431}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_52950"
 		Debug.AspNetCompiler.PhysicalPath = "Scripts\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_52950\"
