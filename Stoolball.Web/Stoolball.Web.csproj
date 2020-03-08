@@ -710,10 +710,11 @@
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <None Include="Web.live.xdt.config" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <None Include="Web.xdt.config" />
+    <None Include="Web.local.xdt.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Stoolball.Umbraco.Migrations\Stoolball.Umbraco.Migrations.csproj">
@@ -798,7 +799,7 @@
       <TempWebConfig Include="$(ProjectDir)\Web.temp.config" />
     </ItemGroup>
     <Copy SourceFiles="@(OriginalWebConfig)" DestinationFiles="@(TempWebConfig)" />
-    <TransformXml Source="@(TempWebConfig)" Transform="$(ProjectDir)\Web.xdt.config" Destination="@(OriginalWebConfig)" StackTrace="true" />
+    <TransformXml Source="@(TempWebConfig)" Transform="$(ProjectDir)\Web.local.xdt.config" Destination="@(OriginalWebConfig)" StackTrace="true" />
     <Delete Files="@(TempWebConfig)" />
   </Target>
   <Import Project="..\packages\BuildWebCompiler.1.12.405\build\BuildWebCompiler.targets" Condition="Exists('..\packages\BuildWebCompiler.1.12.405\build\BuildWebCompiler.targets')" />

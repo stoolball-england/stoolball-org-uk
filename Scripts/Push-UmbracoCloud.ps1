@@ -12,7 +12,7 @@ Read-Host -Prompt "Press any key to continue or CTRL+C to quit"
 .\Scripts\Pull-UmbracoCloud
 
 # Copy changes from Stoolball.Web to the .UmbracoCloud deployment repository
-robocopy .\Stoolball.Web .\.UmbracoCloud /IF *.dll *.cshtml *.uda Web.config *.xdt.config /XF Umbraco.*.dll /S /XD .git $projectRoot\Stoolball.Web\obj $projectRoot\Stoolball.Web\umbraco $projectRoot\Stoolball.Web\App_Data $projectRoot\Stoolball.Web\App_Plugins\Deploy $projectRoot\Stoolball.Web\App_Plugins\UmbracoForms $projectRoot\Stoolball.Web\Content $projectRoot\Stoolball.Web\Scripts $projectRoot\Stoolball.Web\Media
+robocopy .\Stoolball.Web .\.UmbracoCloud /IF *.dll *.cshtml *.uda *.xdt.config /XF Umbraco.*.dll /S /XD .git $projectRoot\Stoolball.Web\obj $projectRoot\Stoolball.Web\umbraco $projectRoot\Stoolball.Web\App_Data $projectRoot\Stoolball.Web\App_Plugins\Deploy $projectRoot\Stoolball.Web\App_Plugins\UmbracoForms $projectRoot\Stoolball.Web\Content $projectRoot\Stoolball.Web\Scripts $projectRoot\Stoolball.Web\Media
 
 # Commit and push those changes
 Push-Location .\.UmbracoCloud
