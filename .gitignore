@@ -381,5 +381,5 @@ Stoolball.Web/Scripts
 # Exclude files containing secrets
 UmbracoDeploy*.config
 Stoolball.Web/Web.config
-Secret.*
+Secret-*
 *.courier

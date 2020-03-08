@@ -21,12 +21,12 @@ git clone $UmbracoCloudRepoUrl .UmbracoCloud
 robocopy .\.UmbracoCloud\App_Plugins\Deploy .\Stoolball.Web\App_Plugins\Deploy /s
 robocopy .\.UmbracoCloud\App_Plugins\UmbracoLicenses .\Stoolball.Web\App_Plugins\UmbracoLicenses /s
 robocopy .\.UmbracoCloud\Config .\Stoolball.Web\config /IF UmbracoDeploy.*
-robocopy .\.UmbracoCloud\Config .\Stoolball.Web\config /IF Secret.*.xdt.config
+robocopy .\.UmbracoCloud\Config .\Stoolball.Web\config /IF Secret-*.xdt.config
 robocopy .\.UmbracoCloud\umbraco\Config\Lang .\Stoolball.Web\umbraco\Config\Lang /s
 robocopy .\.UmbracoCloud\bin .\Stoolball.Web\bin /IF Umbraco.Deploy.*
 robocopy .\.UmbracoCloud\data\backoffice .\Stoolball.Web\data\backoffice /s
 robocopy .\.UmbracoCloud .\Stoolball.Web /IF Web.config
-robocopy .\.UmbracoCloud .\Stoolball.Web /IF Secret.*.xdt.config
+robocopy .\.UmbracoCloud .\Stoolball.Web /IF Secret-*.xdt.config
 
 # Trigger an update from remote to local by Umbraco deploy
 if (!(Test-Path "./Stoolball.Web/data/deploy" -PathType Leaf)) {

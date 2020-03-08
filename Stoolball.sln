@@ -78,6 +78,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Scripts", "Scripts\", "{799
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "52950"
+		SlnRelativePath = "Scripts\"
 	EndProjectSection
 EndProject
 Global
