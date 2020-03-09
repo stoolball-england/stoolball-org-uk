@@ -25,13 +25,25 @@
       "SortOrder": 0,
       "PropertyTypes": [
         {
+          "Key": "0dce2565-1143-41a0-b297-4b65f9b118ef",
+          "Alias": "logoutButton",
+          "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+          "Description": "Label for the logout button that appears when signed in.",
+          "Mandatory": true,
+          "Name": "Logout button",
+          "SortOrder": 1,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
           "Key": "3dd4bf33-4601-4630-8501-794909252831",
           "Alias": "registrationSuccessful",
           "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
           "Description": "Displays when a member registers successfully and must now activate their account, or is already registered. You can use {{EMAIL}} to tell them where we sent the email to.",
           "Mandatory": true,
           "Name": "Registration successful",
-          "SortOrder": 1,
+          "SortOrder": 2,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -55,7 +67,7 @@
           "Description": "Label for the form submit button",
           "Mandatory": true,
           "Name": "Register button",
-          "SortOrder": 2,
+          "SortOrder": 3,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false

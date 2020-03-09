@@ -19,3 +19,6 @@
 .field-validation-error, .validation-summary-errors {
     color: $red;
 }
+
+/* Forms should have space before any following element */
+form { margin-bottom: $spacer; }

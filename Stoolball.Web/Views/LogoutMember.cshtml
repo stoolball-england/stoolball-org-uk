@@ -1,0 +1,23 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.LogoutMember>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.Account
+@{ 
+    Html.RequiresCss("~/css/forms.css");
+}
+<h1>@Model.Name</h1>
+
+@if (User.Identity.IsAuthenticated)
+{
+    @Html.Raw(Model.Value<string>("loggedIn").Replace("{{NAME}}", Umbraco.MembershipHelper.GetCurrentMember().Name))
+
+    using (Html.BeginUmbracoForm<LogoutMemberController>("HandleLogout"))
+    {
+        @Html.AntiForgeryToken()
+        <button class="btn btn-primary">@Model.Value("logoutButton")</button>
+    }
+}
+else
+{
+    @Model.Value("loggedOut")
+}

@@ -1,11 +1,11 @@
 {
-  "DefaultTemplate": "umb://template/efab32b5766643a4b4fd55e0d2b00e27",
+  "DefaultTemplate": "umb://template/a91a6a71f4b24298932d850354b762fb",
   "AllowedTemplates": [
-    "umb://template/efab32b5766643a4b4fd55e0d2b00e27"
+    "umb://template/a91a6a71f4b24298932d850354b762fb"
   ],
-  "Icon": "icon-logout color-blue",
+  "Icon": "icon-log-out color-blue",
   "Thumbnail": "folder.png",
-  "Description": "Login to a member account",
+  "Description": "Logout of a member account",
   "IsContainer": false,
   "Permissions": {
     "AllowVaryingByCulture": false,
@@ -20,53 +20,41 @@
   ],
   "PropertyGroups": [
     {
-      "Key": "ce46aa63-4b12-4c9f-855b-b62bc2a4b04a",
+      "Key": "3886e9a7-c2d1-44bd-9eec-e6971ff36d01",
       "Name": "Page content",
       "SortOrder": 0,
       "PropertyTypes": [
         {
-          "Key": "1cee3b15-db72-4ea1-ac57-946eba2c30ef",
-          "Alias": "alreadyLoggedIn",
+          "Key": "11e4be85-24ce-4b58-afff-3b84bc6cfb8a",
+          "Alias": "loggedIn",
           "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
-          "Description": "Displays instead of the form when a member is already logged in. You can use {{NAME}} to insert the member's name.",
+          "Description": "Displays when a member is still logged in. You can use {{NAME}} to insert the member's name.",
           "Mandatory": true,
-          "Name": "Already logged in",
+          "Name": "Logged in",
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
         },
         {
-          "Key": "52d18108-091a-430e-9401-4afd344fd9cb",
-          "Alias": "logoutButton",
-          "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
-          "Description": "Label for the logout button that appears when signed in.",
+          "Key": "1916f534-5af8-4680-8d86-dc73556283a3",
+          "Alias": "loggedOut",
+          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+          "Description": "Displays when a member is logged out.",
           "Mandatory": true,
-          "Name": "Logout button",
+          "Name": "Logged out",
           "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
         },
         {
-          "Key": "c658e086-b6e3-4afd-996c-b6564aaddb08",
-          "Alias": "migratedMemberAccounts",
-          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
-          "Description": "Advice for members whose accounts have been migrated from the old website.",
-          "Mandatory": false,
-          "Name": "Migrated member accounts",
-          "SortOrder": 3,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false
-        },
-        {
-          "Key": "f5ca4e12-ff76-42fb-bd86-9da09be78550",
-          "Alias": "loginButton",
+          "Key": "db6f85d4-7f03-42d3-8b37-d552b772060b",
+          "Alias": "logoutButton",
           "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
           "Description": "Label for the form submit button",
           "Mandatory": true,
-          "Name": "Login button",
+          "Name": "Logout button",
           "SortOrder": 2,
           "Validation": null,
           "VariesByCulture": false,
@@ -76,7 +64,7 @@
     }
   ],
   "PropertyTypes": [],
-  "Udi": "umb://document-type/0e4d0122c7a44a458e223be6f2f0e4ca",
+  "Udi": "umb://document-type/60449f5c60f54153ae5f9ddd4d2c1d15",
   "Dependencies": [
     {
       "Udi": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
@@ -99,13 +87,13 @@
       "Mode": 0
     },
     {
-      "Udi": "umb://template/efab32b5766643a4b4fd55e0d2b00e27",
+      "Udi": "umb://template/a91a6a71f4b24298932d850354b762fb",
       "Ordering": true,
       "Mode": 0
     }
   ],
-  "Name": "Login Member",
-  "Alias": "loginMember",
+  "Name": "Logout Member",
+  "Alias": "logoutMember",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
   "__version": "3.3.0"
 }

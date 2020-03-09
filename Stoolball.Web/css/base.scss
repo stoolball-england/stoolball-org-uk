@@ -1,6 +1,10 @@
 ﻿@import "../Content/bootstrap/bootstrap-reboot.scss";
 @import "../Content/bootstrap/bootstrap-grid.scss";
 @import "../Content/bootstrap/_nav.scss";
+@import "../Content/bootstrap/_alert.scss";
 
 /* Add some spacing to sitewide nav */
 .nav-pills a { margin-right: $spacer/2 }
+
+/* An alert has even padding, so remove any bottom margin on the last child which would make that look extra large. */
+.alert > :last-child { margin-bottom: 0; }

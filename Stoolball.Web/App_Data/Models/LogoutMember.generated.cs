@@ -19,58 +19,51 @@ using Umbraco.ModelsBuilder.Embedded;
 
 namespace Umbraco.Web.PublishedModels
 {
-	/// <summary>Login Member</summary>
-	[PublishedModel("loginMember")]
-	public partial class LoginMember : PublishedContentModel, IMetadata
+	/// <summary>Logout Member</summary>
+	[PublishedModel("logoutMember")]
+	public partial class LogoutMember : PublishedContentModel, IMetadata
 	{
 		// helpers
 #pragma warning disable 0109 // new is redundant
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
-		public new const string ModelTypeAlias = "loginMember";
+		public new const string ModelTypeAlias = "logoutMember";
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		public new const PublishedItemType ModelItemType = PublishedItemType.Content;
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		public new static IPublishedContentType GetModelContentType()
 			=> PublishedModelUtility.GetModelContentType(ModelItemType, ModelTypeAlias);
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
-		public static IPublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<LoginMember, TValue>> selector)
+		public static IPublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<LogoutMember, TValue>> selector)
 			=> PublishedModelUtility.GetModelPropertyType(GetModelContentType(), selector);
 #pragma warning restore 0109
 
 		// ctor
-		public LoginMember(IPublishedContent content)
+		public LogoutMember(IPublishedContent content)
 			: base(content)
 		{ }
 
 		// properties
 
 		///<summary>
-		/// Already logged in: Displays instead of the form when a member is already logged in. You can use {{NAME}} to insert the member's name.
+		/// Logged in: Displays when a member is still logged in. You can use {{NAME}} to insert the member's name.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
-		[ImplementPropertyType("alreadyLoggedIn")]
-		public global::System.Web.IHtmlString AlreadyLoggedIn => this.Value<global::System.Web.IHtmlString>("alreadyLoggedIn");
+		[ImplementPropertyType("loggedIn")]
+		public global::System.Web.IHtmlString LoggedIn => this.Value<global::System.Web.IHtmlString>("loggedIn");
 
 		///<summary>
-		/// Login button: Label for the form submit button
+		/// Logged out: Displays when a member is logged out.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
-		[ImplementPropertyType("loginButton")]
-		public string LoginButton => this.Value<string>("loginButton");
+		[ImplementPropertyType("loggedOut")]
+		public global::System.Web.IHtmlString LoggedOut => this.Value<global::System.Web.IHtmlString>("loggedOut");
 
 		///<summary>
-		/// Logout button: Label for the logout button that appears when signed in.
+		/// Logout button: Label for the form submit button
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		[ImplementPropertyType("logoutButton")]
 		public string LogoutButton => this.Value<string>("logoutButton");
-
-		///<summary>
-		/// Migrated member accounts: Advice for members whose accounts have been migrated from the old website.
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
-		[ImplementPropertyType("migratedMemberAccounts")]
-		public global::System.Web.IHtmlString MigratedMemberAccounts => this.Value<global::System.Web.IHtmlString>("migratedMemberAccounts");
 
 		///<summary>
 		/// URL segment: Sets the URL for this page. Defaults to the page title.

@@ -5,6 +5,7 @@
 @using Umbraco.Web
 @using Umbraco.Web.Models
 @using Umbraco.Web.Controllers
+@using Stoolball.Web.Account
 @{
     Html.EnableClientValidation();
     Html.EnableUnobtrusiveJavaScript();
@@ -21,6 +22,12 @@
 @if (User.Identity.IsAuthenticated)
 {
     @Html.Raw(Model.Value<string>("alreadyLoggedIn").Replace("{{NAME}}", Umbraco.MembershipHelper.GetCurrentMember().Name))
+
+    using (Html.BeginUmbracoForm<LogoutMemberController>("HandleLogout"))
+    {
+        @Html.AntiForgeryToken()
+        <button class="btn btn-primary">@Model.Value("logoutButton")</button>
+    }
 }
 else
 {
@@ -41,5 +48,12 @@ else
         </div>
 
         <button class="btn btn-primary">@Model.Value("loginButton")</button>
+    }
+
+    if (Model.HasValue("migratedMemberAccounts"))
+    {
+        <div class="alert alert-info">
+            @Model.Value("migratedMemberAccounts")
+        </div>
     }
 }

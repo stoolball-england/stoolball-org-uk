@@ -18,7 +18,13 @@
 
 @if (User.Identity.IsAuthenticated)
 {
-    @(Model.Value<string>("alreadyLoggedIn").Replace("{{NAME}}", Umbraco.MembershipHelper.GetCurrentMember().Name))
+    @Html.Raw(Model.Value<string>("alreadyLoggedIn").Replace("{{NAME}}", Umbraco.MembershipHelper.GetCurrentMember().Name))
+
+    using (Html.BeginUmbracoForm<LogoutMemberController>("HandleLogout"))
+    {
+        @Html.AntiForgeryToken()
+        <button class="btn btn-primary">@Model.Value("logoutButton")</button>
+    }
 }
 else
 {
@@ -34,17 +40,17 @@ else
 
             <div class="form-group">
                 @Html.LabelFor(m => registerModel.Name)
-                @Html.TextBoxFor(m => registerModel.Name, new { @class = "form-control", required = "required", aria_describedby="form-name" })
+                @Html.TextBoxFor(m => registerModel.Name, new { @class = "form-control", required = "required", aria_describedby = "form-name" })
                 @Html.ValidationMessageFor(m => registerModel.Name, null, new { id = "form-name" })
             </div>
             <div class="form-group">
                 @Html.LabelFor(m => registerModel.Email)
-                @Html.TextBoxFor(m => registerModel.Email, new { @class = "form-control", type = "email", required = "required", aria_describedby="form-email" })
+                @Html.TextBoxFor(m => registerModel.Email, new { @class = "form-control", type = "email", required = "required", aria_describedby = "form-email" })
                 @Html.ValidationMessageFor(m => registerModel.Email, null, new { id = "form-email" })
             </div>
             <div class="form-group">
                 @Html.LabelFor(m => registerModel.Password)
-                @Html.PasswordFor(m => registerModel.Password, new { @class = "form-control", aria_describedby="form-password" })
+                @Html.PasswordFor(m => registerModel.Password, new { @class = "form-control", aria_describedby = "form-password" })
                 @Html.ValidationMessageFor(m => registerModel.Password, null, new { id = "form-password" })
             </div>
 

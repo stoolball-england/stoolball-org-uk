@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/LogoutMember.cshtml",
+  "Master": null,
+  "Udi": "umb://template/a91a6a71f4b24298932d850354b762fb",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/LogoutMember.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Logout Member",
+  "Alias": "LogoutMember",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.3.0"
+}

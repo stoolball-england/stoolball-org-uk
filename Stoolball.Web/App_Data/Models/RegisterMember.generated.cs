@@ -80,6 +80,13 @@ namespace Umbraco.Web.PublishedModels
 		public string ApproveMemberSubject => this.Value<string>("approveMemberSubject");
 
 		///<summary>
+		/// Logout button: Label for the logout button that appears when signed in.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("logoutButton")]
+		public string LogoutButton => this.Value<string>("logoutButton");
+
+		///<summary>
 		/// Register button: Label for the form submit button
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]

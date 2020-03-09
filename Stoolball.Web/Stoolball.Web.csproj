@@ -669,7 +669,9 @@
   <ItemGroup>
     <Compile Include="Account\ApproveMemberController.cs" />
     <Compile Include="Account\ApproveMemberModel.cs" />
+    <Compile Include="Account\LogoutMemberController.cs" />
     <Compile Include="App_Data\Models\LoginMember.generated.cs" />
+    <Compile Include="App_Data\Models\LogoutMember.generated.cs" />
     <Compile Include="Email\EmailHelper.cs" />
     <Compile Include="Email\IEmailHelper.cs" />
     <Compile Include="Account\RegisterMemberController.cs" />
@@ -757,6 +759,7 @@
     <Content Include="Views\MyAccount.cshtml" />
     <Content Include="Views\RegisterMember.cshtml" />
     <Content Include="Views\LoginMember.cshtml" />
+    <Content Include="Views\LogoutMember.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -796,6 +799,7 @@
   <ItemGroup>
     <Folder Include="Views\ApproveMember\" />
     <Folder Include="Views\LoginMember\" />
+    <Folder Include="Views\LogoutMember\" />
     <Folder Include="Views\RegisterMember\" />
   </ItemGroup>
   <PropertyGroup>
