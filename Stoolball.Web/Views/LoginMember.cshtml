@@ -1,0 +1,45 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.LoginMember>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using System.Web.Mvc.Html
+@using ClientDependency.Core.Mvc
+@using Umbraco.Web
+@using Umbraco.Web.Models
+@using Umbraco.Web.Controllers
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresCss("~/css/forms.css");
+    Html.RequiresJs("~/scripts/jquery-3.4.1.slim.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+
+    var loginModel = new LoginModel();
+    loginModel.RedirectUrl = "/";
+}
+<h1>@Model.Name</h1>
+
+@if (User.Identity.IsAuthenticated)
+{
+    @Html.Raw(Model.Value<string>("alreadyLoggedIn").Replace("{{NAME}}", Umbraco.MembershipHelper.GetCurrentMember().Name))
+}
+else
+{
+    using (Html.BeginUmbracoForm<UmbLoginController>("HandleLogin"))
+    {
+        @Html.HiddenFor(m => loginModel.RedirectUrl)
+        @Html.ValidationSummary("loginModel", true)
+
+        <div class="form-group">
+            @Html.LabelFor(m => loginModel.Username, "Email")
+            @Html.TextBoxFor(m => loginModel.Username, new { @class = "form-control", type = "email", required = "required", aria_describedby = "form-email" })
+            @Html.ValidationMessageFor(m => loginModel.Username, null, new { id = "form-email" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => loginModel.Password)
+            @Html.PasswordFor(m => loginModel.Password, new { @class = "form-control", aria_describedby = "form-password" })
+            @Html.ValidationMessageFor(m => loginModel.Password, null, new { id = "form-password" })
+        </div>
+
+        <button class="btn btn-primary">@Model.Value("loginButton")</button>
+    }
+}

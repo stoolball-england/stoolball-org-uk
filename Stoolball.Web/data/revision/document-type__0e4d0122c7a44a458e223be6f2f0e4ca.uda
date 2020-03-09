@@ -1,0 +1,87 @@
+{
+  "DefaultTemplate": "umb://template/efab32b5766643a4b4fd55e0d2b00e27",
+  "AllowedTemplates": [
+    "umb://template/efab32b5766643a4b4fd55e0d2b00e27"
+  ],
+  "Icon": "icon-logout color-blue",
+  "Thumbnail": "folder.png",
+  "Description": "Login to a member account",
+  "IsContainer": false,
+  "Permissions": {
+    "AllowVaryingByCulture": false,
+    "AllowVaryingBySegment": false,
+    "AllowedAtRoot": false,
+    "IsElementType": false,
+    "AllowedChildContentTypes": []
+  },
+  "Parent": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
+  "CompositionContentTypes": [
+    "umb://document-type/d9999f5ac07b4f379d013f0316d8678c"
+  ],
+  "PropertyGroups": [
+    {
+      "Key": "ce46aa63-4b12-4c9f-855b-b62bc2a4b04a",
+      "Name": "Page content",
+      "SortOrder": 0,
+      "PropertyTypes": [
+        {
+          "Key": "1cee3b15-db72-4ea1-ac57-946eba2c30ef",
+          "Alias": "alreadyLoggedIn",
+          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+          "Description": "Displays instead of the form when a member is already logged in. You can use {{NAME}} to insert the member's name.",
+          "Mandatory": true,
+          "Name": "Already logged in",
+          "SortOrder": 0,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
+          "Key": "f5ca4e12-ff76-42fb-bd86-9da09be78550",
+          "Alias": "loginButton",
+          "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+          "Description": "Label for the form submit button",
+          "Mandatory": true,
+          "Name": "Login button",
+          "SortOrder": 1,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        }
+      ]
+    }
+  ],
+  "PropertyTypes": [],
+  "Udi": "umb://document-type/0e4d0122c7a44a458e223be6f2f0e4ca",
+  "Dependencies": [
+    {
+      "Udi": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/d9999f5ac07b4f379d013f0316d8678c",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/efab32b5766643a4b4fd55e0d2b00e27",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Login Member",
+  "Alias": "loginMember",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
+  "__version": "3.3.0"
+}

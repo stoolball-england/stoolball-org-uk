@@ -16,6 +16,6 @@
     @extend .form-control.is-valid;
 }
 
-.field-validation-error {
+.field-validation-error, .validation-summary-errors {
     color: $red;
 }
