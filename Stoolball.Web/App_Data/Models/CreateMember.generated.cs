@@ -101,6 +101,13 @@ namespace Umbraco.Web.PublishedModels
 		public string MemberExistsSubject => this.Value<string>("memberExistsSubject");
 
 		///<summary>
+		/// Password help: Advice on minimum password complexity requirements.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("passwordHelp")]
+		public string PasswordHelp => this.Value<string>("passwordHelp");
+
+		///<summary>
 		/// URL segment: Sets the URL for this page. Defaults to the page title.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]

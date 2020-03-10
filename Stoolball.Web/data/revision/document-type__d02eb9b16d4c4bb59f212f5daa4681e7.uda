@@ -43,6 +43,18 @@
           "Description": "Displays when a member is created successfully and must now be approved, or when a member already existed. You can use {{EMAIL}} to tell them where we sent the email to.",
           "Mandatory": true,
           "Name": "Member created successfully",
+          "SortOrder": 4,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
+          "Key": "a956f1d4-7d6f-48e2-baf3-d0835e586ead",
+          "Alias": "passwordHelp",
+          "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+          "Description": "Advice on minimum password complexity requirements.",
+          "Mandatory": false,
+          "Name": "Password help",
           "SortOrder": 2,
           "Validation": null,
           "VariesByCulture": false,

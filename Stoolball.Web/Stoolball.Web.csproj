@@ -675,7 +675,7 @@
     <Compile Include="App_Data\Models\LogoutMember.generated.cs" />
     <Compile Include="Email\EmailHelper.cs" />
     <Compile Include="Email\IEmailHelper.cs" />
-    <Compile Include="Account\CreateMemberController.cs" />
+    <Compile Include="Account\CreateMemberSurfaceController.cs" />
     <Compile Include="App_Data\Models\ApproveMember.generated.cs" />
     <Compile Include="App_Data\Models\File.generated.cs" />
     <Compile Include="App_Data\Models\Folder.generated.cs" />

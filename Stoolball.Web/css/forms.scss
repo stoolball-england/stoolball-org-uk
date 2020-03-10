@@ -20,5 +20,12 @@
     color: $red;
 }
 
+/* Bootstrap expects .form-text after the element but it's better before, where the user will see it in time */
+.form-text {
+    margin-top: $spacer*-.5;
+    margin-bottom: $spacer/4;
+    color: #777;
+}
+
 /* Forms should have space before any following element */
 form { margin-bottom: $spacer; }

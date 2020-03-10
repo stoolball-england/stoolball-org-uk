@@ -34,9 +34,15 @@ else
     }
     else
     {
-        using (Html.BeginUmbracoForm<CreateMemberController>("HandleCreateMember"))
+        using (Html.BeginUmbracoForm<CreateMemberSurfaceController>("HandleCreateMember"))
         {
             @Html.AntiForgeryToken()
+            
+            @* Html.ValidationSummary() would display these errors, but it would also display duplicate client-side errors and use inline styles, so use TempData instead. *@
+            if (TempData["Error"] != null)
+            {
+                <p class="validation-summary-errors">@TempData["Error"]</p>
+            }
 
             <div class="form-group">
                 @Html.LabelFor(m => createMemberModel.Name)
@@ -50,7 +56,13 @@ else
             </div>
             <div class="form-group">
                 @Html.LabelFor(m => createMemberModel.Password)
-                @Html.PasswordFor(m => createMemberModel.Password, new { @class = "form-control", aria_describedby = "form-password" })
+                @{ var describedBy = "form-password"; }
+                @if (!string.IsNullOrEmpty(Model.PasswordHelp))
+                {
+                    describedBy = "form-password form-password-help";
+                    <p class="form-text" id="form-password-help"><small>@Model.PasswordHelp</small></p>
+                }
+                @Html.PasswordFor(m => createMemberModel.Password, new { @class = "form-control", aria_describedby = describedBy })
                 @Html.ValidationMessageFor(m => createMemberModel.Password, null, new { id = "form-password" })
             </div>
 

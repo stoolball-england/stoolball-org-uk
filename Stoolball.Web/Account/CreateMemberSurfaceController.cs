@@ -17,11 +17,11 @@ using System.Globalization;
 
 namespace Stoolball.Web.Account
 {
-    public class CreateMemberController : UmbRegisterController
+    public class CreateMemberSurfaceController : UmbRegisterController
     {
         private readonly IEmailHelper _emailHelper;
 
-        public CreateMemberController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services, AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IEmailHelper emailHelper)
+        public CreateMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services, AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IEmailHelper emailHelper)
             : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _emailHelper = emailHelper;
@@ -102,6 +102,8 @@ namespace Stoolball.Web.Account
                 }
                 else
                 {
+                    // Some other validation error, such as password not strong enough
+                    TempData["Error"] = errorMessage;
                     return baseResult;
                 }
             }
