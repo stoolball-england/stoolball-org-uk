@@ -19,26 +19,26 @@ using Umbraco.ModelsBuilder.Embedded;
 
 namespace Umbraco.Web.PublishedModels
 {
-	/// <summary>Register Member</summary>
-	[PublishedModel("registerMember")]
-	public partial class RegisterMember : PublishedContentModel, IMetadata
+	/// <summary>Create Member</summary>
+	[PublishedModel("createMember")]
+	public partial class CreateMember : PublishedContentModel, IMetadata
 	{
 		// helpers
 #pragma warning disable 0109 // new is redundant
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
-		public new const string ModelTypeAlias = "registerMember";
+		public new const string ModelTypeAlias = "createMember";
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		public new const PublishedItemType ModelItemType = PublishedItemType.Content;
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		public new static IPublishedContentType GetModelContentType()
 			=> PublishedModelUtility.GetModelContentType(ModelItemType, ModelTypeAlias);
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
-		public static IPublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<RegisterMember, TValue>> selector)
+		public static IPublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<CreateMember, TValue>> selector)
 			=> PublishedModelUtility.GetModelPropertyType(GetModelContentType(), selector);
 #pragma warning restore 0109
 
 		// ctor
-		public RegisterMember(IPublishedContent content)
+		public CreateMember(IPublishedContent content)
 			: base(content)
 		{ }
 
@@ -50,20 +50,6 @@ namespace Umbraco.Web.PublishedModels
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		[ImplementPropertyType("alreadyLoggedIn")]
 		public global::System.Web.IHtmlString AlreadyLoggedIn => this.Value<global::System.Web.IHtmlString>("alreadyLoggedIn");
-
-		///<summary>
-		/// Email body: The body of the email. You can use {{NAME}}, {{EMAIL}} and {{DOMAIN}} to insert values.
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
-		[ImplementPropertyType("alreadyRegisteredBody")]
-		public global::System.Web.IHtmlString AlreadyRegisteredBody => this.Value<global::System.Web.IHtmlString>("alreadyRegisteredBody");
-
-		///<summary>
-		/// Email subject: The subject line of the email. You can use {{NAME}} to insert the member's name.
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
-		[ImplementPropertyType("alreadyRegisteredSubject")]
-		public string AlreadyRegisteredSubject => this.Value<string>("alreadyRegisteredSubject");
 
 		///<summary>
 		/// Email body: The body of the email. You can use {{NAME}}, {{EMAIL}}, {{TOKEN}} and {{DOMAIN}} to insert values.
@@ -80,6 +66,13 @@ namespace Umbraco.Web.PublishedModels
 		public string ApproveMemberSubject => this.Value<string>("approveMemberSubject");
 
 		///<summary>
+		/// Create Member button: Label for the form submit button
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("createMemberButton")]
+		public string CreateMemberButton => this.Value<string>("createMemberButton");
+
+		///<summary>
 		/// Logout button: Label for the logout button that appears when signed in.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
@@ -87,18 +80,25 @@ namespace Umbraco.Web.PublishedModels
 		public string LogoutButton => this.Value<string>("logoutButton");
 
 		///<summary>
-		/// Register button: Label for the form submit button
+		/// Member created successfully: Displays when a member is created successfully and must now be approved, or when a member already existed. You can use {{EMAIL}} to tell them where we sent the email to.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
-		[ImplementPropertyType("registerButton")]
-		public string RegisterButton => this.Value<string>("registerButton");
+		[ImplementPropertyType("memberCreatedSuccessfully")]
+		public global::System.Web.IHtmlString MemberCreatedSuccessfully => this.Value<global::System.Web.IHtmlString>("memberCreatedSuccessfully");
 
 		///<summary>
-		/// Registration successful: Displays when a member registers successfully and must now activate their account, or is already registered. You can use {{EMAIL}} to tell them where we sent the email to.
+		/// Email body: The body of the email. You can use {{NAME}}, {{EMAIL}} and {{DOMAIN}} to insert values.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
-		[ImplementPropertyType("registrationSuccessful")]
-		public global::System.Web.IHtmlString RegistrationSuccessful => this.Value<global::System.Web.IHtmlString>("registrationSuccessful");
+		[ImplementPropertyType("memberExistsBody")]
+		public global::System.Web.IHtmlString MemberExistsBody => this.Value<global::System.Web.IHtmlString>("memberExistsBody");
+
+		///<summary>
+		/// Email subject: The subject line of the email. You can use {{NAME}} to insert the member's name.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("memberExistsSubject")]
+		public string MemberExistsSubject => this.Value<string>("memberExistsSubject");
 
 		///<summary>
 		/// URL segment: Sets the URL for this page. Defaults to the page title.

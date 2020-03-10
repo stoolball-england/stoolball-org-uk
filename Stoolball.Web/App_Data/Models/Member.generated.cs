@@ -45,7 +45,7 @@ namespace Umbraco.Web.PublishedModels
 		// properties
 
 		///<summary>
-		/// Approval token: Used during email validation when registering a new member
+		/// Approval token: Used during email validation when creating a new member
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		[ImplementPropertyType("approvalToken")]

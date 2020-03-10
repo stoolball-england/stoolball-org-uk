@@ -17,11 +17,11 @@ using System.Globalization;
 
 namespace Stoolball.Web.Account
 {
-    public class RegisterMemberController : UmbRegisterController
+    public class CreateMemberController : UmbRegisterController
     {
         private readonly IEmailHelper _emailHelper;
 
-        public RegisterMemberController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services, AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IEmailHelper emailHelper)
+        public CreateMemberController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services, AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IEmailHelper emailHelper)
             : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _emailHelper = emailHelper;
@@ -30,23 +30,23 @@ namespace Stoolball.Web.Account
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        public ActionResult HandleRegisterMemberWithValidation([Bind(Prefix = "registerModel")]RegisterModel model)
+        public ActionResult HandleCreateMember([Bind(Prefix = "createMemberModel")]RegisterModel model)
         {
             if (ModelState.IsValid == false || model == null)
             {
                 return CurrentUmbracoPage();
             }
 
-            // Don't login if registration succeeds, because we're going to revert approval and ask for validation
+            // Don't login if creating the member succeeds, because we're going to revert approval and ask for validation
             model.LoginOnSuccess = false;
-            var baseResult = RegisterMemberWithUmbraco(model);
+            var baseResult = CreateMemberInUmbraco(model);
 
             // Put the entered email address in TempData so that it can be accessed in the view
             TempData["Email"] = model.Email;
 
             // The base Umbraco method populates this TempData key with a boolean we can use to check the result
-            var registrationSuccessful = TempData.ContainsKey("FormSuccess") && Convert.ToBoolean(TempData["FormSuccess"], CultureInfo.InvariantCulture) == true;
-            if (registrationSuccessful)
+            var memberCreated = TempData.ContainsKey("FormSuccess") && Convert.ToBoolean(TempData["FormSuccess"], CultureInfo.InvariantCulture) == true;
+            if (memberCreated)
             {
                 // Get the newly-created member so that we can set an approval token
                 var member = Services.MemberService.GetByEmail(model.Email);
@@ -85,10 +85,10 @@ namespace Stoolball.Web.Account
                 var errorMessage = ModelState.Values.Where(x => x.Errors.Count > 0).Select(x => x.Errors[0].ErrorMessage).First();
                 if (errorMessage == "A member with this username already exists.")
                 {
-                    // Send the already-registered email
+                    // Send the 'member already exists' email
                     _emailHelper.SendEmail(model.Email,
-                        this.CurrentPage.Value<string>("alreadyRegisteredSubject"),
-                        this.CurrentPage.Value<string>("alreadyRegisteredBody"),
+                        this.CurrentPage.Value<string>("memberExistsSubject"),
+                        this.CurrentPage.Value<string>("memberExistsBody"),
                         new Dictionary<string, string>
                         {
                             {"name", model.Name},
@@ -133,6 +133,6 @@ namespace Stoolball.Web.Account
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        protected virtual ActionResult RegisterMemberWithUmbraco(RegisterModel model) => base.HandleRegisterMember(model);
+        protected virtual ActionResult CreateMemberInUmbraco(RegisterModel model) => base.HandleRegisterMember(model);
     }
 }

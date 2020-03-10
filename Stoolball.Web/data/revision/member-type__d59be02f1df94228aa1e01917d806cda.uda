@@ -130,7 +130,7 @@
           "Key": "71d678b0-c7ed-4f70-a349-d8965d555b1f",
           "Alias": "approvalToken",
           "DataType": "umb://data-type/f0bc4bfbb49940d6ba86058885a5178c",
-          "Description": "Used during email validation when registering a new member",
+          "Description": "Used during email validation when creating a new member",
           "Mandatory": false,
           "Name": "Approval token",
           "SortOrder": 9,
