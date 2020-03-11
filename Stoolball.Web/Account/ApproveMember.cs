@@ -5,18 +5,14 @@ using System.Web;
 using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Web.PublishedModels;
 
-namespace Stoolball.Web.Account
+namespace Umbraco.Web.PublishedModels
 {
-    public class ApproveMemberModel : ApproveMember
+    public partial class ApproveMember
     {
-        public ApproveMemberModel(IPublishedContent content) : base(content)
-        {
-        }
-
         /// <summary>
-        /// Gets or sets whether a token was recognised, validated and resulted in approval of the member
+        /// Gets or sets whether a token was recognised, validated and matched to a member
         /// </summary>
-        public bool MemberWasApproved { get; set; }
+        public bool ApprovalTokenValid { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the newly-approved member

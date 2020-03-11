@@ -8,12 +8,13 @@ using System.Net.Mail;
 using System.IO;
 using System.Web;
 using System.Web.Hosting;
+using System.Runtime.CompilerServices;
 
 namespace Stoolball.Web.Email
 {
-    public class EmailHelper : IEmailHelper
+    public class EmailFormatter : IEmailFormatter
     {
-        public bool SendEmail(string toAddress, string subject, string bodyHtml, Dictionary<string, string> tokenValues)
+        public (string subject, string body) FormatEmailContent(string subject, string bodyHtml, Dictionary<string, string> tokenValues)
         {
             // Replace tokens in text
             var revisedSubject = ReplaceTokens(subject != null ? subject : string.Empty, tokenValues);
@@ -24,28 +25,7 @@ namespace Stoolball.Web.Email
                 .Replace("{{SUBJECT}}", revisedSubject)
                 .Replace("{{BODY}}", revisedBody);
 
-            try
-            {
-                using (var message = new MailMessage())
-                {
-                    message.To.Add(toAddress);
-                    message.From = new MailAddress("alerts@stoolball.org.uk", "Stoolball England");
-                    message.Subject = revisedSubject;
-
-                    message.IsBodyHtml = true;
-                    message.Body = revisedBody;
-                    using (var smtp = new SmtpClient())
-                    {
-                        smtp.Send(message);
-                    }
-                    return true;
-                }
-            }
-            catch (SmtpException e)
-            {
-                Umbraco.Core.Composing.Current.Logger.Info(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, "Error trying to send email: " + e);
-                return false;
-            }
+            return (revisedSubject, revisedBody);
         }
 
         private static string ReplaceTokens(string textIn, Dictionary<string, string> tokenValues)

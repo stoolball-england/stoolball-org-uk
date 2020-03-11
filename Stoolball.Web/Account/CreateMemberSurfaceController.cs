@@ -14,17 +14,22 @@ using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Stoolball.Web.Email;
 using System.Globalization;
+using Stoolball.Security;
 
 namespace Stoolball.Web.Account
 {
     public class CreateMemberSurfaceController : UmbRegisterController
     {
-        private readonly IEmailHelper _emailHelper;
+        private readonly IEmailFormatter _emailFormatter;
+        private readonly IEmailSender _emailSender;
+        private readonly IVerificationToken _verificationToken;
 
-        public CreateMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services, AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IEmailHelper emailHelper)
+        public CreateMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services, AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IEmailFormatter emailFormatter, IEmailSender emailSender, IVerificationToken verificationToken)
             : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper)
         {
-            _emailHelper = emailHelper;
+            _emailFormatter = emailFormatter;
+            _emailSender = emailSender;
+            _verificationToken = verificationToken;
         }
 
         [HttpPost]
@@ -51,11 +56,10 @@ namespace Stoolball.Web.Account
                 // Get the newly-created member so that we can set an approval token
                 var member = Services.MemberService.GetByEmail(model.Email);
 
-                // Create a GUID for the account approval token, combined with the id so we can find the member
-                // Set the expiry to be 24 hours
-                string approvalToken = $"{member.Id}-{Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture)}";
-                member.SetValue("approvalToken", approvalToken);
-                member.SetValue("approvalTokenExpiry", CalculateApprovalTokenExpiry());
+                // Create an account approval token including the id so we can find the member
+                var (token, expires) = _verificationToken.TokenFor(member.Id);
+                member.SetValue("approvalToken", token);
+                member.SetValue("approvalTokenExpires", expires);
                 member.IsApproved = false;
 
                 Services.MemberService.Save(member);
@@ -64,16 +68,16 @@ namespace Stoolball.Web.Account
                 Services.MemberService.AssignRole(member.Id, "All Members");
 
                 // Send the approval validation email
-                _emailHelper.SendEmail(model.Email,
-                    this.CurrentPage.Value<string>("approveMemberSubject"),
-                    this.CurrentPage.Value<string>("approveMemberBody"),
+                var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>("approveMemberSubject"),
+                    CurrentPage.Value<string>("approveMemberBody"),
                     new Dictionary<string, string>
                     {
                         {"name", model.Name},
                         {"email", model.Email},
-                        {"token", approvalToken},
+                        {"token", token},
                         {"domain", GetRequestUrlAuthority()}
                     });
+                _emailSender.SendEmail(model.Email, subject, body);
 
                 return RedirectToCurrentUmbracoPage();
             }
@@ -86,15 +90,15 @@ namespace Stoolball.Web.Account
                 if (errorMessage == "A member with this username already exists.")
                 {
                     // Send the 'member already exists' email
-                    _emailHelper.SendEmail(model.Email,
-                        this.CurrentPage.Value<string>("memberExistsSubject"),
-                        this.CurrentPage.Value<string>("memberExistsBody"),
+                    var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>("memberExistsSubject"),
+                        CurrentPage.Value<string>("memberExistsBody"),
                         new Dictionary<string, string>
                         {
                             {"name", model.Name},
                             {"email", model.Email},
                             {"domain", GetRequestUrlAuthority()}
                         });
+                    _emailSender.SendEmail(model.Email, subject, body);
 
                     // Send back the same status regardless for security
                     TempData["FormSuccess"] = true;
@@ -107,15 +111,6 @@ namespace Stoolball.Web.Account
                     return baseResult;
                 }
             }
-        }
-
-        /// <summary>
-        /// Calculate the approval token expiry in a way which can be overridden for testing
-        /// </summary>
-        /// <returns></returns>
-        protected virtual DateTime CalculateApprovalTokenExpiry()
-        {
-            return DateTime.UtcNow.AddDays(1);
         }
 
         /// <summary>

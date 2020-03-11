@@ -66,14 +66,14 @@ namespace Umbraco.Web.PublishedModels
 		public string ApproveMemberSubject => this.Value<string>("approveMemberSubject");
 
 		///<summary>
-		/// Create Member button: Label for the form submit button
+		/// 'Create member' button: Label for the form submit button.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		[ImplementPropertyType("createMemberButton")]
 		public string CreateMemberButton => this.Value<string>("createMemberButton");
 
 		///<summary>
-		/// Logout button: Label for the logout button that appears when signed in.
+		/// 'Logout' button: Label for the logout button that appears when signed in.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		[ImplementPropertyType("logoutButton")]

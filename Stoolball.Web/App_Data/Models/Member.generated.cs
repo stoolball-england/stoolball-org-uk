@@ -45,18 +45,32 @@ namespace Umbraco.Web.PublishedModels
 		// properties
 
 		///<summary>
-		/// Approval token: Used during email validation when creating a new member
+		/// Approval token: Used during email validation when creating a new member.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		[ImplementPropertyType("approvalToken")]
 		public string ApprovalToken => this.Value<string>("approvalToken");
 
 		///<summary>
-		/// Approval token expiry: The date and time the approval token expires
+		/// Approval token expires: The date and time the approval token expires.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
-		[ImplementPropertyType("approvalTokenExpiry")]
-		public global::System.DateTime ApprovalTokenExpiry => this.Value<global::System.DateTime>("approvalTokenExpiry");
+		[ImplementPropertyType("approvalTokenExpires")]
+		public global::System.DateTime ApprovalTokenExpires => this.Value<global::System.DateTime>("approvalTokenExpires");
+
+		///<summary>
+		/// Password reset token: Used during email validation when a member resets their password.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("passwordResetToken")]
+		public string PasswordResetToken => this.Value<string>("passwordResetToken");
+
+		///<summary>
+		/// Password reset token expires: The date and time the password reset token expires.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("passwordResetTokenExpires")]
+		public global::System.DateTime PasswordResetTokenExpires => this.Value<global::System.DateTime>("passwordResetTokenExpires");
 
 		///<summary>
 		/// Is Approved

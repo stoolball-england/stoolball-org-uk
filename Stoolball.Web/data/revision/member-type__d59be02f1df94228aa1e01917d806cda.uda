@@ -127,10 +127,22 @@
           "VariesBySegment": false
         },
         {
+          "Key": "4f0b190f-c53d-41f8-9592-0b32cb67d183",
+          "Alias": "passwordResetToken",
+          "DataType": "umb://data-type/f0bc4bfbb49940d6ba86058885a5178c",
+          "Description": "Used during email validation when a member resets their password.",
+          "Mandatory": false,
+          "Name": "Password reset token",
+          "SortOrder": 11,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
           "Key": "71d678b0-c7ed-4f70-a349-d8965d555b1f",
           "Alias": "approvalToken",
           "DataType": "umb://data-type/f0bc4bfbb49940d6ba86058885a5178c",
-          "Description": "Used during email validation when creating a new member",
+          "Description": "Used during email validation when creating a new member.",
           "Mandatory": false,
           "Name": "Approval token",
           "SortOrder": 9,
@@ -139,12 +151,24 @@
           "VariesBySegment": false
         },
         {
-          "Key": "a665fde5-0cbb-4702-8e43-e4262d0b305b",
-          "Alias": "approvalTokenExpiry",
+          "Key": "999f3441-fb77-4f4f-a851-1a19cb382cc8",
+          "Alias": "passwordResetTokenExpires",
           "DataType": "umb://data-type/0e9794ebf9b54f20a78893acd233a7e4",
-          "Description": "The date and time the approval token expires",
+          "Description": "The date and time the password reset token expires.",
           "Mandatory": false,
-          "Name": "Approval token expiry",
+          "Name": "Password reset token expires",
+          "SortOrder": 12,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
+          "Key": "a665fde5-0cbb-4702-8e43-e4262d0b305b",
+          "Alias": "approvalTokenExpires",
+          "DataType": "umb://data-type/0e9794ebf9b54f20a78893acd233a7e4",
+          "Description": "The date and time the approval token expires.",
+          "Mandatory": false,
+          "Name": "Approval token expires",
           "SortOrder": 10,
           "Validation": null,
           "VariesByCulture": false,

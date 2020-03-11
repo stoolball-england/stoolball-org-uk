@@ -59,7 +59,7 @@ namespace Umbraco.Web.PublishedModels
 		public global::System.Web.IHtmlString LoggedOut => this.Value<global::System.Web.IHtmlString>("loggedOut");
 
 		///<summary>
-		/// Logout button: Label for the form submit button
+		/// 'Logout' button: Label for the form submit button.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		[ImplementPropertyType("logoutButton")]

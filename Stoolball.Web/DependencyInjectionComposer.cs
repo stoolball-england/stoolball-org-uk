@@ -1,4 +1,4 @@
-﻿using Stoolball.Web.Email;
+﻿using Stoolball.Security;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
 
@@ -8,7 +8,9 @@ namespace Stoolball.Web
     {
         public void Compose(Composition composition)
         {
-            composition.Register<IEmailHelper, EmailHelper>(Lifetime.Singleton);
+            composition.Register<Email.IEmailFormatter, Email.EmailFormatter>(Lifetime.Singleton);
+            composition.Register<Email.IEmailSender, Email.EmailSender>(Lifetime.Singleton);
+            composition.Register<IVerificationToken, VerificationToken>(Lifetime.Singleton);
         }
     }
 }

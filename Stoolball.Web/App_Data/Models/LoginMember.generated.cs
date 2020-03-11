@@ -52,14 +52,14 @@ namespace Umbraco.Web.PublishedModels
 		public global::System.Web.IHtmlString AlreadyLoggedIn => this.Value<global::System.Web.IHtmlString>("alreadyLoggedIn");
 
 		///<summary>
-		/// Login button: Label for the form submit button
+		/// 'Login' button: Label for the form submit button.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		[ImplementPropertyType("loginButton")]
 		public string LoginButton => this.Value<string>("loginButton");
 
 		///<summary>
-		/// Logout button: Label for the logout button that appears when signed in.
+		/// 'Logout' button: Label for the logout button that appears when signed in.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		[ImplementPropertyType("logoutButton")]
@@ -71,6 +71,13 @@ namespace Umbraco.Web.PublishedModels
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		[ImplementPropertyType("migratedMemberAccounts")]
 		public global::System.Web.IHtmlString MigratedMemberAccounts => this.Value<global::System.Web.IHtmlString>("migratedMemberAccounts");
+
+		///<summary>
+		/// Reset password: Displays below the Login button and prompts the member to reset their password if they are unable to login.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("resetPassword")]
+		public global::System.Web.IHtmlString ResetPassword => this.Value<global::System.Web.IHtmlString>("resetPassword");
 
 		///<summary>
 		/// URL segment: Sets the URL for this page. Defaults to the page title.
