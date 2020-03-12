@@ -1,18 +1,17 @@
 $projectRoot = Resolve-Path "$PSScriptRoot\.."
 Push-Location $projectRoot
 
-Write-Host "YOU SHOULD ALWAYS BE WORKING ON A BRANCH AND HAVE EVERYTHING COMMITTED OR STASHED.
-CHANGES FROM REMOTE WILL NOW OVERWRITE ANYTHING, EVEN COMMITS, ON `master`
-DOING THIS BEFORE A MERGE TO `master` AVOIDS REMOTE CHANGES OVERWRITING LOCAL.
+Write-Host "THIS COULD LOSE YOUR WORK. ARE YOU SURE?
 
-ALSO, IF YOU DELETED ANYTHING DELETE IT FROM THE .UmbracoCloud REPO TOO, OR IT'LL COME BACK!!!" -ForegroundColor Red
-Read-Host -Prompt "Press any key to continue or CTRL+C to quit" 
+* Do you have all your work committed or stashed on a branch?
+* Have you pulled any changes from Umbraco Cloud into master using Pull-UmbracoCloud.ps1?
+* If you deleted anything, have you also deleted it from the .UmbracoCloud repo? It might come back!
 
-# Ensure master branch is up-to-date with changes from Umbraco Cloud
-.\Scripts\Pull-UmbracoCloud
+" -ForegroundColor Red
+Read-Host -Prompt "Press any key to continue or CTRL+C to quit"
 
 # Copy changes from Stoolball.Web to the .UmbracoCloud deployment repository
-robocopy .\Stoolball.Web .\.UmbracoCloud /IF *.dll *.cshtml *.uda *.xdt.config *.css /XF Umbraco.*.dll /S /XD .git $projectRoot\Stoolball.Web\obj $projectRoot\Stoolball.Web\umbraco $projectRoot\Stoolball.Web\App_Data $projectRoot\Stoolball.Web\App_Plugins\Deploy $projectRoot\Stoolball.Web\App_Plugins\UmbracoForms $projectRoot\Stoolball.Web\Content $projectRoot\Stoolball.Web\Scripts $projectRoot\Stoolball.Web\Media
+robocopy .\Stoolball.Web .\.UmbracoCloud /IF *.dll *.cshtml *.uda *.xdt.config *.css *.html /XF Umbraco.*.dll /S /XD .git $projectRoot\Stoolball.Web\obj $projectRoot\Stoolball.Web\umbraco $projectRoot\Stoolball.Web\App_Data $projectRoot\Stoolball.Web\App_Plugins\Deploy $projectRoot\Stoolball.Web\App_Plugins\UmbracoForms $projectRoot\Stoolball.Web\Content $projectRoot\Stoolball.Web\Scripts $projectRoot\Stoolball.Web\Media
 
 # Commit and push those changes
 Push-Location .\.UmbracoCloud
