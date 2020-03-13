@@ -59,11 +59,15 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Account\CreateMemberSurfaceControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UmbracoBaseTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="xunit.runner.json" />
+    <None Include="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
@@ -93,6 +97,10 @@
     <ProjectReference Include="..\Stoolball.Web\Stoolball.Web.csproj">
       <Project>{f66102a7-55a0-423a-aad3-19d89147b5c7}</Project>
       <Name>Stoolball.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Stoolball\Stoolball.csproj">
+      <Project>{4F0709D1-9E82-4016-8003-0E67D6F8CB60}</Project>
+      <Name>Stoolball</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

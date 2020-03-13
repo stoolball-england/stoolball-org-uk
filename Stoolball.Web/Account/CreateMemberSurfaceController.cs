@@ -35,7 +35,7 @@ namespace Stoolball.Web.Account
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        public ActionResult HandleCreateMember([Bind(Prefix = "createMemberModel")]RegisterModel model)
+        public ActionResult CreateMember([Bind(Prefix = "createMemberModel")]RegisterModel model)
         {
             if (ModelState.IsValid == false || model == null)
             {
@@ -86,7 +86,7 @@ namespace Stoolball.Web.Account
                 // Don't expose that an email address is in use already.
                 // For security send an email with a link to reset their password.
                 // See https://www.troyhunt.com/everything-you-ever-wanted-to-know/
-                var errorMessage = ModelState.Values.Where(x => x.Errors.Count > 0).Select(x => x.Errors[0].ErrorMessage).First();
+                var errorMessage = ModelState.Values.Where(x => x.Errors.Count > 0).Select(x => x.Errors[0].ErrorMessage).FirstOrDefault();
                 if (errorMessage == "A member with this username already exists.")
                 {
                     // Send the 'member already exists' email
@@ -102,7 +102,7 @@ namespace Stoolball.Web.Account
 
                     // Send back the same status regardless for security
                     TempData["FormSuccess"] = true;
-                    return CurrentUmbracoPage();
+                    return RedirectToCurrentUmbracoPage();
                 }
                 else
                 {
