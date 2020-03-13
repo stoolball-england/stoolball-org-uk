@@ -18,13 +18,7 @@
 
 @if (User.Identity.IsAuthenticated)
 {
-    @Html.Raw(Model.Value<string>("alreadyLoggedIn").Replace("{{NAME}}", Umbraco.MembershipHelper.GetCurrentMember().Name))
-
-    using (Html.BeginUmbracoForm<LogoutMemberController>("HandleLogout"))
-    {
-        @Html.AntiForgeryToken()
-        <button class="btn btn-primary">@Model.Value("logoutButton")</button>
-    }
+    @Html.Partial("_Logout")
 }
 else
 {
@@ -37,7 +31,7 @@ else
         using (Html.BeginUmbracoForm<CreateMemberSurfaceController>("CreateMember"))
         {
             @Html.AntiForgeryToken()
-            
+
             @* Html.ValidationSummary() would display these errors, but it would also display duplicate client-side errors and use inline styles, so use TempData instead. *@
             if (TempData["Error"] != null)
             {

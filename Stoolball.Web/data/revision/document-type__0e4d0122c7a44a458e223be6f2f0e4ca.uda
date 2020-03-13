@@ -26,24 +26,12 @@
       "PropertyTypes": [
         {
           "Key": "1cee3b15-db72-4ea1-ac57-946eba2c30ef",
-          "Alias": "alreadyLoggedIn",
+          "Alias": "loggedIn",
           "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
-          "Description": "Displays instead of the form when a member is already logged in. You can use {{NAME}} to insert the member's name.",
+          "Description": "Displays instead of the form when a member is logged in. You can use {{NAME}} to insert the member's name.",
           "Mandatory": true,
-          "Name": "Already logged in",
+          "Name": "Logged in",
           "SortOrder": 0,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false
-        },
-        {
-          "Key": "52d18108-091a-430e-9401-4afd344fd9cb",
-          "Alias": "logoutButton",
-          "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
-          "Description": "Label for the logout button that appears when signed in.",
-          "Mandatory": true,
-          "Name": "'Logout' button",
-          "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -68,6 +56,18 @@
           "Mandatory": false,
           "Name": "Migrated member accounts",
           "SortOrder": 4,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
+          "Key": "d67d27b8-89cd-4cd8-9531-3b59875d4954",
+          "Alias": "loginRequired",
+          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+          "Description": "Displays above the form when a page requires the member to be logged in.",
+          "Mandatory": true,
+          "Name": "Login required",
+          "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false

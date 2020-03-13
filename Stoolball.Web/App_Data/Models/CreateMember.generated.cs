@@ -45,13 +45,6 @@ namespace Umbraco.Web.PublishedModels
 		// properties
 
 		///<summary>
-		/// Already logged in: Displays instead of the form when a member is already logged in. You can use {{NAME}} to insert the member's name.
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
-		[ImplementPropertyType("alreadyLoggedIn")]
-		public global::System.Web.IHtmlString AlreadyLoggedIn => this.Value<global::System.Web.IHtmlString>("alreadyLoggedIn");
-
-		///<summary>
 		/// Email body: The body of the email. You can use {{NAME}}, {{EMAIL}}, {{TOKEN}} and {{DOMAIN}} to insert values.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
@@ -73,11 +66,11 @@ namespace Umbraco.Web.PublishedModels
 		public string CreateMemberButton => this.Value<string>("createMemberButton");
 
 		///<summary>
-		/// 'Logout' button: Label for the logout button that appears when signed in.
+		/// Logged in: Displays instead of the form when a member is logged in. You can use {{NAME}} to insert the member's name.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
-		[ImplementPropertyType("logoutButton")]
-		public string LogoutButton => this.Value<string>("logoutButton");
+		[ImplementPropertyType("loggedIn")]
+		public global::System.Web.IHtmlString LoggedIn => this.Value<global::System.Web.IHtmlString>("loggedIn");
 
 		///<summary>
 		/// Member created successfully: Displays when a member is created successfully and must now be approved, or when a member already existed. You can use {{EMAIL}} to tell them where we sent the email to.

@@ -1,0 +1,15 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.PublishedContentModel>
+@using ContentModels = Umbraco.Core.Models.PublishedContent;
+@using Stoolball.Web.Account
+@{
+    var logoutPage = Umbraco.ContentSingleAtXPath("//logoutMember");
+    var loggedIn = !string.IsNullOrEmpty(Model.Value<string>("loggedIn")) ? Model.Value<string>("loggedIn") : logoutPage?.Value<string>("loggedIn");
+}
+
+@Html.Raw(loggedIn?.Replace("{{NAME}}", Umbraco.MembershipHelper.GetCurrentMember().Name))
+
+@using (Html.BeginUmbracoForm<LogoutMemberSurfaceController>("HandleLogout"))
+{
+    @Html.AntiForgeryToken()
+    <button class="btn btn-primary">@(logoutPage?.Value("logoutButton"))</button>
+}

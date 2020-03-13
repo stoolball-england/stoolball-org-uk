@@ -118,13 +118,25 @@
       "SortOrder": 0,
       "PropertyTypes": [
         {
+          "Key": "16d79713-9e0d-4a43-85db-79f4f283c868",
+          "Alias": "loggedIn",
+          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+          "Description": "Displays instead of the form when a member is logged in. You can use {{NAME}} to insert the member's name.",
+          "Mandatory": true,
+          "Name": "Logged in",
+          "SortOrder": 0,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
           "Key": "ed0022b3-5d4b-4627-80f7-d6dd790d8d0e",
           "Alias": "passwordResetRequested",
           "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
           "Description": "Displayed when a password reset was requested and, if an member was found, an email was sent. You can use {{EMAIL}} to tell them where we sent the email to.",
           "Mandatory": true,
           "Name": "Password reset requested",
-          "SortOrder": 1,
+          "SortOrder": 3,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -136,7 +148,7 @@
           "Description": "Label for the form submit button when requesting a password reset.",
           "Mandatory": true,
           "Name": "'Reset password' button",
-          "SortOrder": 0,
+          "SortOrder": 2,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false

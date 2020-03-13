@@ -73,6 +73,13 @@ namespace Umbraco.Web.PublishedModels
 		public string CreateMemberSubject => this.Value<string>("createMemberSubject");
 
 		///<summary>
+		/// Logged in: Displays instead of the form when a member is logged in. You can use {{NAME}} to insert the member's name.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("loggedIn")]
+		public global::System.Web.IHtmlString LoggedIn => this.Value<global::System.Web.IHtmlString>("loggedIn");
+
+		///<summary>
 		/// Password help: Advice on minimum password complexity requirements.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]

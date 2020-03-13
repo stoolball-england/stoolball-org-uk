@@ -45,11 +45,11 @@ namespace Umbraco.Web.PublishedModels
 		// properties
 
 		///<summary>
-		/// Already logged in: Displays instead of the form when a member is already logged in. You can use {{NAME}} to insert the member's name.
+		/// Logged in: Displays instead of the form when a member is logged in. You can use {{NAME}} to insert the member's name.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
-		[ImplementPropertyType("alreadyLoggedIn")]
-		public global::System.Web.IHtmlString AlreadyLoggedIn => this.Value<global::System.Web.IHtmlString>("alreadyLoggedIn");
+		[ImplementPropertyType("loggedIn")]
+		public global::System.Web.IHtmlString LoggedIn => this.Value<global::System.Web.IHtmlString>("loggedIn");
 
 		///<summary>
 		/// 'Login' button: Label for the form submit button.
@@ -59,11 +59,11 @@ namespace Umbraco.Web.PublishedModels
 		public string LoginButton => this.Value<string>("loginButton");
 
 		///<summary>
-		/// 'Logout' button: Label for the logout button that appears when signed in.
+		/// Login required: Displays above the form when a page requires the member to be logged in.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
-		[ImplementPropertyType("logoutButton")]
-		public string LogoutButton => this.Value<string>("logoutButton");
+		[ImplementPropertyType("loginRequired")]
+		public global::System.Web.IHtmlString LoginRequired => this.Value<global::System.Web.IHtmlString>("loginRequired");
 
 		///<summary>
 		/// Migrated member accounts: Advice for members whose accounts have been migrated from the old website.

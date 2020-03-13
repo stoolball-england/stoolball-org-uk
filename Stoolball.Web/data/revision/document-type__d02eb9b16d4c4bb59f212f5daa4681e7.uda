@@ -25,18 +25,6 @@
       "SortOrder": 0,
       "PropertyTypes": [
         {
-          "Key": "0dce2565-1143-41a0-b297-4b65f9b118ef",
-          "Alias": "logoutButton",
-          "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
-          "Description": "Label for the logout button that appears when signed in.",
-          "Mandatory": true,
-          "Name": "'Logout' button",
-          "SortOrder": 1,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false
-        },
-        {
           "Key": "3dd4bf33-4601-4630-8501-794909252831",
           "Alias": "memberCreatedSuccessfully",
           "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
@@ -62,11 +50,11 @@
         },
         {
           "Key": "d5933674-3f63-439d-8bf0-d89379001157",
-          "Alias": "alreadyLoggedIn",
+          "Alias": "loggedIn",
           "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
-          "Description": "Displays instead of the form when a member is already logged in. You can use {{NAME}} to insert the member's name.",
+          "Description": "Displays instead of the form when a member is logged in. You can use {{NAME}} to insert the member's name.",
           "Mandatory": true,
-          "Name": "Already logged in",
+          "Name": "Logged in",
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,

@@ -7,7 +7,7 @@ using Umbraco.Web.Mvc;
 
 namespace Stoolball.Web.Account
 {
-    public class LogoutMemberController : SurfaceController
+    public class LogoutMemberSurfaceController : SurfaceController
     {
         [HttpPost]
         [ValidateAntiForgeryToken]
