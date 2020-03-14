@@ -45,6 +45,27 @@ namespace Umbraco.Web.PublishedModels
 		// properties
 
 		///<summary>
+		/// Gravatar: Displays next to the member's gravatar and explains that it can be changed at gravatar.com.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("gravatar")]
+		public global::System.Web.IHtmlString Gravatar => this.Value<global::System.Web.IHtmlString>("gravatar");
+
+		///<summary>
+		/// 'Save' button: Label for the form submit button.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("saveButton")]
+		public string SaveButton => this.Value<string>("saveButton");
+
+		///<summary>
+		/// Saved: Displays when an update is saved successfully.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("saved")]
+		public global::System.Web.IHtmlString Saved => this.Value<global::System.Web.IHtmlString>("saved");
+
+		///<summary>
 		/// URL segment: Sets the URL for this page. Defaults to the page title.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]

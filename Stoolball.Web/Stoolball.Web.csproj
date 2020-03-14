@@ -669,8 +669,9 @@
   <ItemGroup>
     <Compile Include="Account\ApproveMemberController.cs" />
     <Compile Include="Account\ApproveMember.cs" />
-    <Compile Include="Account\EditMemberSurfaceController.cs" />
-    <Compile Include="Account\LogoutMemberController.cs" />
+    <Compile Include="Account\MyAccountSurfaceController.cs" />
+    <Compile Include="Account\GravatarUrl.cs" />
+    <Compile Include="Account\LogoutMemberSurfaceController.cs" />
     <Compile Include="Account\MyAccountUpdate.cs" />
     <Compile Include="Account\ResetPassword.cs" />
     <Compile Include="Account\ResetPasswordController.cs" />
@@ -809,7 +810,9 @@
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Views\MyAccount\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

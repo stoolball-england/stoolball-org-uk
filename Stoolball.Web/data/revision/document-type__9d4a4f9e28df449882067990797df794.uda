@@ -24,10 +24,64 @@
   "CompositionContentTypes": [
     "umb://document-type/d9999f5ac07b4f379d013f0316d8678c"
   ],
-  "PropertyGroups": [],
+  "PropertyGroups": [
+    {
+      "Key": "4790350e-9469-4276-aa49-bd7670450fa1",
+      "Name": "Page content",
+      "SortOrder": 0,
+      "PropertyTypes": [
+        {
+          "Key": "7be523ae-e4b4-478c-b540-ef35ce1f7d47",
+          "Alias": "saveButton",
+          "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+          "Description": "Label for the form submit button.",
+          "Mandatory": true,
+          "Name": "'Save' button",
+          "SortOrder": 0,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
+          "Key": "9287886b-f3db-4bcd-9171-054a558d6ea2",
+          "Alias": "gravatar",
+          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+          "Description": "Displays next to the member's gravatar and explains that it can be changed at gravatar.com.",
+          "Mandatory": true,
+          "Name": "Gravatar",
+          "SortOrder": 1,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
+          "Key": "e8bccbd1-ae65-4bf2-887d-e141b0d9c91d",
+          "Alias": "saved",
+          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+          "Description": "Displays when an update is saved successfully.",
+          "Mandatory": true,
+          "Name": "Saved",
+          "SortOrder": 2,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        }
+      ]
+    }
+  ],
   "PropertyTypes": [],
   "Udi": "umb://document-type/9d4a4f9e28df449882067990797df794",
   "Dependencies": [
+    {
+      "Udi": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+      "Ordering": true,
+      "Mode": 0
+    },
     {
       "Udi": "umb://document-type/0465ea378c16476795b5cd3b96d72381",
       "Ordering": false,

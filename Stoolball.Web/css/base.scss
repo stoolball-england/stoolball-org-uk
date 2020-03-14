@@ -8,3 +8,12 @@
 
 /* An alert has even padding, so remove any bottom margin on the last child which would make that look extra large. */
 .alert > :last-child { margin-bottom: 0; }
+
+/* Display a Gravatar next to its content 
+
+    <div class="form-row">
+        <div class="col gravatar"><img /></div>
+        <div class="col">content</div>
+    </div>
+*/
+.gravatar { flex: 0 0 50px; }
