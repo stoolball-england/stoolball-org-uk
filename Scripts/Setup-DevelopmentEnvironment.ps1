@@ -12,6 +12,7 @@ robocopy .\packages\UmbracoForms.8.3.1\Content\ .\Stoolball.Web /s
 robocopy .\packages\bootstrap.sass.4.4.1\contentFiles .\Stoolball.Web\ /s
 robocopy .\packages\jQuery.3.0.0\Content .\Stoolball.Web\ /s
 robocopy .\packages\popper.js.1.16.0\content .\Stoolball.Web\ /s
+robocopy .\packages\Skybrud.Umbraco.Redirects.2.0.3\contentFiles\any\net472\App_Plugins .\Stoolball.Web\App_Plugins\ /s
 
 # Clone the Umbraco Cloud repo. This may prompt for authentication
 git clone $UmbracoCloudRepoUrl .UmbracoCloud
