@@ -45,6 +45,20 @@ namespace Umbraco.Web.PublishedModels
 		// properties
 
 		///<summary>
+		/// Email body: The body of the email. You can use {{NAME}}, {{EMAIL}}, {{TOKEN}} and {{DOMAIN}} to insert values.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("approveMemberBody")]
+		public global::System.Web.IHtmlString ApproveMemberBody => this.Value<global::System.Web.IHtmlString>("approveMemberBody");
+
+		///<summary>
+		/// Email subject: The subject line of the email. You can use {{NAME}} to insert the member's name.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("approveMemberSubject")]
+		public string ApproveMemberSubject => this.Value<string>("approveMemberSubject");
+
+		///<summary>
 		/// Logged in: Displays instead of the form when a member is logged in. You can use {{NAME}} to insert the member's name.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
@@ -78,6 +92,20 @@ namespace Umbraco.Web.PublishedModels
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		[ImplementPropertyType("resetPassword")]
 		public global::System.Web.IHtmlString ResetPassword => this.Value<global::System.Web.IHtmlString>("resetPassword");
+
+		///<summary>
+		/// Email body: The body of the email. You can use {{NAME}}, {{EMAIL}}, {{TOKEN}} and {{DOMAIN}} to insert values.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("resetPasswordBody")]
+		public global::System.Web.IHtmlString ResetPasswordBody => this.Value<global::System.Web.IHtmlString>("resetPasswordBody");
+
+		///<summary>
+		/// Email subject: The subject line of the email. You can use {{NAME}} to insert the member's name.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("resetPasswordSubject")]
+		public string ResetPasswordSubject => this.Value<string>("resetPasswordSubject");
 
 		///<summary>
 		/// URL segment: Sets the URL for this page. Defaults to the page title.

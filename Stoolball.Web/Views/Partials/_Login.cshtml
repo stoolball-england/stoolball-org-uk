@@ -1,8 +1,8 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.PublishedContentModel>
 @using ContentModels = Umbraco.Core.Models.PublishedContent;
 @using Umbraco.Web
-@using Umbraco.Web.Controllers
 @using Umbraco.Web.Models
+@using Stoolball.Web.Account
 @{
     var loginPage = Umbraco.ContentSingleAtXPath("//loginMember");
     var loginModel = new LoginModel();
@@ -15,10 +15,11 @@
     loginModel.RedirectUrl = Model.Url;
 }
 
-@using (Html.BeginUmbracoForm<UmbLoginController>("HandleLogin"))
+@using (Html.BeginUmbracoForm<LoginMemberSurfaceController>("Login"))
 {
     @Html.HiddenFor(m => loginModel.RedirectUrl)
     @Html.ValidationSummary("loginModel", true)
+    @Html.AntiForgeryToken()
 
     <div class="form-group">
         @Html.LabelFor(m => loginModel.Username, "Email")

@@ -701,6 +701,7 @@
   <ItemGroup>
     <Compile Include="Account\ApproveMemberController.cs" />
     <Compile Include="Account\ApproveMember.cs" />
+    <Compile Include="Account\LoginMemberSurfaceController.cs" />
     <Compile Include="Account\MyAccountSurfaceController.cs" />
     <Compile Include="Account\GravatarUrl.cs" />
     <Compile Include="Account\LogoutMemberSurfaceController.cs" />

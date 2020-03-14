@@ -11,6 +11,8 @@ namespace Stoolball.Web.Account
     /// </summary>
     public class Gravatar
     {
+        private readonly int _size = 50;
+
         public Gravatar(string emailAddress)
         {
             Url = BuildGravatarUrl(emailAddress);
@@ -24,7 +26,7 @@ namespace Stoolball.Web.Account
         /// <summary>
         /// Size in pixels. Gravatars are square.
         /// </summary>
-        public int Size {  get { return 50; } }
+        public int Size {  get { return _size; } }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms", Justification = "<Pending>")]
