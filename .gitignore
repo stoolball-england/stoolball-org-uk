@@ -364,6 +364,7 @@ splashes
 **/App_Plugins/Deploy
 **/App_Plugins/UmbracoForms
 **/App_Plugins/UmbracoLicenses
+**/App_Plugins/Skybrud*
 **/Views/Partials/Forms
 **/Views/Partials/Grid
 **/Views/MacroPartials
