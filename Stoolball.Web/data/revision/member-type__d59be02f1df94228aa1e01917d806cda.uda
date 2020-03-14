@@ -85,7 +85,7 @@
           "Description": null,
           "Mandatory": false,
           "Name": "Last Login Date",
-          "SortOrder": 5,
+          "SortOrder": 6,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -97,7 +97,7 @@
           "Description": null,
           "Mandatory": false,
           "Name": "Last Password Change Date",
-          "SortOrder": 6,
+          "SortOrder": 7,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -109,7 +109,7 @@
           "Description": null,
           "Mandatory": false,
           "Name": "Password Question",
-          "SortOrder": 7,
+          "SortOrder": 8,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -121,7 +121,7 @@
           "Description": null,
           "Mandatory": false,
           "Name": "Password Answer",
-          "SortOrder": 8,
+          "SortOrder": 9,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -133,7 +133,7 @@
           "Description": "Used during email validation when a member resets their password.",
           "Mandatory": false,
           "Name": "Password reset token",
-          "SortOrder": 11,
+          "SortOrder": 12,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -145,7 +145,7 @@
           "Description": "Used during email validation when creating a new member.",
           "Mandatory": false,
           "Name": "Approval token",
-          "SortOrder": 9,
+          "SortOrder": 10,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -157,7 +157,19 @@
           "Description": "The date and time the password reset token expires.",
           "Mandatory": false,
           "Name": "Password reset token expires",
-          "SortOrder": 12,
+          "SortOrder": 13,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
+          "Key": "9c7e4178-bd1c-4abf-8b5a-5db3cd613e90",
+          "Alias": "blockLogin",
+          "DataType": "umb://data-type/92897bc6a5f34ffeae27f2e7e33dda49",
+          "Description": "A member with a valid email address will always be able to approve their account or remove a lockout. Set this to block a member from logging in.",
+          "Mandatory": false,
+          "Name": "Block login",
+          "SortOrder": 5,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -169,7 +181,7 @@
           "Description": "The date and time the approval token expires.",
           "Mandatory": false,
           "Name": "Approval token expires",
-          "SortOrder": 10,
+          "SortOrder": 11,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false

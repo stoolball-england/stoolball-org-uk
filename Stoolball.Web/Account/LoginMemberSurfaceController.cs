@@ -35,12 +35,22 @@ namespace Stoolball.Web.Account
         [ValidateUmbracoFormRouteString]
         public ActionResult Login([Bind(Prefix = "loginModel")]LoginModel model)
         {
+            // Check whether login is blocked. If so, don't even try.
+            // This is nececesary because we use IsApproved for account activation 
+            // and can re-send an activation email below.
+            var member = Services.MemberService.GetByEmail(model?.Username);
+            if (member.GetValue<bool>("blockLogin"))
+            {
+                // Return the same status the built in controller uses if login fails for any reason
+                ModelState.AddModelError("loginModel", "Invalid username or password");
+                return CurrentUmbracoPage();
+            }
+
             var result = base.HandleLogin(model);
 
             // Re-send activation email if the account is found but not approved or locked out.
             // Don't bother checking result since this tells us it will have failed, 
             // and in any case the failure message wouldn't reveal the reason.
-            var member = Services.MemberService.GetByEmail(model?.Username);
             if (member != null && (!member.IsApproved || member.IsLockedOut))
             {
                 string tokenField = string.Empty, tokenExpiryField = string.Empty, emailSubjectField = string.Empty, emailBodyField = string.Empty;

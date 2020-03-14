@@ -59,6 +59,13 @@ namespace Umbraco.Web.PublishedModels
 		public global::System.DateTime ApprovalTokenExpires => this.Value<global::System.DateTime>("approvalTokenExpires");
 
 		///<summary>
+		/// Block login: A member with a valid email address will always be able to approve their account or remove a lockout. Set this to block a member from logging in.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("blockLogin")]
+		public bool BlockLogin => this.Value<bool>("blockLogin");
+
+		///<summary>
 		/// Password reset token: Used during email validation when a member resets their password.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]

@@ -151,8 +151,11 @@ namespace Stoolball.Web.Account
                         // Reset the password
                         memberService.SavePassword(member, model.NewPassword);
 
-                        // They obviously wanted to login, so be helpful and do it
-                        Umbraco.MembershipHelper.Login(member.Username, model.NewPassword);
+                        // They obviously wanted to login, so be helpful and do it, unless they're blocked
+                        if (!member.GetValue<bool>("blockLogin"))
+                        {
+                            Umbraco.MembershipHelper.Login(member.Username, model.NewPassword);
+                        }
 
                         TempData["PasswordResetSuccessful"] = true;
                         return CurrentUmbracoPage();
