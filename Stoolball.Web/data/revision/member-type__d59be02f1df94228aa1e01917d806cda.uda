@@ -85,7 +85,7 @@
           "Description": null,
           "Mandatory": false,
           "Name": "Last Login Date",
-          "SortOrder": 6,
+          "SortOrder": 7,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -97,7 +97,7 @@
           "Description": null,
           "Mandatory": false,
           "Name": "Last Password Change Date",
-          "SortOrder": 7,
+          "SortOrder": 8,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -109,7 +109,7 @@
           "Description": null,
           "Mandatory": false,
           "Name": "Password Question",
-          "SortOrder": 8,
+          "SortOrder": 9,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -121,7 +121,7 @@
           "Description": null,
           "Mandatory": false,
           "Name": "Password Answer",
-          "SortOrder": 9,
+          "SortOrder": 10,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -132,8 +132,8 @@
           "DataType": "umb://data-type/f0bc4bfbb49940d6ba86058885a5178c",
           "Description": "Used during email validation when a member resets their password.",
           "Mandatory": false,
-          "Name": "Password reset token",
-          "SortOrder": 12,
+          "Name": "Password Reset Token",
+          "SortOrder": 13,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -144,8 +144,8 @@
           "DataType": "umb://data-type/f0bc4bfbb49940d6ba86058885a5178c",
           "Description": "Used during email validation when creating a new member.",
           "Mandatory": false,
-          "Name": "Approval token",
-          "SortOrder": 10,
+          "Name": "Approval Token",
+          "SortOrder": 11,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -156,8 +156,8 @@
           "DataType": "umb://data-type/0e9794ebf9b54f20a78893acd233a7e4",
           "Description": "The date and time the password reset token expires.",
           "Mandatory": false,
-          "Name": "Password reset token expires",
-          "SortOrder": 13,
+          "Name": "Password Reset Token Expires",
+          "SortOrder": 14,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -168,8 +168,32 @@
           "DataType": "umb://data-type/92897bc6a5f34ffeae27f2e7e33dda49",
           "Description": "A member with a valid email address will always be able to approve their account or remove a lockout. Set this to block a member from logging in.",
           "Mandatory": false,
-          "Name": "Block login",
+          "Name": "Block Login",
           "SortOrder": 5,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
+          "Key": "9d06cd3f-1407-4b2f-9212-13f9da43449f",
+          "Alias": "totalLogins",
+          "DataType": "umb://data-type/8e7f995cbd8146279932c40e568ec788",
+          "Description": "The number of times a member has logged in.",
+          "Mandatory": false,
+          "Name": "Total Logins",
+          "SortOrder": 6,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
+          "Key": "a3d70221-a92a-4056-aa80-8bf4efc6f6e7",
+          "Alias": "migratedMemberId",
+          "DataType": "umb://data-type/8e7f995cbd8146279932c40e568ec788",
+          "Description": "For members migrated from the previous website, the id they had on that website.",
+          "Mandatory": false,
+          "Name": "Migrated Member Id",
+          "SortOrder": 15,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -180,8 +204,8 @@
           "DataType": "umb://data-type/0e9794ebf9b54f20a78893acd233a7e4",
           "Description": "The date and time the approval token expires.",
           "Mandatory": false,
-          "Name": "Approval token expires",
-          "SortOrder": 11,
+          "Name": "Approval Token Expires",
+          "SortOrder": 12,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false

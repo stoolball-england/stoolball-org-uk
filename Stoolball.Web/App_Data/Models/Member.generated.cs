@@ -45,39 +45,53 @@ namespace Umbraco.Web.PublishedModels
 		// properties
 
 		///<summary>
-		/// Approval token: Used during email validation when creating a new member.
+		/// Approval Token: Used during email validation when creating a new member.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		[ImplementPropertyType("approvalToken")]
 		public string ApprovalToken => this.Value<string>("approvalToken");
 
 		///<summary>
-		/// Approval token expires: The date and time the approval token expires.
+		/// Approval Token Expires: The date and time the approval token expires.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		[ImplementPropertyType("approvalTokenExpires")]
 		public global::System.DateTime ApprovalTokenExpires => this.Value<global::System.DateTime>("approvalTokenExpires");
 
 		///<summary>
-		/// Block login: A member with a valid email address will always be able to approve their account or remove a lockout. Set this to block a member from logging in.
+		/// Block Login: A member with a valid email address will always be able to approve their account or remove a lockout. Set this to block a member from logging in.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		[ImplementPropertyType("blockLogin")]
 		public bool BlockLogin => this.Value<bool>("blockLogin");
 
 		///<summary>
-		/// Password reset token: Used during email validation when a member resets their password.
+		/// Migrated Member Id: For members migrated from the previous website, the id they had on that website.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("migratedMemberId")]
+		public int MigratedMemberId => this.Value<int>("migratedMemberId");
+
+		///<summary>
+		/// Password Reset Token: Used during email validation when a member resets their password.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		[ImplementPropertyType("passwordResetToken")]
 		public string PasswordResetToken => this.Value<string>("passwordResetToken");
 
 		///<summary>
-		/// Password reset token expires: The date and time the password reset token expires.
+		/// Password Reset Token Expires: The date and time the password reset token expires.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
 		[ImplementPropertyType("passwordResetTokenExpires")]
 		public global::System.DateTime PasswordResetTokenExpires => this.Value<global::System.DateTime>("passwordResetTokenExpires");
+
+		///<summary>
+		/// Total Logins: The number of times a member has logged in.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.5.4")]
+		[ImplementPropertyType("totalLogins")]
+		public int TotalLogins => this.Value<int>("totalLogins");
 
 		///<summary>
 		/// Is Approved

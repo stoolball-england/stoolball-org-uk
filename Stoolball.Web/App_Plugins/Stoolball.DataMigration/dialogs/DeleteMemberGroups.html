@@ -1,0 +1,63 @@
+﻿<div class="data-migration-dialog" ng-controller="Stoolball.DataMigration.DeleteMemberGroups as vm">
+
+    <umb-editor-view>
+
+        <umb-editor-header name="model.title"
+                           name-locked="true"
+                           hide-alias="true"
+                           hide-icon="true"
+                           hide-description="true">
+        </umb-editor-header>
+
+        <umb-editor-container>
+            <umb-box>
+                <umb-box-content>
+                    <p>This will delete all groups from the Members section.</p>
+                    <p><strong>This cannot be undone.</strong></p>
+                </umb-box-content>
+            </umb-box>
+            <umb-box ng-if="vm.totalGroups > 0">
+                <umb-box-content>
+                    <div class="umb-panel-group__details-check-name">Deleting {{vm.deletedGroups.length}} of {{vm.totalGroups}} Member Groups</div>
+                    <ul class="data-migration-progress">
+                        <li ng-repeat="group in vm.deletedGroups">Deleted: {{group.Name}}</li>
+                    </ul>
+                </umb-box-content>
+            </umb-box>
+            <umb-box ng-if="vm.done && vm.totalGroups === 0">
+                <umb-box-content>
+                    <div class="umb-panel-group__details-check-name">There are no Member Groups to delete.</div>
+                </umb-box-content>
+            </umb-box>
+        </umb-editor-container>
+
+        <umb-editor-footer>
+            <umb-editor-footer-content-right>
+                <umb-button type="button"
+                            button-style="link"
+                            label-key="general_close"
+                            shortcut="esc"
+                            action="vm.close()"
+                            ng-if="!vm.done">
+                </umb-button>
+                <umb-button type="button"
+                            button-style="danger"
+                            label="Delete all member groups"
+                            icon="icon-trash"
+                            action="vm.submit(model)"
+                            state="vm.buttonState"
+                            disabled="vm.buttonState === 'busy'"
+                            ng-if="!vm.done">
+                </umb-button>
+                <umb-button type="button"
+                            button-style="action"
+                            label="Close"
+                            action="vm.close(model)"
+                            ng-if="vm.done">
+                </umb-button>
+            </umb-editor-footer-content-right>
+        </umb-editor-footer>
+
+    </umb-editor-view>
+
+</div>

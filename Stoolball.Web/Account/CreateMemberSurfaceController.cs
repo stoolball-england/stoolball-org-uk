@@ -60,6 +60,7 @@ namespace Stoolball.Web.Account
                 var (token, expires) = _verificationToken.TokenFor(member.Id);
                 member.SetValue("approvalToken", token);
                 member.SetValue("approvalTokenExpires", expires);
+                member.SetValue("totalLogins", 0);
                 member.IsApproved = false;
 
                 Services.MemberService.Save(member);

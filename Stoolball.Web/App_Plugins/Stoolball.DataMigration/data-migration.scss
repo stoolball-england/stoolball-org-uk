@@ -1,0 +1,32 @@
+﻿/* Space below buttons for when they wrap */
+.data-migration-dashboard button {
+    margin-bottom: .25em;
+}
+
+/* Report the items dealt with */
+.data-migration-progress {
+    margin: 1rem 0 0;
+    max-height: 200px;
+    overflow: auto;
+}
+.data-migration-progress > li {
+    list-style: none;
+}
+
+/* Even up the padding at the bottom of an umb-box */
+.data-migration-dialog .umb-box-content > :last-child {
+    margin-bottom: 0;
+}
+
+/* Restore the original button colour for the primary buttons, which are disabled while busy. 
+   They will still appear faded due to the low opacity assigned to disabled buttons.
+*/
+.data-migration-dialog {
+    .btn-danger.disabled, .btn-danger[disabled] {
+        background-color: #d42054;
+    }
+
+    .btn-primary.disabled, .btn-primary[disabled] {
+        background-color: #2bc37c;
+    }
+}

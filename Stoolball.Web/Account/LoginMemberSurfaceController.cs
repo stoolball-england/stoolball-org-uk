@@ -39,7 +39,7 @@ namespace Stoolball.Web.Account
             // This is nececesary because we use IsApproved for account activation 
             // and can re-send an activation email below.
             var member = Services.MemberService.GetByEmail(model?.Username);
-            if (member.GetValue<bool>("blockLogin"))
+            if (member != null && member.GetValue<bool>("blockLogin"))
             {
                 // Return the same status the built in controller uses if login fails for any reason
                 ModelState.AddModelError("loginModel", "Invalid username or password");
@@ -47,6 +47,13 @@ namespace Stoolball.Web.Account
             }
 
             var result = base.HandleLogin(model);
+
+            // If they were logged in, increment their total logins.
+            if (ModelState.IsValid)
+            {
+                member.SetValue("totalLogins", member.GetValue<int>("totalLogins") + 1);
+                Services.MemberService.Save(member);
+            }
 
             // Re-send activation email if the account is found but not approved or locked out.
             // Don't bother checking result since this tells us it will have failed, 

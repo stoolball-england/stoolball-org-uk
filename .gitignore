@@ -375,6 +375,7 @@ media
 **/data/Revision/media/*
 **/data/Revision/mediaproperties/*
 **/data/Revision/properties/*
+member-group__*.uda
 
 # Other Nuget packages
 Stoolball.Web/Content

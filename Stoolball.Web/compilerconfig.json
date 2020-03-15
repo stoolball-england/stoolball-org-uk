@@ -6,5 +6,9 @@
   {
     "outputFile": "css/base.css",
     "inputFile": "css/base.scss"
+  },
+  {
+    "outputFile": "App_Plugins/Stoolball.DataMigration/data-migration.css",
+    "inputFile": "App_Plugins/Stoolball.DataMigration/data-migration.scss"
   }
 ]

@@ -6,7 +6,7 @@ git checkout master
 # Go and get the latest changes from Umbraco Cloud and copy them into the Stoolball.Web
 Push-Location $projectRoot\.UmbracoCloud
 git pull
-robocopy . ..\Stoolball.Web *.uda *.cshtml /S /XD .git
+robocopy . ..\Stoolball.Web /IF *.uda *.cshtml /XF member-group__*.uda /S /XD .git
 Pop-Location
 
 # Trigger an update from remote to local by Umbraco deploy

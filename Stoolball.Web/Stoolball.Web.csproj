@@ -324,6 +324,20 @@
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\Outbound.html" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\RadioGroup.html" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\Site.html" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\data-migration.css">
+      <DependentUpon>data-migration.scss</DependentUpon>
+    </Content>
+    <Content Include="App_Plugins\Stoolball.DataMigration\data-migration.min.css">
+      <DependentUpon>data-migration.css</DependentUpon>
+    </Content>
+    <Content Include="App_Plugins\Stoolball.DataMigration\dataMigrationDashboardController.js" />
+    <None Include="App_Plugins\Stoolball.DataMigration\data-migration.scss" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\DataMigrationDashboard.html" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\dialogs\DeleteMemberGroups.html" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\dialogs\DeleteMembers.html" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\dialogs\ImportGroupsAndMembers.html" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\lang\en-US.xml" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\stoolballResource.js" />
     <Content Include="App_Plugins\UmbracoForms\Assets\BaremetricsCalendar\public\css\application.css" />
     <Content Include="App_Plugins\UmbracoForms\Assets\BaremetricsCalendar\public\js\Calendar.js" />
     <Content Include="App_Plugins\UmbracoForms\Assets\datepicker.init.js" />
@@ -609,6 +623,7 @@
       <Link>.editorconfig</Link>
     </Content>
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\package.manifest" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\package.manifest" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -715,6 +730,9 @@
     <Compile Include="App_Data\Models\LoginMember.generated.cs" />
     <Compile Include="App_Data\Models\LogoutMember.generated.cs" />
     <Compile Include="App_Data\Models\ResetPassword.generated.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\MemberGroupAssignment.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\MemberMigrationController.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\ImportedMember.cs" />
     <Compile Include="Email\EmailSender.cs" />
     <Compile Include="Email\EmailFormatter.cs" />
     <Compile Include="Email\IEmailFormatter.cs" />
@@ -795,6 +813,8 @@
     <Content Include="Views\MacroPartials\InsertUmbracoFormWithTheme.cshtml" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
+    <None Include="Secret-DataMigrationApiKey.Web.local.xdt.config" />
+    <None Include="Secret-DataMigrationApiKey.Web.live.xdt.config" />
     <None Include="Secret-Email.Web.live.xdt.config" />
     <Content Include="Views\Master.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
@@ -899,10 +919,12 @@
     <ItemGroup>
       <OriginalWebConfig Include="$(ProjectDir)\Web.config" />
       <TempWebConfig Include="$(ProjectDir)\Web.temp.config" />
+      <TempWebConfig2 Include="$(ProjectDir)\Web.temp2.config" />
     </ItemGroup>
     <Copy SourceFiles="@(OriginalWebConfig)" DestinationFiles="@(TempWebConfig)" />
-    <TransformXml Source="@(TempWebConfig)" Transform="$(ProjectDir)\Web.local.xdt.config" Destination="@(OriginalWebConfig)" StackTrace="true" />
-    <Delete Files="@(TempWebConfig)" />
+    <TransformXml Source="@(TempWebConfig)" Transform="$(ProjectDir)\Web.local.xdt.config" Destination="@(TempWebConfig2)" StackTrace="true" />
+    <TransformXml Source="@(TempWebConfig2)" Transform="$(ProjectDir)\Secret-DataMigrationApiKey.Web.local.xdt.config" Destination="@(OriginalWebConfig)" StackTrace="true" />
+    <Delete Files="@(TempWebConfig);@(TempWebConfig2)" />
   </Target>
   <Import Project="..\packages\BuildWebCompiler.1.12.405\build\BuildWebCompiler.targets" Condition="Exists('..\packages\BuildWebCompiler.1.12.405\build\BuildWebCompiler.targets')" />
   <Import Project="..\packages\UmbracoCms.8.5.4\build\UmbracoCms.targets" Condition="Exists('..\packages\UmbracoCms.8.5.4\build\UmbracoCms.targets')" />

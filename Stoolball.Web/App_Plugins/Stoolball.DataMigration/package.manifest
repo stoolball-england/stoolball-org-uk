@@ -1,0 +1,20 @@
+{
+  "dashboards": [
+    {
+      "alias": "DataMigrationDashboard",
+      "view": "/App_Plugins/Stoolball.DataMigration/DataMigrationDashboard.html",
+      "sections": [ "settings" ],
+      "weight": -100,
+      "access": [
+        { "grant": "admin" }
+      ]
+    }
+  ],
+  "javascript": [
+    "~/App_Plugins/Stoolball.DataMigration/dataMigrationDashboardController.js",
+    "~/App_Plugins/Stoolball.DataMigration/stoolballResource.js"
+  ],
+  "css": [
+    "~/App_Plugins/Stoolball.DataMigration/data-migration.css"
+  ]
+}
