@@ -4,7 +4,7 @@
       "alias": "DataMigrationDashboard",
       "view": "/App_Plugins/Stoolball.DataMigration/DataMigrationDashboard.html",
       "sections": [ "settings" ],
-      "weight": -100,
+      "weight": 100,
       "access": [
         { "grant": "admin" }
       ]
