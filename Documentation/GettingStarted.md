@@ -5,8 +5,9 @@ The following software is recommended to work on this project:
 - [Git for Windows](https://git-scm.com/download/win)
 - [NuGet command line](https://www.nuget.org/downloads)
 - [Visual Studio Community 2019 or better](https://visualstudio.microsoft.com/downloads/)
-- [Web Compiler extension for Visual Studio](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.WebCompiler)
-- [Markdown Editor extension for Visual Studio](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.MarkdownEditor)
+- [Web Compiler extension](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.WebCompiler) for Visual Studio
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [Jest](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest) and [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) for Visual Studio Code
 - [SQL Server Express LocalDB or better](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb?view=sql-server-ver15)
 - [Node.js LTS including npm](https://nodejs.org/en/)
 - [Papercut SMTP development server](https://github.com/ChangemakerStudios/Papercut)
@@ -46,3 +47,7 @@ Begin the filename with `Secret-` (for example `Secret-MyPassword.{config file n
 ## Managing redirects
 
 Redirects are managed using the [Skybrud.Umbraco.Redirects](https://github.com/skybrud/Skybrud.Umbraco.Redirects) package, which appears as a dashboard named 'Redirects' in the Content section of the Umbraco back office.
+
+## Testing
+
+See [Testing](Testing.md).

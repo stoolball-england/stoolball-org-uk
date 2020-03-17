@@ -2,11 +2,25 @@
   "name": "stoolball",
   "version": "1.0.0",
   "description": "This is a rebuild of the Stoolball England website at www.stoolball.org.uk using .NET Framework and Umbraco Cloud.",
-  "scripts": {},
   "repository": {
     "type": "git",
     "url": ""
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^25.1.0"
+  },
+  "jest": {
+    "projects": [
+      "<rootDir>/Stoolball.Web"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/Cypress/"
+    ]
+  },
+  "prettier": {
+    "editor.formatOnSave": true
+  }
 }
