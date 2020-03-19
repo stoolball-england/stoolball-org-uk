@@ -14,7 +14,7 @@
   },
   "jest": {
     "projects": [
-      "<rootDir>/Stoolball.Web"
+      "<rootDir>/Stoolball.Web/"
     ],
     "testPathIgnorePatterns": [
       "<rootDir>/Cypress/"
