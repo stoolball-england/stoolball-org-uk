@@ -2,17 +2,15 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using Umbraco.Core.Models;
 using Umbraco.Web.Editors;
 using Umbraco.Web.Models.ContentEditing;
+using Umbraco.Web.Mvc;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration
 {
-    [Umbraco.Web.Mvc.PluginController("Migration")]
+    [PluginController("Migration")]
     public class MemberMigrationController : UmbracoAuthorizedJsonController
     {
         [HttpGet]

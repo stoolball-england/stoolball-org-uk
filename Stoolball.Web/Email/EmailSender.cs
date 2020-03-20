@@ -1,5 +1,5 @@
-﻿using System;
-using System.Net.Mail;
+﻿using System.Net.Mail;
+using Umbraco.Core.Composing;
 
 namespace Stoolball.Web.Email
 {
@@ -26,7 +26,7 @@ namespace Stoolball.Web.Email
             }
             catch (SmtpException e)
             {
-                Umbraco.Core.Composing.Current.Logger.Info(this.GetType(), "Error trying to send email: " + e);
+                Current.Logger.Info(GetType(), "Error trying to send email: " + e);
                 return false;
             }
         }
