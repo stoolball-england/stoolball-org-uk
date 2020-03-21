@@ -21,10 +21,15 @@ namespace Stoolball.Umbraco.Data
         [SpecialDbType(SpecialDbTypes.NTEXT)]
         public string Introduction { get; set; }
 
-        [Column(nameof(ContactDetails))]
+        [Column(nameof(PublicContactDetails))]
         [NullSetting(NullSetting = NullSettings.Null)]
         [SpecialDbType(SpecialDbTypes.NTEXT)]
-        public string ContactDetails { get; set; }
+        public string PublicContactDetails { get; set; }
+
+        [Column(nameof(PrivateContactDetails))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        [SpecialDbType(SpecialDbTypes.NTEXT)]
+        public string PrivateContactDetails { get; set; }
 
         [Column(nameof(Website))]
         [NullSetting(NullSetting = NullSettings.Null)]
@@ -55,9 +60,9 @@ namespace Stoolball.Umbraco.Data
         [NullSetting(NullSetting = NullSettings.Null)]
         public DateTime? UntilDate { get; set; }
 
-        [Column(nameof(PlayerTypeId))]
+        [Column(nameof(PlayerType))]
         [Index(IndexTypes.NonClustered)]
-        public int PlayerTypeId { get; set; }
+        public string PlayerType { get; set; }
 
         [Column(nameof(PlayersPerTeam))]
         public int PlayersPerTeam { get; set; }

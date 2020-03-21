@@ -4,22 +4,22 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Umbraco.Data
 {
-    [TableName(Constants.Tables.ClubName)]
-    [PrimaryKey(nameof(ClubNameId), AutoIncrement = true)]
+    [TableName(Constants.Tables.SchoolName)]
+    [PrimaryKey(nameof(SchoolNameId), AutoIncrement = true)]
     [ExplicitColumns]
-    public class ClubNameTableSchema
+    public class SchoolNameTableSchema
     {
         [PrimaryKeyColumn(AutoIncrement = true, IdentitySeed = 1, Clustered = false)]
-        [Column(nameof(ClubNameId))]
-        public int ClubNameId { get; set; }
+        [Column(nameof(SchoolNameId))]
+        public int SchoolNameId { get; set; }
 
-        [Column(nameof(ClubId))]
-        [ForeignKey(typeof(ClubTableSchema), Column = nameof(ClubTableSchema.ClubId))]
+        [Column(nameof(SchoolId))]
+        [ForeignKey(typeof(SchoolTableSchema), Column = nameof(SchoolTableSchema.SchoolId))]
         [Index(IndexTypes.Clustered)]
-        public int ClubId { get; set; }
+        public int SchoolId { get; set; }
 
-        [Column(nameof(ClubName))]
-        public string ClubName { get; set; }
+        [Column(nameof(SchoolName))]
+        public string SchoolName { get; set; }
 
         [Column(nameof(FromDate))]
         [Index(IndexTypes.NonClustered)]

@@ -27,6 +27,7 @@
             public const string MatchTeam = _tablePrefix + "MatchTeam";
             public const string PlayerIdentity = _tablePrefix + "PlayerIdentity";
             public const string School = _tablePrefix + "School";
+            public const string SchoolName = _tablePrefix + "SchoolName";
             public const string Season = _tablePrefix + "Season";
             public const string SeasonMatch = _tablePrefix + "SeasonMatch";
             public const string SeasonMatchType = _tablePrefix + "SeasonMatchType";
