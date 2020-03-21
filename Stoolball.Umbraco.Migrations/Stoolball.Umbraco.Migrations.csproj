@@ -56,6 +56,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuditAddTable.cs" />
+    <Compile Include="SeasonPointsRuleAddTable.cs" />
+    <Compile Include="SeasonMatchTypeAddTable.cs" />
+    <Compile Include="SeasonMatchTypeTableSchema.cs" />
+    <Compile Include="SeasonPointsRuleTableSchema.cs" />
+    <Compile Include="SeasonTableSchema.cs" />
+    <Compile Include="SeasonAddTable.cs" />
+    <Compile Include="CompetitionTableSchema.cs" />
+    <Compile Include="CompetitionAddTable.cs" />
     <Compile Include="MatchLocationTableSchema.cs" />
     <Compile Include="MatchLocationAddTable.cs" />
     <Compile Include="ClubNameAddTable.cs" />

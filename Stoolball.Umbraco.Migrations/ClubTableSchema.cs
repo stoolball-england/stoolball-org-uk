@@ -21,6 +21,10 @@ namespace Stoolball.Umbraco.Data
         [NullSetting(NullSetting = NullSettings.Null)]
         public bool? PlaysIndoors { get; set; }
 
+        [Column(nameof(Website))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public string Website { get; set; }
+
         [Column(nameof(Twitter))]
         [NullSetting(NullSetting = NullSettings.Null)]
         public string Twitter { get; set; }
