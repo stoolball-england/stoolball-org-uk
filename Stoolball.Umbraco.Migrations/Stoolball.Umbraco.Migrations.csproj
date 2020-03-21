@@ -65,6 +65,8 @@
     <Compile Include="SeasonTeamAddTable.cs" />
     <Compile Include="SeasonTeamTableSchema.cs" />
     <Compile Include="TeamMatchLocationTableSchema.cs" />
+    <Compile Include="PlayerIdentityAddTable.cs" />
+    <Compile Include="PlayerIdentityTableSchema.cs" />
     <Compile Include="TeamNameTableSchema.cs" />
     <Compile Include="TeamMatchLocationAddTable.cs" />
     <Compile Include="TeamNameAddTable.cs" />
