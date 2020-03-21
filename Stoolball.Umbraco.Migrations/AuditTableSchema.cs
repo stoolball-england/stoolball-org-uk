@@ -17,6 +17,10 @@ namespace Stoolball.Umbraco.Data
         [NullSetting(NullSetting = NullSettings.Null)]
         public Guid? MemberKey { get; set; }
 
+        [Column(nameof(MemberName))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public string MemberName { get; set; }
+
         [Column(nameof(RequestUrl))]
         [NullSetting(NullSetting = NullSettings.Null)]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1056:Uri properties should not be strings", Justification = "Uri does not match a SQL datatype")]

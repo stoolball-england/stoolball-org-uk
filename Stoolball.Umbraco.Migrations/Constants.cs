@@ -25,6 +25,9 @@
             public const string MatchComment = _tablePrefix + "MatchComment";
             public const string MatchLocation = _tablePrefix + "MatchLocation";
             public const string MatchTeam = _tablePrefix + "MatchTeam";
+            public const string MatchInnings = _tablePrefix + "MatchInnings";
+            public const string MatchAward = _tablePrefix + "MatchAward";
+            public const string MatchAwardType = _tablePrefix + "MatchAwardType";
             public const string PlayerIdentity = _tablePrefix + "PlayerIdentity";
             public const string School = _tablePrefix + "School";
             public const string SchoolName = _tablePrefix + "SchoolName";
