@@ -60,6 +60,10 @@
     <Compile Include="SchoolTableSchema.cs" />
     <Compile Include="SchoolNameAddTable.cs" />
     <Compile Include="SchoolAddTable.cs" />
+    <Compile Include="SeasonPointsAdjustmentAddTable.cs" />
+    <Compile Include="SeasonPointsAdjustmentTableSchema.cs" />
+    <Compile Include="SeasonTeamAddTable.cs" />
+    <Compile Include="SeasonTeamTableSchema.cs" />
     <Compile Include="TeamMatchLocationTableSchema.cs" />
     <Compile Include="TeamNameTableSchema.cs" />
     <Compile Include="TeamMatchLocationAddTable.cs" />

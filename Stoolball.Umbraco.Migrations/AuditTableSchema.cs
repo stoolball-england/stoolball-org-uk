@@ -9,7 +9,7 @@ namespace Stoolball.Umbraco.Data
     [ExplicitColumns]
     public class AuditTableSchema
     {
-        [PrimaryKeyColumn(AutoIncrement = true, IdentitySeed = 1)]
+        [PrimaryKeyColumn(AutoIncrement = true, IdentitySeed = 1, Clustered = false)]
         [Column(nameof(AuditId))]
         public int AuditId { get; set; }
 
@@ -23,6 +23,7 @@ namespace Stoolball.Umbraco.Data
         public string RequestUrl { get; set; }
 
         [Column(nameof(ItemUri))]
+        [Index(IndexTypes.Clustered)]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1056:Uri properties should not be strings", Justification = "Uri does not match a SQL datatype")]
         public string ItemUri { get; set; }
 

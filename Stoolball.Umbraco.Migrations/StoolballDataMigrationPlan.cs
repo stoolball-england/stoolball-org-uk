@@ -23,7 +23,9 @@ namespace Stoolball.Umbraco.Data
                 .To<SeasonPointsRuleAddTable>(typeof(SeasonPointsRuleAddTable).ToString())
                 .To<TeamAddTable>(typeof(TeamAddTable).ToString())
                 .To<TeamNameAddTable>(typeof(TeamNameAddTable).ToString())
-                .To<TeamMatchLocationAddTable>(typeof(TeamMatchLocationAddTable).ToString());
+                .To<TeamMatchLocationAddTable>(typeof(TeamMatchLocationAddTable).ToString())
+                .To<SeasonTeamAddTable>(typeof(SeasonTeamAddTable).ToString())
+                .To<SeasonPointsAdjustmentAddTable>(typeof(SeasonPointsAdjustmentAddTable).ToString());
         }
     }
 }
