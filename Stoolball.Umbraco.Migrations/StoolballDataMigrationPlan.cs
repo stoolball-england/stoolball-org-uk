@@ -11,7 +11,10 @@ namespace Stoolball.Umbraco.Data
             // This is the steps we need to take
             // Each step in the migration adds a unique value
             From(string.Empty)
-                .To<AuditAddTable>(typeof(AuditAddTable).ToString());
+                .To<AuditAddTable>(typeof(AuditAddTable).ToString())
+                .To<ClubAddTable>(typeof(ClubAddTable).ToString())
+                .To<ClubNameAddTable>(typeof(ClubNameAddTable).ToString())
+                .To<MatchLocationAddTable>(typeof(MatchLocationAddTable).ToString());
         }
     }
 }

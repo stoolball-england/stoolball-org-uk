@@ -56,6 +56,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuditAddTable.cs" />
+    <Compile Include="MatchLocationTableSchema.cs" />
+    <Compile Include="MatchLocationAddTable.cs" />
+    <Compile Include="ClubNameAddTable.cs" />
+    <Compile Include="ClubNameTableSchema.cs" />
+    <Compile Include="ClubTableSchema.cs" />
+    <Compile Include="ClubAddTable.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="AuditTableSchema.cs" />
     <Compile Include="StoolballDataComponent.cs" />
@@ -75,6 +81,12 @@
     <PackageReference Include="UmbracoCms.Core">
       <Version>8.5.5</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stoolball\Stoolball.csproj">
+      <Project>{4f0709d1-9e82-4016-8003-0e67d6f8cb60}</Project>
+      <Name>Stoolball</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
