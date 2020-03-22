@@ -55,7 +55,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuditAddTable.cs" />
     <Compile Include="BowlingOverTableSchema.cs" />
     <Compile Include="MatchCommentAddTable.cs" />
     <Compile Include="MatchAwardTypeAddTable.cs" />
@@ -107,7 +106,6 @@
     <Compile Include="ClubTableSchema.cs" />
     <Compile Include="ClubAddTable.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="AuditTableSchema.cs" />
     <Compile Include="StoolballDataComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StoolballDataComposer.cs" />

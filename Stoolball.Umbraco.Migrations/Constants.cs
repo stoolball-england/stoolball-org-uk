@@ -11,11 +11,6 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Not a typical class. This is creating a set of constants accessible with IntelliSense.")]
         public static class Tables
         {
-            public const string Audit = _tablePrefix + "Audit";
-
-            public const string NotificationSubscription = _tablePrefix + "NotificationSubscription";
-            public const string NotificationTracker = _tablePrefix + "NotificationTracker";
-
             public const string Batting = _tablePrefix + "Batting";
             public const string BowlingOver = _tablePrefix + "BowlingOver";
             public const string Club = _tablePrefix + "Club";
