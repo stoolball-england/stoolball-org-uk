@@ -1,7 +1,7 @@
 ﻿using Umbraco.Core.Logging;
 using Umbraco.Core.Migrations;
 
-namespace Stoolball.Umbraco.Data
+namespace Stoolball.Umbraco.Migrations
 {
     /// <summary>
     /// Adds a table for recording the names of schools that play stoolball, which change over time

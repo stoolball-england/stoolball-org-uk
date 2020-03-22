@@ -2,7 +2,7 @@
 using System;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
-namespace Stoolball.Umbraco.Data
+namespace Stoolball.Umbraco.Migrations
 {
     [TableName(Constants.Tables.PlayerIdentity)]
     [PrimaryKey(nameof(PlayerIdentityId), AutoIncrement = true)]

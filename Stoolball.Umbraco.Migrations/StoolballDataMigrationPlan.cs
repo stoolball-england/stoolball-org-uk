@@ -1,6 +1,6 @@
 ﻿using Umbraco.Core.Migrations;
 
-namespace Stoolball.Umbraco.Data
+namespace Stoolball.Umbraco.Migrations
 {
     // Create a migration plan for the stoolball schema
     // Each latest migration state/step is tracked for this project/feature

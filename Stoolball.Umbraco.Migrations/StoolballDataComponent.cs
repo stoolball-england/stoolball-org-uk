@@ -5,7 +5,7 @@ using Umbraco.Core.Migrations.Upgrade;
 using Umbraco.Core.Scoping;
 using Umbraco.Core.Services;
 
-namespace Stoolball.Umbraco.Data
+namespace Stoolball.Umbraco.Migrations
 {
     /// <summary>
     /// Component which is loaded by <see cref="StoolballDataComposer"/> on startup, and kicks off the <see cref="StoolballMigrationPlan"/>

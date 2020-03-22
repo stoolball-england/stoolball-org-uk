@@ -2,7 +2,7 @@
 using NPoco;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
-namespace Stoolball.Umbraco.Data
+namespace Stoolball.Umbraco.Migrations
 {
     [TableName(Constants.Tables.School)]
     [PrimaryKey(nameof(SchoolId), AutoIncrement = true)]

@@ -1,7 +1,7 @@
 ﻿using Umbraco.Core.Logging;
 using Umbraco.Core.Migrations;
 
-namespace Stoolball.Umbraco.Data
+namespace Stoolball.Umbraco.Migrations
 {
     /// <summary>
     /// Adds a table for recording what bonus or penalty points are awarded or deducted in stoolball seasons

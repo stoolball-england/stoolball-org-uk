@@ -1,4 +1,4 @@
-﻿namespace Stoolball.Umbraco.Data
+﻿namespace Stoolball.Umbraco.Migrations
 {
     /// <summary>
     ///  Constants for working with the stoolball data schema
