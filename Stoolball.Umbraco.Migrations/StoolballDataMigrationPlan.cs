@@ -35,7 +35,8 @@ namespace Stoolball.Umbraco.Data
                 .To<SeasonMatchAddTable>(typeof(SeasonMatchAddTable).ToString())
                 .To<BattingAddTable>(typeof(BattingAddTable).ToString())
                 .To<BowlingOverAddTable>(typeof(BowlingOverAddTable).ToString())
-                .To<MatchCommentAddTable>(typeof(MatchCommentAddTable).ToString());
+                .To<MatchCommentAddTable>(typeof(MatchCommentAddTable).ToString())
+                .To<PlayerMatchStatisticsAddTable>(typeof(PlayerMatchStatisticsAddTable).ToString());
         }
     }
 }

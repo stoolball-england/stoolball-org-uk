@@ -21,8 +21,8 @@ namespace Stoolball.Umbraco.Data
         [ForeignKey(typeof(PlayerIdentityTableSchema), Column = nameof(PlayerIdentityTableSchema.PlayerIdentityId))]
         public int PlayerIdentityId { get; set; }
 
-        [Column(nameof(Position))]
-        public int Position { get; set; }
+        [Column(nameof(OverNumber))]
+        public int OverNumber { get; set; }
 
         [Column(nameof(BallsBowled))]
         [NullSetting(NullSetting = NullSettings.Null)]

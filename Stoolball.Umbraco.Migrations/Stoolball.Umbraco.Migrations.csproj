@@ -66,6 +66,8 @@
     <Compile Include="MatchCommentTableSchema.cs" />
     <Compile Include="MatchInningsTableSchema.cs" />
     <Compile Include="BattingTableSchema.cs" />
+    <Compile Include="PlayerMatchStatisticsTableSchema.cs" />
+    <Compile Include="PlayerMatchStatisticsAddTable.cs" />
     <Compile Include="SeasonMatchTableSchema.cs" />
     <Compile Include="SeasonMatchAddTable.cs" />
     <Compile Include="MatchTeamAddTable.cs" />
