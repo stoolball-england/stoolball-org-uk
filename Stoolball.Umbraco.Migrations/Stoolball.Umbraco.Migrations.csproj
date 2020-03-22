@@ -57,11 +57,13 @@
   <ItemGroup>
     <Compile Include="AuditAddTable.cs" />
     <Compile Include="BowlingOverTableSchema.cs" />
+    <Compile Include="MatchCommentAddTable.cs" />
     <Compile Include="MatchAwardTypeAddTable.cs" />
     <Compile Include="MatchAwardAddTable.cs" />
     <Compile Include="MatchAwardTableSchema.cs" />
     <Compile Include="MatchInningsAddTable.cs" />
     <Compile Include="MatchAwardTypeTableSchema.cs" />
+    <Compile Include="MatchCommentTableSchema.cs" />
     <Compile Include="MatchInningsTableSchema.cs" />
     <Compile Include="BattingTableSchema.cs" />
     <Compile Include="SeasonMatchTableSchema.cs" />
