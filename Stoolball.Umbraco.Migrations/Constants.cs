@@ -17,7 +17,7 @@
             public const string NotificationTracker = _tablePrefix + "NotificationTracker";
 
             public const string Batting = _tablePrefix + "Batting";
-            public const string Bowling = _tablePrefix + "Bowling";
+            public const string BowlingOver = _tablePrefix + "BowlingOver";
             public const string Club = _tablePrefix + "Club";
             public const string ClubName = _tablePrefix + "ClubName";
             public const string Competition = _tablePrefix + "Competition";

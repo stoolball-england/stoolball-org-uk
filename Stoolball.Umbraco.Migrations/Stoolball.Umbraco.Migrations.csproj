@@ -56,12 +56,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuditAddTable.cs" />
+    <Compile Include="BowlingOverTableSchema.cs" />
     <Compile Include="MatchAwardTypeAddTable.cs" />
     <Compile Include="MatchAwardAddTable.cs" />
     <Compile Include="MatchAwardTableSchema.cs" />
     <Compile Include="MatchInningsAddTable.cs" />
     <Compile Include="MatchAwardTypeTableSchema.cs" />
     <Compile Include="MatchInningsTableSchema.cs" />
+    <Compile Include="BattingTableSchema.cs" />
     <Compile Include="SeasonMatchTableSchema.cs" />
     <Compile Include="SeasonMatchAddTable.cs" />
     <Compile Include="MatchTeamAddTable.cs" />
@@ -69,6 +71,8 @@
     <Compile Include="SchoolTableSchema.cs" />
     <Compile Include="SchoolNameAddTable.cs" />
     <Compile Include="SchoolAddTable.cs" />
+    <Compile Include="BowlingOverAddTable.cs" />
+    <Compile Include="BattingAddTable.cs" />
     <Compile Include="SeasonPointsAdjustmentAddTable.cs" />
     <Compile Include="SeasonPointsAdjustmentTableSchema.cs" />
     <Compile Include="SeasonTeamAddTable.cs" />
