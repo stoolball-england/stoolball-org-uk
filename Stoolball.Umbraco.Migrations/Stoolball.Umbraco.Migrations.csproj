@@ -62,6 +62,9 @@
     <Compile Include="MatchInningsAddTable.cs" />
     <Compile Include="MatchAwardTypeTableSchema.cs" />
     <Compile Include="MatchInningsTableSchema.cs" />
+    <Compile Include="SeasonMatchTableSchema.cs" />
+    <Compile Include="SeasonMatchAddTable.cs" />
+    <Compile Include="MatchTeamAddTable.cs" />
     <Compile Include="SchoolNameTableSchema.cs" />
     <Compile Include="SchoolTableSchema.cs" />
     <Compile Include="SchoolNameAddTable.cs" />
@@ -71,6 +74,7 @@
     <Compile Include="SeasonTeamAddTable.cs" />
     <Compile Include="SeasonTeamTableSchema.cs" />
     <Compile Include="MatchAddTable.cs" />
+    <Compile Include="MatchTeamTableSchema.cs" />
     <Compile Include="TeamMatchLocationTableSchema.cs" />
     <Compile Include="PlayerIdentityAddTable.cs" />
     <Compile Include="PlayerIdentityTableSchema.cs" />
