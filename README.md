@@ -4,3 +4,5 @@ This is a rebuild of the Stoolball England website at www.stoolball.org.uk using
 
 - [Getting started](Documentation/GettingStarted.md)
 - [Testing](Documentation/Testing.md)
+- [Migrating data](Documentation/DataMigration.md)
+- [Working with stoolball data](Documentation/Database.md)

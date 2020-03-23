@@ -47,7 +47,3 @@ Begin the filename with `Secret-` (for example `Secret-MyPassword.{config file n
 ## Managing redirects
 
 Redirects are managed using the [Skybrud.Umbraco.Redirects](https://github.com/skybrud/Skybrud.Umbraco.Redirects) package, which appears as a dashboard named 'Redirects' in the Content section of the Umbraco back office.
-
-## Testing
-
-See [Testing](Testing.md).
