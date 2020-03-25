@@ -11,7 +11,10 @@
     }
   ],
   "javascript": [
-    "~/App_Plugins/Stoolball.DataMigration/dataMigrationDashboardController.js",
+    "~/App_Plugins/Stoolball.DataMigration/DataMigrationDashboardController.js",
+    "~/App_Plugins/Stoolball.DataMigration/dialogs/DeleteMembersController.js",
+    "~/App_Plugins/Stoolball.DataMigration/dialogs/DeleteMemberGroupsController.js",
+    "~/App_Plugins/Stoolball.DataMigration/dialogs/ImportGroupsAndMembersController.js",
     "~/App_Plugins/Stoolball.DataMigration/stoolballResource.js"
   ],
   "css": [
