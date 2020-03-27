@@ -333,9 +333,14 @@
     <Content Include="App_Plugins\Stoolball.DataMigration\dataMigrationDashboardController.js" />
     <None Include="App_Plugins\Stoolball.DataMigration\data-migration.scss" />
     <Content Include="App_Plugins\Stoolball.DataMigration\DataMigrationDashboard.html" />
-    <Content Include="App_Plugins\Stoolball.DataMigration\dialogs\DeleteMemberGroups.html" />
-    <Content Include="App_Plugins\Stoolball.DataMigration\dialogs\DeleteMembers.html" />
-    <Content Include="App_Plugins\Stoolball.DataMigration\dialogs\ImportGroupsAndMembers.html" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMemberGroups.html" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMemberGroupsController.js" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMembers.html" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMembersController.js" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportClubs.html" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportClubsController.js" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportGroupsAndMembers.html" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportGroupsAndMembersController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\lang\en-US.xml" />
     <Content Include="App_Plugins\Stoolball.DataMigration\stoolballResource.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\stoolballResource.test.js" />
@@ -732,9 +737,12 @@
     <Compile Include="App_Data\Models\LoginMember.generated.cs" />
     <Compile Include="App_Data\Models\LogoutMember.generated.cs" />
     <Compile Include="App_Data\Models\ResetPassword.generated.cs" />
-    <Compile Include="App_Plugins\Stoolball.DataMigration\MemberGroupAssignment.cs" />
-    <Compile Include="App_Plugins\Stoolball.DataMigration\MemberMigrationController.cs" />
-    <Compile Include="App_Plugins\Stoolball.DataMigration\ImportedMember.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\MemberGroupAssignment.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\ClubMigrationController.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\MemberMigrationController.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\ImportedMember.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IClubDataMigrator.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerClubDataMigrator.cs" />
     <Compile Include="Email\EmailSender.cs" />
     <Compile Include="Email\EmailFormatter.cs" />
     <Compile Include="Email\IEmailFormatter.cs" />
@@ -839,9 +847,9 @@
     <None Include="Web.local.xdt.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Stoolball.Umbraco.Migrations\Stoolball.Umbraco.Migrations.csproj">
-      <Project>{0289e095-f560-4ff9-87a0-b06bf796b944}</Project>
-      <Name>Stoolball.Umbraco.Migrations</Name>
+    <ProjectReference Include="..\Stoolball.Umbraco.Data\Stoolball.Umbraco.Data.csproj">
+      <Project>{b34b6e72-27e7-4440-be0d-a627abe6ca17}</Project>
+      <Name>Stoolball.Umbraco.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\Stoolball\Stoolball.csproj">
       <Project>{4f0709d1-9e82-4016-8003-0e67d6f8cb60}</Project>

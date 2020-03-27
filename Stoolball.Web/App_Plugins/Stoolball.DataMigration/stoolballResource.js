@@ -13,7 +13,26 @@
       );
       return xsrf ? xsrf.split("=")[1] : null;
     },
-
+    async __postToApi(apiRoute, items, itemReducer, succeeded, failed) {
+      await this.__asyncForEach(items, async item => {
+        await fetch("/umbraco/backoffice/Migration/" + apiRoute, {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Umb-XSRF-Token": this.__parseXsrfTokenFromCookie(document.cookie)
+          },
+          body: JSON.stringify(itemReducer(item))
+        }).then(response => {
+          if (response.ok && succeeded) {
+            succeeded.push(item);
+          }
+          if (!response.ok && failed) {
+            failed.push(item);
+          }
+        });
+      });
+    },
     // this calls the Stoolball England data migration API
     getApiKey: function() {
       const url = "/umbraco/backoffice/Migration/MemberMigration/ApiKey";
@@ -52,94 +71,76 @@
       );
     },
     deleteMemberGroups: async function(groups, deleted) {
-      await this.__asyncForEach(groups, async groupToDelete => {
-        await fetch(
-          "/umbraco/backoffice/Migration/MemberMigration/DeleteMemberGroup",
-          {
-            method: "POST",
-            credentials: "same-origin",
-            headers: {
-              "Content-Type": "application/json",
-              "X-Umb-XSRF-Token": this.__parseXsrfTokenFromCookie(
-                document.cookie
-              )
-            },
-            body: JSON.stringify(groupToDelete)
-          }
-        );
-        if (deleted) {
-          deleted.push(groupToDelete);
-        }
-      });
+      await this.__postToApi(
+        "MemberMigration/DeleteMemberGroup",
+        groups,
+        group => group,
+        deleted
+      );
     },
     importMembers: async function(members, imported) {
-      await this.__asyncForEach(members, async memberToImport => {
-        await fetch(
-          "/umbraco/backoffice/Migration/MemberMigration/CreateMember",
-          {
-            method: "POST",
-            credentials: "same-origin",
-            headers: {
-              "Content-Type": "application/json",
-              "X-Umb-XSRF-Token": this.__parseXsrfTokenFromCookie(
-                document.cookie
-              )
-            },
-            body: JSON.stringify(memberToImport)
-          }
-        );
-        if (imported) {
-          imported.push(memberToImport);
-        }
-      });
+      await this.__postToApi(
+        "MemberMigration/CreateMember",
+        members,
+        member => member,
+        imported
+      );
     },
-    importMemberGroups: async function(groups, imported) {
-      await this.__asyncForEach(groups, async groupToImport => {
-        await fetch(
-          "/umbraco/backoffice/Migration/MemberMigration/CreateMemberGroup",
-          {
-            method: "POST",
-            credentials: "same-origin",
-            headers: {
-              "Content-Type": "application/json",
-              "X-Umb-XSRF-Token": this.__parseXsrfTokenFromCookie(
-                document.cookie
-              )
-            },
-            body: JSON.stringify({ Name: groupToImport.name })
-          }
-        );
-        if (imported) {
-          imported.push(groupToImport);
-        }
-      });
+    importMemberGroups: async function(groups, imported, failed) {
+      await this.__postToApi(
+        "MemberMigration/CreateMemberGroup",
+        groups,
+        group => ({
+          Name: group.name
+        }),
+        imported,
+        failed
+      );
     },
     assignMembersToGroups: async function(members, groups) {
       await this.__asyncForEach(members, async member => {
         for (let i = 0; i < member.roles.length; i++) {
           let roleId = member.roles[i];
           let groupsToAssign = groups.filter(group => group.id == roleId);
-          for (let j = 0; j < groupsToAssign.length; j++) {
-            await fetch(
-              "/umbraco/backoffice/Migration/MemberMigration/AssignMemberGroup",
-              {
-                method: "POST",
-                credentials: "same-origin",
-                headers: {
-                  "Content-Type": "application/json",
-                  "X-Umb-XSRF-Token": this.__parseXsrfTokenFromCookie(
-                    document.cookie
-                  )
-                },
-                body: JSON.stringify({
-                  Email: member.email,
-                  GroupName: groupsToAssign[j].name
-                })
-              }
-            );
-          }
+          await this.__postToApi(
+            "MemberMigration/AssignMemberGroup",
+            groupsToAssign,
+            group => ({
+              Email: member.email,
+              GroupName: group.name
+            })
+          );
         }
       });
+    },
+    getClubsToMigrate: async function(dataSource, apiKey) {
+      const url = "https://" + dataSource + "/data/clubs-api.php?key=" + apiKey;
+      return await umbRequestHelper.resourcePromise(
+        $http.get(url),
+        "Failed to retrieve all Stoolball England club data"
+      );
+    },
+    importClubs: async function(clubs, imported, failed) {
+      await this.__postToApi(
+        "ClubMigration/CreateClub",
+        clubs,
+        club => ({
+          ClubId: club.clubId,
+          ClubName: club.name,
+          PlaysOutdoors: club.playsOutdoors,
+          PlaysIndoors: club.playsIndoors,
+          Twitter: club.twitterAccount,
+          Facebook: club.facebookUrl,
+          Instagram: club.instagramAccount,
+          ClubMark: club.clubmarkAccredited,
+          HowManyPlayers: club.howManyPlayers,
+          ClubRoute: club.route,
+          DateCreated: club.dateCreated,
+          DateUpdated: club.dateUpdated
+        }),
+        imported,
+        failed
+      );
     }
   };
 }

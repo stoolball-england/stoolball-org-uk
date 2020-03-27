@@ -1,29 +1,64 @@
-﻿<div class="data-migration-dashboard" ng-controller="Stoolball.DataMigration.DashboardController as vm">
-    <div class="umb-panel-group__details-group">
-        <div class="umb-panel-group__details-group-title">
-            <div class="umb-panel-group__details-group-name">
-                <div>Members</div>
-            </div>
-        </div>
-        <div class="umb-panel-group__details-checks">
-            <div class="umb-panel-group__details-check">
-                <div class="umb-box">
-                    <div class="umb-box-content">
-                        <button class="btn btn-danger" ng-click="vm.deleteMembers()">
-                            <i class="icon-trash"></i>
-                            Delete all members
-                        </button>
-                        <button class="btn btn-danger" ng-click="vm.deleteMemberGroups()">
-                            <i class="icon-trash"></i>
-                            Delete all member groups
-                        </button>
-                        <button class="btn btn-primary" ng-click="vm.importMembers()">
-                            <i class="icon-arrow-right"></i>
-                            Import groups and members
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+﻿<div
+  class="data-migration-dashboard"
+  ng-controller="Stoolball.DataMigration.DashboardController as vm"
+>
+  <div class="umb-panel-group__details-group">
+    <div class="umb-panel-group__details-group-title">
+      <div class="umb-panel-group__details-group-name">
+        <div>Members</div>
+      </div>
     </div>
+    <div class="umb-panel-group__details-checks">
+      <div class="umb-panel-group__details-check">
+        <div class="umb-box">
+          <div class="umb-box-content">
+            <button
+              class="btn btn-danger"
+              ng-click="vm.openDialog('Are you sure?', 'DeleteMembers')"
+            >
+              <i class="icon-trash"></i>
+              Delete all members
+            </button>
+            <button
+              class="btn btn-danger"
+              ng-click="vm.openDialog('Are you sure?', 'DeleteMemberGroups')"
+            >
+              <i class="icon-trash"></i>
+              Delete all member groups
+            </button>
+            <button
+              class="btn btn-primary"
+              ng-click="vm.openDialog('Import Member Groups and Members', 'ImportGroupsAndMembers')"
+            >
+              <i class="icon-arrow-right"></i>
+              Import groups and members
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="umb-panel-group__details-group">
+    <div class="umb-panel-group__details-group-title">
+      <div class="umb-panel-group__details-group-name">
+        <div>Stoolball data</div>
+      </div>
+    </div>
+    <div class="umb-panel-group__details-checks">
+      <div class="umb-panel-group__details-check">
+        <div class="umb-box">
+          <div class="umb-box-content">
+            <button
+              class="btn btn-primary"
+              ng-click="vm.openDialog('Import clubs', 'ImportClubs')"
+            >
+              <i class="icon-arrow-right"></i>
+              Import clubs
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

@@ -35,8 +35,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball", "Stoolball\Stoolball.csproj", "{4F0709D1-9E82-4016-8003-0E67D6F8CB60}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Umbraco.Migrations", "Stoolball.Umbraco.Migrations\Stoolball.Umbraco.Migrations.csproj", "{0289E095-F560-4FF9-87A0-B06BF796B944}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Tests", "Stoolball.Tests\Stoolball.Tests.csproj", "{41DCF0BE-6E18-4F62-986E-DDAB0E76E9A0}"
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Cypress", "Cypress\", "{3B93C365-F093-4D95-AAAD-52733848BB74}"
@@ -83,6 +81,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Scripts", "Scripts\", "{799
 		SlnRelativePath = "Scripts\"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Umbraco.Data", "Stoolball.Umbraco.Data\Stoolball.Umbraco.Data.csproj", "{B34B6E72-27E7-4440-BE0D-A627ABE6CA17}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,10 +100,6 @@ Global
 		{4F0709D1-9E82-4016-8003-0E67D6F8CB60}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F0709D1-9E82-4016-8003-0E67D6F8CB60}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F0709D1-9E82-4016-8003-0E67D6F8CB60}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0289E095-F560-4FF9-87A0-B06BF796B944}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0289E095-F560-4FF9-87A0-B06BF796B944}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0289E095-F560-4FF9-87A0-B06BF796B944}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0289E095-F560-4FF9-87A0-B06BF796B944}.Release|Any CPU.Build.0 = Release|Any CPU
 		{41DCF0BE-6E18-4F62-986E-DDAB0E76E9A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{41DCF0BE-6E18-4F62-986E-DDAB0E76E9A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41DCF0BE-6E18-4F62-986E-DDAB0E76E9A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -118,6 +114,10 @@ Global
 		{799B3778-98D9-4DE1-B9F8-CF3EB55CA431}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{799B3778-98D9-4DE1-B9F8-CF3EB55CA431}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{799B3778-98D9-4DE1-B9F8-CF3EB55CA431}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{B34B6E72-27E7-4440-BE0D-A627ABE6CA17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B34B6E72-27E7-4440-BE0D-A627ABE6CA17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B34B6E72-27E7-4440-BE0D-A627ABE6CA17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B34B6E72-27E7-4440-BE0D-A627ABE6CA17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -13,6 +13,8 @@
     list-style: none;
 }
 
+.data-migration-progress > li.alert { margin-bottom: 2px; }
+
 /* Even up the padding at the bottom of an umb-box */
 .data-migration-dialog .umb-box-content > :last-child {
     margin-bottom: 0;
