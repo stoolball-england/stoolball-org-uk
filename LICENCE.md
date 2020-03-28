@@ -10,11 +10,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## Exceptions not covered by the MIT Licence
 
-This license does not apply to the use of the "Stoolball England" name, logo or other brand elements, including the design, layout and look-and-feel of the Stoolball England  website, for which all rights are reserved. The "Stoolball England" name, logo or brand may not be used to indicate any association with or endorsement by Stoolball England without prior written consent from Stoolball England.
+This license does not apply to the use of the "Stoolball England" name, logo or other brand elements, including the design, layout and look-and-feel of the Stoolball England website, for which all rights are reserved. The "Stoolball England" name, logo or brand may not be used to indicate any association with or endorsement by Stoolball England without prior written consent from Stoolball England.
 
 This source code includes the following dependencies which are not covered by the MIT Licence:
 
-* YUI Compressor 2.4.2 uses the [New BSD Licence](http://framework.zend.com/license/new-bsd).
-* XHTML-2-iCal 0.9.2.1 uses the [The W3C Open Source License](http://www.w3.org/Consortium/Legal/copyright-software-19980720).
-* The WordPress Category Archive plugin has no stated licence covering its use.
-* The ExplorerCanvas polyfill, and MarkerClusterer and MarkerWithLabel 1.1.4 for Google Maps all use the [Apache Licence 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+- The ExplorerCanvas polyfill, and MarkerClusterer and MarkerWithLabel 1.1.4 for Google Maps all use the [Apache Licence 2.0](http://www.apache.org/licenses/LICENSE-2.0).
