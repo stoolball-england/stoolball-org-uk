@@ -15,6 +15,7 @@ namespace Stoolball.Web
             composition.Register<IVerificationToken, VerificationToken>(Lifetime.Singleton);
             composition.Register<IAuditRepository, SqlServerAuditRepository>(Lifetime.Singleton);
             composition.Register<IClubDataMigrator, SqlServerClubDataMigrator>(Lifetime.Singleton);
+            composition.Register<IRedirectsDataMigrator, SkybrudRedirectsDataMigrator>(Lifetime.Singleton);
         }
     }
 }

@@ -13,24 +13,27 @@
       );
       return xsrf ? xsrf.split("=")[1] : null;
     },
-    async __postToApi(apiRoute, items, itemReducer, succeeded, failed) {
+    async __postManyToApi(apiRoute, items, itemReducer, succeeded, failed) {
       await this.__asyncForEach(items, async item => {
-        await fetch("/umbraco/backoffice/Migration/" + apiRoute, {
-          method: "POST",
-          credentials: "same-origin",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Umb-XSRF-Token": this.__parseXsrfTokenFromCookie(document.cookie)
-          },
-          body: JSON.stringify(itemReducer(item))
-        }).then(response => {
-          if (response.ok && succeeded) {
-            succeeded.push(item);
-          }
-          if (!response.ok && failed) {
-            failed.push(item);
-          }
-        });
+        await this.__postToApi(apiRoute, item, itemReducer, succeeded, failed);
+      });
+    },
+    async __postToApi(apiRoute, item, itemReducer, succeeded, failed) {
+      await fetch("/umbraco/backoffice/Migration/" + apiRoute, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Umb-XSRF-Token": this.__parseXsrfTokenFromCookie(document.cookie)
+        },
+        body: itemReducer ? JSON.stringify(itemReducer(item)) : null
+      }).then(response => {
+        if (response.ok && succeeded) {
+          succeeded.push(item);
+        }
+        if (!response.ok && failed) {
+          failed.push(item);
+        }
       });
     },
     async __deleteApi(apiRoute, callback) {
@@ -81,7 +84,7 @@
       );
     },
     deleteMemberGroups: async function(groups, deleted) {
-      await this.__postToApi(
+      await this.__postManyToApi(
         "MemberMigration/DeleteMemberGroup",
         groups,
         group => group,
@@ -89,7 +92,7 @@
       );
     },
     importMembers: async function(members, imported) {
-      await this.__postToApi(
+      await this.__postManyToApi(
         "MemberMigration/CreateMember",
         members,
         member => member,
@@ -97,7 +100,7 @@
       );
     },
     importMemberGroups: async function(groups, imported, failed) {
-      await this.__postToApi(
+      await this.__postManyToApi(
         "MemberMigration/CreateMemberGroup",
         groups,
         group => ({
@@ -112,7 +115,7 @@
         for (let i = 0; i < member.roles.length; i++) {
           let roleId = member.roles[i];
           let groupsToAssign = groups.filter(group => group.id == roleId);
-          await this.__postToApi(
+          await this.__postManyToApi(
             "MemberMigration/AssignMemberGroup",
             groupsToAssign,
             group => ({
@@ -123,6 +126,9 @@
         }
       });
     },
+    ensureRedirects: async function() {
+      await this.__postToApi("RedirectsMigration/EnsureRedirects");
+    },
     getClubsToMigrate: async function(dataSource, apiKey) {
       const url = "https://" + dataSource + "/data/clubs-api.php?key=" + apiKey;
       return await umbRequestHelper.resourcePromise(
@@ -131,7 +137,7 @@
       );
     },
     importClubs: async function(clubs, imported, failed) {
-      await this.__postToApi(
+      await this.__postManyToApi(
         "ClubMigration/CreateClub",
         clubs,
         club => ({
