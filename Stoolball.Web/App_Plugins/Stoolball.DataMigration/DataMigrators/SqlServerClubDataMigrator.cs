@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
+using Umbraco.Core.Persistence;
 using Umbraco.Core.Scoping;
 using StoolballMigrations = Stoolball.Umbraco.Data.Migrations;
 
@@ -33,6 +34,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					{
 						await database.ExecuteAsync($"DELETE FROM {StoolballMigrations.Constants.Tables.ClubName}").ConfigureAwait(false);
 						await database.ExecuteAsync($@"DELETE FROM {StoolballMigrations.Constants.Tables.Club}").ConfigureAwait(false);
+						await database.ExecuteAsync($@"DELETE FROM SkybrudRedirects WHERE DestinationUrl LIKE '/club/%'").ConfigureAwait(false);
 						transaction.Complete();
 					}
 				}
@@ -88,6 +90,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							club.ClubName,
 							club.DateCreated.HasValue && club.DateCreated <= club.DateUpdated ? club.DateCreated : System.Data.SqlTypes.SqlDateTime.MinValue.Value
 							).ConfigureAwait(false);
+						await InsertRedirect(database, club.ClubRoute, revisedRoute, string.Empty).ConfigureAwait(false);
+						await InsertRedirect(database, club.ClubRoute, revisedRoute, "/edit").ConfigureAwait(false);
+						await InsertRedirect(database, club.ClubRoute, revisedRoute, "/matches.rss").ConfigureAwait(false);
 						transaction.Complete();
 					}
 				}
@@ -98,6 +103,29 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				}
 				scope.Complete();
 			}
+		}
+
+		private static async Task InsertRedirect(IUmbracoDatabase database, string originalRoute, string revisedRoute, string routeSuffix)
+		{
+			await database.ExecuteAsync($@"INSERT INTO SkybrudRedirects 
+							([Key], [RootId], [RootKey], [Url], [QueryString], [DestinationType], [DestinationId], [DestinationKey], 
+							 [DestinationUrl], [Created], [Updated], [IsPermanent], [IsRegex], [ForwardQueryString])
+							 VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13)",
+										 Guid.NewGuid().ToString(),
+										 0,
+										 "00000000-0000-0000-0000-000000000000",
+										 "/" + originalRoute + routeSuffix,
+										 string.Empty,
+										 "url",
+										 0,
+										 "00000000-0000-0000-0000-000000000000",
+										 "/" + revisedRoute + routeSuffix,
+										 DateTime.UtcNow,
+										 DateTime.UtcNow,
+										 true,
+										 false,
+										 false
+										 ).ConfigureAwait(false);
 		}
 	}
 }
