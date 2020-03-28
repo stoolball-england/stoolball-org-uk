@@ -1,7 +1,6 @@
 ﻿using Stoolball.Clubs;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using System;
-using System.Configuration;
 using System.Web.Http;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
@@ -34,10 +33,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
             _clubDataMigrator = clubDataMigrator;
         }
 
-        [HttpGet]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Static methods aren't exposed as an API")]
-        public string ApiKey() => ConfigurationManager.AppSettings["Stoolball.DataMigrationApiKey"];
-
         [HttpPost]
         public void CreateClub(Club club)
         {
@@ -47,6 +42,12 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
             }
 
             _clubDataMigrator.MigrateClub(club);
+        }
+
+        [HttpDelete]
+        public void DeleteClubs()
+        {
+            _clubDataMigrator.DeleteClubs();
         }
     }
 }

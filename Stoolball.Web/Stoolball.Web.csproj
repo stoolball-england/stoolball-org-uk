@@ -335,7 +335,9 @@
     <Content Include="App_Plugins\Stoolball.DataMigration\DataMigrationDashboard.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMemberGroups.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMemberGroupsController.js" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteClubs.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMembers.html" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteClubsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMembersController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportClubs.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportClubsController.js" />

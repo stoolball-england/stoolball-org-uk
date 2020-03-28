@@ -50,6 +50,13 @@
         <div class="umb-box">
           <div class="umb-box-content">
             <button
+              class="btn btn-danger"
+              ng-click="vm.openDialog('Are you sure?', 'DeleteClubs')"
+            >
+              <i class="icon-trash"></i>
+              Delete all clubs
+            </button>
+            <button
               class="btn btn-primary"
               ng-click="vm.openDialog('Import clubs', 'ImportClubs')"
             >

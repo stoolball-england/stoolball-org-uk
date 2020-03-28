@@ -33,6 +33,16 @@
         });
       });
     },
+    async __deleteApi(apiRoute, callback) {
+      await fetch("/umbraco/backoffice/Migration/" + apiRoute, {
+        method: "DELETE",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Umb-XSRF-Token": this.__parseXsrfTokenFromCookie(document.cookie)
+        }
+      });
+    },
     // this calls the Stoolball England data migration API
     getApiKey: function() {
       const url = "/umbraco/backoffice/Migration/MemberMigration/ApiKey";
@@ -141,6 +151,9 @@
         imported,
         failed
       );
+    },
+    deleteClubs: async function() {
+      return await this.__deleteApi("ClubMigration/DeleteClubs");
     }
   };
 }

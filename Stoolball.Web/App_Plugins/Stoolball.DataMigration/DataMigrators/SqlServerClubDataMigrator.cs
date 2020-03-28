@@ -19,6 +19,33 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		}
 
 		/// <summary>
+		/// Clear down all the club data ready for a fresh import
+		/// </summary>
+		/// <returns></returns>
+		public async Task DeleteClubs()
+		{
+			using (var scope = _scopeProvider.CreateScope())
+			{
+				var database = scope.Database;
+				try
+				{
+					using (var transaction = database.GetTransaction())
+					{
+						await database.ExecuteAsync($"DELETE FROM {StoolballMigrations.Constants.Tables.ClubName}").ConfigureAwait(false);
+						await database.ExecuteAsync($@"DELETE FROM {StoolballMigrations.Constants.Tables.Club}").ConfigureAwait(false);
+						transaction.Complete();
+					}
+				}
+				catch (Exception e)
+				{
+					_logger.Error<SqlServerClubDataMigrator>(e);
+					throw;
+				}
+				scope.Complete();
+			}
+		}
+
+		/// <summary>
 		/// Save the supplied Club to the database with its existing <see cref="Club.ClubId"/>
 		/// </summary>
 		public async Task MigrateClub(Club club)
