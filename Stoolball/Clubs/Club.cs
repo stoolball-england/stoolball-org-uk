@@ -16,7 +16,11 @@ namespace Stoolball.Clubs
         public bool ClubMark { get; set; }
         public int? HowManyPlayers { get; set; }
         public string ClubRoute { get; set; }
-        public DateTime? DateCreated { get; set; }
-        public DateTime? DateUpdated { get; set; }
+        public DateTimeOffset? DateCreated { get; set; }
+        public DateTimeOffset? DateUpdated { get; set; }
+        public Uri EntityUri
+        {
+            get { return new Uri($"https://www.stoolball.org.uk/id/club/{ClubId}"); }
+        }
     }
 }

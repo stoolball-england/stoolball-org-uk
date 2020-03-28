@@ -147,6 +147,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Audit\AuditRecord.cs" />
+    <Compile Include="Audit\AuditAction.cs" />
+    <Compile Include="Audit\IAuditRepository.cs" />
+    <Compile Include="Audit\SqlServerAuditRepository.cs" />
     <Compile Include="Migrations\BattingAddTable.cs" />
     <Compile Include="Migrations\BattingTableInitialSchema.cs" />
     <Compile Include="Migrations\BowlingOverAddTable.cs" />
@@ -198,7 +202,9 @@
     <Compile Include="Migrations\TeamAddTable.cs" />
     <Compile Include="Migrations\TeamMatchLocationAddTable.cs" />
     <Compile Include="Migrations\TeamMatchLocationTableInitialSchema.cs" />
+    <Compile Include="Migrations\AuditAddTable.cs" />
     <Compile Include="Migrations\TeamNameAddTable.cs" />
+    <Compile Include="Migrations\AuditTableInitialSchema.cs" />
     <Compile Include="Migrations\TeamNameTableInitialSchema.cs" />
     <Compile Include="Migrations\TeamTableInitialSchema.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
