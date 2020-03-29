@@ -741,6 +741,7 @@
     <Compile Include="App_Data\Models\LoginMember.generated.cs" />
     <Compile Include="App_Data\Models\LogoutMember.generated.cs" />
     <Compile Include="App_Data\Models\ResetPassword.generated.cs" />
+    <Compile Include="App_Data\Models\StoolballRouter.generated.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IRedirectsDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\RedirectsMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\MemberGroupAssignment.cs" />
@@ -765,6 +766,14 @@
     <Compile Include="App_Data\Models\MyAccount.generated.cs" />
     <Compile Include="DependencyInjectionComposer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Clubs\ClubController.cs" />
+    <Compile Include="Routing\ContentFinderComposer.cs" />
+    <Compile Include="Routing\RenderMvcControllerAsync.cs" />
+    <Compile Include="Clubs\ClubViewModel.cs" />
+    <Compile Include="Routing\StoolballRouteContentFinder.cs" />
+    <Compile Include="Routing\BaseViewModel.cs" />
+    <Compile Include="Routing\StoolballRouterController.cs" />
+    <Compile Include="Routing\StoolballRouteType.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="config\imageprocessor\security.config" />
@@ -844,6 +853,7 @@
     <Content Include="Views\Partials\Grid\Editors\Base.cshtml" />
     <Content Include="Views\Partials\Grid\Bootstrap3.cshtml" />
     <Content Include="Views\Partials\Grid\Bootstrap3-Fluid.cshtml" />
+    <Content Include="Views\Club.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -877,9 +887,7 @@
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\MyAccount\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

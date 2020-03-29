@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="Account\CreateMemberSurfaceControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Routing\StoolballRouteContentFinderTests.cs" />
     <Compile Include="UmbracoBaseTest.cs" />
   </ItemGroup>
   <ItemGroup>

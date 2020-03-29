@@ -1,0 +1,33 @@
+﻿using Stoolball.Web.Routing;
+using System;
+using Xunit;
+
+namespace Stoolball.Web.Tests.Routing
+{
+    public class StoolballRouteContentFinderTests
+    {
+        [Theory]
+        [InlineData("https://example.org/club")]
+        [InlineData("https://example.org/club/")]
+        [InlineData("https://example.org/club/example")]
+        [InlineData("https://example.org/CLUB/EXAMPLE")]
+        public void Club_route_should_match(string route)
+        {
+            var requestUrl = new Uri(route);
+
+            var result = StoolballRouteContentFinder.MatchStoolballRouteType(requestUrl);
+
+            Assert.Equal(StoolballRouteType.Club, result);
+        }
+
+        [Fact]
+        public void Other_route_should_not_match()
+        {
+            var requestUrl = new Uri("https://example.org/other");
+
+            var result = StoolballRouteContentFinder.MatchStoolballRouteType(requestUrl);
+
+            Assert.Null(result);
+        }
+    }
+}
