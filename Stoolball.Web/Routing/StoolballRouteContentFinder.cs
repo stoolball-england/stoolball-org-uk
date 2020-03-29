@@ -1,5 +1,6 @@
 ﻿using System;
 using Umbraco.Core;
+using Umbraco.Web;
 using Umbraco.Web.Routing;
 
 namespace Stoolball.Web.Routing
@@ -10,8 +11,6 @@ namespace Stoolball.Web.Routing
     /// </summary>
     public class StoolballRouteContentFinder : IContentFinder
     {
-        internal const string ROUTE_TYPE_HEADER = "X-Stoolball-Route-Type";
-
         public bool TryFindContent(PublishedRequest request)
         {
             if (request is null)
@@ -24,11 +23,12 @@ namespace Stoolball.Web.Routing
             {
                 // Direct the response to the 'Stoolball router' document type to be handled by StoolballRouterController
                 var router = request.UmbracoContext.Content.GetSingleByXPath("//stoolballRouter");
+
                 if (router != null)
                 {
                     request.PublishedContent = router;
-                    request.Headers.Add(ROUTE_TYPE_HEADER, matchedRouteType.Value.ToString());
-                    return true;
+                    request.TrySetTemplate(matchedRouteType.Value.ToString());
+                    return request.HasTemplate && router.IsAllowedTemplate(request.TemplateAlias);
                 }
             }
 

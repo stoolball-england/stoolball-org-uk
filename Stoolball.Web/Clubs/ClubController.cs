@@ -20,7 +20,7 @@ namespace Stoolball.Web.Clubs
             {
                 Club = new Club { ClubName = Umbraco.AssignedContentItem.Name }
             };
-            return Task.FromResult((ActionResult)View("Club", model));
+            return Task.FromResult(CurrentTemplate(model));
         }
     }
 }
