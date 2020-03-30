@@ -151,6 +151,8 @@
     <Compile Include="Audit\AuditAction.cs" />
     <Compile Include="Audit\IAuditRepository.cs" />
     <Compile Include="Audit\SqlServerAuditRepository.cs" />
+    <Compile Include="Clubs\IClubDataSource.cs" />
+    <Compile Include="Clubs\SqlServerClubDataSource.cs" />
     <Compile Include="Migrations\BattingAddTable.cs" />
     <Compile Include="Migrations\BattingTableInitialSchema.cs" />
     <Compile Include="Migrations\BowlingOverAddTable.cs" />
@@ -161,7 +163,7 @@
     <Compile Include="Migrations\ClubTableInitialSchema.cs" />
     <Compile Include="Migrations\CompetitionAddTable.cs" />
     <Compile Include="Migrations\CompetitionTableInitialSchema.cs" />
-    <Compile Include="Migrations\Constants.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Migrations\MatchAddTable.cs" />
     <Compile Include="Migrations\MatchAwardAddTable.cs" />
     <Compile Include="Migrations\MatchAwardTableInitialSchema.cs" />

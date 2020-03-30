@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
 using Umbraco.Core.Scoping;
-using StoolballMigrations = Stoolball.Umbraco.Data.Migrations;
+using Tables = Stoolball.Umbraco.Data.Constants.Tables;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
@@ -36,8 +36,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				{
 					using (var transaction = database.GetTransaction())
 					{
-						await database.ExecuteAsync($"DELETE FROM {StoolballMigrations.Constants.Tables.ClubName}").ConfigureAwait(false);
-						await database.ExecuteAsync($@"DELETE FROM {StoolballMigrations.Constants.Tables.Club}").ConfigureAwait(false);
+						await database.ExecuteAsync($"DELETE FROM {Tables.ClubName}").ConfigureAwait(false);
+						await database.ExecuteAsync($@"DELETE FROM {Tables.Club}").ConfigureAwait(false);
 						await database.ExecuteAsync($@"DELETE FROM SkybrudRedirects WHERE DestinationUrl LIKE '/club/%'").ConfigureAwait(false);
 						transaction.Complete();
 					}
@@ -88,8 +88,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					var database = scope.Database;
 					using (var transaction = database.GetTransaction())
 					{
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {StoolballMigrations.Constants.Tables.Club} ON").ConfigureAwait(false);
-						await database.ExecuteAsync($@"INSERT INTO {StoolballMigrations.Constants.Tables.Club}
+						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Club} ON").ConfigureAwait(false);
+						await database.ExecuteAsync($@"INSERT INTO {Tables.Club}
 						(ClubId, PlaysOutdoors, PlaysIndoors, Twitter, Facebook, Instagram, ClubMark, HowManyPlayers, ClubRoute)
 						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8)",
 							migratedClub.ClubId,
@@ -101,8 +101,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedClub.ClubMark,
 							migratedClub.HowManyPlayers,
 							migratedClub.ClubRoute).ConfigureAwait(false);
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {StoolballMigrations.Constants.Tables.Club} OFF").ConfigureAwait(false);
-						await database.ExecuteAsync($@"INSERT INTO {StoolballMigrations.Constants.Tables.ClubName} 
+						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Club} OFF").ConfigureAwait(false);
+						await database.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
 							(ClubId, ClubName, FromDate) VALUES (@0, @1, @2)",
 							migratedClub.ClubId,
 							migratedClub.ClubName,

@@ -1,5 +1,4 @@
-﻿using Stoolball.Umbraco.Data.Migrations;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Umbraco.Core.Scoping;
 
 namespace Stoolball.Umbraco.Data.Audit

@@ -1,5 +1,10 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Mvc;
+using Umbraco.Core.Cache;
+using Umbraco.Core.Configuration;
+using Umbraco.Core.Logging;
+using Umbraco.Core.Services;
+using Umbraco.Web;
 using Umbraco.Web.Models;
 using Umbraco.Web.Mvc;
 
@@ -14,6 +19,15 @@ namespace Stoolball.Web.Routing
     /// </summary>
     public abstract class RenderMvcControllerAsync : RenderMvcController
     {
+        public RenderMvcControllerAsync() : base() { }
+        public RenderMvcControllerAsync(IGlobalSettings globalSettings,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            ServiceContext serviceContext,
+            AppCaches appCaches,
+            IProfilingLogger profilingLogger,
+            UmbracoHelper umbracoHelper)
+            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper) { }
+
         [HttpGet]
         public abstract new Task<ActionResult> Index(ContentModel contentModel);
     }
