@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using Umbraco.Core;
 using Umbraco.Web;
 using Umbraco.Web.Routing;
@@ -40,13 +41,13 @@ namespace Stoolball.Web.Routing
         /// </summary>
         /// <param name="requestUrl">The request URL to test</param>
         /// <returns>The stoolball route type matching the URL, or <c>null</c> for no match</returns>
-        public static StoolballRouteType? MatchStoolballRouteType(Uri requestUrl)
+        internal static StoolballRouteType? MatchStoolballRouteType(Uri requestUrl)
         {
             var path = requestUrl.GetAbsolutePathDecoded();
             StoolballRouteType? matchedType = null;
 
-            // Match /club, /club/ or /club/example-club in upper, lower or mixed case
-            if (path.StartsWith("/club", StringComparison.OrdinalIgnoreCase) && (path.Length == 5 || path.Substring(5, 1) == "/"))
+            // Match /club, /club/ or /club/example-club, but not /club/example-club/invalid, in upper, lower or mixed case
+            if (Regex.IsMatch(path, @"^\/club\/?([a-z0-9-]+\/?)?$", RegexOptions.IgnoreCase))
             {
                 matchedType = StoolballRouteType.Club;
             }

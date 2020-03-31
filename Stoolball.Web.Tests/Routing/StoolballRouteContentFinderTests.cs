@@ -10,6 +10,7 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/club")]
         [InlineData("https://example.org/club/")]
         [InlineData("https://example.org/club/example")]
+        [InlineData("https://example.org/club/example-name/")]
         [InlineData("https://example.org/CLUB/EXAMPLE")]
         public void Club_route_should_match(string route)
         {
@@ -20,10 +21,12 @@ namespace Stoolball.Web.Tests.Routing
             Assert.Equal(StoolballRouteType.Club, result);
         }
 
-        [Fact]
-        public void Other_route_should_not_match()
+        [Theory]
+        [InlineData("https://example.org/other")]
+        [InlineData("https://example.org/club/example/invalid")]
+        public void Other_route_should_not_match(string route)
         {
-            var requestUrl = new Uri("https://example.org/other");
+            var requestUrl = new Uri(route);
 
             var result = StoolballRouteContentFinder.MatchStoolballRouteType(requestUrl);
 
