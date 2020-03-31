@@ -1,3 +1,22 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Clubs.ClubViewModel>
 
-<h1>Club: @Model.Club.ClubName</h1>
+<h1>@Model.Club.ClubName</h1>
+
+@*if (count($a_teams) > 0)
+    {
+        echo new TeamListControl($a_teams);
+    }
+
+    if (count($this->matches))
+    {
+        echo new XhtmlElement('h2', 'Matches this season');
+        echo new MatchListControl($this->matches);
+    }
+
+    <p><a href="Model.Club.GetMatchesRssUrl(); ?>" rel="alternate" type="application/rss+xml" class="rss">Subscribe to new or updated matches</a></p>
+*@
+
+@if (Model.Club.ClubMark) {
+<p><img src="/images/logos/clubmark.png" alt="Clubmark accredited" width="150" height="29" /></p>
+<p>This is a <a href="http://www.sportenglandclubmatters.com/club-mark/">Clubmark accredited</a> stoolball club.</p>
+}
