@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Stoolball.Metadata;
+using System;
 using System.Collections.Generic;
 using Umbraco.Core.Models.PublishedContent;
 
@@ -13,7 +14,7 @@ namespace Stoolball.Web.Routing
     /// and not relevant to each view. Inheriting from <see cref="StoolballRouter"/> causes an error. Using this base class
     /// to compose <see cref="StoolballRouter"/> and the actual stoolball data model into a view model works best.
     /// </remarks>
-    public abstract class BaseViewModel : IPublishedContent
+    public abstract partial class BaseViewModel : IPublishedContent, IHasViewMetadata
     {
         private readonly IPublishedContent _contentModel;
 
@@ -22,6 +23,12 @@ namespace Stoolball.Web.Routing
             _contentModel = contentModel;
         }
 
+        /// <summary>
+        /// Gets the metadata for a view
+        /// </summary>
+        public ViewMetadata Metadata { get; } = new ViewMetadata();
+
+        #region Implement IPublishedContent
         public int Id => _contentModel.Id;
 
         public string Name => _contentModel.Name;
@@ -82,5 +89,7 @@ namespace Stoolball.Web.Routing
         {
             return _contentModel.IsPublished(culture);
         }
+
+        #endregion // Implement IPublishedContent
     }
 }

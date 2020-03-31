@@ -1,4 +1,4 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Metadata.IHasViewMetadata>
 @using ClientDependency.Core.Mvc 
 @{
 	Layout = null;
@@ -9,7 +9,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@Model.Name</title>
+    <title>@Model.Metadata.PageTitle – Stoolball England</title>
     @RenderSection("head", false)
     @Html.RenderCssHere()
 </head>

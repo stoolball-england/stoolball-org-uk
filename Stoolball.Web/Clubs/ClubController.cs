@@ -44,7 +44,12 @@ namespace Stoolball.Web.Clubs
             {
                 return new HttpNotFoundResult();
             }
-            else return CurrentTemplate(model);
+            else
+            {
+                model.Metadata.PageTitle = model.Club.ClubName;
+
+                return CurrentTemplate(model);
+            }
         }
     }
 }

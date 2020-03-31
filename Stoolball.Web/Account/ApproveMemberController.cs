@@ -1,8 +1,6 @@
-﻿using Stoolball.Security;
+﻿using Stoolball.Metadata;
+using Stoolball.Security;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -31,7 +29,13 @@ namespace Stoolball.Web.Account
         [HttpGet]
         public override ActionResult Index(ContentModel model)
         {
-            var contentModel = new ApproveMember(model?.Content);
+            var contentModel = new ApproveMember(model?.Content)
+            {
+                Metadata = new ViewMetadata
+                {
+                    PageTitle = model.Content.Name
+                }
+            };
 
             try
             {

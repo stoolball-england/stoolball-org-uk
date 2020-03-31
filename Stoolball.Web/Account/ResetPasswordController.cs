@@ -1,10 +1,6 @@
-﻿using Stoolball.Security;
+﻿using Stoolball.Metadata;
+using Stoolball.Security;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Web;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -21,8 +17,9 @@ namespace Stoolball.Web.Account
     {
         private readonly IVerificationToken _verificationToken;
 
-        public ResetPasswordController(IGlobalSettings globalSettings, IUmbracoContextAccessor umbracoContextAccessor, ServiceContext services, AppCaches appCaches, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IVerificationToken verificationToken) : 
-            base(globalSettings, umbracoContextAccessor, services, appCaches, profilingLogger, umbracoHelper) {
+        public ResetPasswordController(IGlobalSettings globalSettings, IUmbracoContextAccessor umbracoContextAccessor, ServiceContext services, AppCaches appCaches, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IVerificationToken verificationToken) :
+            base(globalSettings, umbracoContextAccessor, services, appCaches, profilingLogger, umbracoHelper)
+        {
             _verificationToken = verificationToken;
         }
 
@@ -32,7 +29,10 @@ namespace Stoolball.Web.Account
         [HttpGet]
         public override ActionResult Index(ContentModel model)
         {
-            var contentModel = new ResetPassword(model?.Content);
+            var contentModel = new ResetPassword(model?.Content)
+            {
+                Metadata = new ViewMetadata { PageTitle = model.Content.Name }
+            };
 
             try
             {
@@ -60,36 +60,39 @@ namespace Stoolball.Web.Account
                 else
                 {
                     // Show a message saying the token was not valid
-                    Logger.Info(this.GetType(), $"Password reset token invalid {contentModel.PasswordResetToken}");
+                    Logger.Info(GetType(), $"Password reset token invalid {contentModel.PasswordResetToken}");
                     contentModel.PasswordResetTokenValid = false;
                 }
             }
             catch (FormatException)
             {
                 // Show a message saying the token was not valid
-                Logger.Info(this.GetType(), $"Password reset token invalid {contentModel.PasswordResetToken}");
+                Logger.Info(GetType(), $"Password reset token invalid {contentModel.PasswordResetToken}");
                 contentModel.PasswordResetTokenValid = false;
             }
             return CurrentTemplate(contentModel);
         }
 
         /// <summary>
-        /// This method fires when <see cref="ResetPasswordSurfaceController"/> handles a form submissions.
+        /// This method fires when <see cref="ResetPasswordSurfaceController"/> handles form submissions.
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ResetPassword(ContentModel model)
+        public ActionResult ResetPassword(ContentModel contentModel)
         {
             // Record the presence of a token. This informs the view whether 
             // the password reset request or password update form was submitted.
             // Assume it's valid and this will be checked later, but this is used in the view when 
             // routing an invalid password update form submission.
-            var contentModel = new ResetPassword(model?.Content);
-            contentModel.PasswordResetToken = ReadPasswordResetToken();
-            contentModel.PasswordResetTokenValid = true;
-            return CurrentTemplate(contentModel);
+            var model = new ResetPassword(contentModel?.Content)
+            {
+                Metadata = new ViewMetadata { PageTitle = contentModel.Content.Name }
+            };
+            model.PasswordResetToken = ReadPasswordResetToken();
+            model.PasswordResetTokenValid = true;
+            return CurrentTemplate(model);
         }
     }
 }

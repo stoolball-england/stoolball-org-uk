@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using Stoolball.Metadata;
 
 namespace Umbraco.Web.PublishedModels
 {
-	public partial class ResetPassword
-	{
+    public partial class ResetPassword : IHasViewMetadata
+    {
         /// <summary>
         /// Gets or sets a token presented in the URL
         /// </summary>
@@ -21,5 +18,10 @@ namespace Umbraco.Web.PublishedModels
         /// Gets or sets the name of the newly-approved member
         /// </summary>
         public string MemberName { get; set; }
+
+        /// <summary>
+        /// Gets the metadata for a view
+        /// </summary>
+        public ViewMetadata Metadata { get; set; } = new ViewMetadata();
     }
 }

@@ -727,7 +727,15 @@
   <ItemGroup>
     <Compile Include="Account\ApproveMemberController.cs" />
     <Compile Include="Account\ApproveMember.cs" />
+    <Compile Include="Account\CreateMember.cs" />
+    <Compile Include="Account\CreateMemberController.cs" />
+    <Compile Include="Account\LoginMember.cs" />
+    <Compile Include="Account\LoginMemberController.cs" />
     <Compile Include="Account\LoginMemberSurfaceController.cs" />
+    <Compile Include="Account\LogoutMember.cs" />
+    <Compile Include="Account\LogoutMemberController.cs" />
+    <Compile Include="Account\MyAccount.cs" />
+    <Compile Include="Account\MyAccountController.cs" />
     <Compile Include="Account\MyAccountSurfaceController.cs" />
     <Compile Include="Account\GravatarUrl.cs" />
     <Compile Include="Account\LogoutMemberSurfaceController.cs" />
@@ -765,6 +773,8 @@
     <Compile Include="App_Data\Models\Metadata.generated.cs" />
     <Compile Include="App_Data\Models\MyAccount.generated.cs" />
     <Compile Include="DependencyInjectionComposer.cs" />
+    <Compile Include="HomePage\Home.cs" />
+    <Compile Include="HomePage\HomeController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Clubs\ClubController.cs" />
     <Compile Include="Routing\ContentFinderComposer.cs" />
@@ -887,7 +897,13 @@
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Views\CreateMember\" />
+    <Folder Include="Views\Home\" />
+    <Folder Include="Views\LoginMember\" />
+    <Folder Include="Views\LogoutMember\" />
+    <Folder Include="Views\MyAccount\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
