@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Web;
 
 namespace Stoolball.Web.Account
 {
@@ -26,11 +23,11 @@ namespace Stoolball.Web.Account
         /// <summary>
         /// Size in pixels. Gravatars are square.
         /// </summary>
-        public int Size {  get { return _size; } }
+        public int Size { get { return _size; } }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms", Justification = "<Pending>")]
-        private static Uri BuildGravatarUrl(string emailAddress)
+        private Uri BuildGravatarUrl(string emailAddress)
         {
             if (string.IsNullOrEmpty(emailAddress))
             {
@@ -60,7 +57,7 @@ namespace Stoolball.Web.Account
                 var hashedEmail = sBuilder.ToString();  // Return the hexadecimal string.
 
                 //Return the gravatar URL
-                return new Uri($"https://www.gravatar.com/avatar/{hashedEmail}");
+                return new Uri($"https://s.gravatar.com/avatar/{hashedEmail}?s={Size}");
             }
         }
     }

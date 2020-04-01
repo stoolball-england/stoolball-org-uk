@@ -1,0 +1,33 @@
+{
+  "DefaultTemplate": "umb://template/edb47a3c34b0473b8473a2ebcbf05a00",
+  "AllowedTemplates": [
+    "umb://template/edb47a3c34b0473b8473a2ebcbf05a00"
+  ],
+  "Icon": "icon-palette color-purple",
+  "Thumbnail": "folder.png",
+  "Description": "A reference guide and a tool to check the various layout elements used across the site.",
+  "IsContainer": false,
+  "Permissions": {
+    "AllowVaryingByCulture": false,
+    "AllowVaryingBySegment": false,
+    "AllowedAtRoot": true,
+    "IsElementType": false,
+    "AllowedChildContentTypes": []
+  },
+  "Parent": null,
+  "CompositionContentTypes": [],
+  "PropertyGroups": [],
+  "PropertyTypes": [],
+  "Udi": "umb://document-type/7f362088576942c5a05abf015c074613",
+  "Dependencies": [
+    {
+      "Udi": "umb://template/edb47a3c34b0473b8473a2ebcbf05a00",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Style guide",
+  "Alias": "styleGuide",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
+  "__version": "3.3.0"
+}

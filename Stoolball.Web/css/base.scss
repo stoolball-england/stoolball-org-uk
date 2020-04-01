@@ -17,3 +17,9 @@
     </div>
 */
 .gravatar { flex: 0 0 50px; }
+
+/* Bootstrap removes all styling from tables because they're used in calendars etc. 
+   Bootstrap tables have .table applied but you can't do that in TinyMCE for Umbraco as configured by default.
+   Add some spacing, padding and border to tables until it becomes a problem. */
+table { margin-bottom: $spacer; }
+th, td { padding: $spacer/4; border: 1px solid #777; }

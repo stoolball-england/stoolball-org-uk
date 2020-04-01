@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/StyleGuide.cshtml",
+  "Master": null,
+  "Udi": "umb://template/edb47a3c34b0473b8473a2ebcbf05a00",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/StyleGuide.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Style guide",
+  "Alias": "StyleGuide",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.3.0"
+}

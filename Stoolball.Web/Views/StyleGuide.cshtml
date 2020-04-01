@@ -1,0 +1,100 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.StyleGuide>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using ClientDependency.Core.Mvc;
+@{
+    Html.RequiresCss("~/css/forms.css");
+}
+<h1>@Model.Name</h1>
+<h2>Typography</h2>
+<p>This is a paragraph following an h2, with <strong>bold</strong> and <em>italic</em> formatting.</p>
+<p><img src="/images/logos/clubmark.png" alt="Clubmark accredited" width="150" height="29" /></p>
+<p>This is a <a href="https://example.org">link</a> in a paragraph, below an image in its own paragraph.</p>
+<ul>
+    <li>An unordered list</li>
+    <li>An unordered list</li>
+    <li>An unordered list</li>
+</ul>
+<p>A paragraph before and after lists, and another list:</p>
+<ol>
+    <li>A numbered list</li>
+    <li>A numbered list</li>
+    <li>A numbered list</li>
+</ol>
+<table>
+    <thead>
+        <tr>
+            <th>Table heading</th>
+            <th>Table heading</th>
+            <th>Table heading</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>Table heading</th>
+            <td>Table data</td>
+            <td>Table data</td>
+        </tr>
+        <tr>
+            <td>Table data</td>
+            <td>Table data</td>
+            <td>Table data</td>
+        </tr>
+    </tbody>
+</table>
+<p>A paragraph following a table.</p>
+<h2>Forms</h2>
+<form>
+    <div class="validation-summary-errors">
+        <ul>
+            <li>ASP.NET model-level validation error</li>
+        </ul>
+    </div>
+    <p class="validation-summary-errors">Custom display of an error not from a validator.</p>
+    <div class="form-group">
+        <label for="unvalidated-text-field">Unvalidated text field</label>
+        <input aria-describedby="form-name" class="form-control" id="unvalidated-text-field" name="unvalidated-text-field" required="required" type="text" value="" />
+        <span class="field-validation-valid" data-valmsg-for="unvalidated-text-field" data-valmsg-replace="true" id="form-name"></span>
+    </div>
+    <div class="form-group">
+        <label for="valid-text-field">Valid text field</label>
+        <input aria-describedby="form-name valid-text-field-error" class="form-control is-valid" id="valid-text-field" name="valid-text-field" required="required" type="text" value="" />
+        <span class="field-validation-valid" data-valmsg-for="valid-text-field" data-valmsg-replace="true" id="form-name"></span>
+    </div>
+    <div class="form-group">
+        <label for="invalid-text-field">Invalid text field</label>
+        <input aria-describedby="form-email invalid-text-field-error" autocapitalize="off" autocorrect="off" class="form-control input-validation-error" data-val="true" data-val-required="The field is required." id="invalid-text-field" name="invalid-text-field" required="required" type="text" value="" autocomplete="off" />
+        <span class="field-validation-error" data-valmsg-for="invalid-text-field" data-valmsg-replace="true" id="form-email"><span id="invalid-text-field-error" class="">The text field is required.</span></span>
+    </div>
+    <div class="form-group">
+        <p class="form-label">Account picture</p>
+        <div class="form-row">
+            <div class="col gravatar">
+                <img src="https://s.gravatar.com/avatar/e3b84da4a85b8b6e897d5e04eb8b66ec?s=50" alt="Your account picture from gravatar.com" width="50" height="50" />
+            </div>
+            <div class="col">
+                <p>This is how a gravatar is displayed during editing.</p>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="unvalidated-email-field">Email field</label>
+        <input aria-describedby="form-email" autocapitalize="off" autocorrect="off" class="form-control" data-val="true" data-val-regex="Please enter a valid e-mail address" id="unvalidated-email-field" name="unvalidated-email-field" required="required" type="email" value="" />
+        <span class="field-validation-valid" data-valmsg-for="unvalidated-email-field" data-valmsg-replace="true" id="form-email"></span>
+    </div>
+    <div class="form-group">
+        <label for="unvalidated-password-field">Password field</label>
+        <input aria-describedby="form-password form-password-help" autocapitalize="off" autocorrect="off" class="form-control" data-val="true" data-val-required="The Password field is required." id="unvalidated-password-field" name="unvalidated-password-field" type="password" />
+        <span class="field-validation-valid" data-valmsg-for="unvalidated-password-field" data-valmsg-replace="true" id="form-password"></span>
+    </div>
+    <div class="form-group">
+        <label for="unvalidated-password-field-with-help">Password field</label>
+        <p class="form-text" id="form-new-password-help"><small>Help for the password field</small></p>
+        <input aria-describedby="form-password form-password-help" autocapitalize="off" autocorrect="off" class="form-control" data-val="true" data-val-required="The Password field is required." id="unvalidated-password-field-with-help" name="unvalidated-password-field-with-help" type="password" />
+        <span class="field-validation-valid" data-valmsg-for="unvalidated-password-field-with-help" data-valmsg-replace="true" id="form-password"></span>
+    </div>
+    <button class="btn btn-primary">Button text</button>
+</form>
+<p>Paragraph below a button (outside the form) and above an informational alert.</p>
+<div class="alert alert-info">
+    <p>The text of an informational alert, including a <a href="https://example.org">link</a>.</p>
+</div>
