@@ -145,6 +145,7 @@
       <ActualProductionTransform>$(ProjectDir)Web.live.xdt.config</ActualProductionTransform>
       
       <ContentSecurityPolicy>default-src 'none'; style-src 'self'; script-src 'self'; img-src 'self' data: https://s.gravatar.com/avatar/</ContentSecurityPolicy>
+      <FeaturePolicy>accelerometer 'none';ambient-light-sensor 'none';autoplay 'none';battery 'none';camera 'none';display-capture 'none';document-domain 'none';encrypted-media 'none';execution-while-not-rendered 'none';execution-while-out-of-viewport 'none';fullscreen 'none';geolocation 'none';gyroscope 'none';layout-animations 'none';legacy-image-formats 'none';magnetometer 'none';microphone 'none';midi 'none';navigation-override 'none';oversized-images 'none';payment 'none';picture-in-picture 'none';publickey-credentials 'none';sync-xhr 'none';usb 'none';wake-lock 'none';xr-spatial-tracking 'none'</FeaturePolicy>
     </PropertyGroup>
     <Copy SourceFiles="$(OriginalWebConfig)" DestinationFiles="$(TempWebConfig)" />
     <TransformXml Source="$(TempWebConfig)" Transform="$(ProjectDir)\Web.local.xdt.config" Destination="$(OriginalWebConfig)" StackTrace="true" />
@@ -161,12 +162,26 @@
       MatchExpression="__CONTENT_SECURITY_POLICY__"
       ReplacementText="$(ContentSecurityPolicy)" />
 
+    <ReplaceFileText
+      InputFilename="$(OriginalWebConfig)"
+      OutputFilename="$(OriginalWebConfig)"
+      MatchExpression="__FEATURE_POLICY__"
+      ReplacementText="$(FeaturePolicy)" />
+
+
     <!-- Create $(ActualProductionTransform) file from $(TemplateProductionTransform), 
          replacing tokens in the template, again to avoid duplication in the XDT file -->
+    <Copy SourceFiles="$(TemplateProductionTransform)" DestinationFiles="$(ActualProductionTransform)" />
     <ReplaceFileText
-          InputFilename="$(TemplateProductionTransform)"
+          InputFilename="$(ActualProductionTransform)"
           OutputFilename="$(ActualProductionTransform)"
           MatchExpression="__CONTENT_SECURITY_POLICY__"
           ReplacementText="$(ContentSecurityPolicy)" />
+
+    <ReplaceFileText
+          InputFilename="$(ActualProductionTransform)"
+          OutputFilename="$(ActualProductionTransform)"
+          MatchExpression="__FEATURE_POLICY__"
+          ReplacementText="$(FeaturePolicy)" />
   </Target>
 </Project>
