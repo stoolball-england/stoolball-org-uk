@@ -7,8 +7,8 @@ Push-Location $projectRoot
 
 # Restore NuGet packages and files from those packages.
 nuget restore Stoolball.sln
-robocopy .\packages\UmbracoCms.8.5.4\Content\Views\Partials .\Stoolball.Web\Views\Partials /s
-robocopy .\packages\UmbracoForms.8.3.1\Content\ .\Stoolball.Web /s
+robocopy .\packages\UmbracoCms.8.5.5\Content\Views\Partials .\Stoolball.Web\Views\Partials /s
+robocopy .\packages\UmbracoForms.8.4.0\Content\ .\Stoolball.Web /s
 robocopy .\packages\bootstrap.sass.4.4.1\contentFiles .\Stoolball.Web\ /s
 robocopy .\packages\jQuery.3.0.0\Content .\Stoolball.Web\ /s
 robocopy .\packages\popper.js.1.16.0\content .\Stoolball.Web\ /s
