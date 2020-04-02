@@ -17,6 +17,8 @@
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/ImportGroupsAndMembersController.js",
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/ImportClubsController.js",
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/DeleteClubsController.js",
+    "~/App_Plugins/Stoolball.DataMigration/Dialogs/ImportSchoolsController.js",
+    "~/App_Plugins/Stoolball.DataMigration/Dialogs/DeleteSchoolsController.js",
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/EnsureRedirectsController.js",
     "~/App_Plugins/Stoolball.DataMigration/stoolballResource.js"
   ],

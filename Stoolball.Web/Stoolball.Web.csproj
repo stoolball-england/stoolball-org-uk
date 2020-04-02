@@ -339,12 +339,16 @@
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMembers.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteClubsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMembersController.js" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteSchools.html" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteSchoolsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\EnsureRedirects.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\EnsureRedirectsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportClubs.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportClubsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportGroupsAndMembers.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportGroupsAndMembersController.js" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportSchools.html" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportSchoolsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\lang\en-US.xml" />
     <Content Include="App_Plugins\Stoolball.DataMigration\stoolballResource.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\stoolballResource.test.js" />
@@ -753,6 +757,8 @@
     <Compile Include="App_Data\Models\ResetPassword.generated.cs" />
     <Compile Include="App_Data\Models\StoolballRouter.generated.cs" />
     <Compile Include="App_Data\Models\StyleGuide.generated.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\SchoolMigrationController.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\ISchoolDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IRedirectsDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\RedirectsMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\MemberGroupAssignment.cs" />
@@ -761,6 +767,7 @@
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\ImportedMember.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IClubDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SkybrudRedirectsDataMigrator.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerSchoolDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerClubDataMigrator.cs" />
     <Compile Include="Email\EmailSender.cs" />
     <Compile Include="Email\EmailFormatter.cs" />

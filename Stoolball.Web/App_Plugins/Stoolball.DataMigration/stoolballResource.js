@@ -160,6 +160,41 @@
     },
     deleteClubs: async function() {
       return await this.__deleteApi("ClubMigration/DeleteClubs");
+    },
+    getSchoolsToMigrate: async function(dataSource, apiKey) {
+      const url =
+        "https://" +
+        dataSource +
+        "/data/clubs-api.php?type=schools&key=" +
+        apiKey;
+      return await umbRequestHelper.resourcePromise(
+        $http.get(url),
+        "Failed to retrieve all Stoolball England schools data"
+      );
+    },
+    importSchools: async function(schools, imported, failed) {
+      await this.__postManyToApi(
+        "SchoolMigration/CreateSchool",
+        schools,
+        school => ({
+          SchoolId: school.clubId,
+          SchoolName: school.name,
+          PlaysOutdoors: school.playsOutdoors,
+          PlaysIndoors: school.playsIndoors,
+          Twitter: school.twitterAccount,
+          Facebook: school.facebookUrl,
+          Instagram: school.instagramAccount,
+          HowManyPlayers: school.howManyPlayers,
+          SchoolRoute: school.route,
+          DateCreated: school.dateCreated,
+          DateUpdated: school.dateUpdated
+        }),
+        imported,
+        failed
+      );
+    },
+    deleteSchools: async function() {
+      return await this.__deleteApi("SchoolMigration/DeleteSchools");
     }
   };
 }
