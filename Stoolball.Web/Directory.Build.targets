@@ -3,6 +3,32 @@
   <!-- This file is run automatically when the project is built. 
        https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?view=vs-2019
   -->
+
+  <!-- Utility task to replace text in a file copied from:
+       https://stackoverflow.com/questions/7837644/how-to-replace-string-in-file-using-msbuild 
+  -->
+  <UsingTask TaskName="ReplaceFileText" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <InputFilename ParameterType="System.String" Required="true" />
+      <OutputFilename ParameterType="System.String" Required="true" />
+      <MatchExpression ParameterType="System.String" Required="true" />
+      <ReplacementText ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Core" />
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+            File.WriteAllText(
+                OutputFilename,
+                Regex.Replace(File.ReadAllText(InputFilename), MatchExpression, ReplacementText)
+                );
+          ]]>
+      </Code>
+    </Task>
+  </UsingTask>
   
   <!-- Copy files from NuGet packages that are needed to run but are not restored by NuGet restore. -->
   <Target Name="StoolballCopyFilesFromNuGetPackages" BeforeTargets="AfterBuild">
@@ -112,14 +138,35 @@
   <Target Name="StoolballTransformWebConfig" AfterTargets="StoolballCopyFilesFromUmbracoCloud">
     <!-- Applies changes to Web.config on build from XDT transforms so that the unaltered Web.config 
          can always be copied from the Umbraco Cloud repository. -->
-    <ItemGroup>
-      <OriginalWebConfig Include="$(ProjectDir)\Web.config" />
-      <TempWebConfig Include="$(ProjectDir)\Web.temp.config" />
-      <TempWebConfig2 Include="$(ProjectDir)\Web.temp2.config" />
-    </ItemGroup>
-    <Copy SourceFiles="@(OriginalWebConfig)" DestinationFiles="@(TempWebConfig)" />
-    <TransformXml Source="@(TempWebConfig)" Transform="$(ProjectDir)\Web.local.xdt.config" Destination="@(TempWebConfig2)" StackTrace="true" />
-    <TransformXml Source="@(TempWebConfig2)" Transform="$(ProjectDir)\Secret-DataMigrationApiKey.Web.local.xdt.config" Destination="@(OriginalWebConfig)" StackTrace="true" />
-    <Delete Files="@(TempWebConfig);@(TempWebConfig2)" />
+    <PropertyGroup>
+      <OriginalWebConfig>$(ProjectDir)Web.config</OriginalWebConfig>
+      <TempWebConfig>$(ProjectDir)Web.temp.config</TempWebConfig>
+      <TemplateProductionTransform>$(ProjectDir)Web.live.xdt.template.config</TemplateProductionTransform>
+      <ActualProductionTransform>$(ProjectDir)Web.live.xdt.config</ActualProductionTransform>
+      
+      <ContentSecurityPolicy>default-src 'none'; style-src 'self'; script-src 'self'; img-src 'self' data: https://s.gravatar.com/avatar/</ContentSecurityPolicy>
+    </PropertyGroup>
+    <Copy SourceFiles="$(OriginalWebConfig)" DestinationFiles="$(TempWebConfig)" />
+    <TransformXml Source="$(TempWebConfig)" Transform="$(ProjectDir)\Web.local.xdt.config" Destination="$(OriginalWebConfig)" StackTrace="true" />
+    <Delete Files="$(TempWebConfig)" />
+
+    <Copy SourceFiles="$(OriginalWebConfig)" DestinationFiles="$(TempWebConfig)" />
+    <TransformXml Source="$(TempWebConfig)" Transform="$(ProjectDir)\Secret-DataMigrationApiKey.Web.local.xdt.config" Destination="$(OriginalWebConfig)" StackTrace="true" />
+    <Delete Files="$(TempWebConfig)" />
+
+    <!-- Replace tokens that appear in the generated Web.config, to avoid duplication in the XDT file -->
+    <ReplaceFileText
+      InputFilename="$(OriginalWebConfig)"
+      OutputFilename="$(OriginalWebConfig)"
+      MatchExpression="__CONTENT_SECURITY_POLICY__"
+      ReplacementText="$(ContentSecurityPolicy)" />
+
+    <!-- Create $(ActualProductionTransform) file from $(TemplateProductionTransform), 
+         replacing tokens in the template, again to avoid duplication in the XDT file -->
+    <ReplaceFileText
+          InputFilename="$(TemplateProductionTransform)"
+          OutputFilename="$(ActualProductionTransform)"
+          MatchExpression="__CONTENT_SECURITY_POLICY__"
+          ReplacementText="$(ContentSecurityPolicy)" />
   </Target>
 </Project>

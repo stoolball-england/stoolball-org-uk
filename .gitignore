@@ -392,3 +392,6 @@ UmbracoDeploy*.config
 Stoolball.Web/Web.config
 Secret-*
 *.courier
+
+# Exclude generated files
+Stoolball.Web/Web.live.xdt.config
