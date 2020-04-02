@@ -642,6 +642,7 @@
     <Content Include="config\serilog.config" />
     <Content Include="config\HealthChecks.config" />
     <Content Include="config\BackOfficeTours\getting-started.json" />
+    <Content Include="Directory.Build.targets" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -952,17 +953,6 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Target Name="TransformWebConfig" AfterTargets="BeforeBuild">
-    <ItemGroup>
-      <OriginalWebConfig Include="$(ProjectDir)\Web.config" />
-      <TempWebConfig Include="$(ProjectDir)\Web.temp.config" />
-      <TempWebConfig2 Include="$(ProjectDir)\Web.temp2.config" />
-    </ItemGroup>
-    <Copy SourceFiles="@(OriginalWebConfig)" DestinationFiles="@(TempWebConfig)" />
-    <TransformXml Source="@(TempWebConfig)" Transform="$(ProjectDir)\Web.local.xdt.config" Destination="@(TempWebConfig2)" StackTrace="true" />
-    <TransformXml Source="@(TempWebConfig2)" Transform="$(ProjectDir)\Secret-DataMigrationApiKey.Web.local.xdt.config" Destination="@(OriginalWebConfig)" StackTrace="true" />
-    <Delete Files="@(TempWebConfig);@(TempWebConfig2)" />
-  </Target>
   <Import Project="..\packages\BuildWebCompiler.1.12.405\build\BuildWebCompiler.targets" Condition="Exists('..\packages\BuildWebCompiler.1.12.405\build\BuildWebCompiler.targets')" />
   <Import Project="..\packages\UmbracoCms.8.5.5\build\UmbracoCms.targets" Condition="Exists('..\packages\UmbracoCms.8.5.5\build\UmbracoCms.targets')" />
 </Project>
