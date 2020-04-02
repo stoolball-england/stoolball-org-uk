@@ -1,5 +1,7 @@
 # Getting started
 
+## Recommended software
+
 The following software is recommended to work on this project:
 
 - [Git for Windows](https://git-scm.com/download/win)
@@ -12,15 +14,18 @@ The following software is recommended to work on this project:
 - [Node.js LTS including npm](https://nodejs.org/en/)
 - [Papercut SMTP development server](https://github.com/ChangemakerStudios/Papercut)
 
-Clone this project, open a PowerShell prompt in the cloned folder, and then run the following command. You will need the git repository URL of an Umbraco Cloud project and authentication details to connect to it. This can be an Umbraco Cloud trial account.
+## Clone and run the project
 
-```pwsh
-.\Scripts\Setup-DevelopmentEnvironment.ps1 -UmbracoCloudRepoUrl <url>
-```
+Follow these steps to clone and run the project. You will need the git repository URL and authentication details of an Umbraco Cloud project. If you don't have access to the Umbraco Cloud project for this website, you can use an Umbraco Cloud trial account.
 
-Open `Stoolball.sln` in Visual Studio. Press Ctrl+F5 to run without debugging using IIS Express. This will open the login screen for the Umbraco back office. Login using your Umbraco.io account.
+1. Clone this repository
+2. Clone the Umbraco Cloud git repository into a folder called `.UmbracoCloud` inside the root folder of this repository
+3. Open `Stoolball.sln` in Visual Studio
+4. Press Ctrl+F5 to run without debugging using IIS Express
 
-## Running the project in VS Code
+This will open the login screen for the Umbraco back office. Login using your Umbraco.io account.
+
+### Running the project in Visual Studio Code
 
 Visual Studio is the best tool for editing the .NET Framework code of the project. However, Visual Studio Code is better for editing JavaScript, the AngularJS components of the Umbraco back office, and the Markdown documentation.
 
@@ -58,7 +63,7 @@ Once your branch is merged into `master` run `.\Scripts\Push-UmbracoCloud.ps1` t
 
 `*.config` files sometimes need to contain secrets. You can use XDT transforms to add these to the relevant config file at deploy time using the [Umbraco Cloud per-environment naming convention](https://our.umbraco.com/documentation/Umbraco-Cloud/Set-Up/Config-Transforms/).
 
-Begin the filename with `Secret-` (for example `Secret-MyPassword.{config file name}.{environment}.xdt.config`) and commit it to the `.UmbracoCloud` repository, which is private. It will be copied into this application when you run the scripts above.
+Begin the filename with `Secret-` (for example `Secret-MyPassword.{config file name}.{environment}.xdt.config`) and commit it to the `.UmbracoCloud` repository, which is private. It will be copied into this application when you build.
 
 ## Managing redirects
 

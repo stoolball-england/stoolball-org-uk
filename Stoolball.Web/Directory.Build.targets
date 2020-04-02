@@ -1,7 +1,117 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Target Name="TransformStoolballWebConfig" BeforeTargets="AfterBuild">
-    <Message Text="Running TransformStoolballWebConfig target" />
+  <!-- This file is run automatically when the project is built. 
+       https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?view=vs-2019
+  -->
+  
+  <!-- Copy files from NuGet packages that are needed to run but are not restored by NuGet restore. -->
+  <Target Name="StoolballCopyFilesFromNuGetPackages" BeforeTargets="AfterBuild">
+    <PropertyGroup>
+      <UmbracoVersion>8.5.5</UmbracoVersion>
+      <UmbracoFormsVersion>8.4.0</UmbracoFormsVersion>
+      <BootstrapVersion>4.4.1</BootstrapVersion>
+      <JQueryVersion>3.4.1</JQueryVersion>
+      <PopperVersion>1.16.0</PopperVersion>
+      <SkybrudRedirectsVersion>2.0.3</SkybrudRedirectsVersion>
+    </PropertyGroup>
+    
+    <Error Text="UmbracoCms NuGet package v$(UmbracoVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\jQuery.$(JQueryVersion)\')" />
+    <Error Text="UmbracoForms NuGet package v$(UmbracoFormsVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\jQuery.$(JQueryVersion)\')" />
+    <Error Text="bootstrap.sass NuGet package v$(BootstrapVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\jQuery.$(JQueryVersion)\')" />
+    <Error Text="jQuery NuGet package v$(JQueryVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\jQuery.$(JQueryVersion)\')" />
+    <Error Text="popper.js NuGet package v$(PopperVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\jQuery.$(JQueryVersion)\')" />
+    <Error Text="Skybrud.Umbraco.Redirects NuGet package v$(SkybrudRedirectsVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\jQuery.$(JQueryVersion)\')" />
+
+    <ItemGroup>
+      <FilesFromUmbracoPackage Include="$(SolutionDir)packages\UmbracoCms.$(UmbracoVersion)\Content\Views\Partials\**" />
+      <FilesFromUmbracoFormsPackage Include="$(SolutionDir)packages\UmbracoForms.$(UmbracoFormsVersion)\Content\**" />
+      <FilesFromBootstrapPackage Include="$(SolutionDir)packages\bootstrap.sass.$(BootstrapVersion)\contentFiles\**" />
+      <FilesFromJQueryPackage Include="$(SolutionDir)packages\jQuery.$(JQueryVersion)\Content\**" />
+      <FilesFromPopperPackage Include="$(SolutionDir)packages\popper.js.$(PopperVersion)\Content\**" />
+      <FilesFromSkybrudRedirectsPackage Include="$(SolutionDir)packages\Skybrud.Umbraco.Redirects.$(SkybrudRedirectsVersion)\contentFiles\any\net472\App_Plugins\**" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(FilesFromUmbracoPackage)"
+          DestinationFiles="$(ProjectDir)Views\Partials\%(RecursiveDir)%(Filename)%(Extension)"
+          Condition="!Exists('$(ProjectDir)Views\Partials\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(FilesFromUmbracoFormsPackage)"
+          DestinationFiles="$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)"
+          Condition="!Exists('$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(FilesFromBootstrapPackage)"
+          DestinationFiles="$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)"
+          Condition="!Exists('$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(FilesFromJQueryPackage)"
+          DestinationFiles="$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)"
+          Condition="!Exists('$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(FilesFromPopperPackage)"
+          DestinationFiles="$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)"
+          Condition="!Exists('$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(FilesFromSkybrudRedirectsPackage)"
+          DestinationFiles="$(ProjectDir)App_Plugins\%(RecursiveDir)%(Filename)%(Extension)"
+          Condition="!Exists('$(ProjectDir)App_Plugins\%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>
+
+  <Target Name="StoolballCopyFilesFromUmbracoCloud" BeforeTargets="AfterBuild">
+    <!-- Copy files from the Umbraco Cloud repo to the Stoolball.Web project
+         (Mostly secrets and Umbraco Deploy, which is not available on NuGet yet.) -->
+    <Error Text="Before building this project, clone an Umbraco Cloud git repository into a folder called .UmbracoCloud inside the root folder of this repository. This can be an Umbraco Cloud trial account." Condition="!Exists('$(SolutionDir)\.UmbracoCloud\')" />
+
+    <ItemGroup>
+      <UmbracoCloudUsers Include="$(SolutionDir).UmbracoCloud\data\backoffice\**" />
+      <UmbracoLanguageConfig Include="$(SolutionDir).UmbracoCloud\umbraco\Config\Lang\**" />
+      <UmbracoLicences Include="$(SolutionDir).UmbracoCloud\App_Plugins\UmbracoLicenses\**" />
+      <UmbracoDeploy Include="$(SolutionDir).UmbracoCloud\App_Plugins\Deploy\**" />
+      <UmbracoDeployDLLs Include="$(SolutionDir).UmbracoCloud\bin\Umbraco.Deploy.*" />
+      <UmbracoDeployConfig Include="$(SolutionDir).UmbracoCloud\Config\UmbracoDeploy.*" />
+      <UmbracoConfigFolderSecrets Include="$(SolutionDir).UmbracoCloud\Config\Secret-*.xdt.config" />
+      <UmbracoCloudWebConfig Include="$(SolutionDir).UmbracoCloud\Web.config" />
+      <UmbracoCloudWebConfigSecrets Include="$(SolutionDir).UmbracoCloud\Secret-*.xdt.config" />
+    </ItemGroup>
+
+    <!-- Copy these files if they don't already exist -->
+    <Copy SourceFiles="@(UmbracoCloudUsers)"
+      DestinationFiles="$(ProjectDir)data\backoffice\%(RecursiveDir)%(Filename)%(Extension)"
+      Condition="!Exists('$(ProjectDir)data\backoffice\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(UmbracoLanguageConfig)"
+      DestinationFiles="$(ProjectDir)umbraco\Config\Lang\%(RecursiveDir)%(Filename)%(Extension)"
+      Condition="!Exists('$(ProjectDir)umbraco\Config\Lang\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(UmbracoLicences)"
+      DestinationFiles="$(ProjectDir)App_Plugins\UmbracoLicenses\%(RecursiveDir)%(Filename)%(Extension)"
+      Condition="!Exists('$(ProjectDir)App_Plugins\UmbracoLicenses\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(UmbracoDeploy)"
+      DestinationFiles="$(ProjectDir)App_Plugins\Deploy\%(RecursiveDir)%(Filename)%(Extension)"
+      Condition="!Exists('$(ProjectDir)App_Plugins\Deploy\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(UmbracoDeployDLLs)"
+      DestinationFiles="$(ProjectDir)bin\%(Filename)%(Extension)"
+      Condition="!Exists('$(ProjectDir)bin\%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(UmbracoDeployConfig)"
+      DestinationFiles="$(ProjectDir)config\%(Filename)%(Extension)"
+      Condition="!Exists('$(ProjectDir)config\%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(UmbracoConfigFolderSecrets)"
+      DestinationFiles="$(ProjectDir)config\%(Filename)%(Extension)"
+      Condition="!Exists('$(ProjectDir)config\%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(UmbracoCloudWebConfigSecrets)"
+      DestinationFiles="$(ProjectDir)%(Filename)%(Extension)"
+      Condition="!Exists('$(ProjectDir)%(Filename)%(Extension)')" />
+    
+    <!-- Always overwrite these files with the version from Umbraco Cloud -->
+    <Copy SourceFiles="@(UmbracoCloudWebConfig)"
+      DestinationFiles="$(ProjectDir)%(Filename)%(Extension)" />
+  </Target>
+
+  <Target Name="StoolballTriggerUmbracoDeploySync" BeforeTargets="AfterBuild">
+    <!-- Create a 0-byte file that Umbraco Deploy looks for to trigger a sync of 
+         the *.uda files on disk into the Umbraco database -->
+    <Touch Files="$(ProjectDir)data/deploy" AlwaysCreate="true">
+      <Output
+          TaskParameter="TouchedFiles"
+          ItemName="FilesTouched"/>
+    </Touch>
+  </Target>
+
+  <Target Name="StoolballTransformWebConfig" AfterTargets="StoolballCopyFilesFromUmbracoCloud">
+    <!-- Applies changes to Web.config on build from XDT transforms so that the unaltered Web.config 
+         can always be copied from the Umbraco Cloud repository. -->
     <ItemGroup>
       <OriginalWebConfig Include="$(ProjectDir)\Web.config" />
       <TempWebConfig Include="$(ProjectDir)\Web.temp.config" />
