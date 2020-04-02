@@ -1,8 +1,8 @@
 # Routing for stoolball pages
 
-Umbraco routes URLs for its content nodes automatically. However, Umbraco Cloud has a limit of 500 content nodes, so it's useful to limit those taken up by stoolball entities. It's also useful to have access to the Umbraco context when displaying a stoolball entity.
+Umbraco routes URLs for its content nodes automatically. However, Umbraco Cloud has a limit of 500 content nodes, so it's useful to limit those taken up by stoolball entities (leagues, teams, matches and so on). It's also useful to have access to the Umbraco context when displaying a stoolball entity.
 
-The solution to this is to route all stoolball entity URLs (clubs, teams and matches and so on) through one Umbraco content node, based on the 'Stoolball router' document type. This content node must be created at the root of the Content section in the Umbraco back office.
+The solution to this is to route all stoolball entity URLs through one Umbraco content node, based on the 'Stoolball router' document type. This content node must be created at the root of the Content section in the Umbraco back office.
 
 ## How stoolball URLs are routed to a controller
 

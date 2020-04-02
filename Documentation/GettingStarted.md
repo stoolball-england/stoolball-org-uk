@@ -12,15 +12,31 @@ The following software is recommended to work on this project:
 - [Node.js LTS including npm](https://nodejs.org/en/)
 - [Papercut SMTP development server](https://github.com/ChangemakerStudios/Papercut)
 
-Clone this project, then open a PowerShell prompt in the cloned folder, and then run the following command. You will need the git repository URL of an Umbraco Cloud project and authentication details to connect to it. This can be an Umbraco Cloud trial account.
+Clone this project, open a PowerShell prompt in the cloned folder, and then run the following command. You will need the git repository URL of an Umbraco Cloud project and authentication details to connect to it. This can be an Umbraco Cloud trial account.
 
 ```pwsh
 .\Scripts\Setup-DevelopmentEnvironment.ps1 -UmbracoCloudRepoUrl <url>
 ```
 
-Open `Stoolball.sln` in Visual Studio. Select the `Stoolball.Web` project and press Ctrl+F5 to run without debugging using IIS Express.
+Open `Stoolball.sln` in Visual Studio. Press Ctrl+F5 to run without debugging using IIS Express. This will open the login screen for the Umbraco back office. Login using your Umbraco.io account.
 
-Click "Open Umbraco" to navigate to the [Umbraco back office](https://localhost:44343/umbraco). Login using your Umbraco.io account.
+## Running the project in VS Code
+
+Visual Studio is the best tool for editing the .NET Framework code of the project. However, Visual Studio Code is better for editing JavaScript, the AngularJS components of the Umbraco back office, and the Markdown documentation.
+
+You need to run Visual Studio (or the equivalent MSBuild command) at least once to build the code, but after that running the project from Visual Studio Code may be useful when working on client-side changes. To enable this install the [IIS Express extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=warren-buckley.iis-express), and create an `iisexpress.json` file in the `.vscode` folder at the root of the repository. Replace `c:\\src` with the path to the repository on your machine:
+
+```json
+{
+  "port": 44343,
+  "path": "c:\\src\\Stoolball.Web",
+  "clr": "v4.0",
+  "protocol": "https",
+  "url": "/umbraco"
+}
+```
+
+You can now use `View > Command Palette > IIS Express: Start Website` to open the Umbraco back office.
 
 ## Starting a new feature or fix
 
