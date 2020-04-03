@@ -15,9 +15,10 @@
       vm.done = false;
       vm.success = null;
 
-      async function deleteMatchLocations() {
-        return await stoolballResource.__deleteApi(
-          "MatchLocationMigration/DeleteMatchLocations"
+      async function deleteMatchLocations(callback) {
+        return await stoolballResource.deleteApi(
+          "MatchLocationMigration/DeleteMatchLocations",
+          callback
         );
       }
 

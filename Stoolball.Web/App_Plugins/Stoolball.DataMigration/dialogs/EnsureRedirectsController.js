@@ -14,11 +14,15 @@
       vm.buttonState = "init";
       vm.done = false;
 
+      async function ensureRedirects() {
+        await stoolballResource.postToApi("RedirectsMigration/EnsureRedirects");
+      }
+
       async function submit() {
         vm.buttonState = "busy";
 
         try {
-          await stoolballResource.ensureRedirects();
+          await ensureRedirects();
 
           vm.done = true;
           vm.buttonState = "success";

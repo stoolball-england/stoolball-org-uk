@@ -4,8 +4,10 @@
   angular
     .module("umbraco")
     .controller("Stoolball.DataMigration.DeleteMemberGroups", function(
+      $http,
       $scope,
-      stoolballResource
+      stoolballResource,
+      umbRequestHelper
     ) {
       let vm = this;
 
@@ -16,18 +18,33 @@
       vm.buttonState = "init";
       vm.done = false;
 
+      function getMemberGroups() {
+        const url =
+          "/umbraco/backoffice/Migration/MemberMigration/MemberGroups";
+        return umbRequestHelper.resourcePromise(
+          $http.get(url),
+          "Failed to retrieve member groups"
+        );
+      }
+
+      async function deleteMemberGroups(groups, deleted) {
+        await stoolballResource.postManyToApi(
+          "MemberMigration/DeleteMemberGroup",
+          groups,
+          group => group,
+          deleted
+        );
+      }
+
       function submit() {
         vm.buttonState = "busy";
 
-        stoolballResource.getMemberGroups().then(async function(groups) {
+        getMemberGroups().then(async function(groups) {
           groups = groups.filter(group => group.Name !== "All Members");
           vm.totalGroups = groups.length;
 
           try {
-            await stoolballResource.deleteMemberGroups(
-              groups,
-              vm.deletedGroups
-            );
+            await deleteMemberGroups(groups, vm.deletedGroups);
             vm.done = true;
             vm.buttonState = "success";
           } catch (e) {

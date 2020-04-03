@@ -16,7 +16,7 @@ describe("stoolballResource", () => {
     "should parse an XSRF token from a cookie",
     (cookie, xsrfToken) => {
       const objectUnderTest = stoolballResource();
-      const result = objectUnderTest.__parseXsrfTokenFromCookie(cookie);
+      const result = objectUnderTest.parseXsrfTokenFromCookie(cookie);
 
       expect(result).toBe(xsrfToken);
     }

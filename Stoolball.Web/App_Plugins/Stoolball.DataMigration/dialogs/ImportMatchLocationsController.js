@@ -29,7 +29,7 @@
         );
       }
       async function importMatchLocations(locations, imported, failed) {
-        await stoolballResource.__postManyToApi(
+        await stoolballResource.postManyToApi(
           "MatchLocationMigration/CreateMatchLocation",
           locations,
           location => ({
@@ -44,8 +44,10 @@
             Postcode: location.postcode,
             Latitude: location.latitude,
             Longitude: location.longitude,
-            GeoPrecision: location.geoPrecision == null ? null : location.geoPrecision-1,
-            MatchLocationNotes: location.directions + location.parking + location.facilities,
+            GeoPrecision:
+              location.geoPrecision == null ? null : location.geoPrecision - 1,
+            MatchLocationNotes:
+              location.directions + location.parking + location.facilities,
             MatchLocationRoute: location.route,
             DateCreated: location.dateCreated,
             DateUpdated: location.dateUpdated

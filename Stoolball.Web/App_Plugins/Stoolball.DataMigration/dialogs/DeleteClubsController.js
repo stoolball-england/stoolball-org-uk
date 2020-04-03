@@ -15,11 +15,18 @@
       vm.done = false;
       vm.success = null;
 
+      async function deleteClubs(callback) {
+        return await stoolballResource.deleteApi(
+          "ClubMigration/DeleteClubs",
+          callback
+        );
+      }
+
       async function submit() {
         vm.buttonState = "busy";
 
         try {
-          await stoolballResource.deleteClubs(result => (vm.success = result));
+          await deleteClubs(result => (vm.success = result));
           vm.done = true;
           vm.buttonState = "success";
         } catch (e) {

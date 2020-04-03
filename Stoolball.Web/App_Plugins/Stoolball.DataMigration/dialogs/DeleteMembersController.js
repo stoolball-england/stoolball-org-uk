@@ -6,7 +6,8 @@
     .controller("Stoolball.DataMigration.DeleteMembers", function(
       $scope,
       entityResource,
-      stoolballResource
+      stoolballResource,
+      memberResource
     ) {
       let vm = this;
 
@@ -17,6 +18,15 @@
       vm.buttonState = "init";
       vm.done = false;
 
+      async function deleteMembers(members, deleted) {
+        await stoolballResource.asyncForEach(members, async member => {
+          await memberResource.deleteByKey(member.key);
+          if (deleted) {
+            deleted.push(member);
+          }
+        });
+      }
+
       function submit() {
         vm.buttonState = "busy";
 
@@ -24,7 +34,7 @@
           vm.totalMembers = members.length;
 
           try {
-            await stoolballResource.deleteMembers(members, vm.deletedMembers);
+            await deleteMembers(members, vm.deletedMembers);
             vm.done = true;
             vm.buttonState = "success";
           } catch (e) {

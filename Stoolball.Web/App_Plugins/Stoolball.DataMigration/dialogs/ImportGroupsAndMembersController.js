@@ -4,8 +4,10 @@
   angular
     .module("umbraco")
     .controller("Stoolball.DataMigration.ImportGroupsAndMembers", function(
+      $http,
       $scope,
-      stoolballResource
+      stoolballResource,
+      umbRequestHelper
     ) {
       let vm = this;
 
@@ -18,6 +20,62 @@
       vm.buttonState = "init";
       vm.processing = false;
       vm.done = false;
+
+      async function getMemberGroupsToMigrate(dataSource, apiKey) {
+        const url =
+          "https://" + dataSource + "/data/roles-api.php?key=" + apiKey;
+        return await umbRequestHelper.resourcePromise(
+          $http.get(url),
+          "Failed to retrieve all Stoolball England role data"
+        );
+      }
+
+      async function getMembersToMigrate(dataSource, apiKey) {
+        const url =
+          "https://" + dataSource + "/data/users-api.php?key=" + apiKey;
+        return await umbRequestHelper.resourcePromise(
+          $http.get(url),
+          "Failed to retrieve all Stoolball England user data"
+        );
+      }
+
+      async function importMemberGroups(groups, imported, failed) {
+        await stoolballResource.postManyToApi(
+          "MemberMigration/CreateMemberGroup",
+          groups,
+          group => ({
+            Name: group.name
+          }),
+          imported,
+          failed
+        );
+      }
+
+      async function importMembers(members, imported) {
+        await stoolballResource.postManyToApi(
+          "MemberMigration/CreateMember",
+          members,
+          member => member,
+          imported
+        );
+      }
+
+      async function assignMembersToGroups(members, groups) {
+        await stoolballResource.asyncForEach(members, async member => {
+          for (let i = 0; i < member.roles.length; i++) {
+            let roleId = member.roles[i];
+            let groupsToAssign = groups.filter(group => group.id == roleId);
+            await stoolballResource.postManyToApi(
+              "MemberMigration/AssignMemberGroup",
+              groupsToAssign,
+              group => ({
+                Email: member.email,
+                GroupName: group.name
+              })
+            );
+          }
+        });
+      }
 
       function submit() {
         vm.buttonState = "busy";
@@ -51,14 +109,8 @@
           vm.processing = true;
           try {
             let [groups, members] = await Promise.all([
-              stoolballResource.getMemberGroupsToMigrate(
-                $scope.model.dataSource,
-                apiKey
-              ),
-              stoolballResource.getMembersToMigrate(
-                $scope.model.dataSource,
-                apiKey
-              )
+              getMemberGroupsToMigrate($scope.model.dataSource, apiKey),
+              getMembersToMigrate($scope.model.dataSource, apiKey)
             ]);
 
             groups = groups.filter(
@@ -69,12 +121,9 @@
             vm.totalGroups = groups.length;
             vm.totalMembers = members.length;
 
-            await stoolballResource.importMemberGroups(
-              groups,
-              vm.importedGroups
-            );
-            await stoolballResource.importMembers(members, vm.importedMembers);
-            await stoolballResource.assignMembersToGroups(members, groups);
+            await importMemberGroups(groups, vm.importedGroups);
+            await importMembers(members, vm.importedMembers);
+            await assignMembersToGroups(members, groups);
 
             vm.done = true;
             vm.buttonState = "success";

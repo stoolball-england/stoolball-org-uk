@@ -15,13 +15,15 @@
       vm.done = false;
       vm.success = null;
 
+      async function deleteSchools(callback) {
+        return await this.deleteApi("SchoolMigration/DeleteSchools", callback);
+      }
+
       async function submit() {
         vm.buttonState = "busy";
 
         try {
-          await stoolballResource.deleteSchools(
-            result => (vm.success = result)
-          );
+          await deleteSchools(result => (vm.success = result));
           vm.done = true;
           vm.buttonState = "success";
         } catch (e) {
