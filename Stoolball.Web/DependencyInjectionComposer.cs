@@ -23,6 +23,7 @@ namespace Stoolball.Web
             // Data migration from the old Stoolball England website
             composition.Register<IClubDataMigrator, SqlServerClubDataMigrator>(Lifetime.Singleton);
             composition.Register<ISchoolDataMigrator, SqlServerSchoolDataMigrator>(Lifetime.Singleton);
+            composition.Register<IMatchLocationDataMigrator, SqlServerMatchLocationDataMigrator>(Lifetime.Singleton);
             composition.Register<IRedirectsDataMigrator, SkybrudRedirectsDataMigrator>(Lifetime.Singleton);
 
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 

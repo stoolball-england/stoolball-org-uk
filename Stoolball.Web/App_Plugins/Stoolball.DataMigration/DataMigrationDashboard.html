@@ -14,14 +14,14 @@
           <div class="umb-box-content">
             <button
               class="btn btn-danger"
-              ng-click="vm.openDialog('Are you sure?', 'DeleteMembers')"
+              ng-click="vm.openDialog('Delete all members - are you sure?', 'DeleteMembers')"
             >
               <i class="icon-trash"></i>
               Delete all members
             </button>
             <button
               class="btn btn-danger"
-              ng-click="vm.openDialog('Are you sure?', 'DeleteMemberGroups')"
+              ng-click="vm.openDialog('Delete all member groups - are you sure?', 'DeleteMemberGroups')"
             >
               <i class="icon-trash"></i>
               Delete all member groups
@@ -51,7 +51,7 @@
           <div class="umb-box-content">
             <button
               class="btn btn-danger"
-              ng-click="vm.openDialog('Are you sure?', 'DeleteClubs')"
+              ng-click="vm.openDialog('Delete all clubs - are you sure?', 'DeleteClubs')"
             >
               <i class="icon-trash"></i>
               Delete all clubs
@@ -69,7 +69,7 @@
           <div class="umb-box-content">
             <button
               class="btn btn-danger"
-              ng-click="vm.openDialog('Are you sure?', 'DeleteSchools')"
+              ng-click="vm.openDialog('Delete all schools - are you sure?', 'DeleteSchools')"
             >
               <i class="icon-trash"></i>
               Delete all schools
@@ -80,6 +80,24 @@
             >
               <i class="icon-arrow-right"></i>
               Import schools
+            </button>
+          </div>
+        </div>
+        <div class="umb-box">
+          <div class="umb-box-content">
+            <button
+              class="btn btn-danger"
+              ng-click="vm.openDialog('Delete all match locations - are you sure?', 'DeleteMatchLocations')"
+            >
+              <i class="icon-trash"></i>
+              Delete all match locations
+            </button>
+            <button
+              class="btn btn-primary"
+              ng-click="vm.openDialog('Import match locations', 'ImportMatchLocations')"
+            >
+              <i class="icon-arrow-right"></i>
+              Import match locations
             </button>
           </div>
         </div>

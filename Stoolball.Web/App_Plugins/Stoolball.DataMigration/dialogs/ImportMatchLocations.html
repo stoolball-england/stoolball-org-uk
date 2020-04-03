@@ -1,6 +1,6 @@
 ﻿<div
   class="data-migration-dialog"
-  ng-controller="Stoolball.DataMigration.ImportClubs as vm"
+  ng-controller="Stoolball.DataMigration.ImportMatchLocations as vm"
 >
   <umb-editor-view>
     <umb-editor-header
@@ -16,7 +16,7 @@
       <umb-box>
         <umb-box-content>
           <p>
-            This will import all stoolball clubs from the old Stoolball England
+            This will import all stoolball match locations from the old Stoolball England
             website into the Umbraco database.
           </p>
 
@@ -33,14 +33,14 @@
       <umb-box ng-if="vm.processing">
         <umb-box-content>
           <div class="umb-panel-group__details-check-name">
-            Importing: {{vm.imported.length}} of {{vm.total}} clubs
+            Importing: {{vm.imported.length}} of {{vm.total}} match locations
           </div>
           <ul class="data-migration-progress">
             <li ng-repeat="item in vm.failed" class="alert alert-error">
-                Failed: {{item.name}}
+                Failed: {{item.saon ? item.saon : item.paon}}, {{item.town}}
             </li>
             <li ng-repeat="item in vm.imported">
-              Imported: {{item.name}}
+              Imported: {{item.saon ? item.saon : item.paon}}, {{item.town}}
             </li>
           </ul>
         </umb-box-content>
@@ -48,7 +48,7 @@
       <umb-box ng-if="vm.done && vm.total === 0">
         <umb-box-content>
           <div class="umb-panel-group__details-check-name">
-            There are no clubs to import.
+            There are no match locations to import.
           </div>
         </umb-box-content>
       </umb-box>
@@ -68,7 +68,7 @@
         <umb-button
           type="button"
           button-style="primary"
-          label="Import clubs"
+          label="Import match locations"
           icon="icon-arrow-right"
           action="vm.submit(model)"
           state="vm.buttonState"
