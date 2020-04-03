@@ -7,11 +7,11 @@ namespace Stoolball.Web.Tests.Routing
     public class StoolballRouteContentFinderTests
     {
         [Theory]
-        [InlineData("https://example.org/club")]
-        [InlineData("https://example.org/club/")]
-        [InlineData("https://example.org/club/example")]
-        [InlineData("https://example.org/club/example-name/")]
-        [InlineData("https://example.org/CLUB/EXAMPLE")]
+        [InlineData("https://example.org/clubs")]
+        [InlineData("https://example.org/clubs/")]
+        [InlineData("https://example.org/clubs/example")]
+        [InlineData("https://example.org/clubs/example-name/")]
+        [InlineData("https://example.org/CLUBS/EXAMPLE")]
         public void Club_route_should_match(string route)
         {
             var requestUrl = new Uri(route);
@@ -23,7 +23,7 @@ namespace Stoolball.Web.Tests.Routing
 
         [Theory]
         [InlineData("https://example.org/other")]
-        [InlineData("https://example.org/club/example/invalid")]
+        [InlineData("https://example.org/clubs/example/invalid")]
         public void Other_route_should_not_match(string route)
         {
             var requestUrl = new Uri(route);

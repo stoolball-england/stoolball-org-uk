@@ -53,7 +53,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				throw;
 			}
 
-			await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/club/").ConfigureAwait(false);
+			await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/clubs/").ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -77,8 +77,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Instagram = club.Instagram,
 				ClubMark = club.ClubMark,
 				HowManyPlayers = club.HowManyPlayers,
-				ClubRoute = "club/" + club.ClubRoute,
-				DateCreated = club.DateCreated.HasValue && club.DateCreated <= club.DateUpdated ? club.DateCreated : System.Data.SqlTypes.SqlDateTime.MinValue.Value
+				ClubRoute = "clubs/" + club.ClubRoute,
+				DateCreated = club.DateCreated.HasValue && club.DateCreated <= club.DateUpdated ? club.DateCreated : System.Data.SqlTypes.SqlDateTime.MinValue.Value,
+				DateUpdated = club.DateUpdated.HasValue && club.DateUpdated >= club.DateCreated ? club.DateUpdated : System.Data.SqlTypes.SqlDateTime.MinValue.Value
 			};
 
 			if (migratedClub.ClubRoute.EndsWith("club", StringComparison.OrdinalIgnoreCase))
@@ -132,9 +133,18 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			{
 				Action = AuditAction.Create,
 				ActorName = nameof(SqlServerClubDataMigrator),
+				EntityUri = club.EntityUri,
+				State = JsonConvert.SerializeObject(club),
+				AuditDate = club.DateCreated.Value
+			}).ConfigureAwait(false);
+
+			await _auditRepository.CreateAudit(new AuditRecord
+			{
+				Action = AuditAction.Update,
+				ActorName = nameof(SqlServerClubDataMigrator),
 				EntityUri = migratedClub.EntityUri,
 				State = JsonConvert.SerializeObject(migratedClub),
-				AuditDate = migratedClub.DateCreated.Value
+				AuditDate = migratedClub.DateUpdated.Value
 			}).ConfigureAwait(false);
 		}
 	}

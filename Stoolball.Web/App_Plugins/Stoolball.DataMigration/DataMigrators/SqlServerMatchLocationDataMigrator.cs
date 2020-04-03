@@ -46,7 +46,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					scope.Complete();
 				}
 
-				await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/location/").ConfigureAwait(false);
+				await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/locations/").ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -80,7 +80,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Longitude = matchLocation.Longitude,
 				GeoPrecision = matchLocation.GeoPrecision,
 				MatchLocationNotes = matchLocation.MatchLocationNotes,
-				MatchLocationRoute = "location" + matchLocation.MatchLocationRoute.Substring(6)
+				MatchLocationRoute = "locations" + matchLocation.MatchLocationRoute.Substring(6),
+				DateCreated = matchLocation.DateCreated,
+				DateUpdated = matchLocation.DateUpdated
 			};
 
 			try
@@ -135,6 +137,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				EntityUri = matchLocation.EntityUri,
 				State = JsonConvert.SerializeObject(matchLocation),
 				AuditDate = matchLocation.DateCreated.Value
+			}).ConfigureAwait(false);
+
+			await _auditRepository.CreateAudit(new AuditRecord
+			{
+				Action = AuditAction.Update,
+				ActorName = nameof(SqlServerMatchLocationDataMigrator),
+				EntityUri = migratedMatchLocation.EntityUri,
+				State = JsonConvert.SerializeObject(migratedMatchLocation),
+				AuditDate = migratedMatchLocation.DateUpdated.Value
 			}).ConfigureAwait(false);
 		}
 	}

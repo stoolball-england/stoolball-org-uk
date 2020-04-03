@@ -24,7 +24,7 @@ namespace Stoolball.Umbraco.Data.Redirects
 				{
 					var database = scope.Database;
 
-					await database.ExecuteAsync($@"DELETE FROM SkybrudRedirects WHERE DestinationUrl LIKE '{destinationPrefix}% '").ConfigureAwait(false);
+					await database.ExecuteAsync($@"DELETE FROM SkybrudRedirects WHERE DestinationUrl LIKE '{destinationPrefix}%'").ConfigureAwait(false);
 
 					scope.Complete();
 				}

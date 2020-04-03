@@ -46,8 +46,8 @@ namespace Stoolball.Web.Routing
             var path = requestUrl.GetAbsolutePathDecoded();
             StoolballRouteType? matchedType = null;
 
-            // Match /club, /club/ or /club/example-club, but not /club/example-club/invalid, in upper, lower or mixed case
-            if (Regex.IsMatch(path, @"^\/club\/?([a-z0-9-]+\/?)?$", RegexOptions.IgnoreCase))
+            // Match /clubs, /clubs/ or /clubs/example-club, but not /clubs/example-club/invalid, in upper, lower or mixed case
+            if (Regex.IsMatch(path, @"^\/clubs\/?([a-z0-9-]+\/?)?$", RegexOptions.IgnoreCase))
             {
                 matchedType = StoolballRouteType.Club;
             }

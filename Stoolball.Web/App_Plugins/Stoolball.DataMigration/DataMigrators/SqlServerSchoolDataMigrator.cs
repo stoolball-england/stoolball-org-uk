@@ -52,6 +52,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				_logger.Error<SqlServerSchoolDataMigrator>(e);
 				throw;
 			}
+
+			await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/schools/").ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -64,6 +66,21 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				throw new System.ArgumentNullException(nameof(school));
 			}
 
+			var migratedSchool = new School
+			{
+				SchoolId = school.SchoolId,
+				SchoolName = school.SchoolName,
+				PlaysOutdoors = school.PlaysOutdoors,
+				PlaysIndoors = school.PlaysIndoors,
+				Twitter = school.Twitter,
+				Facebook = school.Facebook,
+				Instagram = school.Instagram,
+				HowManyPlayers = school.HowManyPlayers,
+				SchoolRoute = "schools" + school.SchoolRoute.Substring(6),
+				DateCreated = school.DateCreated,
+				DateUpdated = school.DateUpdated
+			};
+
 			try
 			{
 				using (var scope = _scopeProvider.CreateScope())
@@ -75,20 +92,20 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 						await database.ExecuteAsync($@"INSERT INTO {Tables.School}
 						(SchoolId, PlaysOutdoors, PlaysIndoors, Twitter, Facebook, Instagram, HowManyPlayers, SchoolRoute)
 						VALUES (@0, @1, @2, @3, @4, @5, @6, @7)",
-							school.SchoolId,
-							school.PlaysOutdoors,
-							school.PlaysIndoors,
-							school.Twitter,
-							school.Facebook,
-							school.Instagram,
-							school.HowManyPlayers,
-							school.SchoolRoute).ConfigureAwait(false);
+							migratedSchool.SchoolId,
+							migratedSchool.PlaysOutdoors,
+							migratedSchool.PlaysIndoors,
+							migratedSchool.Twitter,
+							migratedSchool.Facebook,
+							migratedSchool.Instagram,
+							migratedSchool.HowManyPlayers,
+							migratedSchool.SchoolRoute).ConfigureAwait(false);
 						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.School} OFF").ConfigureAwait(false);
 						await database.ExecuteAsync($@"INSERT INTO {Tables.SchoolName} 
 							(SchoolId, SchoolName, FromDate) VALUES (@0, @1, @2)",
-							school.SchoolId,
-							school.SchoolName,
-							school.DateCreated
+							migratedSchool.SchoolId,
+							migratedSchool.SchoolName,
+							migratedSchool.DateCreated
 							).ConfigureAwait(false);
 						transaction.Complete();
 					}
@@ -102,6 +119,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				throw;
 			}
 
+			await _redirectsRepository.InsertRedirect(school.SchoolRoute, migratedSchool.SchoolRoute, string.Empty).ConfigureAwait(false);
+			await _redirectsRepository.InsertRedirect(school.SchoolRoute, migratedSchool.SchoolRoute, "/matches.rss").ConfigureAwait(false);
+
 			await _auditRepository.CreateAudit(new AuditRecord
 			{
 				Action = AuditAction.Create,
@@ -109,6 +129,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				EntityUri = school.EntityUri,
 				State = JsonConvert.SerializeObject(school),
 				AuditDate = school.DateCreated.Value
+			}).ConfigureAwait(false);
+
+			await _auditRepository.CreateAudit(new AuditRecord
+			{
+				Action = AuditAction.Update,
+				ActorName = nameof(SqlServerSchoolDataMigrator),
+				EntityUri = migratedSchool.EntityUri,
+				State = JsonConvert.SerializeObject(migratedSchool),
+				AuditDate = migratedSchool.DateUpdated.Value
 			}).ConfigureAwait(false);
 		}
 	}

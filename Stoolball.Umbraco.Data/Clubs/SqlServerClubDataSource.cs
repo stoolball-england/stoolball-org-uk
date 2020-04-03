@@ -26,13 +26,13 @@ namespace Stoolball.Umbraco.Data.Clubs
         /// <summary>
         /// Gets a single stoolball club based on its route
         /// </summary>
-        /// <param name="route">club/example-club</param>
+        /// <param name="route">clubs/example-club</param>
         /// <returns>A matching <see cref="Club"/> or <c>null</c> if not found</returns>
         public async Task<Club> ReadClubByRoute(string route)
         {
             try
             {
-                string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "club");
+                string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "clubs");
 
                 using (var scope = _scopeProvider.CreateScope())
                 {
