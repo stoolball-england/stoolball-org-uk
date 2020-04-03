@@ -126,9 +126,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			await _redirectsRepository.InsertRedirect(matchLocation.MatchLocationRoute, migratedMatchLocation.MatchLocationRoute, string.Empty).ConfigureAwait(false);
 			await _redirectsRepository.InsertRedirect(matchLocation.MatchLocationRoute, migratedMatchLocation.MatchLocationRoute, "/matches").ConfigureAwait(false);
 			await _redirectsRepository.InsertRedirect(matchLocation.MatchLocationRoute, migratedMatchLocation.MatchLocationRoute, "/statistics").ConfigureAwait(false);
-			await _redirectsRepository.InsertRedirect(matchLocation.MatchLocationRoute, migratedMatchLocation.MatchLocationRoute, "/calendar").ConfigureAwait(false);
 			await _redirectsRepository.InsertRedirect(matchLocation.MatchLocationRoute, migratedMatchLocation.MatchLocationRoute, "/calendar.ics").ConfigureAwait(false);
-			await _redirectsRepository.InsertRedirect(matchLocation.MatchLocationRoute, migratedMatchLocation.MatchLocationRoute, "/edit").ConfigureAwait(false);
 
 			await _auditRepository.CreateAudit(new AuditRecord
 			{

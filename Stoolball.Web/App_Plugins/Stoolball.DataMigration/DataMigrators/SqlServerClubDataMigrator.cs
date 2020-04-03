@@ -126,7 +126,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			}
 
 			await _redirectsRepository.InsertRedirect(club.ClubRoute, migratedClub.ClubRoute, string.Empty).ConfigureAwait(false);
-			await _redirectsRepository.InsertRedirect(club.ClubRoute, migratedClub.ClubRoute, "/edit").ConfigureAwait(false);
 			await _redirectsRepository.InsertRedirect(club.ClubRoute, migratedClub.ClubRoute, "/matches.rss").ConfigureAwait(false);
 
 			await _auditRepository.CreateAudit(new AuditRecord
