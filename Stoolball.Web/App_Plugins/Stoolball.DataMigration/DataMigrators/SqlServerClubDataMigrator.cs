@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Stoolball.Clubs;
 using Stoolball.Umbraco.Data.Audit;
+using Stoolball.Umbraco.Data.Redirects;
 using System;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
-using Umbraco.Core.Persistence;
 using Umbraco.Core.Scoping;
 using Tables = Stoolball.Umbraco.Data.Constants.Tables;
 
@@ -12,12 +12,14 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
 	public class SqlServerClubDataMigrator : IClubDataMigrator
 	{
+		private readonly IRedirectsRepository _redirectsRepository;
 		private readonly IScopeProvider _scopeProvider;
 		private readonly IAuditRepository _auditRepository;
 		private readonly ILogger _logger;
 
-		public SqlServerClubDataMigrator(IScopeProvider scopeProvider, IAuditRepository auditRepository, ILogger logger)
+		public SqlServerClubDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditRepository auditRepository, ILogger logger)
 		{
+			_redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
 			_scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
 			_auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -29,26 +31,29 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <returns></returns>
 		public async Task DeleteClubs()
 		{
-			using (var scope = _scopeProvider.CreateScope())
+			try
 			{
-				var database = scope.Database;
-				try
+				using (var scope = _scopeProvider.CreateScope())
 				{
+					var database = scope.Database;
+
 					using (var transaction = database.GetTransaction())
 					{
 						await database.ExecuteAsync($"DELETE FROM {Tables.ClubName}").ConfigureAwait(false);
 						await database.ExecuteAsync($@"DELETE FROM {Tables.Club}").ConfigureAwait(false);
-						await database.ExecuteAsync($@"DELETE FROM SkybrudRedirects WHERE DestinationUrl LIKE '/club/%'").ConfigureAwait(false);
 						transaction.Complete();
 					}
+
+					scope.Complete();
 				}
-				catch (Exception e)
-				{
-					_logger.Error<SqlServerClubDataMigrator>(e);
-					throw;
-				}
-				scope.Complete();
 			}
+			catch (Exception e)
+			{
+				_logger.Error<SqlServerClubDataMigrator>(e);
+				throw;
+			}
+
+			await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/club/").ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -108,9 +113,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedClub.ClubName,
 							migratedClub.DateCreated
 							).ConfigureAwait(false);
-						await InsertRedirect(database, club.ClubRoute, migratedClub.ClubRoute, string.Empty).ConfigureAwait(false);
-						await InsertRedirect(database, club.ClubRoute, migratedClub.ClubRoute, "/edit").ConfigureAwait(false);
-						await InsertRedirect(database, club.ClubRoute, migratedClub.ClubRoute, "/matches.rss").ConfigureAwait(false);
 						transaction.Complete();
 					}
 
@@ -123,45 +125,18 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				scope.Complete();
 			}
 
-			try
-			{
-				await _auditRepository.CreateAudit(new AuditRecord
-				{
-					Action = AuditAction.Create,
-					ActorName = nameof(SqlServerClubDataMigrator),
-					EntityUri = migratedClub.EntityUri,
-					State = JsonConvert.SerializeObject(migratedClub),
-					AuditDate = migratedClub.DateCreated.Value
-				}).ConfigureAwait(false);
-			}
-			catch (Exception e)
-			{
-				_logger.Error<SqlServerClubDataMigrator>(e);
-				throw;
-			}
-		}
+			await _redirectsRepository.InsertRedirect(club.ClubRoute, migratedClub.ClubRoute, string.Empty).ConfigureAwait(false);
+			await _redirectsRepository.InsertRedirect(club.ClubRoute, migratedClub.ClubRoute, "/edit").ConfigureAwait(false);
+			await _redirectsRepository.InsertRedirect(club.ClubRoute, migratedClub.ClubRoute, "/matches.rss").ConfigureAwait(false);
 
-		private static async Task InsertRedirect(IUmbracoDatabase database, string originalRoute, string revisedRoute, string routeSuffix)
-		{
-			await database.ExecuteAsync($@"INSERT INTO SkybrudRedirects 
-							([Key], [RootId], [RootKey], [Url], [QueryString], [DestinationType], [DestinationId], [DestinationKey], 
-							 [DestinationUrl], [Created], [Updated], [IsPermanent], [IsRegex], [ForwardQueryString])
-							 VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13)",
-										 Guid.NewGuid().ToString(),
-										 0,
-										 "00000000-0000-0000-0000-000000000000",
-										 "/" + originalRoute + routeSuffix,
-										 string.Empty,
-										 "url",
-										 0,
-										 "00000000-0000-0000-0000-000000000000",
-										 "/" + revisedRoute + routeSuffix,
-										 DateTime.UtcNow,
-										 DateTime.UtcNow,
-										 true,
-										 false,
-										 false
-										 ).ConfigureAwait(false);
+			await _auditRepository.CreateAudit(new AuditRecord
+			{
+				Action = AuditAction.Create,
+				ActorName = nameof(SqlServerClubDataMigrator),
+				EntityUri = migratedClub.EntityUri,
+				State = JsonConvert.SerializeObject(migratedClub),
+				AuditDate = migratedClub.DateCreated.Value
+			}).ConfigureAwait(false);
 		}
 	}
 }

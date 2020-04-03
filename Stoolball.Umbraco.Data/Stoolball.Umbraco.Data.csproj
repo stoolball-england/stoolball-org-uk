@@ -210,6 +210,8 @@
     <Compile Include="Migrations\TeamNameTableInitialSchema.cs" />
     <Compile Include="Migrations\TeamTableInitialSchema.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Redirects\IRedirectsRepository.cs" />
+    <Compile Include="Redirects\SkybrudRedirectsRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Stoolball\Stoolball.csproj">

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Stoolball.Schools;
 using Stoolball.Umbraco.Data.Audit;
+using Stoolball.Umbraco.Data.Redirects;
 using System;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
@@ -11,12 +12,14 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
 	public class SqlServerSchoolDataMigrator : ISchoolDataMigrator
 	{
+		private readonly IRedirectsRepository _redirectsRepository;
 		private readonly IScopeProvider _scopeProvider;
 		private readonly IAuditRepository _auditRepository;
 		private readonly ILogger _logger;
 
-		public SqlServerSchoolDataMigrator(IScopeProvider scopeProvider, IAuditRepository auditRepository, ILogger logger)
+		public SqlServerSchoolDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditRepository auditRepository, ILogger logger)
 		{
+			_redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
 			_scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
 			_auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -28,24 +31,26 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <returns></returns>
 		public async Task DeleteSchools()
 		{
-			using (var scope = _scopeProvider.CreateScope())
+			try
 			{
-				var database = scope.Database;
-				try
+				using (var scope = _scopeProvider.CreateScope())
 				{
+					var database = scope.Database;
+
 					using (var transaction = database.GetTransaction())
 					{
 						await database.ExecuteAsync($"DELETE FROM {Tables.SchoolName}").ConfigureAwait(false);
 						await database.ExecuteAsync($@"DELETE FROM {Tables.School}").ConfigureAwait(false);
 						transaction.Complete();
 					}
+
+					scope.Complete();
 				}
-				catch (Exception e)
-				{
-					_logger.Error<SqlServerSchoolDataMigrator>(e);
-					throw;
-				}
-				scope.Complete();
+			}
+			catch (Exception e)
+			{
+				_logger.Error<SqlServerSchoolDataMigrator>(e);
+				throw;
 			}
 		}
 
@@ -59,9 +64,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				throw new System.ArgumentNullException(nameof(school));
 			}
 
-			using (var scope = _scopeProvider.CreateScope())
+			try
 			{
-				try
+				using (var scope = _scopeProvider.CreateScope())
 				{
 					var database = scope.Database;
 					using (var transaction = database.GetTransaction())
@@ -88,31 +93,23 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 						transaction.Complete();
 					}
 
+					scope.Complete();
 				}
-				catch (Exception e)
-				{
-					_logger.Error<SqlServerSchoolDataMigrator>(e);
-					throw;
-				}
-				scope.Complete();
-			}
-
-			try
-			{
-				await _auditRepository.CreateAudit(new AuditRecord
-				{
-					Action = AuditAction.Create,
-					ActorName = nameof(SqlServerSchoolDataMigrator),
-					EntityUri = school.EntityUri,
-					State = JsonConvert.SerializeObject(school),
-					AuditDate = school.DateCreated.Value
-				}).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
 				_logger.Error<SqlServerSchoolDataMigrator>(e);
 				throw;
 			}
+
+			await _auditRepository.CreateAudit(new AuditRecord
+			{
+				Action = AuditAction.Create,
+				ActorName = nameof(SqlServerSchoolDataMigrator),
+				EntityUri = school.EntityUri,
+				State = JsonConvert.SerializeObject(school),
+				AuditDate = school.DateCreated.Value
+			}).ConfigureAwait(false);
 		}
 	}
 }

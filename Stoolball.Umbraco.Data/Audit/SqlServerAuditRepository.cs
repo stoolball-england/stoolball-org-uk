@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
 
 namespace Stoolball.Umbraco.Data.Audit
@@ -9,10 +11,12 @@ namespace Stoolball.Umbraco.Data.Audit
     public class SqlServerAuditRepository : IAuditRepository
     {
         private readonly IScopeProvider _scopeProvider;
+        private readonly ILogger _logger;
 
-        public SqlServerAuditRepository(IScopeProvider scopeProvider)
+        public SqlServerAuditRepository(IScopeProvider scopeProvider, ILogger logger)
         {
-            _scopeProvider = scopeProvider;
+            _scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -25,21 +29,28 @@ namespace Stoolball.Umbraco.Data.Audit
             {
                 throw new System.ArgumentNullException(nameof(audit));
             }
-
-            using (var scope = _scopeProvider.CreateScope())
+            try
             {
-                await scope.Database.ExecuteAsync($@"INSERT INTO {Constants.Tables.Audit} 
+                using (var scope = _scopeProvider.CreateScope())
+                {
+                    await scope.Database.ExecuteAsync($@"INSERT INTO {Constants.Tables.Audit} 
                 ([MemberKey], [ActorName], [Action], [EntityUri], [State], [AuditDate]) 
                 VALUES (@0, @1, @2, @3, @4, @5)",
-                audit.MemberKey,
-                audit.ActorName,
-                audit.Action.ToString(),
-                audit.EntityUri.ToString(),
-                audit.State,
-                audit.AuditDate.UtcDateTime
-                ).ConfigureAwait(false);
+                    audit.MemberKey,
+                    audit.ActorName,
+                    audit.Action.ToString(),
+                    audit.EntityUri.ToString(),
+                    audit.State,
+                    audit.AuditDate.UtcDateTime
+                    ).ConfigureAwait(false);
 
-                scope.Complete();
+                    scope.Complete();
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Error<SqlServerAuditRepository>(e);
+                throw;
             }
         }
     }

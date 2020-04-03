@@ -2,6 +2,7 @@
 using Stoolball.Security;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Clubs;
+using Stoolball.Umbraco.Data.Redirects;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Stoolball.Web.Clubs;
 using Umbraco.Core;
@@ -31,6 +32,7 @@ namespace Stoolball.Web
             composition.Register<ClubController>(Lifetime.Request);
 
             // Data sources for stoolball data.
+            composition.Register<IRedirectsRepository, SkybrudRedirectsRepository>(Lifetime.Singleton);
             composition.Register<IClubDataSource, SqlServerClubDataSource>(Lifetime.Singleton);
         }
     }
