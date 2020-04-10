@@ -14,5 +14,11 @@ namespace Stoolball.Umbraco.Data.Clubs
         /// <param name="route">clubs/example-club</param>
         /// <returns>A matching <see cref="Club"/> or <c>null</c> if not found</returns>
         Task<Club> ReadClubByRoute(string route);
+
+        /// <summary>
+        /// Gets a single stoolball club based on its id
+        /// </summary>
+        /// <returns>A matching <see cref="Club"/> or <c>null</c> if not found</returns>
+        Task<Club> ReadClubById(int clubId);
     }
 }

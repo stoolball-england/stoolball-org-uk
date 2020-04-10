@@ -24,6 +24,32 @@ namespace Stoolball.Umbraco.Data.Clubs
         }
 
         /// <summary>
+        /// Gets a single stoolball club based on its id
+        /// </summary>
+        /// <returns>A matching <see cref="Club"/> or <c>null</c> if not found</returns>
+        public async Task<Club> ReadClubById(int clubId)
+        {
+            try
+            {
+                using (var scope = _scopeProvider.CreateScope())
+                {
+                    var club = await scope.Database.SingleOrDefaultAsync<Club>(
+                        $@"SELECT c.ClubId, c.ClubRoute
+                           FROM {Constants.Tables.Club} AS c 
+                           WHERE c.ClubId = @0", clubId).ConfigureAwait(false);
+
+                    scope.Complete();
+                    return club;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(typeof(SqlServerClubDataSource), ex);
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Gets a single stoolball club based on its route
         /// </summary>
         /// <param name="route">clubs/example-club</param>

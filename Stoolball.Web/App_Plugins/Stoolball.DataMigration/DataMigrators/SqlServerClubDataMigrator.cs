@@ -39,6 +39,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
 					using (var transaction = database.GetTransaction())
 					{
+						await database.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = NULL").ConfigureAwait(false);
 						await database.ExecuteAsync($"DELETE FROM {Tables.ClubName}").ConfigureAwait(false);
 						await database.ExecuteAsync($@"DELETE FROM {Tables.Club}").ConfigureAwait(false);
 						transaction.Complete();

@@ -761,9 +761,11 @@
     <Compile Include="App_Data\Models\ResetPassword.generated.cs" />
     <Compile Include="App_Data\Models\StoolballRouter.generated.cs" />
     <Compile Include="App_Data\Models\StyleGuide.generated.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\TeamMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\MatchLocationMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\ClubMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\SchoolMigrationController.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\ITeamDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IMatchLocationDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\ISchoolDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IRedirectsDataMigrator.cs" />
@@ -773,6 +775,7 @@
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\ImportedMember.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IClubDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SkybrudRedirectsDataMigrator.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerTeamDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerMatchLocationDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerSchoolDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerClubDataMigrator.cs" />

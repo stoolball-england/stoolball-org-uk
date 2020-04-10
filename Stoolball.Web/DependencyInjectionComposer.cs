@@ -22,10 +22,11 @@ namespace Stoolball.Web
             composition.Register<IRouteNormaliser, RouteNormaliser>(Lifetime.Singleton);
 
             // Data migration from the old Stoolball England website
+            composition.Register<IRedirectsDataMigrator, SkybrudRedirectsDataMigrator>(Lifetime.Singleton);
             composition.Register<IClubDataMigrator, SqlServerClubDataMigrator>(Lifetime.Singleton);
             composition.Register<ISchoolDataMigrator, SqlServerSchoolDataMigrator>(Lifetime.Singleton);
             composition.Register<IMatchLocationDataMigrator, SqlServerMatchLocationDataMigrator>(Lifetime.Singleton);
-            composition.Register<IRedirectsDataMigrator, SkybrudRedirectsDataMigrator>(Lifetime.Singleton);
+            composition.Register<ITeamDataMigrator, SqlServerTeamDataMigrator>(Lifetime.Singleton);
 
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 
             // be injected anywhere except the one place where it's serving a page of content.

@@ -152,6 +152,8 @@
     <Compile Include="Audit\IAuditRepository.cs" />
     <Compile Include="Audit\SqlServerAuditRepository.cs" />
     <Compile Include="Clubs\IClubDataSource.cs" />
+    <Compile Include="Clubs\IClubRepository.cs" />
+    <Compile Include="Clubs\SqlServerClubRepository.cs" />
     <Compile Include="Clubs\SqlServerClubDataSource.cs" />
     <Compile Include="Migrations\BattingAddTable.cs" />
     <Compile Include="Migrations\BattingTableInitialSchema.cs" />

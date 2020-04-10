@@ -39,11 +39,11 @@ namespace Stoolball.Umbraco.Data.Migrations
 
         [Column(nameof(AgeRangeLower))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int AgeRangeLower { get; set; }
+        public int? AgeRangeLower { get; set; }
 
         [Column(nameof(AgeRangeUpper))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int AgeRangeUpper { get; set; }
+        public int? AgeRangeUpper { get; set; }
 
         [Column(nameof(FromDate))]
         [Index(IndexTypes.NonClustered)]
