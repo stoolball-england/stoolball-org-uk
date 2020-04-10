@@ -44,7 +44,7 @@ namespace Stoolball.Routing
                 normalisedRoute = normalisedRoute.Substring(0, normalisedRoute.Substring(normalisedPrefix.Length + 1).IndexOf("/", StringComparison.OrdinalIgnoreCase) + normalisedPrefix.Length + 1);
             }
 
-            return normalisedRoute;
+            return "/" + normalisedRoute;
         }
     }
 }

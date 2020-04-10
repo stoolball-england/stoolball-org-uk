@@ -91,7 +91,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				PlayingTimes = team.PlayingTimes,
 				Cost = team.Cost,
 				MemberGroupId = ReadMemberGroupId(team),
-				TeamRoute = "teams/" + team.TeamRoute,
+				TeamRoute = "/teams/" + team.TeamRoute,
 				DateCreated = team.DateCreated,
 				DateUpdated = team.DateUpdated
 			};

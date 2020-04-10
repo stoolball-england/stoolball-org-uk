@@ -18,7 +18,7 @@ namespace Stoolball.Tests
 
             var result = normaliser.NormaliseRouteToEntity(route, expectedPrefix);
 
-            Assert.Equal("prefix/route-value", result);
+            Assert.Equal("/prefix/route-value", result);
         }
 
         [Theory]

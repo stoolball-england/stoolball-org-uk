@@ -80,7 +80,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Longitude = matchLocation.Longitude,
 				GeoPrecision = matchLocation.GeoPrecision,
 				MatchLocationNotes = matchLocation.MatchLocationNotes,
-				MatchLocationRoute = "locations" + matchLocation.MatchLocationRoute.Substring(6),
+				MatchLocationRoute = "/locations" + matchLocation.MatchLocationRoute.Substring(6),
 				DateCreated = matchLocation.DateCreated,
 				DateUpdated = matchLocation.DateUpdated
 			};

@@ -77,7 +77,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Facebook = school.Facebook,
 				Instagram = school.Instagram,
 				HowManyPlayers = school.HowManyPlayers,
-				SchoolRoute = "schools" + school.SchoolRoute.Substring(6),
+				SchoolRoute = "/schools" + school.SchoolRoute.Substring(6),
 				DateCreated = school.DateCreated,
 				DateUpdated = school.DateUpdated
 			};

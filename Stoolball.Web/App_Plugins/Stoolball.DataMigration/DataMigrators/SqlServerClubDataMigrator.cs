@@ -78,7 +78,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Instagram = club.Instagram,
 				ClubMark = club.ClubMark,
 				HowManyPlayers = club.HowManyPlayers,
-				ClubRoute = "clubs/" + club.ClubRoute,
+				ClubRoute = "/clubs/" + club.ClubRoute,
 				DateCreated = club.DateCreated.HasValue && club.DateCreated <= club.DateUpdated ? club.DateCreated : System.Data.SqlTypes.SqlDateTime.MinValue.Value,
 				DateUpdated = club.DateUpdated.HasValue && club.DateUpdated >= club.DateCreated ? club.DateUpdated : System.Data.SqlTypes.SqlDateTime.MinValue.Value
 			};
