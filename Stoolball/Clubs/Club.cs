@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Stoolball.Teams;
+using System;
+using System.Collections.Generic;
 
 namespace Stoolball.Clubs
 {
@@ -6,6 +8,7 @@ namespace Stoolball.Clubs
     {
         public int? ClubId { get; set; }
         public string ClubName { get; set; }
+        public List<Team> Teams { get; set; }
         public bool? PlaysOutdoors { get; set; }
         public bool? PlaysIndoors { get; set; }
         public string Website { get; set; }

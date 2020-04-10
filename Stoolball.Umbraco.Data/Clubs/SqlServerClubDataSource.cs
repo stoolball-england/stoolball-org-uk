@@ -1,6 +1,7 @@
 ﻿using Stoolball.Clubs;
 using Stoolball.Routing;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
@@ -24,37 +25,11 @@ namespace Stoolball.Umbraco.Data.Clubs
         }
 
         /// <summary>
-        /// Gets a single stoolball club based on its id
-        /// </summary>
-        /// <returns>A matching <see cref="Club"/> or <c>null</c> if not found</returns>
-        public async Task<Club> ReadClubById(int clubId)
-        {
-            try
-            {
-                using (var scope = _scopeProvider.CreateScope())
-                {
-                    var club = await scope.Database.SingleOrDefaultAsync<Club>(
-                        $@"SELECT c.ClubId, c.ClubRoute
-                           FROM {Constants.Tables.Club} AS c 
-                           WHERE c.ClubId = @0", clubId).ConfigureAwait(false);
-
-                    scope.Complete();
-                    return club;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerClubDataSource), ex);
-                throw;
-            }
-        }
-
-        /// <summary>
         /// Gets a single stoolball club based on its route
         /// </summary>
         /// <param name="route">clubs/example-club</param>
         /// <returns>A matching <see cref="Club"/> or <c>null</c> if not found</returns>
-        public async Task<Club> ReadClubByRoute(string route)
+        public Task<Club> ReadClubByRoute(string route)
         {
             try
             {
@@ -62,7 +37,7 @@ namespace Stoolball.Umbraco.Data.Clubs
 
                 using (var scope = _scopeProvider.CreateScope())
                 {
-                    var club = await scope.Database.SingleOrDefaultAsync<Club>(
+                    var club = scope.Database.FetchOneToMany<Club>(x => x.Teams,
                         $@"SELECT c.ClubId, cn.ClubName, c.HowManyPlayers, c.PlaysOutdoors, c.PlaysIndoors,
                            c.Twitter, c.Facebook, c.Instagram, c.YouTube, c.Website, c.ClubMark, c.ClubRoute,
                            tn.TeamName, t.TeamRoute
@@ -70,10 +45,10 @@ namespace Stoolball.Umbraco.Data.Clubs
                            INNER JOIN {Constants.Tables.ClubName} AS cn ON c.ClubId = cn.ClubId
                            LEFT JOIN {Constants.Tables.Team} AS t ON c.ClubId = t.ClubId
                            LEFT JOIN {Constants.Tables.TeamName} AS tn ON t.TeamId = tn.TeamId
-                           WHERE LOWER(c.ClubRoute) = @0 AND cn.UntilDate IS NULL", normalisedRoute).ConfigureAwait(false);
+                           WHERE LOWER(c.ClubRoute) = @0 AND cn.UntilDate IS NULL", normalisedRoute).FirstOrDefault();
 
                     scope.Complete();
-                    return club;
+                    return Task.FromResult(club);
                 }
             }
             catch (Exception ex)

@@ -2,11 +2,8 @@
 
 <h1>@Model.Club.ClubName</h1>
 
-@*if (count($a_teams) > 0)
-    {
-        echo new TeamListControl($a_teams);
-    }
-
+@Html.Partial("_TeamList", Model.Club.Teams)
+@*
     if (count($this->matches))
     {
         echo new XhtmlElement('h2', 'Matches this season');
