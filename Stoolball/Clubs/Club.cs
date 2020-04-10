@@ -8,7 +8,9 @@ namespace Stoolball.Clubs
     {
         public int? ClubId { get; set; }
         public string ClubName { get; set; }
-        public List<Team> Teams { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Setter is needed to build the object with an ORM")]
+        public List<Team> Teams { get; set; } = new List<Team>();
         public bool? PlaysOutdoors { get; set; }
         public bool? PlaysIndoors { get; set; }
         public string Website { get; set; }
