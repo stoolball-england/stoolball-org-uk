@@ -1,6 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.StyleGuide>
 @using ContentModels = Umbraco.Web.PublishedModels;
 @using ClientDependency.Core.Mvc;
+@using Stoolball.Teams
 @{
     Html.RequiresCss("~/css/forms.css");
 }
@@ -98,3 +99,9 @@
 <div class="alert alert-info">
     <p>The text of an informational alert, including a <a href="https://example.org">link</a>.</p>
 </div>
+<h2>Stoolball listings</h2>
+<p>This is a list of teams.</p>
+@Html.Partial("_TeamList", new List<Team> { 
+    new Team { TeamName = "Team A", TeamRoute = "/teams/team-a" }, 
+    new Team { TeamName = "Team B", TeamRoute = "/teams/team-b" } 
+})
