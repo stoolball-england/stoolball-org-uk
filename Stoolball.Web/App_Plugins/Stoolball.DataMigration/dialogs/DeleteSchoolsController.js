@@ -1,9 +1,9 @@
-(function() {
+(function () {
   "use strict";
 
   angular
     .module("umbraco")
-    .controller("Stoolball.DataMigration.DeleteSchools", function(
+    .controller("Stoolball.DataMigration.DeleteSchools", function (
       $scope,
       stoolballResource
     ) {
@@ -16,14 +16,17 @@
       vm.success = null;
 
       async function deleteSchools(callback) {
-        return await this.deleteApi("SchoolMigration/DeleteSchools", callback);
+        return await stoolballResource.deleteApi(
+          "SchoolMigration/DeleteSchools",
+          callback
+        );
       }
 
       async function submit() {
         vm.buttonState = "busy";
 
         try {
-          await deleteSchools(result => (vm.success = result));
+          await deleteSchools((result) => (vm.success = result));
           vm.done = true;
           vm.buttonState = "success";
         } catch (e) {
