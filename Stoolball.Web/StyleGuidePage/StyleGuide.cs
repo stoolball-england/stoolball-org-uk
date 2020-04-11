@@ -8,5 +8,7 @@ namespace Umbraco.Web.PublishedModels
         /// Gets the metadata for a view
         /// </summary>
         public ViewMetadata Metadata { get; set; } = new ViewMetadata();
+
+        public string GoogleMapsApiKey { get; set; }
     }
 }

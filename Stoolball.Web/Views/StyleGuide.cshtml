@@ -4,6 +4,9 @@
 @using Stoolball.Teams
 @{
     Html.RequiresCss("~/css/forms.css");
+    Html.RequiresJs("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey, 50);
+    Html.RequiresJs("/js/maps.js", 90);
+    Html.RequiresJs("/matchlocations/match-location.js");
 }
 <h1>@Model.Name</h1>
 <h2>Typography</h2>
@@ -105,3 +108,6 @@
     new Team { TeamName = "Team A", TeamRoute = "/teams/team-a" }, 
     new Team { TeamName = "Team B", TeamRoute = "/teams/team-b" } 
 })
+<div id="location-map" data-latitude="50.995715487915" data-longitude="0.088866949081421" data-precision="exact" data-title="Maresfield Recreation Ground, Maresfield">
+    <p><a href="https://maps.google.co.uk/?z=16&amp;q=Maresfield+Recreation+Ground%2c+Maresfield@50.995715487915,0.088866949081421&amp;ll=50.995715487915,0.088866949081421">Map of Maresfield Recreation Ground, Maresfield on Google Maps</a></p>
+</div>
