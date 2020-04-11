@@ -38,6 +38,7 @@
             TeamName: team.name,
             Club: { ClubId: team.clubId },
             School: { SchoolId: team.schoolId },
+            MatchLocations: [{ MatchLocationId: team.groundId }],
             TeamType: team.teamType,
             PlayerType: team.playerType,
             Introduction: team.introduction,

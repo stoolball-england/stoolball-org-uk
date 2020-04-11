@@ -20,6 +20,13 @@
     margin-bottom: 0;
 }
 
+/* Where one .umb-box follows another, the bottom margin of the first plus top padding of .umb-box-content
+   creates too much space, so slide the second box up into the margin.
+*/
+.data-migration-dashboard .umb-box + .umb-box {
+    margin-top: -1rem;
+}
+
 /* Restore the original button colour for the primary buttons, which are disabled while busy. 
    They will still appear faded due to the low opacity assigned to disabled buttons.
 */

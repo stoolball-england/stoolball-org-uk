@@ -1,6 +1,8 @@
 ﻿using Stoolball.Clubs;
+using Stoolball.MatchLocations;
 using Stoolball.Schools;
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Stoolball.Teams
@@ -36,6 +38,8 @@ namespace Stoolball.Teams
 
         public Club Club { get; set; }
         public School School { get; set; }
+
+        public List<MatchLocation> MatchLocations { get; internal set; } = new List<MatchLocation>();
         public TeamType TeamType { get; set; }
         public PlayerType PlayerType { get; set; }
         public string Introduction { get; set; }

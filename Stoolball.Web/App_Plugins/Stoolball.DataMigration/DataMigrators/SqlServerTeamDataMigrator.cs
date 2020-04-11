@@ -4,6 +4,7 @@ using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
@@ -45,6 +46,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
 					using (var transaction = database.GetTransaction())
 					{
+						await database.ExecuteAsync($"DELETE FROM {Tables.TeamMatchLocation}").ConfigureAwait(false);
 						await database.ExecuteAsync($"DELETE FROM {Tables.TeamName}").ConfigureAwait(false);
 						await database.ExecuteAsync($@"DELETE FROM {Tables.Team}").ConfigureAwait(false);
 						transaction.Complete();
@@ -95,6 +97,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				DateCreated = team.DateCreated,
 				DateUpdated = team.DateUpdated
 			};
+			migratedTeam.MatchLocations.AddRange(team.MatchLocations);
 
 			if (migratedTeam.TeamRoute.EndsWith("team", StringComparison.OrdinalIgnoreCase))
 			{
@@ -139,6 +142,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedTeam.GenerateComparableName(),
 							migratedTeam.DateCreated
 							).ConfigureAwait(false);
+						if (migratedTeam.MatchLocations.Count > 0)
+						{
+							await database.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} 
+							(TeamId, MatchLocationId, FromDate) VALUES (@0, @1, @2)",
+								migratedTeam.TeamId,
+								migratedTeam.MatchLocations.First().MatchLocationId,
+								migratedTeam.DateCreated
+								).ConfigureAwait(false);
+						}
 						transaction.Complete();
 					}
 
