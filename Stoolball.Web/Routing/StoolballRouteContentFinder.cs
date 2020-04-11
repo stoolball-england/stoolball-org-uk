@@ -52,6 +52,12 @@ namespace Stoolball.Web.Routing
                 matchedType = StoolballRouteType.Club;
             }
 
+            // Match /locations, /locations/ or /locations/example-location, but not /locations/example-locations/invalid, in upper, lower or mixed case
+            else if (Regex.IsMatch(path, @"^\/locations\/?([a-z0-9-]+\/?)?$", RegexOptions.IgnoreCase))
+            {
+                matchedType = StoolballRouteType.MatchLocation;
+            }
+
             return matchedType;
         }
     }

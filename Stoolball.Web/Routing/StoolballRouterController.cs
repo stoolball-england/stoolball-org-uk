@@ -1,4 +1,5 @@
 ﻿using Stoolball.Web.Clubs;
+using Stoolball.Web.MatchLocations;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,7 +17,8 @@ namespace Stoolball.Web.Routing
     public class StoolballRouterController : RenderMvcController
     {
         private readonly Dictionary<StoolballRouteType, Type> _supportedControllers = new Dictionary<StoolballRouteType, Type> {
-            { StoolballRouteType.Club, typeof(ClubController) }
+            { StoolballRouteType.Club, typeof(ClubController) },
+            { StoolballRouteType.MatchLocation, typeof(MatchLocationController) }
         };
 
         [HttpGet]

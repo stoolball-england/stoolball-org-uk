@@ -1,9 +1,16 @@
-﻿using System;
+﻿using Stoolball.Web.Configuration;
+using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Globalization;
 using System.Web.Http;
+using Umbraco.Core;
+using Umbraco.Core.Cache;
+using Umbraco.Core.Configuration;
+using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
+using Umbraco.Core.Persistence;
+using Umbraco.Core.Services;
+using Umbraco.Web;
 using Umbraco.Web.Editors;
 using Umbraco.Web.Models.ContentEditing;
 using Umbraco.Web.Mvc;
@@ -13,9 +20,24 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
     [PluginController("Migration")]
     public class MemberMigrationController : UmbracoAuthorizedJsonController
     {
+        private readonly IApiKeyProvider _apiKeyProvider;
+
+        public MemberMigrationController(IGlobalSettings globalSettings,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            ISqlContext sqlContext,
+            ServiceContext serviceContext,
+            AppCaches appCaches,
+            IProfilingLogger profilingLogger,
+            IRuntimeState runtimeState,
+            UmbracoHelper umbracoHelper,
+            IApiKeyProvider apiKeyProvider) :
+            base(globalSettings, umbracoContextAccessor, sqlContext, serviceContext, appCaches, profilingLogger, runtimeState, umbracoHelper)
+        {
+            _apiKeyProvider = apiKeyProvider ?? throw new ArgumentNullException(nameof(apiKeyProvider));
+        }
+
         [HttpGet]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Static methods aren't exposed as an API")]
-        public string ApiKey() => ConfigurationManager.AppSettings["Stoolball.DataMigrationApiKey"];
+        public string ApiKey() => _apiKeyProvider.GetApiKey("DataMigration");
 
         [HttpPost]
         public void CreateMember(ImportedMember imported)

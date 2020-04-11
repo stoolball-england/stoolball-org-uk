@@ -8,7 +8,6 @@ namespace Stoolball.Clubs
     {
         public int? ClubId { get; set; }
         public string ClubName { get; set; }
-
         public List<Team> Teams { get; internal set; } = new List<Team>();
         public bool? PlaysOutdoors { get; set; }
         public bool? PlaysIndoors { get; set; }

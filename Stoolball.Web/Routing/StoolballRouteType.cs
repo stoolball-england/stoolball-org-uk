@@ -5,6 +5,7 @@
     /// </summary>
     public enum StoolballRouteType
     {
-        Club
+        Club,
+        MatchLocation
     }
 }

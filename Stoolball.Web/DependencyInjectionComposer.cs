@@ -3,9 +3,12 @@ using Stoolball.Security;
 using Stoolball.Umbraco.Data;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Clubs;
+using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Umbraco.Data.Redirects;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Stoolball.Web.Clubs;
+using Stoolball.Web.Configuration;
+using Stoolball.Web.MatchLocations;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
 
@@ -21,6 +24,7 @@ namespace Stoolball.Web
             composition.Register<IVerificationToken, VerificationToken>(Lifetime.Singleton);
             composition.Register<IAuditRepository, SqlServerAuditRepository>(Lifetime.Singleton);
             composition.Register<IRouteNormaliser, RouteNormaliser>(Lifetime.Singleton);
+            composition.Register<IApiKeyProvider, ConfigApiKeyProvider>(Lifetime.Singleton);
 
             // Data migration from the old Stoolball England website
             composition.Register<IRedirectsDataMigrator, SkybrudRedirectsDataMigrator>(Lifetime.Singleton);
@@ -32,11 +36,13 @@ namespace Stoolball.Web
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 
             // be injected anywhere except the one place where it's serving a page of content.
             composition.Register<ClubController>(Lifetime.Request);
+            composition.Register<MatchLocationController>(Lifetime.Request);
 
             // Data sources for stoolball data.
             composition.Register<IDatabaseConnectionFactory, UmbracoDatabaseConnectionFactory>(Lifetime.Singleton);
             composition.Register<IRedirectsRepository, SkybrudRedirectsRepository>(Lifetime.Singleton);
             composition.Register<IClubDataSource, SqlServerClubDataSource>(Lifetime.Singleton);
+            composition.Register<IMatchLocationDataSource, SqlServerMatchLocationDataSource>(Lifetime.Singleton);
         }
     }
 }

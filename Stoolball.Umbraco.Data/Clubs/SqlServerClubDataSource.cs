@@ -28,7 +28,7 @@ namespace Stoolball.Umbraco.Data.Clubs
         /// <summary>
         /// Gets a single stoolball club based on its route
         /// </summary>
-        /// <param name="route">clubs/example-club</param>
+        /// <param name="route">/clubs/example-club</param>
         /// <returns>A matching <see cref="Club"/> or <c>null</c> if not found</returns>
         public async Task<Club> ReadClubByRoute(string route)
         {
@@ -45,7 +45,7 @@ namespace Stoolball.Umbraco.Data.Clubs
                             FROM {Constants.Tables.Club} AS c 
                             INNER JOIN {Constants.Tables.ClubName} AS cn ON c.ClubId = cn.ClubId
                             LEFT JOIN {Constants.Tables.Team} AS t ON c.ClubId = t.ClubId
-                            LEFT JOIN {Constants.Tables.TeamName} AS tn ON t.TeamId = tn.TeamId
+                            LEFT JOIN {Constants.Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             WHERE LOWER(c.ClubRoute) = @Route AND cn.UntilDate IS NULL",
                         (club, team) =>
                         {
