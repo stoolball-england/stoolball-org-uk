@@ -47,6 +47,7 @@ namespace Stoolball.Web.Clubs
             else
             {
                 model.Metadata.PageTitle = model.Club.ClubName;
+                model.Metadata.Description = model.Club.GetDescription();
 
                 return CurrentTemplate(model);
             }

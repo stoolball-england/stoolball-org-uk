@@ -68,5 +68,29 @@ namespace Stoolball.MatchLocations
             }
             return text.ToString();
         }
+
+        /// <summary>
+        /// Gets a description of the match location suitable for including in metadata or search results
+        /// </summary>
+        public string GetDescription()
+        {
+            var description = new StringBuilder(ToString());
+            if (Teams?.Count > 0)
+            {
+                description.Append(" is home to ");
+                for (var i = 0; i < Teams.Count; i++)
+                {
+                    description.Append(Teams[i].TeamName);
+                    if (i < (Teams.Count - 2)) { description.Append(", "); };
+                    if (i == (Teams.Count - 2)) { description.Append(" and "); };
+                }
+                description.Append(".");
+            }
+            else
+            {
+                description.Append(" is not currently home to any teams.");
+            }
+            return description.ToString();
+        }
     }
 }

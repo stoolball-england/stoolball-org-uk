@@ -3,13 +3,14 @@
 @{
 	Layout = null;
     Html.RequiresCss("~/css/base.css", 1);
-}
-<!DOCTYPE html>
+}<!DOCTYPE html>
 <html dir="ltr" lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@Model.Metadata.PageTitle – Stoolball England</title>
+    @if (!string.IsNullOrWhiteSpace(Model.Metadata.Description))
+    {<meta name="description" content="@Model.Metadata.Description" />}
     @RenderSection("head", false)
     @Html.RenderCssHere()
 </head>
