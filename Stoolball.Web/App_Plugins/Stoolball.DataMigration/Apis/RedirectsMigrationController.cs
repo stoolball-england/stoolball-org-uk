@@ -1,4 +1,5 @@
 ﻿using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
@@ -32,9 +33,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public void EnsureRedirects()
+        public async Task<IHttpActionResult> EnsureRedirects()
         {
-            _redirectsDataMigrator.EnsureRedirects(Umbraco.ContentQuery);
+            await _redirectsDataMigrator.EnsureRedirects(Umbraco.ContentQuery).ConfigureAwait(false);
+            return Ok();
         }
     }
 }

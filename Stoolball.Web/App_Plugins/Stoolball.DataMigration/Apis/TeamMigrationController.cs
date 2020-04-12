@@ -1,6 +1,8 @@
-﻿using Stoolball.Teams;
+﻿using Newtonsoft.Json;
+using Stoolball.Teams;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
@@ -34,20 +36,22 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public void CreateTeam(Team team)
+        public async Task<IHttpActionResult> CreateTeam(Team team)
         {
             if (team is null)
             {
                 throw new ArgumentNullException(nameof(team));
             }
 
-            _teamDataMigrator.MigrateTeam(team);
+            var migrated = await _teamDataMigrator.MigrateTeam(team).ConfigureAwait(false);
+            return Created(new Uri(Request.RequestUri, new Uri(migrated.TeamRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
         }
 
         [HttpDelete]
-        public void DeleteTeams()
+        public async Task<IHttpActionResult> DeleteTeams()
         {
-            _teamDataMigrator.DeleteTeams();
+            await _teamDataMigrator.DeleteTeams().ConfigureAwait(false);
+            return Ok();
         }
     }
 }

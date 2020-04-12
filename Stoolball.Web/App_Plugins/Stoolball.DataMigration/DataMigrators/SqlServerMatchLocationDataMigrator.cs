@@ -58,7 +58,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied match location to the database with its existing <see cref="MatchLocation.MatchLocationId"/>
 		/// </summary>
-		public async Task MigrateMatchLocation(MatchLocation matchLocation)
+		public async Task<MatchLocation> MigrateMatchLocation(MatchLocation matchLocation)
 		{
 			if (matchLocation is null)
 			{
@@ -147,6 +147,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				State = JsonConvert.SerializeObject(migratedMatchLocation),
 				AuditDate = migratedMatchLocation.DateUpdated.Value
 			}).ConfigureAwait(false);
+
+			return migratedMatchLocation;
 		}
 	}
 }

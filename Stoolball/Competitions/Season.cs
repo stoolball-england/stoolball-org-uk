@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Stoolball.Competitions
 {
@@ -17,6 +18,8 @@ namespace Stoolball.Competitions
         public int EndYear { get; set; }
 
         public string Introduction { get; set; }
+
+        public List<TeamInSeason> Teams { get; internal set; } = new List<TeamInSeason>();
 
         public string Results { get; set; }
 

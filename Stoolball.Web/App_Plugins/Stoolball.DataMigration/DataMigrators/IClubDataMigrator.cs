@@ -5,7 +5,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
     public interface IClubDataMigrator
     {
-        Task MigrateClub(Club club);
+        Task<Club> MigrateClub(Club club);
         Task DeleteClubs();
     }
 }

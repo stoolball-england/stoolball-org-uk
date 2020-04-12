@@ -1,6 +1,8 @@
-﻿using Stoolball.Competitions;
+﻿using Newtonsoft.Json;
+using Stoolball.Competitions;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
@@ -34,38 +36,42 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public void CreateCompetition(Competition competition)
+        public async Task<IHttpActionResult> CreateCompetition(Competition competition)
         {
             if (competition is null)
             {
                 throw new ArgumentNullException(nameof(competition));
             }
 
-            _competitionDataMigrator.MigrateCompetition(competition);
+            var migrated = await _competitionDataMigrator.MigrateCompetition(competition).ConfigureAwait(false);
+            return Created(new Uri(Request.RequestUri, new Uri(migrated.CompetitionRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
         }
 
         [HttpDelete]
-        public void DeleteCompetitions()
+        public async Task<IHttpActionResult> DeleteCompetitions()
         {
-            _competitionDataMigrator.DeleteCompetitions();
+            await _competitionDataMigrator.DeleteCompetitions().ConfigureAwait(false);
+            return Ok();
         }
 
 
         [HttpPost]
-        public void CreateSeason(Season season)
+        public async Task<IHttpActionResult> CreateSeason(Season season)
         {
             if (season is null)
             {
                 throw new ArgumentNullException(nameof(season));
             }
 
-            _competitionDataMigrator.MigrateSeason(season);
+            var migrated = await _competitionDataMigrator.MigrateSeason(season).ConfigureAwait(false);
+            return Created(new Uri(Request.RequestUri, new Uri(migrated.SeasonRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
         }
 
         [HttpDelete]
-        public void DeleteSeasons()
+        public async Task<IHttpActionResult> DeleteSeasons()
         {
-            _competitionDataMigrator.DeleteSeasons();
+            await _competitionDataMigrator.DeleteSeasons().ConfigureAwait(false);
+            return Ok();
         }
     }
 }

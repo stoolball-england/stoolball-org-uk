@@ -33,10 +33,19 @@
         await stoolballResource.postManyToApi(
           "CompetitionMigration/CreateSeason",
           seasons,
-            (season) => ({
+          (season) => ({
             SeasonId: season.seasonId,
             SeasonName: season.seasonName,
-            Competition: { CompetitionId: season.competitionId, CompetitionRoute: season.competitionRoute },
+            Competition: {
+              CompetitionId: season.competitionId,
+              CompetitionRoute: season.competitionRoute,
+            },
+            Teams: season.teams.map((x) => {
+              return {
+                Team: { TeamId: x.teamId },
+                WithdrawnDate: x.withdrawnDate,
+              };
+            }),
             IsLatestSeason: season.isLatestSeason,
             StartYear: season.startYear,
             EndYear: season.endYear,
@@ -68,11 +77,11 @@
             const seasons = competitions.flatMap((x) => {
               return x.seasons.map((y) => {
                 return {
-                    ...y,
-                    name: x.name + " " + y.name,
-                    seasonName: y.name,
-                    competitionId: x.competitionId,
-                    competitionRoute: x.route
+                  ...y,
+                  name: x.name + " " + y.name,
+                  seasonName: y.name,
+                  competitionId: x.competitionId,
+                  competitionRoute: x.route,
                 };
               });
             });

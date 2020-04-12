@@ -1,4 +1,5 @@
-﻿using Stoolball.Web.Configuration;
+﻿using Newtonsoft.Json;
+using Stoolball.Web.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -40,7 +41,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         public string ApiKey() => _apiKeyProvider.GetApiKey("DataMigration");
 
         [HttpPost]
-        public void CreateMember(ImportedMember imported)
+        public IHttpActionResult CreateMember(ImportedMember imported)
         {
             if (imported is null)
             {
@@ -76,19 +77,21 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
             {
                 Services.MemberService.AssignRole(member.Id, "All Members");
             }
+            return Created(new Uri(Request.RequestUri, new Uri($"/umbraco#/member/member/edit/{member.Key}", UriKind.Relative)), JsonConvert.SerializeObject(member));
         }
 
         [HttpGet]
         public IEnumerable<IMemberGroup> MemberGroups() => Services.MemberGroupService.GetAll();
 
         [HttpPost]
-        public void DeleteMemberGroup(MemberGroup group)
+        public IHttpActionResult DeleteMemberGroup(MemberGroup group)
         {
             Services.MemberGroupService.Delete(group);
+            return Ok();
         }
 
         [HttpPost]
-        public void CreateMemberGroup(MemberGroupSave saveModel)
+        public IHttpActionResult CreateMemberGroup(MemberGroupSave saveModel)
         {
             if (saveModel is null)
             {
@@ -100,15 +103,17 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
 
             if (group == null)
             {
-                Services.MemberGroupService.Save(new MemberGroup
+                group = new MemberGroup
                 {
                     Name = saveModel.Name
-                });
+                };
+                Services.MemberGroupService.Save(group);
             }
+            return Created(new Uri(Request.RequestUri, new Uri($"/umbraco#/member/memberGroups/edit/{group.Id}", UriKind.Relative)), JsonConvert.SerializeObject(group));
         }
 
         [HttpPost]
-        public void AssignMemberGroup(MemberGroupAssignment assignment)
+        public IHttpActionResult AssignMemberGroup(MemberGroupAssignment assignment)
         {
             if (assignment is null)
             {
@@ -120,6 +125,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
             {
                 Services.MemberService.AssignRole(member.Id, assignment.GroupName);
             }
+
+            return Ok();
         }
     }
 }

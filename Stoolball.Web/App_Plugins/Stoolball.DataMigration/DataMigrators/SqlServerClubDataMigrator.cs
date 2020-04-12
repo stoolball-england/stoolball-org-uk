@@ -60,7 +60,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied Club to the database with its existing <see cref="Club.ClubId"/>
 		/// </summary>
-		public async Task MigrateClub(Club club)
+		public async Task<Club> MigrateClub(Club club)
 		{
 			if (club is null)
 			{
@@ -147,6 +147,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				State = JsonConvert.SerializeObject(migratedClub),
 				AuditDate = migratedClub.DateUpdated.Value
 			}).ConfigureAwait(false);
+
+			return migratedClub;
 		}
 	}
 }

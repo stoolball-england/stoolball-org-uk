@@ -60,7 +60,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied School to the database with its existing <see cref="School.SchoolId"/>
 		/// </summary>
-		public async Task MigrateSchool(School school)
+		public async Task<School> MigrateSchool(School school)
 		{
 			if (school is null)
 			{
@@ -140,6 +140,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				State = JsonConvert.SerializeObject(migratedSchool),
 				AuditDate = migratedSchool.DateUpdated.Value
 			}).ConfigureAwait(false);
+
+			return migratedSchool;
 		}
 	}
 }

@@ -1,6 +1,8 @@
-﻿using Stoolball.Clubs;
+﻿using Newtonsoft.Json;
+using Stoolball.Clubs;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
@@ -34,20 +36,22 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public void CreateClub(Club club)
+        public async Task<IHttpActionResult> CreateClub(Club club)
         {
             if (club is null)
             {
                 throw new ArgumentNullException(nameof(club));
             }
 
-            _clubDataMigrator.MigrateClub(club);
+            var migrated = await _clubDataMigrator.MigrateClub(club).ConfigureAwait(false);
+            return Created(new Uri(Request.RequestUri, new Uri(migrated.ClubRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
         }
 
         [HttpDelete]
-        public void DeleteClubs()
+        public async Task<IHttpActionResult> DeleteClubs()
         {
-            _clubDataMigrator.DeleteClubs();
+            await _clubDataMigrator.DeleteClubs().ConfigureAwait(false);
+            return Ok();
         }
     }
 }

@@ -67,7 +67,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied team to the database with its existing <see cref="Team.TeamId"/>
 		/// </summary>
-		public async Task MigrateTeam(Team team)
+		public async Task<Team> MigrateTeam(Team team)
 		{
 			if (team is null)
 			{
@@ -189,6 +189,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					AuditDate = migratedTeam.DateUpdated.Value
 				}).ConfigureAwait(false);
 			}
+
+			return migratedTeam;
 		}
 
 		private int ReadMemberGroupId(Team team)

@@ -1,6 +1,8 @@
-﻿using Stoolball.Schools;
+﻿using Newtonsoft.Json;
+using Stoolball.Schools;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
@@ -34,20 +36,22 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public void CreateSchool(School school)
+        public async Task<IHttpActionResult> CreateSchool(School school)
         {
             if (school is null)
             {
                 throw new ArgumentNullException(nameof(school));
             }
 
-            _schoolDataMigrator.MigrateSchool(school);
+            var migrated = await _schoolDataMigrator.MigrateSchool(school).ConfigureAwait(false);
+            return Created(new Uri(Request.RequestUri, new Uri(migrated.SchoolRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
         }
 
         [HttpDelete]
-        public void DeleteSchools()
+        public async Task<IHttpActionResult> DeleteSchools()
         {
-            _schoolDataMigrator.DeleteSchools();
+            await _schoolDataMigrator.DeleteSchools().ConfigureAwait(false);
+            return Ok();
         }
     }
 }

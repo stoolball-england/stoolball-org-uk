@@ -61,7 +61,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied competition to the database with its existing <see cref="Competition.CompetitionId"/>
 		/// </summary>
-		public async Task MigrateCompetition(Competition competition)
+		public async Task<Competition> MigrateCompetition(Competition competition)
 		{
 			if (competition is null)
 			{
@@ -149,6 +149,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				State = JsonConvert.SerializeObject(migratedCompetition),
 				AuditDate = migratedCompetition.DateUpdated.Value
 			}).ConfigureAwait(false);
+
+			return migratedCompetition;
 		}
 
 		/// <summary>
@@ -165,6 +167,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
 					using (var transaction = database.GetTransaction())
 					{
+						await database.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam}").ConfigureAwait(false);
 						await database.ExecuteAsync($"DELETE FROM {Tables.Season}").ConfigureAwait(false);
 						transaction.Complete();
 					}
@@ -182,7 +185,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied season to the database with its existing <see cref="Season.SeasonId"/>
 		/// </summary>
-		public async Task MigrateSeason(Season season)
+		public async Task<Season> MigrateSeason(Season season)
 		{
 			if (season is null)
 			{
@@ -198,6 +201,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				StartYear = season.StartYear,
 				EndYear = season.EndYear,
 				Introduction = season.Introduction,
+				Teams = season.Teams,
 				Results = season.Results,
 				ShowTable = season.ShowTable,
 				ShowRunsScored = season.ShowRunsScored,
@@ -232,6 +236,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedSeason.ShowRunsConceded,
 							migratedSeason.SeasonRoute).ConfigureAwait(false);
 						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Season} OFF").ConfigureAwait(false);
+						foreach (var teamInSeason in migratedSeason.Teams)
+						{
+							await database.ExecuteAsync($@"INSERT INTO {Tables.SeasonTeam}
+								(SeasonId, TeamId, WithdrawnDate) VALUES (@0, @1, @2)",
+								season.SeasonId,
+								teamInSeason.Team.TeamId,
+								teamInSeason.WithdrawnDate
+								).ConfigureAwait(false);
+						}
 						transaction.Complete();
 					}
 
@@ -266,6 +279,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				State = JsonConvert.SerializeObject(migratedSeason),
 				AuditDate = migratedSeason.DateUpdated.Value
 			}).ConfigureAwait(false);
+
+			return migratedSeason;
 		}
 	}
 }

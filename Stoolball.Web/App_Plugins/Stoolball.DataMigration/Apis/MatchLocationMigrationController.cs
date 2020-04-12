@@ -1,6 +1,8 @@
-﻿using Stoolball.MatchLocations;
+﻿using Newtonsoft.Json;
+using Stoolball.MatchLocations;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
@@ -34,20 +36,22 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public void CreateMatchLocation(MatchLocation matchLocation)
+        public async Task<IHttpActionResult> CreateMatchLocation(MatchLocation matchLocation)
         {
             if (matchLocation is null)
             {
                 throw new ArgumentNullException(nameof(matchLocation));
             }
 
-            _matchLocationDataMigrator.MigrateMatchLocation(matchLocation);
+            var migrated = await _matchLocationDataMigrator.MigrateMatchLocation(matchLocation).ConfigureAwait(false);
+            return Created(new Uri(Request.RequestUri, new Uri(migrated.MatchLocationRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
         }
 
         [HttpDelete]
-        public void DeleteMatchLocations()
+        public async Task<IHttpActionResult> DeleteMatchLocations()
         {
-            _matchLocationDataMigrator.DeleteMatchLocations();
+            await _matchLocationDataMigrator.DeleteMatchLocations().ConfigureAwait(false);
+            return Ok();
         }
     }
 }
