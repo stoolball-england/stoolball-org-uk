@@ -3,6 +3,7 @@ using Stoolball.Competitions;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
@@ -33,6 +34,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		{
 			try
 			{
+				await DeleteSeasons().ConfigureAwait(false);
+
 				using (var scope = _scopeProvider.CreateScope())
 				{
 					var database = scope.Database;
@@ -145,6 +148,123 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				EntityUri = migratedCompetition.EntityUri,
 				State = JsonConvert.SerializeObject(migratedCompetition),
 				AuditDate = migratedCompetition.DateUpdated.Value
+			}).ConfigureAwait(false);
+		}
+
+		/// <summary>
+		/// Clear down all the season data ready for a fresh import
+		/// </summary>
+		/// <returns></returns>
+		public async Task DeleteSeasons()
+		{
+			try
+			{
+				using (var scope = _scopeProvider.CreateScope())
+				{
+					var database = scope.Database;
+
+					using (var transaction = database.GetTransaction())
+					{
+						await database.ExecuteAsync($"DELETE FROM {Tables.Season}").ConfigureAwait(false);
+						transaction.Complete();
+					}
+
+					scope.Complete();
+				}
+			}
+			catch (Exception e)
+			{
+				_logger.Error<SqlServerCompetitionDataMigrator>(e);
+				throw;
+			}
+		}
+
+		/// <summary>
+		/// Save the supplied season to the database with its existing <see cref="Season.SeasonId"/>
+		/// </summary>
+		public async Task MigrateSeason(Season season)
+		{
+			if (season is null)
+			{
+				throw new System.ArgumentNullException(nameof(season));
+			}
+
+			var migratedSeason = new Season
+			{
+				SeasonId = season.SeasonId,
+				SeasonName = season.SeasonName,
+				Competition = season.Competition,
+				IsLatestSeason = season.IsLatestSeason,
+				StartYear = season.StartYear,
+				EndYear = season.EndYear,
+				Introduction = season.Introduction,
+				Results = season.Results,
+				ShowTable = season.ShowTable,
+				ShowRunsScored = season.ShowRunsScored,
+				ShowRunsConceded = season.ShowRunsConceded,
+				SeasonRoute = "/competitions/" + season.Competition.CompetitionRoute + "/" + season.StartYear + (season.EndYear > season.StartYear ? "-" + season.EndYear.ToString(CultureInfo.CurrentCulture).Substring(2) : string.Empty),
+				DateCreated = season.DateCreated <= season.DateUpdated ? season.DateCreated : System.Data.SqlTypes.SqlDateTime.MinValue.Value,
+				DateUpdated = season.DateUpdated >= season.DateCreated ? season.DateUpdated : System.Data.SqlTypes.SqlDateTime.MinValue.Value
+			};
+
+			using (var scope = _scopeProvider.CreateScope())
+			{
+				try
+				{
+					var database = scope.Database;
+					using (var transaction = database.GetTransaction())
+					{
+						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Season} ON").ConfigureAwait(false);
+						await database.ExecuteAsync($@"INSERT INTO {Tables.Season}
+						(SeasonId, SeasonName, CompetitionId, IsLatestSeason, StartYear, EndYear, Introduction, 
+						 Results, ShowTable, ShowRunsScored, ShowRunsConceded, SeasonRoute)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11)",
+							migratedSeason.SeasonId,
+							migratedSeason.SeasonName,
+							migratedSeason.Competition.CompetitionId,
+							migratedSeason.IsLatestSeason,
+							migratedSeason.StartYear,
+							migratedSeason.EndYear,
+							migratedSeason.Introduction,
+							migratedSeason.Results,
+							migratedSeason.ShowTable,
+							migratedSeason.ShowRunsScored,
+							migratedSeason.ShowRunsConceded,
+							migratedSeason.SeasonRoute).ConfigureAwait(false);
+						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Season} OFF").ConfigureAwait(false);
+						transaction.Complete();
+					}
+
+				}
+				catch (Exception e)
+				{
+					_logger.Error<SqlServerCompetitionDataMigrator>(e);
+					throw;
+				}
+				scope.Complete();
+			}
+
+			await _redirectsRepository.InsertRedirect(season.SeasonRoute, migratedSeason.SeasonRoute, string.Empty).ConfigureAwait(false);
+			await _redirectsRepository.InsertRedirect(season.SeasonRoute, migratedSeason.SeasonRoute, "/statistics").ConfigureAwait(false);
+			await _redirectsRepository.InsertRedirect(season.SeasonRoute, migratedSeason.SeasonRoute, "/table").ConfigureAwait(false);
+			await _redirectsRepository.InsertRedirect(season.SeasonRoute, migratedSeason.SeasonRoute, "/map").ConfigureAwait(false);
+
+			await _auditRepository.CreateAudit(new AuditRecord
+			{
+				Action = AuditAction.Create,
+				ActorName = nameof(SqlServerCompetitionDataMigrator),
+				EntityUri = season.EntityUri,
+				State = JsonConvert.SerializeObject(season),
+				AuditDate = season.DateCreated.Value
+			}).ConfigureAwait(false);
+
+			await _auditRepository.CreateAudit(new AuditRecord
+			{
+				Action = AuditAction.Update,
+				ActorName = nameof(SqlServerCompetitionDataMigrator),
+				EntityUri = migratedSeason.EntityUri,
+				State = JsonConvert.SerializeObject(migratedSeason),
+				AuditDate = migratedSeason.DateUpdated.Value
 			}).ConfigureAwait(false);
 		}
 	}

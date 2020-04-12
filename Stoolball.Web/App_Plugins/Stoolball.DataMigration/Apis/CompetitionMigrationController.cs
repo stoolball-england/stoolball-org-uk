@@ -49,5 +49,23 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         {
             _competitionDataMigrator.DeleteCompetitions();
         }
+
+
+        [HttpPost]
+        public void CreateSeason(Season season)
+        {
+            if (season is null)
+            {
+                throw new ArgumentNullException(nameof(season));
+            }
+
+            _competitionDataMigrator.MigrateSeason(season);
+        }
+
+        [HttpDelete]
+        public void DeleteSeasons()
+        {
+            _competitionDataMigrator.DeleteSeasons();
+        }
     }
 }

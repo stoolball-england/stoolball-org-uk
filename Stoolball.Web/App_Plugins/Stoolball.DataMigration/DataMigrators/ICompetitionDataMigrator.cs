@@ -7,5 +7,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
     {
         Task MigrateCompetition(Competition competition);
         Task DeleteCompetitions();
+        Task MigrateSeason(Season season);
+        Task DeleteSeasons();
     }
 }

@@ -25,6 +25,8 @@
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/DeleteTeamsController.js",
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/ImportCompetitionsController.js",
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/DeleteCompetitionsController.js",
+    "~/App_Plugins/Stoolball.DataMigration/Dialogs/ImportSeasonsController.js",
+    "~/App_Plugins/Stoolball.DataMigration/Dialogs/DeleteSeasonsController.js",
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/EnsureRedirectsController.js",
     "~/App_Plugins/Stoolball.DataMigration/stoolballResource.js"
   ],

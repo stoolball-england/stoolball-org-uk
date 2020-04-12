@@ -345,6 +345,8 @@
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMembersController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteSchools.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteSchoolsController.js" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteSeasons.html" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteSeasonsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteTeams.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteTeamsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\EnsureRedirects.html" />
@@ -359,6 +361,8 @@
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportMatchLocationsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportSchools.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportSchoolsController.js" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportSeasons.html" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportSeasonsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportTeams.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportTeamsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\lang\en-US.xml" />
