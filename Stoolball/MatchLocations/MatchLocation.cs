@@ -53,26 +53,40 @@ namespace Stoolball.MatchLocations
                 if (text.Length > 0) text.Append(", ");
                 text.Append(PrimaryAddressableObjectName);
             }
+            var placeName = LocalityOrTown();
+            if (!string.IsNullOrWhiteSpace(placeName))
+            {
+                text.Append(", ").Append(placeName);
+            }
+
+            return text.ToString();
+        }
+
+        /// <summary>
+        /// Get the most useful value of locality or town
+        /// </summary>
+        /// <returns></returns>
+        public string LocalityOrTown()
+        {
             if (!string.IsNullOrWhiteSpace(Town))
             {
-                text.Append(", ");
                 if (!string.IsNullOrWhiteSpace(Locality) && Town.StartsWith("Near ", StringComparison.OrdinalIgnoreCase))
                 {
-                    text.Append(Locality);
+                    return Locality;
                 }
 
                 else
                 {
-                    text.Append(Town);
+                    return Town;
                 }
             }
-            return text.ToString();
+            else return Locality;
         }
 
         /// <summary>
         /// Gets a description of the match location suitable for including in metadata or search results
         /// </summary>
-        public string GetDescription()
+        public string Description()
         {
             var description = new StringBuilder(ToString());
             if (Teams?.Count > 0)

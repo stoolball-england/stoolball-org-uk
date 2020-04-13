@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Umbraco.Core;
 using Umbraco.Web;
@@ -44,21 +45,31 @@ namespace Stoolball.Web.Routing
         internal static StoolballRouteType? MatchStoolballRouteType(Uri requestUrl)
         {
             var path = requestUrl.GetAbsolutePathDecoded();
-            StoolballRouteType? matchedType = null;
 
-            // Match /clubs, /clubs/ or /clubs/example-club, but not /clubs/example-club/invalid, in upper, lower or mixed case
-            if (Regex.IsMatch(path, @"^\/clubs\/?([a-z0-9-]+\/?)?$", RegexOptions.IgnoreCase))
+            var routeTypes = new Dictionary<string, StoolballRouteType>
             {
-                matchedType = StoolballRouteType.Club;
+                { "clubs", StoolballRouteType.Club },
+                { "locations", StoolballRouteType.MatchLocation},
+                { "teams", StoolballRouteType.Team}
+            };
+
+            foreach (var routeType in routeTypes)
+            {
+                if (MatchRouteType(path, routeType.Key))
+                {
+                    return routeType.Value;
+                }
             }
 
-            // Match /locations, /locations/ or /locations/example-location, but not /locations/example-locations/invalid, in upper, lower or mixed case
-            else if (Regex.IsMatch(path, @"^\/locations\/?([a-z0-9-]+\/?)?$", RegexOptions.IgnoreCase))
-            {
-                matchedType = StoolballRouteType.MatchLocation;
-            }
+            return null;
+        }
 
-            return matchedType;
+        /// <summary>
+        /// Match /prefix, /prefix/ or /prefix/example-entity, but not /prefix/example-entity/invalid, in upper, lower or mixed case
+        /// </summary>
+        private static bool MatchRouteType(string path, string expectedPrefix)
+        {
+            return Regex.IsMatch(path, $@"^\/{expectedPrefix}\/?([a-z0-9-]+\/?)?$", RegexOptions.IgnoreCase);
         }
     }
 }

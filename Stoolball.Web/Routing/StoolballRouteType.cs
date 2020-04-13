@@ -6,6 +6,7 @@
     public enum StoolballRouteType
     {
         Club,
-        MatchLocation
+        MatchLocation,
+        Team
     }
 }

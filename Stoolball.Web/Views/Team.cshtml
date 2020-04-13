@@ -1,0 +1,161 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamViewModel>
+@using Stoolball.Teams
+@using Stoolball.Web.Competitions
+
+<h1>@Model.Team.TeamNameLocationAndPlayerType()</h1>
+
+@if (Model.Team.TeamType != TeamType.Once)
+{
+    if (Model.Team.Club != null)
+    {
+        <p>Part of <a href="@Model.Team.Club.ClubRoute">@Model.Team.Club.ClubName</a>.</p>
+    }
+}
+
+@Html.Raw(Model.Team.Introduction)
+
+@{ var whenWhereHeadingRendered = false; }
+@if (Model.Team.TeamType != TeamType.Once && Model.Team.UntilDate.HasValue)
+{
+    whenWhereHeadingRendered = true;
+    <h2>When and where</h2>
+    <p><strong>This team doesn't play any more.</strong></p>
+}
+
+@if (Model.Team.MatchLocations.Count > 0)
+{
+    if (!whenWhereHeadingRendered)
+    {
+        whenWhereHeadingRendered = true;
+        <h2>When and where</h2>
+    }
+    <p>This team plays at <a href="@Model.Team.MatchLocations.First().MatchLocationRoute">@Model.Team.MatchLocations.First()</a>.</p>
+}
+
+@if (Model.Team.TeamType != TeamType.Once && !string.IsNullOrWhiteSpace(Model.Team.PlayingTimes))
+{
+    if (!whenWhereHeadingRendered)
+    {
+        whenWhereHeadingRendered = true;
+        <h2>When and where</h2>
+    }
+    @Html.Raw(Model.Team.PlayingTimes)
+}
+
+@if (Model.Team.TeamType == TeamType.Once)
+{
+    if (!whenWhereHeadingRendered)
+    {
+        whenWhereHeadingRendered = true;
+        <h2>When and where</h2>
+    }
+    @* TODO: "came" should change to "will come" if the match start time > now *@
+    <p>This team came together once to play in a tournament.</p>
+}
+
+@if (Model.Team.TeamType != TeamType.Once)
+{
+    var seasonListModel = new SeasonListViewModel
+    {
+        ShowCompetitionHeading = true
+    };
+    seasonListModel.Competitions.AddRange(Model.Team.Seasons
+        .GroupBy(x => x.Season.Competition.CompetitionId)
+        .Select(seasonsInACompetition =>
+        {
+            var competition = seasonsInACompetition.First().Season.Competition;
+            competition.Seasons.AddRange(seasonsInACompetition.Select(season => season.Season).OrderBy(season => season.SeasonName));
+            return competition;
+        }));
+
+    @Html.Partial("_SeasonList", seasonListModel);
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.Team.Cost))
+{
+    <h2>How much does it cost?</h2>
+    @Html.Raw(Model.Team.Cost)
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.Team.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Team.Website))
+{
+    <h2>Contact details</h2>
+    @Html.Raw(Model.Team.PublicContactDetails)
+
+    if (!string.IsNullOrWhiteSpace(Model.Team.Website))
+    {
+        <p>Visit <a href="@Model.Team.Website">@Model.Team.TeamName's website</a>.</p>
+    }
+}
+
+@if (Model.Team.Club != null && Model.Team.Club.ClubMark)
+{
+    @Html.Partial("_ClubMark")
+}
+
+@if (Model.Team.TeamType != TeamType.Once
+     && Model.Team.TeamType != TeamType.Representative
+     && string.IsNullOrWhiteSpace(Model.Team.PublicContactDetails)
+     && string.IsNullOrWhiteSpace(Model.Team.Website)
+     )
+{
+    // Prompt for more contact information, unless it's a representative team when we don't expect it
+    if (!string.IsNullOrWhiteSpace(Model.Team.PrivateContactDetails))
+    {
+        <p>
+            We may be able to contact this team, but we don't have permission to publish their details.
+            If you'd like to play for them, <a href="/contact">contact us</a> and we'll pass your details on.
+        </p>
+    }
+    else
+    {
+        <p>
+            This team hasn't given us any contact details. If you'd like to play for them, try contacting
+            their opposition teams or the secretary of their league, and ask them to pass on your details.
+        </p>
+    }
+    <p> If you play for this team, please <a href="/teams/add">help us to improve this page</a>.</p>
+}
+@*
+    # Add contact details
+    $s_contact = $team->GetContact();
+    if ($s_contact)
+    {
+        # protect emails before escaping HTML, because it's trying to recognise the actual HTML tags
+        require_once('email/email-address-protector.class.php');
+        $protector = new EmailAddressProtector($this->GetSettings());
+        $s_contact = $protector->ApplyEmailProtection($s_contact, AuthenticationManager::GetUser()->IsSignedIn());
+    }
+
+
+    $club = $this->team->GetClub();
+    if ($club and ($club->GetFacebookUrl() or $club->GetTwitterAccount() or $club->GetInstagramAccount())) {
+        ?>
+        <div class="social screen">
+        <?php
+        if ($club->GetFacebookUrl())
+        {
+        ?>
+            <a href="<?php echo Html::Encode($club->GetFacebookUrl()); ?>" class="facebook-group"><img src="/images/play/find-us-on-facebook.png" alt="Find us on Facebook" width="137" height="22" /></a>
+        <?php
+        }
+        if ($club->GetTwitterAccount()) {
+            ?>
+            <a href="https://twitter.com/<?php echo Html::Encode(substr($club->GetTwitterAccount(), 1)); ?>" class="twitter-follow-button">Follow <?php echo Html::Encode($this->team->GetClub()->GetTwitterAccount()); ?></a>
+            <script src="https://platform.twitter.com/widgets.js"></script>
+            <?php
+        }
+        if ($club->GetInstagramAccount()) {
+            ?>
+            <a href="https://www.instagram.com/<?php echo Html::Encode(trim($club->GetInstagramAccount(),'@')); ?>/?ref=badge" class="instagram"><img src="//badges.instagram.com/static/images/ig-badge-view-24.png" alt="Instagram" /></a>
+            <?php
+        }
+        ?>
+        </div>
+        <?php
+    } else {
+        $this->ShowSocial();
+    }
+
+    ?>
+*@

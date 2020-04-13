@@ -7,18 +7,18 @@ namespace Stoolball.Web.Tests.Routing
     public class StoolballRouteContentFinderTests
     {
         [Theory]
-        [InlineData("https://example.org/clubs")]
-        [InlineData("https://example.org/clubs/")]
-        [InlineData("https://example.org/clubs/example")]
-        [InlineData("https://example.org/clubs/example-name/")]
-        [InlineData("https://example.org/CLUBS/EXAMPLE")]
-        public void Club_route_should_match(string route)
+        [InlineData("https://example.org/clubs", StoolballRouteType.Club)]
+        [InlineData("https://example.org/teams/", StoolballRouteType.Team)]
+        [InlineData("https://example.org/locations/example", StoolballRouteType.MatchLocation)]
+        [InlineData("https://example.org/clubs/example-name/", StoolballRouteType.Club)]
+        [InlineData("https://example.org/CLUBS/EXAMPLE", StoolballRouteType.Club)]
+        public void Club_route_should_match(string route, StoolballRouteType expectedType)
         {
             var requestUrl = new Uri(route);
 
             var result = StoolballRouteContentFinder.MatchStoolballRouteType(requestUrl);
 
-            Assert.Equal(StoolballRouteType.Club, result);
+            Assert.Equal(expectedType, result);
         }
 
         [Theory]

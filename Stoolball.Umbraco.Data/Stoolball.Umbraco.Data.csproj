@@ -158,6 +158,8 @@
     <Compile Include="Clubs\IClubRepository.cs" />
     <Compile Include="Clubs\SqlServerClubRepository.cs" />
     <Compile Include="Clubs\SqlServerClubDataSource.cs" />
+    <Compile Include="Teams\ITeamDataSource.cs" />
+    <Compile Include="Teams\SqlServerTeamDataSource.cs" />
     <Compile Include="MatchLocations\IMatchLocationDataSource.cs" />
     <Compile Include="MatchLocations\SqlServerMatchLocationDataSource.cs" />
     <Compile Include="UmbracoDatabaseConnectionFactory.cs" />

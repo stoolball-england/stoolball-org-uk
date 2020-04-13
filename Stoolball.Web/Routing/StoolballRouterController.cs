@@ -1,5 +1,6 @@
 ﻿using Stoolball.Web.Clubs;
 using Stoolball.Web.MatchLocations;
+using Stoolball.Web.Teams;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace Stoolball.Web.Routing
     {
         private readonly Dictionary<StoolballRouteType, Type> _supportedControllers = new Dictionary<StoolballRouteType, Type> {
             { StoolballRouteType.Club, typeof(ClubController) },
+            { StoolballRouteType.Team, typeof(TeamController) },
             { StoolballRouteType.MatchLocation, typeof(MatchLocationController) }
         };
 

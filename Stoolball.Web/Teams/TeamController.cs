@@ -1,4 +1,4 @@
-﻿using Stoolball.Umbraco.Data.Clubs;
+﻿using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Routing;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -9,22 +9,22 @@ using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
 
-namespace Stoolball.Web.Clubs
+namespace Stoolball.Web.Teams
 {
-    public class ClubController : RenderMvcControllerAsync
+    public class TeamController : RenderMvcControllerAsync
     {
-        private readonly IClubDataSource _clubDataSource;
+        private readonly ITeamDataSource _teamDataSource;
 
-        public ClubController(IGlobalSettings globalSettings,
+        public TeamController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           IClubDataSource clubDataSource)
+           ITeamDataSource teamDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _clubDataSource = clubDataSource ?? throw new System.ArgumentNullException(nameof(clubDataSource));
+            _teamDataSource = teamDataSource ?? throw new System.ArgumentNullException(nameof(teamDataSource));
         }
 
         [HttpGet]
@@ -35,19 +35,19 @@ namespace Stoolball.Web.Clubs
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new ClubViewModel(contentModel.Content)
+            var model = new TeamViewModel(contentModel.Content)
             {
-                Club = await _clubDataSource.ReadClubByRoute(Request.Url.AbsolutePath).ConfigureAwait(false)
+                Team = await _teamDataSource.ReadTeamByRoute(Request.Url.AbsolutePath).ConfigureAwait(false)
             };
 
-            if (model.Club == null)
+            if (model.Team == null)
             {
                 return new HttpNotFoundResult();
             }
             else
             {
-                model.Metadata.PageTitle = model.Club.ClubName;
-                model.Metadata.Description = model.Club.Description();
+                model.Metadata.PageTitle = model.Team.TeamName + " stoolball team";
+                model.Metadata.Description = model.Team.Description();
 
                 return CurrentTemplate(model);
             }

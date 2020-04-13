@@ -800,6 +800,9 @@
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerMatchLocationDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerSchoolDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerClubDataMigrator.cs" />
+    <Compile Include="Competitions\SeasonListViewModel.cs" />
+    <Compile Include="Teams\TeamController.cs" />
+    <Compile Include="Teams\TeamViewModel.cs" />
     <Compile Include="Configuration\ConfigApiKeyProvider.cs" />
     <Compile Include="Configuration\IApiKeyProvider.cs" />
     <Compile Include="Email\EmailSender.cs" />
@@ -916,6 +919,9 @@
     <Content Include="Views\MacroPartials\InsertUmbracoFormWithTheme.cshtml" />
     <Content Include="Views\Partials\_TeamList.cshtml" />
     <Content Include="Views\MatchLocation.cshtml" />
+    <Content Include="Views\Team.cshtml" />
+    <Content Include="Views\Partials\_SeasonList.cshtml" />
+    <Content Include="Views\Partials\_ClubMark.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

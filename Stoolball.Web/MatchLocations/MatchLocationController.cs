@@ -52,7 +52,7 @@ namespace Stoolball.Web.MatchLocations
             else
             {
                 model.Metadata.PageTitle = model.MatchLocation.ToString();
-                model.Metadata.Description = model.MatchLocation.GetDescription();
+                model.Metadata.Description = model.MatchLocation.Description();
 
                 return CurrentTemplate(model);
             }

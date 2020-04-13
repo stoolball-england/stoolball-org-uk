@@ -30,7 +30,7 @@ namespace Stoolball.Clubs
         /// <summary>
         /// Gets a description of the club suitable for including in metadata or search results
         /// </summary>
-        public string GetDescription()
+        public string Description()
         {
             var description = new StringBuilder(ClubName).Append(" is a stoolball club");
             if (Teams?.Count > 0)

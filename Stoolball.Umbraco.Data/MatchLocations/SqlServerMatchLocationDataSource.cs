@@ -56,8 +56,11 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                         new { Route = normalisedRoute },
                         splitOn: "TeamName").ConfigureAwait(false);
 
-                    var locationToReturn = locations.First(); // get an example with the properties that are the same for every row
-                    locationToReturn.Teams = locations.Select(location => location.Teams.Single()).ToList();
+                    var locationToReturn = locations.FirstOrDefault(); // get an example with the properties that are the same for every row
+                    if (locationToReturn != null)
+                    {
+                        locationToReturn.Teams = locations.Select(location => location.Teams.Single()).ToList();
+                    }
 
                     return locationToReturn;
                 }

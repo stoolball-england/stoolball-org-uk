@@ -1,6 +1,7 @@
 {
   "DefaultTemplate": "umb://template/f2724e57d127459a81b0cc293e1304b3",
   "AllowedTemplates": [
+    "umb://template/3665664f1024441fb4dd184d3e2eb7d7",
     "umb://template/bcf47530158d44b980facd6ba373aacb",
     "umb://template/f2724e57d127459a81b0cc293e1304b3"
   ],
@@ -21,6 +22,11 @@
   "PropertyTypes": [],
   "Udi": "umb://document-type/b406c97934284717ade92aa16d4cb679",
   "Dependencies": [
+    {
+      "Udi": "umb://template/3665664f1024441fb4dd184d3e2eb7d7",
+      "Ordering": true,
+      "Mode": 0
+    },
     {
       "Udi": "umb://template/bcf47530158d44b980facd6ba373aacb",
       "Ordering": true,
