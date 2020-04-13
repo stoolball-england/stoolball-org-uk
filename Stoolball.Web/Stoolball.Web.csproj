@@ -801,6 +801,7 @@
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerSchoolDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerClubDataMigrator.cs" />
     <Compile Include="Competitions\SeasonListViewModel.cs" />
+    <Compile Include="Email\EmailProtectorHtmlHelper.cs" />
     <Compile Include="Teams\TeamController.cs" />
     <Compile Include="Teams\TeamViewModel.cs" />
     <Compile Include="Configuration\ConfigApiKeyProvider.cs" />

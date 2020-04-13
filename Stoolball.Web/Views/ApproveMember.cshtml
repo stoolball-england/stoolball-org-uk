@@ -1,13 +1,14 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.ApproveMember>
 @using ContentModels = Umbraco.Web.PublishedModels;
+@using Stoolball.Web.Email
 
 <h1>@Model.Name</h1>
 
 @if (Model.ApprovalTokenValid)
 {
-    @Html.Raw(Model.ApprovalSuccessful.ToHtmlString().Replace("{{NAME}}", Model.MemberName))
+    @Html.ProtectEmailAddresses(Model.ApprovalSuccessful.ToHtmlString().Replace("{{NAME}}", Model.MemberName))
 }
 else
 {
-    @Model.ApprovalFailed
+    @Html.ProtectEmailAddresses(Model.ApprovalFailed)
 }

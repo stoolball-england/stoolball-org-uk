@@ -1,7 +1,7 @@
 ﻿using Stoolball.Teams;
 using Xunit;
 
-namespace Stoolball.Tests
+namespace Stoolball.Tests.Teams
 {
     public class TeamTests
     {

@@ -2,7 +2,7 @@
 using System;
 using Xunit;
 
-namespace Stoolball.Tests
+namespace Stoolball.Tests.Routing
 {
     public class RouteNormaliserTests
     {

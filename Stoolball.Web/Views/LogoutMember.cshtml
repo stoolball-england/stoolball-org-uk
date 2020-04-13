@@ -1,7 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.LogoutMember>
 @using ContentModels = Umbraco.Web.PublishedModels;
 @using ClientDependency.Core.Mvc
-@using Stoolball.Web.Account
+@using Stoolball.Web.Email
 @{
     Html.RequiresCss("~/css/forms.css");
 }
@@ -13,5 +13,5 @@
 }
 else
 {
-    @Model.Value("loggedOut")
+    @Html.ProtectEmailAddresses(Model.LoggedOut)
 }

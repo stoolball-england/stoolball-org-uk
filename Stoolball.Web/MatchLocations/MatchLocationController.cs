@@ -1,4 +1,5 @@
-﻿using Stoolball.Umbraco.Data.MatchLocations;
+﻿using Stoolball.Email;
+using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.Routing;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace Stoolball.Web.MatchLocations
     {
         private readonly IMatchLocationDataSource _matchLocationDataSource;
         private readonly IApiKeyProvider _apiKeyProvider;
+        private readonly IEmailProtector _emailProtector;
 
         public MatchLocationController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -24,11 +26,13 @@ namespace Stoolball.Web.MatchLocations
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IMatchLocationDataSource matchLocationDataSource,
-           IApiKeyProvider apiKeyProvider)
+           IApiKeyProvider apiKeyProvider,
+           IEmailProtector emailProtector)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchLocationDataSource = matchLocationDataSource ?? throw new System.ArgumentNullException(nameof(matchLocationDataSource));
             _apiKeyProvider = apiKeyProvider ?? throw new System.ArgumentNullException(nameof(apiKeyProvider));
+            _emailProtector = emailProtector ?? throw new System.ArgumentNullException(nameof(emailProtector));
         }
 
         [HttpGet]
@@ -53,6 +57,8 @@ namespace Stoolball.Web.MatchLocations
             {
                 model.Metadata.PageTitle = model.MatchLocation.ToString();
                 model.Metadata.Description = model.MatchLocation.Description();
+
+                model.MatchLocation.MatchLocationNotes = _emailProtector.ProtectEmailAddresses(model.MatchLocation.MatchLocationNotes, User.Identity.IsAuthenticated);
 
                 return CurrentTemplate(model);
             }

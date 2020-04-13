@@ -3,6 +3,7 @@
 @using Umbraco.Web
 @using Umbraco.Web.Models
 @using Stoolball.Web.Account
+@using Stoolball.Web.Email
 @{
     var loginPage = Umbraco.ContentSingleAtXPath("//loginMember");
     var loginModel = new LoginModel();
@@ -11,7 +12,7 @@
 
 @if (Model.Key != loginPage?.Key)
 {
-    @loginPage.Value("loginRequired")
+    @Html.ProtectEmailAddresses(loginPage.Value<IHtmlString>("loginRequired"))
     loginModel.RedirectUrl = Model.Url;
 }
 
@@ -35,11 +36,11 @@
     <button class="btn btn-primary">@loginPage.Value("loginButton")</button>
 }
 
-@(loginPage?.Value("resetPassword"))
+@Html.ProtectEmailAddresses(loginPage?.Value<IHtmlString>("resetPassword"))
 
 @if (loginPage != null && loginPage.HasValue("migratedMemberAccounts"))
 {
     <div class="alert alert-info">
-        @(loginPage?.Value("migratedMemberAccounts"))
+        @Html.ProtectEmailAddresses(loginPage?.Value<IHtmlString>("migratedMemberAccounts"))
     </div>
 }

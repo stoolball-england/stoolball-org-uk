@@ -1,4 +1,5 @@
-﻿using Stoolball.Routing;
+﻿using Stoolball.Email;
+using Stoolball.Routing;
 using Stoolball.Security;
 using Stoolball.Umbraco.Data;
 using Stoolball.Umbraco.Data.Audit;
@@ -23,6 +24,7 @@ namespace Stoolball.Web
             // Utility classes
             composition.Register<Email.IEmailFormatter, Email.EmailFormatter>(Lifetime.Singleton);
             composition.Register<Email.IEmailSender, Email.EmailSender>(Lifetime.Singleton);
+            composition.Register<IEmailProtector, EmailProtector>(Lifetime.Singleton);
             composition.Register<IVerificationToken, VerificationToken>(Lifetime.Singleton);
             composition.Register<IAuditRepository, SqlServerAuditRepository>(Lifetime.Singleton);
             composition.Register<IRouteNormaliser, RouteNormaliser>(Lifetime.Singleton);

@@ -4,6 +4,7 @@
 @using ClientDependency.Core.Mvc
 @using Umbraco.Web
 @using Stoolball.Web.Account
+@using Stoolball.Web.Email
 @{
     Html.EnableClientValidation();
     Html.EnableUnobtrusiveJavaScript();
@@ -24,7 +25,7 @@ else
 {
     if (TempData["FormSuccess"] != null)
     {
-        @Html.Raw(Model.Value("memberCreatedSuccessfully").ToString().Replace("{{EMAIL}}", TempData["Email"]?.ToString()))
+        @Html.ProtectEmailAddresses(Model.Value("memberCreatedSuccessfully").ToString().Replace("{{EMAIL}}", TempData["Email"]?.ToString()))
     }
     else
     {

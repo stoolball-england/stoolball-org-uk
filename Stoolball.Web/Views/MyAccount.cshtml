@@ -6,6 +6,7 @@
 @using Umbraco.Web.Models
 @using Umbraco.Web.Controllers
 @using Stoolball.Web.Account
+@using Stoolball.Web.Email
 @{
     Html.EnableClientValidation();
     Html.EnableUnobtrusiveJavaScript();
@@ -41,7 +42,7 @@
                         <img src="@gravatar.Url" alt="Your account picture from gravatar.com" width="@gravatar.Size" height="@gravatar.Size" />
                     </div>
                     <div class="col">
-                        @Model.Value("gravatar")
+                        @Html.ProtectEmailAddresses(Model.Value<IHtmlString>("gravatar"))
                     </div>
                 </div>
             </div>
@@ -51,7 +52,7 @@
     }
     else
     {
-        @Model.Value("saved")
+        @Html.ProtectEmailAddresses(Model.Value<IHtmlString>("saved"))
     }
 }
 else

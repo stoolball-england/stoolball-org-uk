@@ -1,4 +1,5 @@
-﻿using Stoolball.Umbraco.Data.Teams;
+﻿using Stoolball.Email;
+using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Routing;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -14,6 +15,7 @@ namespace Stoolball.Web.Teams
     public class TeamController : RenderMvcControllerAsync
     {
         private readonly ITeamDataSource _teamDataSource;
+        private readonly IEmailProtector _emailProtector;
 
         public TeamController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -21,10 +23,12 @@ namespace Stoolball.Web.Teams
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           ITeamDataSource teamDataSource)
+           ITeamDataSource teamDataSource,
+           IEmailProtector emailProtector)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource ?? throw new System.ArgumentNullException(nameof(teamDataSource));
+            _emailProtector = emailProtector ?? throw new System.ArgumentNullException(nameof(emailProtector));
         }
 
         [HttpGet]
@@ -48,6 +52,11 @@ namespace Stoolball.Web.Teams
             {
                 model.Metadata.PageTitle = model.Team.TeamName + " stoolball team";
                 model.Metadata.Description = model.Team.Description();
+
+                model.Team.Cost = _emailProtector.ProtectEmailAddresses(model.Team.Cost, User.Identity.IsAuthenticated);
+                model.Team.Introduction = _emailProtector.ProtectEmailAddresses(model.Team.Introduction, User.Identity.IsAuthenticated);
+                model.Team.PlayingTimes = _emailProtector.ProtectEmailAddresses(model.Team.PlayingTimes, User.Identity.IsAuthenticated);
+                model.Team.PublicContactDetails = _emailProtector.ProtectEmailAddresses(model.Team.PublicContactDetails, User.Identity.IsAuthenticated);
 
                 return CurrentTemplate(model);
             }
