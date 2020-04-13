@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace Stoolball.Routing
 {
@@ -13,9 +14,10 @@ namespace Stoolball.Routing
         /// </summary>
         /// <param name="route">prefix/entity-route</param>
         /// <param name="expectedPrefix">prefix</param>
+        /// <param name="subrouteRegex">(valid|alsoValid)</param>
         /// <returns>prefix/entity-route</returns>
         /// <exception cref="ArgumentException">If the <c>route</c> or the <c>expectedPrefix</c> is not in a valid format</exception>
-        public string NormaliseRouteToEntity(string route, string expectedPrefix)
+        public string NormaliseRouteToEntity(string route, string expectedPrefix, string subrouteRegex)
         {
             if (string.IsNullOrWhiteSpace(route) && route != "/")
             {
@@ -41,10 +43,34 @@ namespace Stoolball.Routing
 
             if (normalisedRoute.Substring(normalisedPrefix.Length + 1).Contains("/"))
             {
-                normalisedRoute = normalisedRoute.Substring(0, normalisedRoute.Substring(normalisedPrefix.Length + 1).IndexOf("/", StringComparison.OrdinalIgnoreCase) + normalisedPrefix.Length + 1);
+                // If there's anything after prefix/route, test it against the Regex or either discard it 
+                if (!string.IsNullOrWhiteSpace(subrouteRegex))
+                {
+                    var subroute = normalisedRoute.Substring(normalisedRoute.Substring(normalisedPrefix.Length + 1).IndexOf("/", StringComparison.OrdinalIgnoreCase) + normalisedPrefix.Length + 2);
+                    if (!Regex.IsMatch(subroute, subrouteRegex))
+                    {
+                        throw new ArgumentException($"Sub-route must match the regular expression '{subrouteRegex}'. Sub-route {subroute} was identified in the route {route}.", nameof(route));
+                    }
+                }
+                else
+                {
+                    normalisedRoute = normalisedRoute.Substring(0, normalisedRoute.Substring(normalisedPrefix.Length + 1).IndexOf("/", StringComparison.OrdinalIgnoreCase) + normalisedPrefix.Length + 1);
+                }
             }
 
             return "/" + normalisedRoute;
+        }
+
+        /// <summary>
+        /// From a given route, removes any extraneous / characters and returns only the portion identifying an entity, ie prefix/entity-route
+        /// </summary>
+        /// <param name="route">prefix/entity-route</param>
+        /// <param name="expectedPrefix">prefix</param>
+        /// <returns>prefix/entity-route</returns>
+        /// <exception cref="ArgumentException">If the <c>route</c> or the <c>expectedPrefix</c> is not in a valid format</exception>
+        public string NormaliseRouteToEntity(string route, string expectedPrefix)
+        {
+            return NormaliseRouteToEntity(route, expectedPrefix, null);
         }
     }
 }

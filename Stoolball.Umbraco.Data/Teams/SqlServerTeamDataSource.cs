@@ -13,7 +13,7 @@ using static Stoolball.Umbraco.Data.Constants;
 namespace Stoolball.Umbraco.Data.Teams
 {
     /// <summary>
-    /// Gets match location data from the Umbraco database
+    /// Gets stoolball team data from the Umbraco database
     /// </summary>
     public class SqlServerTeamDataSource : ITeamDataSource
     {
@@ -46,7 +46,7 @@ namespace Stoolball.Umbraco.Data.Teams
                             t.Website, t.PublicContactDetails, t.PlayingTimes, t.Cost, t.TeamRoute, t.UntilDate,
                             cn.ClubName, c.ClubRoute, c.ClubMark,
                             ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, ml.Town, ml.AdministrativeArea, ml.MatchLocationRoute,
-                            s.SeasonName, s.SeasonRoute,
+                            s.StartYear, s.EndYear, s.SeasonRoute,
                             co.CompetitionId, co.CompetitionName
                             FROM {Tables.Team} AS t 
                             INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
@@ -67,7 +67,7 @@ namespace Stoolball.Umbraco.Data.Teams
                             return team;
                         },
                         new { Route = normalisedRoute },
-                        splitOn: "ClubName, SecondaryAddressableObjectName, SeasonName, CompetitionId").ConfigureAwait(false);
+                        splitOn: "ClubName, SecondaryAddressableObjectName, StartYear, CompetitionId").ConfigureAwait(false);
 
                     var teamToReturn = teams.FirstOrDefault(); // get an example with the properties that are the same for every row
                     if (teamToReturn != null)

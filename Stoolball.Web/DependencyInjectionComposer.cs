@@ -4,11 +4,13 @@ using Stoolball.Security;
 using Stoolball.Umbraco.Data;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Clubs;
+using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Umbraco.Data.Redirects;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Stoolball.Web.Clubs;
+using Stoolball.Web.Competitions;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Teams;
@@ -43,6 +45,7 @@ namespace Stoolball.Web
             composition.Register<ClubController>(Lifetime.Request);
             composition.Register<TeamController>(Lifetime.Request);
             composition.Register<MatchLocationController>(Lifetime.Request);
+            composition.Register<SeasonController>(Lifetime.Request);
 
             // Data sources for stoolball data.
             composition.Register<IDatabaseConnectionFactory, UmbracoDatabaseConnectionFactory>(Lifetime.Singleton);
@@ -50,6 +53,7 @@ namespace Stoolball.Web
             composition.Register<IClubDataSource, SqlServerClubDataSource>(Lifetime.Singleton);
             composition.Register<ITeamDataSource, SqlServerTeamDataSource>(Lifetime.Singleton);
             composition.Register<IMatchLocationDataSource, SqlServerMatchLocationDataSource>(Lifetime.Singleton);
+            composition.Register<ISeasonDataSource, SqlServerSeasonDataSource>(Lifetime.Singleton);
         }
     }
 }

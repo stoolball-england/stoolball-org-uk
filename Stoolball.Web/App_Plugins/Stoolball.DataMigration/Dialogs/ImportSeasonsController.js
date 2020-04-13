@@ -35,7 +35,6 @@
           seasons,
           (season) => ({
             SeasonId: season.seasonId,
-            SeasonName: season.seasonName,
             Competition: {
               CompetitionId: season.competitionId,
               CompetitionRoute: season.competitionRoute,
