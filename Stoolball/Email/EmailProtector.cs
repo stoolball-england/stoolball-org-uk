@@ -19,6 +19,8 @@ namespace Stoolball.Email
         /// <returns>Updated HTML</returns>
         public string ProtectEmailAddresses(string html, bool userIsAuthenticated)
         {
+            if (string.IsNullOrEmpty(html)) return html;
+
             return Regex.Replace(html, EMAIL_REGEX, match =>
             {
                 if (userIsAuthenticated)

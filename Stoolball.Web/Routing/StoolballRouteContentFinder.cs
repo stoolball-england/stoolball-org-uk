@@ -61,6 +61,14 @@ namespace Stoolball.Web.Routing
                 }
             }
 
+            /// Match /competitions/example-entity, /competitions/example-entity/2020, /competitions/example-entity/2020-21, 
+            /// but not /competitions, /competitions/,  /competitions/example-entity/invalid or /competitions/example-entity/2020/invalid, 
+            /// in upper, lower or mixed case
+            if (Regex.IsMatch(path, @"^\/competitions\/([a-z0-9-]+\/?)([0-9]{4}\/?)?(-[0-9]{2}\/?)?$", RegexOptions.IgnoreCase))
+            {
+                return StoolballRouteType.Season;
+            }
+
             return null;
         }
 

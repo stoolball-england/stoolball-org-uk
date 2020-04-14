@@ -9,7 +9,7 @@ namespace Stoolball.Competitions
 
         public string CompetitionName { get; set; }
 
-        public List<Season> Seasons { get; private set; } = new List<Season>();
+        public List<Season> Seasons { get; internal set; } = new List<Season>();
 
         public string Introduction { get; set; }
 

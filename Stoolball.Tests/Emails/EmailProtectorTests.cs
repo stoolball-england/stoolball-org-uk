@@ -16,5 +16,17 @@ namespace Stoolball.Tests.Emails
 
             Assert.Equal(expectedOutput, result);
         }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void Null_or_empty_is_returned_unaltered(string input)
+        {
+            var protector = new EmailProtector();
+
+            var result = protector.ProtectEmailAddresses(input, true);
+
+            Assert.Equal(input, result);
+        }
     }
 }

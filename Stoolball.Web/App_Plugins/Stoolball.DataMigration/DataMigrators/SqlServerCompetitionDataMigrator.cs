@@ -195,7 +195,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			var migratedSeason = new Season
 			{
 				SeasonId = season.SeasonId,
-				SeasonName = season.SeasonName,
 				Competition = season.Competition,
 				IsLatestSeason = season.IsLatestSeason,
 				StartYear = season.StartYear,
@@ -220,11 +219,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					{
 						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Season} ON").ConfigureAwait(false);
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Season}
-						(SeasonId, SeasonName, CompetitionId, IsLatestSeason, StartYear, EndYear, Introduction, 
+						(SeasonId, CompetitionId, IsLatestSeason, StartYear, EndYear, Introduction, 
 						 Results, ShowTable, ShowRunsScored, ShowRunsConceded, SeasonRoute)
 						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11)",
 							migratedSeason.SeasonId,
-							migratedSeason.SeasonName,
 							migratedSeason.Competition.CompetitionId,
 							migratedSeason.IsLatestSeason,
 							migratedSeason.StartYear,

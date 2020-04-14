@@ -4,6 +4,13 @@
 
 <h1>@Model.Team.TeamNameLocationAndPlayerType()</h1>
 
+@if (Model.Team.TeamType != TeamType.Once && Model.Team.UntilDate.HasValue)
+{
+<div class="alert alert-info">
+    <p><strong>This team doesn't play any more.</strong></p>
+</div>
+}
+
 @if (Model.Team.TeamType != TeamType.Once)
 {
     if (Model.Team.Club != null)
@@ -15,20 +22,10 @@
 @Html.Raw(Model.Team.Introduction)
 
 @{ var whenWhereHeadingRendered = false; }
-@if (Model.Team.TeamType != TeamType.Once && Model.Team.UntilDate.HasValue)
+@if (Model.Team.MatchLocations.Count > 0)
 {
     whenWhereHeadingRendered = true;
     <h2>When and where</h2>
-    <p><strong>This team doesn't play any more.</strong></p>
-}
-
-@if (Model.Team.MatchLocations.Count > 0)
-{
-    if (!whenWhereHeadingRendered)
-    {
-        whenWhereHeadingRendered = true;
-        <h2>When and where</h2>
-    }
     <p>This team plays at <a href="@Model.Team.MatchLocations.First().MatchLocationRoute">@Model.Team.MatchLocations.First()</a>.</p>
 }
 
@@ -64,7 +61,7 @@
         .Select(seasonsInACompetition =>
         {
             var competition = seasonsInACompetition.First().Season.Competition;
-            competition.Seasons.AddRange(seasonsInACompetition.Select(season => season.Season).OrderBy(season => season.SeasonName));
+            competition.Seasons.AddRange(seasonsInACompetition.Select(season => season.Season).OrderBy(season => season.SeasonName()));
             return competition;
         }));
 

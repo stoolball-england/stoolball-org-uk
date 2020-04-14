@@ -7,6 +7,7 @@
     {
         Club,
         MatchLocation,
-        Team
+        Team,
+        Season
     }
 }
