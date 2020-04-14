@@ -21,7 +21,8 @@ Follow these steps to clone and run the project. You will need the git repositor
 1. Clone this repository
 2. Clone the Umbraco Cloud git repository into a folder called `.UmbracoCloud` inside the root folder of this repository
 3. Open `Stoolball.sln` in Visual Studio
-4. Press Ctrl+F5 to run without debugging using IIS Express
+4. Select the solution in Solution Explorer and press Alt+Enter (or right-click, Properties). In the Properties dialog select "Single startup project" and choose Stoolball.Web. Click OK.
+5. Press Ctrl+F5 to run without debugging using IIS Express
 
 This will open the login screen for the Umbraco back office. Login using your Umbraco.io account.
 
