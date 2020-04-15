@@ -221,7 +221,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Season}
 						(SeasonId, CompetitionId, IsLatestSeason, StartYear, EndYear, Introduction, 
 						 Results, ShowTable, ShowRunsScored, ShowRunsConceded, SeasonRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11)",
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10)",
 							migratedSeason.SeasonId,
 							migratedSeason.Competition.CompetitionId,
 							migratedSeason.IsLatestSeason,
