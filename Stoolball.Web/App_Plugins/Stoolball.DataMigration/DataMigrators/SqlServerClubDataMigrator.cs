@@ -136,7 +136,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				ActorName = nameof(SqlServerClubDataMigrator),
 				EntityUri = club.EntityUri,
 				State = JsonConvert.SerializeObject(club),
-				AuditDate = club.DateCreated.Value
+				AuditDate = club.DateCreated.HasValue ? club.DateCreated.Value : migratedClub.DateCreated.Value
 			}).ConfigureAwait(false);
 
 			await _auditRepository.CreateAudit(new AuditRecord
