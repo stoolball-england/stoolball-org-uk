@@ -145,7 +145,7 @@
       <ActualProductionTransform>$(ProjectDir)Web.live.xdt.config</ActualProductionTransform>
 
       <GoogleMapsScripts>https://www.google.com https://maps.google.com https://maps.google.co.uk https://maps.googleapis.com</GoogleMapsScripts>
-      <GoogleMapsImages>https://maps.gstatic.com https://maps.google.co.uk</GoogleMapsImages>
+      <GoogleMapsImages>https://maps.gstatic.com https://maps.google.co.uk https://maps.googleapis.com</GoogleMapsImages>
       <GoogleMapsStyles>https://fonts.googleapis.com 'unsafe-inline'</GoogleMapsStyles>
       <GoogleMapsFonts>https://fonts.gstatic.com</GoogleMapsFonts>
       <ContentSecurityPolicy>default-src 'none'; style-src 'self' $(GoogleMapsStyles); script-src 'self' $(GoogleMapsScripts); img-src 'self' data: https://s.gravatar.com/avatar/ $(GoogleMapsImages); font-src $(GoogleMapsFonts)</ContentSecurityPolicy>
