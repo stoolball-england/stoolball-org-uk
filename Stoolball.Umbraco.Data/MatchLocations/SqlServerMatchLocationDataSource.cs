@@ -45,7 +45,7 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                             tn.TeamName, t.TeamRoute
                             FROM {Constants.Tables.MatchLocation} AS ml
                             LEFT JOIN {Constants.Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId AND tml.UntilDate IS NULL
-                            LEFT JOIN {Constants.Tables.Team} AS t ON tml.TeamId = t.TeamId
+                            LEFT JOIN {Constants.Tables.Team} AS t ON tml.TeamId = t.TeamId AND t.UntilDate IS NULL AND NOT t.TeamType = '{TeamType.Once}'
                             LEFT JOIN {Constants.Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             WHERE LOWER(ml.MatchLocationRoute) = @Route",
                         (matchLocation, team) =>
@@ -59,7 +59,7 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                     var locationToReturn = locations.FirstOrDefault(); // get an example with the properties that are the same for every row
                     if (locationToReturn != null)
                     {
-                        locationToReturn.Teams = locations.Select(location => location.Teams.Single()).ToList();
+                        locationToReturn.Teams = locations.Select(location => location.Teams.Single()).OfType<Team>().ToList();
                     }
 
                     return locationToReturn;
