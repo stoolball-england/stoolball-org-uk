@@ -61,9 +61,15 @@ namespace Stoolball.Umbraco.Data.Teams
                         (team, club, matchLocation, season, competition) =>
                         {
                             team.Club = club;
-                            team.MatchLocations.Add(matchLocation);
-                            season.Competition = competition;
-                            team.Seasons.Add(new TeamInSeason { Season = season });
+                            if (matchLocation != null)
+                            {
+                                team.MatchLocations.Add(matchLocation);
+                            }
+                            if (season != null)
+                            {
+                                season.Competition = competition;
+                                team.Seasons.Add(new TeamInSeason { Season = season });
+                            }
                             return team;
                         },
                         new { Route = normalisedRoute },
@@ -72,8 +78,8 @@ namespace Stoolball.Umbraco.Data.Teams
                     var teamToReturn = teams.FirstOrDefault(); // get an example with the properties that are the same for every row
                     if (teamToReturn != null)
                     {
-                        teamToReturn.MatchLocations = teams.Select(team => team.MatchLocations.Single()).ToList();
-                        teamToReturn.Seasons = teams.Select(team => team.Seasons.Single()).ToList();
+                        teamToReturn.MatchLocations = teams.Select(team => team.MatchLocations.SingleOrDefault()).OfType<MatchLocation>().ToList();
+                        teamToReturn.Seasons = teams.Select(team => team.Seasons.SingleOrDefault()).OfType<TeamInSeason>().ToList();
                     }
 
                     return teamToReturn;

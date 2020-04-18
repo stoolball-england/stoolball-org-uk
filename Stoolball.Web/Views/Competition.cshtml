@@ -1,0 +1,23 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.CompetitionViewModel>
+
+<h1>@Model.Competition.CompetitionNameAndPlayerType()</h1>
+
+@if (Model.Competition.UntilDate.HasValue)
+{
+    <div class="alert alert-info">
+        <p><strong>This competition isn't played any more.</strong></p>
+    </div>
+}
+
+@Html.Raw(Model.Competition.Introduction)
+
+@if (!string.IsNullOrWhiteSpace(Model.Competition.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Competition.Website))
+{
+    <h2>Contact details</h2>
+    @Html.Raw(Model.Competition.PublicContactDetails)
+
+    if (!string.IsNullOrWhiteSpace(Model.Competition.Website))
+    {
+        <p>Visit the <a href="@Model.Competition.Website">@Model.Competition.CompetitionName's website</a>.</p>
+    }
+}

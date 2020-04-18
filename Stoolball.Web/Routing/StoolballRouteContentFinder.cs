@@ -50,7 +50,8 @@ namespace Stoolball.Web.Routing
             {
                 { "clubs", StoolballRouteType.Club },
                 { "locations", StoolballRouteType.MatchLocation},
-                { "teams", StoolballRouteType.Team}
+                { "teams", StoolballRouteType.Team},
+                { "competitions", StoolballRouteType.Competition }
             };
 
             foreach (var routeType in routeTypes)
@@ -61,10 +62,10 @@ namespace Stoolball.Web.Routing
                 }
             }
 
-            /// Match /competitions/example-entity, /competitions/example-entity/2020, /competitions/example-entity/2020-21, 
-            /// but not /competitions, /competitions/,  /competitions/example-entity/invalid or /competitions/example-entity/2020/invalid, 
+            /// Match /competitions/example-entity/2020, /competitions/example-entity/2020-21, 
+            /// but not /competitions, /competitions/, /competitions/example-entity, /competitions/example-entity/invalid or /competitions/example-entity/2020/invalid, 
             /// in upper, lower or mixed case
-            if (Regex.IsMatch(path, @"^\/competitions\/([a-z0-9-]+\/?)([0-9]{4}\/?)?(-[0-9]{2}\/?)?$", RegexOptions.IgnoreCase))
+            if (Regex.IsMatch(path, @"^\/competitions\/[a-z0-9-]+\/[0-9]{4}\/?(-[0-9]{2}\/?)?$", RegexOptions.IgnoreCase))
             {
                 return StoolballRouteType.Season;
             }
@@ -73,11 +74,11 @@ namespace Stoolball.Web.Routing
         }
 
         /// <summary>
-        /// Match /prefix, /prefix/ or /prefix/example-entity, but not /prefix/example-entity/invalid, in upper, lower or mixed case
+        /// Match /prefix/example-entity, but not /prefix, /prefix/, or /prefix/example-entity/invalid, in upper, lower or mixed case
         /// </summary>
         private static bool MatchRouteType(string path, string expectedPrefix)
         {
-            return Regex.IsMatch(path, $@"^\/{expectedPrefix}\/?([a-z0-9-]+\/?)?$", RegexOptions.IgnoreCase);
+            return Regex.IsMatch(path, $@"^\/{expectedPrefix}\/([a-z0-9-]+\/?)$", RegexOptions.IgnoreCase);
         }
     }
 }

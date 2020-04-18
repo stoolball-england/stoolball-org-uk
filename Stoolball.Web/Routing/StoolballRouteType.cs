@@ -8,6 +8,7 @@
         Club,
         MatchLocation,
         Team,
-        Season
+        Season,
+        Competition
     }
 }

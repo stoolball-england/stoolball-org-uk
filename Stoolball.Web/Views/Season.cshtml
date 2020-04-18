@@ -3,7 +3,7 @@
 @using Stoolball.Competitions
 @using Stoolball.Web.Competitions
 
-<h1>@Model.Season.SeasonFullName()</h1>
+<h1>@Model.Season.SeasonFullNameAndPlayerType()</h1>
 
 @if (Model.Season.Competition.UntilDate.HasValue)
 {

@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Humanizer;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,12 +27,20 @@ namespace Stoolball.Competitions
         }
 
         /// <summary>
-        /// Gets the name of the competition and season
+        /// Gets the name of the competition and season, and the type of players (if not stated in the name)
         /// </summary>
         /// <returns></returns>
-        public string SeasonFullName()
+        public string SeasonFullNameAndPlayerType()
         {
-            return $"{Competition?.CompetitionName}, {SeasonName()}".Trim();
+            var name = Competition?.CompetitionName;
+
+            var type = Competition?.PlayerType.ToString().Humanize(LetterCasing.Sentence);
+            if (type != null && !name.Replace("'", string.Empty).ToUpperInvariant().Contains(type.Replace("'", string.Empty).ToUpperInvariant()))
+            {
+                name += " (" + type + ")";
+            }
+
+            return $"{name}, {SeasonName()}".Trim();
         }
 
         public Competition Competition { get; set; }

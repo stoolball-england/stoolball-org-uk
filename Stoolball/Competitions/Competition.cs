@@ -1,4 +1,6 @@
-﻿using System;
+﻿using HtmlAgilityPack;
+using Humanizer;
+using System;
 using System.Collections.Generic;
 
 namespace Stoolball.Competitions
@@ -8,6 +10,22 @@ namespace Stoolball.Competitions
         public int? CompetitionId { get; set; }
 
         public string CompetitionName { get; set; }
+
+        /// <summary>
+        /// Gets the name of the competition and the type of players (if not stated in the name)
+        /// </summary>
+        /// <returns></returns>
+        public string CompetitionNameAndPlayerType()
+        {
+            var name = CompetitionName;
+
+            var type = PlayerType.ToString().Humanize(LetterCasing.Sentence);
+            if (!name.Replace("'", string.Empty).ToUpperInvariant().Contains(type.Replace("'", string.Empty).ToUpperInvariant()))
+            {
+                name += " (" + type + ")";
+            }
+            return name;
+        }
 
         public List<Season> Seasons { get; internal set; } = new List<Season>();
 
@@ -43,6 +61,28 @@ namespace Stoolball.Competitions
         public Uri EntityUri
         {
             get { return new Uri($"https://www.stoolball.org.uk/id/competition/{CompetitionId}"); }
+        }
+
+        /// <summary>
+        /// Gets a description of the competition suitable for metadata or search results
+        /// </summary>
+        /// <returns></returns>
+        public string Description()
+        {
+            if (!string.IsNullOrEmpty(Introduction))
+            {
+                var htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(Introduction.Trim());
+                var description = htmlDoc.DocumentNode.InnerText;
+
+                var newLine = description.IndexOf(Environment.NewLine, StringComparison.OrdinalIgnoreCase);
+                if (newLine > -1)
+                {
+                    description = description.Substring(0, newLine).TrimEnd();
+                }
+                return description;
+            }
+            else return string.Empty;
         }
     }
 }

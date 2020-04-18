@@ -1,4 +1,5 @@
-﻿using Stoolball.Clubs;
+﻿using Humanizer;
+using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.MatchLocations;
 using Stoolball.Schools;
@@ -31,7 +32,7 @@ namespace Stoolball.Teams
         public string TeamNameAndPlayerType()
         {
             var name = TeamName;
-            var type = PlayerType.ToString();
+            var type = PlayerType.ToString().Humanize(LetterCasing.Sentence);
             if (!name.Replace("'", string.Empty).ToUpperInvariant().Contains(type.Replace("'", string.Empty).ToUpperInvariant()))
             {
                 name += " (" + type + ")";
@@ -55,7 +56,7 @@ namespace Stoolball.Teams
                 name += ", " + location;
             }
 
-            var type = PlayerType.ToString();
+            var type = PlayerType.ToString().Humanize(LetterCasing.Sentence);
             if (!name.Replace("'", string.Empty).ToUpperInvariant().Contains(type.Replace("'", string.Empty).ToUpperInvariant()))
             {
                 name += " (" + type + ")";
