@@ -178,7 +178,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 								(MatchId, TeamId, TeamRole, WonToss) VALUES (@0, @1, @2, @3)",
 								migratedMatch.MatchId,
 								team.Team.TeamId,
-								team.TeamRole,
+								team.TeamRole.ToString(),
 								team.WonToss).ConfigureAwait(false);
 						}
 						transaction.Complete();
@@ -305,7 +305,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 								(MatchId, TeamId, TeamRole) VALUES (@0, @1, @2)",
 								migratedTournament.TournamentId,
 								team.Team.TeamId,
-								team.TeamRole).ConfigureAwait(false);
+								team.TeamRole.ToString()).ConfigureAwait(false);
 						}
 						transaction.Complete();
 					}
