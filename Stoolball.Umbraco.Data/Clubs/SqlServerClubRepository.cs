@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Stoolball.Audit;
 using Stoolball.Clubs;
 using Stoolball.Umbraco.Data.Audit;
 using System;

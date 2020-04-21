@@ -13,24 +13,25 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(MatchId))]
         public int MatchId { get; set; }
 
-        [Column(nameof(MatchTitle))]
-        public string MatchTitle { get; set; }
+        [Column(nameof(MatchName))]
+        public string MatchName { get; set; }
 
-        [Column(nameof(IsCustomTitle))]
-        public bool IsCustomTitle { get; set; }
+        [Column(nameof(UpdateMatchNameAutomatically))]
+        [Constraint(Default = 1)]
+        public bool UpdateMatchNameAutomatically { get; set; }
 
         [Column(nameof(MatchLocationId))]
         [ForeignKey(typeof(MatchLocationTableInitialSchema), Column = nameof(MatchLocationTableInitialSchema.MatchLocationId))]
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? MatchLocationId { get; set; }
 
-        [Column(nameof(MatchStartTime))]
+        [Column(nameof(StartTime))]
         [Index(IndexTypes.Clustered)]
-        public DateTime MatchStartTime { get; set; }
+        public DateTime StartTime { get; set; }
 
-        [Column(nameof(MatchStartTimeIsKnown))]
+        [Column(nameof(StartTimeIsKnown))]
         [Constraint(Default = 1)]
-        public bool MatchStartTimeIsKnown { get; set; }
+        public bool StartTimeIsKnown { get; set; }
 
         [Column(nameof(MatchType))]
         [Index(IndexTypes.NonClustered)]
@@ -38,23 +39,23 @@ namespace Stoolball.Umbraco.Data.Migrations
 
         [Column(nameof(PlayerType))]
         [Index(IndexTypes.NonClustered)]
-        [NullSetting(NullSetting = NullSettings.Null)]
         public string PlayerType { get; set; }
 
         [Column(nameof(PlayersPerTeam))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int PlayersPerTeam { get; set; }
+        public int? PlayersPerTeam { get; set; }
 
-        [Column(nameof(MatchQualificationType))]
+        [Column(nameof(QualificationType))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public string MatchQualificationType { get; set; }
-
-        [Column(nameof(HomeTeamWonToss))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public bool? HomeTeamWonToss { get; set; }
+        public string QualificationType { get; set; }
 
         [Column(nameof(InningsOrderIsKnown))]
-        public bool InningsOrderIsKnown { get; set; }
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public bool? InningsOrderIsKnown { get; set; }
+
+        [Column(nameof(OversPerInningsDefault))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? OversPerInningsDefault { get; set; }
 
         [Column(nameof(MatchResultType))]
         [NullSetting(NullSetting = NullSettings.Null)]
@@ -69,13 +70,13 @@ namespace Stoolball.Umbraco.Data.Migrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? OrderInTournament { get; set; }
 
-        [Column(nameof(MaxTeamsInTournament))]
+        [Column(nameof(MaximumTeamsInTournament))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? MaxTeamsInTournament { get; set; }
+        public int? MaximumTeamsInTournament { get; set; }
 
-        [Column(nameof(TournamentSpaces))]
+        [Column(nameof(SpacesInTournament))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? TournamentSpaces { get; set; }
+        public int? SpacesInTournament { get; set; }
 
         [Column(nameof(MatchNotes))]
         [NullSetting(NullSetting = NullSettings.Null)]

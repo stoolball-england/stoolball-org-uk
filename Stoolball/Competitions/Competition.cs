@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Humanizer;
+using Stoolball.Teams;
 using System;
 using System.Collections.Generic;
 

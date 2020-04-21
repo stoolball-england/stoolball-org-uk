@@ -150,8 +150,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Audit\AuditRecord.cs" />
-    <Compile Include="Audit\AuditAction.cs" />
     <Compile Include="Audit\IAuditRepository.cs" />
     <Compile Include="Audit\SqlServerAuditRepository.cs" />
     <Compile Include="Clubs\IClubDataSource.cs" />

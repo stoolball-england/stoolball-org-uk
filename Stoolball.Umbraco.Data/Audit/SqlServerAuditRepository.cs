@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Stoolball.Audit;
+using System;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;

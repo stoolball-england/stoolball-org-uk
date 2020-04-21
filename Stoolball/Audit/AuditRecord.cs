@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Stoolball.Umbraco.Data.Audit
+namespace Stoolball.Audit
 {
     /// <summary>
     /// An audited change to an entity

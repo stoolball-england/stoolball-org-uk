@@ -1,4 +1,4 @@
-﻿namespace Stoolball.Umbraco.Data.Audit
+﻿namespace Stoolball.Audit
 {
     public enum AuditAction
     {

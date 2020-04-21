@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Stoolball.Audit;
 using Stoolball.MatchLocations;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;

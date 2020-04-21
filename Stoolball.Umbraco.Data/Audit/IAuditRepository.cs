@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using Stoolball.Audit;
+using System.Threading.Tasks;
 
 namespace Stoolball.Umbraco.Data.Audit
 {

@@ -2,6 +2,7 @@
   // the factory object returned
   return {
     async asyncForEach(array, callback) {
+      if (!array || !array.length || !callback) return;
       for (let index = 0; index < array.length; index++) {
         await callback(array[index], index, array);
       }
@@ -9,12 +10,13 @@
     parseXsrfTokenFromCookie(cookie) {
       const split = cookie.split(";");
       const xsrf = split.find(
-        value => value.replace(/\s/, "").indexOf("UMB-XSRF-TOKEN") === 0
+        (value) => value.replace(/\s/, "").indexOf("UMB-XSRF-TOKEN") === 0
       );
       return xsrf ? xsrf.split("=")[1] : null;
     },
     async postManyToApi(apiRoute, items, itemReducer, succeeded, failed) {
-      await this.asyncForEach(items, async item => {
+      if (!items || !items.length) return;
+      await this.asyncForEach(items, async (item) => {
         await this.postToApi(apiRoute, item, itemReducer, succeeded, failed);
       });
     },
@@ -24,10 +26,10 @@
         credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
-          "X-Umb-XSRF-Token": this.parseXsrfTokenFromCookie(document.cookie)
+          "X-Umb-XSRF-Token": this.parseXsrfTokenFromCookie(document.cookie),
         },
-        body: itemReducer ? JSON.stringify(itemReducer(item)) : null
-      }).then(response => {
+        body: itemReducer ? JSON.stringify(itemReducer(item)) : null,
+      }).then((response) => {
         if (response.ok && succeeded) {
           succeeded.push(item);
         }
@@ -42,9 +44,9 @@
         credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
-          "X-Umb-XSRF-Token": this.parseXsrfTokenFromCookie(document.cookie)
-        }
-      }).then(response => callback(response.ok));
+          "X-Umb-XSRF-Token": this.parseXsrfTokenFromCookie(document.cookie),
+        },
+      }).then((response) => callback(response.ok));
     },
     // this calls the Stoolball England data migration API
     getApiKey() {
@@ -53,7 +55,7 @@
         $http.get(url),
         "Failed to retrieve API key"
       );
-    }
+    },
   };
 }
 

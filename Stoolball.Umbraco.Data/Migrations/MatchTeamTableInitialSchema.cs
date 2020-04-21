@@ -24,5 +24,9 @@ namespace Stoolball.Umbraco.Data.Migrations
 
         [Column(nameof(TeamRole))]
         public string TeamRole { get; set; }
+
+        [Column(nameof(WonToss))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public bool? WonToss { get; set; }
     }
 }

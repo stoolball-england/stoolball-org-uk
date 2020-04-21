@@ -1,4 +1,4 @@
-﻿namespace Stoolball
+﻿namespace Stoolball.Teams
 {
 	public enum PlayerType
 	{
