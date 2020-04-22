@@ -57,7 +57,8 @@ namespace Stoolball.Umbraco.Data.Teams
                             LEFT JOIN {Tables.SeasonTeam} AS st ON t.TeamId = st.TeamId
                             LEFT JOIN {Tables.Season} AS s ON st.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.Competition} AS co ON co.CompetitionId = s.CompetitionId
-                            WHERE LOWER(t.TeamRoute) = @Route",
+                            WHERE LOWER(t.TeamRoute) = @Route
+                            ORDER BY co.CompetitionName, s.StartYear DESC, s.EndYear ASC",
                         (team, club, matchLocation, season, competition) =>
                         {
                             team.Club = club;

@@ -43,10 +43,11 @@ namespace Stoolball.Umbraco.Data.Clubs
                             c.Twitter, c.Facebook, c.Instagram, c.YouTube, c.Website, c.ClubMark, c.ClubRoute,
                             tn.TeamName, t.TeamRoute
                             FROM {Constants.Tables.Club} AS c 
-                            INNER JOIN {Constants.Tables.ClubName} AS cn ON c.ClubId = cn.ClubId
+                            INNER JOIN {Constants.Tables.ClubName} AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
                             LEFT JOIN {Constants.Tables.Team} AS t ON c.ClubId = t.ClubId
                             LEFT JOIN {Constants.Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
-                            WHERE LOWER(c.ClubRoute) = @Route AND cn.UntilDate IS NULL",
+                            WHERE LOWER(c.ClubRoute) = @Route
+                            ORDER BY tn.TeamName",
                         (club, team) =>
                         {
                             club.Teams.Add(team);

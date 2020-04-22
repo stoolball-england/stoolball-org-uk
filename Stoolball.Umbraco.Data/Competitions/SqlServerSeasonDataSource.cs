@@ -93,7 +93,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                             LEFT JOIN {Tables.Team} AS t ON t.TeamId = st.TeamId
                             LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             WHERE LOWER(s.SeasonRoute) = @Route
-                            ORDER BY s2.StartYear, s2.EndYear",
+                            ORDER BY s2.StartYear DESC, s2.EndYear ASC",
                         (season, competition, anotherSeasonInTheCompetition, team) =>
                         {
                             season.Competition = competition;
@@ -123,6 +123,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                             .GroupBy(teamInSeason => teamInSeason?.Team.TeamId)
                             .Select(duplicateTeamInSeason => duplicateTeamInSeason.First())
                             .OfType<TeamInSeason>()
+                            .OrderBy(team => team.Team.TeamName)
                             .ToList();
                     }
 

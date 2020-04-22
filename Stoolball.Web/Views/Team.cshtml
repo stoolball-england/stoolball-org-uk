@@ -61,7 +61,7 @@
         .Select(seasonsInACompetition =>
         {
             var competition = seasonsInACompetition.First().Season.Competition;
-            competition.Seasons.AddRange(seasonsInACompetition.Select(season => season.Season).OrderBy(season => season.SeasonName()));
+            competition.Seasons.AddRange(seasonsInACompetition.Select(season => season.Season));
             return competition;
         }));
 

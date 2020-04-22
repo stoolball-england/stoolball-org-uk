@@ -245,5 +245,5 @@
   "Name": "Member",
   "Alias": "Member",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.MemberTypeArtifact",
-  "__version": "3.3.0"
+  "__version": "3.3.1"
 }

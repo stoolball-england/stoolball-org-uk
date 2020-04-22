@@ -47,7 +47,8 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                             LEFT JOIN {Constants.Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId AND tml.UntilDate IS NULL
                             LEFT JOIN {Constants.Tables.Team} AS t ON tml.TeamId = t.TeamId AND t.UntilDate IS NULL AND NOT t.TeamType = '{TeamType.Once}'
                             LEFT JOIN {Constants.Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
-                            WHERE LOWER(ml.MatchLocationRoute) = @Route",
+                            WHERE LOWER(ml.MatchLocationRoute) = @Route
+                            ORDER BY tn.TeamName",
                         (matchLocation, team) =>
                         {
                             matchLocation.Teams.Add(team);
