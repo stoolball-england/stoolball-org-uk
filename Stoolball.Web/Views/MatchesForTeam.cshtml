@@ -1,5 +1,8 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamViewModel>
 @using Stoolball.Teams
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
 
 <h1>Matches for @Model.Team.TeamName</h1>
 

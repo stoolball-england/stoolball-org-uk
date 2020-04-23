@@ -76,8 +76,7 @@ namespace Stoolball.Web.Teams
                     },
                 };
 
-                model.Metadata.PageTitle = model.Team.TeamName + " stoolball team";
-                //model.Metadata.Description = model.Team.Description();
+                model.Metadata.PageTitle = $"Matches for {model.Team.TeamName} stoolball team";
 
                 return CurrentTemplate(model);
             }
