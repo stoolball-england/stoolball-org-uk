@@ -2,6 +2,10 @@
 @using ContentModels = Umbraco.Web.PublishedModels;
 @using ClientDependency.Core.Mvc;
 @using Stoolball.Teams
+@using Stoolball.Competitions
+@using Stoolball.Matches
+@using Stoolball.Web.Matches
+@using Stoolball.Web.Competitions
 @{
     Html.RequiresCss("~/css/forms.css");
     Html.RequiresJs("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey, 50);
@@ -9,6 +13,16 @@
     Html.RequiresJs("/matchlocations/match-location.js");
 }
 <h1>@Model.Name</h1>
+<h2>Tabs</h2>
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="#">Another tab</a>
+    </li>
+    <li class="nav-item">
+        <em class="nav-link active">Current tab</em>
+    </li>
+</ul>
+<p>Text below tabs.</p>
 <h2>Typography</h2>
 <p>This is a paragraph following an h2, with <strong>bold</strong> and <em>italic</em> formatting.</p>
 <p><img src="/images/logos/clubmark.png" alt="Clubmark accredited" width="150" height="29" /></p>
@@ -104,10 +118,55 @@
 </div>
 <h2>Stoolball listings</h2>
 <p>This is a list of teams.</p>
-@Html.Partial("_TeamList", new List<Team> { 
-    new Team { TeamName = "Team A", TeamRoute = "/teams/team-a" }, 
-    new Team { TeamName = "Team B", TeamRoute = "/teams/team-b" } 
+@Html.Partial("_TeamList", new List<Team> {
+    new Team { TeamName = "Team A", TeamRoute = "/teams/team-a" },
+    new Team { TeamName = "Team B", TeamRoute = "/teams/team-b" }
 })
+<p>This is a list of matches.</p>
+@{
+    var matchListing = new MatchListingViewModel
+    {
+        DateFormatter = new Stoolball.Dates.DateFormatter()
+    };
+    matchListing.MatchTypesToLabel.Add(MatchType.FriendlyMatch);
+    matchListing.Matches.AddRange(new[] {
+    new MatchListing {
+        MatchName = "Team A v Team B",
+        MatchRoute = "/matches/team-a-v-team-b",
+        MatchType = MatchType.LeagueMatch,
+        StartTime = DateTime.UtcNow.AddMonths(-1)
+        },
+    new MatchListing {
+        MatchName = "Team A v Team B",
+        MatchRoute = "/matches/team-a-v-team-b",
+        MatchType = MatchType.FriendlyMatch,
+        StartTime = DateTime.UtcNow
+        },
+    new MatchListing {
+        MatchName = "Team A tournament",
+        MatchRoute = "/tournaments/team-a-tournament",
+        MatchType = MatchType.Tournament,
+        PlayerType = PlayerType.Mixed,
+        SpacesInTournament = 5,
+        StartTime = DateTime.UtcNow.AddMonths(1)
+    }
+    });
+}
+@Html.Partial("_MatchList", matchListing)
+
+<p>This is a list of seasons.</p>
+@{
+    var seasonList = new SeasonListViewModel
+    {
+        ShowCompetitionHeading = true
+    };
+    var competition = new Competition { CompetitionName = "Example competition" };
+    competition.Seasons.Add(new Season { StartYear = 2020, EndYear = 2020, SeasonRoute = "/competitions/example/2020" });
+    competition.Seasons.Add(new Season { StartYear = 2020, EndYear = 2021, SeasonRoute = "/competitions/example/2020-21" });
+
+    seasonList.Competitions.Add(competition);
+}
+@Html.Partial("_SeasonList", seasonList)
 <div id="location-map" data-latitude="50.995715487915" data-longitude="0.088866949081421" data-precision="exact" data-title="Maresfield Recreation Ground, Maresfield">
     <p><a href="https://maps.google.co.uk/?z=16&amp;q=Maresfield+Recreation+Ground%2c+Maresfield@50.995715487915,0.088866949081421&amp;ll=50.995715487915,0.088866949081421">Map of Maresfield Recreation Ground, Maresfield on Google Maps</a></p>
 </div>

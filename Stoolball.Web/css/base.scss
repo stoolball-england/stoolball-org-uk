@@ -23,3 +23,6 @@
    Add some spacing, padding and border to tables until it becomes a problem. */
 table { margin-bottom: $spacer; }
 th, td { padding: $spacer/4; border: 1px solid #777; }
+
+/* Add some space below a tabbed navigation */
+.nav-tabs { margin-bottom: $spacer; }

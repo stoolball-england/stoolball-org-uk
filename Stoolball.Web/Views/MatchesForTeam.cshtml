@@ -10,6 +10,18 @@
     </div>
 }
 
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Team.TeamRoute">Summary</a>
+    </li>
+    @if (Model.Team.TeamType != TeamType.Once)
+    {
+        <li class="nav-item">
+            <em class="nav-link active">Matches</em>
+        </li>
+    }
+    </ul>
+
 @if (Model.Matches.Matches.Count > 0)
 {
     @Html.Partial("_MatchList", Model.Matches)

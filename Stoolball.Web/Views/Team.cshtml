@@ -11,6 +11,18 @@
 </div>
 }
 
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <em class="nav-link active">Summary</em>
+    </li>
+    @if (Model.Team.TeamType != TeamType.Once)
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Team.TeamRoute/matches">Matches</a>
+        </li>
+    }
+</ul>
+
 @if (Model.Team.TeamType != TeamType.Once)
 {
     if (Model.Team.Club != null)

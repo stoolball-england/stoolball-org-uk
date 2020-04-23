@@ -48,7 +48,7 @@ namespace Stoolball.Umbraco.Data.Teams
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var teams = await connection.QueryAsync<Team>(
-                        $@"SELECT t.TeamId, tn.TeamName, t.TeamType
+                        $@"SELECT t.TeamId, tn.TeamName, t.TeamType, t.TeamRoute, t.UntilDate
                             FROM {Tables.Team} AS t 
                             INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             WHERE LOWER(t.TeamRoute) = @Route",

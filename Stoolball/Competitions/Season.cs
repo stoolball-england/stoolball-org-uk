@@ -2,6 +2,7 @@
 using Humanizer;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Stoolball.Competitions
@@ -22,7 +23,7 @@ namespace Stoolball.Competitions
             }
             else
             {
-                return $"{StartYear}/{EndYear} season";
+                return $"{StartYear}/{new DateTime(EndYear, 1, 1).ToString("yy", CultureInfo.CurrentCulture)} season";
             }
         }
 
