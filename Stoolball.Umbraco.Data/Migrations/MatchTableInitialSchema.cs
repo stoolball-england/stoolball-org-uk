@@ -45,9 +45,9 @@ namespace Stoolball.Umbraco.Data.Migrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? PlayersPerTeam { get; set; }
 
-        [Column(nameof(QualificationType))]
+        [Column(nameof(TournamentQualificationType))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public string QualificationType { get; set; }
+        public string TournamentQualificationType { get; set; }
 
         [Column(nameof(InningsOrderIsKnown))]
         [NullSetting(NullSetting = NullSettings.Null)]

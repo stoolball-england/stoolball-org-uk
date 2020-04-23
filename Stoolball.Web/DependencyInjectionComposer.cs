@@ -1,10 +1,13 @@
-﻿using Stoolball.Email;
+﻿using Stoolball.Competitions;
+using Stoolball.Dates;
+using Stoolball.Email;
 using Stoolball.Routing;
 using Stoolball.Security;
 using Stoolball.Umbraco.Data;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Umbraco.Data.Competitions;
+using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Umbraco.Data.Redirects;
 using Stoolball.Umbraco.Data.Teams;
@@ -31,6 +34,8 @@ namespace Stoolball.Web
             composition.Register<IAuditRepository, SqlServerAuditRepository>(Lifetime.Singleton);
             composition.Register<IRouteNormaliser, RouteNormaliser>(Lifetime.Singleton);
             composition.Register<IApiKeyProvider, ConfigApiKeyProvider>(Lifetime.Singleton);
+            composition.Register<IDateFormatter, DateFormatter>(Lifetime.Singleton);
+            composition.Register<IEstimatedSeason, EstimatedSeason>(Lifetime.Singleton);
 
             // Data migration from the old Stoolball England website
             composition.Register<IRedirectsDataMigrator, SkybrudRedirectsDataMigrator>(Lifetime.Singleton);
@@ -45,6 +50,7 @@ namespace Stoolball.Web
             // be injected anywhere except the one place where it's serving a page of content.
             composition.Register<ClubController>(Lifetime.Request);
             composition.Register<TeamController>(Lifetime.Request);
+            composition.Register<MatchesForTeamController>(Lifetime.Request);
             composition.Register<MatchLocationController>(Lifetime.Request);
             composition.Register<SeasonController>(Lifetime.Request);
             composition.Register<CompetitionController>(Lifetime.Request);
@@ -56,6 +62,7 @@ namespace Stoolball.Web
             composition.Register<ITeamDataSource, SqlServerTeamDataSource>(Lifetime.Singleton);
             composition.Register<IMatchLocationDataSource, SqlServerMatchLocationDataSource>(Lifetime.Singleton);
             composition.Register<ISeasonDataSource, SqlServerSeasonDataSource>(Lifetime.Singleton);
+            composition.Register<IMatchDataSource, SqlServerMatchDataSource>(Lifetime.Singleton);
         }
     }
 }

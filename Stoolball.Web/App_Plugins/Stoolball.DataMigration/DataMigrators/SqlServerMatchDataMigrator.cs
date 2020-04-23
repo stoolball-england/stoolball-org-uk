@@ -280,7 +280,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					{
 						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Match} ON").ConfigureAwait(false);
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Match}
-						(MatchId, MatchName, UpdateMatchNameAutomatically, MatchLocationId, MatchType, QualificationType, PlayerType, PlayersPerTeam, 
+						(MatchId, MatchName, UpdateMatchNameAutomatically, MatchLocationId, MatchType, TournamentQualificationType, PlayerType, PlayersPerTeam, 
 						 OversPerInningsDefault, MaximumTeamsInTournament, SpacesInTournament, StartTime, StartTimeIsKnown, MatchNotes, MatchRoute)
 						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14)",
 							migratedTournament.TournamentId,

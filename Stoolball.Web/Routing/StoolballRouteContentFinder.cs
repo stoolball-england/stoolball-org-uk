@@ -46,39 +46,46 @@ namespace Stoolball.Web.Routing
         {
             var path = requestUrl.GetAbsolutePathDecoded();
 
-            var routeTypes = new Dictionary<string, StoolballRouteType>
+            var routeTypes = new Dictionary<(string expectedPrefix, string subrouteRegex), StoolballRouteType>
             {
-                { "clubs", StoolballRouteType.Club },
-                { "locations", StoolballRouteType.MatchLocation},
-                { "teams", StoolballRouteType.Team},
-                { "competitions", StoolballRouteType.Competition }
+                // Match /prefix/example-entity, but not /prefix, /prefix/, or /prefix/example-entity/invalid, 
+                // in upper, lower or mixed case
+                { ("clubs", null), StoolballRouteType.Club },
+                { ("locations", null), StoolballRouteType.MatchLocation},
+                { ("teams", null), StoolballRouteType.Team},
+                { ("competitions", null), StoolballRouteType.Competition },
+
+                // Match /competitions/example-entity/2020, /competitions/example-entity/2020-21, 
+                // but not /competitions, /competitions/, /competitions/example-entity, /competitions/example-entity/invalid 
+                // or /competitions/example-entity/2020/invalid, in upper, lower or mixed case
+                { ("competitions", @"[0-9]{4}\/?(-[0-9]{2}\/?)?"), StoolballRouteType.Season },
+
+                // Match /teams/example-team/matches or /teams/example-team/matches/ but not /teams, /teams/
+                // /teams/example-team, /teams/example-team/ or /teams/example-team/invalid in upper, lower or mixed case
+                { ("teams", @"matches\/?"), StoolballRouteType.MatchesForTeam }
             };
 
             foreach (var routeType in routeTypes)
             {
-                if (MatchRouteType(path, routeType.Key))
+                if (MatchRouteType(path, routeType.Key.expectedPrefix, routeType.Key.subrouteRegex))
                 {
                     return routeType.Value;
                 }
             }
 
-            /// Match /competitions/example-entity/2020, /competitions/example-entity/2020-21, 
-            /// but not /competitions, /competitions/, /competitions/example-entity, /competitions/example-entity/invalid or /competitions/example-entity/2020/invalid, 
-            /// in upper, lower or mixed case
-            if (Regex.IsMatch(path, @"^\/competitions\/[a-z0-9-]+\/[0-9]{4}\/?(-[0-9]{2}\/?)?$", RegexOptions.IgnoreCase))
-            {
-                return StoolballRouteType.Season;
-            }
-
             return null;
         }
 
-        /// <summary>
-        /// Match /prefix/example-entity, but not /prefix, /prefix/, or /prefix/example-entity/invalid, in upper, lower or mixed case
-        /// </summary>
-        private static bool MatchRouteType(string path, string expectedPrefix)
+        private static bool MatchRouteType(string path, string expectedPrefix, string subrouteRegex)
         {
-            return Regex.IsMatch(path, $@"^\/{expectedPrefix}\/([a-z0-9-]+\/?)$", RegexOptions.IgnoreCase);
+            if (!string.IsNullOrEmpty(subrouteRegex))
+            {
+                return Regex.IsMatch(path, $@"^\/{expectedPrefix}\/[a-z0-9-]+\/{subrouteRegex}$", RegexOptions.IgnoreCase);
+            }
+            else
+            {
+                return Regex.IsMatch(path, $@"^\/{expectedPrefix}\/([a-z0-9-]+\/?)$", RegexOptions.IgnoreCase);
+            }
         }
     }
 }

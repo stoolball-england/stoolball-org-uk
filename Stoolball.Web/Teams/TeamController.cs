@@ -41,7 +41,7 @@ namespace Stoolball.Web.Teams
 
             var model = new TeamViewModel(contentModel.Content)
             {
-                Team = await _teamDataSource.ReadTeamByRoute(Request.Url.AbsolutePath).ConfigureAwait(false)
+                Team = await _teamDataSource.ReadTeamByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false)
             };
 
             if (model.Team == null)

@@ -150,6 +150,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Audit\IAuditRepository.cs" />
     <Compile Include="Audit\SqlServerAuditRepository.cs" />
     <Compile Include="Clubs\IClubDataSource.cs" />
@@ -158,6 +159,11 @@
     <Compile Include="Clubs\SqlServerClubDataSource.cs" />
     <Compile Include="Competitions\ISeasonDataSource.cs" />
     <Compile Include="Competitions\SqlServerSeasonDataSource.cs" />
+    <Compile Include="DapperDateTimeHandler.cs" />
+    <Compile Include="DapperComposer.cs" />
+    <Compile Include="Matches\IMatchDataSource.cs" />
+    <Compile Include="Matches\MatchQuery.cs" />
+    <Compile Include="Matches\SqlServerMatchDataSource.cs" />
     <Compile Include="Teams\ITeamDataSource.cs" />
     <Compile Include="Teams\SqlServerTeamDataSource.cs" />
     <Compile Include="MatchLocations\IMatchLocationDataSource.cs" />

@@ -32,8 +32,39 @@ namespace Stoolball.Umbraco.Data.Teams
         /// Gets a single team based on its route
         /// </summary>
         /// <param name="route">/teams/example-team</param>
+        /// <param name="includeRelated"><c>true</c> to include the club, match locations and seasons; <c>false</c> otherwise</param>
         /// <returns>A matching <see cref="Team"/> or <c>null</c> if not found</returns>
-        public async Task<Team> ReadTeamByRoute(string route)
+        public async Task<Team> ReadTeamByRoute(string route, bool includeRelated = false)
+        {
+            return await (includeRelated ? ReadTeamWithRelatedDataByRoute(route) : ReadTeamByRoute(route)).ConfigureAwait(false);
+        }
+
+        private async Task<Team> ReadTeamByRoute(string route)
+        {
+            try
+            {
+                string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "teams");
+
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    var teams = await connection.QueryAsync<Team>(
+                        $@"SELECT t.TeamId, tn.TeamName, t.TeamType
+                            FROM {Tables.Team} AS t 
+                            INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
+                            WHERE LOWER(t.TeamRoute) = @Route",
+                        new { Route = normalisedRoute }).ConfigureAwait(false);
+
+                    return teams.FirstOrDefault();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(typeof(SqlServerTeamDataSource), ex);
+                throw;
+            }
+        }
+
+        private async Task<Team> ReadTeamWithRelatedDataByRoute(string route)
         {
             try
             {

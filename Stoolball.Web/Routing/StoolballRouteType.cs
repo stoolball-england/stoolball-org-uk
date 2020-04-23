@@ -9,6 +9,7 @@
         MatchLocation,
         Team,
         Season,
-        Competition
+        Competition,
+        MatchesForTeam
     }
 }
