@@ -30,5 +30,14 @@ namespace Stoolball.Web.Routing
 
         [HttpGet]
         public abstract new Task<ActionResult> Index(ContentModel contentModel);
+
+        /// <summary>
+        /// Gets an action result based on the template name found in the route values and a model
+        /// </summary>
+        /// <remarks>This method exists to make it easier to override the base method in unit tests.</remarks>
+        protected new virtual ActionResult CurrentTemplate<T>(T model)
+        {
+            return base.CurrentTemplate<T>(model);
+        }
     }
 }

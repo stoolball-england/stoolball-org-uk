@@ -60,6 +60,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Account\CreateMemberSurfaceControllerTests.cs" />
+    <Compile Include="Teams\MatchesForTeamControllerTests.cs" />
+    <Compile Include="Teams\TeamControllerTests.cs" />
+    <Compile Include="MatchLocations\MatchLocationControllerTests.cs" />
+    <Compile Include="MatchLocations\MatchesForMatchLocationControllerTests.cs" />
+    <Compile Include="Clubs\MatchesForClubControllerTests.cs" />
+    <Compile Include="Clubs\ClubControllerTests.cs" />
+    <Compile Include="Competitions\SeasonControllerTests.cs" />
+    <Compile Include="Competitions\CompetitionControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Routing\StoolballRouteContentFinderTests.cs" />
     <Compile Include="UmbracoBaseTest.cs" />
@@ -95,6 +103,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Stoolball.Umbraco.Data\Stoolball.Umbraco.Data.csproj">
+      <Project>{B34B6E72-27E7-4440-BE0D-A627ABE6CA17}</Project>
+      <Name>Stoolball.Umbraco.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Stoolball.Web\Stoolball.Web.csproj">
       <Project>{f66102a7-55a0-423a-aad3-19d89147b5c7}</Project>
       <Name>Stoolball.Web</Name>
