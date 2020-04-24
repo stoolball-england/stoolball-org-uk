@@ -10,6 +10,7 @@
         Team,
         Season,
         Competition,
+        MatchesForClub,
         MatchesForTeam
     }
 }

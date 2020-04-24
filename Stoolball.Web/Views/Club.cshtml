@@ -2,16 +2,16 @@
 
 <h1>@Model.Club.ClubName</h1>
 
-@Html.Partial("_TeamList", Model.Club.Teams)
-@*
-    if (count($this->matches))
-    {
-        echo new XhtmlElement('h2', 'Matches this season');
-        echo new MatchListControl($this->matches);
-    }
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <em class="nav-link active">Summary</em>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Club.ClubRoute/matches">Matches</a>
+    </li>
+</ul>
 
-    <p><a href="Model.Club.GetMatchesRssUrl(); ?>" rel="alternate" type="application/rss+xml" class="rss">Subscribe to new or updated matches</a></p>
-*@
+@Html.Partial("_TeamList", Model.Club.Teams)
 
 @if (Model.Club.ClubMark)
 {

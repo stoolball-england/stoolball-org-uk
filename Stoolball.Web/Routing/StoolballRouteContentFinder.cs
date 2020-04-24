@@ -62,6 +62,7 @@ namespace Stoolball.Web.Routing
 
                 // Match /teams/example-team/matches or /teams/example-team/matches/ but not /teams, /teams/
                 // /teams/example-team, /teams/example-team/ or /teams/example-team/invalid in upper, lower or mixed case
+                { ("clubs", @"matches\/?"), StoolballRouteType.MatchesForClub },
                 { ("teams", @"matches\/?"), StoolballRouteType.MatchesForTeam }
             };
 

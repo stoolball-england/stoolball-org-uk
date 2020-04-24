@@ -53,7 +53,7 @@ namespace Stoolball.Umbraco.Data.Matches
                         join.Append($"INNER JOIN {Tables.MatchTeam} mt ON m.MatchId = mt.MatchId ");
 
                         where.Append(where.Length > 0 ? "AND " : "WHERE ");
-                        where.Append("mt.TeamId IN (@TeamIds) ");
+                        where.Append("mt.TeamId IN @TeamIds ");
                         parameters.Add("@TeamIds", matchQuery.TeamIds);
                     }
 

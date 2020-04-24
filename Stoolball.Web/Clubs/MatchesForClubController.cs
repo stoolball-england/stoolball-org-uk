@@ -1,11 +1,11 @@
 ﻿using Stoolball.Competitions;
 using Stoolball.Dates;
+using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Umbraco.Data.Matches;
-using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -15,28 +15,28 @@ using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
 
-namespace Stoolball.Web.Teams
+namespace Stoolball.Web.Clubs
 {
-    public class MatchesForTeamController : RenderMvcControllerAsync
+    public class MatchesForClubController : RenderMvcControllerAsync
     {
-        private readonly ITeamDataSource _teamDataSource;
+        private readonly IClubDataSource _clubDataSource;
         private readonly IMatchDataSource _matchDataSource;
         private readonly IDateFormatter _dateFormatter;
         private readonly IEstimatedSeason _estimatedSeason;
 
-        public MatchesForTeamController(IGlobalSettings globalSettings,
+        public MatchesForClubController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           ITeamDataSource teamDataSource,
+           IClubDataSource clubDataSource,
            IMatchDataSource matchDataSource,
            IDateFormatter dateFormatter,
            IEstimatedSeason estimatedSeason)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
+            _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
             _estimatedSeason = estimatedSeason ?? throw new ArgumentNullException(nameof(estimatedSeason));
@@ -50,29 +50,29 @@ namespace Stoolball.Web.Teams
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var team = await _teamDataSource.ReadTeamByRoute(Request.Url.AbsolutePath).ConfigureAwait(false);
+            var club = await _clubDataSource.ReadClubByRoute(Request.Url.AbsolutePath).ConfigureAwait(false);
 
-            if (team == null)
+            if (club == null)
             {
                 return new HttpNotFoundResult();
             }
             else
             {
-                var model = new TeamViewModel(contentModel.Content)
+                var model = new ClubViewModel(contentModel.Content)
                 {
-                    Team = team,
+                    Club = club,
                     Matches = new MatchListingViewModel
                     {
                         Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
                         {
-                            TeamIds = new List<int> { team.TeamId },
+                            TeamIds = club.Teams.Select(team => team.TeamId).ToList(),
                             FromDate = _estimatedSeason.StartDate
                         }).ConfigureAwait(false),
                         DateFormatter = _dateFormatter
                     },
                 };
 
-                model.Metadata.PageTitle = $"Matches for {model.Team.TeamName} stoolball team";
+                model.Metadata.PageTitle = $"Matches for {model.Club.ClubName}";
 
                 return CurrentTemplate(model);
             }

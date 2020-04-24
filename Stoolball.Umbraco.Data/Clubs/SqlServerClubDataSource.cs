@@ -41,7 +41,7 @@ namespace Stoolball.Umbraco.Data.Clubs
                     var clubs = await connection.QueryAsync<Club, Team, Club>(
                         $@"SELECT c.ClubId, cn.ClubName, c.HowManyPlayers, c.PlaysOutdoors, c.PlaysIndoors,
                             c.Twitter, c.Facebook, c.Instagram, c.YouTube, c.Website, c.ClubMark, c.ClubRoute,
-                            tn.TeamName, t.TeamRoute
+                            t.TeamId, tn.TeamName, t.TeamRoute
                             FROM {Constants.Tables.Club} AS c 
                             INNER JOIN {Constants.Tables.ClubName} AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
                             LEFT JOIN {Constants.Tables.Team} AS t ON c.ClubId = t.ClubId
@@ -54,7 +54,7 @@ namespace Stoolball.Umbraco.Data.Clubs
                             return club;
                         },
                         new { Route = normalisedRoute },
-                        splitOn: "TeamName").ConfigureAwait(false);
+                        splitOn: "TeamId").ConfigureAwait(false);
 
                     var resolvedClub = clubs.GroupBy(club => club.ClubId).Select(group =>
                     {
