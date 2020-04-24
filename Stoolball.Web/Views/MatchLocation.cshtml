@@ -9,6 +9,16 @@ Html.RequiresJs("/matchlocations/match-location.js");
 }
 
 <h1>@Model.MatchLocation</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <em class="nav-link active">Summary</em>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute/matches">Matches</a>
+    </li>
+</ul>
+
 @{
     var addressLines = new List<string>();
     if (!string.IsNullOrWhiteSpace(Model.MatchLocation.SecondaryAddressableObjectName))

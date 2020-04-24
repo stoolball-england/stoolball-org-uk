@@ -51,8 +51,8 @@ namespace Stoolball.Web.Routing
                 // Match /prefix/example-entity, but not /prefix, /prefix/, or /prefix/example-entity/invalid, 
                 // in upper, lower or mixed case
                 { ("clubs", null), StoolballRouteType.Club },
-                { ("locations", null), StoolballRouteType.MatchLocation},
                 { ("teams", null), StoolballRouteType.Team},
+                { ("locations", null), StoolballRouteType.MatchLocation},
                 { ("competitions", null), StoolballRouteType.Competition },
 
                 // Match /competitions/example-entity/2020, /competitions/example-entity/2020-21, 
@@ -63,7 +63,8 @@ namespace Stoolball.Web.Routing
                 // Match /teams/example-team/matches or /teams/example-team/matches/ but not /teams, /teams/
                 // /teams/example-team, /teams/example-team/ or /teams/example-team/invalid in upper, lower or mixed case
                 { ("clubs", @"matches\/?"), StoolballRouteType.MatchesForClub },
-                { ("teams", @"matches\/?"), StoolballRouteType.MatchesForTeam }
+                { ("teams", @"matches\/?"), StoolballRouteType.MatchesForTeam },
+                { ("locations", @"matches\/?"), StoolballRouteType.MatchesForMatchLocation }
             };
 
             foreach (var routeType in routeTypes)

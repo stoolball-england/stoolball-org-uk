@@ -27,7 +27,8 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
-    <UseGlobalApplicationHostFile>True</UseGlobalApplicationHostFile>
+    <UseGlobalApplicationHostFile>
+    </UseGlobalApplicationHostFile>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
@@ -814,6 +815,7 @@
     <Compile Include="Competitions\SeasonListViewModel.cs" />
     <Compile Include="Email\EmailProtectorHtmlHelper.cs" />
     <Compile Include="Matches\MatchListingViewModel.cs" />
+    <Compile Include="MatchLocations\MatchesForMatchLocationController.cs" />
     <Compile Include="Teams\MatchesForTeamController.cs" />
     <Compile Include="Teams\TeamController.cs" />
     <Compile Include="Teams\TeamViewModel.cs" />
@@ -941,6 +943,7 @@
     <Content Include="Views\MatchesForTeam.cshtml" />
     <Content Include="Views\Partials\_MatchList.cshtml" />
     <Content Include="Views\MatchesForClub.cshtml" />
+    <Content Include="Views\MatchesForMatchLocation.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

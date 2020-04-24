@@ -42,7 +42,7 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                         $@"SELECT ml.MatchLocationId, ml.MatchLocationNotes, ml.MatchLocationRoute,
                             ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.StreetDescription, ml.Locality, ml.Town, ml.AdministrativeArea, ml.Postcode, 
                             ml.Latitude, ml.Longitude, ml.GeoPrecision,
-                            tn.TeamName, t.TeamRoute
+                            t.TeamId, tn.TeamName, t.TeamRoute
                             FROM {Constants.Tables.MatchLocation} AS ml
                             LEFT JOIN {Constants.Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId AND tml.UntilDate IS NULL
                             LEFT JOIN {Constants.Tables.Team} AS t ON tml.TeamId = t.TeamId AND t.UntilDate IS NULL AND NOT t.TeamType = '{TeamType.Once}'
@@ -55,7 +55,7 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                             return matchLocation;
                         },
                         new { Route = normalisedRoute },
-                        splitOn: "TeamName").ConfigureAwait(false);
+                        splitOn: "TeamId").ConfigureAwait(false);
 
                     var locationToReturn = locations.FirstOrDefault(); // get an example with the properties that are the same for every row
                     if (locationToReturn != null)

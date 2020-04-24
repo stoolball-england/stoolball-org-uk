@@ -1,0 +1,24 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.MatchLocations.MatchLocationViewModel>
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+
+<h1>Matches at @Model.MatchLocation</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute">Summary</a>
+    </li>
+    <li class="nav-item">
+        <em class="nav-link active">Matches</em>
+    </li>
+</ul>
+
+@if (Model.Matches.Matches.Count > 0)
+{
+    @Html.Partial("_MatchList", Model.Matches)
+}
+else
+{
+    <p>There are no matches at this location this season.</p>
+}

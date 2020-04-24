@@ -1,4 +1,5 @@
 ﻿using Stoolball.MatchLocations;
+using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
 using Umbraco.Core.Models.PublishedContent;
 
@@ -12,5 +13,6 @@ namespace Stoolball.Web.MatchLocations
         public MatchLocation MatchLocation { get; set; }
 
         public string GoogleMapsApiKey { get; set; }
+        public MatchListingViewModel Matches { get; set; }
     }
 }
