@@ -1,4 +1,5 @@
 ﻿using Stoolball.Audit;
+using Stoolball.Competitions;
 using Stoolball.MatchLocations;
 using Stoolball.Teams;
 using System;
@@ -22,6 +23,7 @@ namespace Stoolball.Matches
         public int? SpacesInTournament { get; set; }
         public string MatchNotes { get; set; }
         public string TournamentRoute { get; set; }
+        public List<Season> Seasons { get; internal set; } = new List<Season>();
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 
         public Uri EntityUri

@@ -107,6 +107,11 @@
               StartTime: match.startTime,
               StartTimeIsKnown: match.startTimeKnown,
               Teams: teams,
+              Seasons: match.seasons.length
+                ? match.seasons.map((seasonId) => ({
+                    SeasonId: seasonId,
+                  }))
+                : null,
               MatchRoute: match.route,
               History: [
                 {
@@ -155,6 +160,11 @@
               Team: { TeamId: team.teamId },
               TeamRole: team.teamRole - 1,
             })),
+            Seasons: tournament.seasons.length
+              ? tournament.seasons.map((seasonId) => ({
+                  SeasonId: seasonId,
+                }))
+              : null,
             TournamentRoute: tournament.route,
             History: [
               {

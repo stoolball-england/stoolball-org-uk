@@ -40,6 +40,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
 					using (var transaction = database.GetTransaction())
 					{
+						await database.ExecuteAsync($"DELETE FROM {Tables.SeasonMatch}").ConfigureAwait(false);
 						await database.ExecuteAsync($"DELETE FROM {Tables.MatchInnings}").ConfigureAwait(false);
 						await database.ExecuteAsync($"DELETE FROM {Tables.MatchTeam}").ConfigureAwait(false);
 						await database.ExecuteAsync($"DELETE FROM {Tables.Match}").ConfigureAwait(false);
@@ -86,6 +87,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				StartTime = match.StartTime,
 				StartTimeIsKnown = match.StartTimeIsKnown,
 				Teams = match.Teams,
+				Seasons = match.Seasons,
 				MatchResultType = match.MatchResultType,
 				MatchNotes = match.MatchNotes,
 				MatchRoute = match.MatchRoute
@@ -151,6 +153,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 								team.TeamRole.ToString(),
 								team.WonToss).ConfigureAwait(false);
 						}
+						foreach (var season in migratedMatch.Seasons)
+						{
+							await database.ExecuteAsync($@"INSERT INTO {Tables.SeasonMatch} 
+								(MatchId, SeasonId) VALUES (@0, @1)",
+								migratedMatch.MatchId,
+								season.SeasonId).ConfigureAwait(false);
+						}
 						transaction.Complete();
 					}
 
@@ -198,6 +207,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				SpacesInTournament = tournament.SpacesInTournament,
 				StartTime = tournament.StartTime,
 				StartTimeIsKnown = tournament.StartTimeIsKnown,
+				Teams = tournament.Teams,
+				Seasons = tournament.Seasons,
 				TournamentRoute = tournament.TournamentRoute,
 				MatchNotes = tournament.MatchNotes,
 			};
@@ -250,6 +261,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 								migratedTournament.TournamentId,
 								team.Team.TeamId,
 								team.TeamRole.ToString()).ConfigureAwait(false);
+						}
+						foreach (var season in migratedTournament.Seasons)
+						{
+							await database.ExecuteAsync($@"INSERT INTO {Tables.SeasonMatch} 
+								(MatchId, SeasonId) VALUES (@0, @1)",
+								migratedTournament.TournamentId,
+								season.SeasonId).ConfigureAwait(false);
 						}
 						transaction.Complete();
 					}
