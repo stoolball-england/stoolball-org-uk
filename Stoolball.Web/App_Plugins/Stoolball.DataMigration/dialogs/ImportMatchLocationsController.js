@@ -1,9 +1,9 @@
-(function() {
+(function () {
   "use strict";
 
   angular
     .module("umbraco")
-    .controller("Stoolball.DataMigration.ImportMatchLocations", function(
+    .controller("Stoolball.DataMigration.ImportMatchLocations", function (
       $http,
       $scope,
       umbRequestHelper,
@@ -32,7 +32,7 @@
         await stoolballResource.postManyToApi(
           "MatchLocationMigration/CreateMatchLocation",
           locations,
-          location => ({
+          (location) => ({
             MatchLocationId: location.groundId,
             SortName: location.sortName,
             SecondaryAddressableObjectName: location.saon,
@@ -49,8 +49,16 @@
             MatchLocationNotes:
               location.directions + location.parking + location.facilities,
             MatchLocationRoute: location.route,
-            DateCreated: location.dateCreated,
-            DateUpdated: location.dateUpdated
+            History: [
+              {
+                Action: "Create",
+                AuditDate: location.dateCreated,
+              },
+              {
+                Action: "Update",
+                AuditDate: location.dateUpdated,
+              },
+            ],
           }),
           imported,
           failed
@@ -60,7 +68,7 @@
       function submit() {
         vm.buttonState = "busy";
 
-        stoolballResource.getApiKey().then(async apiKey => {
+        stoolballResource.getApiKey().then(async (apiKey) => {
           vm.processing = true;
           try {
             let locations = await getMatchLocationsToMigrate(

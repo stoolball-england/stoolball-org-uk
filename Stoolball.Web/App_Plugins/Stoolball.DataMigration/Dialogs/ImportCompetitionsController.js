@@ -47,8 +47,16 @@
             PlayersPerTeam: competition.playersPerTeam,
             Overs: competition.overs,
             CompetitionRoute: competition.route,
-            DateCreated: competition.dateCreated,
-            DateUpdated: competition.dateUpdated,
+            History: [
+              {
+                Action: "Create",
+                AuditDate: competition.dateCreated,
+              },
+              {
+                Action: "Update",
+                AuditDate: competition.dateUpdated,
+              },
+            ],
           }),
           imported,
           failed

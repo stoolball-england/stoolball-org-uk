@@ -38,6 +38,7 @@ namespace Stoolball.Web
             composition.Register<IEstimatedSeason, EstimatedSeason>(Lifetime.Singleton);
 
             // Data migration from the old Stoolball England website
+            composition.Register<IAuditHistoryBuilder, AuditHistoryBuilder>(Lifetime.Singleton);
             composition.Register<IRedirectsDataMigrator, SkybrudRedirectsDataMigrator>(Lifetime.Singleton);
             composition.Register<IClubDataMigrator, SqlServerClubDataMigrator>(Lifetime.Singleton);
             composition.Register<ISchoolDataMigrator, SqlServerSchoolDataMigrator>(Lifetime.Singleton);

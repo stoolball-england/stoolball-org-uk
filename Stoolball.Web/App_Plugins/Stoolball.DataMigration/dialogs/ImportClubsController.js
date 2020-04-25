@@ -1,9 +1,9 @@
-(function() {
+(function () {
   "use strict";
 
   angular
     .module("umbraco")
-    .controller("Stoolball.DataMigration.ImportClubs", function(
+    .controller("Stoolball.DataMigration.ImportClubs", function (
       $http,
       $scope,
       stoolballResource,
@@ -33,7 +33,7 @@
         await stoolballResource.postManyToApi(
           "ClubMigration/CreateClub",
           clubs,
-          club => ({
+          (club) => ({
             ClubId: club.clubId,
             ClubName: club.name,
             PlaysOutdoors: club.playsOutdoors,
@@ -44,8 +44,16 @@
             ClubMark: club.clubmarkAccredited,
             HowManyPlayers: club.howManyPlayers,
             ClubRoute: club.route,
-            DateCreated: club.dateCreated,
-            DateUpdated: club.dateUpdated
+            History: [
+              {
+                Action: "Create",
+                AuditDate: club.dateCreated,
+              },
+              {
+                Action: "Update",
+                AuditDate: club.dateUpdated,
+              },
+            ],
           }),
           imported,
           failed
@@ -55,7 +63,7 @@
       function submit() {
         vm.buttonState = "busy";
 
-        stoolballResource.getApiKey().then(async apiKey => {
+        stoolballResource.getApiKey().then(async (apiKey) => {
           vm.processing = true;
           try {
             let clubs = await getClubsToMigrate(

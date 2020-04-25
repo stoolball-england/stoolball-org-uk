@@ -339,6 +339,9 @@
     <Content Include="App_Plugins\Stoolball.DataMigration\DataMigrationDashboard.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteCompetitions.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteCompetitionsController.js" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMatches.html" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMatchesController.js" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMatchesController.min.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMatchLocations.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMatchLocationsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMemberGroups.html" />
@@ -361,6 +364,8 @@
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportCompetitionsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportGroupsAndMembers.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportGroupsAndMembersController.js" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportMatches.html" />
+    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportMatchesController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportMatchLocations.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportMatchLocationsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportSchools.html" />
@@ -789,6 +794,8 @@
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\MatchLocationMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\ClubMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\SchoolMigrationController.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\AuditHistoryBuilder.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IAuditHistoryBuilder.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\ICompetitionDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IMatchDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\ITeamDataMigrator.cs" />

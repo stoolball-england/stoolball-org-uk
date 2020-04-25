@@ -1,12 +1,13 @@
 ﻿using HtmlAgilityPack;
 using Humanizer;
+using Stoolball.Audit;
 using Stoolball.Teams;
 using System;
 using System.Collections.Generic;
 
 namespace Stoolball.Competitions
 {
-    public class Competition
+    public class Competition : IAuditable
     {
         public int? CompetitionId { get; set; }
 
@@ -57,8 +58,8 @@ namespace Stoolball.Competitions
         public int Overs { get; set; } = 16;
 
         public string CompetitionRoute { get; set; }
-        public DateTimeOffset? DateCreated { get; set; }
-        public DateTimeOffset? DateUpdated { get; set; }
+        public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
+
         public Uri EntityUri
         {
             get { return new Uri($"https://www.stoolball.org.uk/id/competition/{CompetitionId}"); }

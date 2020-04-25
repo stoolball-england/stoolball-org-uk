@@ -54,8 +54,16 @@
             ShowRunsScored: season.showRunsScored,
             ShowRunsConceded: season.showRunsConceded,
             SeasonRoute: season.route,
-            DateCreated: season.dateCreated,
-            DateUpdated: season.dateUpdated,
+            History: [
+              {
+                Action: "Create",
+                AuditDate: season.dateCreated,
+              },
+              {
+                Action: "Update",
+                AuditDate: season.dateUpdated,
+              },
+            ],
           }),
           imported,
           failed

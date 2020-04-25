@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Stoolball.Audit;
+using System;
+using System.Collections.Generic;
 
 namespace Stoolball.Schools
 {
-    public class School
+    public class School : IAuditable
     {
         public int? SchoolId { get; set; }
         public string SchoolName { get; set; }
@@ -15,8 +17,8 @@ namespace Stoolball.Schools
         public string YouTube { get; set; }
         public int? HowManyPlayers { get; set; }
         public string SchoolRoute { get; set; }
-        public DateTimeOffset? DateCreated { get; set; }
-        public DateTimeOffset? DateUpdated { get; set; }
+        public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
+
         public Uri EntityUri
         {
             get { return new Uri($"https://www.stoolball.org.uk/id/school/{SchoolId}"); }

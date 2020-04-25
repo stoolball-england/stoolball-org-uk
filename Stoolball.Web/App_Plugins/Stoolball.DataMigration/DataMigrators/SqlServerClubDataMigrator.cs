@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Audit;
-using Stoolball.Clubs;
+﻿using Stoolball.Clubs;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
@@ -15,13 +13,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 	{
 		private readonly IRedirectsRepository _redirectsRepository;
 		private readonly IScopeProvider _scopeProvider;
+		private readonly IAuditHistoryBuilder _auditHistoryBuilder;
 		private readonly IAuditRepository _auditRepository;
 		private readonly ILogger _logger;
 
-		public SqlServerClubDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditRepository auditRepository, ILogger logger)
+		public SqlServerClubDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, ILogger logger)
 		{
 			_redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
 			_scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
+			_auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
 			_auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
@@ -79,15 +79,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Instagram = club.Instagram,
 				ClubMark = club.ClubMark,
 				HowManyPlayers = club.HowManyPlayers,
-				ClubRoute = "/clubs/" + club.ClubRoute,
-				DateCreated = club.DateCreated.HasValue && club.DateCreated <= club.DateUpdated ? club.DateCreated : System.Data.SqlTypes.SqlDateTime.MinValue.Value,
-				DateUpdated = club.DateUpdated.HasValue && club.DateUpdated >= club.DateCreated ? club.DateUpdated : System.Data.SqlTypes.SqlDateTime.MinValue.Value
+				ClubRoute = "/clubs/" + club.ClubRoute
 			};
 
 			if (migratedClub.ClubRoute.EndsWith("club", StringComparison.OrdinalIgnoreCase))
 			{
 				migratedClub.ClubRoute = migratedClub.ClubRoute.Substring(0, migratedClub.ClubRoute.Length - 4);
 			}
+
+			_auditHistoryBuilder.BuildInitialAuditHistory(club, migratedClub, nameof(SqlServerClubDataMigrator));
 
 			using (var scope = _scopeProvider.CreateScope())
 			{
@@ -114,7 +114,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							(ClubId, ClubName, FromDate) VALUES (@0, @1, @2)",
 							migratedClub.ClubId,
 							migratedClub.ClubName,
-							migratedClub.DateCreated
+							migratedClub.History[0].AuditDate
 							).ConfigureAwait(false);
 						transaction.Complete();
 					}
@@ -131,23 +131,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			await _redirectsRepository.InsertRedirect(club.ClubRoute, migratedClub.ClubRoute, string.Empty).ConfigureAwait(false);
 			await _redirectsRepository.InsertRedirect(club.ClubRoute, migratedClub.ClubRoute, "/matches.rss").ConfigureAwait(false);
 
-			await _auditRepository.CreateAudit(new AuditRecord
+			foreach (var audit in migratedClub.History)
 			{
-				Action = AuditAction.Create,
-				ActorName = nameof(SqlServerClubDataMigrator),
-				EntityUri = club.EntityUri,
-				State = JsonConvert.SerializeObject(club),
-				AuditDate = club.DateCreated.HasValue ? club.DateCreated.Value : migratedClub.DateCreated.Value
-			}).ConfigureAwait(false);
-
-			await _auditRepository.CreateAudit(new AuditRecord
-			{
-				Action = AuditAction.Update,
-				ActorName = nameof(SqlServerClubDataMigrator),
-				EntityUri = migratedClub.EntityUri,
-				State = JsonConvert.SerializeObject(migratedClub),
-				AuditDate = migratedClub.DateUpdated.Value
-			}).ConfigureAwait(false);
+				await _auditRepository.CreateAudit(audit).ConfigureAwait(false);
+			}
 
 			return migratedClub;
 		}

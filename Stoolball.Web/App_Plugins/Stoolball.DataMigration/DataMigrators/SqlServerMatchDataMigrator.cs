@@ -1,31 +1,27 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Audit;
-using Stoolball.Matches;
+﻿using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
-using Umbraco.Core.Services;
 using Tables = Stoolball.Umbraco.Data.Constants.Tables;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
 	public class SqlServerMatchDataMigrator : IMatchDataMigrator
 	{
-		private readonly ServiceContext _serviceContext;
 		private readonly IRedirectsRepository _redirectsRepository;
 		private readonly IScopeProvider _scopeProvider;
+		private readonly IAuditHistoryBuilder _auditHistoryBuilder;
 		private readonly IAuditRepository _auditRepository;
 		private readonly ILogger _logger;
 
-		public SqlServerMatchDataMigrator(ServiceContext serviceContext, IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditRepository auditRepository, ILogger logger)
+		public SqlServerMatchDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, ILogger logger)
 		{
-			_serviceContext = serviceContext ?? throw new ArgumentNullException(nameof(serviceContext));
 			_redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
 			_scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
+			_auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
 			_auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
@@ -102,33 +98,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
 			migratedMatch.MatchRoute = "/matches/" + migratedMatch.MatchRoute;
 
-			if (match.History.Count > 0)
-			{
-				var (memberGuid, memberName) = FindMember(match.History[0].ActorName);
-				migratedMatch.History.Add(new AuditRecord
-				{
-					Action = AuditAction.Create,
-					MemberKey = memberGuid,
-					ActorName = !string.IsNullOrEmpty(memberName) ? memberName : nameof(SqlServerMatchDataMigrator),
-					EntityUri = match.EntityUri,
-					State = JsonConvert.SerializeObject(match),
-					AuditDate = match.History[0].AuditDate
-				});
-			};
-
-			if (match.History.Count > 1 && match.History[1].AuditDate > match.History[0].AuditDate)
-			{
-				var (memberGuid, memberName) = FindMember(match.History[1].ActorName);
-				migratedMatch.History.Add(new AuditRecord
-				{
-					Action = AuditAction.Update,
-					MemberKey = memberGuid,
-					ActorName = !string.IsNullOrEmpty(memberName) ? memberName : nameof(SqlServerMatchDataMigrator),
-					EntityUri = migratedMatch.EntityUri,
-					State = JsonConvert.SerializeObject(migratedMatch),
-					AuditDate = match.History[1].AuditDate
-				});
-			}
+			_auditHistoryBuilder.BuildInitialAuditHistory(match, migratedMatch, nameof(SqlServerMatchDataMigrator));
 
 			using (var scope = _scopeProvider.CreateScope())
 			{
@@ -243,33 +213,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			}
 			migratedTournament.TournamentRoute = "/tournaments/" + migratedTournament.TournamentRoute;
 
-			if (tournament.History.Count > 0)
-			{
-				var (memberGuid, memberName) = FindMember(tournament.History[0].ActorName);
-				migratedTournament.History.Add(new AuditRecord
-				{
-					Action = AuditAction.Create,
-					MemberKey = memberGuid,
-					ActorName = !string.IsNullOrEmpty(memberName) ? memberName : nameof(SqlServerMatchDataMigrator),
-					EntityUri = tournament.EntityUri,
-					State = JsonConvert.SerializeObject(tournament),
-					AuditDate = tournament.History[0].AuditDate
-				});
-			};
-
-			if (tournament.History.Count > 1 && tournament.History[1].AuditDate > tournament.History[0].AuditDate)
-			{
-				var (memberGuid, memberName) = FindMember(tournament.History[1].ActorName);
-				migratedTournament.History.Add(new AuditRecord
-				{
-					Action = AuditAction.Update,
-					MemberKey = memberGuid,
-					ActorName = !string.IsNullOrEmpty(memberName) ? memberName : nameof(SqlServerMatchDataMigrator),
-					EntityUri = migratedTournament.EntityUri,
-					State = JsonConvert.SerializeObject(migratedTournament),
-					AuditDate = tournament.History[1].AuditDate
-				});
-			}
+			_auditHistoryBuilder.BuildInitialAuditHistory(tournament, migratedTournament, nameof(SqlServerMatchDataMigrator));
 
 			using (var scope = _scopeProvider.CreateScope())
 			{
@@ -329,21 +273,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			}
 
 			return migratedTournament;
-		}
-
-		private (Guid? memberGuid, string memberName) FindMember(string actorName)
-		{
-			int memberId;
-			if (!string.IsNullOrWhiteSpace(actorName) && int.TryParse(actorName, out memberId))
-			{
-				var member = _serviceContext.MemberService.GetMembersByPropertyValue("migratedMemberId", memberId).SingleOrDefault();
-				if (member != null)
-				{
-					return (member.Key, member.Name);
-				}
-			}
-
-			return (null, null);
 		}
 	}
 }

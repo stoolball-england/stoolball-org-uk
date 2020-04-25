@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Audit;
-using Stoolball.Schools;
+﻿using Stoolball.Schools;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
@@ -15,13 +13,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 	{
 		private readonly IRedirectsRepository _redirectsRepository;
 		private readonly IScopeProvider _scopeProvider;
+		private readonly IAuditHistoryBuilder _auditHistoryBuilder;
 		private readonly IAuditRepository _auditRepository;
 		private readonly ILogger _logger;
 
-		public SqlServerSchoolDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditRepository auditRepository, ILogger logger)
+		public SqlServerSchoolDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, ILogger logger)
 		{
 			_redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
 			_scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
+			_auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
 			_auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
@@ -78,10 +78,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Facebook = school.Facebook,
 				Instagram = school.Instagram,
 				HowManyPlayers = school.HowManyPlayers,
-				SchoolRoute = "/schools" + school.SchoolRoute.Substring(6),
-				DateCreated = school.DateCreated,
-				DateUpdated = school.DateUpdated
+				SchoolRoute = "/schools" + school.SchoolRoute.Substring(6)
 			};
+
+			_auditHistoryBuilder.BuildInitialAuditHistory(school, migratedSchool, nameof(SqlServerSchoolDataMigrator));
 
 			try
 			{
@@ -107,7 +107,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							(SchoolId, SchoolName, FromDate) VALUES (@0, @1, @2)",
 							migratedSchool.SchoolId,
 							migratedSchool.SchoolName,
-							migratedSchool.DateCreated
+							migratedSchool.History[0].AuditDate
 							).ConfigureAwait(false);
 						transaction.Complete();
 					}
@@ -124,23 +124,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			await _redirectsRepository.InsertRedirect(school.SchoolRoute, migratedSchool.SchoolRoute, string.Empty).ConfigureAwait(false);
 			await _redirectsRepository.InsertRedirect(school.SchoolRoute, migratedSchool.SchoolRoute, "/matches.rss").ConfigureAwait(false);
 
-			await _auditRepository.CreateAudit(new AuditRecord
+			foreach (var audit in migratedSchool.History)
 			{
-				Action = AuditAction.Create,
-				ActorName = nameof(SqlServerSchoolDataMigrator),
-				EntityUri = school.EntityUri,
-				State = JsonConvert.SerializeObject(school),
-				AuditDate = school.DateCreated.Value
-			}).ConfigureAwait(false);
-
-			await _auditRepository.CreateAudit(new AuditRecord
-			{
-				Action = AuditAction.Update,
-				ActorName = nameof(SqlServerSchoolDataMigrator),
-				EntityUri = migratedSchool.EntityUri,
-				State = JsonConvert.SerializeObject(migratedSchool),
-				AuditDate = migratedSchool.DateUpdated.Value
-			}).ConfigureAwait(false);
+				await _auditRepository.CreateAudit(audit).ConfigureAwait(false);
+			}
 
 			return migratedSchool;
 		}

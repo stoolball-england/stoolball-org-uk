@@ -1,4 +1,5 @@
 ﻿using Humanizer;
+using Stoolball.Audit;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.MatchLocations;
@@ -11,7 +12,7 @@ using System.Text.RegularExpressions;
 
 namespace Stoolball.Teams
 {
-    public class Team
+    public class Team : IAuditable
     {
         public int TeamId { get; set; }
         public string TeamName { get; set; }
@@ -87,8 +88,8 @@ namespace Stoolball.Teams
         public string Cost { get; set; }
         public int MemberGroupId { get; set; }
         public string TeamRoute { get; set; }
-        public DateTimeOffset? DateCreated { get; set; }
-        public DateTimeOffset? DateUpdated { get; set; }
+        public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
+
         public Uri EntityUri
         {
             get { return new Uri($"https://www.stoolball.org.uk/id/team/{TeamId}"); }

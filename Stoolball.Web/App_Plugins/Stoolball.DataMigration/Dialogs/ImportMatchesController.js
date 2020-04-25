@@ -110,10 +110,12 @@
               MatchRoute: match.route,
               History: [
                 {
+                  Action: "Create",
                   AuditDate: match.dateCreated,
                   ActorName: match.createdBy ? match.createdBy : null,
                 },
                 {
+                  Action: "Update",
                   AuditDate: match.dateUpdated,
                   ActorName: match.updatedBy ? match.updatedBy : null,
                 },
@@ -156,10 +158,12 @@
             TournamentRoute: tournament.route,
             History: [
               {
+                Action: "Create",
                 AuditDate: tournament.dateCreated,
                 ActorName: tournament.createdBy ? tournament.createdBy : null,
               },
               {
+                Action: "Update",
                 AuditDate: tournament.dateUpdated,
                 ActorName: tournament.updatedBy ? tournament.updatedBy : null,
               },

@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Audit;
-using Stoolball.MatchLocations;
+﻿using Stoolball.MatchLocations;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
@@ -15,13 +13,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 	{
 		private readonly IRedirectsRepository _redirectsRepository;
 		private readonly IScopeProvider _scopeProvider;
+		private readonly IAuditHistoryBuilder _auditHistoryBuilder;
 		private readonly IAuditRepository _auditRepository;
 		private readonly ILogger _logger;
 
-		public SqlServerMatchLocationDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditRepository auditRepository, ILogger logger)
+		public SqlServerMatchLocationDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, ILogger logger)
 		{
 			_redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
 			_scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
+			_auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
 			_auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
@@ -81,10 +81,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Longitude = matchLocation.Longitude,
 				GeoPrecision = matchLocation.GeoPrecision,
 				MatchLocationNotes = matchLocation.MatchLocationNotes,
-				MatchLocationRoute = "/locations" + matchLocation.MatchLocationRoute.Substring(6),
-				DateCreated = matchLocation.DateCreated,
-				DateUpdated = matchLocation.DateUpdated
+				MatchLocationRoute = "/locations" + matchLocation.MatchLocationRoute.Substring(6)
 			};
+
+			_auditHistoryBuilder.BuildInitialAuditHistory(matchLocation, migratedMatchLocation, nameof(SqlServerMatchLocationDataMigrator));
 
 			try
 			{
@@ -131,23 +131,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			await _redirectsRepository.InsertRedirect(matchLocation.MatchLocationRoute, migratedMatchLocation.MatchLocationRoute, "/statistics").ConfigureAwait(false);
 			await _redirectsRepository.InsertRedirect(matchLocation.MatchLocationRoute, migratedMatchLocation.MatchLocationRoute, "/calendar.ics").ConfigureAwait(false);
 
-			await _auditRepository.CreateAudit(new AuditRecord
+			foreach (var audit in migratedMatchLocation.History)
 			{
-				Action = AuditAction.Create,
-				ActorName = nameof(SqlServerMatchLocationDataMigrator),
-				EntityUri = matchLocation.EntityUri,
-				State = JsonConvert.SerializeObject(matchLocation),
-				AuditDate = matchLocation.DateCreated.Value
-			}).ConfigureAwait(false);
-
-			await _auditRepository.CreateAudit(new AuditRecord
-			{
-				Action = AuditAction.Update,
-				ActorName = nameof(SqlServerMatchLocationDataMigrator),
-				EntityUri = migratedMatchLocation.EntityUri,
-				State = JsonConvert.SerializeObject(migratedMatchLocation),
-				AuditDate = migratedMatchLocation.DateUpdated.Value
-			}).ConfigureAwait(false);
+				await _auditRepository.CreateAudit(audit).ConfigureAwait(false);
+			}
 
 			return migratedMatchLocation;
 		}

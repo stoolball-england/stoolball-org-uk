@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Audit;
-using Stoolball.Teams;
+﻿using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Umbraco.Data.Redirects;
@@ -19,15 +17,17 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		private readonly ServiceContext _serviceContext;
 		private readonly IRedirectsRepository _redirectsRepository;
 		private readonly IScopeProvider _scopeProvider;
+		private readonly IAuditHistoryBuilder _auditHistoryBuilder;
 		private readonly IAuditRepository _auditRepository;
 		private readonly ILogger _logger;
 		private readonly IClubDataSource _clubDataSource;
 
-		public SqlServerTeamDataMigrator(ServiceContext serviceContext, IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditRepository auditRepository, ILogger logger, IClubDataSource clubDataSource)
+		public SqlServerTeamDataMigrator(ServiceContext serviceContext, IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, ILogger logger, IClubDataSource clubDataSource)
 		{
 			_serviceContext = serviceContext ?? throw new ArgumentNullException(nameof(serviceContext));
 			_redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
 			_scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
+			_auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
 			_auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 			_clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
@@ -94,9 +94,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				PlayingTimes = team.PlayingTimes,
 				Cost = team.Cost,
 				MemberGroupId = ReadMemberGroupId(team),
-				TeamRoute = "/teams/" + team.TeamRoute,
-				DateCreated = team.DateCreated,
-				DateUpdated = team.DateUpdated
+				TeamRoute = "/teams/" + team.TeamRoute
 			};
 			migratedTeam.MatchLocations.AddRange(team.MatchLocations);
 
@@ -104,6 +102,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			{
 				migratedTeam.TeamRoute = migratedTeam.TeamRoute.Substring(0, migratedTeam.TeamRoute.Length - 4);
 			}
+
+			_auditHistoryBuilder.BuildInitialAuditHistory(team, migratedTeam, nameof(SqlServerTeamDataMigrator));
 
 			using (var scope = _scopeProvider.CreateScope())
 			{
@@ -141,7 +141,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedTeam.TeamId,
 							migratedTeam.TeamName,
 							migratedTeam.GenerateComparableName(),
-							migratedTeam.DateCreated
+							migratedTeam.History[0].AuditDate
 							).ConfigureAwait(false);
 						if (migratedTeam.MatchLocations.Count > 0)
 						{
@@ -149,7 +149,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							(TeamId, MatchLocationId, FromDate) VALUES (@0, @1, @2)",
 								migratedTeam.TeamId,
 								migratedTeam.MatchLocations.First().MatchLocationId,
-								migratedTeam.DateCreated
+								migratedTeam.History[0].AuditDate
 								).ConfigureAwait(false);
 						}
 						transaction.Complete();
@@ -170,25 +170,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			await _redirectsRepository.InsertRedirect(team.TeamRoute, migratedTeam.TeamRoute, "/players").ConfigureAwait(false);
 			await _redirectsRepository.InsertRedirect(team.TeamRoute, migratedTeam.TeamRoute, "/calendar.ics").ConfigureAwait(false);
 
-			await _auditRepository.CreateAudit(new AuditRecord
+			foreach (var audit in migratedTeam.History)
 			{
-				Action = AuditAction.Create,
-				ActorName = nameof(SqlServerTeamDataMigrator),
-				EntityUri = team.EntityUri,
-				State = JsonConvert.SerializeObject(team),
-				AuditDate = team.DateCreated.Value
-			}).ConfigureAwait(false);
-
-			if (migratedTeam.DateUpdated > migratedTeam.DateCreated)
-			{
-				await _auditRepository.CreateAudit(new AuditRecord
-				{
-					Action = AuditAction.Update,
-					ActorName = nameof(SqlServerTeamDataMigrator),
-					EntityUri = migratedTeam.EntityUri,
-					State = JsonConvert.SerializeObject(migratedTeam),
-					AuditDate = migratedTeam.DateUpdated.Value
-				}).ConfigureAwait(false);
+				await _auditRepository.CreateAudit(audit).ConfigureAwait(false);
 			}
 
 			return migratedTeam;

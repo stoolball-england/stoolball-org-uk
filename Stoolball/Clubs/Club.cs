@@ -1,11 +1,12 @@
-﻿using Stoolball.Teams;
+﻿using Stoolball.Audit;
+using Stoolball.Teams;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Stoolball.Clubs
 {
-    public class Club
+    public class Club : IAuditable
     {
         public int? ClubId { get; set; }
         public string ClubName { get; set; }
@@ -20,8 +21,8 @@ namespace Stoolball.Clubs
         public bool ClubMark { get; set; }
         public int? HowManyPlayers { get; set; }
         public string ClubRoute { get; set; }
-        public DateTimeOffset? DateCreated { get; set; }
-        public DateTimeOffset? DateUpdated { get; set; }
+        public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
+
         public Uri EntityUri
         {
             get { return new Uri($"https://www.stoolball.org.uk/id/club/{ClubId}"); }

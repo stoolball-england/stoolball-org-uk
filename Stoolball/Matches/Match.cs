@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Stoolball.Matches
 {
-    public class Match
+    public class Match : IAuditable
     {
         public int? MatchId { get; set; }
         public string MatchName { get; set; }

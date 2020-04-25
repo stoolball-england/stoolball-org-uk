@@ -1,11 +1,12 @@
-﻿using Stoolball.Teams;
+﻿using Stoolball.Audit;
+using Stoolball.Teams;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Stoolball.MatchLocations
 {
-    public class MatchLocation
+    public class MatchLocation : IAuditable
     {
         public int? MatchLocationId { get; set; }
 
@@ -35,8 +36,8 @@ namespace Stoolball.MatchLocations
         public List<Team> Teams { get; internal set; } = new List<Team>();
 
         public string MatchLocationRoute { get; set; }
-        public DateTimeOffset? DateCreated { get; set; }
-        public DateTimeOffset? DateUpdated { get; set; }
+        public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
+
         public Uri EntityUri
         {
             get { return new Uri($"https://www.stoolball.org.uk/id/match-location/{MatchLocationId}"); }

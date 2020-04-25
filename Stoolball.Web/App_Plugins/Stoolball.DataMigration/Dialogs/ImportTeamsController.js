@@ -56,8 +56,16 @@
             PlayingTimes: team.playingTimes,
             Cost: team.cost,
             TeamRoute: team.route,
-            DateCreated: team.dateCreated,
-            DateUpdated: team.dateUpdated,
+            History: [
+              {
+                Action: "Create",
+                AuditDate: team.dateCreated,
+              },
+              {
+                Action: "Update",
+                AuditDate: team.dateUpdated,
+              },
+            ],
           }),
           imported,
           failed

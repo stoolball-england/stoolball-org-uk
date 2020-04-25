@@ -1,9 +1,9 @@
-(function() {
+(function () {
   "use strict";
 
   angular
     .module("umbraco")
-    .controller("Stoolball.DataMigration.ImportSchools", function(
+    .controller("Stoolball.DataMigration.ImportSchools", function (
       $http,
       $scope,
       stoolballResource,
@@ -36,7 +36,7 @@
         await stoolballResource.postManyToApi(
           "SchoolMigration/CreateSchool",
           schools,
-          school => ({
+          (school) => ({
             SchoolId: school.clubId,
             SchoolName: school.name,
             PlaysOutdoors: school.playsOutdoors,
@@ -46,8 +46,16 @@
             Instagram: school.instagramAccount,
             HowManyPlayers: school.howManyPlayers,
             SchoolRoute: school.route,
-            DateCreated: school.dateCreated,
-            DateUpdated: school.dateUpdated
+            History: [
+              {
+                Action: "Create",
+                AuditDate: school.dateCreated,
+              },
+              {
+                Action: "Update",
+                AuditDate: school.dateUpdated,
+              },
+            ],
           }),
           imported,
           failed
@@ -57,7 +65,7 @@
       function submit() {
         vm.buttonState = "busy";
 
-        stoolballResource.getApiKey().then(async apiKey => {
+        stoolballResource.getApiKey().then(async (apiKey) => {
           vm.processing = true;
           try {
             let schools = await getSchoolsToMigrate(

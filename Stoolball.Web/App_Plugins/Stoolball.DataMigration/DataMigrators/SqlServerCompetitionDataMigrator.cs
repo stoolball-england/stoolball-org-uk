@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Audit;
-using Stoolball.Competitions;
+﻿using Stoolball.Competitions;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
@@ -16,13 +14,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 	{
 		private readonly IRedirectsRepository _redirectsRepository;
 		private readonly IScopeProvider _scopeProvider;
+		private readonly IAuditHistoryBuilder _auditHistoryBuilder;
 		private readonly IAuditRepository _auditRepository;
 		private readonly ILogger _logger;
 
-		public SqlServerCompetitionDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditRepository auditRepository, ILogger logger)
+		public SqlServerCompetitionDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, ILogger logger)
 		{
 			_redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
 			_scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
+			_auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
 			_auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
@@ -83,11 +83,11 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Overs = competition.Overs,
 				PlayerType = competition.PlayerType,
 				CompetitionRoute = "/competitions/" + competition.CompetitionRoute,
-				FromDate = competition.DateCreated <= competition.DateUpdated ? competition.DateCreated.Value : System.Data.SqlTypes.SqlDateTime.MinValue.Value,
-				UntilDate = competition.UntilDate,
-				DateCreated = competition.DateCreated <= competition.DateUpdated ? competition.DateCreated : System.Data.SqlTypes.SqlDateTime.MinValue.Value,
-				DateUpdated = competition.DateUpdated >= competition.DateCreated ? competition.DateUpdated : System.Data.SqlTypes.SqlDateTime.MinValue.Value
+				UntilDate = competition.UntilDate
 			};
+
+			_auditHistoryBuilder.BuildInitialAuditHistory(competition, migratedCompetition, nameof(SqlServerCompetitionDataMigrator));
+			migratedCompetition.FromDate = competition.History[0].AuditDate;
 
 			using (var scope = _scopeProvider.CreateScope())
 			{
@@ -133,23 +133,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, migratedCompetition.CompetitionRoute, "/map").ConfigureAwait(false);
 			await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, migratedCompetition.CompetitionRoute, "/matches.rss").ConfigureAwait(false);
 
-			await _auditRepository.CreateAudit(new AuditRecord
+			foreach (var audit in migratedCompetition.History)
 			{
-				Action = AuditAction.Create,
-				ActorName = nameof(SqlServerCompetitionDataMigrator),
-				EntityUri = competition.EntityUri,
-				State = JsonConvert.SerializeObject(competition),
-				AuditDate = competition.DateCreated.Value
-			}).ConfigureAwait(false);
-
-			await _auditRepository.CreateAudit(new AuditRecord
-			{
-				Action = AuditAction.Update,
-				ActorName = nameof(SqlServerCompetitionDataMigrator),
-				EntityUri = migratedCompetition.EntityUri,
-				State = JsonConvert.SerializeObject(migratedCompetition),
-				AuditDate = migratedCompetition.DateUpdated.Value
-			}).ConfigureAwait(false);
+				await _auditRepository.CreateAudit(audit).ConfigureAwait(false);
+			}
 
 			return migratedCompetition;
 		}
@@ -206,10 +193,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				ShowTable = season.ShowTable,
 				ShowRunsScored = season.ShowRunsScored,
 				ShowRunsConceded = season.ShowRunsConceded,
-				SeasonRoute = "/competitions/" + season.Competition.CompetitionRoute + "/" + season.StartYear + (season.EndYear > season.StartYear ? "-" + season.EndYear.ToString(CultureInfo.CurrentCulture).Substring(2) : string.Empty),
-				DateCreated = season.DateCreated <= season.DateUpdated ? season.DateCreated : System.Data.SqlTypes.SqlDateTime.MinValue.Value,
-				DateUpdated = season.DateUpdated >= season.DateCreated ? season.DateUpdated : System.Data.SqlTypes.SqlDateTime.MinValue.Value
+				SeasonRoute = "/competitions/" + season.Competition.CompetitionRoute + "/" + season.StartYear + (season.EndYear > season.StartYear ? "-" + season.EndYear.ToString(CultureInfo.CurrentCulture).Substring(2) : string.Empty)
 			};
+
+			_auditHistoryBuilder.BuildInitialAuditHistory(season, migratedSeason, nameof(SqlServerCompetitionDataMigrator));
 
 			using (var scope = _scopeProvider.CreateScope())
 			{
@@ -261,23 +248,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			await _redirectsRepository.InsertRedirect(season.SeasonRoute, migratedSeason.SeasonRoute, "/table").ConfigureAwait(false);
 			await _redirectsRepository.InsertRedirect(season.SeasonRoute, migratedSeason.SeasonRoute, "/map").ConfigureAwait(false);
 
-			await _auditRepository.CreateAudit(new AuditRecord
+			foreach (var audit in migratedSeason.History)
 			{
-				Action = AuditAction.Create,
-				ActorName = nameof(SqlServerCompetitionDataMigrator),
-				EntityUri = season.EntityUri,
-				State = JsonConvert.SerializeObject(season),
-				AuditDate = season.DateCreated.Value
-			}).ConfigureAwait(false);
-
-			await _auditRepository.CreateAudit(new AuditRecord
-			{
-				Action = AuditAction.Update,
-				ActorName = nameof(SqlServerCompetitionDataMigrator),
-				EntityUri = migratedSeason.EntityUri,
-				State = JsonConvert.SerializeObject(migratedSeason),
-				AuditDate = migratedSeason.DateUpdated.Value
-			}).ConfigureAwait(false);
+				await _auditRepository.CreateAudit(audit).ConfigureAwait(false);
+			}
 
 			return migratedSeason;
 		}
