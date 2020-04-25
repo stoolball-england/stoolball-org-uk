@@ -34,15 +34,16 @@ namespace Stoolball.Competitions
         /// <returns></returns>
         public string SeasonFullNameAndPlayerType()
         {
-            var name = Competition?.CompetitionName;
+            var competitionName = Competition?.CompetitionName;
+            var playerType = string.Empty;
 
             var type = Competition?.PlayerType.ToString().Humanize(LetterCasing.Sentence);
-            if (type != null && !name.Replace("'", string.Empty).ToUpperInvariant().Contains(type.Replace("'", string.Empty).ToUpperInvariant()))
+            if (type != null && !competitionName.Replace("'", string.Empty).ToUpperInvariant().Contains(type.Replace("'", string.Empty).ToUpperInvariant()))
             {
-                name += " (" + type + ")";
+                playerType = " (" + type + ")";
             }
 
-            return $"{name}, {SeasonName()}".Trim();
+            return $"{competitionName}, {SeasonName()}{playerType}".Trim();
         }
 
         public Competition Competition { get; set; }
