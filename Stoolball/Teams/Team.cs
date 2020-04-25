@@ -14,7 +14,7 @@ namespace Stoolball.Teams
 {
     public class Team : IAuditable
     {
-        public int TeamId { get; set; }
+        public int? TeamId { get; set; }
         public string TeamName { get; set; }
 
         /// <summary>

@@ -12,6 +12,15 @@
     </div>
 }
 
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <em class="nav-link active">Summary</em>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
+    </li>
+</ul>
+
 @Html.Raw(Model.Season.Competition.Introduction)
 @Html.Raw(Model.Season.Introduction)
 

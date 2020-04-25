@@ -71,7 +71,7 @@ namespace Stoolball.Web.Tests.Teams
         public async Task Route_matching_team_returns_TeamViewModel()
         {
             var teamDataSource = new Mock<ITeamDataSource>();
-            teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).ReturnsAsync(new Team());
+            teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).ReturnsAsync(new Team { TeamId = 1 });
 
             var matchesDataSource = new Mock<IMatchDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());

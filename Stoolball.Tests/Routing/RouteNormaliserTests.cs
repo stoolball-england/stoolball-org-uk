@@ -22,17 +22,19 @@ namespace Stoolball.Tests.Routing
         }
 
         [Theory]
-        [InlineData("prefix/route-value/1234", "prefix", "[0-9]{4}")]
-        [InlineData("/prefix/route-value/1234/", "prefix", "[0-9]{4}")]
-        [InlineData("/PREFIX/ROUTE-VALUE/1234", "prefix", "[0-9]{4}")]
-        [InlineData("prefix/route-value/1234", "/prefix/", "[0-9]{4}")]
-        public void Route_should_normalise_to_prefix_routevalue_subroute(string route, string expectedPrefix, string subrouteRegex)
+        [InlineData("prefix/route-value/1234", "/prefix/", "/prefix/route-value/1234")]
+        [InlineData("/prefix/route-value/1234", "/prefix/", "/prefix/route-value/1234")]
+        [InlineData("/PREFIX/ROUTE-VALUE/1234/", "prefix", "/prefix/route-value/1234")]
+        [InlineData("/prefix/route-value/1234-56/", "/prefix/", "/prefix/route-value/1234-56")]
+        [InlineData("/prefix/route-value/1234/matches", "/prefix/", "/prefix/route-value/1234")]
+        [InlineData("/prefix/route-value/1234-56/matches/", "/prefix/", "/prefix/route-value/1234-56")]
+        public void Season_route_should_normalise_to_prefix_routevalue(string route, string expectedPrefix, string expectedResult)
         {
             var normaliser = new RouteNormaliser();
 
-            var result = normaliser.NormaliseRouteToEntity(route, expectedPrefix, subrouteRegex);
+            var result = normaliser.NormaliseRouteToEntity(route, expectedPrefix, @"^[a-z0-9-]+\/[0-9]{4}(-[0-9]{2})?$");
 
-            Assert.Equal("/prefix/route-value/1234", result);
+            Assert.Equal(expectedResult, result);
         }
 
         [Theory]
@@ -55,11 +57,11 @@ namespace Stoolball.Tests.Routing
 
         [Theory]
         [InlineData("prefix", "prefix/route-value/invalid", "(valid|alsoValid)")]
-        public void Invalid_subRoute_should_throw_ArgumentException(string route, string expectedPrefix, string subrouteRegex)
+        public void Invalid_subRoute_should_throw_ArgumentException(string route, string expectedPrefix, string entityRouteRegex)
         {
             var normaliser = new RouteNormaliser();
 
-            Assert.Throws<ArgumentException>(() => normaliser.NormaliseRouteToEntity(route, expectedPrefix, subrouteRegex));
+            Assert.Throws<ArgumentException>(() => normaliser.NormaliseRouteToEntity(route, expectedPrefix, entityRouteRegex));
         }
     }
 }

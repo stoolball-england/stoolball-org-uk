@@ -14,10 +14,10 @@ namespace Stoolball.Routing
         /// </summary>
         /// <param name="route">prefix/entity-route</param>
         /// <param name="expectedPrefix">prefix</param>
-        /// <param name="subrouteRegex">(valid|alsoValid)</param>
+        /// <param name="entityRouteRegex">(valid|alsoValid)</param>
         /// <returns>prefix/entity-route</returns>
         /// <exception cref="ArgumentException">If the <c>route</c> or the <c>expectedPrefix</c> is not in a valid format</exception>
-        public string NormaliseRouteToEntity(string route, string expectedPrefix, string subrouteRegex)
+        public string NormaliseRouteToEntity(string route, string expectedPrefix, string entityRouteRegex)
         {
             if (string.IsNullOrWhiteSpace(route) && route != "/")
             {
@@ -31,34 +31,32 @@ namespace Stoolball.Routing
 
             var normalisedRoute = route.Trim('/').ToLower(CultureInfo.CurrentCulture);
             var normalisedPrefix = expectedPrefix.Trim('/').ToLower(CultureInfo.CurrentCulture);
-            if (!normalisedRoute.StartsWith(normalisedPrefix + "/", StringComparison.OrdinalIgnoreCase))
+            var splitRoute = normalisedRoute.Split('/');
+
+            if (splitRoute.Length == 0 || splitRoute[0] != normalisedPrefix)
             {
                 throw new ArgumentException($"Route must start with '{normalisedPrefix}/. It was {route}.", nameof(route));
             }
 
-            if (normalisedRoute.Length <= normalisedPrefix.Length + 1)
+            if (splitRoute.Length == 1)
             {
-                throw new ArgumentException($"Route must include a segment beyond the prefix. It was {route}.", nameof(route));
+                throw new ArgumentException($"Route must include an entity route beyond the prefix. It was {route}.", nameof(route));
             }
 
-            if (normalisedRoute.Substring(normalisedPrefix.Length + 1).Contains("/"))
+
+            var entityRoute = string.Empty;
+            for (var i = 1; i < splitRoute.Length; i++)
             {
-                // If there's anything after prefix/route, test it against the Regex or either discard it 
-                if (!string.IsNullOrWhiteSpace(subrouteRegex))
+                if (entityRoute.Length > 0) { entityRoute += "/"; }
+                entityRoute += splitRoute[i];
+
+                if (Regex.IsMatch(entityRoute, entityRouteRegex))
                 {
-                    var subroute = normalisedRoute.Substring(normalisedRoute.Substring(normalisedPrefix.Length + 1).IndexOf("/", StringComparison.OrdinalIgnoreCase) + normalisedPrefix.Length + 2);
-                    if (!Regex.IsMatch(subroute, subrouteRegex))
-                    {
-                        throw new ArgumentException($"Sub-route must match the regular expression '{subrouteRegex}'. Sub-route {subroute} was identified in the route {route}.", nameof(route));
-                    }
-                }
-                else
-                {
-                    normalisedRoute = normalisedRoute.Substring(0, normalisedRoute.Substring(normalisedPrefix.Length + 1).IndexOf("/", StringComparison.OrdinalIgnoreCase) + normalisedPrefix.Length + 1);
+                    return $"/{normalisedPrefix}/{entityRoute}";
                 }
             }
 
-            return "/" + normalisedRoute;
+            throw new ArgumentException($"Entity route must match the regular expression '{entityRouteRegex}'. Entity route {entityRoute} was identified in the route {route}.", nameof(route));
         }
 
         /// <summary>
@@ -70,7 +68,7 @@ namespace Stoolball.Routing
         /// <exception cref="ArgumentException">If the <c>route</c> or the <c>expectedPrefix</c> is not in a valid format</exception>
         public string NormaliseRouteToEntity(string route, string expectedPrefix)
         {
-            return NormaliseRouteToEntity(route, expectedPrefix, null);
+            return NormaliseRouteToEntity(route, expectedPrefix, "^[a-z0-9-]+$");
         }
     }
 }

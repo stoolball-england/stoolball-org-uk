@@ -26,7 +26,8 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.MatchLocation, typeof(MatchLocationController) },
             { StoolballRouteType.MatchesForMatchLocation, typeof(MatchesForMatchLocationController) },
             { StoolballRouteType.Competition, typeof(CompetitionController) },
-            { StoolballRouteType.Season, typeof(SeasonController) }
+            { StoolballRouteType.Season, typeof(SeasonController) },
+            { StoolballRouteType.MatchesForSeason, typeof(MatchesForSeasonController) },
         };
 
         [HttpGet]

@@ -1,0 +1,25 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.SeasonViewModel>
+@using Stoolball.Competitions
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+
+<h1>Matches for @Model.Season.SeasonFullNameAndPlayerType()</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Season.SeasonRoute">Summary</a>
+    </li>
+    <li class="nav-item">
+        <em class="nav-link active">Matches</em>
+    </li>
+</ul>
+
+@if (Model.Matches.Matches.Count > 0)
+{
+    @Html.Partial("_MatchList", Model.Matches)
+}
+else
+{
+    <p>There are no matches for this season.</p>
+}

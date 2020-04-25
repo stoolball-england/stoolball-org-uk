@@ -37,7 +37,7 @@ namespace Stoolball.Umbraco.Data.Matches
             {
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var sql = $@"SELECT TOP 100 m.MatchName, m.MatchType, m.PlayerType, m.TournamentQualificationType, 
+                    var sql = $@"SELECT m.MatchName, m.MatchType, m.PlayerType, m.TournamentQualificationType, 
                         m.StartTime, m.StartTimeIsKnown, m.SpacesInTournament, m.MatchRoute
                         FROM {Tables.Match} AS m
                         <<JOIN>>
@@ -55,6 +55,15 @@ namespace Stoolball.Umbraco.Data.Matches
                         where.Append(where.Length > 0 ? "AND " : "WHERE ");
                         where.Append("mt.TeamId IN @TeamIds ");
                         parameters.Add("@TeamIds", matchQuery.TeamIds);
+                    }
+
+                    if (matchQuery?.SeasonIds?.Count > 0)
+                    {
+                        join.Append($"INNER JOIN {Tables.SeasonMatch} sm ON m.MatchId = sm.MatchId ");
+
+                        where.Append(where.Length > 0 ? "AND " : "WHERE ");
+                        where.Append("sm.SeasonId IN @SeasonIds ");
+                        parameters.Add("@SeasonIds", matchQuery.SeasonIds);
                     }
 
                     if (matchQuery?.FromDate != null)

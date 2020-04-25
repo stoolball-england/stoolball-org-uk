@@ -12,6 +12,7 @@
         Competition,
         MatchesForClub,
         MatchesForTeam,
-        MatchesForMatchLocation
+        MatchesForMatchLocation,
+        MatchesForSeason
     }
 }

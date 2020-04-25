@@ -67,22 +67,59 @@ namespace Stoolball.Umbraco.Data.Competitions
                 throw;
             }
         }
-
         /// <summary>
         /// Gets a single stoolball season based on its route
         /// </summary>
         /// <param name="route">/competitions/example-competition/2020</param>
+        /// <param name="includeRelated"><c>true</c> to include the teams and other seasons in the competition; <c>false</c> otherwise</param>
         /// <returns>A matching <see cref="Season"/> or <c>null</c> if not found</returns>
-        public async Task<Season> ReadSeasonByRoute(string route)
+        public async Task<Season> ReadSeasonByRoute(string route, bool includeRelated = false)
+        {
+            return await (includeRelated ? ReadSeasonWithRelatedDataByRoute(route) : ReadSeasonByRoute(route)).ConfigureAwait(false);
+        }
+
+        private async Task<Season> ReadSeasonByRoute(string route)
         {
             try
             {
-                string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "competitions", "^[0-9]{4}(-[0-9]{2})?$");
+                string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "competitions", @"^[a-z0-9-]+\/[0-9]{4}(-[0-9]{2})?$");
+
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    var seasons = await connection.QueryAsync<Season, Competition, Season>(
+                        $@"SELECT s.SeasonId, s.StartYear, s.EndYear, s.SeasonRoute,
+                            co.CompetitionName, co.PlayerType, co.UntilDate
+                            FROM {Tables.Season} AS s 
+                            INNER JOIN {Tables.Competition} AS co ON co.CompetitionId = s.CompetitionId
+                            WHERE LOWER(s.SeasonRoute) = @Route",
+                        (season, competition) =>
+                        {
+                            season.Competition = competition;
+                            return season;
+                        },
+                        new { Route = normalisedRoute },
+                        splitOn: "CompetitionName").ConfigureAwait(false);
+
+                    return seasons.FirstOrDefault();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(typeof(SqlServerSeasonDataSource), ex);
+                throw;
+            }
+        }
+
+        private async Task<Season> ReadSeasonWithRelatedDataByRoute(string route)
+        {
+            try
+            {
+                string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "competitions", @"^[a-z0-9-]+\/[0-9]{4}(-[0-9]{2})?$");
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var seasons = await connection.QueryAsync<Season, Competition, Season, Team, Season>(
-                        $@"SELECT s.StartYear, s.EndYear, s.Introduction, s.Results,
+                        $@"SELECT s.StartYear, s.EndYear, s.Introduction, s.Results, s.SeasonRoute,
                             co.CompetitionName, co.PlayerType, co.Introduction, co.UntilDate, co.PublicContactDetails, co.Website,
                             s2.SeasonId, s2.StartYear, s2.EndYear, s2.SeasonRoute,
                             t.TeamId, tn.TeamName, t.TeamRoute
