@@ -29,8 +29,39 @@ namespace Stoolball.Umbraco.Data.MatchLocations
         /// Gets a single match location based on its route
         /// </summary>
         /// <param name="route">/locations/example-location</param>
+        /// <param name="includeRelated"><c>true</c> to include the teams based at the selected location; <c>false</c> otherwise</param>
         /// <returns>A matching <see cref="MatchLocation"/> or <c>null</c> if not found</returns>
-        public async Task<MatchLocation> ReadMatchLocationByRoute(string route)
+        public async Task<MatchLocation> ReadMatchLocationByRoute(string route, bool includeRelated = false)
+        {
+            return await (includeRelated ? ReadMatchLocationWithRelatedDataByRoute(route) : ReadMatchLocationByRoute(route)).ConfigureAwait(false);
+        }
+
+        private async Task<MatchLocation> ReadMatchLocationByRoute(string route)
+        {
+            try
+            {
+                string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "locations");
+
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    var locations = await connection.QueryAsync<MatchLocation>(
+                        $@"SELECT ml.MatchLocationId, ml.MatchLocationRoute,
+                            ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, ml.Town 
+                            FROM {Constants.Tables.MatchLocation} AS ml
+                            WHERE LOWER(ml.MatchLocationRoute) = @Route",
+                        new { Route = normalisedRoute }).ConfigureAwait(false);
+
+                    return locations.FirstOrDefault();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(typeof(SqlServerMatchLocationDataSource), ex);
+                throw;
+            }
+        }
+
+        private async Task<MatchLocation> ReadMatchLocationWithRelatedDataByRoute(string route)
         {
             try
             {

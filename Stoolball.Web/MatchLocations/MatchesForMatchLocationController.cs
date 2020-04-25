@@ -50,7 +50,7 @@ namespace Stoolball.Web.MatchLocations
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var location = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.Url.AbsolutePath).ConfigureAwait(false);
+            var location = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.Url.AbsolutePath, false).ConfigureAwait(false);
 
             if (location == null)
             {

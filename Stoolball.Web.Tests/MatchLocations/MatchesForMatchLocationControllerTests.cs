@@ -54,7 +54,7 @@ namespace Stoolball.Web.Tests.MatchLocations
         public async Task Route_not_matching_location_returns_404()
         {
             var locationDataSource = new Mock<IMatchLocationDataSource>();
-            locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>())).Returns(Task.FromResult<MatchLocation>(null));
+            locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<MatchLocation>(null));
 
             var matchesDataSource = new Mock<IMatchDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
@@ -71,7 +71,7 @@ namespace Stoolball.Web.Tests.MatchLocations
         public async Task Route_matching_location_returns_MatchLocationViewModel()
         {
             var locationDataSource = new Mock<IMatchLocationDataSource>();
-            locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>())).ReturnsAsync(new MatchLocation());
+            locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).ReturnsAsync(new MatchLocation());
 
             var matchesDataSource = new Mock<IMatchDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
