@@ -36,17 +36,17 @@
       <UmbracoVersion>8.6.0</UmbracoVersion>
       <UmbracoFormsVersion>8.4.0</UmbracoFormsVersion>
       <BootstrapVersion>4.4.1</BootstrapVersion>
-      <JQueryVersion>3.4.1</JQueryVersion>
+      <JQueryVersion>3.5.0.1</JQueryVersion>
       <PopperVersion>1.16.0</PopperVersion>
       <SkybrudRedirectsVersion>2.0.3</SkybrudRedirectsVersion>
     </PropertyGroup>
     
-    <Error Text="UmbracoCms NuGet package v$(UmbracoVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\jQuery.$(JQueryVersion)\')" />
-    <Error Text="UmbracoForms NuGet package v$(UmbracoFormsVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\jQuery.$(JQueryVersion)\')" />
-    <Error Text="bootstrap.sass NuGet package v$(BootstrapVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\jQuery.$(JQueryVersion)\')" />
+    <Error Text="UmbracoCms NuGet package v$(UmbracoVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\UmbracoCms.$(UmbracoVersion)\')" />
+    <Error Text="UmbracoForms NuGet package v$(UmbracoFormsVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\UmbracoForms.$(UmbracoFormsVersion)\')" />
+    <Error Text="bootstrap.sass NuGet package v$(BootstrapVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\bootstrap.sass.$(BootstrapVersion)\')" />
     <Error Text="jQuery NuGet package v$(JQueryVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\jQuery.$(JQueryVersion)\')" />
-    <Error Text="popper.js NuGet package v$(PopperVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\jQuery.$(JQueryVersion)\')" />
-    <Error Text="Skybrud.Umbraco.Redirects NuGet package v$(SkybrudRedirectsVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\jQuery.$(JQueryVersion)\')" />
+    <Error Text="popper.js NuGet package v$(PopperVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\popper.js.$(PopperVersion)\')" />
+    <Error Text="Skybrud.Umbraco.Redirects NuGet package v$(SkybrudRedirectsVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\Skybrud.Umbraco.Redirects.$(SkybrudRedirectsVersion)\')" />
 
     <ItemGroup>
       <FilesFromUmbracoPackage Include="$(SolutionDir)packages\UmbracoCms.$(UmbracoVersion)\Content\Views\Partials\**" />

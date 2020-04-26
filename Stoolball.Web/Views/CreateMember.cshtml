@@ -9,7 +9,7 @@
     Html.EnableClientValidation();
     Html.EnableUnobtrusiveJavaScript();
     Html.RequiresCss("~/css/forms.css");
-    Html.RequiresJs("~/scripts/jquery-3.4.1.slim.min.js");
+    Html.RequiresJs("~/scripts/jquery-3.5.0.slim.min.js");
     Html.RequiresJs("~/scripts/jquery.validate.min.js");
     Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
 
@@ -47,7 +47,7 @@ else
             <div class="form-group">
                 @Html.LabelFor(m => createMemberModel.Email)
                 @Html.TextBoxFor(m => createMemberModel.Email, new { @class = "form-control", type = "email", required = "required", aria_describedby = "form-email", autocorrect="off", autocapitalize="off" })
-                @Html.ValidationMessageFor(m => createMemberModel.Email, null, new { id = "form-email" })
+                @Html.ValidationMessageFor(m => createMemberModel.Email, "Please enter a valid email address", new { id = "form-email" })
             </div>
             <div class="form-group">
                 @Html.LabelFor(m => createMemberModel.Password)
@@ -58,7 +58,7 @@ else
                     <p class="form-text" id="form-password-help"><small>@Model.PasswordHelp</small></p>
                 }
                 @Html.PasswordFor(m => createMemberModel.Password, new { @class = "form-control", aria_describedby = describedBy, autocorrect="off", autocapitalize="off" })
-                @Html.ValidationMessageFor(m => createMemberModel.Password, null, new { id = "form-password" })
+                @Html.ValidationMessageFor(m => createMemberModel.Password, "Please create a new password", new { id = "form-password" })
             </div>
 
             <button class="btn btn-primary">@Model.Value("createMemberButton")</button>

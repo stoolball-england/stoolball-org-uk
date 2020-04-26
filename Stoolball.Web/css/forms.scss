@@ -20,6 +20,9 @@
     color: $red;
 }
 
+/* When a custom error message is set by Html.ValidationMessageFor() in the view, prevent it showing when the field is still valid */
+.field-validation-valid { display: none;}
+
 /* Bootstrap expects .form-text after the element but it's better before, where the user will see it in time */
 .form-text {
     margin-top: $spacer*-.5;
