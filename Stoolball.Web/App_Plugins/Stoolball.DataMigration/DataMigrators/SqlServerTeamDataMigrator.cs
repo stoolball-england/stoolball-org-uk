@@ -1,8 +1,8 @@
 ﻿using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Audit;
-using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
@@ -20,9 +20,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		private readonly IAuditHistoryBuilder _auditHistoryBuilder;
 		private readonly IAuditRepository _auditRepository;
 		private readonly ILogger _logger;
-		private readonly IClubDataSource _clubDataSource;
 
-		public SqlServerTeamDataMigrator(ServiceContext serviceContext, IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, ILogger logger, IClubDataSource clubDataSource)
+		public SqlServerTeamDataMigrator(ServiceContext serviceContext, IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, ILogger logger)
 		{
 			_serviceContext = serviceContext ?? throw new ArgumentNullException(nameof(serviceContext));
 			_redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
@@ -30,7 +29,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			_auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
 			_auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
-			_clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
 		}
 
 		/// <summary>
@@ -47,6 +45,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
 					using (var transaction = database.GetTransaction())
 					{
+						await database.ExecuteAsync($"DELETE FROM {Tables.PlayerIdentity}").ConfigureAwait(false);
 						await database.ExecuteAsync($"DELETE FROM {Tables.TeamMatchLocation}").ConfigureAwait(false);
 						await database.ExecuteAsync($"DELETE FROM {Tables.TeamName}").ConfigureAwait(false);
 						await database.ExecuteAsync($@"DELETE FROM {Tables.Team}").ConfigureAwait(false);
@@ -94,13 +93,24 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				PlayingTimes = team.PlayingTimes,
 				Cost = team.Cost,
 				MemberGroupId = ReadMemberGroupId(team),
-				TeamRoute = "/teams/" + team.TeamRoute
+				TeamRoute = team.TeamRoute
 			};
 			migratedTeam.MatchLocations.AddRange(team.MatchLocations);
 
 			if (migratedTeam.TeamRoute.EndsWith("team", StringComparison.OrdinalIgnoreCase))
 			{
 				migratedTeam.TeamRoute = migratedTeam.TeamRoute.Substring(0, migratedTeam.TeamRoute.Length - 4);
+			}
+
+			if (migratedTeam.TeamType == TeamType.Once)
+			{
+				// Use a partial route that will be updated when the tournament is imported
+				var splitRoute = migratedTeam.TeamRoute.Split('/');
+				migratedTeam.TeamRoute = migratedTeam.TeamId.Value.ToString("00000", CultureInfo.InvariantCulture) + splitRoute[splitRoute.Length - 1];
+			}
+			else
+			{
+				migratedTeam.TeamRoute = "/teams/" + migratedTeam.TeamRoute;
 			}
 
 			_auditHistoryBuilder.BuildInitialAuditHistory(team, migratedTeam, nameof(SqlServerTeamDataMigrator));

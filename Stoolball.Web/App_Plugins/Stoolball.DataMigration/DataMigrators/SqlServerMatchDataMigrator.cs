@@ -269,6 +269,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 								migratedTournament.TournamentId,
 								season.SeasonId).ConfigureAwait(false);
 						}
+						await database.ExecuteAsync($@"UPDATE {Tables.Team} SET 
+							TeamRoute = CONCAT(@0, '/teams/', SUBSTRING(TeamRoute, 6, LEN(TeamRoute)-5))
+							WHERE TeamType = 'Once' 
+							AND TeamId IN (
+								SELECT TeamId FROM {Tables.MatchTeam} WHERE MatchId = @1
+							)",
+							migratedTournament.TournamentRoute, migratedTournament.TournamentId).ConfigureAwait(false);
 						transaction.Complete();
 					}
 
