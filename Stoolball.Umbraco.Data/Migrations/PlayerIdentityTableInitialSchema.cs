@@ -34,16 +34,16 @@ namespace Stoolball.Umbraco.Data.Migrations
 
         [Column(nameof(TotalMatches))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int TotalMatches { get; set; }
+        public int? TotalMatches { get; set; }
 
         [Column(nameof(MissedMatches))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int MissedMatches { get; set; }
+        public int? MissedMatches { get; set; }
 
         [Column(nameof(Probability))]
         [Index(IndexTypes.NonClustered)]
-        [Constraint(Default = 0)]
-        public int Probability { get; set; }
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? Probability { get; set; }
 
         [Column(nameof(PlayerRole))]
         public string PlayerRole { get; set; }

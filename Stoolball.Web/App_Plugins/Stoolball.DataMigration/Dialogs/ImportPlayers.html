@@ -1,6 +1,6 @@
 ﻿<div
   class="data-migration-dialog"
-  ng-controller="Stoolball.DataMigration.DeleteTeams as vm"
+  ng-controller="Stoolball.DataMigration.ImportPlayers as vm"
 >
   <umb-editor-view>
     <umb-editor-header
@@ -15,16 +15,41 @@
     <umb-editor-container>
       <umb-box>
         <umb-box-content>
-          <p>This will delete all stoolball teams and players.</p>
-          <p><strong>This cannot be undone.</strong></p>
+          <p>
+            This will import all stoolball players from the old Stoolball
+            England website into the Umbraco database.
+          </p>
+
+          <label for="dataSource">Import from</label>
+          <select
+            ng-init="model.dataSource='stoolball.local'"
+            ng-model="model.dataSource"
+            ng-options="x for x in model.dataSources"
+            id="dataSource"
+          >
+          </select>
         </umb-box-content>
       </umb-box>
-      <umb-box ng-if="vm.buttonState != 'init'">
+      <umb-box ng-if="vm.processing">
         <umb-box-content>
           <div class="umb-panel-group__details-check-name">
-            Deleting teams
+            Importing: {{vm.imported.length}} of {{vm.total}} players
           </div>
-          <p ng-if="vm.done">Done.</p>
+          <ul class="data-migration-progress">
+            <li ng-repeat="item in vm.failed" class="alert alert-error">
+              Failed: {{item.name}}
+            </li>
+            <li ng-repeat="item in vm.imported">
+              Imported: {{item.name}}
+            </li>
+          </ul>
+        </umb-box-content>
+      </umb-box>
+      <umb-box ng-if="vm.done && vm.total === 0">
+        <umb-box-content>
+          <div class="umb-panel-group__details-check-name">
+            There are no players to import.
+          </div>
         </umb-box-content>
       </umb-box>
     </umb-editor-container>
@@ -42,9 +67,9 @@
         </umb-button>
         <umb-button
           type="button"
-          button-style="danger"
-          label="Delete all teams"
-          icon="icon-trash"
+          button-style="primary"
+          label="Import players"
+          icon="icon-arrow-right"
           action="vm.submit(model)"
           state="vm.buttonState"
           disabled="vm.buttonState === 'busy'"
