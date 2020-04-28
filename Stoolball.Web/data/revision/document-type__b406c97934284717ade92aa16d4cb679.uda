@@ -9,6 +9,7 @@
     "umb://template/bcf47530158d44b980facd6ba373aacb",
     "umb://template/c5404e5846af4d3698d302cad730707d",
     "umb://template/d0bce9edea034b52a3dce19147b0dce9",
+    "umb://template/db0381783ee94b348eb8a42c2ea95ced",
     "umb://template/f2724e57d127459a81b0cc293e1304b3"
   ],
   "Icon": "icon-split-alt color-green",
@@ -65,6 +66,11 @@
     },
     {
       "Udi": "umb://template/d0bce9edea034b52a3dce19147b0dce9",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/db0381783ee94b348eb8a42c2ea95ced",
       "Ordering": true,
       "Mode": 0
     },

@@ -8,6 +8,7 @@
         Club,
         MatchLocation,
         Team,
+        TransientTeam,
         Season,
         Competition,
         MatchesForClub,

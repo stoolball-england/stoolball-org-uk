@@ -1,12 +1,11 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamViewModel>
-@using Stoolball.Teams
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
 
 <h1>Matches for @Model.Team.TeamName</h1>
 
-@if (Model.Team.TeamType != TeamType.Once && Model.Team.UntilDate.HasValue)
+@if (Model.Team.UntilDate.HasValue)
 {
     <div class="alert alert-info">
         <p><strong>This team doesn't play any more.</strong></p>
@@ -17,12 +16,9 @@
     <li class="nav-item">
         <a class="nav-link" href="@Model.Team.TeamRoute">Summary</a>
     </li>
-    @if (Model.Team.TeamType != TeamType.Once)
-    {
-        <li class="nav-item">
-            <em class="nav-link active">Matches</em>
-        </li>
-    }
+    <li class="nav-item">
+        <em class="nav-link active">Matches</em>
+    </li>
     </ul>
 
 @if (Model.Matches.Matches.Count > 0)

@@ -4,7 +4,7 @@
 
 <h1>@Model.Team.TeamNameLocationAndPlayerType()</h1>
 
-@if (Model.Team.TeamType != TeamType.Once && Model.Team.UntilDate.HasValue)
+@if (Model.Team.UntilDate.HasValue)
 {
 <div class="alert alert-info">
     <p><strong>This team doesn't play any more.</strong></p>
@@ -15,20 +15,14 @@
     <li class="nav-item">
         <em class="nav-link active">Summary</em>
     </li>
-    @if (Model.Team.TeamType != TeamType.Once)
-    {
-        <li class="nav-item">
-            <a class="nav-link" href="@Model.Team.TeamRoute/matches">Matches</a>
-        </li>
-    }
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Team.TeamRoute/matches">Matches</a>
+    </li>
 </ul>
 
-@if (Model.Team.TeamType != TeamType.Once)
+@if (Model.Team.Club != null)
 {
-    if (Model.Team.Club != null)
-    {
-        <p>Part of <a href="@Model.Team.Club.ClubRoute">@Model.Team.Club.ClubName</a>.</p>
-    }
+    <p>Part of <a href="@Model.Team.Club.ClubRoute">@Model.Team.Club.ClubName</a>.</p>
 }
 
 @Html.Raw(Model.Team.Introduction)
@@ -41,7 +35,7 @@
     <p>This team plays at <a href="@Model.Team.MatchLocations.First().MatchLocationRoute">@Model.Team.MatchLocations.First()</a>.</p>
 }
 
-@if (Model.Team.TeamType != TeamType.Once && !string.IsNullOrWhiteSpace(Model.Team.PlayingTimes))
+@if (!string.IsNullOrWhiteSpace(Model.Team.PlayingTimes))
 {
     if (!whenWhereHeadingRendered)
     {
@@ -51,19 +45,7 @@
     @Html.Raw(Model.Team.PlayingTimes)
 }
 
-@if (Model.Team.TeamType == TeamType.Once)
-{
-    if (!whenWhereHeadingRendered)
-    {
-        whenWhereHeadingRendered = true;
-        <h2>When and where</h2>
-    }
-    @* TODO: "came" should change to "will come" if the match start time > now *@
-    <p>This team came together once to play in a tournament.</p>
-}
-
-@if (Model.Team.TeamType != TeamType.Once)
-{
+@{ 
     var seasonListModel = new SeasonListViewModel
     {
         ShowCompetitionHeading = true
@@ -102,8 +84,7 @@
     @Html.Partial("_ClubMark")
 }
 
-@if (Model.Team.TeamType != TeamType.Once
-     && Model.Team.TeamType != TeamType.Representative
+@if (Model.Team.TeamType != TeamType.Representative
      && string.IsNullOrWhiteSpace(Model.Team.PublicContactDetails)
      && string.IsNullOrWhiteSpace(Model.Team.Website)
      )
@@ -126,17 +107,6 @@
     <p> If you play for this team, please <a href="/teams/add">help us to improve this page</a>.</p>
 }
 @*
-    # Add contact details
-    $s_contact = $team->GetContact();
-    if ($s_contact)
-    {
-        # protect emails before escaping HTML, because it's trying to recognise the actual HTML tags
-        require_once('email/email-address-protector.class.php');
-        $protector = new EmailAddressProtector($this->GetSettings());
-        $s_contact = $protector->ApplyEmailProtection($s_contact, AuthenticationManager::GetUser()->IsSignedIn());
-    }
-
-
     $club = $this->team->GetClub();
     if ($club and ($club->GetFacebookUrl() or $club->GetTwitterAccount() or $club->GetInstagramAccount())) {
         ?>

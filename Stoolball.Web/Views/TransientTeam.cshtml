@@ -1,0 +1,57 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamViewModel>
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+
+<h1>@Model.Team.TeamNameLocationAndPlayerType()</h1>
+
+@if (Model.Team.UntilDate < DateTime.UtcNow)
+{
+    <div class="alert alert-info">
+        <p><strong>This team doesn't play any more.</strong></p>
+    </div>
+}
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <em class="nav-link active">Summary</em>
+    </li>
+</ul>
+
+@if (Model.Team.Club != null)
+{
+    <p>Part of <a href="@Model.Team.Club.ClubRoute">@Model.Team.Club.ClubName</a>.</p>
+}
+
+@Html.Raw(Model.Team.Introduction)
+
+<h2>When and where</h2>
+@if (Model.Team.MatchLocations.Count > 0)
+{
+    <p>This team plays at <a href="@Model.Team.MatchLocations.First().MatchLocationRoute">@Model.Team.MatchLocations.First()</a>.</p>
+}
+
+@{ var verb = (Model.Team.UntilDate < DateTime.UtcNow) ? "came" : "will come"; }
+<p>This team @verb together once to play in a tournament.</p>
+
+@if (!string.IsNullOrWhiteSpace(Model.Team.Cost))
+{
+    <h2>How much does it cost?</h2>
+    @Html.Raw(Model.Team.Cost)
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.Team.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Team.Website))
+{
+    <h2>Contact details</h2>
+    @Html.Raw(Model.Team.PublicContactDetails)
+
+    if (!string.IsNullOrWhiteSpace(Model.Team.Website))
+    {
+        <p>Visit <a href="@Model.Team.Website">@Model.Team.TeamName's website</a>.</p>
+    }
+}
+
+@if (Model.Team.Club != null && Model.Team.Club.ClubMark)
+{
+    @Html.Partial("_ClubMark")
+}

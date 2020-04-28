@@ -102,7 +102,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				migratedTeam.TeamRoute = migratedTeam.TeamRoute.Substring(0, migratedTeam.TeamRoute.Length - 4);
 			}
 
-			if (migratedTeam.TeamType == TeamType.Once)
+			if (migratedTeam.TeamType == TeamType.Transient)
 			{
 				// Use a partial route that will be updated when the tournament is imported
 				var splitRoute = migratedTeam.TeamRoute.Split('/');

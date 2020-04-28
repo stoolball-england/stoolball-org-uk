@@ -25,7 +25,7 @@
 		/// <summary>
 		/// A one-off team for a single match or tournament
 		/// </summary>
-		Once,
+		Transient,
 
 		/// <summary>
 		/// A team made up of pupils from one or more school years

@@ -5,6 +5,7 @@ using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Teams;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
@@ -43,7 +44,7 @@ namespace Stoolball.Umbraco.Data.Teams
         {
             try
             {
-                string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "teams");
+                string normalisedRoute = NormaliseRouteToTeam(route);
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
@@ -64,11 +65,20 @@ namespace Stoolball.Umbraco.Data.Teams
             }
         }
 
+        private string NormaliseRouteToTeam(string route)
+        {
+            return _routeNormaliser.NormaliseRouteToEntity(route,
+                                new Dictionary<string, string> {
+                    { "teams", null },
+                    {"tournaments", @"^[a-z0-9-]+\/teams\/[a-z0-9-]+$" }
+                            });
+        }
+
         private async Task<Team> ReadTeamWithRelatedDataByRoute(string route)
         {
             try
             {
-                string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "teams");
+                string normalisedRoute = NormaliseRouteToTeam(route);
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {

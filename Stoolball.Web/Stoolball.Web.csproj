@@ -834,6 +834,7 @@
     <Compile Include="Matches\MatchListingViewModel.cs" />
     <Compile Include="MatchLocations\MatchesForMatchLocationController.cs" />
     <Compile Include="Teams\MatchesForTeamController.cs" />
+    <Compile Include="Teams\TransientTeamController.cs" />
     <Compile Include="Teams\TeamController.cs" />
     <Compile Include="Teams\TeamViewModel.cs" />
     <Compile Include="Configuration\ConfigApiKeyProvider.cs" />
@@ -960,6 +961,7 @@
     <Content Include="Views\Partials\Grid\Editors\Base.cshtml" />
     <Content Include="Views\Partials\Grid\Bootstrap3.cshtml" />
     <Content Include="Views\Partials\Grid\Bootstrap3-Fluid.cshtml" />
+    <Content Include="Views\TransientTeam.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

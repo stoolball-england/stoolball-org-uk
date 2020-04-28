@@ -1,5 +1,6 @@
 ﻿using Stoolball.Routing;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Stoolball.Tests.Routing
@@ -37,9 +38,31 @@ namespace Stoolball.Tests.Routing
             Assert.Equal(expectedResult, result);
         }
 
+        [Fact]
+        public void Second_route_should_normalise_to_prefix_routevalue()
+        {
+            var normaliser = new RouteNormaliser();
+
+            var result = normaliser.NormaliseRouteToEntity("/tournaments/example123/teams/example-team/",
+                new Dictionary<string, string> {
+                    { "dont-match-this-or-throw", null },
+                    {"tournaments", @"^[a-z0-9-]+\/teams\/[a-z0-9-]+$" }
+                });
+
+            Assert.Equal("/tournaments/example123/teams/example-team", result);
+        }
+
+        [Fact]
+        public void Null_prefix_should_throw_ArgumentNullException()
+        {
+            var normaliser = new RouteNormaliser();
+
+            string expectedPrefix = null;
+            Assert.Throws<ArgumentNullException>(() => normaliser.NormaliseRouteToEntity("prefix/route-value", expectedPrefix));
+        }
+
         [Theory]
         [InlineData(null, "prefix")]
-        [InlineData("prefix/route-value", null)]
         [InlineData(" ", "prefix")]
         [InlineData("prefix/route-value", " ")]
         [InlineData("wrong/route-value", "prefix")]

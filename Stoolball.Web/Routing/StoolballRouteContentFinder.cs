@@ -69,7 +69,12 @@ namespace Stoolball.Web.Routing
                 // /teams/example-team, /teams/example-team/ or /teams/example-team/invalid in upper, lower or mixed case
                 { ("clubs", @"matches\/?"), StoolballRouteType.MatchesForClub },
                 { ("teams", @"matches\/?"), StoolballRouteType.MatchesForTeam },
-                { ("locations", @"matches\/?"), StoolballRouteType.MatchesForMatchLocation }
+                { ("locations", @"matches\/?"), StoolballRouteType.MatchesForMatchLocation },
+
+                // Match /tournaments/example123/teams/example-team or /tournaments/example123/teams/example-team/ but not 
+                // /tournaments/example123, /tournaments/example123/, /tournaments/example123/teams, /tournaments/example123/teams/
+                // or /tournaments/example123/invalid in upper, lower or mixed case
+                { ("tournaments", @"teams\/[a-z0-9-]+\/?"), StoolballRouteType.TransientTeam }
             };
 
             foreach (var routeType in routeTypes)
