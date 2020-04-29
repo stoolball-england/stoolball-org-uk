@@ -8,18 +8,27 @@ namespace Stoolball.Dates
 		/// <summary>
 		/// Get a date in the format "10am, Sunday 1 January 2000"
 		/// </summary>
-		/// <param name="dateTime">The date and time to display</param>
+		/// <param name="dateTimeToFormat">The date and time to display</param>
+		/// <param name="currentDateTime">The current date and time, used when displaying relative dates</param>
 		/// <param name="dayOfTheWeek">Include Monday, Tuesday, Wednesday etc</param>
+		/// <param name="time">Include the time of day</param>
 		/// <param name="relativeDate">Refer to "this Sunday" rather than "Sunday 12 June"</param>
 		/// <param name="abbreviated">Use Jan, Feb etc rather than January, February etc</param>
 		/// <returns></returns>
-		public string FormatDate(DateTimeOffset dateTimeToFormat, DateTimeOffset currentDateTime, bool dayOfTheWeek = true, bool relativeDate = true, bool abbreviated = false)
+		public string FormatDate(DateTimeOffset dateTimeToFormat, DateTimeOffset currentDateTime, bool dayOfTheWeek = true, bool time = true, bool relativeDate = true, bool abbreviated = false)
 		{
 			// Safe to assume visitors to Stoolball England want times expressed in the UK time zone
 			var ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
 			var ukStartTime = TimeZoneInfo.ConvertTimeFromUtc(dateTimeToFormat.UtcDateTime, ukTimeZone);
 
-			return Time(ukStartTime) + TimeDateSeparator(ukStartTime, currentDateTime) + BritishDate(ukStartTime, currentDateTime, dayOfTheWeek, relativeDate, abbreviated);
+			if (time)
+			{
+				return Time(ukStartTime) + TimeDateSeparator(ukStartTime, currentDateTime) + BritishDate(ukStartTime, currentDateTime, dayOfTheWeek, relativeDate, abbreviated);
+			}
+			else
+			{
+				return BritishDate(ukStartTime, currentDateTime, dayOfTheWeek, relativeDate, abbreviated);
+			}
 		}
 
 		/// <summary>
@@ -27,12 +36,13 @@ namespace Stoolball.Dates
 		/// </summary>
 		/// <param name="dateTimeToFormat">The date and time to display</param>
 		/// <param name="dayOfTheWeek">Include Monday, Tuesday, Wednesday etc</param>
+		/// <param name="time">Include the time of day</param>
 		/// <param name="relativeDate">Refer to "this Sunday" rather than "Sunday 12 June"</param>
 		/// <param name="abbreviated">Use Jan, Feb etc rather than January, February etc</param>
 		/// <returns></returns>
-		public string FormatDate(DateTimeOffset dateTimeToFormat, bool dayOfTheWeek = true, bool relativeDate = true, bool abbreviated = false)
+		public string FormatDate(DateTimeOffset dateTimeToFormat, bool dayOfTheWeek = true, bool time = true, bool relativeDate = true, bool abbreviated = false)
 		{
-			return FormatDate(dateTimeToFormat, DateTimeOffset.UtcNow, dayOfTheWeek, relativeDate, abbreviated);
+			return FormatDate(dateTimeToFormat, DateTimeOffset.UtcNow, dayOfTheWeek, time, relativeDate, abbreviated);
 		}
 
 		/// <summary>

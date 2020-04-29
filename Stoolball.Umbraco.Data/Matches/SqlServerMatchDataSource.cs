@@ -48,6 +48,13 @@ namespace Stoolball.Umbraco.Data.Matches
                     var where = new StringBuilder();
                     var parameters = new Dictionary<string, object>();
 
+                    if (matchQuery?.MatchTypes?.Count > 0)
+                    {
+                        where.Append(where.Length > 0 ? "AND " : "WHERE ");
+                        where.Append("m.MatchType IN @MatchTypes ");
+                        parameters.Add("@MatchTypes", matchQuery.MatchTypes.Select(x => x.ToString()));
+                    }
+
                     if (matchQuery?.TeamIds?.Count > 0)
                     {
                         join.Append($"INNER JOIN {Tables.MatchTeam} mt ON m.MatchId = mt.MatchId ");

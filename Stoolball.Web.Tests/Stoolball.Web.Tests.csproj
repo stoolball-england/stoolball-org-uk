@@ -62,6 +62,7 @@
     <Compile Include="Account\CreateMemberSurfaceControllerTests.cs" />
     <Compile Include="Competitions\MatchesForSeasonControllerTests.cs" />
     <Compile Include="Teams\MatchesForTeamControllerTests.cs" />
+    <Compile Include="Teams\TransientTeamControllerTests.cs" />
     <Compile Include="Teams\TeamControllerTests.cs" />
     <Compile Include="MatchLocations\MatchLocationControllerTests.cs" />
     <Compile Include="MatchLocations\MatchesForMatchLocationControllerTests.cs" />

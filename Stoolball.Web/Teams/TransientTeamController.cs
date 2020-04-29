@@ -1,6 +1,11 @@
-﻿using Stoolball.Email;
+﻿using Stoolball.Dates;
+using Stoolball.Email;
+using Stoolball.Matches;
+using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
+using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -15,6 +20,8 @@ namespace Stoolball.Web.Teams
     public class TransientTeamController : RenderMvcControllerAsync
     {
         private readonly ITeamDataSource _teamDataSource;
+        private readonly IMatchDataSource _matchDataSource;
+        private readonly IDateFormatter _dateFormatter;
         private readonly IEmailProtector _emailProtector;
 
         public TransientTeamController(IGlobalSettings globalSettings,
@@ -24,10 +31,14 @@ namespace Stoolball.Web.Teams
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            ITeamDataSource teamDataSource,
+           IMatchDataSource matchDataSource,
+           IDateFormatter dateFormatter,
            IEmailProtector emailProtector)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource ?? throw new System.ArgumentNullException(nameof(teamDataSource));
+            _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
+            _dateFormatter = dateFormatter ?? throw new System.ArgumentNullException(nameof(dateFormatter));
             _emailProtector = emailProtector ?? throw new System.ArgumentNullException(nameof(emailProtector));
         }
 
@@ -50,7 +61,17 @@ namespace Stoolball.Web.Teams
             }
             else
             {
-                model.Metadata.PageTitle = model.Team.TeamName + " stoolball team";
+                model.Matches = new MatchListingViewModel
+                {
+                    Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
+                    {
+                        TeamIds = new List<int> { model.Team.TeamId.Value },
+                        MatchTypes = new List<MatchType> { MatchType.Tournament }
+                    }).ConfigureAwait(false),
+                    DateFormatter = _dateFormatter
+                };
+
+                model.Metadata.PageTitle = model.Team.TeamName + " stoolball team, " + _dateFormatter.FormatDate(model.Team.UntilDate.Value.Date, false, false, false);
 
                 model.Team.Cost = _emailProtector.ProtectEmailAddresses(model.Team.Cost, User.Identity.IsAuthenticated);
                 model.Team.Introduction = _emailProtector.ProtectEmailAddresses(model.Team.Introduction, User.Identity.IsAuthenticated);

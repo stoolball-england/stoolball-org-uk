@@ -3,7 +3,7 @@
     <meta name="robots" content="noindex,follow" />
 }
 
-<h1>@Model.Team.TeamNameLocationAndPlayerType()</h1>
+<h1>@Model.Team.TeamName, @Model.Matches.DateFormatter.FormatDate(Model.Team.UntilDate.Value.Date, false, false, false)</h1>
 
 @if (Model.Team.UntilDate < DateTime.UtcNow)
 {
@@ -26,13 +26,17 @@
 @Html.Raw(Model.Team.Introduction)
 
 <h2>When and where</h2>
-@if (Model.Team.MatchLocations.Count > 0)
-{
-    <p>This team plays at <a href="@Model.Team.MatchLocations.First().MatchLocationRoute">@Model.Team.MatchLocations.First()</a>.</p>
+@{
+    IHtmlString atLocation = null;
+    if (Model.Team.MatchLocations.Count > 0)
+    {
+        atLocation = new HtmlString(" at <a href=\"" + Model.Team.MatchLocations.First().MatchLocationRoute + "\">" + Model.Team.MatchLocations.First() + "</a>");
+    }
 }
 
 @{ var verb = (Model.Team.UntilDate < DateTime.UtcNow) ? "came" : "will come"; }
-<p>This team @verb together once to play in a tournament.</p>
+<p>This team @verb together once to play in a tournament@(atLocation):</p>
+@Html.Partial("_MatchList", Model.Matches)
 
 @if (!string.IsNullOrWhiteSpace(Model.Team.Cost))
 {
