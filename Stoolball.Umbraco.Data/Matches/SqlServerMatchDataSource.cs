@@ -55,6 +55,13 @@ namespace Stoolball.Umbraco.Data.Matches
                         parameters.Add("@MatchTypes", matchQuery.MatchTypes.Select(x => x.ToString()));
                     }
 
+                    if (matchQuery?.ExcludeMatchTypes?.Count > 0)
+                    {
+                        where.Append(where.Length > 0 ? "AND " : "WHERE ");
+                        where.Append("m.MatchType NOT IN @ExcludeMatchTypes ");
+                        parameters.Add("@ExcludeMatchTypes", matchQuery.ExcludeMatchTypes.Select(x => x.ToString()));
+                    }
+
                     if (matchQuery?.TeamIds?.Count > 0)
                     {
                         join.Append($"INNER JOIN {Tables.MatchTeam} mt ON m.MatchId = mt.MatchId ");
