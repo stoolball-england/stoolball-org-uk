@@ -1,16 +1,17 @@
 ﻿using NPoco;
+using System;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Umbraco.Data.Migrations
 {
     [TableName(Constants.Tables.MatchAwardType)]
-    [PrimaryKey(nameof(MatchAwardTypeId), AutoIncrement = true)]
+    [PrimaryKey(nameof(MatchAwardTypeId), AutoIncrement = false)]
     [ExplicitColumns]
     public class MatchAwardTypeTableInitialSchema
     {
-        [PrimaryKeyColumn(AutoIncrement = true, IdentitySeed = 1)]
+        [PrimaryKeyColumn(AutoIncrement = false)]
         [Column(nameof(MatchAwardTypeId))]
-        public int MatchAwardTypeId { get; set; }
+        public Guid MatchAwardTypeId { get; set; }
 
         [Column(nameof(MatchAwardTypeName))]
         public string MatchAwardTypeName { get; set; }

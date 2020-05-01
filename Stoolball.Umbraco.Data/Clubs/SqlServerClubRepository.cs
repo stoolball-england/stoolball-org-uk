@@ -55,7 +55,8 @@ namespace Stoolball.Umbraco.Data.Clubs
                             club.ClubRoute).ConfigureAwait(false);
                         club.ClubId = await scope.Database.ExecuteScalarAsync<int>("SELECT SCOPE_IDENTITY()").ConfigureAwait(false);
                         await scope.Database.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
-							(ClubId, ClubName, FromDate) VALUES (@0, @1, @2)",
+							(ClubNameId, ClubId, ClubName, FromDate) VALUES (@0, @1, @2, @3)",
+                            Guid.NewGuid(),
                             club.ClubId,
                             club.ClubName,
                             DateTime.UtcNow

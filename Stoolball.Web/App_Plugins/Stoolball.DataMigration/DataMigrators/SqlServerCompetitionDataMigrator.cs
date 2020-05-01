@@ -226,7 +226,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 						foreach (var teamInSeason in migratedSeason.Teams)
 						{
 							await database.ExecuteAsync($@"INSERT INTO {Tables.SeasonTeam}
-								(SeasonId, TeamId, WithdrawnDate) VALUES (@0, @1, @2)",
+								(SeasonTeamId, SeasonId, TeamId, WithdrawnDate) VALUES (@0, @1, @2, @3)",
+								Guid.NewGuid(),
 								season.SeasonId,
 								teamInSeason.Team.TeamId,
 								teamInSeason.WithdrawnDate

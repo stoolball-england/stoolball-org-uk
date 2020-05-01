@@ -1,16 +1,17 @@
 ﻿using NPoco;
+using System;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Umbraco.Data.Migrations
 {
     [TableName(Constants.Tables.MatchAward)]
-    [PrimaryKey(nameof(MatchAwardId), AutoIncrement = true)]
+    [PrimaryKey(nameof(MatchAwardId), AutoIncrement = false)]
     [ExplicitColumns]
     public class MatchAwardTableInitialSchema
     {
-        [PrimaryKeyColumn(AutoIncrement = true, IdentitySeed = 1, Clustered = false)]
+        [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
         [Column(nameof(MatchAwardId))]
-        public int MatchAwardId { get; set; }
+        public Guid MatchAwardId { get; set; }
 
         [ForeignKey(typeof(MatchTableInitialSchema), Column = nameof(MatchTableInitialSchema.MatchId))]
         [Index(IndexTypes.Clustered)]
@@ -20,7 +21,7 @@ namespace Stoolball.Umbraco.Data.Migrations
         [ForeignKey(typeof(MatchAwardTypeTableInitialSchema), Column = nameof(MatchAwardTypeTableInitialSchema.MatchAwardTypeId))]
         [Index(IndexTypes.NonClustered)]
         [Column(nameof(MatchAwardTypeId))]
-        public int MatchAwardTypeId { get; set; }
+        public Guid MatchAwardTypeId { get; set; }
 
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId))]
         [Index(IndexTypes.NonClustered)]

@@ -5,13 +5,13 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 namespace Stoolball.Umbraco.Data.Migrations
 {
     [TableName(Constants.Tables.SeasonTeam)]
-    [PrimaryKey(nameof(SeasonTeamId), AutoIncrement = true)]
+    [PrimaryKey(nameof(SeasonTeamId), AutoIncrement = false)]
     [ExplicitColumns]
     public class SeasonTeamTableInitialSchema
     {
-        [PrimaryKeyColumn(AutoIncrement = true, IdentitySeed = 1, Clustered = false)]
+        [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
         [Column(nameof(SeasonTeamId))]
-        public int SeasonTeamId { get; set; }
+        public Guid SeasonTeamId { get; set; }
 
         [ForeignKey(typeof(SeasonTableInitialSchema), Column = nameof(SeasonTableInitialSchema.SeasonId))]
         [Index(IndexTypes.Clustered)]

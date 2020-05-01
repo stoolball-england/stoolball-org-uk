@@ -5,13 +5,13 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 namespace Stoolball.Umbraco.Data.Migrations
 {
     [TableName(Constants.Tables.Audit)]
-    [PrimaryKey(nameof(AuditId), AutoIncrement = true)]
+    [PrimaryKey(nameof(AuditId), AutoIncrement = false)]
     [ExplicitColumns]
     public class AuditTableInitialSchema
     {
-        [PrimaryKeyColumn(AutoIncrement = true, IdentitySeed = 1, Clustered = false)]
+        [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
         [Column(nameof(AuditId))]
-        public int AuditId { get; set; }
+        public Guid AuditId { get; set; }
 
         [Column(nameof(MemberKey))]
         [NullSetting(NullSetting = NullSettings.Null)]

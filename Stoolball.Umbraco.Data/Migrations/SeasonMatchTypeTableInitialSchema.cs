@@ -1,16 +1,17 @@
 ﻿using NPoco;
+using System;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Umbraco.Data.Migrations
 {
     [TableName(Constants.Tables.SeasonMatchType)]
-    [PrimaryKey(nameof(SeasonMatchTypeId), AutoIncrement = true)]
+    [PrimaryKey(nameof(SeasonMatchTypeId), AutoIncrement = false)]
     [ExplicitColumns]
     public class SeasonMatchTypeTableInitialSchema
     {
-        [PrimaryKeyColumn(AutoIncrement = true, IdentitySeed = 1, Clustered = false)]
+        [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
         [Column(nameof(SeasonMatchTypeId))]
-        public int SeasonMatchTypeId { get; set; }
+        public Guid SeasonMatchTypeId { get; set; }
 
         [ForeignKey(typeof(SeasonTableInitialSchema), Column = nameof(SeasonTableInitialSchema.SeasonId))]
         [Index(IndexTypes.Clustered)]

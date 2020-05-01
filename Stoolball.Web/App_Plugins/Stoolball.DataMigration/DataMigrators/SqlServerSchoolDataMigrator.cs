@@ -104,7 +104,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedSchool.SchoolRoute).ConfigureAwait(false);
 						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.School} OFF").ConfigureAwait(false);
 						await database.ExecuteAsync($@"INSERT INTO {Tables.SchoolName} 
-							(SchoolId, SchoolName, FromDate) VALUES (@0, @1, @2)",
+							(SchoolNameId, SchoolId, SchoolName, FromDate) VALUES (@0, @1, @2, @3)",
+							Guid.NewGuid(),
 							migratedSchool.SchoolId,
 							migratedSchool.SchoolName,
 							migratedSchool.History[0].AuditDate

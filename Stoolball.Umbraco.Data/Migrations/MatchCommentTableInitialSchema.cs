@@ -5,13 +5,13 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 namespace Stoolball.Umbraco.Data.Migrations
 {
     [TableName(Constants.Tables.MatchComment)]
-    [PrimaryKey(nameof(MatchCommentId), AutoIncrement = true)]
+    [PrimaryKey(nameof(MatchCommentId), AutoIncrement = false)]
     [ExplicitColumns]
     public class MatchCommentTableInitialSchema
     {
-        [PrimaryKeyColumn(AutoIncrement = true, IdentitySeed = 1, Clustered = false)]
+        [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
         [Column(nameof(MatchCommentId))]
-        public int MatchCommentId { get; set; }
+        public Guid MatchCommentId { get; set; }
 
         [ForeignKey(typeof(MatchTableInitialSchema), Column = nameof(MatchTableInitialSchema.MatchId))]
         [Index(IndexTypes.Clustered)]

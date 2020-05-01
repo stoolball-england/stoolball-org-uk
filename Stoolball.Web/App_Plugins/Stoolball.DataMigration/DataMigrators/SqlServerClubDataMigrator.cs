@@ -111,7 +111,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedClub.ClubRoute).ConfigureAwait(false);
 						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Club} OFF").ConfigureAwait(false);
 						await database.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
-							(ClubId, ClubName, FromDate) VALUES (@0, @1, @2)",
+							(ClubNameId, ClubId, ClubName, FromDate) VALUES (@0, @1, @2, @3)",
+							Guid.NewGuid(),
 							migratedClub.ClubId,
 							migratedClub.ClubName,
 							migratedClub.History[0].AuditDate

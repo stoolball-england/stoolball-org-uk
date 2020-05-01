@@ -35,8 +35,9 @@ namespace Stoolball.Umbraco.Data.Audit
                 using (var scope = _scopeProvider.CreateScope())
                 {
                     await scope.Database.ExecuteAsync($@"INSERT INTO {Constants.Tables.Audit} 
-                ([MemberKey], [ActorName], [Action], [EntityUri], [State], [AuditDate]) 
-                VALUES (@0, @1, @2, @3, @4, @5)",
+                ([AuditId], [MemberKey], [ActorName], [Action], [EntityUri], [State], [AuditDate]) 
+                VALUES (@0, @1, @2, @3, @4, @5, @6)",
+                    Guid.NewGuid(),
                     audit.MemberKey,
                     audit.ActorName,
                     audit.Action.ToString(),

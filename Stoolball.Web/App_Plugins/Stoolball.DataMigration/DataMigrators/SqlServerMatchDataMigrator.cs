@@ -260,7 +260,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 						foreach (var team in migratedTournament.Teams)
 						{
 							await database.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
-								(MatchId, TeamId, TeamRole) VALUES (@0, @1, @2)",
+								(MatchTeamId, MatchId, TeamId, TeamRole) VALUES (@0, @1, @2, @3)",
+								Guid.NewGuid(),
 								migratedTournament.TournamentId,
 								team.Team.TeamId,
 								team.TeamRole.ToString()).ConfigureAwait(false);
@@ -268,7 +269,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 						foreach (var season in migratedTournament.Seasons)
 						{
 							await database.ExecuteAsync($@"INSERT INTO {Tables.SeasonMatch} 
-								(MatchId, SeasonId) VALUES (@0, @1)",
+								(SeasonMatchId, MatchId, SeasonId) VALUES (@0, @1, @2)",
+								Guid.NewGuid(),
 								migratedTournament.TournamentId,
 								season.SeasonId).ConfigureAwait(false);
 						}

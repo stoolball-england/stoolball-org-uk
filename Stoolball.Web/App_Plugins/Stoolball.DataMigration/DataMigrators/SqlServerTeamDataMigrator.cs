@@ -147,7 +147,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedTeam.TeamRoute).ConfigureAwait(false);
 						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Team} OFF").ConfigureAwait(false);
 						await database.ExecuteAsync($@"INSERT INTO {Tables.TeamName} 
-							(TeamId, TeamName, TeamComparableName, FromDate) VALUES (@0, @1, @2, @3)",
+							(TeamNameId, TeamId, TeamName, TeamComparableName, FromDate) VALUES (@0, @1, @2, @3, @4)",
+							Guid.NewGuid(),
 							migratedTeam.TeamId,
 							migratedTeam.TeamName,
 							migratedTeam.GenerateComparableName(),
@@ -156,7 +157,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 						if (migratedTeam.MatchLocations.Count > 0)
 						{
 							await database.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} 
-							(TeamId, MatchLocationId, FromDate) VALUES (@0, @1, @2)",
+							(TeamMatchLocationId, TeamId, MatchLocationId, FromDate) VALUES (@0, @1, @2, @3)",
+								Guid.NewGuid(),
 								migratedTeam.TeamId,
 								migratedTeam.MatchLocations.First().MatchLocationId,
 								migratedTeam.History[0].AuditDate
