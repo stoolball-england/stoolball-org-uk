@@ -1,16 +1,17 @@
 ﻿using NPoco;
+using System;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Umbraco.Data.Migrations
 {
     [TableName(Constants.Tables.BowlingOver)]
-    [PrimaryKey(nameof(BowlingOverId), AutoIncrement = true)]
+    [PrimaryKey(nameof(BowlingOverId), AutoIncrement = false)]
     [ExplicitColumns]
     public class BowlingOverTableInitialSchema
     {
-        [PrimaryKeyColumn(AutoIncrement = true, IdentitySeed = 1, Clustered = false)]
+        [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
         [Column(nameof(BowlingOverId))]
-        public int BowlingOverId { get; set; }
+        public Guid BowlingOverId { get; set; }
 
         [Column(nameof(MatchTeamId))]
         [ForeignKey(typeof(MatchTeamTableInitialSchema), Column = nameof(MatchTeamTableInitialSchema.MatchTeamId))]

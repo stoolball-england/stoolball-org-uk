@@ -203,6 +203,28 @@
             </button>
           </div>
         </div>
+        <div class="umb-box">
+          <div class="umb-box-content">
+            <p>
+              Players and matches must already be imported before importing
+              player performances.
+            </p>
+            <button
+              class="btn btn-danger"
+              ng-click="vm.openDialog('Delete all batting performances - are you sure?', 'DeleteBatting')"
+            >
+              <i class="icon-trash"></i>
+              Delete all batting
+            </button>
+            <button
+              class="btn btn-primary"
+              ng-click="vm.openDialog('Import batting', 'ImportBatting')"
+            >
+              <i class="icon-arrow-right"></i>
+              Import batting
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
