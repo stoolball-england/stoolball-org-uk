@@ -1,16 +1,17 @@
 ﻿using NPoco;
+using System;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Umbraco.Data.Migrations
 {
     [TableName(Constants.Tables.MatchInnings)]
-    [PrimaryKey(nameof(MatchInningsId), AutoIncrement = true)]
+    [PrimaryKey(nameof(MatchInningsId), AutoIncrement = false)]
     [ExplicitColumns]
     public class MatchInningsTableInitialSchema
     {
-        [PrimaryKeyColumn(AutoIncrement = true, IdentitySeed = 1, Clustered = false)]
+        [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
         [Column(nameof(MatchInningsId))]
-        public int MatchInningsId { get; set; }
+        public Guid MatchInningsId { get; set; }
 
         [ForeignKey(typeof(MatchTableInitialSchema), Column = nameof(MatchTableInitialSchema.MatchId))]
         [Index(IndexTypes.Clustered)]

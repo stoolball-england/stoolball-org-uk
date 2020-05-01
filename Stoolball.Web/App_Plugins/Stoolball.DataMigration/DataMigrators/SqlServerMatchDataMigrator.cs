@@ -135,8 +135,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 						foreach (var innings in migratedMatch.MatchInnings)
 						{
 							await database.ExecuteAsync($@"INSERT INTO {Tables.MatchInnings} 
-								(MatchId, TeamId, InningsOrderInMatch, Overs, Runs, Wickets)
-								VALUES (@0, @1, @2, @3, @4, @5)",
+								(MatchInningsId, MatchId, TeamId, InningsOrderInMatch, Overs, Runs, Wickets)
+								VALUES (@0, @1, @2, @3, @4, @5, @6)",
+								Guid.NewGuid(),
 								migratedMatch.MatchId,
 								innings.Team?.TeamId,
 								innings.InningsOrderInMatch,
@@ -147,7 +148,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 						foreach (var team in migratedMatch.Teams)
 						{
 							await database.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
-								(MatchId, TeamId, TeamRole, WonToss) VALUES (@0, @1, @2, @3)",
+								(MatchTeamId, MatchId, TeamId, TeamRole, WonToss) VALUES (@0, @1, @2, @3, @4)",
+								Guid.NewGuid(),
 								migratedMatch.MatchId,
 								team.Team.TeamId,
 								team.TeamRole.ToString(),
@@ -156,7 +158,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 						foreach (var season in migratedMatch.Seasons)
 						{
 							await database.ExecuteAsync($@"INSERT INTO {Tables.SeasonMatch} 
-								(MatchId, SeasonId) VALUES (@0, @1)",
+								(SeasonMatchId, MatchId, SeasonId) VALUES (@0, @1, @2)",
+								Guid.NewGuid(),
 								migratedMatch.MatchId,
 								season.SeasonId).ConfigureAwait(false);
 						}

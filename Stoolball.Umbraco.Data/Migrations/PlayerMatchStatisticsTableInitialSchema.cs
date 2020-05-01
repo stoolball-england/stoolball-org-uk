@@ -69,7 +69,7 @@ namespace Stoolball.Umbraco.Data.Migrations
         [ForeignKey(typeof(MatchTeamTableInitialSchema), Column = nameof(MatchTeamTableInitialSchema.MatchTeamId))]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? MatchTeamId { get; set; }
+        public Guid? MatchTeamId { get; set; }
 
         [Column(nameof(TeamId))]
         [ForeignKey(typeof(TeamTableInitialSchema), Column = nameof(TeamTableInitialSchema.TeamId))]

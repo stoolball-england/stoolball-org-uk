@@ -86,13 +86,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
 						using (var transaction = database.GetTransaction())
 						{
-							var matchTeamId = (await database.ExecuteScalarAsync<int>($"SELECT MatchTeamId FROM {Tables.MatchTeam} WHERE MatchId = @0 AND TeamId = @1", batting.Match.MatchId, batting.PlayerIdentity.Team.TeamId).ConfigureAwait(false));
+							var inningsId = (await database.ExecuteScalarAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @0 AND TeamId = @1", batting.Match.MatchId, batting.PlayerIdentity.Team.TeamId).ConfigureAwait(false));
 
 							await database.ExecuteAsync($@"INSERT INTO {Tables.Batting}
-						(BattingId, MatchTeamId, PlayerIdentityId, BattingPosition, HowOut, DismissedById, BowlerId, RunsScored, BallsFaced)
+						(BattingId, MatchInningsId, PlayerIdentityId, BattingPosition, HowOut, DismissedById, BowlerId, RunsScored, BallsFaced)
 						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8)",
 								migratedBatting.BattingId,
-								matchTeamId,
+								inningsId,
 								migratedBatting.PlayerIdentity.PlayerIdentityId,
 								migratedBatting.BattingPosition,
 								migratedBatting.HowOut?.ToString(),
