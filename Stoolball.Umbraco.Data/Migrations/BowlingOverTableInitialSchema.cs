@@ -37,9 +37,9 @@ namespace Stoolball.Umbraco.Data.Migrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? Wides { get; set; }
 
-        [Column(nameof(RunsInOver))]
+        [Column(nameof(RunsConceded))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? RunsInOver { get; set; }
+        public int? RunsConceded { get; set; }
 
     }
 }

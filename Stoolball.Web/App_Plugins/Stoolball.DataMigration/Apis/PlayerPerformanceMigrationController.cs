@@ -53,5 +53,24 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
             await _playerPerformanceDataMigrator.DeleteBatting().ConfigureAwait(false);
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> CreateBowling(BowlingOver bowling)
+        {
+            if (bowling is null)
+            {
+                throw new ArgumentNullException(nameof(bowling));
+            }
+
+            var migrated = await _playerPerformanceDataMigrator.MigrateBowling(bowling).ConfigureAwait(false);
+            return Created(migrated.EntityUri, JsonConvert.SerializeObject(migrated));
+        }
+
+        [HttpDelete]
+        public async Task<IHttpActionResult> DeleteBowling()
+        {
+            await _playerPerformanceDataMigrator.DeleteBowling().ConfigureAwait(false);
+            return Ok();
+        }
     }
 }

@@ -7,5 +7,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
     {
         Task<Batting> MigrateBatting(Batting batting);
         Task DeleteBatting();
+        Task<BowlingOver> MigrateBowling(BowlingOver bowling);
+        Task DeleteBowling();
     }
 }
