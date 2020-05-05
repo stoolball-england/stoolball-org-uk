@@ -885,6 +885,7 @@
     <Compile Include="Competitions\CompetitionViewModel.cs" />
     <Compile Include="Competitions\SeasonViewModel.cs" />
     <Compile Include="Competitions\SeasonListViewModel.cs" />
+    <Compile Include="HumanizerComposer.cs" />
     <Compile Include="Email\EmailProtectorHtmlHelper.cs" />
     <Compile Include="Matches\MatchController.cs" />
     <Compile Include="Matches\MatchListingViewModel.cs" />
