@@ -8,7 +8,7 @@ namespace Stoolball.Clubs
 {
     public class Club : IAuditable
     {
-        public int? ClubId { get; set; }
+        public Guid? ClubId { get; set; }
         public string ClubName { get; set; }
         public List<Team> Teams { get; internal set; } = new List<Team>();
         public bool? PlaysOutdoors { get; set; }

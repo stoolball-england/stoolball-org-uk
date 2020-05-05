@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
+namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
-    public class ImportedMember
+    public class MigratedMember
     {
         public int UserId { get; set; }
         public string Name { get; set; }

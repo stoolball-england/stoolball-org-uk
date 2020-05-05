@@ -50,7 +50,7 @@
             const home = match.teams.filter((team) => team.teamRole === 1);
             if (home.length) {
               teams.push({
-                Team: { TeamId: home[0].teamId },
+                MigratedTeamId: home[0].teamId,
                 TeamRole: 0,
                 WonToss: match.tossWonBy ? match.tossWonBy === 1 : null,
               });
@@ -58,25 +58,23 @@
             const away = match.teams.filter((team) => team.teamRole === 2);
             if (away.length) {
               teams.push({
-                Team: { TeamId: away[0].teamId },
+                MigratedTeamId: away[0].teamId,
                 TeamRole: 1,
                 WonToss: match.tossWonBy ? match.tossWonBy === 2 : null,
               });
             }
 
             return {
-              MatchId: match.matchId,
+              MigratedMatchId: match.matchId,
               MatchName: match.title,
               UpdateMatchNameAutomatically: !match.customTitle,
-              MatchLocation: match.groundId
-                ? { MatchLocationId: match.groundId }
-                : null,
+              MigratedMatchLocationId: match.groundId,
               MatchType: match.matchType,
               PlayerType: match.playerType - 1,
               PlayersPerTeam: match.playersPerTeam,
-              MatchInnings: [
+              MigratedMatchInnings: [
                 {
-                  Team: home.length ? { TeamId: home[0].teamId } : null,
+                  MigratedTeamId: home.length ? home[0].teamId : null,
                   InningsOrderInMatch: match.homeBatFirst
                     ? match.homeBatFirst
                       ? 1
@@ -87,7 +85,7 @@
                   Wickets: match.homeWickets,
                 },
                 {
-                  Team: away.length ? { TeamId: away[0].teamId } : null,
+                  MigratedTeamId: away.length ? away[0].teamId : null,
                   InningsOrderInMatch: match.homeBatFirst
                     ? match.homeBatFirst
                       ? 2
@@ -100,18 +98,12 @@
               ],
               InningsOrderIsKnown: match.homeBatFirst === null,
               OversPerInningsDefault: match.overs,
-              Tournament: match.tournamentMatchId
-                ? { TournamentId: match.tournamentMatchId }
-                : null,
+              MigratedTournamentId: match.tournamentMatchId,
               OrderInTournament: match.orderInTournament,
               StartTime: match.startTime,
               StartTimeIsKnown: match.startTimeKnown,
-              Teams: teams,
-              Seasons: match.seasons.length
-                ? match.seasons.map((seasonId) => ({
-                    SeasonId: seasonId,
-                  }))
-                : null,
+              MigratedTeams: teams,
+              MigratedSeasonIds: match.seasons,
               MatchRoute: match.route,
               History: [
                 {
@@ -139,11 +131,9 @@
           "MatchMigration/CreateTournament",
           tournaments,
           (tournament) => ({
-            TournamentId: tournament.matchId,
+            MigratedTournamentId: tournament.matchId,
             TournamentName: tournament.title,
-            TournamentLocation: tournament.groundId
-              ? { MatchLocationId: tournament.groundId }
-              : null,
+            MigratedTournamentLocationId: tournament.groundId,
             TournamentQualificationType:
               tournament.qualification === 0
                 ? null
@@ -156,15 +146,11 @@
             StartTime: tournament.startTime,
             StartTimeIsKnown: tournament.startTimeKnown,
             MatchNotes: tournament.notes,
-            Teams: tournament.teams.map((team) => ({
-              Team: { TeamId: team.teamId },
+            MigratedTeams: tournament.teams.map((team) => ({
+              MigratedTeamId: team.teamId,
               TeamRole: team.teamRole - 1,
             })),
-            Seasons: tournament.seasons.length
-              ? tournament.seasons.map((seasonId) => ({
-                  SeasonId: seasonId,
-                }))
-              : null,
+            MigratedSeasonIds: tournament.seasons,
             TournamentRoute: tournament.route,
             History: [
               {

@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Stoolball.Matches;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using System;
 using System.Threading.Tasks;
@@ -36,7 +35,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateMatch(Match match)
+        public async Task<IHttpActionResult> CreateMatch(MigratedMatch match)
         {
             if (match is null)
             {
@@ -48,7 +47,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateTournament(Tournament tournament)
+        public async Task<IHttpActionResult> CreateTournament(MigratedTournament tournament)
         {
             if (tournament is null)
             {

@@ -800,6 +800,9 @@
     <Compile Include="App_Data\Models\StyleGuide.generated.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\CompetitionMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\MatchMigrationController.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedBatting.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedBowlingOver.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedCompetition.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\PlayerPerformanceMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\PlayerMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\TeamMigrationController.cs" />
@@ -810,6 +813,7 @@
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IAuditHistoryBuilder.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\ICompetitionDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IMatchDataMigrator.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedClub.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IPlayerPerformanceDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IPlayerDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\ITeamDataMigrator.cs" />
@@ -819,8 +823,18 @@
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\RedirectsMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\MemberGroupAssignment.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\MemberMigrationController.cs" />
-    <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\ImportedMember.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedMatch.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedMatchInnings.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedMatchLocation.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedMember.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IClubDataMigrator.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedPlayerIdentity.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedSchool.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedSeason.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedTeam.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedTeamInMatch.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedTeamInSeason.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedTournament.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SkybrudRedirectsDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerCompetitionDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerMatchDataMigrator.cs" />

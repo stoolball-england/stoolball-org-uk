@@ -20,7 +20,7 @@ namespace Stoolball.Umbraco.Data.Migrations
 
         [Column(nameof(PlayerIdentityId))]
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId))]
-        public int PlayerIdentityId { get; set; }
+        public Guid PlayerIdentityId { get; set; }
 
         [Column(nameof(OverNumber))]
         public int OverNumber { get; set; }

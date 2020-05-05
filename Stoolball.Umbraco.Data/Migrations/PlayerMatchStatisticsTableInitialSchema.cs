@@ -16,7 +16,7 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(PlayerIdentityId))]
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId))]
         [Index(IndexTypes.NonClustered)]
-        public int PlayerIdentityId { get; set; }
+        public Guid PlayerIdentityId { get; set; }
 
         [Column(nameof(PlayerRole))]
         [Index(IndexTypes.NonClustered)]
@@ -34,13 +34,13 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(MatchId))]
         [ForeignKey(typeof(MatchTableInitialSchema), Column = nameof(MatchTableInitialSchema.MatchId))]
         [Index(IndexTypes.Clustered)]
-        public int MatchId { get; set; }
+        public Guid MatchId { get; set; }
 
         [Column(nameof(TournamentId))]
         [ForeignKey(typeof(MatchTableInitialSchema), Column = nameof(MatchTableInitialSchema.MatchId), Name = "FK_StoolballStatisticsPlayerMatch_StoolballMatch_TournamentId")]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? TournamentId { get; set; }
+        public Guid? TournamentId { get; set; }
 
         [Column(nameof(MatchStartTime))]
         [Index(IndexTypes.NonClustered)]
@@ -75,7 +75,7 @@ namespace Stoolball.Umbraco.Data.Migrations
         [ForeignKey(typeof(TeamTableInitialSchema), Column = nameof(TeamTableInitialSchema.TeamId))]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? TeamId { get; set; }
+        public Guid? TeamId { get; set; }
 
         [Column(nameof(TeamName))]
         [NullSetting(NullSetting = NullSettings.Null)]
@@ -85,7 +85,7 @@ namespace Stoolball.Umbraco.Data.Migrations
         [ForeignKey(typeof(TeamTableInitialSchema), Column = nameof(TeamTableInitialSchema.TeamId), Name = "FK_StoolballStatisticsPlayerMatch_StoolballTeam_OppositionTeamId")]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? OppositionTeamId { get; set; }
+        public Guid? OppositionTeamId { get; set; }
 
         [Column(nameof(OppositionTeamName))]
         [NullSetting(NullSetting = NullSettings.Null)]
@@ -95,7 +95,7 @@ namespace Stoolball.Umbraco.Data.Migrations
         [ForeignKey(typeof(MatchLocationTableInitialSchema), Column = nameof(MatchLocationTableInitialSchema.MatchLocationId))]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? MatchLocationId { get; set; }
+        public Guid? MatchLocationId { get; set; }
 
         [Column(nameof(InningsOrderInMatch))]
         [Index(IndexTypes.NonClustered)]
@@ -166,19 +166,19 @@ namespace Stoolball.Umbraco.Data.Migrations
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId), Name = "FK_StoolballStatisticsPlayerMatch_StoolballPlayerIdentity_BowledById")]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? BowledById { get; set; }
+        public Guid? BowledById { get; set; }
 
         [Column(nameof(CaughtById))]
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId), Name = "FK_StoolballStatisticsPlayerMatch_StoolballPlayerIdentity_CaughtById")]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? CaughtById { get; set; }
+        public Guid? CaughtById { get; set; }
 
         [Column(nameof(RunOutById))]
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId), Name = "FK_StoolballStatisticsPlayerMatch_StoolballPlayerIdentity_RunOutById")]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? RunOutById { get; set; }
+        public Guid? RunOutById { get; set; }
 
         [Column(nameof(RunsScored))]
         [Index(IndexTypes.NonClustered)]

@@ -1,4 +1,5 @@
 ﻿using Stoolball.Matches;
+using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Audit;
 using System;
 using System.Threading.Tasks;
@@ -54,19 +55,22 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied batting performance to the database
 		/// </summary>
-		public async Task<Batting> MigrateBatting(Batting batting)
+		public async Task<Batting> MigrateBatting(MigratedBatting batting)
 		{
 			if (batting is null)
 			{
-				throw new System.ArgumentNullException(nameof(batting));
+				throw new ArgumentNullException(nameof(batting));
 			}
 			try
 			{
-				var migratedBatting = new Batting
+				var migratedBatting = new MigratedBatting
 				{
 					BattingId = Guid.NewGuid(),
-					Match = batting.Match,
-					PlayerIdentity = batting.PlayerIdentity,
+					MigratedMatchId = batting.MigratedMatchId,
+					MigratedPlayerIdentityId = batting.MigratedPlayerIdentityId,
+					MigratedTeamId = batting.MigratedTeamId,
+					MigratedDismissedById = batting.MigratedDismissedById,
+					MigratedBowlerId = batting.MigratedBowlerId,
 					BattingPosition = batting.BattingPosition,
 					HowOut = batting.HowOut,
 					DismissedBy = batting.DismissedBy,
@@ -86,7 +90,33 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
 						using (var transaction = database.GetTransaction())
 						{
-							var inningsId = (await database.ExecuteScalarAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @0 AND TeamId = @1", batting.Match.MatchId, batting.PlayerIdentity.Team.TeamId).ConfigureAwait(false));
+							migratedBatting.Match = new Match
+							{
+								MatchId = (await database.ExecuteScalarAsync<Guid>($"SELECT MatchId FROM {Tables.Match} WHERE MigratedMatchId = @0", migratedBatting.MigratedMatchId).ConfigureAwait(false))
+							};
+							migratedBatting.PlayerIdentity = new PlayerIdentity
+							{
+								PlayerIdentityId = (await database.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @0", migratedBatting.MigratedPlayerIdentityId).ConfigureAwait(false)),
+								Team = new Team
+								{
+									TeamId = (await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", migratedBatting.MigratedTeamId).ConfigureAwait(false))
+								}
+							};
+							if (migratedBatting.MigratedDismissedById.HasValue)
+							{
+								migratedBatting.DismissedBy = new PlayerIdentity
+								{
+									PlayerIdentityId = (await database.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @0", migratedBatting.MigratedDismissedById).ConfigureAwait(false)),
+								};
+							}
+							if (migratedBatting.MigratedBowlerId.HasValue)
+							{
+								migratedBatting.Bowler = new PlayerIdentity
+								{
+									PlayerIdentityId = (await database.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @0", migratedBatting.MigratedBowlerId).ConfigureAwait(false)),
+								};
+							}
+							var inningsId = (await database.ExecuteScalarAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @0 AND TeamId = @1", migratedBatting.Match.MatchId, migratedBatting.PlayerIdentity.Team.TeamId).ConfigureAwait(false));
 
 							await database.ExecuteAsync($@"INSERT INTO {Tables.Batting}
 						(BattingId, MatchInningsId, PlayerIdentityId, BattingPosition, HowOut, DismissedById, BowlerId, RunsScored, BallsFaced)
@@ -157,19 +187,20 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied bowling over to the database
 		/// </summary>
-		public async Task<BowlingOver> MigrateBowling(BowlingOver bowling)
+		public async Task<BowlingOver> MigrateBowling(MigratedBowlingOver bowling)
 		{
 			if (bowling is null)
 			{
-				throw new System.ArgumentNullException(nameof(bowling));
+				throw new ArgumentNullException(nameof(bowling));
 			}
 			try
 			{
-				var migratedBowling = new BowlingOver
+				var migratedBowling = new MigratedBowlingOver
 				{
 					BowlingOverId = Guid.NewGuid(),
-					Match = bowling.Match,
-					PlayerIdentity = bowling.PlayerIdentity,
+					MigratedMatchId = bowling.MigratedMatchId,
+					MigratedPlayerIdentityId = bowling.MigratedPlayerIdentityId,
+					MigratedTeamId = bowling.MigratedTeamId,
 					OverNumber = bowling.OverNumber,
 					BallsBowled = bowling.BallsBowled,
 					NoBalls = bowling.NoBalls,
@@ -187,7 +218,19 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
 						using (var transaction = database.GetTransaction())
 						{
-							var inningsId = (await database.ExecuteScalarAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @0 AND TeamId = @1", bowling.Match.MatchId, bowling.PlayerIdentity.Team.TeamId).ConfigureAwait(false));
+							migratedBowling.Match = new Match
+							{
+								MatchId = (await database.ExecuteScalarAsync<Guid>($"SELECT MatchId FROM {Tables.Match} WHERE MigratedMatchId = @0", migratedBowling.MigratedMatchId).ConfigureAwait(false))
+							};
+							migratedBowling.PlayerIdentity = new PlayerIdentity
+							{
+								PlayerIdentityId = (await database.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @0", migratedBowling.MigratedPlayerIdentityId).ConfigureAwait(false)),
+								Team = new Team
+								{
+									TeamId = (await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", migratedBowling.MigratedTeamId).ConfigureAwait(false))
+								}
+							};
+							var inningsId = (await database.ExecuteScalarAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @0 AND TeamId = @1", migratedBowling.Match.MatchId, migratedBowling.PlayerIdentity.Team.TeamId).ConfigureAwait(false));
 
 							await database.ExecuteAsync($@"INSERT INTO {Tables.BowlingOver}
 						(BowlingOverId, MatchInningsId, PlayerIdentityId, OverNumber, BallsBowled, NoBalls, Wides, RunsConceded)

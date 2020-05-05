@@ -62,16 +62,17 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied competition to the database with its existing <see cref="Competition.CompetitionId"/>
 		/// </summary>
-		public async Task<Competition> MigrateCompetition(Competition competition)
+		public async Task<Competition> MigrateCompetition(MigratedCompetition competition)
 		{
 			if (competition is null)
 			{
 				throw new System.ArgumentNullException(nameof(competition));
 			}
 
-			var migratedCompetition = new Competition
+			var migratedCompetition = new MigratedCompetition
 			{
-				CompetitionId = competition.CompetitionId,
+				CompetitionId = Guid.NewGuid(),
+				MigratedCompetitionId = competition.MigratedCompetitionId,
 				CompetitionName = competition.CompetitionName,
 				Introduction = competition.Introduction,
 				PublicContactDetails = competition.PublicContactDetails,
@@ -96,12 +97,12 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					var database = scope.Database;
 					using (var transaction = database.GetTransaction())
 					{
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Competition} ON").ConfigureAwait(false);
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Competition}
-						(CompetitionId, CompetitionName, Introduction, Twitter, Facebook, Instagram, PublicContactDetails, Website, PlayersPerTeam, 
+						(CompetitionId, MigratedCompetitionId, CompetitionName, Introduction, Twitter, Facebook, Instagram, PublicContactDetails, Website, PlayersPerTeam, 
 						 Overs, PlayerType, FromDate, UntilDate, CompetitionRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13)",
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14)",
 							migratedCompetition.CompetitionId,
+							migratedCompetition.MigratedCompetitionId,
 							migratedCompetition.CompetitionName,
 							migratedCompetition.Introduction,
 							migratedCompetition.Twitter,
@@ -115,7 +116,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedCompetition.FromDate,
 							migratedCompetition.UntilDate,
 							migratedCompetition.CompetitionRoute).ConfigureAwait(false);
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Competition} OFF").ConfigureAwait(false);
 						transaction.Complete();
 					}
 
@@ -174,27 +174,28 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied season to the database with its existing <see cref="Season.SeasonId"/>
 		/// </summary>
-		public async Task<Season> MigrateSeason(Season season)
+		public async Task<Season> MigrateSeason(MigratedSeason season)
 		{
 			if (season is null)
 			{
 				throw new System.ArgumentNullException(nameof(season));
 			}
 
-			var migratedSeason = new Season
+			var migratedSeason = new MigratedSeason
 			{
-				SeasonId = season.SeasonId,
-				Competition = season.Competition,
+				SeasonId = Guid.NewGuid(),
+				MigratedSeasonId = season.MigratedSeasonId,
+				Competition = season.MigratedCompetition,
 				IsLatestSeason = season.IsLatestSeason,
 				StartYear = season.StartYear,
 				EndYear = season.EndYear,
 				Introduction = season.Introduction,
-				Teams = season.Teams,
+				MigratedTeams = season.MigratedTeams,
 				Results = season.Results,
 				ShowTable = season.ShowTable,
 				ShowRunsScored = season.ShowRunsScored,
 				ShowRunsConceded = season.ShowRunsConceded,
-				SeasonRoute = "/competitions/" + season.Competition.CompetitionRoute + "/" + season.StartYear + (season.EndYear > season.StartYear ? "-" + season.EndYear.ToString(CultureInfo.CurrentCulture).Substring(2) : string.Empty)
+				SeasonRoute = "/competitions/" + season.MigratedCompetition.CompetitionRoute + "/" + season.StartYear + (season.EndYear > season.StartYear ? "-" + season.EndYear.ToString(CultureInfo.CurrentCulture).Substring(2) : string.Empty)
 			};
 
 			_auditHistoryBuilder.BuildInitialAuditHistory(season, migratedSeason, nameof(SqlServerCompetitionDataMigrator));
@@ -206,12 +207,14 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					var database = scope.Database;
 					using (var transaction = database.GetTransaction())
 					{
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Season} ON").ConfigureAwait(false);
+						migratedSeason.Competition.CompetitionId = await database.ExecuteScalarAsync<Guid>($"SELECT CompetitionId FROM {Tables.Competition} WHERE MigratedCompetitionId = @0", season.MigratedCompetition.MigratedCompetitionId).ConfigureAwait(false);
+
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Season}
-						(SeasonId, CompetitionId, IsLatestSeason, StartYear, EndYear, Introduction, 
+						(SeasonId, MigratedSeasonId, CompetitionId, IsLatestSeason, StartYear, EndYear, Introduction, 
 						 Results, ShowTable, ShowRunsScored, ShowRunsConceded, SeasonRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10)",
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11)",
 							migratedSeason.SeasonId,
+							migratedSeason.MigratedSeasonId,
 							migratedSeason.Competition.CompetitionId,
 							migratedSeason.IsLatestSeason,
 							migratedSeason.StartYear,
@@ -222,14 +225,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedSeason.ShowRunsScored,
 							migratedSeason.ShowRunsConceded,
 							migratedSeason.SeasonRoute).ConfigureAwait(false);
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Season} OFF").ConfigureAwait(false);
-						foreach (var teamInSeason in migratedSeason.Teams)
+						foreach (var teamInSeason in migratedSeason.MigratedTeams)
 						{
+							var teamId = await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", teamInSeason.MigratedTeamId).ConfigureAwait(false);
+
 							await database.ExecuteAsync($@"INSERT INTO {Tables.SeasonTeam}
 								(SeasonTeamId, SeasonId, TeamId, WithdrawnDate) VALUES (@0, @1, @2, @3)",
 								Guid.NewGuid(),
-								season.SeasonId,
-								teamInSeason.Team.TeamId,
+								migratedSeason.SeasonId,
+								teamId,
 								teamInSeason.WithdrawnDate
 								).ConfigureAwait(false);
 						}

@@ -6,7 +6,7 @@ namespace Stoolball.Schools
 {
     public class School : IAuditable
     {
-        public int? SchoolId { get; set; }
+        public Guid? SchoolId { get; set; }
         public string SchoolName { get; set; }
         public bool? PlaysOutdoors { get; set; }
         public bool? PlaysIndoors { get; set; }

@@ -16,7 +16,7 @@ namespace Stoolball.Umbraco.Data.Migrations
         [ForeignKey(typeof(MatchTableInitialSchema), Column = nameof(MatchTableInitialSchema.MatchId))]
         [Index(IndexTypes.Clustered)]
         [Column(nameof(MatchId))]
-        public int MatchId { get; set; }
+        public Guid MatchId { get; set; }
 
         [ForeignKey(typeof(MatchAwardTypeTableInitialSchema), Column = nameof(MatchAwardTypeTableInitialSchema.MatchAwardTypeId))]
         [Index(IndexTypes.NonClustered)]
@@ -26,6 +26,6 @@ namespace Stoolball.Umbraco.Data.Migrations
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId))]
         [Index(IndexTypes.NonClustered)]
         [Column(nameof(PlayerIdentityId))]
-        public int PlayerIdentityId { get; set; }
+        public Guid PlayerIdentityId { get; set; }
     }
 }

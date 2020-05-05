@@ -46,9 +46,9 @@
           "PlayerMigration/CreatePlayer",
           players,
           (player) => ({
-            PlayerIdentityId: player.playerId,
+            MigratedPlayerIdentityId: player.playerId,
             PlayerIdentityName: player.name,
-            Team: { TeamId: player.teamId },
+            MigratedTeamId: player.teamId,
             FirstPlayed: player.firstPlayed,
             LastPlayed: player.lastPlayed,
             TotalMatches: player.totalMatches,

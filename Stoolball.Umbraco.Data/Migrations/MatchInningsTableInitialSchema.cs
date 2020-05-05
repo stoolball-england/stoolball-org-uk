@@ -16,7 +16,7 @@ namespace Stoolball.Umbraco.Data.Migrations
         [ForeignKey(typeof(MatchTableInitialSchema), Column = nameof(MatchTableInitialSchema.MatchId))]
         [Index(IndexTypes.Clustered)]
         [Column(nameof(MatchId))]
-        public int MatchId { get; set; }
+        public Guid MatchId { get; set; }
 
         [Column(nameof(InningsOrderInMatch))]
         public int InningsOrderInMatch { get; set; }
@@ -24,7 +24,7 @@ namespace Stoolball.Umbraco.Data.Migrations
         [ForeignKey(typeof(TeamTableInitialSchema), Column = nameof(TeamTableInitialSchema.TeamId))]
         [Column(nameof(TeamId))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? TeamId { get; set; }
+        public Guid? TeamId { get; set; }
 
         [Column(nameof(Overs))]
         [NullSetting(NullSetting = NullSettings.Null)]

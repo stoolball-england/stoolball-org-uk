@@ -7,7 +7,7 @@ namespace Stoolball.Teams
 {
     public class PlayerIdentity : IAuditable
     {
-        public int? PlayerIdentityId { get; set; }
+        public Guid? PlayerIdentityId { get; set; }
 
         public Team Team { get; set; }
         public string PlayerIdentityName { get; set; }

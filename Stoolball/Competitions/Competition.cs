@@ -9,7 +9,7 @@ namespace Stoolball.Competitions
 {
     public class Competition : IAuditable
     {
-        public int? CompetitionId { get; set; }
+        public Guid? CompetitionId { get; set; }
 
         public string CompetitionName { get; set; }
 

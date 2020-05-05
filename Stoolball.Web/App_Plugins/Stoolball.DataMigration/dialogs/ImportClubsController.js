@@ -34,7 +34,7 @@
           "ClubMigration/CreateClub",
           clubs,
           (club) => ({
-            ClubId: club.clubId,
+            MigratedClubId: club.clubId,
             ClubName: club.name,
             PlaysOutdoors: club.playsOutdoors,
             PlaysIndoors: club.playsIndoors,

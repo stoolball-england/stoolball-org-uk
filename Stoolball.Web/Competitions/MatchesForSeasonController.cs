@@ -62,7 +62,7 @@ namespace Stoolball.Web.Competitions
                     {
                         Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
                         {
-                            SeasonIds = new List<int> { season.SeasonId.Value },
+                            SeasonIds = new List<Guid> { season.SeasonId.Value },
                             ExcludeMatchTypes = new List<MatchType> { MatchType.TournamentMatch }
                         }).ConfigureAwait(false),
                         DateFormatter = _dateFormatter

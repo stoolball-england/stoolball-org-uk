@@ -8,7 +8,7 @@ namespace Stoolball.MatchLocations
 {
     public class MatchLocation : IAuditable
     {
-        public int? MatchLocationId { get; set; }
+        public Guid? MatchLocationId { get; set; }
 
         public string SortName { get; set; }
 

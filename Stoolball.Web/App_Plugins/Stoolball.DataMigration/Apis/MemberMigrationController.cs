@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Stoolball.Web.Configuration;
 using System;
 using System.Collections.Generic;
@@ -41,7 +42,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         public string ApiKey() => _apiKeyProvider.GetApiKey("DataMigration");
 
         [HttpPost]
-        public IHttpActionResult CreateMember(ImportedMember imported)
+        public IHttpActionResult CreateMember(MigratedMember imported)
         {
             if (imported is null)
             {

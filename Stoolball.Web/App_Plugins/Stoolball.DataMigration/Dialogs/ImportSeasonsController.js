@@ -34,14 +34,14 @@
           "CompetitionMigration/CreateSeason",
           seasons,
           (season) => ({
-            SeasonId: season.seasonId,
-            Competition: {
-              CompetitionId: season.competitionId,
+            MigratedSeasonId: season.seasonId,
+            MigratedCompetition: {
+              MigratedCompetitionId: season.competitionId,
               CompetitionRoute: season.competitionRoute,
             },
-            Teams: season.teams.map((x) => {
+            MigratedTeams: season.teams.map((x) => {
               return {
-                Team: { TeamId: x.teamId },
+                MigratedTeamId: x.teamId,
                 WithdrawnDate: x.withdrawnDate,
               };
             }),

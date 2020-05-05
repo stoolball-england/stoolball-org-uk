@@ -59,16 +59,17 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied match location to the database with its existing <see cref="MatchLocation.MatchLocationId"/>
 		/// </summary>
-		public async Task<MatchLocation> MigrateMatchLocation(MatchLocation matchLocation)
+		public async Task<MatchLocation> MigrateMatchLocation(MigratedMatchLocation matchLocation)
 		{
 			if (matchLocation is null)
 			{
 				throw new System.ArgumentNullException(nameof(matchLocation));
 			}
 
-			var migratedMatchLocation = new MatchLocation
+			var migratedMatchLocation = new MigratedMatchLocation
 			{
-				MatchLocationId = matchLocation.MatchLocationId,
+				MatchLocationId = Guid.NewGuid(),
+				MigratedMatchLocationId = matchLocation.MigratedMatchLocationId,
 				SortName = matchLocation.SortName,
 				SecondaryAddressableObjectName = matchLocation.SecondaryAddressableObjectName,
 				PrimaryAddressableObjectName = matchLocation.PrimaryAddressableObjectName,
@@ -93,12 +94,12 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					var database = scope.Database;
 					using (var transaction = database.GetTransaction())
 					{
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.MatchLocation} ON").ConfigureAwait(false);
 						await database.ExecuteAsync($@"INSERT INTO {Tables.MatchLocation}
-						(MatchLocationId, SortName, SecondaryAddressableObjectName, PrimaryAddressableObjectName, StreetDescription, 
+						(MatchLocationId, MigratedMatchLocationId, SortName, SecondaryAddressableObjectName, PrimaryAddressableObjectName, StreetDescription, 
 						 Locality, Town, AdministrativeArea, Postcode, Latitude, Longitude, GeoPrecision, MatchLocationNotes, MatchLocationRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13)",
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14)",
 							migratedMatchLocation.MatchLocationId,
+							migratedMatchLocation.MigratedMatchLocationId,
 							migratedMatchLocation.SortName,
 							migratedMatchLocation.SecondaryAddressableObjectName,
 							migratedMatchLocation.PrimaryAddressableObjectName,
@@ -112,7 +113,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedMatchLocation.GeoPrecision?.ToString(),
 							migratedMatchLocation.MatchLocationNotes,
 							migratedMatchLocation.MatchLocationRoute).ConfigureAwait(false);
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.MatchLocation} OFF").ConfigureAwait(false);
 
 						transaction.Complete();
 					}

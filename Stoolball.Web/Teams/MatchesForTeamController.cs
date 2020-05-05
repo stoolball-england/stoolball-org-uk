@@ -66,7 +66,7 @@ namespace Stoolball.Web.Teams
                     {
                         Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
                         {
-                            TeamIds = new List<int> { team.TeamId.Value },
+                            TeamIds = new List<Guid> { team.TeamId.Value },
                             FromDate = _estimatedSeason.StartDate,
                             ExcludeMatchTypes = new List<MatchType> { MatchType.TournamentMatch }
                         }).ConfigureAwait(false),

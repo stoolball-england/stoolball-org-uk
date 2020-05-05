@@ -7,8 +7,8 @@ namespace Stoolball.Umbraco.Data.Matches
     public class MatchQuery
     {
 
-        public List<int> TeamIds { get; internal set; } = new List<int>();
-        public List<int> SeasonIds { get; internal set; } = new List<int>();
+        public List<Guid> TeamIds { get; internal set; } = new List<Guid>();
+        public List<Guid> SeasonIds { get; internal set; } = new List<Guid>();
         public List<MatchType> MatchTypes { get; internal set; } = new List<MatchType>();
 
         public List<MatchType> ExcludeMatchTypes { get; internal set; } = new List<MatchType>();

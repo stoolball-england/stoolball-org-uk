@@ -5,7 +5,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
     public interface IMatchLocationDataMigrator
     {
-        Task<MatchLocation> MigrateMatchLocation(MatchLocation matchLocation);
+        Task<MatchLocation> MigrateMatchLocation(MigratedMatchLocation matchLocation);
         Task DeleteMatchLocations();
     }
 }

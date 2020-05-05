@@ -9,7 +9,7 @@ namespace Stoolball.Matches
 {
     public class Match : IAuditable
     {
-        public int? MatchId { get; set; }
+        public Guid? MatchId { get; set; }
         public string MatchName { get; set; }
         public bool UpdateMatchNameAutomatically { get; set; }
         public MatchLocation MatchLocation { get; set; }

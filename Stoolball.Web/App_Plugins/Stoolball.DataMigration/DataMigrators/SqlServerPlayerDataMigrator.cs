@@ -59,7 +59,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied player to the database with its existing <see cref="PlayerIdentity.PlayerIdentityId"/>
 		/// </summary>
-		public async Task<PlayerIdentity> MigratePlayer(PlayerIdentity player)
+		public async Task<PlayerIdentity> MigratePlayer(MigratedPlayerIdentity player)
 		{
 			if (player is null)
 			{
@@ -67,11 +67,12 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			}
 			try
 			{
-				var migratedPlayer = new PlayerIdentity
+				var migratedPlayer = new MigratedPlayerIdentity
 				{
-					PlayerIdentityId = player.PlayerIdentityId,
+					PlayerIdentityId = Guid.NewGuid(),
+					MigratedPlayerIdentityId = player.MigratedPlayerIdentityId,
 					PlayerIdentityName = player.PlayerIdentityName,
-					Team = player.Team,
+					MigratedTeamId = player.MigratedTeamId,
 					FirstPlayed = player.FirstPlayed,
 					LastPlayed = player.LastPlayed,
 					TotalMatches = player.TotalMatches,
@@ -86,7 +87,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					{
 						var database = scope.Database;
 
-						var team = (await database.FetchAsync<Team>($"SELECT TeamRoute FROM {Tables.Team} WHERE TeamId = @0", player.Team.TeamId).ConfigureAwait(false)).SingleOrDefault();
+						var teamId = await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", migratedPlayer.MigratedTeamId).ConfigureAwait(false);
+						var team = (await database.FetchAsync<Team>($"SELECT TeamRoute FROM {Tables.Team} WHERE TeamId = @0", teamId).ConfigureAwait(false)).SingleOrDefault();
 						var slash = player.PlayerIdentityRoute.IndexOf("/", StringComparison.OrdinalIgnoreCase);
 						var route = slash > -1 ? player.PlayerIdentityRoute.Substring(slash + 1) : player.PlayerIdentityRoute;
 						if (player.PlayerRole == PlayerRole.Player)
@@ -106,15 +108,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
 						using (var transaction = database.GetTransaction())
 						{
-							await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.PlayerIdentity} ON").ConfigureAwait(false);
 							await database.ExecuteAsync($@"INSERT INTO {Tables.PlayerIdentity}
-						(PlayerIdentityId, PlayerIdentityName, PlayerIdentityComparableName, TeamId, FirstPlayed, LastPlayed,
-						 TotalMatches, MissedMatches, Probability, PlayerRole, PlayerIdentityRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10)",
+							(PlayerIdentityId, MigratedPlayerIdentityId, PlayerIdentityName, PlayerIdentityComparableName, TeamId, 
+								FirstPlayed, LastPlayed, TotalMatches, MissedMatches, Probability, PlayerRole, PlayerIdentityRoute)
+							VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11)",
 								migratedPlayer.PlayerIdentityId,
+								migratedPlayer.MigratedPlayerIdentityId,
 								migratedPlayer.PlayerIdentityName,
 								migratedPlayer.GenerateComparableName(),
-								migratedPlayer.Team.TeamId,
+								teamId,
 								migratedPlayer.FirstPlayed,
 								migratedPlayer.LastPlayed,
 								migratedPlayer.TotalMatches,
@@ -122,7 +124,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 								migratedPlayer.Probability,
 								migratedPlayer.PlayerRole.ToString(),
 								migratedPlayer.PlayerIdentityRoute).ConfigureAwait(false);
-							await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.PlayerIdentity} OFF").ConfigureAwait(false);
 							transaction.Complete();
 						}
 

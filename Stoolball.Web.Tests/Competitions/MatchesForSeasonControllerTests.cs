@@ -70,7 +70,7 @@ namespace Stoolball.Web.Tests.Competitions
         public async Task Route_matching_season_returns_SeasonViewModel()
         {
             var seasonDataSource = new Mock<ISeasonDataSource>();
-            seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).ReturnsAsync(new Season { SeasonId = 1 });
+            seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).ReturnsAsync(new Season { SeasonId = Guid.NewGuid() });
 
             var matchesDataSource = new Mock<IMatchDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());

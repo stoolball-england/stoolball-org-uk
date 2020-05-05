@@ -46,21 +46,13 @@
           "PlayerPerformanceMigration/CreateBatting",
           performances,
           (batting) => ({
-            Match: { MatchId: batting.matchId },
-            PlayerIdentity: {
-              PlayerIdentityId: batting.playerId,
-              Team: { TeamId: batting.teamId },
-            },
+            MigratedMatchId: batting.matchId,
+            MigratedPlayerIdentityId: batting.playerId,
+            MigratedTeamId: batting.teamId,
             BattingPosition: batting.battingPosition,
             HowOut: batting.howOut,
-            DismissedBy:
-              batting.dismissedById == null
-                ? null
-                : { PlayerIdentityId: batting.dismissedById },
-            Bowler:
-              batting.bowlerId == null
-                ? null
-                : { PlayerIdentityId: batting.bowlerId },
+            MigratedDismissedById: batting.dismissedById,
+            MigratedBowlerId: batting.bowlerId,
             RunsScored: batting.runsScored,
             BallsFaced: batting.ballsFaced,
             History: [

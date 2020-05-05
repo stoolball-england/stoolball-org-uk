@@ -33,7 +33,7 @@
           "MatchLocationMigration/CreateMatchLocation",
           locations,
           (location) => ({
-            MatchLocationId: location.groundId,
+            MigratedMatchLocationId: location.groundId,
             SortName: location.sortName,
             SecondaryAddressableObjectName: location.saon,
             PrimaryAddressableObjectName: location.paon,

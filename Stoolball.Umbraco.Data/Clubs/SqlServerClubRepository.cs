@@ -42,9 +42,12 @@ namespace Stoolball.Umbraco.Data.Clubs
                 {
                     using (var transaction = scope.Database.GetTransaction())
                     {
+                        club.ClubId = Guid.NewGuid();
+
                         await scope.Database.ExecuteAsync($@"INSERT INTO {Tables.Club}
-						(PlaysOutdoors, PlaysIndoors, Twitter, Facebook, Instagram, ClubMark, HowManyPlayers, ClubRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7)",
+						(ClubId, PlaysOutdoors, PlaysIndoors, Twitter, Facebook, Instagram, ClubMark, HowManyPlayers, ClubRoute)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8)",
+                            club.ClubId,
                             club.PlaysOutdoors,
                             club.PlaysIndoors,
                             club.Twitter,
@@ -53,7 +56,6 @@ namespace Stoolball.Umbraco.Data.Clubs
                             club.ClubMark,
                             club.HowManyPlayers,
                             club.ClubRoute).ConfigureAwait(false);
-                        club.ClubId = await scope.Database.ExecuteScalarAsync<int>("SELECT SCOPE_IDENTITY()").ConfigureAwait(false);
                         await scope.Database.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
 							(ClubNameId, ClubId, ClubName, FromDate) VALUES (@0, @1, @2, @3)",
                             Guid.NewGuid(),

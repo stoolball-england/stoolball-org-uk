@@ -9,7 +9,7 @@ namespace Stoolball.Matches
 {
     public class Tournament : IAuditable
     {
-        public int? TournamentId { get; set; }
+        public Guid? TournamentId { get; set; }
         public string TournamentName { get; set; }
         public MatchLocation TournamentLocation { get; set; }
         public DateTimeOffset StartTime { get; set; }

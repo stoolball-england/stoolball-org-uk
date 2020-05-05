@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Stoolball.Teams;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using System;
 using System.Threading.Tasks;
@@ -36,7 +35,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreatePlayer(PlayerIdentity player)
+        public async Task<IHttpActionResult> CreatePlayer(MigratedPlayerIdentity player)
         {
             if (player is null)
             {

@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Stoolball.MatchLocations;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using System;
 using System.Threading.Tasks;
@@ -36,7 +35,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateMatchLocation(MatchLocation matchLocation)
+        public async Task<IHttpActionResult> CreateMatchLocation(MigratedMatchLocation matchLocation)
         {
             if (matchLocation is null)
             {

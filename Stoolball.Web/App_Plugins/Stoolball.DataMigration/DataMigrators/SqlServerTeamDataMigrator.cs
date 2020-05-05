@@ -1,4 +1,7 @@
-﻿using Stoolball.Teams;
+﻿using Stoolball.Clubs;
+using Stoolball.MatchLocations;
+using Stoolball.Schools;
+using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
@@ -67,19 +70,21 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied team to the database with its existing <see cref="Team.TeamId"/>
 		/// </summary>
-		public async Task<Team> MigrateTeam(Team team)
+		public async Task<Team> MigrateTeam(MigratedTeam team)
 		{
 			if (team is null)
 			{
-				throw new System.ArgumentNullException(nameof(team));
+				throw new ArgumentNullException(nameof(team));
 			}
 
-			var migratedTeam = new Team
+			var migratedTeam = new MigratedTeam
 			{
-				TeamId = team.TeamId,
+				TeamId = Guid.NewGuid(),
+				MigratedTeamId = team.MigratedTeamId,
 				TeamName = team.TeamName,
-				Club = team.Club != null && team.Club.ClubId.HasValue ? team.Club : null,
-				School = team.School != null && team.School.SchoolId.HasValue ? team.School : null,
+				MigratedClubId = team.MigratedClubId,
+				MigratedSchoolId = team.MigratedSchoolId,
+				MigratedMatchLocationId = team.MigratedMatchLocationId,
 				TeamType = team.TeamType,
 				PlayerType = team.PlayerType,
 				Introduction = team.Introduction,
@@ -95,7 +100,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				MemberGroupId = ReadMemberGroupId(team),
 				TeamRoute = team.TeamRoute
 			};
-			migratedTeam.MatchLocations.AddRange(team.MatchLocations);
 
 			if (migratedTeam.TeamRoute.EndsWith("team", StringComparison.OrdinalIgnoreCase))
 			{
@@ -106,7 +110,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			{
 				// Use a partial route that will be updated when the tournament is imported
 				var splitRoute = migratedTeam.TeamRoute.Split('/');
-				migratedTeam.TeamRoute = migratedTeam.TeamId.Value.ToString("00000", CultureInfo.InvariantCulture) + splitRoute[splitRoute.Length - 1];
+				migratedTeam.TeamRoute = migratedTeam.MigratedTeamId.ToString("00000", CultureInfo.InvariantCulture) + splitRoute[splitRoute.Length - 1];
 			}
 			else
 			{
@@ -122,13 +126,35 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					var database = scope.Database;
 					using (var transaction = database.GetTransaction())
 					{
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Team} ON").ConfigureAwait(false);
+						if (migratedTeam.MigratedClubId.HasValue)
+						{
+							migratedTeam.Club = new Club
+							{
+								ClubId = await database.ExecuteScalarAsync<Guid>($"SELECT ClubId FROM {Tables.Club} WHERE MigratedClubId = @0", migratedTeam.MigratedClubId).ConfigureAwait(false)
+							};
+						}
+						if (migratedTeam.MigratedSchoolId.HasValue)
+						{
+							migratedTeam.School = new School
+							{
+								SchoolId = await database.ExecuteScalarAsync<Guid>($"SELECT SchoolId FROM {Tables.School} WHERE MigratedSchoolId = @0", migratedTeam.MigratedSchoolId).ConfigureAwait(false)
+							};
+						}
+						if (migratedTeam.MigratedMatchLocationId.HasValue)
+						{
+							migratedTeam.MatchLocations.Add(new MatchLocation
+							{
+								MatchLocationId = await database.ExecuteScalarAsync<Guid>($"SELECT MatchLocationId FROM {Tables.MatchLocation} WHERE MigratedMatchLocationId = @0", migratedTeam.MigratedMatchLocationId).ConfigureAwait(false)
+							});
+						}
+
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Team}
-						(TeamId, ClubId, SchoolId, TeamType, PlayerType, Introduction, AgeRangeLower, AgeRangeUpper, 
+						(TeamId, MigratedTeamId, ClubId, SchoolId, TeamType, PlayerType, Introduction, AgeRangeLower, AgeRangeUpper, 
 						 FromDate, UntilDate, Website, PublicContactDetails, PrivateContactDetails, PlayingTimes, Cost,
 						 MemberGroupId, TeamRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16)",
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16, @17)",
 							migratedTeam.TeamId,
+							migratedTeam.MigratedTeamId,
 							migratedTeam.Club?.ClubId,
 							migratedTeam.School?.SchoolId,
 							migratedTeam.TeamType.ToString(),
@@ -145,7 +171,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedTeam.Cost,
 							migratedTeam.MemberGroupId,
 							migratedTeam.TeamRoute).ConfigureAwait(false);
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Team} OFF").ConfigureAwait(false);
 						await database.ExecuteAsync($@"INSERT INTO {Tables.TeamName} 
 							(TeamNameId, TeamId, TeamName, TeamComparableName, FromDate) VALUES (@0, @1, @2, @3, @4)",
 							Guid.NewGuid(),

@@ -20,7 +20,7 @@ namespace Stoolball.Umbraco.Data.Migrations
 
         [Column(nameof(PlayerIdentityId))]
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId))]
-        public int PlayerIdentityId { get; set; }
+        public Guid PlayerIdentityId { get; set; }
 
         [Column(nameof(BattingPosition))]
         public int BattingPosition { get; set; }
@@ -32,12 +32,12 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(DismissedById))]
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId), Name = "FK_StoolballBatting_StoolballPlayerIdentity_DismissedById")]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? DismissedById { get; set; }
+        public Guid? DismissedById { get; set; }
 
         [Column(nameof(BowlerId))]
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId), Name = "FK_StoolballBatting_StoolballPlayerIdentity_BowlerId")]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? BowlerId { get; set; }
+        public Guid? BowlerId { get; set; }
 
         [Column(nameof(RunsScored))]
         [NullSetting(NullSetting = NullSettings.Null)]

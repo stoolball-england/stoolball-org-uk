@@ -61,16 +61,17 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied Club to the database with its existing <see cref="Club.ClubId"/>
 		/// </summary>
-		public async Task<Club> MigrateClub(Club club)
+		public async Task<Club> MigrateClub(MigratedClub club)
 		{
 			if (club is null)
 			{
 				throw new System.ArgumentNullException(nameof(club));
 			}
 
-			var migratedClub = new Club
+			var migratedClub = new MigratedClub
 			{
-				ClubId = club.ClubId,
+				ClubId = Guid.NewGuid(),
+				MigratedClubId = club.MigratedClubId,
 				ClubName = club.ClubName,
 				PlaysOutdoors = club.PlaysOutdoors,
 				PlaysIndoors = club.PlaysIndoors,
@@ -96,11 +97,11 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					var database = scope.Database;
 					using (var transaction = database.GetTransaction())
 					{
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Club} ON").ConfigureAwait(false);
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Club}
-						(ClubId, PlaysOutdoors, PlaysIndoors, Twitter, Facebook, Instagram, ClubMark, HowManyPlayers, ClubRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8)",
+						(ClubId, MigratedClubId, PlaysOutdoors, PlaysIndoors, Twitter, Facebook, Instagram, ClubMark, HowManyPlayers, ClubRoute)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9)",
 							migratedClub.ClubId,
+							migratedClub.MigratedClubId,
 							migratedClub.PlaysOutdoors,
 							migratedClub.PlaysIndoors,
 							migratedClub.Twitter,
@@ -109,7 +110,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedClub.ClubMark,
 							migratedClub.HowManyPlayers,
 							migratedClub.ClubRoute).ConfigureAwait(false);
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Club} OFF").ConfigureAwait(false);
 						await database.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
 							(ClubNameId, ClubId, ClubName, FromDate) VALUES (@0, @1, @2, @3)",
 							Guid.NewGuid(),

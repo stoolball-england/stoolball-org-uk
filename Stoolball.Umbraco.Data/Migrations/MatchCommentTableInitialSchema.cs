@@ -16,7 +16,7 @@ namespace Stoolball.Umbraco.Data.Migrations
         [ForeignKey(typeof(MatchTableInitialSchema), Column = nameof(MatchTableInitialSchema.MatchId))]
         [Index(IndexTypes.Clustered)]
         [Column(nameof(MatchId))]
-        public int MatchId { get; set; }
+        public Guid MatchId { get; set; }
 
         [Column(nameof(MemberKey))]
         public Guid MemberKey { get; set; }

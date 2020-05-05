@@ -1,4 +1,6 @@
 ﻿using Stoolball.Matches;
+using Stoolball.MatchLocations;
+using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
@@ -63,31 +65,32 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied match to the database with its existing <see cref="Match.MatchId"/>
 		/// </summary>
-		public async Task<Match> MigrateMatch(Match match)
+		public async Task<Match> MigrateMatch(MigratedMatch match)
 		{
 			if (match is null)
 			{
 				throw new System.ArgumentNullException(nameof(match));
 			}
 
-			var migratedMatch = new Match
+			var migratedMatch = new MigratedMatch
 			{
-				MatchId = match.MatchId,
+				MatchId = Guid.NewGuid(),
+				MigratedMatchId = match.MigratedMatchId,
 				MatchName = match.MatchName,
 				UpdateMatchNameAutomatically = match.UpdateMatchNameAutomatically,
-				MatchLocation = match.MatchLocation,
+				MigratedMatchLocationId = match.MigratedMatchLocationId,
 				MatchType = match.MatchType,
 				PlayerType = match.PlayerType,
 				PlayersPerTeam = match.PlayersPerTeam,
-				MatchInnings = match.MatchInnings,
+				MigratedMatchInnings = match.MigratedMatchInnings,
 				InningsOrderIsKnown = match.InningsOrderIsKnown,
 				OversPerInningsDefault = match.OversPerInningsDefault,
-				Tournament = match.Tournament,
+				MigratedTournamentId = match.MigratedTournamentId,
 				OrderInTournament = match.OrderInTournament,
 				StartTime = match.StartTime,
 				StartTimeIsKnown = match.StartTimeIsKnown,
-				Teams = match.Teams,
-				Seasons = match.Seasons,
+				MigratedTeams = match.MigratedTeams,
+				MigratedSeasonIds = match.MigratedSeasonIds,
 				MatchResultType = match.MatchResultType,
 				MatchNotes = match.MatchNotes,
 				MatchRoute = match.MatchRoute
@@ -109,13 +112,29 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					var database = scope.Database;
 					using (var transaction = database.GetTransaction())
 					{
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Match} ON").ConfigureAwait(false);
+						if (migratedMatch.MigratedMatchLocationId.HasValue)
+						{
+							migratedMatch.MatchLocation = new MatchLocation
+							{
+								MatchLocationId = await database.ExecuteScalarAsync<Guid>($"SELECT MatchLocationId FROM {Tables.MatchLocation} WHERE MigratedMatchLocationId = @0", migratedMatch.MigratedMatchLocationId).ConfigureAwait(false)
+							};
+						}
+
+						if (migratedMatch.MigratedTournamentId.HasValue)
+						{
+							migratedMatch.Tournament = new Tournament
+							{
+								TournamentId = await database.ExecuteScalarAsync<Guid>($"SELECT MatchId FROM {Tables.Match} WHERE MigratedMatchId = @0", migratedMatch.MigratedTournamentId).ConfigureAwait(false)
+							};
+						}
+
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Match}
-						(MatchId, MatchName, UpdateMatchNameAutomatically, MatchLocationId, MatchType, PlayerType, PlayersPerTeam,
+						(MatchId, MigratedMatchId, MatchName, UpdateMatchNameAutomatically, MatchLocationId, MatchType, PlayerType, PlayersPerTeam,
 						 InningsOrderIsKnown, OversPerInningsDefault, TournamentId, OrderInTournament, StartTime, StartTimeIsKnown, MatchResultType, 
 						 MatchNotes, MatchRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15)",
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16)",
 							migratedMatch.MatchId,
+							migratedMatch.MigratedMatchId,
 							migratedMatch.MatchName,
 							migratedMatch.UpdateMatchNameAutomatically,
 							migratedMatch.MatchLocation?.MatchLocationId,
@@ -131,9 +150,16 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedMatch.MatchResultType?.ToString(),
 							migratedMatch.MatchNotes,
 							migratedMatch.MatchRoute).ConfigureAwait(false);
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Match} OFF").ConfigureAwait(false);
-						foreach (var innings in migratedMatch.MatchInnings)
+						foreach (var innings in migratedMatch.MigratedMatchInnings)
 						{
+							if (innings.MigratedTeamId.HasValue)
+							{
+								innings.Team = new Team
+								{
+									TeamId = await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", innings.MigratedTeamId).ConfigureAwait(false)
+								};
+							}
+
 							await database.ExecuteAsync($@"INSERT INTO {Tables.MatchInnings} 
 								(MatchInningsId, MatchId, TeamId, InningsOrderInMatch, Overs, Runs, Wickets)
 								VALUES (@0, @1, @2, @3, @4, @5, @6)",
@@ -145,8 +171,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 								innings.Runs,
 								innings.Wickets).ConfigureAwait(false);
 						}
-						foreach (var team in migratedMatch.Teams)
+						foreach (var team in migratedMatch.MigratedTeams)
 						{
+							team.Team = new Team
+							{
+								TeamId = await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", team.MigratedTeamId).ConfigureAwait(false)
+							};
+
 							await database.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
 								(MatchTeamId, MatchId, TeamId, TeamRole, WonToss) VALUES (@0, @1, @2, @3, @4)",
 								Guid.NewGuid(),
@@ -155,13 +186,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 								team.TeamRole.ToString(),
 								team.WonToss).ConfigureAwait(false);
 						}
-						foreach (var season in migratedMatch.Seasons)
+						foreach (var season in migratedMatch.MigratedSeasonIds)
 						{
+							var seasonId = await database.ExecuteScalarAsync<Guid>($"SELECT SeasonId FROM {Tables.Season} WHERE MigratedSeasonId = @0", season).ConfigureAwait(false);
+
 							await database.ExecuteAsync($@"INSERT INTO {Tables.SeasonMatch} 
 								(SeasonMatchId, MatchId, SeasonId) VALUES (@0, @1, @2)",
 								Guid.NewGuid(),
 								migratedMatch.MatchId,
-								season.SeasonId).ConfigureAwait(false);
+								seasonId).ConfigureAwait(false);
 						}
 						transaction.Complete();
 					}
@@ -190,18 +223,19 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied tournament to the database with its existing <see cref="Match.MatchId"/>
 		/// </summary>
-		public async Task<Tournament> MigrateTournament(Tournament tournament)
+		public async Task<Tournament> MigrateTournament(MigratedTournament tournament)
 		{
 			if (tournament is null)
 			{
 				throw new System.ArgumentNullException(nameof(tournament));
 			}
 
-			var migratedTournament = new Tournament
+			var migratedTournament = new MigratedTournament
 			{
-				TournamentId = tournament.TournamentId,
+				TournamentId = Guid.NewGuid(),
+				MigratedTournamentId = tournament.MigratedTournamentId,
 				TournamentName = tournament.TournamentName,
-				TournamentLocation = tournament.TournamentLocation,
+				MigratedTournamentLocationId = tournament.MigratedTournamentLocationId,
 				QualificationType = tournament.QualificationType,
 				PlayerType = tournament.PlayerType,
 				PlayersPerTeam = tournament.PlayersPerTeam,
@@ -236,12 +270,21 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					var database = scope.Database;
 					using (var transaction = database.GetTransaction())
 					{
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Match} ON").ConfigureAwait(false);
+						if (migratedTournament.MigratedTournamentLocationId.HasValue)
+						{
+							migratedTournament.TournamentLocation = new MatchLocation
+							{
+								MatchLocationId = await database.ExecuteScalarAsync<Guid>($"SELECT MatchLocationId FROM {Tables.MatchLocation} WHERE MigratedMatchLocationId = @0", migratedTournament.MigratedTournamentLocationId).ConfigureAwait(false)
+							};
+						}
+
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Match}
-						(MatchId, MatchName, UpdateMatchNameAutomatically, MatchLocationId, MatchType, TournamentQualificationType, PlayerType, PlayersPerTeam, 
-						 OversPerInningsDefault, MaximumTeamsInTournament, SpacesInTournament, StartTime, StartTimeIsKnown, MatchNotes, MatchRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14)",
+						(MatchId, MigratedMatchId, MatchName, UpdateMatchNameAutomatically, MatchLocationId, MatchType, 
+						 TournamentQualificationType, PlayerType, PlayersPerTeam, OversPerInningsDefault, MaximumTeamsInTournament, 
+						 SpacesInTournament, StartTime, StartTimeIsKnown, MatchNotes, MatchRoute)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15)",
 							migratedTournament.TournamentId,
+							migratedTournament.MigratedTournamentId,
 							migratedTournament.TournamentName,
 							false,
 							migratedTournament.TournamentLocation?.MatchLocationId,
@@ -256,9 +299,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedTournament.StartTimeIsKnown,
 							migratedTournament.MatchNotes,
 							migratedTournament.TournamentRoute).ConfigureAwait(false);
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.Match} OFF").ConfigureAwait(false);
-						foreach (var team in migratedTournament.Teams)
+						foreach (var team in migratedTournament.MigratedTeams)
 						{
+							team.Team = new Team
+							{
+								TeamId = await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", team.MigratedTeamId).ConfigureAwait(false)
+							};
+
 							await database.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
 								(MatchTeamId, MatchId, TeamId, TeamRole) VALUES (@0, @1, @2, @3)",
 								Guid.NewGuid(),
@@ -266,13 +313,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 								team.Team.TeamId,
 								team.TeamRole.ToString()).ConfigureAwait(false);
 						}
-						foreach (var season in migratedTournament.Seasons)
+						foreach (var season in migratedTournament.MigratedSeasonIds)
 						{
+							var seasonId = await database.ExecuteScalarAsync<Guid>($"SELECT SeasonId FROM {Tables.Season} WHERE MigratedSeasonId = @0", season).ConfigureAwait(false);
+
 							await database.ExecuteAsync($@"INSERT INTO {Tables.SeasonMatch} 
 								(SeasonMatchId, MatchId, SeasonId) VALUES (@0, @1, @2)",
 								Guid.NewGuid(),
 								migratedTournament.TournamentId,
-								season.SeasonId).ConfigureAwait(false);
+								seasonId).ConfigureAwait(false);
 						}
 						await database.ExecuteAsync($@"UPDATE {Tables.Team} SET 
 							TeamRoute = CONCAT(@0, '/teams/', SUBSTRING(TeamRoute, 6, LEN(TeamRoute)-5)),

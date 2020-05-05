@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Stoolball.Competitions;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using System;
 using System.Threading.Tasks;
@@ -36,7 +35,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateCompetition(Competition competition)
+        public async Task<IHttpActionResult> CreateCompetition(MigratedCompetition competition)
         {
             if (competition is null)
             {
@@ -56,7 +55,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
 
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateSeason(Season season)
+        public async Task<IHttpActionResult> CreateSeason(MigratedSeason season)
         {
             if (season is null)
             {

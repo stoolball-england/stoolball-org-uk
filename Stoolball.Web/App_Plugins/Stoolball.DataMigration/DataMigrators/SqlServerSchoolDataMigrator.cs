@@ -61,16 +61,17 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied School to the database with its existing <see cref="School.SchoolId"/>
 		/// </summary>
-		public async Task<School> MigrateSchool(School school)
+		public async Task<School> MigrateSchool(MigratedSchool school)
 		{
 			if (school is null)
 			{
 				throw new System.ArgumentNullException(nameof(school));
 			}
 
-			var migratedSchool = new School
+			var migratedSchool = new MigratedSchool
 			{
-				SchoolId = school.SchoolId,
+				SchoolId = Guid.NewGuid(),
+				MigratedSchoolId = school.MigratedSchoolId,
 				SchoolName = school.SchoolName,
 				PlaysOutdoors = school.PlaysOutdoors,
 				PlaysIndoors = school.PlaysIndoors,
@@ -90,11 +91,11 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					var database = scope.Database;
 					using (var transaction = database.GetTransaction())
 					{
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.School} ON").ConfigureAwait(false);
 						await database.ExecuteAsync($@"INSERT INTO {Tables.School}
-						(SchoolId, PlaysOutdoors, PlaysIndoors, Twitter, Facebook, Instagram, HowManyPlayers, SchoolRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7)",
+						(SchoolId, MigratedSchoolId, PlaysOutdoors, PlaysIndoors, Twitter, Facebook, Instagram, HowManyPlayers, SchoolRoute)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8)",
 							migratedSchool.SchoolId,
+							migratedSchool.MigratedSchoolId,
 							migratedSchool.PlaysOutdoors,
 							migratedSchool.PlaysIndoors,
 							migratedSchool.Twitter,
@@ -102,7 +103,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedSchool.Instagram,
 							migratedSchool.HowManyPlayers,
 							migratedSchool.SchoolRoute).ConfigureAwait(false);
-						await database.ExecuteAsync($"SET IDENTITY_INSERT {Tables.School} OFF").ConfigureAwait(false);
 						await database.ExecuteAsync($@"INSERT INTO {Tables.SchoolName} 
 							(SchoolNameId, SchoolId, SchoolName, FromDate) VALUES (@0, @1, @2, @3)",
 							Guid.NewGuid(),

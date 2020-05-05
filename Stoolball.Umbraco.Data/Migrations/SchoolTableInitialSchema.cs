@@ -1,17 +1,22 @@
 ﻿
 using NPoco;
+using System;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Umbraco.Data.Migrations
 {
     [TableName(Constants.Tables.School)]
-    [PrimaryKey(nameof(SchoolId), AutoIncrement = true)]
+    [PrimaryKey(nameof(SchoolId), AutoIncrement = false)]
     [ExplicitColumns]
     public class SchoolTableInitialSchema
     {
-        [PrimaryKeyColumn(AutoIncrement = true, IdentitySeed = 1)]
+        [PrimaryKeyColumn(AutoIncrement = false)]
         [Column(nameof(SchoolId))]
-        public int SchoolId { get; set; }
+        public Guid SchoolId { get; set; }
+
+        [Column(nameof(MigratedSchoolId))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? MigratedSchoolId { get; set; }
 
         [Column(nameof(PlaysOutdoors))]
         [NullSetting(NullSetting = NullSettings.Null)]

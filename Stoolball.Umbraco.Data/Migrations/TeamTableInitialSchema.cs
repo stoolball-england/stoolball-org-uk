@@ -5,24 +5,27 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 namespace Stoolball.Umbraco.Data.Migrations
 {
     [TableName(Constants.Tables.Team)]
-    [PrimaryKey(nameof(TeamId), AutoIncrement = true)]
+    [PrimaryKey(nameof(TeamId), AutoIncrement = false)]
     [ExplicitColumns]
     public class TeamTableInitialSchema
     {
-        [PrimaryKeyColumn(AutoIncrement = true, IdentitySeed = 1, Clustered = false)]
+        [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
         [Column(nameof(TeamId))]
-        public int TeamId { get; set; }
+        public Guid TeamId { get; set; }
+
+        [Column(nameof(MigratedTeamId))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? MigratedTeamId { get; set; }
 
         [Column(nameof(ClubId))]
         [ForeignKey(typeof(ClubTableInitialSchema), Column = nameof(ClubTableInitialSchema.ClubId))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? ClubId { get; set; }
-
+        public Guid? ClubId { get; set; }
 
         [Column(nameof(SchoolId))]
         [ForeignKey(typeof(SchoolTableInitialSchema), Column = nameof(SchoolTableInitialSchema.SchoolId))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? SchoolId { get; set; }
+        public Guid? SchoolId { get; set; }
 
         [Column(nameof(TeamType))]
         [Index(IndexTypes.NonClustered)]

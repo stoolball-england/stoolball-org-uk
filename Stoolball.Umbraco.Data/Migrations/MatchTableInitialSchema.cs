@@ -5,13 +5,17 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 namespace Stoolball.Umbraco.Data.Migrations
 {
     [TableName(Constants.Tables.Match)]
-    [PrimaryKey(nameof(MatchId), AutoIncrement = true)]
+    [PrimaryKey(nameof(MatchId), AutoIncrement = false)]
     [ExplicitColumns]
     public class MatchTableInitialSchema
     {
-        [PrimaryKeyColumn(AutoIncrement = true, IdentitySeed = 1, Clustered = false)]
+        [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
         [Column(nameof(MatchId))]
-        public int MatchId { get; set; }
+        public Guid MatchId { get; set; }
+
+        [Column(nameof(MigratedMatchId))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? MigratedMatchId { get; set; }
 
         [Column(nameof(MatchName))]
         public string MatchName { get; set; }
@@ -23,7 +27,7 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(MatchLocationId))]
         [ForeignKey(typeof(MatchLocationTableInitialSchema), Column = nameof(MatchLocationTableInitialSchema.MatchLocationId))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? MatchLocationId { get; set; }
+        public Guid? MatchLocationId { get; set; }
 
         [Column(nameof(StartTime))]
         [Index(IndexTypes.Clustered)]
@@ -64,7 +68,7 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(TournamentId))]
         [ForeignKey(typeof(MatchTableInitialSchema), Column = nameof(MatchId))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? TournamentId { get; set; }
+        public Guid? TournamentId { get; set; }
 
         [Column(nameof(OrderInTournament))]
         [NullSetting(NullSetting = NullSettings.Null)]

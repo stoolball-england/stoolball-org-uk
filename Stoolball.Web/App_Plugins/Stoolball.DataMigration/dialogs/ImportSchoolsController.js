@@ -37,7 +37,7 @@
           "SchoolMigration/CreateSchool",
           schools,
           (school) => ({
-            SchoolId: school.clubId,
+            MigratedSchoolId: school.clubId,
             SchoolName: school.name,
             PlaysOutdoors: school.playsOutdoors,
             PlaysIndoors: school.playsIndoors,

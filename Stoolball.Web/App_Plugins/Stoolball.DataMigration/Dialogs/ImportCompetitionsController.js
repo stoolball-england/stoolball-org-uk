@@ -34,7 +34,7 @@
           "CompetitionMigration/CreateCompetition",
           competitions,
           (competition) => ({
-            CompetitionId: competition.competitionId,
+            MigratedCompetitionId: competition.competitionId,
             CompetitionName: competition.name,
             PlayerType: competition.playerType,
             Introduction: competition.introduction,

@@ -16,12 +16,12 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(SeasonId))]
         [ForeignKey(typeof(SeasonTableInitialSchema), Column = nameof(SeasonTableInitialSchema.SeasonId))]
         [Index(IndexTypes.Clustered)]
-        public int SeasonId { get; set; }
+        public Guid SeasonId { get; set; }
 
         [Column(nameof(TeamId))]
         [ForeignKey(typeof(TeamTableInitialSchema), Column = nameof(TeamTableInitialSchema.TeamId))]
         [Index(IndexTypes.NonClustered)]
-        public int TeamId { get; set; }
+        public Guid TeamId { get; set; }
 
         [Column(nameof(Points))]
         public int Points { get; set; }

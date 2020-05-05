@@ -34,13 +34,11 @@
           "TeamMigration/CreateTeam",
           teams,
           (team) => ({
-            TeamId: team.teamId,
+            MigratedTeamId: team.teamId,
             TeamName: team.name,
-            Club: { ClubId: team.clubId },
-            School: { SchoolId: team.schoolId },
-            MatchLocations: team.groundId
-              ? [{ MatchLocationId: team.groundId }]
-              : [],
+            MigratedClubId: team.clubId,
+            MigratedSchoolId: team.schoolId,
+            MigratedMatchLocationId: team.groundId,
             TeamType: team.teamType,
             PlayerType: team.playerType,
             Introduction: team.introduction,

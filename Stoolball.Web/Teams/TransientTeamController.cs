@@ -5,6 +5,7 @@ using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -65,7 +66,7 @@ namespace Stoolball.Web.Teams
                 {
                     Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
                     {
-                        TeamIds = new List<int> { model.Team.TeamId.Value },
+                        TeamIds = new List<Guid> { model.Team.TeamId.Value },
                         MatchTypes = new List<MatchType> { MatchType.Tournament }
                     }).ConfigureAwait(false),
                     DateFormatter = _dateFormatter

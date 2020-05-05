@@ -16,7 +16,7 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(SeasonId))]
         [ForeignKey(typeof(SeasonTableInitialSchema), Column = nameof(SeasonTableInitialSchema.SeasonId))]
         [Index(IndexTypes.Clustered)]
-        public int SeasonId { get; set; }
+        public Guid SeasonId { get; set; }
 
         [Column(nameof(MatchResultType))]
         public string MatchResultType { get; set; }

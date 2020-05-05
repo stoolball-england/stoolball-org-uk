@@ -14,7 +14,7 @@ namespace Stoolball.Teams
 {
     public class Team : IAuditable
     {
-        public int? TeamId { get; set; }
+        public Guid? TeamId { get; set; }
         public string TeamName { get; set; }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace Stoolball.Teams
 
             if (Seasons.Count > 0)
             {
-                var competitions = new Dictionary<int, string>();
+                var competitions = new Dictionary<Guid, string>();
                 foreach (var teamInSeason in Seasons)
                 {
                     if (teamInSeason?.Season?.Competition?.CompetitionId != null
@@ -144,7 +144,7 @@ namespace Stoolball.Teams
                 if (competitions.Count > 0)
                 {
                     description.Append(" playing in the ");
-                    var keys = new List<int>(competitions.Keys);
+                    var keys = new List<Guid>(competitions.Keys);
                     for (var i = 0; i < keys.Count; i++)
                     {
                         description.Append(competitions[keys[i]]);

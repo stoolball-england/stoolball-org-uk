@@ -10,7 +10,7 @@ namespace Stoolball.Competitions
 {
     public class Season : IAuditable
     {
-        public int? SeasonId { get; set; }
+        public Guid? SeasonId { get; set; }
 
         /// <summary>
         /// Gets the name of the season, not including the competition name

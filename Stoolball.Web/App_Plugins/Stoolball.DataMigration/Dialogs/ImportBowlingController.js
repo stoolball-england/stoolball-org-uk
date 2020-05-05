@@ -46,11 +46,9 @@
           "PlayerPerformanceMigration/CreateBowling",
           performances,
           (bowling) => ({
-            Match: { MatchId: bowling.matchId },
-            PlayerIdentity: {
-              PlayerIdentityId: bowling.playerId,
-              Team: { TeamId: bowling.teamId },
-            },
+            MigratedMatchId: bowling.matchId,
+            MigratedPlayerIdentityId: bowling.playerId,
+            MigratedTeamId: bowling.teamId,
             OverNumber: bowling.overNumber,
             BallsBowled: bowling.ballsBowled,
             NoBalls: bowling.noBalls,
