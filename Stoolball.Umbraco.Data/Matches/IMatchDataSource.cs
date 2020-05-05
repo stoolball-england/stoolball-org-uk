@@ -14,5 +14,12 @@ namespace Stoolball.Umbraco.Data.Matches
         /// </summary>
         /// <returns>A list of <see cref="MatchListing"/> objects. An empty list if no matches or tournaments are found.</returns>
         Task<List<MatchListing>> ReadMatchListings(MatchQuery matchQuery);
+
+        /// <summary>
+        /// Gets a single match based on its route
+        /// </summary>
+        /// <param name="route">/matches/example-match</param>
+        /// <returns>A matching <see cref="Match"/> or <c>null</c> if not found</returns>
+        Task<Match> ReadMatchByRoute(string route);
     }
 }

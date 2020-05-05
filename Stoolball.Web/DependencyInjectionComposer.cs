@@ -15,6 +15,7 @@ using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
 using Stoolball.Web.Configuration;
+using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Teams;
 using Umbraco.Core;
@@ -59,6 +60,7 @@ namespace Stoolball.Web
             composition.Register<MatchesForMatchLocationController>(Lifetime.Request);
             composition.Register<MatchesForSeasonController>(Lifetime.Request);
             composition.Register<MatchLocationController>(Lifetime.Request);
+            composition.Register<MatchController>(Lifetime.Request);
             composition.Register<SeasonController>(Lifetime.Request);
             composition.Register<CompetitionController>(Lifetime.Request);
 

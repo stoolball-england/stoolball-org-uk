@@ -1,5 +1,6 @@
 ﻿using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
+using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Teams;
 using System;
@@ -29,6 +30,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.Competition, typeof(CompetitionController) },
             { StoolballRouteType.Season, typeof(SeasonController) },
             { StoolballRouteType.MatchesForSeason, typeof(MatchesForSeasonController) },
+            { StoolballRouteType.Match, typeof(MatchController) }
         };
 
         [HttpGet]

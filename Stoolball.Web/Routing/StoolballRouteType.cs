@@ -14,6 +14,7 @@
         MatchesForClub,
         MatchesForTeam,
         MatchesForMatchLocation,
-        MatchesForSeason
+        MatchesForSeason,
+        Match
     }
 }

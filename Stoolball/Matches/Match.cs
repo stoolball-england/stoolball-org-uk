@@ -33,5 +33,10 @@ namespace Stoolball.Matches
         {
             get { return new Uri($"https://www.stoolball.org.uk/id/match/{MatchId}"); }
         }
+
+        public string Description()
+        {
+            return MatchName;
+        }
     }
 }

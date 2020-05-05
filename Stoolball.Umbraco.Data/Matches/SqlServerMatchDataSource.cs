@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Stoolball.Matches;
 using Stoolball.Routing;
+using Stoolball.Teams;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,6 +94,52 @@ namespace Stoolball.Umbraco.Data.Matches
                     var matches = await connection.QueryAsync<MatchListing>(sql, new DynamicParameters(parameters)).ConfigureAwait(false);
 
                     return matches.Distinct(new MatchListingEqualityComparer()).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(typeof(SqlServerMatchDataSource), ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Gets a single stoolball match based on its route
+        /// </summary>
+        /// <param name="route">/matches/example-match</param>
+        /// <returns>A matching <see cref="Match"/> or <c>null</c> if not found</returns>
+        public async Task<Match> ReadMatchByRoute(string route)
+        {
+            try
+            {
+                string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "matches");
+
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    var matches = await connection.QueryAsync<Match, Team, Match>(
+                        $@"SELECT m.MatchName, 
+                            t.TeamId, tn.TeamName, t.TeamRoute
+                            FROM {Tables.Match} AS m
+                            LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
+                            LEFT JOIN {Tables.Team} AS t ON mt.TeamId = t.TeamId
+                            LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
+                            WHERE LOWER(m.MatchRoute) = @Route
+                            ORDER BY mt.TeamRole",
+                        (match, team) =>
+                        {
+                            match.Teams.Add(new TeamInMatch { Team = team });
+                            return match;
+                        },
+                        new { Route = normalisedRoute },
+                        splitOn: "TeamId").ConfigureAwait(false);
+
+                    var matchToReturn = matches.FirstOrDefault(); // get an example with the properties that are the same for every row
+                    if (matchToReturn != null)
+                    {
+                        matchToReturn.Teams = matches.Select(match => match.Teams.SingleOrDefault()).OfType<TeamInMatch>().ToList();
+                    }
+
+                    return matchToReturn;
                 }
             }
             catch (Exception ex)

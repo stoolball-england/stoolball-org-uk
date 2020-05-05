@@ -886,7 +886,9 @@
     <Compile Include="Competitions\SeasonViewModel.cs" />
     <Compile Include="Competitions\SeasonListViewModel.cs" />
     <Compile Include="Email\EmailProtectorHtmlHelper.cs" />
+    <Compile Include="Matches\MatchController.cs" />
     <Compile Include="Matches\MatchListingViewModel.cs" />
+    <Compile Include="Matches\MatchViewModel.cs" />
     <Compile Include="MatchLocations\MatchesForMatchLocationController.cs" />
     <Compile Include="Teams\MatchesForTeamController.cs" />
     <Compile Include="Teams\TransientTeamController.cs" />
@@ -1017,6 +1019,7 @@
     <Content Include="Views\Partials\Grid\Bootstrap3.cshtml" />
     <Content Include="Views\Partials\Grid\Bootstrap3-Fluid.cshtml" />
     <Content Include="Views\TransientTeam.cshtml" />
+    <Content Include="Views\Match.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
