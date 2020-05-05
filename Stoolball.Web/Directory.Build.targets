@@ -35,6 +35,7 @@
     <PropertyGroup>
       <UmbracoVersion>8.6.1</UmbracoVersion>
       <UmbracoFormsVersion>8.4.0</UmbracoFormsVersion>
+      <USyncVersion>8.6.1</USyncVersion>
       <BootstrapVersion>4.4.1</BootstrapVersion>
       <JQueryVersion>3.5.0.1</JQueryVersion>
       <PopperVersion>1.16.0</PopperVersion>
@@ -43,6 +44,7 @@
     
     <Error Text="UmbracoCms NuGet package v$(UmbracoVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\UmbracoCms.$(UmbracoVersion)\')" />
     <Error Text="UmbracoForms NuGet package v$(UmbracoFormsVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\UmbracoForms.$(UmbracoFormsVersion)\')" />
+    <Error Text="uSync NuGet package v$(USyncVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\uSync.$(USyncVersion)\')" />
     <Error Text="bootstrap.sass NuGet package v$(BootstrapVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\bootstrap.sass.$(BootstrapVersion)\')" />
     <Error Text="jQuery NuGet package v$(JQueryVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\jQuery.$(JQueryVersion)\')" />
     <Error Text="popper.js NuGet package v$(PopperVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\popper.js.$(PopperVersion)\')" />
@@ -51,6 +53,7 @@
     <ItemGroup>
       <FilesFromUmbracoPackage Include="$(SolutionDir)packages\UmbracoCms.$(UmbracoVersion)\Content\Views\Partials\**" />
       <FilesFromUmbracoFormsPackage Include="$(SolutionDir)packages\UmbracoForms.$(UmbracoFormsVersion)\Content\**" />
+      <FilesFromUSyncPackage Include="$(SolutionDir)packages\uSync.$(USyncVersion)\Content\App_Plugins\**" />
       <FilesFromBootstrapPackage Include="$(SolutionDir)packages\bootstrap.sass.$(BootstrapVersion)\contentFiles\**" />
       <FilesFromJQueryPackage Include="$(SolutionDir)packages\jQuery.$(JQueryVersion)\Content\**" />
       <FilesFromPopperPackage Include="$(SolutionDir)packages\popper.js.$(PopperVersion)\Content\**" />
@@ -63,6 +66,9 @@
     <Copy SourceFiles="@(FilesFromUmbracoFormsPackage)"
           DestinationFiles="$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)"
           Condition="!Exists('$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(FilesFromUSyncPackage)"
+          DestinationFiles="$(ProjectDir)App_Plugins\%(RecursiveDir)%(Filename)%(Extension)"
+          Condition="!Exists('$(ProjectDir)App_Plugins\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(FilesFromBootstrapPackage)"
           DestinationFiles="$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)"
           Condition="!Exists('$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)')" />
