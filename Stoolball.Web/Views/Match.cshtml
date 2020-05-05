@@ -1,4 +1,4 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Matches.MatchViewModel>
 
-<h1>@Model.Match.MatchName</h1>
+<h1>@Model.Match.MatchName, @Model.DateFormatter.FormatDate(Model.Match.StartTime,false,false)</h1>
 @Html.Partial("_TeamList", Model.Match.Teams.Select(x => x.Team).ToList())

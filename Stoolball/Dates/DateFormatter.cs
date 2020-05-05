@@ -144,12 +144,12 @@ namespace Stoolball.Dates
 					if (abbreviated)
 					{
 						pos = day.Length - 2;
-						year = currentDateTime.Year.ToString("yy", CultureInfo.CurrentCulture);
+						year = currentDateTime.ToString("yy", CultureInfo.CurrentCulture);
 					}
 					else
 					{
 						pos = day.Length - 4;
-						year = currentDateTime.Year.ToString("yyyy", CultureInfo.CurrentCulture);
+						year = currentDateTime.ToString("yyyy", CultureInfo.CurrentCulture);
 					}
 					if (day.Substring(pos.Value) == year) { day = day.Substring(0, pos.Value - 1); }
 				}

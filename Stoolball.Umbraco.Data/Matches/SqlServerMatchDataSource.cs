@@ -117,7 +117,7 @@ namespace Stoolball.Umbraco.Data.Matches
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var matches = await connection.QueryAsync<Match, Team, Match>(
-                        $@"SELECT m.MatchName, 
+                        $@"SELECT m.MatchName, m.StartTime,
                             t.TeamId, tn.TeamName, t.TeamRoute
                             FROM {Tables.Match} AS m
                             LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
