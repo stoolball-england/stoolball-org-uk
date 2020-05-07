@@ -29,6 +29,15 @@ namespace Stoolball.Competitions
         }
 
         /// <summary>
+        /// Gets the name of the competition and season
+        /// </summary>
+        /// <returns></returns>
+        public string SeasonFullName()
+        {
+            return $"{Competition?.CompetitionName}, {SeasonName()}";
+        }
+
+        /// <summary>
         /// Gets the name of the competition and season, and the type of players (if not stated in the name)
         /// </summary>
         /// <returns></returns>
@@ -43,7 +52,7 @@ namespace Stoolball.Competitions
                 playerType = " (" + type + ")";
             }
 
-            return $"{competitionName}, {SeasonName()}{playerType}".Trim();
+            return $"{SeasonFullName()}{playerType}".Trim();
         }
 
         public Competition Competition { get; set; }

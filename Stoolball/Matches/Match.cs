@@ -5,7 +5,6 @@ using Stoolball.MatchLocations;
 using Stoolball.Teams;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Stoolball.Matches
@@ -30,7 +29,7 @@ namespace Stoolball.Matches
         public List<MatchInnings> MatchInnings { get; internal set; } = new List<MatchInnings>();
         public string MatchNotes { get; set; }
         public string MatchRoute { get; set; }
-        public List<Season> Seasons { get; internal set; } = new List<Season>();
+        public Season Season { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
         public Uri EntityUri
         {
@@ -63,16 +62,10 @@ namespace Stoolball.Matches
 
                 var seasonList = string.Empty;
 
-                if (Seasons.Count == 1)
+                if (Season != null)
                 {
-                    var season = Seasons.First();
-                    var the = season.Competition.CompetitionName.ToUpperInvariant().Contains("THE ");
-                    description.Append(" in ").Append(the ? string.Empty : "the ").Append(season.Competition.CompetitionName);
-                }
-                else if (Seasons.Count > 1)
-                {
-                    description.Append(" in ");
-                    description.Append(Seasons.Humanize(x => x.Competition.CompetitionName));
+                    var the = Season.Competition.CompetitionName.ToUpperInvariant().Contains("THE ");
+                    description.Append(" in ").Append(the ? string.Empty : "the ").Append(Season.Competition.CompetitionName);
                 }
 
                 description.Append(seasonList);

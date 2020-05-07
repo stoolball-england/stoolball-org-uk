@@ -1,9 +1,6 @@
-﻿using Humanizer.Configuration;
-using Stoolball.Competitions;
+﻿using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
-using System.Collections.Generic;
-using System.Globalization;
 using Xunit;
 
 namespace Stoolball.Tests.Matches
@@ -40,11 +37,11 @@ namespace Stoolball.Tests.Matches
             var match = new Match
             {
                 MatchType = MatchType.LeagueMatch,
-                Seasons = new List<Season> {
-                    new Season {
-                        Competition = new Competition {
-                            CompetitionName = "Example competition"
-                        }
+                Season = new Season
+                {
+                    Competition = new Competition
+                    {
+                        CompetitionName = "Example competition"
                     }
                 }
             };
@@ -60,11 +57,11 @@ namespace Stoolball.Tests.Matches
             var match = new Match
             {
                 MatchType = MatchType.LeagueMatch,
-                Seasons = new List<Season> {
-                    new Season {
-                        Competition = new Competition {
-                            CompetitionName = "The Example"
-                        }
+                Season = new Season
+                {
+                    Competition = new Competition
+                    {
+                        CompetitionName = "The Example"
                     }
                 }
             };
@@ -72,39 +69,6 @@ namespace Stoolball.Tests.Matches
             var result = match.Description();
 
             Assert.Equal("Stoolball league match in The Example.", result);
-        }
-
-        [Fact]
-        public void Match_description_should_include_match_type_and_multiple_competitions()
-        {
-            var match = new Match
-            {
-                MatchType = MatchType.LeagueMatch,
-                Seasons = new List<Season> {
-                    new Season {
-                        Competition = new Competition {
-                            CompetitionName = "Competition One"
-                        }
-                    },
-
-                    new Season {
-                        Competition = new Competition {
-                            CompetitionName = "Competition Two"
-                        }
-                    },
-
-                    new Season {
-                        Competition = new Competition {
-                            CompetitionName = "Competition Three"
-                        }
-                    }
-                }
-            };
-
-            Configurator.CollectionFormatters.Register(CultureInfo.CurrentCulture.Name, new HumanizerCollectionGrammar());
-            var result = match.Description();
-
-            Assert.Equal("Stoolball league match in Competition One, Competition Two and Competition Three.", result);
         }
     }
 }

@@ -17,11 +17,11 @@
 <h1>@h1</h1>
 
 <p>@Model.Match.MatchType.Humanize(LetterCasing.Sentence)@{
-    if (Model.Match.Seasons.Count > 0)
+    if (Model.Match.Season != null)
     {
-        var seasonName = Model.Match.Seasons.First().SeasonFullNameAndPlayerType();
+        var seasonName = Model.Match.Season.SeasonFullName();
         var inTheSeason = (seasonName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? " in" : " in the";
-        @inTheSeason <a href="@Model.Match.Seasons.First().SeasonRoute">@seasonName</a>
+        @inTheSeason <a href="@Model.Match.Season.SeasonRoute">@seasonName</a>
     }
 }</p>
 

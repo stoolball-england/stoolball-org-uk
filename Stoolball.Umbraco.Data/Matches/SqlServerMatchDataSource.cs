@@ -144,7 +144,7 @@ namespace Stoolball.Umbraco.Data.Matches
                             match.Teams.Add(new TeamInMatch { Team = team });
                             match.MatchLocation = matchLocation;
                             if (season != null) { season.Competition = competition; }
-                            match.Seasons.Add(season);
+                            match.Season = season;
                             return match;
                         },
                         new { Route = normalisedRoute },
@@ -154,7 +154,6 @@ namespace Stoolball.Umbraco.Data.Matches
                     if (matchToReturn != null)
                     {
                         matchToReturn.Teams = matches.Select(match => match.Teams.SingleOrDefault()).OfType<TeamInMatch>().ToList();
-                        matchToReturn.Seasons = matches.Select(match => match.Seasons.SingleOrDefault()).OfType<Season>().ToList();
                     }
 
                     return matchToReturn;
