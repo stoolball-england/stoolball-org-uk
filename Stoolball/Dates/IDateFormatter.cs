@@ -26,5 +26,10 @@ namespace Stoolball.Dates
 		/// <param name="abbreviated">Use Jan, Feb etc rather than January, February etc</param>
 		/// <returns></returns>
 		string FormatDate(DateTimeOffset dateTimeToFormat, bool dayOfTheWeek = true, bool time = true, bool relativeDate = true, bool abbreviated = false);
+
+		/// <summary>
+		/// Gets the time in the format 10am or 10.01am
+		/// </summary>
+		string FormatTime(DateTimeOffset dateTimeToFormat);
 	}
 }

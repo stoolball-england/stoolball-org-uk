@@ -1,4 +1,54 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Matches.MatchViewModel>
+@using Stoolball.Matches
+@using Humanizer
+@using Innovative.SolarCalculator
+@{
+    var h1 = Model.Match.MatchName;
+    if (Model.Match.MatchType == MatchType.TournamentMatch)
+    {
+        var inThe = (Model.Match.Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? " in " : " in the ";
+        h1 += inThe + Model.Match.Tournament.TournamentName;
+    }
+    else
+    {
+        h1 += ", " + Model.DateFormatter.FormatDate(Model.Match.StartTime, false, false);
+    }
+}
+<h1>@h1</h1>
 
-<h1>@Model.Match.MatchName, @Model.DateFormatter.FormatDate(Model.Match.StartTime,false,false)</h1>
-@Html.Partial("_TeamList", Model.Match.Teams.Select(x => x.Team).ToList())
+<p>@Model.Match.MatchType.Humanize(LetterCasing.Sentence)@{
+    if (Model.Match.Seasons.Count > 0)
+    {
+        var seasonName = Model.Match.Seasons.First().SeasonFullNameAndPlayerType();
+        var inTheSeason = (seasonName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? " in" : " in the";
+        @inTheSeason <a href="@Model.Match.Seasons.First().SeasonRoute">@seasonName</a>
+    }
+}</p>
+
+@if (Model.Match.Teams.Count > 0)
+{
+<p>Who: @Html.Raw(Model.Match.Teams.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>"))</p>
+}
+
+<p>
+    When:
+    @if (Model.Match.MatchType == MatchType.TournamentMatch)
+    {
+        var inTheTournament = (Model.Match.Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? ", in " : ", in the ";
+        @Model.DateFormatter.FormatDate(Model.Match.StartTime, true, Model.Match.StartTimeIsKnown)@inTheTournament <a href="@Model.Match.Tournament.TournamentRoute">@Model.Match.Tournament.TournamentName</a>
+    }
+    else
+    {
+        @Model.DateFormatter.FormatDate(Model.Match.StartTime, true, Model.Match.StartTimeIsKnown)
+    }
+    @if (Model.Match.MatchLocation?.Latitude != null && Model.Match.MatchLocation?.Longitude != null)
+    {
+    var solarTimes = new SolarTimes(Model.Match.StartTime.LocalDateTime, Model.Match.MatchLocation.Latitude, Model.Match.MatchLocation.Longitude);
+    @: (sunset @Model.DateFormatter.FormatTime(solarTimes.Sunset))
+    }
+</p>
+
+@if (Model.Match.MatchLocation != null)
+{
+    <p>Where: <a href="@Model.Match.MatchLocation.MatchLocationRoute">@Model.Match.MatchLocation</a></p>
+}

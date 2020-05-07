@@ -1,5 +1,7 @@
 ﻿using Dapper;
+using Stoolball.Competitions;
 using Stoolball.Matches;
+using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Teams;
 using System;
@@ -7,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
@@ -116,27 +119,42 @@ namespace Stoolball.Umbraco.Data.Matches
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var matches = await connection.QueryAsync<Match, Team, Match>(
-                        $@"SELECT m.MatchName, m.StartTime,
-                            t.TeamId, tn.TeamName, t.TeamRoute
+                    var matches = await connection.QueryAsync<Match, Tournament, Team, MatchLocation, Season, Competition, Match>(
+                        $@"SELECT m.MatchName, m.MatchType, m.StartTime, m.StartTimeIsKnown,
+                            tourney.MatchRoute AS TournamentRoute, tourney.MatchName AS TournamentName,
+                            t.TeamRoute, tn.TeamName,
+                            ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
+                            ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
+                            s.SeasonRoute, s.StartYear, s.EndYear,
+                            co.CompetitionName
                             FROM {Tables.Match} AS m
+                            LEFT JOIN {Tables.Match} AS tourney ON m.TournamentId = tourney.MatchId
                             LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
                             LEFT JOIN {Tables.Team} AS t ON mt.TeamId = t.TeamId
                             LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
+                            LEFT JOIN {Tables.MatchLocation} AS ml ON m.MatchLocationId = ml.MatchLocationId
+                            LEFT JOIN {Tables.SeasonMatch} AS sm ON m.MatchId = sm.MatchId
+                            LEFT JOIN {Tables.Season} AS s ON sm.SeasonId = s.SeasonId
+                            LEFT JOIN {Tables.Competition} AS co ON s.CompetitionId = co.CompetitionId
                             WHERE LOWER(m.MatchRoute) = @Route
-                            ORDER BY mt.TeamRole",
-                        (match, team) =>
+                            ORDER BY mt.TeamRole DESC",  // TeamRole DESC puts 'Home' before 'Away'
+                        (match, tournament, team, matchLocation, season, competition) =>
                         {
+                            match.Tournament = tournament;
                             match.Teams.Add(new TeamInMatch { Team = team });
+                            match.MatchLocation = matchLocation;
+                            if (season != null) { season.Competition = competition; }
+                            match.Seasons.Add(season);
                             return match;
                         },
                         new { Route = normalisedRoute },
-                        splitOn: "TeamId").ConfigureAwait(false);
+                        splitOn: "TournamentRoute, TeamRoute, MatchLocationRoute, SeasonRoute, CompetitionName").ConfigureAwait(false);
 
                     var matchToReturn = matches.FirstOrDefault(); // get an example with the properties that are the same for every row
                     if (matchToReturn != null)
                     {
                         matchToReturn.Teams = matches.Select(match => match.Teams.SingleOrDefault()).OfType<TeamInMatch>().ToList();
+                        matchToReturn.Seasons = matches.Select(match => match.Seasons.SingleOrDefault()).OfType<Season>().ToList();
                     }
 
                     return matchToReturn;

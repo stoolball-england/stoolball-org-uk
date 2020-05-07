@@ -50,8 +50,7 @@ namespace Stoolball.Matches
                 if (Tournament != null)
                 {
                     // Check for 'the' to get the grammar right
-                    var tournamentName = Tournament.TournamentName.ToUpperInvariant();
-                    var the = (tournamentName.Length >= 4 && tournamentName.Substring(0, 4) == "THE ") ? string.Empty : "the ";
+                    var the = (Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? string.Empty : "the ";
                     description.Append("Match in ").Append(the).Append(Tournament.TournamentName);
                     if (MatchLocation != null) description.Append(" at ").Append(MatchLocation);
                     description.Append(".");

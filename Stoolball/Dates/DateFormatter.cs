@@ -23,7 +23,7 @@ namespace Stoolball.Dates
 
 			if (time)
 			{
-				return Time(ukStartTime) + TimeDateSeparator(ukStartTime, currentDateTime) + BritishDate(ukStartTime, currentDateTime, dayOfTheWeek, relativeDate, abbreviated);
+				return FormatTime(ukStartTime) + TimeDateSeparator(ukStartTime, currentDateTime) + BritishDate(ukStartTime, currentDateTime, dayOfTheWeek, relativeDate, abbreviated);
 			}
 			else
 			{
@@ -45,10 +45,11 @@ namespace Stoolball.Dates
 			return FormatDate(dateTimeToFormat, DateTimeOffset.UtcNow, dayOfTheWeek, time, relativeDate, abbreviated);
 		}
 
+
 		/// <summary>
 		/// Gets the time in the format 10am or 10.01am
 		/// </summary>
-		private static string Time(DateTimeOffset dateTimeToFormat)
+		public string FormatTime(DateTimeOffset dateTimeToFormat)
 		{
 			var time = dateTimeToFormat.ToString("h.mmtt", CultureInfo.CurrentCulture)
 					.ToLower(CultureInfo.CurrentCulture)
