@@ -4,16 +4,16 @@ using Xunit;
 
 namespace Stoolball.Tests.Dates
 {
-    public class DateFormatterTests
+    public class DateTimeFormatterTests
     {
         [Fact]
         public void Relative_date_should_return_today_for_same_date()
         {
             var now = new DateTime(2020, 5, 1);
             var dateToFormat = now;
-            var dateFormatter = new DateFormatter();
+            var dateFormatter = new DateTimeFormatter();
 
-            var result = dateFormatter.FormatDate(dateToFormat, now, false, false, true, false);
+            var result = dateFormatter.FormatDate(dateToFormat, now, false, true, false);
 
             Assert.Equal("today", result);
         }
@@ -23,9 +23,9 @@ namespace Stoolball.Tests.Dates
         {
             var now = new DateTime(2020, 5, 1);
             var dateToFormat = now.AddDays(1);
-            var dateFormatter = new DateFormatter();
+            var dateFormatter = new DateTimeFormatter();
 
-            var result = dateFormatter.FormatDate(dateToFormat, now, false, false, true, false);
+            var result = dateFormatter.FormatDate(dateToFormat, now, false, true, false);
 
             Assert.Equal("tomorrow", result);
         }
@@ -35,9 +35,9 @@ namespace Stoolball.Tests.Dates
         {
             var now = new DateTime(2020, 5, 1);
             var dateToFormat = now.AddMonths(1);
-            var dateFormatter = new DateFormatter();
+            var dateFormatter = new DateTimeFormatter();
 
-            var result = dateFormatter.FormatDate(dateToFormat, now, false, false, true, false);
+            var result = dateFormatter.FormatDate(dateToFormat, now, false, true, false);
 
             Assert.Equal("1 June", result);
         }

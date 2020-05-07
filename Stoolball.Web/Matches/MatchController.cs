@@ -18,7 +18,7 @@ namespace Stoolball.Web.Matches
     public class MatchController : RenderMvcControllerAsync
     {
         private readonly IMatchDataSource _matchDataSource;
-        private readonly IDateFormatter _dateFormatter;
+        private readonly IDateTimeFormatter _dateFormatter;
         private readonly IEmailProtector _emailProtector;
 
         public MatchController(IGlobalSettings globalSettings,
@@ -28,7 +28,7 @@ namespace Stoolball.Web.Matches
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IMatchDataSource matchDataSource,
-           IDateFormatter dateFormatter,
+           IDateTimeFormatter dateFormatter,
            IEmailProtector emailProtector)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
@@ -48,7 +48,7 @@ namespace Stoolball.Web.Matches
             var model = new MatchViewModel(contentModel.Content)
             {
                 Match = await _matchDataSource.ReadMatchByRoute(Request.Url.AbsolutePath).ConfigureAwait(false),
-                DateFormatter = _dateFormatter
+                DateTimeFormatter = _dateFormatter
             };
 
             if (model.Match == null)
@@ -64,7 +64,7 @@ namespace Stoolball.Web.Matches
                     var inThe = (model.Match.Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? " in " : " in the ";
                     model.Metadata.PageTitle += inThe + model.Match.Tournament.TournamentName;
                 }
-                model.Metadata.PageTitle += $", {_dateFormatter.FormatDate(model.Match.StartTime, false, false, false, false)} - stoolball match";
+                model.Metadata.PageTitle += $", {_dateFormatter.FormatDate(model.Match.StartTime.LocalDateTime, false, false, false)} - stoolball match";
 
                 model.Metadata.Description = model.Match.Description();
 

@@ -35,7 +35,7 @@ namespace Stoolball.Web
             composition.Register<IAuditRepository, SqlServerAuditRepository>(Lifetime.Singleton);
             composition.Register<IRouteNormaliser, RouteNormaliser>(Lifetime.Singleton);
             composition.Register<IApiKeyProvider, ConfigApiKeyProvider>(Lifetime.Singleton);
-            composition.Register<IDateFormatter, DateFormatter>(Lifetime.Singleton);
+            composition.Register<IDateTimeFormatter, DateTimeFormatter>(Lifetime.Singleton);
             composition.Register<IEstimatedSeason, EstimatedSeason>(Lifetime.Singleton);
 
             // Data migration from the old Stoolball England website

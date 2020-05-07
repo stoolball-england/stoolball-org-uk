@@ -11,6 +11,6 @@ namespace Stoolball.Web.Matches
         {
         }
         public Match Match { get; set; }
-        public IDateFormatter DateFormatter { get; set; }
+        public IDateTimeFormatter DateTimeFormatter { get; set; }
     }
 }

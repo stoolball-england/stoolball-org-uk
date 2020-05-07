@@ -19,7 +19,7 @@
                 }
 
                 var fullstop = false;
-                var tournamentDetail = new StringBuilder(Model.DateFormatter.FormatDate(match.StartTime));
+                var tournamentDetail = new StringBuilder(Model.DateTimeFormatter.FormatDateTime(match.StartTime.LocalDateTime));
                 if (match.TournamentQualificationType == TournamentQualificationType.OpenTournament)
                 {
                     tournamentDetail.Append(". ");
@@ -70,7 +70,7 @@
 				    matchType = $" ({match.MatchType.Humanize(LetterCasing.LowerCase)})";
                 }
 
-                <li class="@matchClass"><a href="@match.MatchRoute">@match.MatchName</a>@matchType<p>@Model.DateFormatter.FormatDate(match.StartTime)</p></li>
+                <li class="@matchClass"><a href="@match.MatchRoute">@match.MatchName</a>@matchType<p>@Model.DateTimeFormatter.FormatDateTime(match.StartTime.LocalDateTime)</p></li>
             }
         }
     </ol>

@@ -11,7 +11,7 @@
     }
     else
     {
-        h1 += ", " + Model.DateFormatter.FormatDate(Model.Match.StartTime, false, false);
+        h1 += ", " + Model.DateTimeFormatter.FormatDate(Model.Match.StartTime.LocalDateTime, false);
     }
 }
 <h1>@h1</h1>
@@ -35,16 +35,17 @@
     @if (Model.Match.MatchType == MatchType.TournamentMatch)
     {
         var inTheTournament = (Model.Match.Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? ", in " : ", in the ";
-        @Model.DateFormatter.FormatDate(Model.Match.StartTime, true, Model.Match.StartTimeIsKnown)@inTheTournament <a href="@Model.Match.Tournament.TournamentRoute">@Model.Match.Tournament.TournamentName</a>
+        @(Model.Match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(Model.Match.StartTime.LocalDateTime) : Model.DateTimeFormatter.FormatDate(Model.Match.StartTime.LocalDateTime))@inTheTournament
+        <a href="@Model.Match.Tournament.TournamentRoute">@Model.Match.Tournament.TournamentName</a>
     }
     else
     {
-        @Model.DateFormatter.FormatDate(Model.Match.StartTime, true, Model.Match.StartTimeIsKnown)
+        @(Model.Match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(Model.Match.StartTime.LocalDateTime) : Model.DateTimeFormatter.FormatDate(Model.Match.StartTime.LocalDateTime))
     }
     @if (Model.Match.MatchLocation?.Latitude != null && Model.Match.MatchLocation?.Longitude != null)
     {
-    var solarTimes = new SolarTimes(Model.Match.StartTime.LocalDateTime, Model.Match.MatchLocation.Latitude, Model.Match.MatchLocation.Longitude);
-    @: (sunset @Model.DateFormatter.FormatTime(solarTimes.Sunset))
+        var solarTimes = new SolarTimes(Model.Match.StartTime.LocalDateTime, Model.Match.MatchLocation.Latitude, Model.Match.MatchLocation.Longitude);
+        @: (sunset @Model.DateTimeFormatter.FormatTime(solarTimes.Sunset))
     }
 </p>
 

@@ -32,7 +32,7 @@ namespace Stoolball.Web.Tests.Competitions
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, seasonDataSource, matchDataSource, Mock.Of<IDateFormatter>())
+                null, seasonDataSource, matchDataSource, Mock.Of<IDateTimeFormatter>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));

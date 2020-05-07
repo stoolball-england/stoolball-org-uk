@@ -23,7 +23,7 @@ namespace Stoolball.Web.Clubs
     {
         private readonly IClubDataSource _clubDataSource;
         private readonly IMatchDataSource _matchDataSource;
-        private readonly IDateFormatter _dateFormatter;
+        private readonly IDateTimeFormatter _dateFormatter;
         private readonly IEstimatedSeason _estimatedSeason;
 
         public MatchesForClubController(IGlobalSettings globalSettings,
@@ -34,7 +34,7 @@ namespace Stoolball.Web.Clubs
            UmbracoHelper umbracoHelper,
            IClubDataSource clubDataSource,
            IMatchDataSource matchDataSource,
-           IDateFormatter dateFormatter,
+           IDateTimeFormatter dateFormatter,
            IEstimatedSeason estimatedSeason)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
@@ -71,7 +71,7 @@ namespace Stoolball.Web.Clubs
                             FromDate = _estimatedSeason.StartDate,
                             ExcludeMatchTypes = new List<MatchType> { MatchType.TournamentMatch }
                         }).ConfigureAwait(false),
-                        DateFormatter = _dateFormatter
+                        DateTimeFormatter = _dateFormatter
                     },
                 };
 

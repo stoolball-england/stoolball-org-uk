@@ -22,7 +22,7 @@ namespace Stoolball.Web.Teams
     {
         private readonly ITeamDataSource _teamDataSource;
         private readonly IMatchDataSource _matchDataSource;
-        private readonly IDateFormatter _dateFormatter;
+        private readonly IDateTimeFormatter _dateFormatter;
         private readonly IEmailProtector _emailProtector;
 
         public TransientTeamController(IGlobalSettings globalSettings,
@@ -33,7 +33,7 @@ namespace Stoolball.Web.Teams
            UmbracoHelper umbracoHelper,
            ITeamDataSource teamDataSource,
            IMatchDataSource matchDataSource,
-           IDateFormatter dateFormatter,
+           IDateTimeFormatter dateFormatter,
            IEmailProtector emailProtector)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
@@ -69,10 +69,10 @@ namespace Stoolball.Web.Teams
                         TeamIds = new List<Guid> { model.Team.TeamId.Value },
                         MatchTypes = new List<MatchType> { MatchType.Tournament }
                     }).ConfigureAwait(false),
-                    DateFormatter = _dateFormatter
+                    DateTimeFormatter = _dateFormatter
                 };
 
-                model.Metadata.PageTitle = model.Team.TeamName + " stoolball team, " + _dateFormatter.FormatDate(model.Team.UntilDate.Value.Date, false, false, false);
+                model.Metadata.PageTitle = model.Team.TeamName + " stoolball team, " + _dateFormatter.FormatDate(model.Team.UntilDate.Value.Date, false, false);
 
                 model.Team.Cost = _emailProtector.ProtectEmailAddresses(model.Team.Cost, User.Identity.IsAuthenticated);
                 model.Team.Introduction = _emailProtector.ProtectEmailAddresses(model.Team.Introduction, User.Identity.IsAuthenticated);

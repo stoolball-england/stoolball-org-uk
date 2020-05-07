@@ -3,7 +3,7 @@
     <meta name="robots" content="noindex,follow" />
 }
 
-<h1>@Model.Team.TeamName, @Model.Matches.DateFormatter.FormatDate(Model.Team.UntilDate.Value.Date, false, false, false)</h1>
+<h1>@Model.Team.TeamName, @Model.Matches.DateTimeFormatter.FormatDate(Model.Team.UntilDate.Value.Date, false, false)</h1>
 
 @if (Model.Team.UntilDate < DateTime.UtcNow)
 {

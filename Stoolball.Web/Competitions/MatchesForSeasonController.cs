@@ -21,7 +21,7 @@ namespace Stoolball.Web.Competitions
     {
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly IMatchDataSource _matchDataSource;
-        private readonly IDateFormatter _dateFormatter;
+        private readonly IDateTimeFormatter _dateFormatter;
 
         public MatchesForSeasonController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -31,7 +31,7 @@ namespace Stoolball.Web.Competitions
            UmbracoHelper umbracoHelper,
            ISeasonDataSource seasonDataSource,
            IMatchDataSource matchDataSource,
-           IDateFormatter dateFormatter)
+           IDateTimeFormatter dateFormatter)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
@@ -65,7 +65,7 @@ namespace Stoolball.Web.Competitions
                             SeasonIds = new List<Guid> { season.SeasonId.Value },
                             ExcludeMatchTypes = new List<MatchType> { MatchType.TournamentMatch }
                         }).ConfigureAwait(false),
-                        DateFormatter = _dateFormatter
+                        DateTimeFormatter = _dateFormatter
                     },
                 };
 
