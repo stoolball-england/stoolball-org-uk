@@ -1,0 +1,32 @@
+﻿@import "../Content/bootstrap/_functions.scss";
+@import "../Content/bootstrap/_mixins.scss";
+@import "../Content/bootstrap/_variables.scss";
+
+/*******************
+  Sitewide header 
+*******************/
+
+/* Place the logo on the left and the account menu on the right */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Some white-space around the logo */
+.navbar-brand {
+    padding: $spacer/2 0;
+}
+
+/* Offset the padding on the container, so that the account button is in the top-right corner */
+.navbar__account {
+    margin-right: -15px;
+}
+
+/* Reduce the default space around the account button, and hide the dropdown arrow */
+.navbar .navbar__account-button {
+    padding: $spacer/4;
+}
+
+.navbar .navbar__account-button::after {
+    display: none;
+}

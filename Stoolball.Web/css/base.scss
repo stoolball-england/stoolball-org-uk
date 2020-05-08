@@ -1,13 +1,19 @@
-﻿@import "../Content/bootstrap/bootstrap-reboot.scss";
+﻿$theme-colors: ( "primary": #008000, "info": #b5d498);
+
+@import "../Content/bootstrap/bootstrap-reboot.scss";
 @import "../Content/bootstrap/bootstrap-grid.scss";
 @import "../Content/bootstrap/_nav.scss";
 @import "../Content/bootstrap/_alert.scss";
+@import "../Content/bootstrap/_forms.scss";
+@import "../Content/bootstrap/_buttons.scss";
+@import "../Content/bootstrap/_dropdown.scss";
 
-/* Add some spacing to sitewide nav */
-.nav-pills a { margin-right: $spacer/2 }
+@import "_header.scss";
 
 /* An alert has even padding, so remove any bottom margin on the last child which would make that look extra large. */
-.alert > :last-child { margin-bottom: 0; }
+.alert > :last-child {
+    margin-bottom: 0;
+}
 
 /* Display a Gravatar next to its content 
 
@@ -18,11 +24,9 @@
 */
 .gravatar { flex: 0 0 50px; }
 
-/* Bootstrap removes all styling from tables because they're used in calendars etc. 
-   Bootstrap tables have .table applied but you can't do that in TinyMCE for Umbraco as configured by default.
-   Add some spacing, padding and border to tables until it becomes a problem. */
-table { margin-bottom: $spacer; }
-th, td { padding: $spacer/4; border: 1px solid #777; }
+@import "_tables.scss";
 
 /* Add some space below a tabbed navigation */
 .nav-tabs { margin-bottom: $spacer; }
+
+@import "_forms.scss";

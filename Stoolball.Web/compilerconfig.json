@@ -1,14 +1,12 @@
-﻿[
-  {
-    "outputFile": "css/forms.css",
-    "inputFile": "css/forms.scss"
-  },
+[
   {
     "outputFile": "css/base.css",
-    "inputFile": "css/base.scss"
+    "inputFile": "css/base.scss",
+    "sourceMap": false
   },
   {
     "outputFile": "App_Plugins/Stoolball.DataMigration/data-migration.css",
-    "inputFile": "App_Plugins/Stoolball.DataMigration/data-migration.scss"
+    "inputFile": "App_Plugins/Stoolball.DataMigration/data-migration.scss",
+    "sourceMap": false
   }
 ]

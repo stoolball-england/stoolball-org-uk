@@ -7,7 +7,6 @@
 @using Stoolball.Web.Matches
 @using Stoolball.Web.Competitions
 @{
-    Html.RequiresCss("~/css/forms.css");
     Html.RequiresJs("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey, 50);
     Html.RequiresJs("/js/maps.js", 90);
     Html.RequiresJs("/matchlocations/match-location.js");
