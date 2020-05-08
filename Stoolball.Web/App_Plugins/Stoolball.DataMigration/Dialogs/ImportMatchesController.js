@@ -69,8 +69,47 @@ function matchResource() {
             ActorName: match.updatedBy ? match.updatedBy : null,
           },
         ],
-        MatchResultType: match.resultType ? match.resultType - 1 : null,
+        MatchResultType: match.resultType
+          ? match.resultType - (match.resultType > 3 ? 2 : 1)
+          : null,
         MatchNotes: match.notes,
+      };
+    },
+    tournamentReducer(tournament) {
+      tournament.teams = tournament.teams || [];
+
+      return {
+        MigratedTournamentId: tournament.matchId,
+        TournamentName: tournament.title,
+        MigratedTournamentLocationId: tournament.groundId,
+        TournamentQualificationType:
+          tournament.qualification === 0 ? null : tournament.qualification - 1,
+        PlayerType: tournament.playerType - 1,
+        PlayersPerTeam: tournament.playersPerTeam,
+        OversPerInningsDefault: tournament.overs,
+        MaximumTeamsInTournament: tournament.maximumTeamsInTournament,
+        SpacesInTournament: tournament.spacesInTournament,
+        StartTime: tournament.startTime,
+        StartTimeIsKnown: tournament.startTimeKnown,
+        MatchNotes: tournament.notes,
+        MigratedTeams: tournament.teams.map((team) => ({
+          MigratedTeamId: team.teamId,
+          TeamRole: team.teamRole - 1,
+        })),
+        MigratedSeasonIds: tournament.seasons,
+        TournamentRoute: tournament.route,
+        History: [
+          {
+            Action: "Create",
+            AuditDate: tournament.dateCreated,
+            ActorName: tournament.createdBy ? tournament.createdBy : null,
+          },
+          {
+            Action: "Update",
+            AuditDate: tournament.dateUpdated,
+            ActorName: tournament.updatedBy ? tournament.updatedBy : null,
+          },
+        ],
       };
     },
   };
@@ -140,41 +179,7 @@ if (typeof angular !== "undefined") {
         await stoolballResource.postManyToApi(
           "MatchMigration/CreateTournament",
           tournaments,
-          (tournament) => ({
-            MigratedTournamentId: tournament.matchId,
-            TournamentName: tournament.title,
-            MigratedTournamentLocationId: tournament.groundId,
-            TournamentQualificationType:
-              tournament.qualification === 0
-                ? null
-                : tournament.qualification - 1,
-            PlayerType: tournament.playerType - 1,
-            PlayersPerTeam: tournament.playersPerTeam,
-            OversPerInningsDefault: tournament.overs,
-            MaximumTeamsInTournament: tournament.maximumTeamsInTournament,
-            SpacesInTournament: tournament.spacesInTournament,
-            StartTime: tournament.startTime,
-            StartTimeIsKnown: tournament.startTimeKnown,
-            MatchNotes: tournament.notes,
-            MigratedTeams: tournament.teams.map((team) => ({
-              MigratedTeamId: team.teamId,
-              TeamRole: team.teamRole - 1,
-            })),
-            MigratedSeasonIds: tournament.seasons,
-            TournamentRoute: tournament.route,
-            History: [
-              {
-                Action: "Create",
-                AuditDate: tournament.dateCreated,
-                ActorName: tournament.createdBy ? tournament.createdBy : null,
-              },
-              {
-                Action: "Update",
-                AuditDate: tournament.dateUpdated,
-                ActorName: tournament.updatedBy ? tournament.updatedBy : null,
-              },
-            ],
-          }),
+          (tournament) => matchResource.tournamentReducer(tournament),
           imported,
           failed
         );
