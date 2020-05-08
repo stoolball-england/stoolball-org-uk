@@ -3,7 +3,7 @@
 
   angular
     .module("umbraco")
-    .controller("Stoolball.DataMigration.ImportBowling", function (
+    .controller("Stoolball.DataMigration.ImportPlayerInnings", function (
       $http,
       $scope,
       umbRequestHelper,
@@ -20,7 +20,7 @@
       vm.processing = false;
       vm.done = false;
 
-      async function getBowlingToMigrate(
+      async function getBattingToMigrate(
         dataSource,
         apiKey,
         position,
@@ -30,7 +30,7 @@
           $http.get(
             "https://" +
               dataSource +
-              "/data/bowling-api.php?key=" +
+              "/data/batting-api.php?key=" +
               apiKey +
               "&from=" +
               position +
@@ -41,23 +41,24 @@
         );
       }
 
-      async function importBowling(performances, imported, failed) {
+      async function importBatting(performances, imported, failed) {
         await stoolballResource.postManyToApi(
-          "PlayerPerformanceMigration/CreateBowling",
+          "PlayerPerformanceMigration/CreatePlayerInnings",
           performances,
-          (bowling) => ({
-            MigratedMatchId: bowling.matchId,
-            MigratedPlayerIdentityId: bowling.playerId,
-            MigratedTeamId: bowling.teamId,
-            OverNumber: bowling.overNumber,
-            BallsBowled: bowling.ballsBowled,
-            NoBalls: bowling.noBalls,
-            Wides: bowling.wides,
-            RunsConceded: bowling.runsConceded,
+          (batting) => ({
+            MigratedMatchId: batting.matchId,
+            MigratedPlayerIdentityId: batting.playerId,
+            MigratedTeamId: batting.teamId,
+            BattingPosition: batting.battingPosition,
+            HowOut: batting.howOut,
+            MigratedDismissedById: batting.dismissedById,
+            MigratedBowlerId: batting.bowlerId,
+            RunsScored: batting.runsScored,
+            BallsFaced: batting.ballsFaced,
             History: [
               {
                 Action: "Create",
-                AuditDate: bowling.dateCreated,
+                AuditDate: batting.dateCreated,
               },
             ],
           }),
@@ -79,18 +80,18 @@
             while (first || (position < target && position <= vm.total)) {
               first = false;
 
-              let bowling = await getBowlingToMigrate(
+              let batting = await getBattingToMigrate(
                 $scope.model.dataSource,
                 apiKey,
                 position,
                 batchSize
               );
 
-              vm.total = bowling.total;
+              vm.total = batting.total;
 
-              if (bowling.performances && bowling.performances.length) {
-                await importBowling(
-                  bowling.performances,
+              if (batting.performances && batting.performances.length) {
+                await importBatting(
+                  batting.performances,
                   vm.imported,
                   vm.failed
                 );

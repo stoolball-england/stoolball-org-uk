@@ -840,8 +840,8 @@
     <Compile Include="App_Data\Models\StyleGuide.generated.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\CompetitionMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\MatchMigrationController.cs" />
-    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedBatting.cs" />
-    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedBowlingOver.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedPlayerInnings.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedOver.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedCompetition.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\PlayerPerformanceMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\PlayerMigrationController.cs" />

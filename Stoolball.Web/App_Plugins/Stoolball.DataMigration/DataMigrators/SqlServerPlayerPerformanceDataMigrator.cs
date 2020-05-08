@@ -25,10 +25,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		}
 
 		/// <summary>
-		/// Clear down all the batting data ready for a fresh import
+		/// Clear down all the player innings data ready for a fresh import
 		/// </summary>
 		/// <returns></returns>
-		public async Task DeleteBatting()
+		public async Task DeletePlayerInnings()
 		{
 			try
 			{
@@ -38,7 +38,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
 					using (var transaction = database.GetTransaction())
 					{
-						await database.ExecuteAsync($"DELETE FROM {Tables.Batting}").ConfigureAwait(false);
+						await database.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings}").ConfigureAwait(false);
 						transaction.Complete();
 					}
 
@@ -53,30 +53,30 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		}
 
 		/// <summary>
-		/// Save the supplied batting performance to the database
+		/// Save the supplied player innings to the database
 		/// </summary>
-		public async Task<Batting> MigrateBatting(MigratedBatting batting)
+		public async Task<PlayerInnings> MigratePlayerInnings(MigratedPlayerInnings innings)
 		{
-			if (batting is null)
+			if (innings is null)
 			{
-				throw new ArgumentNullException(nameof(batting));
+				throw new ArgumentNullException(nameof(innings));
 			}
 			try
 			{
-				var migratedBatting = new MigratedBatting
+				var migratedInnings = new MigratedPlayerInnings
 				{
-					BattingId = Guid.NewGuid(),
-					MigratedMatchId = batting.MigratedMatchId,
-					MigratedPlayerIdentityId = batting.MigratedPlayerIdentityId,
-					MigratedTeamId = batting.MigratedTeamId,
-					MigratedDismissedById = batting.MigratedDismissedById,
-					MigratedBowlerId = batting.MigratedBowlerId,
-					BattingPosition = batting.BattingPosition,
-					HowOut = batting.HowOut,
-					DismissedBy = batting.DismissedBy,
-					Bowler = batting.Bowler,
-					RunsScored = batting.RunsScored,
-					BallsFaced = batting.BallsFaced
+					PlayerInningsId = Guid.NewGuid(),
+					MigratedMatchId = innings.MigratedMatchId,
+					MigratedPlayerIdentityId = innings.MigratedPlayerIdentityId,
+					MigratedTeamId = innings.MigratedTeamId,
+					MigratedDismissedById = innings.MigratedDismissedById,
+					MigratedBowlerId = innings.MigratedBowlerId,
+					BattingPosition = innings.BattingPosition,
+					HowOut = innings.HowOut,
+					DismissedBy = innings.DismissedBy,
+					Bowler = innings.Bowler,
+					RunsScored = innings.RunsScored,
+					BallsFaced = innings.BallsFaced
 				};
 
 				using (var scope = _scopeProvider.CreateScope())
@@ -86,50 +86,50 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 						var database = scope.Database;
 
 
-						_auditHistoryBuilder.BuildInitialAuditHistory(batting, migratedBatting, nameof(SqlServerPlayerPerformanceDataMigrator));
+						_auditHistoryBuilder.BuildInitialAuditHistory(innings, migratedInnings, nameof(SqlServerPlayerPerformanceDataMigrator));
 
 						using (var transaction = database.GetTransaction())
 						{
-							migratedBatting.Match = new Match
+							migratedInnings.Match = new Match
 							{
-								MatchId = (await database.ExecuteScalarAsync<Guid>($"SELECT MatchId FROM {Tables.Match} WHERE MigratedMatchId = @0", migratedBatting.MigratedMatchId).ConfigureAwait(false))
+								MatchId = (await database.ExecuteScalarAsync<Guid>($"SELECT MatchId FROM {Tables.Match} WHERE MigratedMatchId = @0", migratedInnings.MigratedMatchId).ConfigureAwait(false))
 							};
-							migratedBatting.PlayerIdentity = new PlayerIdentity
+							migratedInnings.PlayerIdentity = new PlayerIdentity
 							{
-								PlayerIdentityId = (await database.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @0", migratedBatting.MigratedPlayerIdentityId).ConfigureAwait(false)),
+								PlayerIdentityId = (await database.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @0", migratedInnings.MigratedPlayerIdentityId).ConfigureAwait(false)),
 								Team = new Team
 								{
-									TeamId = (await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", migratedBatting.MigratedTeamId).ConfigureAwait(false))
+									TeamId = (await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", migratedInnings.MigratedTeamId).ConfigureAwait(false))
 								}
 							};
-							if (migratedBatting.MigratedDismissedById.HasValue)
+							if (migratedInnings.MigratedDismissedById.HasValue)
 							{
-								migratedBatting.DismissedBy = new PlayerIdentity
+								migratedInnings.DismissedBy = new PlayerIdentity
 								{
-									PlayerIdentityId = (await database.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @0", migratedBatting.MigratedDismissedById).ConfigureAwait(false)),
+									PlayerIdentityId = (await database.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @0", migratedInnings.MigratedDismissedById).ConfigureAwait(false)),
 								};
 							}
-							if (migratedBatting.MigratedBowlerId.HasValue)
+							if (migratedInnings.MigratedBowlerId.HasValue)
 							{
-								migratedBatting.Bowler = new PlayerIdentity
+								migratedInnings.Bowler = new PlayerIdentity
 								{
-									PlayerIdentityId = (await database.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @0", migratedBatting.MigratedBowlerId).ConfigureAwait(false)),
+									PlayerIdentityId = (await database.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @0", migratedInnings.MigratedBowlerId).ConfigureAwait(false)),
 								};
 							}
-							var inningsId = (await database.ExecuteScalarAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @0 AND TeamId = @1", migratedBatting.Match.MatchId, migratedBatting.PlayerIdentity.Team.TeamId).ConfigureAwait(false));
+							var inningsId = (await database.ExecuteScalarAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @0 AND TeamId = @1", migratedInnings.Match.MatchId, migratedInnings.PlayerIdentity.Team.TeamId).ConfigureAwait(false));
 
-							await database.ExecuteAsync($@"INSERT INTO {Tables.Batting}
-						(BattingId, MatchInningsId, PlayerIdentityId, BattingPosition, HowOut, DismissedById, BowlerId, RunsScored, BallsFaced)
+							await database.ExecuteAsync($@"INSERT INTO {Tables.PlayerInnings}
+						(PlayerInningsId, MatchInningsId, PlayerIdentityId, BattingPosition, HowOut, DismissedById, BowlerId, RunsScored, BallsFaced)
 						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8)",
-								migratedBatting.BattingId,
+								migratedInnings.PlayerInningsId,
 								inningsId,
-								migratedBatting.PlayerIdentity.PlayerIdentityId,
-								migratedBatting.BattingPosition,
-								migratedBatting.HowOut?.ToString(),
-								migratedBatting.DismissedBy?.PlayerIdentityId,
-								migratedBatting.Bowler?.PlayerIdentityId,
-								migratedBatting.RunsScored,
-								migratedBatting.BallsFaced).ConfigureAwait(false);
+								migratedInnings.PlayerIdentity.PlayerIdentityId,
+								migratedInnings.BattingPosition,
+								migratedInnings.HowOut?.ToString(),
+								migratedInnings.DismissedBy?.PlayerIdentityId,
+								migratedInnings.Bowler?.PlayerIdentityId,
+								migratedInnings.RunsScored,
+								migratedInnings.BallsFaced).ConfigureAwait(false);
 							transaction.Complete();
 						}
 
@@ -142,11 +142,11 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					scope.Complete();
 				}
 
-				foreach (var audit in migratedBatting.History)
+				foreach (var audit in migratedInnings.History)
 				{
 					await _auditRepository.CreateAudit(audit).ConfigureAwait(false);
 				}
-				return migratedBatting;
+				return migratedInnings;
 			}
 			catch (Exception e)
 			{
@@ -160,7 +160,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// Clear down all the bowling data ready for a fresh import
 		/// </summary>
 		/// <returns></returns>
-		public async Task DeleteBowling()
+		public async Task DeleteOvers()
 		{
 			try
 			{
@@ -170,7 +170,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
 					using (var transaction = database.GetTransaction())
 					{
-						await database.ExecuteAsync($"DELETE FROM {Tables.BowlingOver}").ConfigureAwait(false);
+						await database.ExecuteAsync($"DELETE FROM {Tables.Over}").ConfigureAwait(false);
 						transaction.Complete();
 					}
 
@@ -187,25 +187,25 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied bowling over to the database
 		/// </summary>
-		public async Task<BowlingOver> MigrateBowling(MigratedBowlingOver bowling)
+		public async Task<Over> MigrateOver(MigratedOver over)
 		{
-			if (bowling is null)
+			if (over is null)
 			{
-				throw new ArgumentNullException(nameof(bowling));
+				throw new ArgumentNullException(nameof(over));
 			}
 			try
 			{
-				var migratedBowling = new MigratedBowlingOver
+				var migratedOver = new MigratedOver
 				{
-					BowlingOverId = Guid.NewGuid(),
-					MigratedMatchId = bowling.MigratedMatchId,
-					MigratedPlayerIdentityId = bowling.MigratedPlayerIdentityId,
-					MigratedTeamId = bowling.MigratedTeamId,
-					OverNumber = bowling.OverNumber,
-					BallsBowled = bowling.BallsBowled,
-					NoBalls = bowling.NoBalls,
-					Wides = bowling.Wides,
-					RunsConceded = bowling.RunsConceded
+					OverId = Guid.NewGuid(),
+					MigratedMatchId = over.MigratedMatchId,
+					MigratedPlayerIdentityId = over.MigratedPlayerIdentityId,
+					MigratedTeamId = over.MigratedTeamId,
+					OverNumber = over.OverNumber,
+					BallsBowled = over.BallsBowled,
+					NoBalls = over.NoBalls,
+					Wides = over.Wides,
+					RunsConceded = over.RunsConceded
 				};
 
 				using (var scope = _scopeProvider.CreateScope())
@@ -214,35 +214,35 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					{
 						var database = scope.Database;
 
-						_auditHistoryBuilder.BuildInitialAuditHistory(bowling, migratedBowling, nameof(SqlServerPlayerPerformanceDataMigrator));
+						_auditHistoryBuilder.BuildInitialAuditHistory(over, migratedOver, nameof(SqlServerPlayerPerformanceDataMigrator));
 
 						using (var transaction = database.GetTransaction())
 						{
-							migratedBowling.Match = new Match
+							migratedOver.Match = new Match
 							{
-								MatchId = (await database.ExecuteScalarAsync<Guid>($"SELECT MatchId FROM {Tables.Match} WHERE MigratedMatchId = @0", migratedBowling.MigratedMatchId).ConfigureAwait(false))
+								MatchId = (await database.ExecuteScalarAsync<Guid>($"SELECT MatchId FROM {Tables.Match} WHERE MigratedMatchId = @0", migratedOver.MigratedMatchId).ConfigureAwait(false))
 							};
-							migratedBowling.PlayerIdentity = new PlayerIdentity
+							migratedOver.PlayerIdentity = new PlayerIdentity
 							{
-								PlayerIdentityId = (await database.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @0", migratedBowling.MigratedPlayerIdentityId).ConfigureAwait(false)),
+								PlayerIdentityId = (await database.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @0", migratedOver.MigratedPlayerIdentityId).ConfigureAwait(false)),
 								Team = new Team
 								{
-									TeamId = (await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", migratedBowling.MigratedTeamId).ConfigureAwait(false))
+									TeamId = (await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", migratedOver.MigratedTeamId).ConfigureAwait(false))
 								}
 							};
-							var inningsId = (await database.ExecuteScalarAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @0 AND TeamId = @1", migratedBowling.Match.MatchId, migratedBowling.PlayerIdentity.Team.TeamId).ConfigureAwait(false));
+							var inningsId = (await database.ExecuteScalarAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @0 AND TeamId = @1", migratedOver.Match.MatchId, migratedOver.PlayerIdentity.Team.TeamId).ConfigureAwait(false));
 
-							await database.ExecuteAsync($@"INSERT INTO {Tables.BowlingOver}
-						(BowlingOverId, MatchInningsId, PlayerIdentityId, OverNumber, BallsBowled, NoBalls, Wides, RunsConceded)
+							await database.ExecuteAsync($@"INSERT INTO {Tables.Over}
+						(OverId, MatchInningsId, PlayerIdentityId, OverNumber, BallsBowled, NoBalls, Wides, RunsConceded)
 						VALUES (@0, @1, @2, @3, @4, @5, @6, @7)",
-								migratedBowling.BowlingOverId,
+								migratedOver.OverId,
 								inningsId,
-								migratedBowling.PlayerIdentity.PlayerIdentityId,
-								migratedBowling.OverNumber,
-								migratedBowling.BallsBowled,
-								migratedBowling.NoBalls,
-								migratedBowling.Wides,
-								migratedBowling.RunsConceded).ConfigureAwait(false);
+								migratedOver.PlayerIdentity.PlayerIdentityId,
+								migratedOver.OverNumber,
+								migratedOver.BallsBowled,
+								migratedOver.NoBalls,
+								migratedOver.Wides,
+								migratedOver.RunsConceded).ConfigureAwait(false);
 							transaction.Complete();
 						}
 
@@ -255,11 +255,11 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					scope.Complete();
 				}
 
-				foreach (var audit in migratedBowling.History)
+				foreach (var audit in migratedOver.History)
 				{
 					await _auditRepository.CreateAudit(audit).ConfigureAwait(false);
 				}
-				return migratedBowling;
+				return migratedOver;
 			}
 			catch (Exception e)
 			{

@@ -75,10 +75,10 @@
     <Compile Include="MatchLocations\SqlServerMatchLocationDataSource.cs" />
     <Compile Include="UmbracoDatabaseConnectionFactory.cs" />
     <Compile Include="IDatabaseConnectionFactory.cs" />
-    <Compile Include="Migrations\BattingAddTable.cs" />
-    <Compile Include="Migrations\BattingTableInitialSchema.cs" />
-    <Compile Include="Migrations\BowlingOverAddTable.cs" />
-    <Compile Include="Migrations\BowlingOverTableInitialSchema.cs" />
+    <Compile Include="Migrations\PlayerInningsAddTable.cs" />
+    <Compile Include="Migrations\PlayerInningsTableInitialSchema.cs" />
+    <Compile Include="Migrations\OverAddTable.cs" />
+    <Compile Include="Migrations\OverTableInitialSchema.cs" />
     <Compile Include="Migrations\ClubAddTable.cs" />
     <Compile Include="Migrations\ClubNameAddTable.cs" />
     <Compile Include="Migrations\ClubNameTableInitialSchema.cs" />

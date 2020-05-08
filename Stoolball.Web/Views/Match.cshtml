@@ -80,8 +80,8 @@
 }
 
 @{
-    var hasBatting = Model.Match.MatchInnings.Select(x => x.Batting.Count).Sum() > 0;
-    var hasOvers = Model.Match.MatchInnings.Select(x => x.BowlingOvers.Count).Sum() > 0;
+    var hasBatting = Model.Match.MatchInnings.Select(x => x.PlayerInnings.Count).Sum() > 0;
+    var hasOvers = Model.Match.MatchInnings.Select(x => x.OversBowled.Count).Sum() > 0;
     var hasRuns = Model.Match.MatchInnings.Select(x => x.Runs.HasValue).Contains(true);
     var hasWickets = Model.Match.MatchInnings.Select(x => x.Wickets.HasValue).Contains(true);
 

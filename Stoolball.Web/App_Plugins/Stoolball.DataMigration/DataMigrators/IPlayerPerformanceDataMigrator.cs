@@ -5,9 +5,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
     public interface IPlayerPerformanceDataMigrator
     {
-        Task<Batting> MigrateBatting(MigratedBatting batting);
-        Task DeleteBatting();
-        Task<BowlingOver> MigrateBowling(MigratedBowlingOver bowling);
-        Task DeleteBowling();
+        Task<PlayerInnings> MigratePlayerInnings(MigratedPlayerInnings innings);
+        Task DeletePlayerInnings();
+        Task<Over> MigrateOver(MigratedOver over);
+        Task DeleteOvers();
     }
 }

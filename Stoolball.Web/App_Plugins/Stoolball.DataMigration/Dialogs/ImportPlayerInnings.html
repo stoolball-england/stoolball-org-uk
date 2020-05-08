@@ -1,6 +1,6 @@
 ﻿<div
   class="data-migration-dialog"
-  ng-controller="Stoolball.DataMigration.ImportBatting as vm"
+  ng-controller="Stoolball.DataMigration.ImportPlayerInnings as vm"
 >
   <umb-editor-view>
     <umb-editor-header
@@ -16,7 +16,7 @@
       <umb-box>
         <umb-box-content>
           <p>
-            This will import all stoolball batting performances from the old
+            This will import all stoolball player innings from the old
             Stoolball England website into the Umbraco database.
           </p>
 
@@ -46,8 +46,7 @@
         <umb-box-content>
           <div class="umb-panel-group__details-check-name">
             Importing: {{model.startFrom}} to {{vm.imported.length ?
-            model.startFrom+vm.imported.length : '?'}} of {{vm.total}} batting
-            performances
+            model.startFrom+vm.imported.length : '?'}} of {{vm.total}} player innings
           </div>
           <ul class="data-migration-progress">
             <li ng-repeat="item in vm.failed" class="alert alert-error">
@@ -64,7 +63,7 @@
       <umb-box ng-if="vm.done && vm.total === 0">
         <umb-box-content>
           <div class="umb-panel-group__details-check-name">
-            There are no batting performances to import.
+            There are no player innings to import.
           </div>
         </umb-box-content>
       </umb-box>
@@ -84,7 +83,7 @@
         <umb-button
           type="button"
           button-style="primary"
-          label="Import batting"
+          label="Import player innings"
           icon="icon-arrow-right"
           action="vm.submit(model)"
           state="vm.buttonState"

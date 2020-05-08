@@ -3,7 +3,7 @@
 
   angular
     .module("umbraco")
-    .controller("Stoolball.DataMigration.DeleteBowling", function (
+    .controller("Stoolball.DataMigration.DeleteOvers", function (
       $scope,
       stoolballResource
     ) {
@@ -17,7 +17,7 @@
 
       async function deleteBowling(callback) {
         return await stoolballResource.deleteApi(
-          "PlayerPerformanceMigration/DeleteBowling",
+          "PlayerPerformanceMigration/DeleteOvers",
           callback
         );
       }

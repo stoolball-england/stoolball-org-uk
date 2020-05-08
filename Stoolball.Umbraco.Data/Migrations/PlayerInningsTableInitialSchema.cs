@@ -4,14 +4,14 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Umbraco.Data.Migrations
 {
-    [TableName(Constants.Tables.Batting)]
-    [PrimaryKey(nameof(BattingId), AutoIncrement = false)]
+    [TableName(Constants.Tables.PlayerInnings)]
+    [PrimaryKey(nameof(PlayerInningsId), AutoIncrement = false)]
     [ExplicitColumns]
-    public class BattingTableInitialSchema
+    public class PlayerInningsTableInitialSchema
     {
         [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
-        [Column(nameof(BattingId))]
-        public Guid BattingId { get; set; }
+        [Column(nameof(PlayerInningsId))]
+        public Guid PlayerInningsId { get; set; }
 
         [Column(nameof(MatchInningsId))]
         [ForeignKey(typeof(MatchInningsTableInitialSchema), Column = nameof(MatchInningsTableInitialSchema.MatchInningsId))]

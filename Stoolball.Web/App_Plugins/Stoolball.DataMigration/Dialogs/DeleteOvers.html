@@ -1,6 +1,6 @@
 ﻿<div
   class="data-migration-dialog"
-  ng-controller="Stoolball.DataMigration.DeleteBatting as vm"
+  ng-controller="Stoolball.DataMigration.DeleteOvers as vm"
 >
   <umb-editor-view>
     <umb-editor-header
@@ -15,14 +15,14 @@
     <umb-editor-container>
       <umb-box>
         <umb-box-content>
-          <p>This will delete all stoolball batting performances.</p>
+          <p>This will delete all stoolball overs bowled.</p>
           <p><strong>This cannot be undone.</strong></p>
         </umb-box-content>
       </umb-box>
       <umb-box ng-if="vm.buttonState != 'init'">
         <umb-box-content>
           <div class="umb-panel-group__details-check-name">
-            Deleting batting performances
+            Deleting overs bowled
           </div>
           <p ng-if="vm.done">Done.</p>
         </umb-box-content>
@@ -43,7 +43,7 @@
         <umb-button
           type="button"
           button-style="danger"
-          label="Delete all batting"
+          label="Delete all overs"
           icon="icon-trash"
           action="vm.submit(model)"
           state="vm.buttonState"

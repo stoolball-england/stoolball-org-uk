@@ -35,40 +35,40 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateBatting(MigratedBatting batting)
+        public async Task<IHttpActionResult> CreatePlayerInnings(MigratedPlayerInnings innings)
         {
-            if (batting is null)
+            if (innings is null)
             {
-                throw new ArgumentNullException(nameof(batting));
+                throw new ArgumentNullException(nameof(innings));
             }
 
-            var migrated = await _playerPerformanceDataMigrator.MigrateBatting(batting).ConfigureAwait(false);
+            var migrated = await _playerPerformanceDataMigrator.MigratePlayerInnings(innings).ConfigureAwait(false);
             return Created(migrated.EntityUri, JsonConvert.SerializeObject(migrated));
         }
 
         [HttpDelete]
-        public async Task<IHttpActionResult> DeleteBatting()
+        public async Task<IHttpActionResult> DeletePlayerInnings()
         {
-            await _playerPerformanceDataMigrator.DeleteBatting().ConfigureAwait(false);
+            await _playerPerformanceDataMigrator.DeletePlayerInnings().ConfigureAwait(false);
             return Ok();
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateBowling(MigratedBowlingOver bowling)
+        public async Task<IHttpActionResult> CreateOver(MigratedOver over)
         {
-            if (bowling is null)
+            if (over is null)
             {
-                throw new ArgumentNullException(nameof(bowling));
+                throw new ArgumentNullException(nameof(over));
             }
 
-            var migrated = await _playerPerformanceDataMigrator.MigrateBowling(bowling).ConfigureAwait(false);
+            var migrated = await _playerPerformanceDataMigrator.MigrateOver(over).ConfigureAwait(false);
             return Created(migrated.EntityUri, JsonConvert.SerializeObject(migrated));
         }
 
         [HttpDelete]
-        public async Task<IHttpActionResult> DeleteBowling()
+        public async Task<IHttpActionResult> DeleteOvers()
         {
-            await _playerPerformanceDataMigrator.DeleteBowling().ConfigureAwait(false);
+            await _playerPerformanceDataMigrator.DeleteOvers().ConfigureAwait(false);
             return Ok();
         }
     }

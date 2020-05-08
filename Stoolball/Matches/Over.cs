@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace Stoolball.Matches
 {
-    public class BowlingOver : IAuditable
+    public class Over : IAuditable
     {
-        public Guid? BowlingOverId { get; set; }
+        public Guid? OverId { get; set; }
 
         public Match Match { get; set; }
 
@@ -25,7 +25,7 @@ namespace Stoolball.Matches
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
         public Uri EntityUri
         {
-            get { return new Uri($"https://www.stoolball.org.uk/id/bowling/{BowlingOverId}"); }
+            get { return new Uri($"https://www.stoolball.org.uk/id/over/{OverId}"); }
         }
     }
 }

@@ -11,8 +11,8 @@ namespace Stoolball.Matches
 
         public int? Overs { get; set; }
 
-        public SortedList<int, Batting> Batting { get; internal set; } = new SortedList<int, Batting>();
-        public SortedList<int, BowlingOver> BowlingOvers { get; internal set; } = new SortedList<int, BowlingOver>();
+        public List<PlayerInnings> PlayerInnings { get; internal set; } = new List<PlayerInnings>();
+        public List<Over> OversBowled { get; internal set; } = new List<Over>();
 
         public int? Runs { get; set; }
 

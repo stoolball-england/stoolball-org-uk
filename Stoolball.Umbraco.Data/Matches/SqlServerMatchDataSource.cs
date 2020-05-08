@@ -202,16 +202,16 @@ namespace Stoolball.Umbraco.Data.Matches
 
                     if (matchToReturn != null)
                     {
-                        var allInnings = await connection.QueryAsync<MatchInnings, Team, Batting, BowlingOver, MatchInnings>(
+                        var allInnings = await connection.QueryAsync<MatchInnings, Team, PlayerInnings, Over, MatchInnings>(
                             $@"SELECT i.Runs, i.Wickets, i.InningsOrderInMatch,
                                i.TeamId,
                                b.BattingPosition,
                                o.OverNumber
                                FROM {Tables.MatchInnings} i 
-                               LEFT JOIN {Tables.Batting} b ON i.MatchInningsId = b.MatchInningsId
-                               LEFT JOIN {Tables.BowlingOver} o ON i.MatchInningsId = o.MatchInningsId
+                               LEFT JOIN {Tables.PlayerInnings} b ON i.MatchInningsId = b.MatchInningsId
+                               LEFT JOIN {Tables.Over} o ON i.MatchInningsId = o.MatchInningsId
                                WHERE i.MatchId = @MatchId
-                               ORDER BY i.InningsOrderInMatch",
+                               ORDER BY i.InningsOrderInMatch, b.BattingPosition, o.OverNumber",
                             (innings, team, batting, over) =>
                             {
                                 if (team != null)
@@ -220,11 +220,11 @@ namespace Stoolball.Umbraco.Data.Matches
                                 }
                                 if (batting != null)
                                 {
-                                    innings.Batting.Add(batting.BattingPosition, batting);
+                                    innings.PlayerInnings.Add(batting);
                                 }
                                 if (over != null)
                                 {
-                                    innings.BowlingOvers.Add(over.OverNumber, over);
+                                    innings.OversBowled.Add(over);
                                 }
                                 return innings;
                             },
