@@ -68,6 +68,8 @@ namespace Stoolball.Web.Matches
 
                 model.Metadata.Description = model.Match.Description();
 
+                model.Match.MatchNotes = _emailProtector.ProtectEmailAddresses(model.Match.MatchNotes, User.Identity.IsAuthenticated);
+
                 return CurrentTemplate(model);
             }
         }

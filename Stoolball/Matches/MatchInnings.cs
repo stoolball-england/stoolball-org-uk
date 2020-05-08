@@ -1,4 +1,5 @@
 ﻿using Stoolball.Teams;
+using System.Collections.Generic;
 
 namespace Stoolball.Matches
 {
@@ -9,6 +10,9 @@ namespace Stoolball.Matches
         public Team Team { get; set; }
 
         public int? Overs { get; set; }
+
+        public SortedList<int, Batting> Batting { get; internal set; } = new SortedList<int, Batting>();
+        public SortedList<int, BowlingOver> BowlingOvers { get; internal set; } = new SortedList<int, BowlingOver>();
 
         public int? Runs { get; set; }
 

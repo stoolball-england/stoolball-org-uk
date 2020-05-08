@@ -2,6 +2,29 @@
 @using Stoolball.Matches
 @using Humanizer
 @using Innovative.SolarCalculator
+@functions{
+    private string ResultDescription()
+    {
+        var description = Model.Match.MatchResultType.Humanize(LetterCasing.Sentence);
+        if (Model.Match.MatchResultType == MatchResultType.HomeWin || Model.Match.MatchResultType == MatchResultType.HomeWinByForfeit)
+        {
+            var homeTeam = Model.Match.Teams.Where(x => x.TeamRole == TeamRole.Home).FirstOrDefault()?.Team;
+            if (homeTeam != null)
+            {
+                description = description.Replace("Home", homeTeam.TeamName);
+            }
+        }
+        if (Model.Match.MatchResultType == MatchResultType.AwayWin || Model.Match.MatchResultType == MatchResultType.AwayWinByForfeit)
+        {
+            var awayTeam = Model.Match.Teams.Where(x => x.TeamRole == TeamRole.Away).FirstOrDefault()?.Team;
+            if (awayTeam != null)
+            {
+                description = description.Replace("Away", awayTeam.TeamName);
+            }
+        }
+        return description;
+    }
+}
 @{
     var h1 = Model.Match.MatchName;
     if (Model.Match.MatchType == MatchType.TournamentMatch)
@@ -16,18 +39,20 @@
 }
 <h1>@h1</h1>
 
-<p>@Model.Match.MatchType.Humanize(LetterCasing.Sentence)@{
-    if (Model.Match.Season != null)
-    {
-        var seasonName = Model.Match.Season.SeasonFullName();
-        var inTheSeason = (seasonName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? " in" : " in the";
-        @inTheSeason <a href="@Model.Match.Season.SeasonRoute">@seasonName</a>
+<p>
+    @Model.Match.MatchType.Humanize(LetterCasing.Sentence)@{
+        if (Model.Match.Season != null)
+        {
+            var seasonName = Model.Match.Season.SeasonFullName();
+            var inTheSeason = (seasonName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? " in" : " in the";
+            @inTheSeason <a href="@Model.Match.Season.SeasonRoute">@seasonName</a>
+        }
     }
-}</p>
+</p>
 
 @if (Model.Match.Teams.Count > 0)
 {
-<p>Who: @Html.Raw(Model.Match.Teams.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>"))</p>
+    <p>Who: @Html.Raw(Model.Match.Teams.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>"))</p>
 }
 
 <p>
@@ -52,4 +77,65 @@
 @if (Model.Match.MatchLocation != null)
 {
     <p>Where: <a href="@Model.Match.MatchLocation.MatchLocationRoute">@Model.Match.MatchLocation</a></p>
+}
+
+@{
+    var hasBatting = Model.Match.MatchInnings.Select(x => x.Batting.Count).Sum() > 0;
+    var hasOvers = Model.Match.MatchInnings.Select(x => x.BowlingOvers.Count).Sum() > 0;
+    var hasRuns = Model.Match.MatchInnings.Select(x => x.Runs.HasValue).Contains(true);
+    var hasWickets = Model.Match.MatchInnings.Select(x => x.Wickets.HasValue).Contains(true);
+
+    var hasScorecard = (hasBatting || hasOvers || hasRuns || hasWickets);
+
+    if (Model.Match.MatchResultType.HasValue || Model.Match.InningsOrderIsKnown || hasScorecard)
+    {
+        // Put the result in the h2, so long as we have something to put after it. Otherwise put the result after the h2.
+        var resultHeader = "Result";
+        if (Model.Match.MatchResultType.HasValue && (Model.Match.InningsOrderIsKnown || hasScorecard))
+        {
+            resultHeader += ": " + ResultDescription();
+        }
+
+        <h2>@resultHeader</h2>
+    }
+
+    var tossWinners = Model.Match.Teams.FirstOrDefault(x => x.WonToss.HasValue && x.WonToss.Value);
+    if (tossWinners != null)
+    {
+        var tossResult = tossWinners.Team.TeamName + " won the toss";
+        if (Model.Match.InningsOrderIsKnown)
+        {
+            var choseTo = ((tossWinners.TeamRole == TeamRole.Home) == (Model.Match.MatchInnings.FirstOrDefault().Team?.TeamId == tossWinners.Team.TeamId)) ? "bat" : "bowl";
+            tossResult += " and chose to " + choseTo;
+        }
+        <p>@tossResult.</p>
+    }
+
+    if (hasScorecard)
+    {
+
+    }
+    else
+    {
+        // Got to be just result and batting order now.
+        // Only include result if batting order's not there, otherwise result will already be in header.
+        if (Model.Match.MatchResultType.HasValue && !Model.Match.InningsOrderIsKnown)
+        {
+            <p>@ResultDescription().</p>
+        }
+
+        if (Model.Match.InningsOrderIsKnown)
+        {
+            var firstToBat = Model.Match.Teams.FirstOrDefault(x => x.Team.TeamId == Model.Match.MatchInnings.FirstOrDefault().Team?.TeamId);
+            if (firstToBat != null)
+            {
+                <p>@firstToBat.Team.TeamName batted first.</p>
+            }
+        }
+    }
+}
+@if (!string.IsNullOrWhiteSpace(Model.Match.MatchNotes))
+{
+    <h2>Notes</h2>
+    @Html.Raw(Model.Match.MatchNotes)
 }

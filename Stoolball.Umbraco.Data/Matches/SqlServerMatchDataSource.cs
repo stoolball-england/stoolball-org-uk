@@ -106,6 +106,19 @@ namespace Stoolball.Umbraco.Data.Matches
             }
         }
 
+        private class TeamDto
+        {
+            public Guid HomeTeamId { get; set; }
+            public string HomeTeamRoute { get; set; }
+            public string HomeTeamName { get; set; }
+
+            public bool? HomeWonToss { get; set; }
+            public Guid AwayTeamId { get; set; }
+            public string AwayTeamRoute { get; set; }
+            public string AwayTeamName { get; set; }
+            public bool? AwayWonToss { get; set; }
+        };
+
         /// <summary>
         /// Gets a single stoolball match based on its route
         /// </summary>
@@ -119,10 +132,12 @@ namespace Stoolball.Umbraco.Data.Matches
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var matches = await connection.QueryAsync<Match, Tournament, Team, MatchLocation, Season, Competition, Match>(
-                        $@"SELECT m.MatchName, m.MatchType, m.StartTime, m.StartTimeIsKnown,
+                    var matches = await connection.QueryAsync<Match, Tournament, TeamDto, TeamDto, MatchLocation, Season, Competition, Match>(
+                        $@"SELECT m.MatchId, m.MatchName, m.MatchType, m.StartTime, m.StartTimeIsKnown, m.MatchResultType, 
+                            m.InningsOrderIsKnown, m.MatchNotes,
                             tourney.MatchRoute AS TournamentRoute, tourney.MatchName AS TournamentName,
-                            t.TeamRoute, tn.TeamName,
+                            h.TeamId AS HomeTeamId, h.TeamRoute AS HomeTeamRoute, tnh.TeamName AS HomeTeamName, mt.WonToss AS HomeWonToss,
+                            a.TeamId AS AwayTeamId, a.TeamRoute AS AwayTeamRoute, tna.TeamName AS AwayTeamName, mt.WonToss AS AwayWonToss,
                             ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
                             ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
                             s.SeasonRoute, s.StartYear, s.EndYear,
@@ -130,30 +145,94 @@ namespace Stoolball.Umbraco.Data.Matches
                             FROM {Tables.Match} AS m
                             LEFT JOIN {Tables.Match} AS tourney ON m.TournamentId = tourney.MatchId
                             LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
-                            LEFT JOIN {Tables.Team} AS t ON mt.TeamId = t.TeamId
-                            LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
+                            LEFT JOIN {Tables.Team} AS h ON mt.TeamId = h.TeamId AND mt.TeamRole = 'Home'
+                            LEFT JOIN {Tables.TeamName} AS tnh ON h.TeamId = tnh.TeamId AND tnh.UntilDate IS NULL
+                            LEFT JOIN {Tables.Team} AS a ON mt.TeamId = a.TeamId AND mt.TeamRole = 'Away'
+                            LEFT JOIN {Tables.TeamName} AS tna ON a.TeamId = tna.TeamId AND tna.UntilDate IS NULL
                             LEFT JOIN {Tables.MatchLocation} AS ml ON m.MatchLocationId = ml.MatchLocationId
                             LEFT JOIN {Tables.SeasonMatch} AS sm ON m.MatchId = sm.MatchId
                             LEFT JOIN {Tables.Season} AS s ON sm.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.Competition} AS co ON s.CompetitionId = co.CompetitionId
-                            WHERE LOWER(m.MatchRoute) = @Route
-                            ORDER BY mt.TeamRole DESC",  // TeamRole DESC puts 'Home' before 'Away'
-                        (match, tournament, team, matchLocation, season, competition) =>
+                            WHERE LOWER(m.MatchRoute) = @Route",
+                        (match, tournament, home, away, matchLocation, season, competition) =>
                         {
                             match.Tournament = tournament;
-                            match.Teams.Add(new TeamInMatch { Team = team });
+                            if (home != null)
+                            {
+                                match.Teams.Add(new TeamInMatch
+                                {
+                                    Team = new Team
+                                    {
+                                        TeamId = home.HomeTeamId,
+                                        TeamRoute = home.HomeTeamRoute,
+                                        TeamName = home.HomeTeamName
+                                    },
+                                    TeamRole = TeamRole.Home,
+                                    WonToss = home.HomeWonToss
+                                });
+                            }
+                            if (away != null)
+                            {
+                                match.Teams.Add(new TeamInMatch
+                                {
+                                    Team = new Team
+                                    {
+                                        TeamId = away.AwayTeamId,
+                                        TeamRoute = away.AwayTeamRoute,
+                                        TeamName = away.AwayTeamName
+                                    },
+                                    TeamRole = TeamRole.Away,
+                                    WonToss = away.AwayWonToss
+                                });
+                            }
                             match.MatchLocation = matchLocation;
                             if (season != null) { season.Competition = competition; }
                             match.Season = season;
                             return match;
                         },
                         new { Route = normalisedRoute },
-                        splitOn: "TournamentRoute, TeamRoute, MatchLocationRoute, SeasonRoute, CompetitionName").ConfigureAwait(false);
+                        splitOn: "TournamentRoute, HomeTeamId, AwayTeamId, MatchLocationRoute, SeasonRoute, CompetitionName")
+                        .ConfigureAwait(false);
 
                     var matchToReturn = matches.FirstOrDefault(); // get an example with the properties that are the same for every row
                     if (matchToReturn != null)
                     {
-                        matchToReturn.Teams = matches.Select(match => match.Teams.SingleOrDefault()).OfType<TeamInMatch>().ToList();
+                        matchToReturn.Teams = matches.Select(match => match.Teams.SingleOrDefault()).OfType<TeamInMatch>().OrderBy(x => x.TeamRole).ToList();
+                    }
+
+                    if (matchToReturn != null)
+                    {
+                        var allInnings = await connection.QueryAsync<MatchInnings, Team, Batting, BowlingOver, MatchInnings>(
+                            $@"SELECT i.Runs, i.Wickets, i.InningsOrderInMatch,
+                               i.TeamId,
+                               b.BattingPosition,
+                               o.OverNumber
+                               FROM {Tables.MatchInnings} i 
+                               LEFT JOIN {Tables.Batting} b ON i.MatchInningsId = b.MatchInningsId
+                               LEFT JOIN {Tables.BowlingOver} o ON i.MatchInningsId = o.MatchInningsId
+                               WHERE i.MatchId = @MatchId
+                               ORDER BY i.InningsOrderInMatch",
+                            (innings, team, batting, over) =>
+                            {
+                                if (team != null)
+                                {
+                                    innings.Team = team;
+                                }
+                                if (batting != null)
+                                {
+                                    innings.Batting.Add(batting.BattingPosition, batting);
+                                }
+                                if (over != null)
+                                {
+                                    innings.BowlingOvers.Add(over.OverNumber, over);
+                                }
+                                return innings;
+                            },
+                            new { matchToReturn.MatchId },
+                            splitOn: "TeamId, BattingPosition, OverNumber")
+                            .ConfigureAwait(false);
+
+                        matchToReturn.MatchInnings = allInnings.OrderBy(x => x.InningsOrderInMatch).ToList();
                     }
 
                     return matchToReturn;
