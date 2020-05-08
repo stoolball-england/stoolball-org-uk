@@ -1,5 +1,89 @@
-(function () {
-  "use strict";
+"use strict";
+
+function matchResource() {
+  return {
+    matchReducer(match) {
+      const teams = [];
+      match.teams = match.teams || [];
+      const home = match.teams.filter((team) => team.teamRole === 1);
+      if (home.length) {
+        teams.push({
+          MigratedTeamId: home[0].teamId,
+          TeamRole: 0,
+          WonToss: match.tossWonBy ? match.tossWonBy === 1 : null,
+        });
+      }
+      const away = match.teams.filter((team) => team.teamRole === 2);
+      if (away.length) {
+        teams.push({
+          MigratedTeamId: away[0].teamId,
+          TeamRole: 1,
+          WonToss: match.tossWonBy ? match.tossWonBy === 2 : null,
+        });
+      }
+
+      return {
+        MigratedMatchId: match.matchId,
+        MatchName: match.title,
+        UpdateMatchNameAutomatically: !match.customTitle,
+        MigratedMatchLocationId: match.groundId,
+        MatchType: match.matchType,
+        PlayerType: match.playerType - 1,
+        PlayersPerTeam: match.playersPerTeam,
+        MigratedMatchInnings: [
+          {
+            MigratedTeamId: home.length ? home[0].teamId : null,
+            InningsOrderInMatch:
+              match.homeBatFirst !== null ? (match.homeBatFirst ? 1 : 2) : 1,
+            Overs: match.overs,
+            Runs: match.homeRuns,
+            Wickets: match.homeWickets,
+          },
+          {
+            MigratedTeamId: away.length ? away[0].teamId : null,
+            InningsOrderInMatch:
+              match.homeBatFirst !== null ? (match.homeBatFirst ? 2 : 1) : 2,
+            Overs: match.overs,
+            Runs: match.awayRuns,
+            Wickets: match.awayWickets,
+          },
+        ],
+        InningsOrderIsKnown: match.homeBatFirst !== null,
+        OversPerInningsDefault: match.overs,
+        MigratedTournamentId: match.tournamentMatchId,
+        OrderInTournament: match.orderInTournament,
+        StartTime: match.startTime,
+        StartTimeIsKnown: match.startTimeKnown,
+        MigratedTeams: teams,
+        MigratedSeasonIds: match.seasons,
+        MatchRoute: match.route,
+        History: [
+          {
+            Action: "Create",
+            AuditDate: match.dateCreated,
+            ActorName: match.createdBy ? match.createdBy : null,
+          },
+          {
+            Action: "Update",
+            AuditDate: match.dateUpdated,
+            ActorName: match.updatedBy ? match.updatedBy : null,
+          },
+        ],
+        MatchResultType: match.resultType ? match.resultType - 1 : null,
+        MatchNotes: match.notes,
+      };
+    },
+  };
+}
+
+// For Jest tests
+if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
+  module.exports = matchResource;
+}
+
+//adds the resource to umbraco.resources module:
+if (typeof angular !== "undefined") {
+  angular.module("umbraco.resources").factory("matchResource", matchResource);
 
   angular
     .module("umbraco")
@@ -7,7 +91,8 @@
       $http,
       $scope,
       umbRequestHelper,
-      stoolballResource
+      stoolballResource,
+      matchResource
     ) {
       let vm = this;
 
@@ -45,82 +130,7 @@
         await stoolballResource.postManyToApi(
           "MatchMigration/CreateMatch",
           matches,
-          (match) => {
-            const teams = [];
-            const home = match.teams.filter((team) => team.teamRole === 1);
-            if (home.length) {
-              teams.push({
-                MigratedTeamId: home[0].teamId,
-                TeamRole: 0,
-                WonToss: match.tossWonBy ? match.tossWonBy === 1 : null,
-              });
-            }
-            const away = match.teams.filter((team) => team.teamRole === 2);
-            if (away.length) {
-              teams.push({
-                MigratedTeamId: away[0].teamId,
-                TeamRole: 1,
-                WonToss: match.tossWonBy ? match.tossWonBy === 2 : null,
-              });
-            }
-
-            return {
-              MigratedMatchId: match.matchId,
-              MatchName: match.title,
-              UpdateMatchNameAutomatically: !match.customTitle,
-              MigratedMatchLocationId: match.groundId,
-              MatchType: match.matchType,
-              PlayerType: match.playerType - 1,
-              PlayersPerTeam: match.playersPerTeam,
-              MigratedMatchInnings: [
-                {
-                  MigratedTeamId: home.length ? home[0].teamId : null,
-                  InningsOrderInMatch: match.homeBatFirst
-                    ? match.homeBatFirst
-                      ? 1
-                      : 2
-                    : 1,
-                  Overs: match.overs,
-                  Runs: match.homeRuns,
-                  Wickets: match.homeWickets,
-                },
-                {
-                  MigratedTeamId: away.length ? away[0].teamId : null,
-                  InningsOrderInMatch: match.homeBatFirst
-                    ? match.homeBatFirst
-                      ? 2
-                      : 1
-                    : 2,
-                  Overs: match.overs,
-                  Runs: match.awayRuns,
-                  Wickets: match.awayWickets,
-                },
-              ],
-              InningsOrderIsKnown: match.homeBatFirst === null,
-              OversPerInningsDefault: match.overs,
-              MigratedTournamentId: match.tournamentMatchId,
-              OrderInTournament: match.orderInTournament,
-              StartTime: match.startTime,
-              StartTimeIsKnown: match.startTimeKnown,
-              MigratedTeams: teams,
-              MigratedSeasonIds: match.seasons,
-              MatchRoute: match.route,
-              History: [
-                {
-                  Action: "Create",
-                  AuditDate: match.dateCreated,
-                  ActorName: match.createdBy ? match.createdBy : null,
-                },
-                {
-                  Action: "Update",
-                  AuditDate: match.dateUpdated,
-                  ActorName: match.updatedBy ? match.updatedBy : null,
-                },
-              ],
-              MatchResultType: match.resultType ? match.resultType - 1 : null,
-              MatchNotes: match.notes,
-            };
-          },
+          (match) => matchResource.matchReducer(match),
           imported,
           failed
         );
@@ -270,4 +280,4 @@
         }
       }
     });
-})();
+}
