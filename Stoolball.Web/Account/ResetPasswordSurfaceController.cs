@@ -2,13 +2,7 @@
 using Stoolball.Web.Email;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -139,8 +133,7 @@ namespace Stoolball.Web.Account
                 if (member != null)
                 {
                     if (member.GetValue<string>("passwordResetToken") == model.PasswordResetToken &&
-                        !_verificationToken.HasExpired(member.GetValue<DateTime>("passwordResetTokenExpires"))
-                        && model.NewPassword == model.ConfirmNewPassword)
+                        !_verificationToken.HasExpired(member.GetValue<DateTime>("passwordResetTokenExpires")))
                     {
                         // If the user has tried repeatedly they might have locked their account
                         // Remove the lockout and expire the token
@@ -162,21 +155,21 @@ namespace Stoolball.Web.Account
                     }
                     else
                     {
-                        Logger.Info(this.GetType(), $"Password reset token invalid {model.PasswordResetToken}");
+                        Logger.Info(GetType(), $"Password reset token invalid {model.PasswordResetToken}");
                         TempData["PasswordResetSuccessful"] = false;
                         return CurrentUmbracoPage();
                     }
                 }
                 else
                 {
-                    Logger.Info(this.GetType(), $"Password reset token invalid {model.PasswordResetToken}");
+                    Logger.Info(GetType(), $"Password reset token invalid {model.PasswordResetToken}");
                     TempData["PasswordResetSuccessful"] = false;
                     return CurrentUmbracoPage();
                 }
             }
             catch (FormatException)
             {
-                Logger.Info(this.GetType(), $"Password reset token invalid {model.PasswordResetToken}");
+                Logger.Info(GetType(), $"Password reset token invalid {model.PasswordResetToken}");
                 TempData["PasswordResetSuccessful"] = false;
                 return CurrentUmbracoPage();
             }
