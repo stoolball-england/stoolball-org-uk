@@ -191,6 +191,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				EndYear = season.EndYear,
 				Introduction = season.Introduction,
 				MigratedTeams = season.MigratedTeams,
+				MatchTypes = season.MatchTypes,
 				Results = season.Results,
 				ShowTable = season.ShowTable,
 				ShowRunsScored = season.ShowRunsScored,
@@ -235,6 +236,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 								migratedSeason.SeasonId,
 								teamId,
 								teamInSeason.WithdrawnDate
+								).ConfigureAwait(false);
+						}
+						foreach (var matchType in migratedSeason.MatchTypes)
+						{
+							await database.ExecuteAsync($@"INSERT INTO {Tables.SeasonMatchType}
+								(SeasonMatchTypeId, SeasonId, MatchType) VALUES (@0, @1, @2)",
+								Guid.NewGuid(),
+								migratedSeason.SeasonId,
+								matchType.ToString()
 								).ConfigureAwait(false);
 						}
 						transaction.Complete();

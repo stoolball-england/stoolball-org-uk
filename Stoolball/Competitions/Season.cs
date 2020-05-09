@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Humanizer;
 using Stoolball.Audit;
+using Stoolball.Matches;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -64,6 +65,7 @@ namespace Stoolball.Competitions
         public int EndYear { get; set; }
 
         public string Introduction { get; set; }
+        public List<MatchType> MatchTypes { get; internal set; } = new List<MatchType>();
 
         public List<TeamInSeason> Teams { get; internal set; } = new List<TeamInSeason>();
 

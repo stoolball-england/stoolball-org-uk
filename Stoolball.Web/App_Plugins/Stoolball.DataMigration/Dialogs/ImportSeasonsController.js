@@ -1,5 +1,55 @@
-(function () {
-  "use strict";
+"use strict";
+
+function seasonResource() {
+  return {
+    seasonReducer(season) {
+      season.teams = season.teams || [];
+
+      return {
+        MigratedSeasonId: season.seasonId,
+        MigratedCompetition: {
+          MigratedCompetitionId: season.competitionId,
+          CompetitionRoute: season.competitionRoute,
+        },
+        MigratedTeams: season.teams.map((x) => {
+          return {
+            MigratedTeamId: x.teamId,
+            WithdrawnDate: x.withdrawnDate,
+          };
+        }),
+        MatchTypes: season.matchTypes,
+        IsLatestSeason: season.isLatestSeason,
+        StartYear: season.startYear,
+        EndYear: season.endYear,
+        Introduction: season.introduction,
+        Results: season.results,
+        ShowTable: season.showTable,
+        ShowRunsScored: season.showRunsScored,
+        ShowRunsConceded: season.showRunsConceded,
+        SeasonRoute: season.route,
+        History: [
+          {
+            Action: "Create",
+            AuditDate: season.dateCreated,
+          },
+          {
+            Action: "Update",
+            AuditDate: season.dateUpdated,
+          },
+        ],
+      };
+    },
+  };
+}
+
+// For Jest tests
+if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
+  module.exports = seasonResource;
+}
+
+//adds the resource to umbraco.resources module:
+if (typeof angular !== "undefined") {
+  angular.module("umbraco.resources").factory("seasonResource", seasonResource);
 
   angular
     .module("umbraco")
@@ -7,6 +57,7 @@
       $http,
       $scope,
       stoolballResource,
+      seasonResource,
       umbRequestHelper
     ) {
       let vm = this;
@@ -33,38 +84,7 @@
         await stoolballResource.postManyToApi(
           "CompetitionMigration/CreateSeason",
           seasons,
-          (season) => ({
-            MigratedSeasonId: season.seasonId,
-            MigratedCompetition: {
-              MigratedCompetitionId: season.competitionId,
-              CompetitionRoute: season.competitionRoute,
-            },
-            MigratedTeams: season.teams.map((x) => {
-              return {
-                MigratedTeamId: x.teamId,
-                WithdrawnDate: x.withdrawnDate,
-              };
-            }),
-            IsLatestSeason: season.isLatestSeason,
-            StartYear: season.startYear,
-            EndYear: season.endYear,
-            Introduction: season.introduction,
-            Results: season.results,
-            ShowTable: season.showTable,
-            ShowRunsScored: season.showRunsScored,
-            ShowRunsConceded: season.showRunsConceded,
-            SeasonRoute: season.route,
-            History: [
-              {
-                Action: "Create",
-                AuditDate: season.dateCreated,
-              },
-              {
-                Action: "Update",
-                AuditDate: season.dateUpdated,
-              },
-            ],
-          }),
+          (season) => seasonResource.seasonReducer(season),
           imported,
           failed
         );
@@ -112,4 +132,4 @@
         }
       }
     });
-})();
+}
