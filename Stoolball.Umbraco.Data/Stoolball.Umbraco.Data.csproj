@@ -66,8 +66,10 @@
     <Compile Include="Competitions\SqlServerSeasonDataSource.cs" />
     <Compile Include="DapperDateTimeHandler.cs" />
     <Compile Include="DapperComposer.cs" />
+    <Compile Include="Matches\ITournamentDataSource.cs" />
     <Compile Include="Matches\IMatchDataSource.cs" />
     <Compile Include="Matches\MatchQuery.cs" />
+    <Compile Include="Matches\SqlServerTournamentDataSource.cs" />
     <Compile Include="Matches\SqlServerMatchDataSource.cs" />
     <Compile Include="Teams\ITeamDataSource.cs" />
     <Compile Include="Teams\SqlServerTeamDataSource.cs" />

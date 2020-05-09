@@ -1,0 +1,23 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Matches.TournamentViewModel>
+@using Humanizer
+@{
+    // Make sure the reader knows this is a tournament, and the player type
+    var saysTournament = Model.Tournament.TournamentName.ToUpperInvariant().Contains("TOURNAMENT");
+    var playerType = Model.Tournament.PlayerType.Humanize(LetterCasing.Sentence);
+    var saysPlayerType = Model.Tournament.TournamentName.Replace("'", string.Empty).ToUpperInvariant().Contains(playerType.ToUpperInvariant());
+
+    var h1 = Model.Tournament.TournamentName + ", " + Model.DateTimeFormatter.FormatDate(Model.Tournament.StartTime.LocalDateTime, false);
+    if (!saysTournament && !saysPlayerType)
+    {
+        h1 += " (" + playerType + " stoolball tournament)";
+    }
+    else if (!saysTournament)
+    {
+        h1 += " stoolball tournament";
+    }
+    else if (!saysPlayerType)
+    {
+        h1 += " (" + playerType + ")";
+    }
+}
+<h1>@h1</h1>

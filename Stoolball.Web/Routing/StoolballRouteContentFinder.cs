@@ -55,6 +55,7 @@ namespace Stoolball.Web.Routing
                 { ("locations", null), StoolballRouteType.MatchLocation},
                 { ("competitions", null), StoolballRouteType.Competition },
                 { ("matches", null), StoolballRouteType.Match },
+                { ("tournaments", null), StoolballRouteType.Tournament },
 
                 // Match /competitions/example-entity/2020, /competitions/example-entity/2020-21, 
                 // but not /competitions, /competitions/, /competitions/example-entity, /competitions/example-entity/invalid 

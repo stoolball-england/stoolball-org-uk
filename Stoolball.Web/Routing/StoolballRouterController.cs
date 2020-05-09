@@ -30,7 +30,8 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.Competition, typeof(CompetitionController) },
             { StoolballRouteType.Season, typeof(SeasonController) },
             { StoolballRouteType.MatchesForSeason, typeof(MatchesForSeasonController) },
-            { StoolballRouteType.Match, typeof(MatchController) }
+            { StoolballRouteType.Match, typeof(MatchController) },
+            { StoolballRouteType.Tournament, typeof(TournamentController) }
         };
 
         [HttpGet]

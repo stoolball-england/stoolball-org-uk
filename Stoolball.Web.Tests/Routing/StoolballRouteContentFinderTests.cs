@@ -25,6 +25,10 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/competitions/example/2020/MATCHES/", StoolballRouteType.MatchesForSeason)]
         [InlineData("https://example.org/competitions/example/2020-21/MATCHES", StoolballRouteType.MatchesForSeason)]
         [InlineData("https://example.org/competitions/example/2020-21/mAtChEs/", StoolballRouteType.MatchesForSeason)]
+        [InlineData("https://example.org/matches/example-match", StoolballRouteType.Match)]
+        [InlineData("https://example.org/matches/example-MaTcH/", StoolballRouteType.Match)]
+        [InlineData("https://example.org/tournaments/example-tournament/", StoolballRouteType.Tournament)]
+        [InlineData("https://example.org/tournaments/123-TOURNAMENT/", StoolballRouteType.Tournament)]
         public void Correct_route_should_match(string route, StoolballRouteType expectedType)
         {
             var requestUrl = new Uri(route);
@@ -50,6 +54,10 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/competitions/example/2020-")]
         [InlineData("https://example.org/competitions/example/2020/invalid")]
         [InlineData("https://example.org/competitions/example/2020-21/invalid/")]
+        [InlineData("https://example.org/matches")]
+        [InlineData("https://example.org/matches/")]
+        [InlineData("https://example.org/tournaments")]
+        [InlineData("https://example.org/tournamnents/")]
         [InlineData("https://example.org/other")]
         [InlineData("https://example.org/other/")]
         public void Other_route_should_not_match(string route)

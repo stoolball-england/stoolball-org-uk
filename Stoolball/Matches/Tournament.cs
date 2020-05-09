@@ -1,9 +1,12 @@
-﻿using Stoolball.Audit;
+﻿using Humanizer;
+using Stoolball.Audit;
 using Stoolball.Competitions;
 using Stoolball.MatchLocations;
 using Stoolball.Teams;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace Stoolball.Matches
 {
@@ -29,6 +32,37 @@ namespace Stoolball.Matches
         public Uri EntityUri
         {
             get { return new Uri($"https://www.stoolball.org.uk/id/tournament/{TournamentId}"); }
+        }
+
+        /// <summary>
+        /// Gets a description of the tournament suitable for metadata or search results
+        /// </summary>
+        public string Description()
+        {
+            var description = new StringBuilder();
+
+            description.Append("Stoolball tournament");
+            if (TournamentLocation != null) description.Append(" at ").Append(TournamentLocation);
+
+            var seasonList = string.Empty;
+
+            if (Seasons.Count == 1)
+            {
+                var season = Seasons.First();
+                var the = season.Competition.CompetitionName.ToUpperInvariant().Contains("THE ");
+                description.Append(" in ").Append(the ? string.Empty : "the ").Append(season.Competition.CompetitionName);
+            }
+            else if (Seasons.Count > 1)
+            {
+                description.Append(" in ");
+                description.Append(Seasons.Humanize(x => x.Competition.CompetitionName));
+            }
+
+            description.Append(seasonList);
+
+            description.Append('.');
+
+            return description.ToString();
         }
     }
 }

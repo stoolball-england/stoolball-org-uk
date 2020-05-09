@@ -60,15 +60,11 @@ namespace Stoolball.Matches
                 description.Append("Stoolball ").Append(MatchType.Humanize(LetterCasing.LowerCase));
                 if (MatchLocation != null) description.Append(" at ").Append(MatchLocation);
 
-                var seasonList = string.Empty;
-
                 if (Season != null)
                 {
                     var the = Season.Competition.CompetitionName.ToUpperInvariant().Contains("THE ");
                     description.Append(" in ").Append(the ? string.Empty : "the ").Append(Season.Competition.CompetitionName);
                 }
-
-                description.Append(seasonList);
 
                 description.Append('.');
             }

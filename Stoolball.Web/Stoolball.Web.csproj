@@ -890,8 +890,10 @@
     <Compile Include="Competitions\SeasonListViewModel.cs" />
     <Compile Include="HumanizerComposer.cs" />
     <Compile Include="Email\EmailProtectorHtmlHelper.cs" />
+    <Compile Include="Matches\TournamentController.cs" />
     <Compile Include="Matches\MatchController.cs" />
     <Compile Include="Matches\MatchListingViewModel.cs" />
+    <Compile Include="Matches\TournamentViewModel.cs" />
     <Compile Include="Matches\MatchViewModel.cs" />
     <Compile Include="MatchLocations\MatchesForMatchLocationController.cs" />
     <Compile Include="Teams\MatchesForTeamController.cs" />
@@ -1024,6 +1026,7 @@
     <Content Include="Views\Partials\Grid\Bootstrap3-Fluid.cshtml" />
     <Content Include="Views\TransientTeam.cshtml" />
     <Content Include="Views\Match.cshtml" />
+    <Content Include="Views\Tournament.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
