@@ -24,7 +24,10 @@
           <div class="umb-panel-group__details-check-name">
             Deleting match locations
           </div>
-          <p ng-if="vm.done">Done.</p>
+          <p ng-if="!vm.success && vm.done" class="alert alert-error">
+            Failed
+          </p>
+          <p ng-if="vm.success && vm.done">Done.</p>
         </umb-box-content>
       </umb-box>
     </umb-editor-container>

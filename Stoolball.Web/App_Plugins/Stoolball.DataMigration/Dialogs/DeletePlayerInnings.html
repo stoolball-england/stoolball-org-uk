@@ -24,7 +24,10 @@
           <div class="umb-panel-group__details-check-name">
             Deleting player innings
           </div>
-          <p ng-if="vm.done">Done.</p>
+          <p ng-if="!vm.success && vm.done" class="alert alert-error">
+            Failed
+          </p>
+          <p ng-if="vm.success && vm.done">Done.</p>
         </umb-box-content>
       </umb-box>
     </umb-editor-container>
@@ -43,7 +46,7 @@
         <umb-button
           type="button"
           button-style="danger"
-          label="Delete all batting"
+          label="Delete all player innings"
           icon="icon-trash"
           action="vm.submit(model)"
           state="vm.buttonState"
