@@ -4,6 +4,7 @@ function seasonResource() {
   return {
     seasonReducer(season) {
       season.teams = season.teams || [];
+      season.pointsRules = season.pointsRules || [];
 
       return {
         MigratedSeasonId: season.seasonId,
@@ -18,6 +19,11 @@ function seasonResource() {
           };
         }),
         MatchTypes: season.matchTypes,
+        PointsRules: season.pointsRules.map((x) => ({
+          MatchResultType: x.resultType - (x.resultType > 3 ? 2 : 1),
+          HomePoints: x.homePoints,
+          AwayPoints: x.awayPoints,
+        })),
         IsLatestSeason: season.isLatestSeason,
         StartYear: season.startYear,
         EndYear: season.endYear,

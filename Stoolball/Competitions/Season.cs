@@ -68,6 +68,7 @@ namespace Stoolball.Competitions
         public List<MatchType> MatchTypes { get; internal set; } = new List<MatchType>();
 
         public List<TeamInSeason> Teams { get; internal set; } = new List<TeamInSeason>();
+        public List<PointsRule> PointsRules { get; internal set; } = new List<PointsRule>();
 
         public string Results { get; set; }
 

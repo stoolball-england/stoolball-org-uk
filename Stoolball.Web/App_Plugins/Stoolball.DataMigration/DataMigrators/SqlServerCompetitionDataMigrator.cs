@@ -155,6 +155,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
 					using (var transaction = database.GetTransaction())
 					{
+						await database.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsRule}").ConfigureAwait(false);
+						await database.ExecuteAsync($"DELETE FROM {Tables.SeasonMatchType}").ConfigureAwait(false);
 						await database.ExecuteAsync($"DELETE FROM {Tables.SeasonMatch}").ConfigureAwait(false);
 						await database.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam}").ConfigureAwait(false);
 						await database.ExecuteAsync($"DELETE FROM {Tables.Season}").ConfigureAwait(false);
@@ -192,6 +194,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Introduction = season.Introduction,
 				MigratedTeams = season.MigratedTeams,
 				MatchTypes = season.MatchTypes,
+				PointsRules = season.PointsRules,
 				Results = season.Results,
 				ShowTable = season.ShowTable,
 				ShowRunsScored = season.ShowRunsScored,
@@ -245,6 +248,18 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 								Guid.NewGuid(),
 								migratedSeason.SeasonId,
 								matchType.ToString()
+								).ConfigureAwait(false);
+						}
+						foreach (var rule in migratedSeason.PointsRules)
+						{
+							await database.ExecuteAsync($@"INSERT INTO {Tables.SeasonPointsRule}
+								(SeasonPointsRuleId, SeasonId, MatchResultType, HomePoints, AwayPoints) 
+								 VALUES (@0, @1, @2, @3, @4)",
+								Guid.NewGuid(),
+								migratedSeason.SeasonId,
+								rule.MatchResultType.ToString(),
+								rule.HomePoints,
+								rule.AwayPoints
 								).ConfigureAwait(false);
 						}
 						transaction.Complete();

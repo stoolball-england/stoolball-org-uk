@@ -67,3 +67,121 @@ describe("seasonReducer", () => {
     expect(result.MatchTypes).toEqual([1, 2, 3]);
   });
 });
+
+describe("seasonReducer", () => {
+  it("should translate pointsRules.homePoints to PointsRules.HomePoints", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      pointsRules: [
+        {
+          homePoints: 1,
+        },
+      ],
+    });
+
+    expect(result.PointsRules[0].HomePoints).toEqual(1);
+  });
+});
+
+describe("seasonReducer", () => {
+  it("should translate pointsRules.awayPoints to PointsRules.AwayPoints", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      pointsRules: [
+        {
+          awayPoints: 1,
+        },
+      ],
+    });
+
+    expect(result.PointsRules[0].AwayPoints).toEqual(1);
+  });
+});
+
+describe("seasonReducer", () => {
+  it("should translate pointsRules.resultType = 1 to PointsRules.MatchResultType = 0", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      pointsRules: [{ resultType: 1 }],
+    });
+
+    expect(result.PointsRules[0].MatchResultType).toBe(0);
+  });
+});
+
+describe("seasonReducer", () => {
+  it("should translate pointsRules.resultType = 2 to PointsRules.MatchResultType = 1", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      pointsRules: [{ resultType: 2 }],
+    });
+
+    expect(result.PointsRules[0].MatchResultType).toBe(1);
+  });
+});
+
+describe("seasonReducer", () => {
+  it("should translate pointsRules.resultType = 3 to PointsRules.MatchResultType = 2", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      pointsRules: [{ resultType: 3 }],
+    });
+
+    expect(result.PointsRules[0].MatchResultType).toBe(2);
+  });
+});
+
+describe("seasonReducer", () => {
+  it("should translate pointsRules.resultType = 5 to PointsRules.MatchResultType = 3", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      pointsRules: [{ resultType: 5 }],
+    });
+
+    expect(result.PointsRules[0].MatchResultType).toBe(3);
+  });
+});
+
+describe("seasonReducer", () => {
+  it("should translate pointsRules.resultType = 6 to PointsRules.MatchResultType = 4", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      pointsRules: [{ resultType: 6 }],
+    });
+
+    expect(result.PointsRules[0].MatchResultType).toBe(4);
+  });
+});
+
+describe("seasonReducer", () => {
+  it("should translate pointsRules.resultType = 7 to PointsRules.MatchResultType = 5", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      pointsRules: [{ resultType: 7 }],
+    });
+
+    expect(result.PointsRules[0].MatchResultType).toBe(5);
+  });
+});
+
+describe("seasonReducer", () => {
+  it("should translate pointsRules.resultType = 8 to PointsRules.MatchResultType = 6", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      pointsRules: [{ resultType: 8 }],
+    });
+
+    expect(result.PointsRules[0].MatchResultType).toBe(6);
+  });
+});
+
+describe("seasonReducer", () => {
+  it("should translate pointsRules.resultType = 9 to PointsRules.MatchResultType = 7", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      pointsRules: [{ resultType: 9 }],
+    });
+
+    expect(result.PointsRules[0].MatchResultType).toBe(7);
+  });
+});
