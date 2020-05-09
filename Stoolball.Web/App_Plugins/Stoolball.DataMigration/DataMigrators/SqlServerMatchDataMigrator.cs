@@ -245,7 +245,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				StartTime = tournament.StartTime,
 				StartTimeIsKnown = tournament.StartTimeIsKnown,
 				Teams = tournament.Teams,
-				Seasons = tournament.Seasons,
+				MigratedSeasonIds = tournament.MigratedSeasonIds,
 				TournamentRoute = tournament.TournamentRoute,
 				MatchNotes = tournament.MatchNotes,
 			};
