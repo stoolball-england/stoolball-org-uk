@@ -185,3 +185,36 @@ describe("seasonReducer", () => {
     expect(result.PointsRules[0].MatchResultType).toBe(7);
   });
 });
+
+describe("seasonReducer", () => {
+  it("should translate pointsAdjustments.points to MigratedPointsAdjustments.Points", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      pointsAdjustments: [{ points: 1 }],
+    });
+
+    expect(result.MigratedPointsAdjustments[0].Points).toBe(1);
+  });
+});
+
+describe("seasonReducer", () => {
+  it("should translate pointsAdjustments.teamId to MigratedPointsAdjustments.MigratedTeamId", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      pointsAdjustments: [{ teamId: 1 }],
+    });
+
+    expect(result.MigratedPointsAdjustments[0].MigratedTeamId).toBe(1);
+  });
+});
+
+describe("seasonReducer", () => {
+  it("should translate pointsAdjustments.reason to MigratedPointsAdjustments.Reason", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      pointsAdjustments: [{ reason: "example" }],
+    });
+
+    expect(result.MigratedPointsAdjustments[0].Reason).toBe("example");
+  });
+});

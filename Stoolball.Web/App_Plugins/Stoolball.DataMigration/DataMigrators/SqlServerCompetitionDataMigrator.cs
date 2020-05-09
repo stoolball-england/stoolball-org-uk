@@ -195,6 +195,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				MigratedTeams = season.MigratedTeams,
 				MatchTypes = season.MatchTypes,
 				PointsRules = season.PointsRules,
+				MigratedPointsAdjustments = season.MigratedPointsAdjustments,
 				Results = season.Results,
 				ShowTable = season.ShowTable,
 				ShowRunsScored = season.ShowRunsScored,
@@ -260,6 +261,20 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 								rule.MatchResultType.ToString(),
 								rule.HomePoints,
 								rule.AwayPoints
+								).ConfigureAwait(false);
+						}
+						foreach (var point in migratedSeason.MigratedPointsAdjustments)
+						{
+							var teamId = await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", point.MigratedTeamId).ConfigureAwait(false);
+
+							await database.ExecuteAsync($@"INSERT INTO {Tables.SeasonPointsAdjustment}
+								(SeasonPointsAdjustmentId, SeasonId, TeamId, Points, Reason) 
+								 VALUES (@0, @1, @2, @3, @4)",
+								Guid.NewGuid(),
+								migratedSeason.SeasonId,
+								teamId,
+								point.Points,
+								point.Reason
 								).ConfigureAwait(false);
 						}
 						transaction.Complete();

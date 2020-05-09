@@ -9,5 +9,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         public MigratedCompetition MigratedCompetition { get; set; }
 
         public List<MigratedTeamInSeason> MigratedTeams { get; internal set; } = new List<MigratedTeamInSeason>();
+        public List<MigratedPointsAdjustment> MigratedPointsAdjustments { get; internal set; } = new List<MigratedPointsAdjustment>();
     }
 }

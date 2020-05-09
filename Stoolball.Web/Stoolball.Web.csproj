@@ -866,6 +866,7 @@
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedMember.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IClubDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedPlayerIdentity.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedPointsAdjustment.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedSchool.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedSeason.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedTeam.cs" />

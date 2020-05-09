@@ -5,6 +5,7 @@ function seasonResource() {
     seasonReducer(season) {
       season.teams = season.teams || [];
       season.pointsRules = season.pointsRules || [];
+      season.pointsAdjustments = season.pointsAdjustments || [];
 
       return {
         MigratedSeasonId: season.seasonId,
@@ -16,6 +17,13 @@ function seasonResource() {
           return {
             MigratedTeamId: x.teamId,
             WithdrawnDate: x.withdrawnDate,
+          };
+        }),
+        MigratedPointsAdjustments: season.pointsAdjustments.map((x) => {
+          return {
+            MigratedTeamId: x.teamId,
+            Points: x.points,
+            Reason: x.reason,
           };
         }),
         MatchTypes: season.matchTypes,
