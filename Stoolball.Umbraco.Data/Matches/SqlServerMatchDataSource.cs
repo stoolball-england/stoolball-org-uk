@@ -85,6 +85,13 @@ namespace Stoolball.Umbraco.Data.Matches
                         parameters.Add("@SeasonIds", matchQuery.SeasonIds);
                     }
 
+                    if (matchQuery?.MatchLocationIds?.Count > 0)
+                    {
+                        where.Append(where.Length > 0 ? "AND " : "WHERE ");
+                        where.Append("m.MatchLocationId IN @MatchLocationIds ");
+                        parameters.Add("@MatchLocationIds", matchQuery.MatchLocationIds);
+                    }
+
                     if (matchQuery?.FromDate != null)
                     {
                         where.Append(where.Length > 0 ? "AND " : "WHERE ");

@@ -14,5 +14,6 @@ namespace Stoolball.Umbraco.Data.Matches
         public List<MatchType> ExcludeMatchTypes { get; internal set; } = new List<MatchType>();
         public DateTimeOffset? FromDate { get; set; }
         public Guid? TournamentId { get; set; }
+        public List<Guid> MatchLocationIds { get; internal set; } = new List<Guid>();
     }
 }

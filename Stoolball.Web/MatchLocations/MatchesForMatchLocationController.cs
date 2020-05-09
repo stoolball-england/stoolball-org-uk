@@ -7,7 +7,6 @@ using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -67,7 +66,7 @@ namespace Stoolball.Web.MatchLocations
                     {
                         Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
                         {
-                            TeamIds = location.Teams.Select(team => team.TeamId.Value).ToList(),
+                            MatchLocationIds = new List<Guid> { location.MatchLocationId.Value },
                             FromDate = _estimatedSeason.StartDate,
                             ExcludeMatchTypes = new List<MatchType> { MatchType.TournamentMatch }
                         }).ConfigureAwait(false),
