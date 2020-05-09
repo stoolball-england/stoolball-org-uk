@@ -19,7 +19,7 @@ namespace Stoolball.Matches
         public bool StartTimeIsKnown { get; set; }
         public PlayerType PlayerType { get; set; }
         public int? PlayersPerTeam { get; set; }
-        public TournamentQualificationType QualificationType { get; set; }
+        public TournamentQualificationType? TournamentQualificationType { get; set; }
         public List<TeamInMatch> Teams { get; internal set; } = new List<TeamInMatch>();
         public int? OversPerInningsDefault { get; set; }
         public int? MaximumTeamsInTournament { get; set; }

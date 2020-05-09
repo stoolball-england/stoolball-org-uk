@@ -43,14 +43,15 @@ namespace Stoolball.Umbraco.Data.Matches
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var tournaments = await connection.QueryAsync<Tournament, Team, MatchLocation, Season, Competition, Tournament>(
-                        $@"SELECT m.MatchName AS TournamentName, m.PlayerType, m.StartTime, m.StartTimeIsKnown, m.MatchNotes,
+                        $@"SELECT m.MatchId AS TournamentId, m.MatchName AS TournamentName, m.PlayerType, m.StartTime, m.StartTimeIsKnown, 
+                            m.OversPerInningsDefault, m.PlayersPerTeam, m.TournamentQualificationType, 
+                            m.MaximumTeamsInTournament, m.SpacesInTournament, m.MatchNotes,
                             t.TeamRoute, tn.TeamName,
                             ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
                             ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
                             s.SeasonRoute, s.StartYear, s.EndYear,
                             co.CompetitionName
                             FROM {Tables.Match} AS m
-                            LEFT JOIN {Tables.Match} AS tourney ON m.TournamentId = tourney.MatchId
                             LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
                             LEFT JOIN {Tables.Team} AS t ON mt.TeamId = t.TeamId
                             LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
@@ -84,8 +85,12 @@ namespace Stoolball.Umbraco.Data.Matches
                     var tournamentToReturn = tournaments.FirstOrDefault(); // get an example with the properties that are the same for every row
                     if (tournamentToReturn != null)
                     {
-                        tournamentToReturn.Teams = tournaments.Select(match => match.Teams.SingleOrDefault()).OfType<TeamInMatch>().OrderBy(x => x.TeamRole).ToList();
-                        tournamentToReturn.Seasons = tournaments.Select(tournament => tournament.Seasons.SingleOrDefault()).OfType<Season>().OrderBy(x => x.Competition.CompetitionName).ToList();
+                        tournamentToReturn.Teams = tournaments.Select(match => match.Teams.SingleOrDefault()).OfType<TeamInMatch>().OrderBy(x => x.Team.TeamName).ToList();
+                        tournamentToReturn.Seasons = tournaments.Select(tournament => tournament.Seasons.SingleOrDefault())
+                            .OfType<Season>()
+                            .Distinct(new SeasonEqualityComparer())
+                            .OrderBy(x => x.Competition.CompetitionName)
+                            .ToList();
                     }
 
                     return tournamentToReturn;

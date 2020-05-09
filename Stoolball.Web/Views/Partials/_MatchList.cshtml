@@ -60,17 +60,27 @@
             }
             else
             {
-                var matchClass = (match.StartTime <= DateTime.UtcNow.AddHours(-2)) ? "match-list__past" : "match-list__future";
-                if (!dateOfNextMatch.HasValue && matchClass == "match-list__future") { dateOfNextMatch = match.StartTime.Date; }
-                if (dateOfNextMatch == match.StartTime.Date) { matchClass += " match-list__next"; }
+                var matchClass = string.Empty;
+                if (Model.ShowMatchDate)
+                {
+                    matchClass = (match.StartTime <= DateTime.UtcNow.AddHours(-2)) ? "match-list__past" : "match-list__future";
+                    if (!dateOfNextMatch.HasValue && matchClass == "match-list__future") { dateOfNextMatch = match.StartTime.Date; }
+                    if (dateOfNextMatch == match.StartTime.Date) { matchClass += " match-list__next"; }
+                }
 
                 var matchType = string.Empty;
                 if (Model.MatchTypesToLabel.Count > 0 && Model.MatchTypesToLabel.Contains(match.MatchType) && !match.MatchName.Replace("'", string.Empty).ToUpperInvariant().Contains(match.MatchType.Humanize(LetterCasing.AllCaps)))
-			    {
-				    matchType = $" ({match.MatchType.Humanize(LetterCasing.LowerCase)})";
+                {
+                    matchType = $" ({match.MatchType.Humanize(LetterCasing.LowerCase)})";
                 }
 
-                <li class="@matchClass"><a href="@match.MatchRoute">@match.MatchName</a>@matchType<p>@Model.DateTimeFormatter.FormatDateTime(match.StartTime.LocalDateTime)</p></li>
+                <li class="@matchClass">
+                    <a href="@match.MatchRoute">@match.MatchName</a>@matchType
+                    @if (Model.ShowMatchDate)
+                    {
+                        <p>@Model.DateTimeFormatter.FormatDateTime(match.StartTime.LocalDateTime)</p>
+                    }
+                </li>
             }
         }
     </ol>

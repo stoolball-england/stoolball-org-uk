@@ -16,6 +16,7 @@ namespace Stoolball.Web.Matches
     public class TournamentController : RenderMvcControllerAsync
     {
         private readonly ITournamentDataSource _tournamentDataSource;
+        private readonly IMatchDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly IEmailProtector _emailProtector;
 
@@ -26,11 +27,13 @@ namespace Stoolball.Web.Matches
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            ITournamentDataSource tournamentDataSource,
+           IMatchDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
            IEmailProtector emailProtector)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _tournamentDataSource = tournamentDataSource ?? throw new System.ArgumentNullException(nameof(tournamentDataSource));
+            _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
             _dateFormatter = dateFormatter ?? throw new System.ArgumentNullException(nameof(dateFormatter));
             _emailProtector = emailProtector ?? throw new System.ArgumentNullException(nameof(emailProtector));
         }
@@ -55,6 +58,15 @@ namespace Stoolball.Web.Matches
             }
             else
             {
+                model.Matches = new MatchListingViewModel
+                {
+                    Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
+                    {
+                        TournamentId = model.Tournament.TournamentId
+                    }).ConfigureAwait(false),
+                    ShowMatchDate = false
+                };
+
                 model.Metadata.PageTitle = model.Tournament.TournamentName;
                 model.Metadata.PageTitle += $", {_dateFormatter.FormatDate(model.Tournament.StartTime.LocalDateTime, false, false, false)} - stoolball tournament";
 

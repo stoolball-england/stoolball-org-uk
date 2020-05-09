@@ -1,5 +1,9 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Matches.TournamentViewModel>
 @using Humanizer
+@using Innovative.SolarCalculator
+@using Stoolball.Matches
+@using Stoolball.Web.Competitions
+@using Stoolball.Web.Matches
 @{
     // Make sure the reader knows this is a tournament, and the player type
     var saysTournament = Model.Tournament.TournamentName.ToUpperInvariant().Contains("TOURNAMENT");
@@ -21,3 +25,104 @@
     }
 }
 <h1>@h1</h1>
+<p>
+    When:
+    @(Model.Tournament.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(Model.Tournament.StartTime.LocalDateTime) : Model.DateTimeFormatter.FormatDate(Model.Tournament.StartTime.LocalDateTime))
+    @if (Model.Tournament.TournamentLocation?.Latitude != null && Model.Tournament.TournamentLocation?.Longitude != null)
+    {
+        var solarTimes = new SolarTimes(Model.Tournament.StartTime.LocalDateTime, Model.Tournament.TournamentLocation.Latitude, Model.Tournament.TournamentLocation.Longitude);
+        @: (sunset @Model.DateTimeFormatter.FormatTime(solarTimes.Sunset))
+    }
+</p>
+
+@if (Model.Tournament.TournamentLocation != null)
+{
+    <p>Where: <a href="@Model.Tournament.TournamentLocation.MatchLocationRoute">@Model.Tournament.TournamentLocation</a></p>
+}
+
+@if (Model.Tournament.OversPerInningsDefault.HasValue)
+{
+    <p>Matches are @Model.Tournament.OversPerInningsDefault overs.</p>
+}
+@{
+    var showSpacesLeft = (Model.Tournament.SpacesInTournament.HasValue &&
+        Model.Tournament.StartTime > DateTime.UtcNow &&
+        Model.Tournament.TournamentQualificationType != TournamentQualificationType.ClosedTournament);
+    if (Model.Tournament.PlayersPerTeam.HasValue ||
+        showSpacesLeft ||
+        Model.Tournament.Teams.Count > 0 ||
+        Model.Tournament.TournamentQualificationType.HasValue)
+    {
+        <h2>Teams</h2>
+    }
+
+}
+@if (Model.Tournament.PlayersPerTeam.HasValue ||
+    Model.Tournament.TournamentQualificationType.HasValue ||
+    showSpacesLeft)
+{
+    <p>
+        @if (Model.Tournament.PlayersPerTeam.HasValue)
+        {
+            @Model.Tournament.PlayersPerTeam.Value@: players per team.
+        }
+        @if (Model.Tournament.TournamentQualificationType == TournamentQualificationType.OpenTournament)
+        {
+            @:Any @Model.Tournament.PlayerType.Humanize(LetterCasing.LowerCase) team may enter this tournament.
+        }
+        else if (Model.Tournament.TournamentQualificationType == TournamentQualificationType.ClosedTournament)
+        {
+            @:Only invited or qualifying teams may enter this tournament.
+        }
+        @if (showSpacesLeft)
+        {
+            <strong>@Model.Tournament.SpacesInTournament spaces left.</strong>
+        }
+    </p>
+}
+@if (Model.Tournament.Teams.Count > 0)
+{
+    @Html.Partial("_TeamList", Model.Tournament.Teams.Select(x => x.Team).ToList())
+}
+
+@if (Model.Matches.Matches.Count > 0)
+{
+	<h2>Matches</h2>
+    @Html.Partial("_MatchList", Model.Matches)
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.Tournament.MatchNotes) || Model.Tournament.Seasons.Count > 0)
+{
+    <h2>Notes</h2>
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.Tournament.MatchNotes))
+{
+    @Html.Raw(Model.Tournament.MatchNotes)
+}
+
+@if (Model.Tournament.Seasons.Count == 1)
+{
+    var season = Model.Tournament.Seasons.First();
+    var the = season.Competition.CompetitionName.StartsWith("THE ");
+
+    <p>This tournament is listed in @(the ? string.Empty : "the ") <a href="@season.SeasonRoute">@season.SeasonFullName()</a>.</p>
+}
+else if (Model.Tournament.Seasons.Count > 1)
+{
+    <p>This tournament is listed in the following seasons:</p>
+
+    var seasonListModel = new SeasonListViewModel
+    {
+        ShowCompetitionHeading = false,
+        ShowSeasonFullName = true
+    };
+    seasonListModel.Competitions.AddRange(Model.Tournament.Seasons
+        .Select(season =>
+        {
+            var competition = season.Competition;
+            competition.Seasons.Add(season);
+            return competition;
+        }));
+    @Html.Partial("_SeasonList", seasonListModel)
+}

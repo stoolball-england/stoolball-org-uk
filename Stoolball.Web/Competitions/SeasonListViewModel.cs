@@ -7,5 +7,6 @@ namespace Stoolball.Web.Competitions
     {
         public List<Competition> Competitions { get; internal set; } = new List<Competition>();
         public bool ShowCompetitionHeading { get; set; }
+        public bool ShowSeasonFullName { get; set; }
     }
 }

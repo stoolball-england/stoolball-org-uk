@@ -12,5 +12,6 @@ namespace Stoolball.Web.Matches
         }
         public Tournament Tournament { get; set; }
         public IDateTimeFormatter DateTimeFormatter { get; set; }
+        public MatchListingViewModel Matches { get; set; }
     }
 }

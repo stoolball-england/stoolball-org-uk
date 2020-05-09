@@ -10,5 +10,6 @@ namespace Stoolball.Web.Matches
         public IDateTimeFormatter DateTimeFormatter { get; set; }
 
         public List<MatchType> MatchTypesToLabel { get; internal set; } = new List<MatchType>();
+        public bool ShowMatchDate { get; set; } = true;
     }
 }

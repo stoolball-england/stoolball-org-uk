@@ -46,10 +46,11 @@ namespace Stoolball.Umbraco.Data.Matches
                         FROM {Tables.Match} AS m
                         <<JOIN>>
                         <<WHERE>>
-                        ORDER BY m.StartTime";
+                        ORDER BY <<ORDER_BY>>";
 
                     var join = new StringBuilder();
                     var where = new StringBuilder();
+                    var orderBy = new List<string>();
                     var parameters = new Dictionary<string, object>();
 
                     if (matchQuery?.MatchTypes?.Count > 0)
@@ -91,8 +92,19 @@ namespace Stoolball.Umbraco.Data.Matches
                         parameters.Add("@FromDate", matchQuery.FromDate.Value);
                     }
 
+                    if (matchQuery?.TournamentId != null)
+                    {
+                        where.Append(where.Length > 0 ? "AND " : "WHERE ");
+                        where.Append("m.TournamentId = @TournamentId");
+                        parameters.Add("@TournamentId", matchQuery.TournamentId.Value);
+                        orderBy.Add("m.OrderInTournament");
+                    }
+
+                    orderBy.Add("m.StartTime");
+
                     sql = sql.Replace("<<JOIN>>", join.ToString())
-                             .Replace("<<WHERE>>", where.ToString());
+                             .Replace("<<WHERE>>", where.ToString())
+                             .Replace("<<ORDER_BY>>", string.Join(", ", orderBy.ToArray()));
 
                     var matches = await connection.QueryAsync<MatchListing>(sql, new DynamicParameters(parameters)).ConfigureAwait(false);
 
