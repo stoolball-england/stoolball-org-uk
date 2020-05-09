@@ -94,7 +94,7 @@ function matchResource() {
         MatchNotes: tournament.notes,
         MigratedTeams: tournament.teams.map((team) => ({
           MigratedTeamId: team.teamId,
-          TeamRole: team.teamRole - 1,
+          TeamRole: 2,
         })),
         MigratedSeasonIds: tournament.seasons,
         TournamentRoute: tournament.route,

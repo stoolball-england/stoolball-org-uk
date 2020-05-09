@@ -506,7 +506,7 @@ describe("tournamentReducer", () => {
 });
 
 describe("tournamentReducer", () => {
-  it("should translate teamRole = 1 to TeamRole = 0", () => {
+  it("should ignore teamRole = 1 and pass TeamRole = 2", () => {
     const objectUnderTest = matchResource();
     const result = objectUnderTest.tournamentReducer({
       teams: [
@@ -517,12 +517,12 @@ describe("tournamentReducer", () => {
       ],
     });
 
-    expect(result.MigratedTeams.filter((x) => x.TeamRole == 0).length).toBe(1);
+    expect(result.MigratedTeams.filter((x) => x.TeamRole == 2).length).toBe(1);
   });
 });
 
 describe("tournamentReducer", () => {
-  it("should translate teamRole = 2 to TeamRole = 1", () => {
+  it("should ignore teamRole = 2 and pass TeamRole = 2", () => {
     const objectUnderTest = matchResource();
     const result = objectUnderTest.tournamentReducer({
       teams: [
@@ -533,6 +533,6 @@ describe("tournamentReducer", () => {
       ],
     });
 
-    expect(result.MigratedTeams.filter((x) => x.TeamRole == 1).length).toBe(1);
+    expect(result.MigratedTeams.filter((x) => x.TeamRole == 2).length).toBe(1);
   });
 });

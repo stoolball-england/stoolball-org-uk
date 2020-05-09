@@ -3,6 +3,7 @@
     public enum TeamRole
     {
         Home,
-        Away
+        Away,
+        Tournament
     }
 }
