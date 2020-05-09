@@ -8,7 +8,7 @@ To check the content of the custom tables, stop IIS Express if it's running and 
 
 ### If Umbraco fails to boot
 
-If you run Umbraco after inspecting the database in Visual Studio you may get an error saying Umbraco failed to boot. If so the database is probably still locked by SQL Server. Open a PowerShell prompt
+If you run Umbraco after inspecting the database in Visual Studio you may get an error saying Umbraco failed to boot because "A connection string is configured but Umbraco could not connect to the database". If so the database is probably still locked by SQL Server. Open a PowerShell prompt
 in the root of this repository and run `.\Scripts\Stop-SqlServer.ps1` to kill the lock, then refresh the browser.
 
 ## Creating and upgrading the database
@@ -33,7 +33,34 @@ To update the stoolball data schema, such as to add, remove or change tables or 
 
 3. Add your new migration after those already configured in `StoolballMigrations.cs` and restart Umbraco.
 
-## Auditing changes
+## Creating, updating and deleting data
+
+Creating, updating and deleting data uses Umbraco's own method of connecting to its database, which is based on [NPoco](https://discoverdot.net/projects/npoco). Table names are referenced using constants from the `Stoolball.Umbraco.Data.Constants` namespace.
+
+Inject `IScopeProvider` into your class and use it with numbered parameters as follows:
+
+```csharp
+using (var scope = _scopeProvider.CreateScope())
+{
+    var database = scope.Database;
+
+    using (var transaction = database.GetTransaction())
+    {
+        await database.ExecuteAsync(
+            $@"INSERT INTO {Tables.Example}
+               (ExampleId, ExampleField)
+               VALUES
+               (@0, @1)",
+            Guid.NewGuid(),
+            "some value").ConfigureAwait(false);
+        transaction.Complete();
+    }
+
+    scope.Complete();
+}
+```
+
+### Auditing changes
 
 All create, update and delete actions on stoolball data should be audited. This adds a record to a `StoolballAudit` table with details of who did what, when, and the resulting serialised object.
 
@@ -58,3 +85,29 @@ async Task CreateSomeThing(Thing thingToAudit)
     }).ConfigureAwait(false);
 }
 ```
+
+## Selecting data
+
+Selecting data uses [Dapper](https://github.com/StackExchange/Dapper) rather than Umbraco's own method of connecting to its database, because [NPoco](https://discoverdot.net/projects/npoco) has only limited support for complex joins and asynchronous queries and cannot select into a `DateTimeOffset` type, which is used for all date properties.
+
+Inject `IDatabaseConnectionFactory` into your class and use it as follows. In this example `connection.QueryAsync<Club, Team, Club>` indicates `Club` and `Team` are joined to return a `Club`:
+
+```csharp
+var clubs = await connection.QueryAsync<Club, Team, Club>(
+    $@"SELECT c.ClubId, c.ClubRoute,
+        t.TeamId, t.TeamRoute
+        FROM {Tables.Club} AS c
+        INNER JOIN {Tables.Team} AS t ON c.ClubId = t.ClubId
+        WHERE LOWER(c.ClubId) = @ClubId",
+    (club, team) =>
+    {
+        club.Teams.Add(team);
+        return club;
+    },
+    new { ClubId = "some-guid-id" },
+    splitOn: "TeamId"
+)
+.ConfigureAwait(false);
+```
+
+When Dapper selects into a `DateTimeOffset`, by default it assumes the timezone of the current culture. All dates are stored in the database as UTC, so assuming another timezone causes the time to be incorrect. `DapperComposer` wires up `DapperDateTimeHandler`, which tells Dapper to interpret any dates coming from the database as UTC.
