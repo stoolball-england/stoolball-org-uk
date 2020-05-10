@@ -35,12 +35,23 @@ namespace Stoolball.Web.Clubs
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
+            var query = new ClubQuery
+            {
+                Query = Request.QueryString["q"]
+            };
+
             var model = new ClubsViewModel(contentModel.Content)
             {
-                Clubs = await _clubDataSource.ReadClubListings(new ClubQuery()).ConfigureAwait(false)
+                ClubQuery = query,
+                Clubs = await _clubDataSource.ReadClubListings(query).ConfigureAwait(false)
             };
 
             model.Metadata.PageTitle = "Stoolball clubs";
+            if (!string.IsNullOrEmpty(query.Query))
+            {
+                model.Metadata.PageTitle += $" matching '{query.Query}'";
+            }
+
             //   model.Metadata.Description = model.Club.Description();
             return CurrentTemplate(model);
         }

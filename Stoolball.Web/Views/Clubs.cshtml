@@ -1,7 +1,19 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Clubs.ClubsViewModel>
 @using Humanizer
 
-<h1>Stoolball clubs</h1>
+<h1>
+    Stoolball clubs
+    @if (!string.IsNullOrEmpty(Model.ClubQuery.Query))
+    {
+        @: matching '@Model.ClubQuery.Query'
+    }
+</h1>
+
+<form method="get" action="@Request.Url" class="form-inline form-search">
+    <label class="sr-only" for="club-search">Club name</label>
+    <input type="search" class="form-control" id="club-search" name="q" value="@Model.ClubQuery.Query" />
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
 
 <dl>
     @foreach (var club in Model.Clubs.Where(x => x.Teams.Count > 0))
@@ -13,7 +25,7 @@
     {
         <dt><a href="@club.ClubRoute">@club.ClubName</a></dt>
         <dd>
-            <p><strong>This club doesn't have any active teams</strong></p>
+            <p>No active teams</p>
         </dd>
     }
 </dl>

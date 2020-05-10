@@ -85,13 +85,26 @@ namespace Stoolball.Umbraco.Data.Clubs
             {
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var clubs = await connection.QueryAsync<Club, Team, Club>(
-                        $@"SELECT c.ClubId, cn.ClubName, c.ClubRoute,
+                    var sql = $@"SELECT c.ClubId, cn.ClubName, c.ClubRoute,
                             t.TeamRoute, t.PlayerType
                             FROM {Tables.Club} AS c 
                             INNER JOIN {Tables.ClubName} AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
                             LEFT JOIN {Tables.Team} AS t ON c.ClubId = t.ClubId AND t.UntilDate IS NULL
-                            ORDER BY cn.ClubName",
+                            <<WHERE>>
+                            ORDER BY cn.ClubName";
+
+                    var where = new List<string>();
+                    var parameters = new Dictionary<string, object>();
+
+                    if (!string.IsNullOrEmpty(clubQuery?.Query))
+                    {
+                        where.Add("cn.ClubName LIKE @Query");
+                        parameters.Add("@Query", $"%{clubQuery.Query}%");
+                    }
+
+                    sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
+
+                    var clubs = await connection.QueryAsync<Club, Team, Club>(sql,
                         (club, team) =>
                         {
                             if (team != null)
@@ -100,6 +113,7 @@ namespace Stoolball.Umbraco.Data.Clubs
                             }
                             return club;
                         },
+                        new DynamicParameters(parameters),
                         splitOn: "TeamRoute").ConfigureAwait(false);
 
                     var resolvedClubs = clubs.GroupBy(club => club.ClubId).Select(copiesOfClub =>
