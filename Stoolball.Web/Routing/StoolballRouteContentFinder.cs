@@ -45,61 +45,55 @@ namespace Stoolball.Web.Routing
         internal static StoolballRouteType? MatchStoolballRouteType(Uri requestUrl)
         {
             var path = requestUrl.GetAbsolutePathDecoded();
+            const string ANY_VALID_ROUTE = "[a-z0-9-]+";
+            const string SLASH = @"\/";
+            const string OPTIONAL_SLASH = @"\/?";
 
-            var routeTypes = new Dictionary<(string expectedPrefix, string subrouteRegex), StoolballRouteType>
+            var routeTypes = new Dictionary<string, StoolballRouteType>
             {
+                // Match /prefix or /prefix/ but not /prefix/invalid, in upper, lower or mixed case
+                { $@"clubs{OPTIONAL_SLASH}", StoolballRouteType.Clubs },
+
                 // Match /prefix/example-entity, but not /prefix, /prefix/, or /prefix/example-entity/invalid, 
                 // in upper, lower or mixed case
-                { ("clubs", null), StoolballRouteType.Club },
-                { ("teams", null), StoolballRouteType.Team},
-                { ("locations", null), StoolballRouteType.MatchLocation},
-                { ("competitions", null), StoolballRouteType.Competition },
-                { ("matches", null), StoolballRouteType.Match },
-                { ("tournaments", null), StoolballRouteType.Tournament },
+                { $@"clubs{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Club },
+                { $@"teams{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Team},
+                { $@"locations{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.MatchLocation},
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Competition },
+                { $@"matches{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Match },
+                { $@"tournaments{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Tournament },
 
                 // Match /competitions/example-entity/2020, /competitions/example-entity/2020-21, 
                 // but not /competitions, /competitions/, /competitions/example-entity, /competitions/example-entity/invalid 
                 // or /competitions/example-entity/2020/invalid, in upper, lower or mixed case
-                { ("competitions", @"[0-9]{4}\/?(-[0-9]{2}\/?)?"), StoolballRouteType.Season },
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}[0-9]{{4}}{OPTIONAL_SLASH}(-[0-9]{{2}}{OPTIONAL_SLASH})?", StoolballRouteType.Season },
                 
                 // Match /competitions/example-entity/2020/matches, /competitions/example-entity/2020-21/matches/, 
                 // but not /competitions, /competitions/, /competitions/example-entity/2020, /competitions/example-entity/invalid 
                 // or /competitions/example-entity/2020/invalid, in upper, lower or mixed case
-                { ("competitions", @"[0-9]{4}(-[0-9]{2})?\/matches\/?"), StoolballRouteType.MatchesForSeason },
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}[0-9]{{4}}(-[0-9]{{2}})?{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForSeason },
 
                 // Match /teams/example-team/matches or /teams/example-team/matches/ but not /teams, /teams/
                 // /teams/example-team, /teams/example-team/ or /teams/example-team/invalid in upper, lower or mixed case
-                { ("clubs", @"matches\/?"), StoolballRouteType.MatchesForClub },
-                { ("teams", @"matches\/?"), StoolballRouteType.MatchesForTeam },
-                { ("locations", @"matches\/?"), StoolballRouteType.MatchesForMatchLocation },
+                { $@"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForClub },
+                { $@"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForTeam },
+                { $@"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForMatchLocation },
 
                 // Match /tournaments/example123/teams/example-team or /tournaments/example123/teams/example-team/ but not 
                 // /tournaments/example123, /tournaments/example123/, /tournaments/example123/teams, /tournaments/example123/teams/
                 // or /tournaments/example123/invalid in upper, lower or mixed case
-                { ("tournaments", @"teams\/[a-z0-9-]+\/?"), StoolballRouteType.TransientTeam }
+                { $@"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}teams{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.TransientTeam }
             };
 
-            foreach (var routeType in routeTypes)
+            foreach (var routePattern in routeTypes.Keys)
             {
-                if (MatchRouteType(path, routeType.Key.expectedPrefix, routeType.Key.subrouteRegex))
+                if (Regex.IsMatch(path, $@"^{SLASH}{routePattern}$", RegexOptions.IgnoreCase))
                 {
-                    return routeType.Value;
+                    return routeTypes[routePattern];
                 }
             }
 
             return null;
-        }
-
-        private static bool MatchRouteType(string path, string expectedPrefix, string subrouteRegex)
-        {
-            if (!string.IsNullOrEmpty(subrouteRegex))
-            {
-                return Regex.IsMatch(path, $@"^\/{expectedPrefix}\/[a-z0-9-]+\/{subrouteRegex}$", RegexOptions.IgnoreCase);
-            }
-            else
-            {
-                return Regex.IsMatch(path, $@"^\/{expectedPrefix}\/([a-z0-9-]+\/?)$", RegexOptions.IgnoreCase);
-            }
         }
     }
 }

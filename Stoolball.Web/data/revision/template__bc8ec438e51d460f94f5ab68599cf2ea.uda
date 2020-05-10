@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/clubs.cshtml",
+  "Master": null,
+  "Udi": "umb://template/bc8ec438e51d460f94f5ab68599cf2ea",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/clubs.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Clubs",
+  "Alias": "clubs",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.3.1"
+}
