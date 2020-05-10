@@ -37,7 +37,7 @@ namespace Stoolball.Web.Clubs
 
             var model = new ClubsViewModel(contentModel.Content)
             {
-                //Club = await _clubDataSource.ReadClubByRoute(Request.Url.AbsolutePath).ConfigureAwait(false)
+                Clubs = await _clubDataSource.ReadClubListings(new ClubQuery()).ConfigureAwait(false)
             };
 
             model.Metadata.PageTitle = "Stoolball clubs";

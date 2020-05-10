@@ -3,9 +3,11 @@ using Stoolball.Clubs;
 using Stoolball.Routing;
 using Stoolball.Teams;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
+using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Umbraco.Data.Clubs
 {
@@ -42,10 +44,10 @@ namespace Stoolball.Umbraco.Data.Clubs
                         $@"SELECT c.ClubId, cn.ClubName, c.HowManyPlayers, c.PlaysOutdoors, c.PlaysIndoors,
                             c.Twitter, c.Facebook, c.Instagram, c.YouTube, c.Website, c.ClubMark, c.ClubRoute,
                             t.TeamId, tn.TeamName, t.TeamRoute
-                            FROM {Constants.Tables.Club} AS c 
-                            INNER JOIN {Constants.Tables.ClubName} AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
-                            LEFT JOIN {Constants.Tables.Team} AS t ON c.ClubId = t.ClubId
-                            LEFT JOIN {Constants.Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
+                            FROM {Tables.Club} AS c 
+                            INNER JOIN {Tables.ClubName} AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
+                            LEFT JOIN {Tables.Team} AS t ON c.ClubId = t.ClubId
+                            LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             WHERE LOWER(c.ClubRoute) = @Route
                             ORDER BY tn.TeamName",
                         (club, team) =>
@@ -64,6 +66,50 @@ namespace Stoolball.Umbraco.Data.Clubs
                     }).FirstOrDefault();
 
                     return resolvedClub;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(typeof(SqlServerClubDataSource), ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Gets a list of clubs based on a query
+        /// </summary>
+        /// <returns>A list of <see cref="Club"/> objects. An empty list if no clubs are found.</returns>
+        public async Task<List<Club>> ReadClubListings(ClubQuery clubQuery)
+        {
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    var clubs = await connection.QueryAsync<Club, Team, Club>(
+                        $@"SELECT c.ClubId, cn.ClubName, c.ClubRoute,
+                            t.TeamRoute, t.PlayerType
+                            FROM {Tables.Club} AS c 
+                            INNER JOIN {Tables.ClubName} AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
+                            LEFT JOIN {Tables.Team} AS t ON c.ClubId = t.ClubId AND t.UntilDate IS NULL
+                            ORDER BY cn.ClubName",
+                        (club, team) =>
+                        {
+                            if (team != null)
+                            {
+                                club.Teams.Add(team);
+                            }
+                            return club;
+                        },
+                        splitOn: "TeamRoute").ConfigureAwait(false);
+
+                    var resolvedClubs = clubs.GroupBy(club => club.ClubId).Select(copiesOfClub =>
+                    {
+                        var resolvedClub = copiesOfClub.First();
+                        resolvedClub.Teams = copiesOfClub.Select(club => club.Teams.SingleOrDefault()).OfType<Team>().ToList();
+                        return resolvedClub;
+                    }).ToList();
+
+                    return resolvedClubs;
                 }
             }
             catch (Exception ex)

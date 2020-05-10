@@ -1030,7 +1030,6 @@
     <Content Include="Views\TransientTeam.cshtml" />
     <Content Include="Views\Match.cshtml" />
     <Content Include="Views\Tournament.cshtml" />
-    <Content Include="Views\Club - Copy.cshtml" />
     <Content Include="Views\Clubs.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

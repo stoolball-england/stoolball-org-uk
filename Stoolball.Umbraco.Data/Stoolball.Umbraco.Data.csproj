@@ -58,6 +58,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Audit\IAuditRepository.cs" />
     <Compile Include="Audit\SqlServerAuditRepository.cs" />
+    <Compile Include="Clubs\ClubQuery.cs" />
     <Compile Include="Clubs\IClubDataSource.cs" />
     <Compile Include="Clubs\IClubRepository.cs" />
     <Compile Include="Clubs\SqlServerClubRepository.cs" />
