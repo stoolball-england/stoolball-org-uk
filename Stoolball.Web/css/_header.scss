@@ -39,6 +39,7 @@
 .navbar__account {
     margin-right: -15px;
 }
+
 /* Reduce the default space around the account button, and hide the dropdown arrow */
 .navbar .navbar__account-button {
     padding: $spacer/4;
@@ -46,4 +47,14 @@
 
 .navbar .navbar__account-button::after {
     display: none;
+}
+
+/* Make links clickable across the whole width of a menu */
+.dropdown-item > a, .dropdown-item > em {
+    display: block;
+}
+
+/* Links get the primary colour as a background when :active, so the foreground needs to contrast with it */
+.dropdown-item:active > a {
+    color: #fff;
 }

@@ -35,21 +35,23 @@ namespace Stoolball.Web.MatchLocations
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            var query = new MatchLocationQuery
-            {
-                Query = Request.QueryString["q"]
-            };
-
             var model = new MatchLocationsViewModel(contentModel.Content)
             {
-                MatchLocationQuery = query,
-                MatchLocations = await _matchLocationDataSource.ReadMatchLocationListings(query).ConfigureAwait(false)
+                MatchLocationQuery = new MatchLocationQuery
+                {
+                    Query = Request.QueryString["q"]?.Trim()
+                }
             };
 
-            model.Metadata.PageTitle = "Match locations";
-            if (!string.IsNullOrEmpty(query.Query))
+            if (!string.IsNullOrEmpty(model.MatchLocationQuery.Query))
             {
-                model.Metadata.PageTitle += $" matching '{query.Query}'";
+                model.MatchLocations = await _matchLocationDataSource.ReadMatchLocationListings(model.MatchLocationQuery).ConfigureAwait(false);
+            }
+
+            model.Metadata.PageTitle = "Match locations";
+            if (!string.IsNullOrEmpty(model.MatchLocationQuery.Query))
+            {
+                model.Metadata.PageTitle += $" matching '{model.MatchLocationQuery.Query}'";
             }
 
             return CurrentTemplate(model);
