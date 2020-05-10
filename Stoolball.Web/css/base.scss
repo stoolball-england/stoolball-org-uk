@@ -2,15 +2,24 @@
 
 @import "../Content/bootstrap/bootstrap-reboot.scss";
 @import "../Content/bootstrap/bootstrap-grid.scss";
-@import "../Content/bootstrap/_nav.scss";
-@import "../Content/bootstrap/_navbar.scss";
-@import "../Content/bootstrap/_alert.scss";
-@import "../Content/bootstrap/_forms.scss";
-@import "../Content/bootstrap/_buttons.scss";
-@import "../Content/bootstrap/_dropdown.scss";
-@import "../Content/bootstrap/utilities/_screenreaders.scss";
 
+/* Required for header */
+@import "../Content/bootstrap/_navbar";
+@import "../Content/bootstrap/transitions";
+@import "../Content/bootstrap/_dropdown.scss";
 @import "_header.scss";
+
+/* Makes .sr-only available */
+@import "../Content/bootstrap/utilities/_screenreaders";
+
+/* Images - don't let them overflow their container */
+img { max-width: 100%; }
+
+/* Table styles */
+@import "_tables.scss";
+
+/* Required to use boxed content using alert styles */
+@import "../Content/bootstrap/_alert.scss";
 
 /* An alert has even padding, so remove any bottom margin on the last child which would make that look extra large. */
 .alert > :last-child {
@@ -26,9 +35,13 @@
 */
 .gravatar { flex: 0 0 50px; }
 
-@import "_tables.scss";
+/* Required for tabbed navigaton */
+@import "../Content/bootstrap/_nav.scss";
 
 /* Add some space below a tabbed navigation */
 .nav-tabs { margin-bottom: $spacer; }
 
+/* Required for forms and form buttons */
+@import "../Content/bootstrap/_forms.scss";
+@import "../Content/bootstrap/_buttons.scss";
 @import "_forms.scss";

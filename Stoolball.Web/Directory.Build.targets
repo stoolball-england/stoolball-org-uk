@@ -37,7 +37,7 @@
       <UmbracoFormsVersion>8.4.0</UmbracoFormsVersion>
       <USyncVersion>8.6.1</USyncVersion>
       <BootstrapVersion>4.4.1</BootstrapVersion>
-      <JQueryVersion>3.5.0.1</JQueryVersion>
+      <JQueryVersion>3.5.1</JQueryVersion>
       <PopperVersion>1.16.0</PopperVersion>
       <SkybrudRedirectsVersion>2.0.3</SkybrudRedirectsVersion>
     </PropertyGroup>

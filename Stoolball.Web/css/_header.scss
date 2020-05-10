@@ -6,22 +6,39 @@
   Sitewide header 
 *******************/
 
-/* Place the logo on the left and the account menu on the right */
+/* Combine flex-grow and flex-shrink to place the logo on the left and the dropdown menus as a group on the right */
 .navbar {
     display: flex;
-    justify-content: space-between;
+    padding: $spacer/2 $spacer/2 $spacer/2 0;
 }
 
-/* Some white-space around the logo */
 .navbar-brand {
-    padding: $spacer/2 0;
+    flex-grow: 1;
+}
+
+.navbar__menu, .navbar__account {
+    flex-shrink: 0;
+}
+
+/* Set a maximum width on the logo which allows the group on the right not to wrap */
+.navbar-brand > a {
+    display: inline-block;
+}
+
+.navbar-brand img {
+    max-width: 150px;
+}
+
+@media (min-width: 400px) {
+    .navbar-brand img {
+        max-width: 200px;
+    }
 }
 
 /* Offset the padding on the container, so that the account button is in the top-right corner */
 .navbar__account {
     margin-right: -15px;
 }
-
 /* Reduce the default space around the account button, and hide the dropdown arrow */
 .navbar .navbar__account-button {
     padding: $spacer/4;
