@@ -52,7 +52,6 @@ namespace Stoolball.Web.Clubs
                 model.Metadata.PageTitle += $" matching '{query.Query}'";
             }
 
-            //   model.Metadata.Description = model.Club.Description();
             return CurrentTemplate(model);
         }
     }

@@ -20,7 +20,7 @@ namespace Stoolball.Web.Tests.Clubs
     {
         private class TestController : ClubsController
         {
-            public TestController(IClubDataSource clubDataSource)
+            public TestController(IClubDataSource clubDataSource, string queryString = "")
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -31,6 +31,7 @@ namespace Stoolball.Web.Tests.Clubs
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
+                request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString(queryString));
 
                 var context = new Mock<HttpContextBase>();
                 context.SetupGet(x => x.Request).Returns(request.Object);
@@ -54,6 +55,33 @@ namespace Stoolball.Web.Tests.Clubs
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
                 Assert.IsType<ClubsViewModel>(((ViewResult)result).Model);
+            }
+        }
+
+        [Fact]
+        public async Task Reads_query_from_querystring_into_view_model()
+        {
+            var dataSource = new Mock<IClubDataSource>();
+
+            using (var controller = new TestController(dataSource.Object, "q=example"))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                Assert.Equal("example", ((ClubsViewModel)((ViewResult)result).Model).ClubQuery.Query);
+            }
+        }
+
+
+        [Fact]
+        public async Task Reads_query_from_querystring_into_page_title()
+        {
+            var dataSource = new Mock<IClubDataSource>();
+
+            using (var controller = new TestController(dataSource.Object, "q=example"))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                Assert.Contains("example", ((ClubsViewModel)((ViewResult)result).Model).Metadata.PageTitle, StringComparison.Ordinal);
             }
         }
     }
