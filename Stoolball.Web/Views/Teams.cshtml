@@ -1,0 +1,29 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamsViewModel>
+
+<h1>
+    Stoolball teams
+    @if (!string.IsNullOrEmpty(Model.TeamQuery.Query))
+    {
+        @: matching '@Model.TeamQuery.Query'
+    }
+</h1>
+
+<form method="get" action="@Request.Url" class="form-inline form-search">
+    <label class="sr-only" for="team-search">Team name</label>
+    <input type="search" class="form-control" id="team-search" name="q" value="@Model.TeamQuery.Query" />
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<ul>
+    @foreach (var team in Model.Teams.Where(x => !x.UntilDate.HasValue))
+    {
+        <li><a href="@team.TeamRoute">@team.TeamNameLocationAndPlayerType()</a></li>
+    }
+    @foreach (var team in Model.Teams.Where(x => x.UntilDate.HasValue))
+    {
+        <li>
+            <a href="@team.TeamRoute">@team.TeamNameLocationAndPlayerType()</a>
+            <p>No longer active.</p>
+        </li>
+    }
+</ul>

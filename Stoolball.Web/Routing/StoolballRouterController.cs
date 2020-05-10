@@ -23,6 +23,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.Clubs, typeof(ClubsController) },
             { StoolballRouteType.Club, typeof(ClubController) },
             { StoolballRouteType.MatchesForClub, typeof(MatchesForClubController) },
+            { StoolballRouteType.Teams, typeof(TeamsController) },
             { StoolballRouteType.Team, typeof(TeamController) },
             { StoolballRouteType.MatchesForTeam, typeof(MatchesForTeamController) },
             { StoolballRouteType.TransientTeam, typeof(TransientTeamController) },

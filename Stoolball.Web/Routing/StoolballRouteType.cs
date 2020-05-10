@@ -11,6 +11,7 @@
         MatchLocations,
         Team,
         TransientTeam,
+        Teams,
         Season,
         Competition,
         MatchesForClub,

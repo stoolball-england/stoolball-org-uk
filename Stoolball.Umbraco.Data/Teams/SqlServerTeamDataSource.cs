@@ -133,5 +133,64 @@ namespace Stoolball.Umbraco.Data.Teams
                 throw;
             }
         }
+
+        /// <summary>
+        /// Gets a list of teams based on a query
+        /// </summary>
+        /// <returns>A list of <see cref="Team"/> objects. An empty list if no teams are found.</returns>
+        public async Task<List<Team>> ReadTeamListings(TeamQuery teamQuery)
+        {
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    var sql = $@"SELECT t.TeamId, tn.TeamName, t.TeamRoute, t.PlayerType, t.UntilDate,
+                            ml.Locality, ml.Town
+                            FROM {Tables.Team} AS t 
+                            INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
+                            LEFT JOIN {Tables.TeamMatchLocation} AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL
+                            LEFT JOIN {Tables.MatchLocation} AS ml ON ml.MatchLocationId = tml.MatchLocationId 
+                            <<WHERE>>
+                            ORDER BY tn.TeamName";
+
+                    var where = new List<string>();
+                    var parameters = new Dictionary<string, object>();
+
+                    if (!string.IsNullOrEmpty(teamQuery?.Query))
+                    {
+                        where.Add("(tn.TeamName LIKE @Query OR ml.Locality LIKE @Query OR ml.Town LIKE @Query)");
+                        parameters.Add("@Query", $"%{teamQuery.Query}%");
+                    }
+
+                    sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
+
+                    var teams = await connection.QueryAsync<Team, MatchLocation, Team>(sql,
+                        (team, matchLocation) =>
+                        {
+                            if (matchLocation != null)
+                            {
+                                team.MatchLocations.Add(matchLocation);
+                            }
+                            return team;
+                        },
+                        new DynamicParameters(parameters),
+                        splitOn: "Locality").ConfigureAwait(false);
+
+                    var resolvedTeams = teams.GroupBy(team => team.TeamId).Select(copiesOfTeam =>
+                    {
+                        var resolvedTeam = copiesOfTeam.First();
+                        resolvedTeam.MatchLocations = copiesOfTeam.Select(club => club.MatchLocations.SingleOrDefault()).OfType<MatchLocation>().ToList();
+                        return resolvedTeam;
+                    }).ToList();
+
+                    return resolvedTeams;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(typeof(SqlServerTeamDataSource), ex);
+                throw;
+            }
+        }
     }
 }

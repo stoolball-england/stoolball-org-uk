@@ -7,6 +7,8 @@ namespace Stoolball.Web.Tests.Routing
     public class StoolballRouteContentFinderTests
     {
         [Theory]
+        [InlineData("https://example.org/teams", StoolballRouteType.Teams)]
+        [InlineData("https://example.org/teams/", StoolballRouteType.Teams)]
         [InlineData("https://example.org/teams/example123", StoolballRouteType.Team)]
         [InlineData("https://example.org/teams/example123/", StoolballRouteType.Team)]
         [InlineData("https://example.org/teams/example123/matches", StoolballRouteType.MatchesForTeam)]
@@ -44,8 +46,6 @@ namespace Stoolball.Web.Tests.Routing
 
         [Theory]
         [InlineData("https://example.org/clubs/example/invalid")]
-        [InlineData("https://example.org/teams")]
-        [InlineData("https://example.org/teams/")]
         [InlineData("https://example.org/teams/example/invalid")]
         [InlineData("https://example.org/teams/example123/teams/example-team/")]
         [InlineData("https://example.org/tournaments/example123/invalid/example-team/")]
