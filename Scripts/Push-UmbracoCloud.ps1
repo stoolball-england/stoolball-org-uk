@@ -11,7 +11,7 @@ Write-Host "THIS COULD LOSE YOUR WORK. ARE YOU SURE?
 Read-Host -Prompt "Press any key to continue or CTRL+C to quit"
 
 # Copy changes from Stoolball.Web to the .UmbracoCloud deployment repository
-robocopy .\Stoolball.Web .\.UmbracoCloud /IF *.dll *.cshtml *.uda *.xdt.config *.css *.html *.js package.manifest en-*.xml *.png *.gif *.jpg /XF Umbraco.*.dll member-group__*.uda /S /XD .git $projectRoot\Stoolball.Web\obj $projectRoot\Stoolball.Web\umbraco $projectRoot\Stoolball.Web\App_Data $projectRoot\Stoolball.Web\App_Plugins\Deploy $projectRoot\Stoolball.Web\App_Plugins\UmbracoForms $projectRoot\Stoolball.Web\Content $projectRoot\Stoolball.Web\Media
+robocopy .\Stoolball.Web .\.UmbracoCloud /IF *.dll *.cshtml *.uda *.xdt.config *.css *.html *.js package.manifest en-*.xml *.png *.gif *.jpg *.svg /XF Umbraco.*.dll member-group__*.uda /S /XD .git $projectRoot\Stoolball.Web\obj $projectRoot\Stoolball.Web\umbraco $projectRoot\Stoolball.Web\App_Data $projectRoot\Stoolball.Web\App_Plugins\Deploy $projectRoot\Stoolball.Web\App_Plugins\UmbracoForms $projectRoot\Stoolball.Web\Content $projectRoot\Stoolball.Web\Media
 
 # Commit and push those changes
 Push-Location .\.UmbracoCloud
