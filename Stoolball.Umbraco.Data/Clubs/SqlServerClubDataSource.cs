@@ -86,7 +86,7 @@ namespace Stoolball.Umbraco.Data.Clubs
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var sql = $@"SELECT c.ClubId, cn.ClubName, c.ClubRoute,
-                            t.TeamRoute, t.PlayerType
+                            t.PlayerType
                             FROM {Tables.Club} AS c 
                             INNER JOIN {Tables.ClubName} AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
                             LEFT JOIN {Tables.Team} AS t ON c.ClubId = t.ClubId AND t.UntilDate IS NULL
@@ -114,7 +114,7 @@ namespace Stoolball.Umbraco.Data.Clubs
                             return club;
                         },
                         new DynamicParameters(parameters),
-                        splitOn: "TeamRoute").ConfigureAwait(false);
+                        splitOn: "PlayerType").ConfigureAwait(false);
 
                     var resolvedClubs = clubs.GroupBy(club => club.ClubId).Select(copiesOfClub =>
                     {

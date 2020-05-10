@@ -3,9 +3,11 @@ using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Teams;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
+using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Umbraco.Data.MatchLocations
 {
@@ -47,7 +49,7 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                     var locations = await connection.QueryAsync<MatchLocation>(
                         $@"SELECT ml.MatchLocationId, ml.MatchLocationRoute,
                             ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, ml.Town 
-                            FROM {Constants.Tables.MatchLocation} AS ml
+                            FROM {Tables.MatchLocation} AS ml
                             WHERE LOWER(ml.MatchLocationRoute) = @Route",
                         new { Route = normalisedRoute }).ConfigureAwait(false);
 
@@ -74,10 +76,10 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                             ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.StreetDescription, ml.Locality, ml.Town, ml.AdministrativeArea, ml.Postcode, 
                             ml.Latitude, ml.Longitude, ml.GeoPrecision,
                             t.TeamId, tn.TeamName, t.TeamRoute
-                            FROM {Constants.Tables.MatchLocation} AS ml
-                            LEFT JOIN {Constants.Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId AND tml.UntilDate IS NULL
-                            LEFT JOIN {Constants.Tables.Team} AS t ON tml.TeamId = t.TeamId AND t.UntilDate IS NULL AND NOT t.TeamType = '{TeamType.Transient}'
-                            LEFT JOIN {Constants.Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
+                            FROM {Tables.MatchLocation} AS ml
+                            LEFT JOIN {Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId AND tml.UntilDate IS NULL
+                            LEFT JOIN {Tables.Team} AS t ON tml.TeamId = t.TeamId AND t.UntilDate IS NULL AND NOT t.TeamType = '{TeamType.Transient}'
+                            LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             WHERE LOWER(ml.MatchLocationRoute) = @Route
                             ORDER BY tn.TeamName",
                         (matchLocation, team) =>
@@ -95,6 +97,68 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                     }
 
                     return locationToReturn;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(typeof(SqlServerMatchLocationDataSource), ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Gets a list of match locations based on a query
+        /// </summary>
+        /// <returns>A list of <see cref="MatchLocation"/> objects. An empty list if no match locations are found.</returns>
+        public async Task<List<MatchLocation>> ReadMatchLocationListings(MatchLocationQuery matchLocationQuery)
+        {
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    var sql = $@"SELECT ml.MatchLocationId, ml.MatchLocationRoute,
+                            ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, ml.Town,
+                            t.PlayerType
+                            FROM {Tables.MatchLocation} AS ml
+                            LEFT JOIN {Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId 
+                            LEFT JOIN {Tables.Team} AS t ON tml.TeamId = t.TeamId AND t.UntilDate IS NULL
+                            <<WHERE>>
+                            ORDER BY ml.SortName";
+
+                    var where = new List<string>();
+                    var parameters = new Dictionary<string, object>();
+
+                    if (!string.IsNullOrEmpty(matchLocationQuery?.Query))
+                    {
+                        where.Add(@"(ml.SecondaryAddressableObjectName LIKE @Query OR 
+                            ml.PrimaryAddressableObjectName LIKE @Query OR 
+                            ml.Locality LIKE @Query OR
+                            ml.Town LIKE @Query)");
+                        parameters.Add("@Query", $"%{matchLocationQuery.Query}%");
+                    }
+
+                    sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
+
+                    var locations = await connection.QueryAsync<MatchLocation, Team, MatchLocation>(sql,
+                        (location, team) =>
+                        {
+                            if (team != null)
+                            {
+                                location.Teams.Add(team);
+                            }
+                            return location;
+                        },
+                        new DynamicParameters(parameters),
+                        splitOn: "PlayerType").ConfigureAwait(false);
+
+                    var resolvedLocations = locations.GroupBy(location => location.MatchLocationId).Select(copiesOfLocation =>
+                    {
+                        var resolvedLocation = copiesOfLocation.First();
+                        resolvedLocation.Teams = copiesOfLocation.Select(location => location.Teams.SingleOrDefault()).OfType<Team>().ToList();
+                        return resolvedLocation;
+                    }).ToList();
+
+                    return resolvedLocations;
                 }
             }
             catch (Exception ex)

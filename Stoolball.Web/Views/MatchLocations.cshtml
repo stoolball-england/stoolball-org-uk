@@ -1,0 +1,31 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.MatchLocations.MatchLocationsViewModel>
+@using Humanizer
+
+<h1>
+    Match locations
+    @if (!string.IsNullOrEmpty(Model.MatchLocationQuery.Query))
+    {
+        @: matching '@Model.MatchLocationQuery.Query'
+    }
+</h1>
+
+<form method="get" action="@Request.Url" class="form-inline form-search">
+    <label class="sr-only" for="location-search">Match location name</label>
+    <input type="search" class="form-control" id="location-search" name="q" value="@Model.MatchLocationQuery.Query" />
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<dl>
+    @foreach (var location in Model.MatchLocations.Where(x => x.Teams.Count > 0))
+    {
+        <dt><a href="@location.MatchLocationRoute">@location</a></dt>
+        <dd>@(location.Teams.Select(x => x.PlayerType).Distinct().Humanize().Humanize(LetterCasing.Sentence)). @("team".ToQuantity(location.Teams.Count)).</dd>
+    }
+    @foreach (var location in Model.MatchLocations.Where(x => x.Teams.Count == 0))
+    {
+        <dt><a href="@location.MatchLocationRoute">@location</a></dt>
+        <dd>
+            <p>No active teams.</p>
+        </dd>
+    }
+</dl>

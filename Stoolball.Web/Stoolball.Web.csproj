@@ -898,7 +898,9 @@
     <Compile Include="Matches\MatchListingViewModel.cs" />
     <Compile Include="Matches\TournamentViewModel.cs" />
     <Compile Include="Matches\MatchViewModel.cs" />
+    <Compile Include="MatchLocations\MatchLocationsViewModel.cs" />
     <Compile Include="MatchLocations\MatchesForMatchLocationController.cs" />
+    <Compile Include="MatchLocations\MatchLocationsController.cs" />
     <Compile Include="Teams\MatchesForTeamController.cs" />
     <Compile Include="Teams\TransientTeamController.cs" />
     <Compile Include="Teams\TeamController.cs" />
@@ -1031,6 +1033,7 @@
     <Content Include="Views\Match.cshtml" />
     <Content Include="Views\Tournament.cshtml" />
     <Content Include="Views\Clubs.cshtml" />
+    <Content Include="Views\MatchLocations.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

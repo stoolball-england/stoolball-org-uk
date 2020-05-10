@@ -1,4 +1,5 @@
 ﻿using Stoolball.MatchLocations;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Stoolball.Umbraco.Data.MatchLocations
@@ -8,6 +9,12 @@ namespace Stoolball.Umbraco.Data.MatchLocations
     /// </summary>
     public interface IMatchLocationDataSource
     {
+        /// <summary>
+        /// Gets a list of match locations based on a query
+        /// </summary>
+        /// <returns>A list of <see cref="MatchLocation"/> objects. An empty list if no match locations are found.</returns>
+        Task<List<MatchLocation>> ReadMatchLocationListings(MatchLocationQuery matchLocationQuery);
+
         /// <summary>
         /// Gets a single match location based on its route
         /// </summary>

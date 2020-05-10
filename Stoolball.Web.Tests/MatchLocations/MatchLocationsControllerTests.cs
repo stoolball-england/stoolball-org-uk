@@ -1,6 +1,6 @@
 ﻿using Moq;
-using Stoolball.Umbraco.Data.Clubs;
-using Stoolball.Web.Clubs;
+using Stoolball.Umbraco.Data.MatchLocations;
+using Stoolball.Web.MatchLocations;
 using System;
 using System.Threading.Tasks;
 using System.Web;
@@ -14,20 +14,20 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Clubs
+namespace Stoolball.Web.Tests.MatchLocations
 {
-    public class ClubsControllerTests : UmbracoBaseTest
+    public class MatchLocationsControllerTests : UmbracoBaseTest
     {
-        private class TestController : ClubsController
+        private class TestController : MatchLocationsController
         {
-            public TestController(IClubDataSource clubDataSource, string queryString = "")
+            public TestController(IMatchLocationDataSource matchLocationDataSource, string queryString = "")
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, clubDataSource)
+                null, matchLocationDataSource)
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -41,33 +41,33 @@ namespace Stoolball.Web.Tests.Clubs
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("Clubs", model);
+                return View("MatchLocations", model);
             }
         }
 
         [Fact]
         public async Task Returns_ClubsViewModel()
         {
-            var dataSource = new Mock<IClubDataSource>();
+            var dataSource = new Mock<IMatchLocationDataSource>();
 
             using (var controller = new TestController(dataSource.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<ClubsViewModel>(((ViewResult)result).Model);
+                Assert.IsType<MatchLocationsViewModel>(((ViewResult)result).Model);
             }
         }
 
         [Fact]
         public async Task Reads_query_from_querystring_into_view_model()
         {
-            var dataSource = new Mock<IClubDataSource>();
+            var dataSource = new Mock<IMatchLocationDataSource>();
 
             using (var controller = new TestController(dataSource.Object, "q=example"))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Equal("example", ((ClubsViewModel)((ViewResult)result).Model).ClubQuery.Query);
+                Assert.Equal("example", ((MatchLocationsViewModel)((ViewResult)result).Model).MatchLocationQuery.Query);
             }
         }
 
@@ -75,13 +75,13 @@ namespace Stoolball.Web.Tests.Clubs
         [Fact]
         public async Task Reads_query_from_querystring_into_page_title()
         {
-            var dataSource = new Mock<IClubDataSource>();
+            var dataSource = new Mock<IMatchLocationDataSource>();
 
             using (var controller = new TestController(dataSource.Object, "q=example"))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Contains("example", ((ClubsViewModel)((ViewResult)result).Model).Metadata.PageTitle, StringComparison.Ordinal);
+                Assert.Contains("example", ((MatchLocationsViewModel)((ViewResult)result).Model).Metadata.PageTitle, StringComparison.Ordinal);
             }
         }
     }

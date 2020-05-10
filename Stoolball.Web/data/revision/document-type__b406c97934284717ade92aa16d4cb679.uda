@@ -13,7 +13,8 @@
     "umb://template/c5404e5846af4d3698d302cad730707d",
     "umb://template/d0bce9edea034b52a3dce19147b0dce9",
     "umb://template/db0381783ee94b348eb8a42c2ea95ced",
-    "umb://template/f2724e57d127459a81b0cc293e1304b3"
+    "umb://template/f2724e57d127459a81b0cc293e1304b3",
+    "umb://template/f53a93e2526f4501a067365c41d83432"
   ],
   "Icon": "icon-split-alt color-green",
   "Thumbnail": "folder.png",
@@ -94,6 +95,11 @@
     },
     {
       "Udi": "umb://template/f2724e57d127459a81b0cc293e1304b3",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/f53a93e2526f4501a067365c41d83432",
       "Ordering": true,
       "Mode": 0
     }

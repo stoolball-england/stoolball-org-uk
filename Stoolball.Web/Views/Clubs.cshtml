@@ -19,13 +19,13 @@
     @foreach (var club in Model.Clubs.Where(x => x.Teams.Count > 0))
     {
         <dt><a href="@club.ClubRoute">@club.ClubName</a></dt>
-        <dd>@(club.Teams.Select(x => x.PlayerType).Distinct().Humanize().Humanize(LetterCasing.Sentence))</dd>
+        <dd>@(club.Teams.Select(x => x.PlayerType).Distinct().Humanize().Humanize(LetterCasing.Sentence)).</dd>
     }
     @foreach (var club in Model.Clubs.Where(x => x.Teams.Count == 0))
     {
         <dt><a href="@club.ClubRoute">@club.ClubName</a></dt>
         <dd>
-            <p>No active teams</p>
+            <p>No active teams.</p>
         </dd>
     }
 </dl>

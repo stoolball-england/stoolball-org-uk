@@ -38,6 +38,18 @@
                         <a class="nav-link" href="/clubs">Clubs</a>
                     </li>
                 }
+                @if (Regex.IsMatch(Request.Url.AbsolutePath, @"^\/locations\/?$"))
+                {
+                    <li class="nav-item active">
+                        <em>Locations</em>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/locations">Locations</a>
+                    </li>
+                }
             </ul>
 
             <div class="navbar__account">

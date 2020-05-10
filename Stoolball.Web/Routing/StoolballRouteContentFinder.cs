@@ -53,6 +53,7 @@ namespace Stoolball.Web.Routing
             {
                 // Match /prefix or /prefix/ but not /prefix/invalid, in upper, lower or mixed case
                 { $@"clubs{OPTIONAL_SLASH}", StoolballRouteType.Clubs },
+                { $@"locations{OPTIONAL_SLASH}", StoolballRouteType.MatchLocations },
 
                 // Match /prefix/example-entity, but not /prefix, /prefix/, or /prefix/example-entity/invalid, 
                 // in upper, lower or mixed case
