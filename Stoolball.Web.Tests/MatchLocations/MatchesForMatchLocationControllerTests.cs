@@ -71,7 +71,7 @@ namespace Stoolball.Web.Tests.MatchLocations
         public async Task Route_matching_location_returns_MatchLocationViewModel()
         {
             var locationDataSource = new Mock<IMatchLocationDataSource>();
-            locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).ReturnsAsync(new MatchLocation());
+            locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).ReturnsAsync(new MatchLocation { MatchLocationId = Guid.NewGuid() });
 
             var matchesDataSource = new Mock<IMatchDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
