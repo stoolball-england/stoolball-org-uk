@@ -87,6 +87,13 @@ namespace Umbraco.Web.PublishedModels
 		public global::System.Web.IHtmlString MigratedMemberAccounts => this.Value<global::System.Web.IHtmlString>("migratedMemberAccounts");
 
 		///<summary>
+		/// Permission required: Displays above the form when a member is logged in but a page requires more permissions. You can use {{NAME}} to insert the member's name.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.6.1")]
+		[ImplementPropertyType("permissionRequired")]
+		public global::System.Web.IHtmlString PermissionRequired => this.Value<global::System.Web.IHtmlString>("permissionRequired");
+
+		///<summary>
 		/// Reset password: Displays below the Login button and prompts the member to reset their password if they are unable to login.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.6.1")]

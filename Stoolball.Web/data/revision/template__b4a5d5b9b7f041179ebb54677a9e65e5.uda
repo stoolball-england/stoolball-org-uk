@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/editClub.cshtml",
+  "Master": null,
+  "Udi": "umb://template/b4a5d5b9b7f041179ebb54677a9e65e5",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/editClub.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Edit Club",
+  "Alias": "editClub",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.4.4"
+}

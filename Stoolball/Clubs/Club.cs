@@ -2,6 +2,7 @@
 using Stoolball.Teams;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Stoolball.Clubs
@@ -9,6 +10,8 @@ namespace Stoolball.Clubs
     public class Club : IAuditable
     {
         public Guid? ClubId { get; set; }
+
+        [Required(ErrorMessage = "The club name field is required")]
         public string ClubName { get; set; }
         public List<Team> Teams { get; internal set; } = new List<Team>();
         public bool? PlaysOutdoors { get; set; }

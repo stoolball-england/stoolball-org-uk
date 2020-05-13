@@ -882,8 +882,10 @@
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerMatchLocationDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerSchoolDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerClubDataMigrator.cs" />
+    <Compile Include="Clubs\EditClubController.cs" />
     <Compile Include="Clubs\ClubsController.cs" />
     <Compile Include="Clubs\ClubsViewModel.cs" />
+    <Compile Include="Clubs\EditClubSurfaceController.cs" />
     <Compile Include="Clubs\MatchesForClubController.cs" />
     <Compile Include="Competitions\CompetitionController.cs" />
     <Compile Include="Competitions\MatchesForSeasonController.cs" />
@@ -1037,6 +1039,7 @@
     <Content Include="Views\Clubs.cshtml" />
     <Content Include="Views\MatchLocations.cshtml" />
     <Content Include="Views\Teams.cshtml" />
+    <Content Include="Views\EditClub.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

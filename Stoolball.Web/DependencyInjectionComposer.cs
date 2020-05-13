@@ -54,6 +54,7 @@ namespace Stoolball.Web
             // be injected anywhere except the one place where it's serving a page of content.
             composition.Register<ClubsController>(Lifetime.Request);
             composition.Register<ClubController>(Lifetime.Request);
+            composition.Register<EditClubController>(Lifetime.Request);
             composition.Register<TeamsController>(Lifetime.Request);
             composition.Register<TeamController>(Lifetime.Request);
             composition.Register<TransientTeamController>(Lifetime.Request);

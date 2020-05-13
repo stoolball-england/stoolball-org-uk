@@ -1,9 +1,6 @@
 ﻿using Stoolball.Security;
 using Stoolball.Web.Email;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -53,6 +50,7 @@ namespace Stoolball.Web.Account
             {
                 member.SetValue("totalLogins", member.GetValue<int>("totalLogins") + 1);
                 Services.MemberService.Save(member);
+                result = Redirect(model.RedirectUrl);
             }
 
             // Re-send activation email if the account is found but not approved or locked out.

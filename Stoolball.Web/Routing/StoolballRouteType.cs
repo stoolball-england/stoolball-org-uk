@@ -7,6 +7,7 @@
     {
         Club,
         Clubs,
+        EditClub,
         MatchLocation,
         MatchLocations,
         Team,

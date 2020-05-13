@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Web.PublishedModels;
 
 namespace Stoolball.Web.Routing
 {
@@ -27,6 +28,8 @@ namespace Stoolball.Web.Routing
         /// Gets the metadata for a view
         /// </summary>
         public ViewMetadata Metadata { get; } = new ViewMetadata();
+
+        public bool IsAuthorized { get; set; }
 
         #region Implement IPublishedContent
         public int Id => _contentModel.Id;
