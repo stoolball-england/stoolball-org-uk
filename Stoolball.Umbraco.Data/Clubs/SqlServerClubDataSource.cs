@@ -61,7 +61,7 @@ namespace Stoolball.Umbraco.Data.Clubs
                     var resolvedClub = clubs.GroupBy(club => club.ClubId).Select(group =>
                     {
                         var groupedClub = group.First();
-                        groupedClub.Teams = group.Select(club => club.Teams.Single()).ToList();
+                        groupedClub.Teams = group.Select(club => club.Teams.Single()).OfType<Team>().ToList();
                         return groupedClub;
                     }).FirstOrDefault();
 
