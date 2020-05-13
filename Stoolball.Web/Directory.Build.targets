@@ -38,6 +38,8 @@
       <USyncVersion>8.6.1</USyncVersion>
       <BootstrapVersion>4.4.1</BootstrapVersion>
       <JQueryVersion>3.5.1</JQueryVersion>
+      <JQueryValidationVersion>1.19.1</JQueryValidationVersion>
+      <JQueryUnobtrusiveValidationVersion>3.2.11</JQueryUnobtrusiveValidationVersion>
       <PopperVersion>1.16.0</PopperVersion>
       <SkybrudRedirectsVersion>2.0.3</SkybrudRedirectsVersion>
     </PropertyGroup>
@@ -47,6 +49,8 @@
     <Error Text="uSync NuGet package v$(USyncVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\uSync.$(USyncVersion)\')" />
     <Error Text="bootstrap.sass NuGet package v$(BootstrapVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\bootstrap.sass.$(BootstrapVersion)\')" />
     <Error Text="jQuery NuGet package v$(JQueryVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\jQuery.$(JQueryVersion)\')" />
+    <Error Text="jQuery.Validation NuGet package v$(JQueryValidationVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\jQuery.Validation.$(JQueryValidationVersion)\')" />
+    <Error Text="Microsoft.jQuery.Unobtrusive.Validation NuGet package v$(JQueryUnobtrusiveValidationVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\Microsoft.jQuery.Unobtrusive.Validation.$(JQueryUnobtrusiveValidationVersion)\')" />
     <Error Text="popper.js NuGet package v$(PopperVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\popper.js.$(PopperVersion)\')" />
     <Error Text="Skybrud.Umbraco.Redirects NuGet package v$(SkybrudRedirectsVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)\packages\Skybrud.Umbraco.Redirects.$(SkybrudRedirectsVersion)\')" />
 
@@ -56,6 +60,8 @@
       <FilesFromUSyncPackage Include="$(SolutionDir)packages\uSync.$(USyncVersion)\Content\App_Plugins\**" />
       <FilesFromBootstrapPackage Include="$(SolutionDir)packages\bootstrap.sass.$(BootstrapVersion)\contentFiles\**" />
       <FilesFromJQueryPackage Include="$(SolutionDir)packages\jQuery.$(JQueryVersion)\Content\**" />
+      <FilesFromJQueryValidationPackage Include="$(SolutionDir)packages\jQuery.Validation.$(JQueryValidationVersion)\Content\**" />
+      <FilesFromJQueryUnobtrusiveValidationPackage Include="$(SolutionDir)packages\Microsoft.jQuery.Unobtrusive.Validation.$(JQueryUnobtrusiveValidationVersion)\Content\**" />
       <FilesFromPopperPackage Include="$(SolutionDir)packages\popper.js.$(PopperVersion)\Content\**" />
       <FilesFromSkybrudRedirectsPackage Include="$(SolutionDir)packages\Skybrud.Umbraco.Redirects.$(SkybrudRedirectsVersion)\contentFiles\any\net472\App_Plugins\**" />
     </ItemGroup>
@@ -73,6 +79,12 @@
           DestinationFiles="$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)"
           Condition="!Exists('$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(FilesFromJQueryPackage)"
+          DestinationFiles="$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)"
+          Condition="!Exists('$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(FilesFromJQueryValidationPackage)"
+          DestinationFiles="$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)"
+          Condition="!Exists('$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(FilesFromJQueryUnobtrusiveValidationPackage)"
           DestinationFiles="$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)"
           Condition="!Exists('$(ProjectDir)%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(FilesFromPopperPackage)"
