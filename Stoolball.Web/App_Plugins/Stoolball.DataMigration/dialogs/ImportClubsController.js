@@ -36,13 +36,10 @@
           (club) => ({
             MigratedClubId: club.clubId,
             ClubName: club.name,
-            PlaysOutdoors: club.playsOutdoors,
-            PlaysIndoors: club.playsIndoors,
             Twitter: club.twitterAccount,
             Facebook: club.facebookUrl,
             Instagram: club.instagramAccount,
             ClubMark: club.clubmarkAccredited,
-            HowManyPlayers: club.howManyPlayers,
             ClubRoute: club.route,
             History: [
               {

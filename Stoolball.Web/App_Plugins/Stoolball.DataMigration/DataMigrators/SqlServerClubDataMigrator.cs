@@ -73,13 +73,11 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				ClubId = Guid.NewGuid(),
 				MigratedClubId = club.MigratedClubId,
 				ClubName = club.ClubName,
-				PlaysOutdoors = club.PlaysOutdoors,
-				PlaysIndoors = club.PlaysIndoors,
 				Twitter = club.Twitter,
 				Facebook = club.Facebook,
 				Instagram = club.Instagram,
 				ClubMark = club.ClubMark,
-				HowManyPlayers = club.HowManyPlayers,
+				MemberGroupId = club.MemberGroupId,
 				ClubRoute = "/clubs/" + club.ClubRoute
 			};
 
@@ -98,17 +96,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					using (var transaction = database.GetTransaction())
 					{
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Club}
-						(ClubId, MigratedClubId, PlaysOutdoors, PlaysIndoors, Twitter, Facebook, Instagram, ClubMark, HowManyPlayers, ClubRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9)",
+						(ClubId, MigratedClubId, Twitter, Facebook, Instagram, ClubMark, MemberGroupId, ClubRoute)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7)",
 							migratedClub.ClubId,
 							migratedClub.MigratedClubId,
-							migratedClub.PlaysOutdoors,
-							migratedClub.PlaysIndoors,
 							migratedClub.Twitter,
 							migratedClub.Facebook,
 							migratedClub.Instagram,
 							migratedClub.ClubMark,
-							migratedClub.HowManyPlayers,
+							migratedClub.MemberGroupId,
 							migratedClub.ClubRoute).ConfigureAwait(false);
 						await database.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
 							(ClubNameId, ClubId, ClubName, FromDate) VALUES (@0, @1, @2, @3)",

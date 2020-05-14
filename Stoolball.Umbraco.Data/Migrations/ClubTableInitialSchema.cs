@@ -18,14 +18,6 @@ namespace Stoolball.Umbraco.Data.Migrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? MigratedClubId { get; set; }
 
-        [Column(nameof(PlaysOutdoors))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public bool? PlaysOutdoors { get; set; }
-
-        [Column(nameof(PlaysIndoors))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public bool? PlaysIndoors { get; set; }
-
         [Column(nameof(Website))]
         [NullSetting(NullSetting = NullSettings.Null)]
         public string Website { get; set; }
@@ -49,9 +41,8 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(ClubMark))]
         public bool ClubMark { get; set; }
 
-        [Column(nameof(HowManyPlayers))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public int? HowManyPlayers { get; set; }
+        [Column(nameof(MemberGroupId))]
+        public int MemberGroupId { get; set; }
 
         [Column(nameof(ClubRoute))]
         [Index(IndexTypes.UniqueNonClustered)]

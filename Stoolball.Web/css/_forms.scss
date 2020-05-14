@@ -3,6 +3,7 @@
 @import "../Content/bootstrap/_variables.scss";
 @import "../Content/bootstrap/_forms.scss";
 @import "../Content/bootstrap/_buttons.scss";
+@import "../Content/bootstrap/_custom-forms.scss";
 
 /* Bootstrap and .NET JQuery validation are applying different rules in some cases, 
    so re-use the Bootstrap styles but on different selectors, and in a way that invalid wins 

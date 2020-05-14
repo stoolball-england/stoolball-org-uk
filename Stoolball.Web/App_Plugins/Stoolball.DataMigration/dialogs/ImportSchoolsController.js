@@ -39,12 +39,9 @@
           (school) => ({
             MigratedSchoolId: school.clubId,
             SchoolName: school.name,
-            PlaysOutdoors: school.playsOutdoors,
-            PlaysIndoors: school.playsIndoors,
             Twitter: school.twitterAccount,
             Facebook: school.facebookUrl,
             Instagram: school.instagramAccount,
-            HowManyPlayers: school.howManyPlayers,
             SchoolRoute: school.route,
             History: [
               {

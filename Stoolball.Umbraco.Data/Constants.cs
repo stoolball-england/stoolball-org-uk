@@ -40,5 +40,12 @@
 
             public const string PlayerMatchStatistics = _tablePrefix + _statisticsPrefix + "PlayerMatch";
         }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Not a typical class. This is creating a set of constants accessible with IntelliSense.")]
+        public static class Groups
+        {
+            public const string Administrators = "Administrators";
+            public const string Editors = "Editors";
+        }
     }
 }

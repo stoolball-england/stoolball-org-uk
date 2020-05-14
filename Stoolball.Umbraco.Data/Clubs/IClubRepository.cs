@@ -10,5 +10,10 @@ namespace Stoolball.Umbraco.Data.Clubs
         /// </summary>
         /// <returns>The created club</returns>
         Task<Club> CreateClub(Club club);
+
+        /// <summary>
+        /// Updates a stoolball club
+        /// </summary>
+        Task<Club> UpdateClub(Club club);
     }
 }

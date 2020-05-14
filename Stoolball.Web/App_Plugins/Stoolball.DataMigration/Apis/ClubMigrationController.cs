@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Humanizer;
+using Newtonsoft.Json;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using System;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Umbraco.Core;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
+using Umbraco.Core.Models;
 using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
@@ -41,6 +43,20 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
             {
                 throw new ArgumentNullException(nameof(club));
             }
+
+
+            // Create an owner group
+            var groupName = "club/" + club.ClubName.Kebaberize();
+            var group = Services.MemberGroupService.GetByName(groupName);
+            if (group == null)
+            {
+                group = new MemberGroup
+                {
+                    Name = groupName
+                };
+                Services.MemberGroupService.Save(group);
+            }
+            club.MemberGroupId = group.Id;
 
             var migrated = await _clubDataMigrator.MigrateClub(club).ConfigureAwait(false);
             return Created(new Uri(Request.RequestUri, new Uri(migrated.ClubRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));

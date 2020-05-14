@@ -8,6 +8,7 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
+using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Clubs
 {
@@ -40,8 +41,8 @@ namespace Stoolball.Web.Clubs
                 Club = await _clubDataSource.ReadClubByRoute(Request.Url.AbsolutePath).ConfigureAwait(false)
             };
 
-
-            model.IsAuthorized = Members.IsMemberAuthorized(null, new[] { "Administrators" }, null);
+            var allowedGroup = Services.MemberGroupService.GetById(model.Club.MemberGroupId);
+            model.IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, allowedGroup.Name }, null);
 
             if (model.Club == null)
             {

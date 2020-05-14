@@ -73,6 +73,7 @@ namespace Stoolball.Web
             composition.Register<IDatabaseConnectionFactory, UmbracoDatabaseConnectionFactory>(Lifetime.Singleton);
             composition.Register<IRedirectsRepository, SkybrudRedirectsRepository>(Lifetime.Singleton);
             composition.Register<IClubDataSource, SqlServerClubDataSource>(Lifetime.Singleton);
+            composition.Register<IClubRepository, SqlServerClubRepository>(Lifetime.Singleton);
             composition.Register<ITeamDataSource, SqlServerTeamDataSource>(Lifetime.Singleton);
             composition.Register<IMatchLocationDataSource, SqlServerMatchLocationDataSource>(Lifetime.Singleton);
             composition.Register<ISeasonDataSource, SqlServerSeasonDataSource>(Lifetime.Singleton);

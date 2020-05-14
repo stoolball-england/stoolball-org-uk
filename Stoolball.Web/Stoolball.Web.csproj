@@ -356,13 +356,10 @@
     <Content Include="App_Plugins\Stoolball.DataMigration\dataMigrationDashboardController.js" />
     <None Include="App_Plugins\Stoolball.DataMigration\data-migration.scss" />
     <Content Include="App_Plugins\Stoolball.DataMigration\DataMigrationDashboard.html" />
-    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteBatting.html" />
-    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteBattingController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteCompetitions.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteCompetitionsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMatches.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMatchesController.js" />
-    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMatchesController.min.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMatchLocations.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMatchLocationsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteMemberGroups.html" />
@@ -381,8 +378,6 @@
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteTeamsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\EnsureRedirects.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\EnsureRedirectsController.js" />
-    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportBatting.html" />
-    <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportBattingController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportClubs.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportClubsController.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\ImportCompetitions.html" />

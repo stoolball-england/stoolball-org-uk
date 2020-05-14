@@ -45,16 +45,13 @@ namespace Stoolball.Umbraco.Data.Clubs
                         club.ClubId = Guid.NewGuid();
 
                         await scope.Database.ExecuteAsync($@"INSERT INTO {Tables.Club}
-						(ClubId, PlaysOutdoors, PlaysIndoors, Twitter, Facebook, Instagram, ClubMark, HowManyPlayers, ClubRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8)",
+						(ClubId, Twitter, Facebook, Instagram, ClubMark, ClubRoute)
+						VALUES (@0, @1, @2, @3, @4, @5)",
                             club.ClubId,
-                            club.PlaysOutdoors,
-                            club.PlaysIndoors,
-                            club.Twitter,
-                            club.Facebook,
-                            club.Instagram,
+                            PrefixAtSign(club.Twitter),
+                            PrefixUrlProtocol(club.Facebook),
+                            PrefixAtSign(club.Instagram),
                             club.ClubMark,
-                            club.HowManyPlayers,
                             club.ClubRoute).ConfigureAwait(false);
                         await scope.Database.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
 							(ClubNameId, ClubId, ClubName, FromDate) VALUES (@0, @1, @2, @3)",
@@ -84,6 +81,95 @@ namespace Stoolball.Umbraco.Data.Clubs
                 _logger.Error(typeof(SqlServerClubRepository), ex);
                 throw;
             }
+        }
+
+
+        /// <summary>
+        /// Updates a stoolball club
+        /// </summary>
+        public async Task<Club> UpdateClub(Club club)
+        {
+            if (club is null)
+            {
+                throw new ArgumentNullException(nameof(club));
+            }
+
+            try
+            {
+                using (var scope = _scopeProvider.CreateScope())
+                {
+                    using (var transaction = scope.Database.GetTransaction())
+                    {
+                        await scope.Database.ExecuteAsync(
+                            $@"UPDATE {Tables.Club} SET
+                                ClubMark = @0,
+                                Facebook = @1,
+                                Twitter = @2,
+                                Instagram = @3,
+                                YouTube = @4,
+                                Website = @5
+						        WHERE ClubId = @6",
+                            club.ClubMark,
+                            PrefixUrlProtocol(club.Facebook),
+                            PrefixAtSign(club.Twitter),
+                            PrefixAtSign(club.Instagram),
+                            PrefixUrlProtocol(club.YouTube),
+                            PrefixUrlProtocol(club.Website),
+                            club.ClubId).ConfigureAwait(false);
+
+                        var currentName = await scope.Database.ExecuteScalarAsync<string>($"SELECT ClubName FROM {Tables.ClubName} WHERE ClubId = @0 AND UntilDate IS NULL", club.ClubId).ConfigureAwait(false);
+                        if (club.ClubName?.Trim() != currentName?.Trim())
+                        {
+                            await scope.Database.ExecuteAsync($"UPDATE {Tables.ClubName} SET UntilDate = GETUTCDATE() WHERE ClubId = @0 AND UntilDate IS NULL", club.ClubId).ConfigureAwait(false);
+                            await scope.Database.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
+                                (ClubNameId, ClubId, ClubName, FromDate) VALUES (@0, @1, @2, GETUTCDATE())",
+                                Guid.NewGuid(),
+                                club.ClubId,
+                                club.ClubName
+                                ).ConfigureAwait(false);
+                        }
+
+                        transaction.Complete();
+                    }
+                    scope.Complete();
+                }
+
+                /* await _auditRepository.CreateAudit(new AuditRecord
+                 {
+                     Action = AuditAction.Create,
+                     ActorName = nameof(SqlServerClubRepository),
+                     EntityUri = club.EntityUri,
+                     State = JsonConvert.SerializeObject(club),
+                     AuditDate = DateTime.UtcNow
+                 }).ConfigureAwait(false);*/
+
+                return club;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(typeof(SqlServerClubRepository), ex);
+                throw;
+            }
+        }
+
+        private string PrefixUrlProtocol(string url)
+        {
+            url = url?.Trim();
+            if (!string.IsNullOrEmpty(url) && !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            {
+                url = "https://" + url;
+            }
+            return url;
+        }
+
+        private string PrefixAtSign(string account)
+        {
+            account = account?.Trim();
+            if (!string.IsNullOrEmpty(account) && !account.StartsWith("@", StringComparison.OrdinalIgnoreCase))
+            {
+                account = "@" + account;
+            }
+            return account;
         }
     }
 }
