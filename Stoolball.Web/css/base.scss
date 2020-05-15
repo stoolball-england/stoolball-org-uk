@@ -15,7 +15,9 @@
 /* Images - don't let them overflow their container */
 img { max-width: 100%; }
 
-/* Table styles */
+/* Text and table styles */
+@import "../Content/bootstrap/utilities/_text.scss";
+@import "../Content/bootstrap/_tables.scss";
 @import "_tables.scss";
 
 /* Required to use boxed content using alert styles */

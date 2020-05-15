@@ -28,7 +28,7 @@ namespace Stoolball.Web.Clubs
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        public async Task<ActionResult> Edit([Bind(Prefix = "Club")]Club club)
+        public async Task<ActionResult> Edit([Bind(Prefix = "Club", Include = "ClubName,ClubMark,Facebook,Twitter,Instagram,YouTube,Website,Teams")]Club club)
         {
             if (club is null)
             {

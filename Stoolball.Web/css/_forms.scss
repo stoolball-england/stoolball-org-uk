@@ -47,3 +47,9 @@ form { margin-bottom: $spacer; }
 .form-search button[type=submit] {
     flex-shrink: 0;
 }
+
+
+/* Make click events on inline SVG images bubble up to parent elements */
+svg {
+    pointer-events: none;
+}

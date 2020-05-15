@@ -1,0 +1,70 @@
+﻿@import "../Content/bootstrap/_functions.scss";
+@import "../Content/bootstrap/_mixins.scss";
+@import "../Content/bootstrap/_variables.scss";
+
+/* For Bootstrap tables used to manage lists of related items. Note that .related-item__animate is used because the <tr />
+   can't have its height animated - it will not collapse beyond the height of its children. .related-item__animate also
+   doesn't work when applied to the <button />.
+
+   <table class="table related-item">
+        <tbody>
+        <tr class="(|related-item__deleted)">
+            <td>
+                <div class="related-item__animate">value</div>
+            </td>
+            <td class="related-item__delete">
+                <div class="related-item__animate">
+                    <input type="hidden" class="related-item__id" />
+                    <button><svg /></button>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+*/
+
+.related-item__delete {
+    width: 20px;
+}
+
+.related-items td {
+    transition: padding 1s;
+}
+
+.related-item__deleted > td {
+    padding: 0;
+}
+
+.related-item__animate {
+    transition: height 1s;
+    overflow: hidden;
+}
+
+.related-item__deleted .related-item__animate {
+    height: 0;
+}
+
+.related-item__delete button {
+    border: none;
+    background: none;
+}
+
+/* For reduced motion, instead of animating the row strike out the text and remove the delete button */
+@media (prefers-reduced-motion: reduce) {
+    .related-items td, .related-item__animate {
+        transition: none;
+    }
+
+    .related-item__deleted > td {
+        padding: ($spacer/4)*3;
+    }
+
+    .related-item__deleted .related-item__animate {
+        height: auto;
+        text-decoration: line-through;
+    }
+
+    .related-item__deleted > .related-item__delete > * {
+        visibility: hidden;
+    }
+}

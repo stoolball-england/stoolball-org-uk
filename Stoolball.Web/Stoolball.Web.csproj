@@ -568,6 +568,12 @@
     <Content Include="css\base.min.css">
       <DependentUpon>base.css</DependentUpon>
     </Content>
+    <Content Include="css\related-items.css">
+      <DependentUpon>related-items.scss</DependentUpon>
+    </Content>
+    <Content Include="css\related-items.min.css">
+      <DependentUpon>related-items.css</DependentUpon>
+    </Content>
     <Content Include="Global.asax" />
     <Content Include="images\logos\clubmark.png" />
     <Content Include="images\logos\stoolball-england.svg" />
@@ -576,6 +582,7 @@
     <Content Include="images\maps\map-markers-shadow.png" />
     <Content Include="images\maps\map-markers.gif" />
     <Content Include="js\maps.js" />
+    <Content Include="js\related-items.js" />
     <Content Include="MatchLocations\match-location.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
@@ -718,6 +725,7 @@
     <Content Include="config\uSync8.config" />
     <Content Include="css\_header.scss" />
     <Content Include="css\_tables.scss" />
+    <Content Include="css\related-items.scss" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
     <Content Include="Scripts\jquery-3.5.1.min.js" />
