@@ -37,6 +37,7 @@ namespace Stoolball.Web.Clubs
 
             var beforeUpdate = await _clubDataSource.ReadClubByRoute(Request.RawUrl).ConfigureAwait(false);
             club.ClubId = beforeUpdate.ClubId;
+            club.ClubRoute = beforeUpdate.ClubRoute;
 
             var allowedGroup = Services.MemberGroupService.GetById(beforeUpdate.MemberGroupId);
             var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, allowedGroup.Name }, null);
@@ -46,7 +47,7 @@ namespace Stoolball.Web.Clubs
                 await _clubRepository.UpdateClub(club).ConfigureAwait(false);
 
                 // redirect back to the club
-                return Redirect(Request.RawUrl.Substring(0, Request.RawUrl.Length - "/edit".Length));
+                return Redirect(club.ClubRoute);
             }
 
             var viewModel = new ClubViewModel(CurrentPage)

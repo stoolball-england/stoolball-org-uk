@@ -1,7 +1,10 @@
 ﻿using Dapper;
 using Stoolball.Clubs;
+using Stoolball.Routing;
 using Stoolball.Umbraco.Data.Audit;
+using Stoolball.Umbraco.Data.Redirects;
 using System;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
@@ -17,12 +20,16 @@ namespace Stoolball.Umbraco.Data.Clubs
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IAuditRepository _auditRepository;
         private readonly ILogger _logger;
+        private readonly IRouteGenerator _routeGenerator;
+        private readonly IRedirectsRepository _redirectsRepository;
 
-        public SqlServerClubRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger)
+        public SqlServerClubRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator, IRedirectsRepository redirectsRepository)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _routeGenerator = routeGenerator;
+            _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
         }
 
         /// <summary>
@@ -95,11 +102,28 @@ namespace Stoolball.Umbraco.Data.Clubs
 
             try
             {
+                string updatedRoute = null;
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     connection.Open();
                     using (var transaction = connection.BeginTransaction())
                     {
+
+                        updatedRoute = _routeGenerator.GenerateRoute("/clubs", club.ClubName);
+                        if (updatedRoute != club.ClubRoute)
+                        {
+                            int count;
+                            do
+                            {
+                                count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Club} WHERE ClubRoute = @ClubRoute", new { ClubRoute = updatedRoute }, transaction).ConfigureAwait(false);
+                                if (count > 0)
+                                {
+                                    updatedRoute = _routeGenerator.IncrementRoute(updatedRoute);
+                                }
+                            }
+                            while (count > 0);
+                        }
+
                         await connection.ExecuteAsync(
                             $@"UPDATE {Tables.Club} SET
                                 ClubMark = @ClubMark,
@@ -107,7 +131,8 @@ namespace Stoolball.Umbraco.Data.Clubs
                                 Twitter = @Twitter,
                                 Instagram = @Instagram,
                                 YouTube = @YouTube,
-                                Website = @Website
+                                Website = @Website,
+                                ClubRoute = @ClubRoute
 						        WHERE ClubId = @ClubId",
                             new
                             {
@@ -117,6 +142,7 @@ namespace Stoolball.Umbraco.Data.Clubs
                                 Instagram = PrefixAtSign(club.Instagram),
                                 YouTube = PrefixUrlProtocol(club.YouTube),
                                 Website = PrefixUrlProtocol(club.Website),
+                                ClubRoute = updatedRoute,
                                 club.ClubId
                             }, transaction).ConfigureAwait(false);
 
@@ -139,6 +165,9 @@ namespace Stoolball.Umbraco.Data.Clubs
 
                         transaction.Commit();
                     }
+
+                    await _redirectsRepository.InsertRedirect(club.ClubRoute, updatedRoute, null).ConfigureAwait(false);
+                    club.ClubRoute = updatedRoute;
                 }
 
                 /* await _auditRepository.CreateAudit(new AuditRecord
@@ -150,13 +179,13 @@ namespace Stoolball.Umbraco.Data.Clubs
                      AuditDate = DateTime.UtcNow
                  }).ConfigureAwait(false);*/
 
-                return club;
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.Error(typeof(SqlServerClubRepository), ex);
-                throw;
             }
+
+            return club;
         }
 
         private string PrefixUrlProtocol(string url)

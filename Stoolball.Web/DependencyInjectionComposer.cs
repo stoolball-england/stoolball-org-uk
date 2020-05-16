@@ -33,6 +33,7 @@ namespace Stoolball.Web
             composition.Register<IEmailProtector, EmailProtector>(Lifetime.Singleton);
             composition.Register<IVerificationToken, VerificationToken>(Lifetime.Singleton);
             composition.Register<IAuditRepository, SqlServerAuditRepository>(Lifetime.Singleton);
+            composition.Register<IRouteGenerator, RouteGenerator>(Lifetime.Singleton);
             composition.Register<IRouteNormaliser, RouteNormaliser>(Lifetime.Singleton);
             composition.Register<IApiKeyProvider, ConfigApiKeyProvider>(Lifetime.Singleton);
             composition.Register<IDateTimeFormatter, DateTimeFormatter>(Lifetime.Singleton);
