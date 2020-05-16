@@ -8,6 +8,7 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
+using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Clubs
 {
@@ -46,6 +47,9 @@ namespace Stoolball.Web.Clubs
             }
             else
             {
+                var allowedGroup = Services.MemberGroupService.GetById(model.Club.MemberGroupId);
+                model.IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, allowedGroup.Name }, null);
+
                 model.Metadata.PageTitle = model.Club.ClubName;
                 model.Metadata.Description = model.Club.Description();
 

@@ -49,7 +49,14 @@ namespace Stoolball.Web.Teams
                 }
             }
             var teams = await _teamDataSource.ReadTeamListings(teamQuery).ConfigureAwait(false);
-            return new AutocompleteResultSet { suggestions = teams.Select(x => new AutocompleteResult { value = x.TeamName, data = x.TeamId.ToString() }) };
+            return new AutocompleteResultSet
+            {
+                suggestions = teams.Select(x => new AutocompleteResult
+                {
+                    value = (x.UntilDate.HasValue ? x.TeamName + " (no longer active)" : x.TeamName),
+                    data = x.TeamId.ToString()
+                })
+            };
         }
     }
 }

@@ -15,15 +15,18 @@
 </form>
 
 <ul>
-    @foreach (var team in Model.Teams.Where(x => !x.UntilDate.HasValue))
+    @foreach (var team in Model.Teams)
     {
+        if (!team.UntilDate.HasValue)
+        {
         <li><a href="@team.TeamRoute">@team.TeamNameLocationAndPlayerType()</a></li>
-    }
-    @foreach (var team in Model.Teams.Where(x => x.UntilDate.HasValue))
-    {
+        }
+        else
+        {
         <li>
             <a href="@team.TeamRoute">@team.TeamNameLocationAndPlayerType()</a>
             <p>No longer active.</p>
         </li>
+        }
     }
 </ul>

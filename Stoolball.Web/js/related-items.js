@@ -59,12 +59,27 @@
           resetIndexes(tableRow);
 
           /* Reset autocomplete options so the deleted team is available for reselection */
-          $(tableRow.parentNode.querySelector(".related-item__search"))
+          const searchField = tableRow.parentNode.querySelector(
+            ".related-item__search"
+          );
+          $(searchField)
             .autocomplete()
             .setOptions({ params: resetAutocompleteParams(tableRow) });
 
-          /* Set a class on the table row so that CSS can transition it */
+          /* Set a class on the table row so that CSS can transition it, then delete it after the transition */
           tableRow.classList.add("related-item__deleted");
+          tableRow.addEventListener("transitionend", function () {
+            tableRow.parentNode && tableRow.parentNode.removeChild(tableRow);
+          });
+
+          /* Set the focus to the search field */
+          searchField.focus();
+        }
+      });
+      relatedItems[i].addEventListener("keypress", function (e) {
+        // Prevent enter submitting the form within this editor
+        if (e.keyCode === 13) {
+          e.preventDefault();
         }
       });
     }

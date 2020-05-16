@@ -61,7 +61,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied Club to the database with its existing <see cref="Club.ClubId"/>
 		/// </summary>
-		public async Task<Club> MigrateClub(MigratedClub club)
+		public async Task<MigratedClub> MigrateClub(MigratedClub club)
 		{
 			if (club is null)
 			{

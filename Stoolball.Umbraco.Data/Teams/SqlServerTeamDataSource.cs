@@ -151,7 +151,8 @@ namespace Stoolball.Umbraco.Data.Teams
                             LEFT JOIN {Tables.TeamMatchLocation} AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL
                             LEFT JOIN {Tables.MatchLocation} AS ml ON ml.MatchLocationId = tml.MatchLocationId 
                             <<WHERE>>
-                            ORDER BY tn.TeamName";
+                            ORDER BY CASE WHEN t.UntilDate IS NULL THEN 0 
+                                          WHEN t.UntilDate IS NOT NULL THEN 1 END, tn.TeamName";
 
                     var where = new List<string>();
                     var parameters = new Dictionary<string, object>();

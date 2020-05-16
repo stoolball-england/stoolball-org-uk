@@ -28,7 +28,7 @@ namespace Stoolball.Web.Clubs
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        public async Task<ActionResult> Edit([Bind(Prefix = "Club", Include = "ClubName,ClubMark,Facebook,Twitter,Instagram,YouTube,Website,Teams")]Club club)
+        public async Task<ActionResult> UpdateClub([Bind(Prefix = "Club", Include = "ClubName,ClubMark,Facebook,Twitter,Instagram,YouTube,Website,Teams")]Club club)
         {
             if (club is null)
             {
@@ -46,11 +46,8 @@ namespace Stoolball.Web.Clubs
                 await _clubRepository.UpdateClub(club).ConfigureAwait(false);
 
                 // redirect back to the club
-                //  return Redirect(Request.RawUrl.Substring(0, Request.RawUrl.Length - "/edit".Length));
+                return Redirect(Request.RawUrl.Substring(0, Request.RawUrl.Length - "/edit".Length));
             }
-
-            //ModelState.AddModelError("Club.ClubName", $"{club.ClubName} is not valid");
-            //ModelState.AddModelError(string.Empty, $"The whole form is not valid");
 
             var viewModel = new ClubViewModel(CurrentPage)
             {

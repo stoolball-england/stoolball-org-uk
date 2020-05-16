@@ -19,10 +19,22 @@
 
 <h1>Edit @Model.Club.ClubName</h1>
 
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Club.ClubRoute">Summary</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Club.ClubRoute/matches">Matches</a>
+    </li>
+    <li class="nav-item">
+        <em class="nav-link active">Edit</em>
+    </li>
+</ul>
+
 @if (Model.IsAuthorized)
 {
     using (Html.BeginUmbracoForm<EditClubSurfaceController>
-        ("Edit"))
+        ("UpdateClub"))
     {
         @Html.AntiForgeryToken()
         @Html.ValidationSummary(true)
@@ -45,12 +57,13 @@
             <tbody>
                 @for (var i = 0; i < Model.Club.Teams.Count; i++)
                 {
+                    var displayName = Model.Club.Teams[i].UntilDate.HasValue ? Model.Club.Teams[i].TeamName + " (no longer active)" : Model.Club.Teams[i].TeamName;
                     <tr>
-                        <td><div class="related-item__animate">@Model.Club.Teams[i].TeamName</div></td>
+                        <td><div class="related-item__animate">@displayName</div></td>
                         <td class="related-item__delete">
                             <div class="related-item__animate">
-                                @Html.HiddenFor(m => Model.Club.Teams[i].TeamId, new { @Name = $"Club.Teams[{i}].TeamId", @class = "related-item__data related-item__id", data_item = Model.Club.Teams[i].TeamId })
-                                @Html.HiddenFor(m => Model.Club.Teams[i].TeamName, new { @Name = $"Club.Teams[{i}].TeamName", @class = "related-item__data", data_item = Model.Club.Teams[i].TeamId })
+                                @Html.Hidden($"Club.Teams[{i}].TeamId", Model.Club.Teams[i].TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Club.Teams[i].TeamId })
+                                @Html.Hidden($"Club.Teams[{i}].TeamName", displayName, new { @class = "related-item__data", data_item = Model.Club.Teams[i].TeamId })
                                 @Html.Partial("_DeleteIcon", (Model.Club.Teams[i].TeamId.ToString(), $"Remove {Model.Club.Teams[i].TeamName} from this club"))
                             </div>
                         </td>
