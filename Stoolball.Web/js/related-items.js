@@ -76,12 +76,14 @@
           searchField.focus();
         }
       });
-      relatedItems[i].addEventListener("keypress", function (e) {
-        // Prevent enter submitting the form within this editor
-        if (e.keyCode === 13) {
-          e.preventDefault();
-        }
-      });
+      relatedItems[i]
+        .querySelector(".related-item__search")
+        .addEventListener("keypress", function (e) {
+          // Prevent enter submitting the form within this editor
+          if (e.keyCode === 13) {
+            e.preventDefault();
+          }
+        });
     }
 
     const searchFields = document.querySelectorAll(".related-item__search");
