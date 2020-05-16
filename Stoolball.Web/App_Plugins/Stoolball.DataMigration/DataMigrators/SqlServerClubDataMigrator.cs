@@ -1,4 +1,5 @@
 ﻿using Stoolball.Clubs;
+using Stoolball.Routing;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
@@ -16,14 +17,17 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		private readonly IAuditHistoryBuilder _auditHistoryBuilder;
 		private readonly IAuditRepository _auditRepository;
 		private readonly ILogger _logger;
+		private readonly IRouteGenerator _routeGenerator;
 
-		public SqlServerClubDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, ILogger logger)
+		public SqlServerClubDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder,
+			IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator)
 		{
 			_redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
 			_scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
 			_auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
 			_auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
+			_routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
 		}
 
 		/// <summary>
@@ -78,12 +82,21 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Instagram = club.Instagram,
 				ClubMark = club.ClubMark,
 				MemberGroupId = club.MemberGroupId,
-				ClubRoute = "/clubs/" + club.ClubRoute
 			};
-
-			if (migratedClub.ClubRoute.EndsWith("club", StringComparison.OrdinalIgnoreCase))
+			using (var scope = _scopeProvider.CreateScope())
 			{
-				migratedClub.ClubRoute = migratedClub.ClubRoute.Substring(0, migratedClub.ClubRoute.Length - 4);
+				migratedClub.ClubRoute = _routeGenerator.GenerateRoute("/clubs", club.ClubName);
+				int count;
+				do
+				{
+					count = await scope.Database.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Club} WHERE ClubRoute = @ClubRoute", new { migratedClub.ClubRoute }).ConfigureAwait(false);
+					if (count > 0)
+					{
+						migratedClub.ClubRoute = _routeGenerator.IncrementRoute(migratedClub.ClubRoute);
+					}
+				}
+				while (count > 0);
+				scope.Complete();
 			}
 
 			_auditHistoryBuilder.BuildInitialAuditHistory(club, migratedClub, nameof(SqlServerClubDataMigrator));
@@ -112,6 +125,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedClub.ClubId,
 							migratedClub.ClubName,
 							migratedClub.History[0].AuditDate
+
 							).ConfigureAwait(false);
 						transaction.Complete();
 					}

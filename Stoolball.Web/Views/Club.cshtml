@@ -17,7 +17,14 @@
     }
 </ul>
 
-@Html.Partial("_TeamList", Model.Club.Teams)
+@if (Model.Club.Teams.Count > 0)
+{
+    @Html.Partial("_TeamList", Model.Club.Teams)
+}
+else
+{
+    <p>@Model.Club.ClubName doesn't have any active teams.</p>
+}
 
 @if (Model.Club.ClubMark)
 {

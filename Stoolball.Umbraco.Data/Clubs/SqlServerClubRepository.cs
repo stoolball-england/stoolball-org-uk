@@ -28,7 +28,7 @@ namespace Stoolball.Umbraco.Data.Clubs
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _routeGenerator = routeGenerator;
+            _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
         }
 
