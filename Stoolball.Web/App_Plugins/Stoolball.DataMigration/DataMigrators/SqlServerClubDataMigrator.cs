@@ -82,6 +82,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Instagram = club.Instagram,
 				ClubMark = club.ClubMark,
 				MemberGroupId = club.MemberGroupId,
+				MemberGroupName = club.MemberGroupName,
 			};
 			using (var scope = _scopeProvider.CreateScope())
 			{
@@ -109,8 +110,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					using (var transaction = database.GetTransaction())
 					{
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Club}
-						(ClubId, MigratedClubId, Twitter, Facebook, Instagram, ClubMark, MemberGroupId, ClubRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7)",
+						(ClubId, MigratedClubId, Twitter, Facebook, Instagram, ClubMark, MemberGroupId, MemberGroupName, ClubRoute)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8)",
 							migratedClub.ClubId,
 							migratedClub.MigratedClubId,
 							migratedClub.Twitter,
@@ -118,6 +119,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedClub.Instagram,
 							migratedClub.ClubMark,
 							migratedClub.MemberGroupId,
+							migratedClub.MemberGroupName,
 							migratedClub.ClubRoute).ConfigureAwait(false);
 						await database.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
 							(ClubNameId, ClubId, ClubName, FromDate) VALUES (@0, @1, @2, @3)",

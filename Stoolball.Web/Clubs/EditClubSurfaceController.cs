@@ -39,8 +39,7 @@ namespace Stoolball.Web.Clubs
             club.ClubId = beforeUpdate.ClubId;
             club.ClubRoute = beforeUpdate.ClubRoute;
 
-            var allowedGroup = Services.MemberGroupService.GetById(beforeUpdate.MemberGroupId);
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, allowedGroup.Name }, null);
+            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, beforeUpdate.MemberGroupName }, null);
 
             if (isAuthorized && ModelState.IsValid)
             {

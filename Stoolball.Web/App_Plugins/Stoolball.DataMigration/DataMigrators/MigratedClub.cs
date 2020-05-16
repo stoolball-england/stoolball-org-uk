@@ -14,11 +14,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         public string Instagram { get; set; }
         public bool ClubMark { get; set; }
         public int MemberGroupId { get; set; }
+        public string MemberGroupName { get; set; }
         public string ClubRoute { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
         public Uri EntityUri
         {
             get { return new Uri($"https://www.stoolball.org.uk/id/club/{ClubId}"); }
         }
+
     }
 }

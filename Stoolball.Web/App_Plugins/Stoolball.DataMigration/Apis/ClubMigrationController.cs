@@ -57,6 +57,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
                 Services.MemberGroupService.Save(group);
             }
             club.MemberGroupId = group.Id;
+            club.MemberGroupName = group.Name;
 
             var migrated = await _clubDataMigrator.MigrateClub(club).ConfigureAwait(false);
             return Created(new Uri(Request.RequestUri, new Uri(migrated.ClubRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
