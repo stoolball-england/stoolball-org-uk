@@ -10,5 +10,9 @@
   {
     "outputFile": "css/related-items.css",
     "inputFile": "css/related-items.scss"
+  },
+  {
+    "outputFile": "css/autocomplete.css",
+    "inputFile": "css/autocomplete.scss"
   }
 ]

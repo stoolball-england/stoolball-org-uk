@@ -19,8 +19,14 @@
                 </div>
             </td>
         </tr>
+        <tr>
+            <td colspan="2"><input type="search" class="related-item__search" data-url="/path/to/autocomplete" data-template="template-id" /></td>
+        </tr>
         </tbody>
     </table>
+    <script id="template-id" type="text/x-template">
+        <tr>... any HTML, with {{value}} and {{data}} replaced with the selected item from autocomplete</tr>
+    </script>
 */
 
 .related-item__delete {

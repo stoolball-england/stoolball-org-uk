@@ -1,4 +1,19 @@
 ﻿(function () {
+  function resetIndexes(tableRow) {
+    /* Reset the indexes on the remaining fields so that ASP.NET model binding reads them all */
+    const remainingIds = tableRow.parentNode.querySelectorAll(
+      ".related-item__id"
+    );
+    for (let i = 0; i < remainingIds.length; i++) {
+      remainingIds[i].setAttribute(
+        "name",
+        remainingIds[i]
+          .getAttribute("name")
+          .replace(/\[[0-9]+\]/, "[" + i + "]")
+      );
+    }
+  }
+
   window.addEventListener("DOMContentLoaded", function () {
     const relatedItems = document.querySelectorAll(".related-items");
     for (let i = 0; i < relatedItems.length; i++) {
@@ -22,9 +37,34 @@
             id.parentNode.removeChild(id);
           }
 
+          resetIndexes(tableRow);
+
           /* Set a class on the table row so that CSS can transition it */
           tableRow.classList.add("related-item__deleted");
         }
+      });
+    }
+
+    const searchFields = document.querySelectorAll(".related-item__search");
+    for (let i = 0; i < searchFields.length; i++) {
+      let url = searchFields[i].getAttribute("data-url");
+      let template = document.getElementById(
+        searchFields[i].getAttribute("data-template")
+      ).innerHTML;
+      const tableRow = searchFields[i].parentNode.parentNode;
+
+      $(searchFields[i]).autocomplete({
+        serviceUrl: url,
+        onSelect: function (suggestion) {
+          tableRow.insertAdjacentHTML(
+            "beforebegin",
+            template
+              .replace(/{{value}}/g, suggestion.value)
+              .replace(/{{data}}/g, suggestion.data)
+          );
+          resetIndexes(tableRow);
+          this.value = "";
+        },
       });
     }
   });

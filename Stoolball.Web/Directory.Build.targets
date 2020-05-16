@@ -166,7 +166,7 @@
       <GoogleMapsImages>https://maps.gstatic.com https://maps.google.co.uk https://maps.googleapis.com</GoogleMapsImages>
       <GoogleMapsStyles>https://fonts.googleapis.com 'unsafe-inline'</GoogleMapsStyles>
       <GoogleMapsFonts>https://fonts.gstatic.com</GoogleMapsFonts>
-      <ContentSecurityPolicy>default-src 'none'; style-src 'self' $(GoogleMapsStyles); script-src 'self' $(GoogleMapsScripts); img-src 'self' data: https://s.gravatar.com/avatar/ $(GoogleMapsImages); font-src $(GoogleMapsFonts)</ContentSecurityPolicy>
+      <ContentSecurityPolicy>default-src 'none'; style-src 'self' $(GoogleMapsStyles); script-src 'self' $(GoogleMapsScripts); img-src 'self' data: https://s.gravatar.com/avatar/ $(GoogleMapsImages); font-src $(GoogleMapsFonts); connect-src 'self'</ContentSecurityPolicy>
       <FeaturePolicy>accelerometer 'none';ambient-light-sensor 'none';autoplay 'none';battery 'none';camera 'none';display-capture 'none';document-domain 'none';encrypted-media 'none';execution-while-not-rendered 'none';execution-while-out-of-viewport 'none';fullscreen 'none';geolocation 'none';gyroscope 'none';layout-animations 'none';legacy-image-formats 'none';magnetometer 'none';microphone 'none';midi 'none';navigation-override 'none';oversized-images 'none';payment 'none';picture-in-picture 'none';publickey-credentials 'none';sync-xhr 'none';usb 'none';wake-lock 'none';xr-spatial-tracking 'none'</FeaturePolicy>
     </PropertyGroup>
     <Copy SourceFiles="$(OriginalWebConfig)" DestinationFiles="$(TempWebConfig)" />

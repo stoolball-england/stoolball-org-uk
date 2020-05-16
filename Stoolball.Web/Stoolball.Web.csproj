@@ -562,6 +562,12 @@
     <Content Include="config\Lang\sv-SE.user.xml" />
     <Content Include="config\Lang\zh-CN.user.xml" />
     <Content Include="config\logviewer.searches.config.js" />
+    <Content Include="css\autocomplete.css">
+      <DependentUpon>autocomplete.scss</DependentUpon>
+    </Content>
+    <Content Include="css\autocomplete.min.css">
+      <DependentUpon>autocomplete.css</DependentUpon>
+    </Content>
     <Content Include="css\base.css">
       <DependentUpon>base.scss</DependentUpon>
     </Content>
@@ -581,6 +587,7 @@
     <Content Include="images\maps\map-marker.gif" />
     <Content Include="images\maps\map-markers-shadow.png" />
     <Content Include="images\maps\map-markers.gif" />
+    <Content Include="js\libs\jquery.autocomplete.min.js" />
     <Content Include="js\maps.js" />
     <Content Include="js\related-items.js" />
     <Content Include="MatchLocations\match-location.js" />
@@ -726,6 +733,8 @@
     <Content Include="css\_header.scss" />
     <Content Include="css\_tables.scss" />
     <Content Include="css\related-items.scss" />
+    <Content Include="css\autocomplete.scss" />
+    <Content Include="css\_theme.scss" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
     <Content Include="Scripts\jquery-3.5.1.min.js" />
@@ -896,6 +905,9 @@
     <Compile Include="Competitions\CompetitionViewModel.cs" />
     <Compile Include="Competitions\SeasonViewModel.cs" />
     <Compile Include="Competitions\SeasonListViewModel.cs" />
+    <Compile Include="WebApi\AutocompleteResult.cs" />
+    <Compile Include="WebApi\AutocompleteResultSet.cs" />
+    <Compile Include="WebApi\WebApiComposer.cs" />
     <Compile Include="HumanizerComposer.cs" />
     <Compile Include="Email\EmailProtectorHtmlHelper.cs" />
     <Compile Include="Matches\TournamentController.cs" />
@@ -906,6 +918,7 @@
     <Compile Include="MatchLocations\MatchLocationsViewModel.cs" />
     <Compile Include="MatchLocations\MatchesForMatchLocationController.cs" />
     <Compile Include="MatchLocations\MatchLocationsController.cs" />
+    <Compile Include="Teams\TeamsApiController.cs" />
     <Compile Include="Teams\TeamsViewModel.cs" />
     <Compile Include="Teams\MatchesForTeamController.cs" />
     <Compile Include="Teams\TeamsController.cs" />
@@ -1043,6 +1056,7 @@
     <Content Include="Views\MatchLocations.cshtml" />
     <Content Include="Views\Teams.cshtml" />
     <Content Include="Views\EditClub.cshtml" />
+    <Content Include="Views\Partials\_DeleteIcon.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

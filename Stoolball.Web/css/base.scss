@@ -1,5 +1,4 @@
-﻿$theme-colors: ( "primary": #008000, "info": #b5d498);
-
+﻿@import "_theme.scss";
 @import "../Content/bootstrap/bootstrap-reboot.scss";
 @import "../Content/bootstrap/bootstrap-grid.scss";
 
