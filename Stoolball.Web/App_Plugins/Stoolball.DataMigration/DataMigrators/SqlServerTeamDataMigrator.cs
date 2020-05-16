@@ -1,12 +1,8 @@
-﻿using Stoolball.Clubs;
-using Stoolball.MatchLocations;
-using Stoolball.Schools;
-using Stoolball.Teams;
+﻿using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
@@ -70,7 +66,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied team to the database with its existing <see cref="Team.TeamId"/>
 		/// </summary>
-		public async Task<Team> MigrateTeam(MigratedTeam team)
+		public async Task<MigratedTeam> MigrateTeam(MigratedTeam team)
 		{
 			if (team is null)
 			{
@@ -128,24 +124,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					{
 						if (migratedTeam.MigratedClubId.HasValue)
 						{
-							migratedTeam.Club = new Club
-							{
-								ClubId = await database.ExecuteScalarAsync<Guid>($"SELECT ClubId FROM {Tables.Club} WHERE MigratedClubId = @0", migratedTeam.MigratedClubId).ConfigureAwait(false)
-							};
+							migratedTeam.ClubId = await database.ExecuteScalarAsync<Guid>($"SELECT ClubId FROM {Tables.Club} WHERE MigratedClubId = @0", migratedTeam.MigratedClubId).ConfigureAwait(false);
 						}
 						if (migratedTeam.MigratedSchoolId.HasValue)
 						{
-							migratedTeam.School = new School
-							{
-								SchoolId = await database.ExecuteScalarAsync<Guid>($"SELECT SchoolId FROM {Tables.School} WHERE MigratedSchoolId = @0", migratedTeam.MigratedSchoolId).ConfigureAwait(false)
-							};
+							migratedTeam.SchoolId = await database.ExecuteScalarAsync<Guid>($"SELECT SchoolId FROM {Tables.School} WHERE MigratedSchoolId = @0", migratedTeam.MigratedSchoolId).ConfigureAwait(false);
 						}
 						if (migratedTeam.MigratedMatchLocationId.HasValue)
 						{
-							migratedTeam.MatchLocations.Add(new MatchLocation
-							{
-								MatchLocationId = await database.ExecuteScalarAsync<Guid>($"SELECT MatchLocationId FROM {Tables.MatchLocation} WHERE MigratedMatchLocationId = @0", migratedTeam.MigratedMatchLocationId).ConfigureAwait(false)
-							});
+							migratedTeam.MatchLocationId = await database.ExecuteScalarAsync<Guid>($"SELECT MatchLocationId FROM {Tables.MatchLocation} WHERE MigratedMatchLocationId = @0", migratedTeam.MigratedMatchLocationId).ConfigureAwait(false);
 						}
 
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Team}
@@ -155,8 +142,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16, @17)",
 							migratedTeam.TeamId,
 							migratedTeam.MigratedTeamId,
-							migratedTeam.Club?.ClubId,
-							migratedTeam.School?.SchoolId,
+							migratedTeam.ClubId,
+							migratedTeam.SchoolId,
 							migratedTeam.TeamType.ToString(),
 							migratedTeam.PlayerType.ToString(),
 							migratedTeam.Introduction,
@@ -179,13 +166,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedTeam.GenerateComparableName(),
 							migratedTeam.History[0].AuditDate
 							).ConfigureAwait(false);
-						if (migratedTeam.MatchLocations.Count > 0)
+						if (migratedTeam.MatchLocationId.HasValue)
 						{
 							await database.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} 
 							(TeamMatchLocationId, TeamId, MatchLocationId, FromDate) VALUES (@0, @1, @2, @3)",
 								Guid.NewGuid(),
 								migratedTeam.TeamId,
-								migratedTeam.MatchLocations.First().MatchLocationId,
+								migratedTeam.MatchLocationId,
 								migratedTeam.History[0].AuditDate
 								).ConfigureAwait(false);
 						}
@@ -215,7 +202,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			return migratedTeam;
 		}
 
-		private int ReadMemberGroupId(Team team)
+		private int ReadMemberGroupId(MigratedTeam team)
 		{
 			var groupId = _serviceContext.MemberGroupService.GetByName("team/" + team.TeamRoute)?.Id;
 			return (groupId == null) ? 0 : groupId.Value;
