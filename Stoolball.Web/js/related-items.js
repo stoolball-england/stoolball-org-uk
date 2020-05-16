@@ -1,15 +1,23 @@
 ﻿(function () {
   function resetIndexes(tableRow) {
     /* Reset the indexes on the remaining fields so that ASP.NET model binding reads them all */
-    const remainingIds = tableRow.parentNode.querySelectorAll(
-      ".related-item__id"
+    const remainingData = tableRow.parentNode.querySelectorAll(
+      ".related-item__data"
     );
-    for (let i = 0; i < remainingIds.length; i++) {
-      remainingIds[i].setAttribute(
+
+    let index = -1;
+    let dataItem;
+    for (let i = 0; i < remainingData.length; i++) {
+      if (remainingData[i].getAttribute("data-item") !== dataItem) {
+        index++;
+        dataItem = remainingData[i].getAttribute("data-item");
+      }
+
+      remainingData[i].setAttribute(
         "name",
-        remainingIds[i]
+        remainingData[i]
           .getAttribute("name")
-          .replace(/\[[0-9]+\]/, "[" + i + "]")
+          .replace(/\[[0-9]+\]/, "[" + index + "]")
       );
     }
   }
@@ -31,10 +39,10 @@
           e.preventDefault();
           e.stopPropagation();
 
-          /* Remove the id field so that it's not posted */
-          const id = tableRow.querySelector(".related-item__id");
-          if (id) {
-            id.parentNode.removeChild(id);
+          /* Remove any data fields so that the item isn't posted */
+          const dataFields = tableRow.querySelectorAll(".related-item__data");
+          for (let j = 0; j < dataFields.length; j++) {
+            dataFields[j].parentNode.removeChild(dataFields[j]);
           }
 
           resetIndexes(tableRow);

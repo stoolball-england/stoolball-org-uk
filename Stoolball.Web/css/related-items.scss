@@ -14,7 +14,7 @@
             </td>
             <td class="related-item__delete">
                 <div class="related-item__animate">
-                    <input type="hidden" class="related-item__id" />
+                    <input type="hidden" class="related-item__data" data-item="{{item-id}}" />
                     <button><svg /></button>
                 </div>
             </td>
@@ -34,7 +34,7 @@
 }
 
 .related-items td {
-    transition: padding 1s;
+    transition: padding .5s;
 }
 
 .related-item__deleted > td {
@@ -42,7 +42,7 @@
 }
 
 .related-item__animate {
-    transition: height 1s;
+    transition: height .5s;
     overflow: hidden;
 }
 

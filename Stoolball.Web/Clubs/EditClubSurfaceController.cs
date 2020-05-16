@@ -35,7 +35,7 @@ namespace Stoolball.Web.Clubs
                 throw new System.ArgumentNullException(nameof(club));
             }
 
-            var beforeUpdate = await _clubDataSource.ReadClubByRoute(Request.Url.AbsolutePath).ConfigureAwait(false);
+            var beforeUpdate = await _clubDataSource.ReadClubByRoute(Request.RawUrl).ConfigureAwait(false);
             club.ClubId = beforeUpdate.ClubId;
 
             var allowedGroup = Services.MemberGroupService.GetById(beforeUpdate.MemberGroupId);
