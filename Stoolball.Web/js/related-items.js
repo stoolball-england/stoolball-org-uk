@@ -22,6 +22,17 @@
     }
   }
 
+  function resetAutocompleteParams(tableRow) {
+    const existingIdFields = tableRow.parentNode.querySelectorAll(
+      ".related-item__id"
+    );
+    const existingIds = [];
+    for (let j = 0; j < existingIdFields.length; j++) {
+      existingIds.push(existingIdFields[j].value);
+    }
+    return { not: existingIds };
+  }
+
   window.addEventListener("DOMContentLoaded", function () {
     const relatedItems = document.querySelectorAll(".related-items");
     for (let i = 0; i < relatedItems.length; i++) {
@@ -47,6 +58,11 @@
 
           resetIndexes(tableRow);
 
+          /* Reset autocomplete options so the deleted team is available for reselection */
+          $(tableRow.parentNode.querySelector(".related-item__search"))
+            .autocomplete()
+            .setOptions({ params: resetAutocompleteParams(tableRow) });
+
           /* Set a class on the table row so that CSS can transition it */
           tableRow.classList.add("related-item__deleted");
         }
@@ -60,9 +76,11 @@
         searchFields[i].getAttribute("data-template")
       ).innerHTML;
       const tableRow = searchFields[i].parentNode.parentNode;
+      const params = resetAutocompleteParams(tableRow);
 
       $(searchFields[i]).autocomplete({
         serviceUrl: url,
+        params: params,
         onSelect: function (suggestion) {
           tableRow.insertAdjacentHTML(
             "beforebegin",
@@ -71,6 +89,13 @@
               .replace(/{{data}}/g, suggestion.data)
           );
           resetIndexes(tableRow);
+
+          /* Reset autocomplete options to the added team is excluded from further suggestions */
+          $(this)
+            .autocomplete()
+            .setOptions({ params: resetAutocompleteParams(tableRow) });
+
+          /* Clear the search field */
           this.value = "";
         },
       });

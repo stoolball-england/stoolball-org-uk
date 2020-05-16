@@ -1,5 +1,6 @@
 ﻿using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.WebApi;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -28,9 +29,26 @@ namespace Stoolball.Web.Teams
 
         [HttpGet]
         [Route("api/teams/autocomplete")]
-        public async Task<AutocompleteResultSet> Autocomplete(string query)
+        public async Task<AutocompleteResultSet> Autocomplete([FromUri]string query, [FromUri]string[] not)
         {
-            var teams = await _teamDataSource.ReadTeamListings(new TeamQuery { Query = query }).ConfigureAwait(false);
+            if (not is null)
+            {
+                throw new ArgumentNullException(nameof(not));
+            }
+
+            var teamQuery = new TeamQuery { Query = query };
+            foreach (var guid in not)
+            {
+                try
+                {
+                    teamQuery.ExcludeTeamIds.Add(new Guid(guid));
+                }
+                catch (FormatException)
+                {
+                    // ignore that one
+                }
+            }
+            var teams = await _teamDataSource.ReadTeamListings(teamQuery).ConfigureAwait(false);
             return new AutocompleteResultSet { suggestions = teams.Select(x => new AutocompleteResult { value = x.TeamName, data = x.TeamId.ToString() }) };
         }
     }

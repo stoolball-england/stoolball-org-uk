@@ -14,7 +14,7 @@
             </td>
             <td class="related-item__delete">
                 <div class="related-item__animate">
-                    <input type="hidden" class="related-item__data" data-item="{{item-id}}" />
+                    <input type="hidden" class="related-item__data related-item__id" data-item="{{item-id}}" />
                     <button><svg /></button>
                 </div>
             </td>

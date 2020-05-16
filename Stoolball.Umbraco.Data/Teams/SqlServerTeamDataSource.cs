@@ -162,6 +162,12 @@ namespace Stoolball.Umbraco.Data.Teams
                         parameters.Add("@Query", $"%{teamQuery.Query}%");
                     }
 
+                    if (teamQuery?.ExcludeTeamIds?.Count > 0)
+                    {
+                        where.Add("t.TeamId NOT IN @ExcludeTeamIds");
+                        parameters.Add("@ExcludeTeamIds", teamQuery.ExcludeTeamIds.Select(x => x.ToString()));
+                    }
+
                     sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
 
                     var teams = await connection.QueryAsync<Team, MatchLocation, Team>(sql,
