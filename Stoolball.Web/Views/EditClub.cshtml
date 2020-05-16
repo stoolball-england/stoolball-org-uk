@@ -72,7 +72,15 @@
                 <tr>
                     <td colspan="2">
                         @Html.Label("team-autocomplete", "Add a team", new { @class = "sr-only" })
-                        @Html.TextBox("team-autocomplete", string.Empty, new { @class = "form-control related-item__search", placeholder = "Add a team", autocomplete = "off", type = "search", data_url = "/api/teams/autocomplete", data_template = "team-template" })
+                        @Html.TextBox("team-autocomplete", string.Empty, new { 
+                            @class = "form-control related-item__search", 
+                            placeholder = "Add a team", 
+                            autocomplete = "off", 
+                            type = "search", 
+                            data_url = "/api/teams/autocomplete", 
+                            data_template = "team-template",
+                            aria_label="Type a team name add and press down arrow to select the team"
+                        })
                     </td>
                 </tr>
             </tbody>

@@ -72,6 +72,13 @@
             tableRow.parentNode && tableRow.parentNode.removeChild(tableRow);
           });
 
+          /* Create an alert for assistive technology */
+          var alert = document.createElement("div");
+          alert.setAttribute("role", "alert");
+          alert.setAttribute("class", "sr-only");
+          alert.appendChild(document.createTextNode("Item removed"));
+          document.body.appendChild(alert);
+
           /* Set the focus to the search field */
           searchField.focus();
         }
@@ -105,6 +112,16 @@
               .replace(/{{value}}/g, suggestion.value)
               .replace(/{{data}}/g, suggestion.data)
           );
+
+          /* Create an alert for assistive technology */
+          var alert = document.createElement("div");
+          alert.setAttribute("role", "alert");
+          alert.setAttribute("class", "sr-only");
+          alert.appendChild(
+            document.createTextNode("Added" + suggestion.value)
+          );
+          document.body.appendChild(alert);
+
           resetIndexes(tableRow);
 
           /* Reset autocomplete options to the added team is excluded from further suggestions */
