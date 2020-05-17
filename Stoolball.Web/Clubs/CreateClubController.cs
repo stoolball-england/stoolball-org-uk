@@ -1,4 +1,4 @@
-﻿using Stoolball.Umbraco.Data.Clubs;
+﻿using Stoolball.Clubs;
 using Stoolball.Web.Routing;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -12,52 +12,36 @@ using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Clubs
 {
-    public class ClubsController : RenderMvcControllerAsync
+    public class CreateClubController : RenderMvcControllerAsync
     {
-        private readonly IClubDataSource _clubDataSource;
-
-        public ClubsController(IGlobalSettings globalSettings,
+        public CreateClubController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           IClubDataSource clubDataSource)
+           UmbracoHelper umbracoHelper)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _clubDataSource = clubDataSource ?? throw new System.ArgumentNullException(nameof(clubDataSource));
         }
 
         [HttpGet]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public override Task<ActionResult> Index(ContentModel contentModel)
         {
             if (contentModel is null)
             {
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new ClubsViewModel(contentModel.Content)
+            var model = new ClubViewModel(contentModel.Content)
             {
-                ClubQuery = new ClubQuery
-                {
-                    Query = Request.QueryString["q"]?.Trim()
-                }
+                Club = new Club()
             };
-
-            if (!string.IsNullOrEmpty(model.ClubQuery.Query))
-            {
-                model.Clubs = await _clubDataSource.ReadClubListings(model.ClubQuery).ConfigureAwait(false);
-            }
 
             model.IsAuthorized = IsAuthorized();
 
-            model.Metadata.PageTitle = "Stoolball clubs";
-            if (!string.IsNullOrEmpty(model.ClubQuery.Query))
-            {
-                model.Metadata.PageTitle += $" matching '{model.ClubQuery.Query}'";
-            }
+            model.Metadata.PageTitle = "Add a club";
 
-            return CurrentTemplate(model);
+            return Task.FromResult(CurrentTemplate(model));
         }
 
         /// <summary>

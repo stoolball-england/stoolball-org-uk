@@ -17,24 +17,24 @@
     Html.RequiresJs("~/js/related-items.js");
 }
 
-<h1>Edit @Model.Club.ClubName</h1>
+<h1>Add a club</h1>
 
 <ul class="nav nav-tabs">
     <li class="nav-item">
-        <a class="nav-link" href="@Model.Club.ClubRoute">Summary</a>
+        <a class="nav-link" href="/clubs">Search</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.Club.ClubRoute/matches">Matches</a>
-    </li>
-    <li class="nav-item">
-        <em class="nav-link active">Edit</em>
-    </li>
+    @if (Model.IsAuthorized)
+    {
+        <li class="nav-item">
+            <em class="nav-link active">Add</em>
+        </li>
+    }
 </ul>
 
 @if (Model.IsAuthorized)
 {
-    using (Html.BeginUmbracoForm<EditClubSurfaceController>
-        ("UpdateClub"))
+    using (Html.BeginUmbracoForm<CreateClubSurfaceController>
+        ("CreateClub"))
     {
         @Html.AntiForgeryToken()
         @Html.Partial("_CreateOrEditClub")

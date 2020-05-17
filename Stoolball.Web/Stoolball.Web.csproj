@@ -208,6 +208,9 @@
     <Reference Include="Superpower, Version=1.0.0.0, Culture=neutral, PublicKeyToken=aec39280ded1b3a7, processorArchitecture=MSIL">
       <HintPath>..\packages\Superpower.2.0.0\lib\net45\Superpower.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.Annotations.4.7.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Data.SqlServerCe, Version=4.0.0.1, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <HintPath>..\packages\Umbraco.SqlServerCE.4.0.0.1\lib\net472\System.Data.SqlServerCe.dll</HintPath>
@@ -894,9 +897,11 @@
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerMatchLocationDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerSchoolDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerClubDataMigrator.cs" />
+    <Compile Include="Clubs\CreateClubController.cs" />
     <Compile Include="Clubs\EditClubController.cs" />
     <Compile Include="Clubs\ClubsController.cs" />
     <Compile Include="Clubs\ClubsViewModel.cs" />
+    <Compile Include="Clubs\CreateClubSurfaceController.cs" />
     <Compile Include="Clubs\EditClubSurfaceController.cs" />
     <Compile Include="Clubs\MatchesForClubController.cs" />
     <Compile Include="Competitions\CompetitionController.cs" />
@@ -1057,6 +1062,8 @@
     <Content Include="Views\Teams.cshtml" />
     <Content Include="Views\EditClub.cshtml" />
     <Content Include="Views\Partials\_DeleteIcon.cshtml" />
+    <Content Include="Views\CreateClub.cshtml" />
+    <Content Include="Views\Partials\_CreateOrEditClub.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

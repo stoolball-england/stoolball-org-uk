@@ -56,8 +56,9 @@ namespace Stoolball.Web.Routing
                 { $@"teams{OPTIONAL_SLASH}", StoolballRouteType.Teams },
                 { $@"locations{OPTIONAL_SLASH}", StoolballRouteType.MatchLocations },
 
-                // Match /prefix/example-entity, but not /prefix, /prefix/, or /prefix/example-entity/invalid, 
+                // Match /prefix/example-entity or /prefix/action, but not /prefix, /prefix/, or /prefix/example-entity/invalid, 
                 // in upper, lower or mixed case
+                { $@"clubs{SLASH}add{OPTIONAL_SLASH}", StoolballRouteType.CreateClub },
                 { $@"clubs{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Club },
                 { $@"teams{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Team},
                 { $@"locations{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.MatchLocation},

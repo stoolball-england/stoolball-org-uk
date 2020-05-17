@@ -7,6 +7,7 @@
     {
         Club,
         Clubs,
+        CreateClub,
         EditClub,
         MatchLocation,
         MatchLocations,
@@ -20,6 +21,6 @@
         MatchesForMatchLocation,
         MatchesForSeason,
         Match,
-        Tournament
+        Tournament,
     }
 }

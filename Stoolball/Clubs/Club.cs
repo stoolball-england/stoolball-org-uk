@@ -24,6 +24,7 @@ namespace Stoolball.Clubs
         [RegularExpression(@"^(|https?:\/\/(www.|)youtube.com\/.+)", ErrorMessage = "Please enter a valid YouTube link")]
         public string YouTube { get; set; }
         public bool ClubMark { get; set; }
+        public int MemberGroupId { get; set; }
         public string MemberGroupName { get; set; }
         public string ClubRoute { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();

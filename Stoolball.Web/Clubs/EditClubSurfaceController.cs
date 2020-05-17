@@ -43,7 +43,8 @@ namespace Stoolball.Web.Clubs
 
             if (isAuthorized && ModelState.IsValid)
             {
-                await _clubRepository.UpdateClub(club).ConfigureAwait(false);
+                var currentMember = Members.GetCurrentMember();
+                await _clubRepository.UpdateClub(club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // redirect back to the club
                 return Redirect(club.ClubRoute);

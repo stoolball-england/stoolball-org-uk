@@ -37,69 +37,108 @@ namespace Stoolball.Umbraco.Data.Clubs
         /// <summary>
         /// Creates a stoolball club and populates the <see cref="Club.ClubId"/>
         /// </summary>
-        public async Task<Club> CreateClub(Club club)
+        public async Task<Club> CreateClub(Club club, Guid memberKey, string memberName)
         {
             if (club is null)
             {
                 throw new ArgumentNullException(nameof(club));
             }
 
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentException("message", nameof(memberName));
+            }
+
             try
             {
-                /* using (var scope = _scopeProvider.CreateScope())
-                 {
-                     using (var transaction = scope.Database.GetTransaction())
-                     {
-                         club.ClubId = Guid.NewGuid();
+                club.ClubId = Guid.NewGuid();
+                club.Facebook = PrefixUrlProtocol(club.Facebook);
+                club.Twitter = PrefixAtSign(club.Twitter);
+                club.Instagram = PrefixAtSign(club.Instagram);
+                club.YouTube = PrefixUrlProtocol(club.YouTube);
+                club.Website = PrefixUrlProtocol(club.Website);
 
-                         await scope.Database.ExecuteAsync($@"INSERT INTO {Tables.Club}
-                         (ClubId, Twitter, Facebook, Instagram, ClubMark, ClubRoute)
-                         VALUES (@0, @1, @2, @3, @4, @5)",
-                             club.ClubId,
-                             PrefixAtSign(club.Twitter),
-                             PrefixUrlProtocol(club.Facebook),
-                             PrefixAtSign(club.Instagram),
-                             club.ClubMark,
-                             club.ClubRoute).ConfigureAwait(false);
-                         await scope.Database.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
-                             (ClubNameId, ClubId, ClubName, FromDate) VALUES (@0, @1, @2, @3)",
-                             Guid.NewGuid(),
-                             club.ClubId,
-                             club.ClubName,
-                             DateTime.UtcNow
-                             ).ConfigureAwait(false);
-                         transaction.Complete();
-                     }
-                     scope.Complete();
-                 }
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        club.ClubRoute = _routeGenerator.GenerateRoute("/clubs", club.ClubName);
+                        int count;
+                        do
+                        {
+                            count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Club} WHERE ClubRoute = @ClubRoute", new { club.ClubRoute }, transaction).ConfigureAwait(false);
+                            if (count > 0)
+                            {
+                                club.ClubRoute = _routeGenerator.IncrementRoute(club.ClubRoute);
+                            }
+                        }
+                        while (count > 0);
 
-                 await _auditRepository.CreateAudit(new AuditRecord
-                 {
-                     Action = AuditAction.Create,
-                     ActorName = nameof(SqlServerClubRepository),
-                     EntityUri = club.EntityUri,
-                     State = JsonConvert.SerializeObject(club),
-                     AuditDate = DateTime.UtcNow
-                 }).ConfigureAwait(false);
-                 */
-                return club;
+                        await connection.ExecuteAsync(
+                            $@"INSERT INTO {Tables.Club} (ClubId, ClubMark, Facebook, Twitter, Instagram, YouTube, Website, ClubRoute, MemberGroupId, MemberGroupName) 
+                                VALUES (@ClubId, @ClubMark, @Facebook, @Twitter, @Instagram, @YouTube, @Website, @ClubRoute, @MemberGroupId, @MemberGroupName)",
+                            new
+                            {
+                                club.ClubId,
+                                club.ClubMark,
+                                club.Facebook,
+                                club.Twitter,
+                                club.Instagram,
+                                club.YouTube,
+                                club.Website,
+                                club.ClubRoute,
+                                club.MemberGroupId,
+                                club.MemberGroupName
+                            }, transaction).ConfigureAwait(false);
+
+                        await connection.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
+                                (ClubNameId, ClubId, ClubName, FromDate) VALUES (@ClubNameId, @ClubId, @ClubName, GETUTCDATE())",
+                            new
+                            {
+                                ClubNameId = Guid.NewGuid(),
+                                club.ClubId,
+                                club.ClubName
+                            }, transaction).ConfigureAwait(false);
+
+                        await connection.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = @ClubId WHERE TeamId IN @TeamIds", new { club.ClubId, TeamIds = club.Teams.Select(x => x.TeamId) }, transaction).ConfigureAwait(false);
+
+                        transaction.Commit();
+                    }
+                }
+
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Create,
+                    MemberKey = memberKey,
+                    ActorName = memberName,
+                    EntityUri = club.EntityUri,
+                    State = JsonConvert.SerializeObject(club),
+                    AuditDate = DateTime.UtcNow
+                }).ConfigureAwait(false);
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.Error(typeof(SqlServerClubRepository), ex);
-                throw;
             }
+
+            return club;
         }
 
 
         /// <summary>
         /// Updates a stoolball club
         /// </summary>
-        public async Task<Club> UpdateClub(Club club)
+        public async Task<Club> UpdateClub(Club club, Guid memberKey, string memberName)
         {
             if (club is null)
             {
                 throw new ArgumentNullException(nameof(club));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentException("message", nameof(memberName));
             }
 
             try
@@ -180,7 +219,8 @@ namespace Stoolball.Umbraco.Data.Clubs
                 await _auditRepository.CreateAudit(new AuditRecord
                 {
                     Action = AuditAction.Update,
-                    ActorName = nameof(SqlServerClubRepository),
+                    MemberKey = memberKey,
+                    ActorName = memberName,
                     EntityUri = club.EntityUri,
                     State = JsonConvert.SerializeObject(club),
                     AuditDate = DateTime.UtcNow
