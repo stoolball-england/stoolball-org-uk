@@ -48,12 +48,22 @@ namespace Stoolball.Web.Clubs
             }
             else
             {
-                model.IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, model.Club.MemberGroupName }, null);
+                model.IsAuthorized = IsAuthorized(model);
 
                 model.Metadata.PageTitle = "Edit " + model.Club.ClubName;
 
                 return CurrentTemplate(model);
             }
+        }
+
+
+        /// <summary>
+        /// Checks whether the currently signed-in member is authorized to edit a club
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsAuthorized(ClubViewModel model)
+        {
+            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, model?.Club.MemberGroupName }, null);
         }
     }
 }
