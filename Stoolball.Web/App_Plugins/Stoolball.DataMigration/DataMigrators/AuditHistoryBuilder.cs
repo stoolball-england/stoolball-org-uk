@@ -24,7 +24,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Action = AuditAction.Create,
 				MemberKey = creatingMemberGuid,
 				ActorName = !string.IsNullOrEmpty(creatingMemberName) ? creatingMemberName : actor,
-				EntityUri = original.EntityUri,
+				EntityUri = migrated.EntityUri,
 				State = JsonConvert.SerializeObject(original),
 				AuditDate = original.History.Count > 0 && original.History[0].AuditDate != DateTime.MinValue ? original.History[0].AuditDate : SqlDateTime.MinValue.Value
 			});
@@ -38,10 +38,19 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					MemberKey = updatingMemberGuid,
 					ActorName = !string.IsNullOrEmpty(updatingMemberName) ? updatingMemberName : actor,
 					EntityUri = migrated.EntityUri,
-					State = JsonConvert.SerializeObject(migrated),
+					State = JsonConvert.SerializeObject(original),
 					AuditDate = original.History[1].AuditDate != DateTime.MinValue ? original.History[1].AuditDate : SqlDateTime.MinValue.Value
 				});
 			}
+
+			migrated.History.Add(new AuditRecord
+			{
+				Action = AuditAction.Update,
+				ActorName = actor,
+				EntityUri = migrated.EntityUri,
+				State = JsonConvert.SerializeObject(migrated),
+				AuditDate = DateTimeOffset.UtcNow
+			});
 		}
 
 		private (Guid? memberGuid, string memberName) FindMember(string actorName)

@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using Newtonsoft.Json;
+using Stoolball.Audit;
 using Stoolball.Clubs;
 using Stoolball.Routing;
 using Stoolball.Umbraco.Data.Audit;
@@ -102,23 +104,29 @@ namespace Stoolball.Umbraco.Data.Clubs
 
             try
             {
-                string updatedRoute = null;
+                string routeBeforeUpdate = club.ClubRoute;
+                club.Facebook = PrefixUrlProtocol(club.Facebook);
+                club.Twitter = PrefixAtSign(club.Twitter);
+                club.Instagram = PrefixAtSign(club.Instagram);
+                club.YouTube = PrefixUrlProtocol(club.YouTube);
+                club.Website = PrefixUrlProtocol(club.Website);
+
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     connection.Open();
                     using (var transaction = connection.BeginTransaction())
                     {
 
-                        updatedRoute = _routeGenerator.GenerateRoute("/clubs", club.ClubName);
-                        if (updatedRoute != club.ClubRoute)
+                        club.ClubRoute = _routeGenerator.GenerateRoute("/clubs", club.ClubName);
+                        if (club.ClubRoute != routeBeforeUpdate)
                         {
                             int count;
                             do
                             {
-                                count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Club} WHERE ClubRoute = @ClubRoute", new { ClubRoute = updatedRoute }, transaction).ConfigureAwait(false);
+                                count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Club} WHERE ClubRoute = @ClubRoute", new { club.ClubRoute }, transaction).ConfigureAwait(false);
                                 if (count > 0)
                                 {
-                                    updatedRoute = _routeGenerator.IncrementRoute(updatedRoute);
+                                    club.ClubRoute = _routeGenerator.IncrementRoute(club.ClubRoute);
                                 }
                             }
                             while (count > 0);
@@ -137,12 +145,12 @@ namespace Stoolball.Umbraco.Data.Clubs
                             new
                             {
                                 club.ClubMark,
-                                Facebook = PrefixUrlProtocol(club.Facebook),
-                                Twitter = PrefixAtSign(club.Twitter),
-                                Instagram = PrefixAtSign(club.Instagram),
-                                YouTube = PrefixUrlProtocol(club.YouTube),
-                                Website = PrefixUrlProtocol(club.Website),
-                                ClubRoute = updatedRoute,
+                                club.Facebook,
+                                club.Twitter,
+                                club.Instagram,
+                                club.YouTube,
+                                club.Website,
+                                club.ClubRoute,
                                 club.ClubId
                             }, transaction).ConfigureAwait(false);
 
@@ -166,18 +174,17 @@ namespace Stoolball.Umbraco.Data.Clubs
                         transaction.Commit();
                     }
 
-                    await _redirectsRepository.InsertRedirect(club.ClubRoute, updatedRoute, null).ConfigureAwait(false);
-                    club.ClubRoute = updatedRoute;
+                    await _redirectsRepository.InsertRedirect(routeBeforeUpdate, club.ClubRoute, null).ConfigureAwait(false);
                 }
 
-                /* await _auditRepository.CreateAudit(new AuditRecord
-                 {
-                     Action = AuditAction.Create,
-                     ActorName = nameof(SqlServerClubRepository),
-                     EntityUri = club.EntityUri,
-                     State = JsonConvert.SerializeObject(club),
-                     AuditDate = DateTime.UtcNow
-                 }).ConfigureAwait(false);*/
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Update,
+                    ActorName = nameof(SqlServerClubRepository),
+                    EntityUri = club.EntityUri,
+                    State = JsonConvert.SerializeObject(club),
+                    AuditDate = DateTime.UtcNow
+                }).ConfigureAwait(false);
 
             }
             catch (SqlException ex)
