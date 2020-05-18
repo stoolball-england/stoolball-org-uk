@@ -38,6 +38,12 @@ namespace Stoolball.Umbraco.Data.Migrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public string YouTube { get; set; }
 
+        [Column(nameof(MemberGroupId))]
+        public int MemberGroupId { get; set; }
+
+        [Column(nameof(MemberGroupName))]
+        public string MemberGroupName { get; set; }
+
         [Column(nameof(SchoolRoute))]
         [Index(IndexTypes.UniqueNonClustered)]
         public string SchoolRoute { get; set; }

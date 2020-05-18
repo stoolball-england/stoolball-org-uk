@@ -76,7 +76,7 @@
 
 @if (Model.Match.MatchLocation != null)
 {
-    <p>Where: <a href="@Model.Match.MatchLocation.MatchLocationRoute">@Model.Match.MatchLocation</a></p>
+    <p>Where: <a href="@Model.Match.MatchLocation.MatchLocationRoute">@Model.Match.MatchLocation.NameAndLocalityOrTown()</a></p>
 }
 
 @{

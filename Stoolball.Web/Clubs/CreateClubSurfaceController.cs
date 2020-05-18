@@ -42,7 +42,7 @@ namespace Stoolball.Web.Clubs
             if (isAuthorized && ModelState.IsValid)
             {
                 // Create an owner group
-                var groupName = _routeGenerator.GenerateRoute("club", club.ClubName);
+                var groupName = _routeGenerator.GenerateRoute("club", club.ClubName, NoiseWords.ClubRoute);
                 IMemberGroup group;
                 do
                 {

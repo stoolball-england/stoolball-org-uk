@@ -66,7 +66,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied team to the database with its existing <see cref="Team.TeamId"/>
 		/// </summary>
-		public async Task<MigratedTeam> MigrateTeam(MigratedTeam team)
+		public async Task<Team> MigrateTeam(MigratedTeam team)
 		{
 			if (team is null)
 			{
@@ -93,7 +93,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				PrivateContactDetails = team.PrivateContactDetails,
 				PlayingTimes = team.PlayingTimes,
 				Cost = team.Cost,
-				MemberGroupId = ReadMemberGroupId(team),
+				MemberGroupId = team.MemberGroupId,
+				MemberGroupName = team.MemberGroupName,
 				TeamRoute = team.TeamRoute
 			};
 
@@ -138,8 +139,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Team}
 						(TeamId, MigratedTeamId, ClubId, SchoolId, TeamType, PlayerType, Introduction, AgeRangeLower, AgeRangeUpper, 
 						 FromDate, UntilDate, Website, PublicContactDetails, PrivateContactDetails, PlayingTimes, Cost,
-						 MemberGroupId, TeamRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16, @17)",
+						 MemberGroupId, MemberGroupName, TeamRoute)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16, @17, @18)",
 							migratedTeam.TeamId,
 							migratedTeam.MigratedTeamId,
 							migratedTeam.ClubId,
@@ -157,6 +158,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedTeam.PlayingTimes,
 							migratedTeam.Cost,
 							migratedTeam.MemberGroupId,
+							migratedTeam.MemberGroupName,
 							migratedTeam.TeamRoute).ConfigureAwait(false);
 						await database.ExecuteAsync($@"INSERT INTO {Tables.TeamName} 
 							(TeamNameId, TeamId, TeamName, TeamComparableName, FromDate) VALUES (@0, @1, @2, @3, @4)",
@@ -200,12 +202,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			}
 
 			return migratedTeam;
-		}
-
-		private int ReadMemberGroupId(MigratedTeam team)
-		{
-			var groupId = _serviceContext.MemberGroupService.GetByName("team/" + team.TeamRoute)?.Id;
-			return (groupId == null) ? 0 : groupId.Value;
 		}
 	}
 }

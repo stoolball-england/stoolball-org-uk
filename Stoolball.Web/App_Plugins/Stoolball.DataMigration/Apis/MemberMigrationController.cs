@@ -16,6 +16,7 @@ using Umbraco.Web;
 using Umbraco.Web.Editors;
 using Umbraco.Web.Models.ContentEditing;
 using Umbraco.Web.Mvc;
+using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
 {
@@ -76,7 +77,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
 
             if (newMember)
             {
-                Services.MemberService.AssignRole(member.Id, "All Members");
+                Services.MemberService.AssignRole(member.Id, Groups.AllMembers);
             }
             return Created(new Uri(Request.RequestUri, new Uri($"/umbraco#/member/member/edit/{member.Key}", UriKind.Relative)), JsonConvert.SerializeObject(member));
         }

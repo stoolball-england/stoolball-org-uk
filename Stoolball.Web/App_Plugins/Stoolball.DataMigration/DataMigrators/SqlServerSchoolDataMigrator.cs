@@ -76,6 +76,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Twitter = school.Twitter,
 				Facebook = school.Facebook,
 				Instagram = school.Instagram,
+				MemberGroupId = school.MemberGroupId,
+				MemberGroupName = school.MemberGroupName,
 				SchoolRoute = "/schools" + school.SchoolRoute.Substring(6)
 			};
 
@@ -89,13 +91,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					using (var transaction = database.GetTransaction())
 					{
 						await database.ExecuteAsync($@"INSERT INTO {Tables.School}
-						(SchoolId, MigratedSchoolId, Twitter, Facebook, Instagram, SchoolRoute)
-						VALUES (@0, @1, @2, @3, @4, @5)",
+						(SchoolId, MigratedSchoolId, Twitter, Facebook, Instagram, MemberGroupId, MemberGroupName, SchoolRoute)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7)",
 							migratedSchool.SchoolId,
 							migratedSchool.MigratedSchoolId,
 							migratedSchool.Twitter,
 							migratedSchool.Facebook,
 							migratedSchool.Instagram,
+							migratedSchool.MemberGroupId,
+							migratedSchool.MemberGroupName,
 							migratedSchool.SchoolRoute).ConfigureAwait(false);
 						await database.ExecuteAsync($@"INSERT INTO {Tables.SchoolName} 
 							(SchoolNameId, SchoolId, SchoolName, FromDate) VALUES (@0, @1, @2, @3)",

@@ -32,7 +32,7 @@
 {
     whenWhereHeadingRendered = true;
     <h2>When and where</h2>
-    <p>This team plays at <a href="@Model.Team.MatchLocations.First().MatchLocationRoute">@Model.Team.MatchLocations.First()</a>.</p>
+    <p>This team plays at <a href="@Model.Team.MatchLocations.First().MatchLocationRoute">@Model.Team.MatchLocations.First().NameAndLocalityOrTown()</a>.</p>
 }
 
 @if (!string.IsNullOrWhiteSpace(Model.Team.PlayingTimes))

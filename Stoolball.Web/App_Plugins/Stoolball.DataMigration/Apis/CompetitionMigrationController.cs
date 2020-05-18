@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Stoolball.Routing;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using System;
 using System.Threading.Tasks;
@@ -7,11 +8,13 @@ using Umbraco.Core;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
+using Umbraco.Core.Models;
 using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Editors;
 using Umbraco.Web.Mvc;
+using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
 {
@@ -19,6 +22,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
     public class CompetitionMigrationController : UmbracoAuthorizedJsonController
     {
         private readonly ICompetitionDataMigrator _competitionDataMigrator;
+        private readonly IRouteGenerator _routeGenerator;
 
         public CompetitionMigrationController(IGlobalSettings globalSettings,
             IUmbracoContextAccessor umbracoContextAccessor,
@@ -28,10 +32,12 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
             IProfilingLogger profilingLogger,
             IRuntimeState runtimeState,
             UmbracoHelper umbracoHelper,
-            ICompetitionDataMigrator competitionDataMigrator) :
+            ICompetitionDataMigrator competitionDataMigrator,
+            IRouteGenerator routeGenerator) :
             base(globalSettings, umbracoContextAccessor, sqlContext, serviceContext, appCaches, profilingLogger, runtimeState, umbracoHelper)
         {
-            _competitionDataMigrator = competitionDataMigrator;
+            _competitionDataMigrator = competitionDataMigrator ?? throw new ArgumentNullException(nameof(competitionDataMigrator));
+            _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
         }
 
         [HttpPost]
@@ -41,6 +47,20 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
             {
                 throw new ArgumentNullException(nameof(competition));
             }
+
+            // Create an owner group
+            var groupName = _routeGenerator.GenerateRoute("competition", competition.CompetitionName, NoiseWords.CompetitionRoute);
+            var group = Services.MemberGroupService.GetByName(groupName);
+            if (group == null)
+            {
+                group = new MemberGroup
+                {
+                    Name = groupName
+                };
+                Services.MemberGroupService.Save(group);
+            }
+            competition.MemberGroupId = group.Id;
+            competition.MemberGroupName = group.Name;
 
             var migrated = await _competitionDataMigrator.MigrateCompetition(competition).ConfigureAwait(false);
             return Created(new Uri(Request.RequestUri, new Uri(migrated.CompetitionRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));

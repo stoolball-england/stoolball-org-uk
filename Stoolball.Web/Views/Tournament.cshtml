@@ -37,7 +37,7 @@
 
 @if (Model.Tournament.TournamentLocation != null)
 {
-    <p>Where: <a href="@Model.Tournament.TournamentLocation.MatchLocationRoute">@Model.Tournament.TournamentLocation</a></p>
+    <p>Where: <a href="@Model.Tournament.TournamentLocation.MatchLocationRoute">@Model.Tournament.TournamentLocation.NameAndLocalityOrTown()</a></p>
 }
 
 @if (Model.Tournament.OversPerInningsDefault.HasValue)

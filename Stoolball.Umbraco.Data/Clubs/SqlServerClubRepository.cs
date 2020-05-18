@@ -63,7 +63,7 @@ namespace Stoolball.Umbraco.Data.Clubs
                     connection.Open();
                     using (var transaction = connection.BeginTransaction())
                     {
-                        club.ClubRoute = _routeGenerator.GenerateRoute("/clubs", club.ClubName);
+                        club.ClubRoute = _routeGenerator.GenerateRoute("/clubs", club.ClubName, NoiseWords.ClubRoute);
                         int count;
                         do
                         {
@@ -156,7 +156,7 @@ namespace Stoolball.Umbraco.Data.Clubs
                     using (var transaction = connection.BeginTransaction())
                     {
 
-                        club.ClubRoute = _routeGenerator.GenerateRoute("/clubs", club.ClubName);
+                        club.ClubRoute = _routeGenerator.GenerateRoute("/clubs", club.ClubName, NoiseWords.ClubRoute);
                         if (club.ClubRoute != routeBeforeUpdate)
                         {
                             int count;

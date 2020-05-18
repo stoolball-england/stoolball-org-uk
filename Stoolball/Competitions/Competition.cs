@@ -56,6 +56,8 @@ namespace Stoolball.Competitions
         public int PlayersPerTeam { get; set; } = 11;
 
         public int Overs { get; set; } = 16;
+        public int MemberGroupId { get; set; }
+        public string MemberGroupName { get; set; }
 
         public string CompetitionRoute { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();

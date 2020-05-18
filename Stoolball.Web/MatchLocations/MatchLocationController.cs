@@ -55,7 +55,7 @@ namespace Stoolball.Web.MatchLocations
             }
             else
             {
-                model.Metadata.PageTitle = model.MatchLocation.ToString();
+                model.Metadata.PageTitle = model.MatchLocation.NameAndLocalityOrTown();
                 model.Metadata.Description = model.MatchLocation.Description();
 
                 model.MatchLocation.MatchLocationNotes = _emailProtector.ProtectEmailAddresses(model.MatchLocation.MatchLocationNotes, User.Identity.IsAuthenticated);

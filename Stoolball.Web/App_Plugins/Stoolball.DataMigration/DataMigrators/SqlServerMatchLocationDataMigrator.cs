@@ -1,10 +1,12 @@
 ﻿using Stoolball.MatchLocations;
+using Stoolball.Routing;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
+using static Stoolball.Umbraco.Data.Constants;
 using Tables = Stoolball.Umbraco.Data.Constants.Tables;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
@@ -16,14 +18,17 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		private readonly IAuditHistoryBuilder _auditHistoryBuilder;
 		private readonly IAuditRepository _auditRepository;
 		private readonly ILogger _logger;
+		private readonly IRouteGenerator _routeGenerator;
 
-		public SqlServerMatchLocationDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, ILogger logger)
+		public SqlServerMatchLocationDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder,
+			IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator)
 		{
 			_redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
 			_scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
 			_auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
 			_auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
+			_routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
 		}
 
 		/// <summary>
@@ -82,8 +87,24 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Longitude = matchLocation.Longitude,
 				GeoPrecision = matchLocation.GeoPrecision,
 				MatchLocationNotes = matchLocation.MatchLocationNotes,
-				MatchLocationRoute = "/locations" + matchLocation.MatchLocationRoute.Substring(6)
+				MemberGroupId = matchLocation.MemberGroupId,
+				MemberGroupName = matchLocation.MemberGroupName,
 			};
+			using (var scope = _scopeProvider.CreateScope())
+			{
+				migratedMatchLocation.MatchLocationRoute = _routeGenerator.GenerateRoute("/locations", migratedMatchLocation.NameAndLocalityOrTown(), NoiseWords.MatchLocationRoute);
+				int count;
+				do
+				{
+					count = await scope.Database.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.MatchLocation} WHERE MatchLocationRoute = @MatchLocationRoute", new { migratedMatchLocation.MatchLocationRoute }).ConfigureAwait(false);
+					if (count > 0)
+					{
+						migratedMatchLocation.MatchLocationRoute = _routeGenerator.IncrementRoute(migratedMatchLocation.MatchLocationRoute);
+					}
+				}
+				while (count > 0);
+				scope.Complete();
+			}
 
 			_auditHistoryBuilder.BuildInitialAuditHistory(matchLocation, migratedMatchLocation, nameof(SqlServerMatchLocationDataMigrator));
 
@@ -96,8 +117,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					{
 						await database.ExecuteAsync($@"INSERT INTO {Tables.MatchLocation}
 						(MatchLocationId, MigratedMatchLocationId, SortName, SecondaryAddressableObjectName, PrimaryAddressableObjectName, StreetDescription, 
-						 Locality, Town, AdministrativeArea, Postcode, Latitude, Longitude, GeoPrecision, MatchLocationNotes, MatchLocationRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14)",
+						 Locality, Town, AdministrativeArea, Postcode, Latitude, Longitude, GeoPrecision, MatchLocationNotes, MemberGroupId, MemberGroupName, MatchLocationRoute)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16)",
 							migratedMatchLocation.MatchLocationId,
 							migratedMatchLocation.MigratedMatchLocationId,
 							migratedMatchLocation.SortName,
@@ -112,6 +133,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedMatchLocation.Longitude,
 							migratedMatchLocation.GeoPrecision?.ToString(),
 							migratedMatchLocation.MatchLocationNotes,
+							migratedMatchLocation.MemberGroupId,
+							migratedMatchLocation.MemberGroupName,
 							migratedMatchLocation.MatchLocationRoute).ConfigureAwait(false);
 
 						transaction.Complete();

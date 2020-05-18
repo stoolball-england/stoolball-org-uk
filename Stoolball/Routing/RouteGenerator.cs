@@ -7,15 +7,19 @@ namespace Stoolball.Routing
 {
     public class RouteGenerator : IRouteGenerator
     {
-        public string GenerateRoute(string prefix, string name)
+        public string GenerateRoute(string prefix, string name, IEnumerable<string> noiseWords)
         {
             if (string.IsNullOrEmpty(name))
             {
                 throw new System.ArgumentException("message", nameof(name));
             }
 
+            if (noiseWords is null)
+            {
+                throw new System.ArgumentNullException(nameof(noiseWords));
+            }
+
             var route = Regex.Replace(name.ToLower(CultureInfo.CurrentCulture).Kebaberize(), "[^a-z0-9-]", string.Empty);
-            var noiseWords = new List<string> { "stoolball", "club", "team", "sports" };
             foreach (var noiseWord in noiseWords)
             {
                 route = Regex.Replace(route, $@"\b{noiseWord}\b", string.Empty);

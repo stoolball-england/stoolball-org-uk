@@ -87,6 +87,7 @@ namespace Stoolball.Teams
         public string PlayingTimes { get; set; }
         public string Cost { get; set; }
         public int MemberGroupId { get; set; }
+        public string MemberGroupName { get; set; }
         public string TeamRoute { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 

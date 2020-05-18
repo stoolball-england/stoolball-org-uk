@@ -13,6 +13,8 @@ namespace Stoolball.Schools
         public string Facebook { get; set; }
         public string Instagram { get; set; }
         public string YouTube { get; set; }
+        public int MemberGroupId { get; set; }
+        public string MemberGroupName { get; set; }
         public string SchoolRoute { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 

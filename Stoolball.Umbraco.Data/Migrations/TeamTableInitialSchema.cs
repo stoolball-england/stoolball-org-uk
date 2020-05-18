@@ -100,6 +100,9 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(MemberGroupId))]
         public int MemberGroupId { get; set; }
 
+        [Column(nameof(MemberGroupName))]
+        public string MemberGroupName { get; set; }
+
         [Column(nameof(TeamRoute))]
         [Index(IndexTypes.UniqueNonClustered)]
         public string TeamRoute { get; set; }

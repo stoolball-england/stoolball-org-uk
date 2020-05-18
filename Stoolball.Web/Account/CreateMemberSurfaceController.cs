@@ -1,20 +1,19 @@
-﻿using System;
+﻿using Stoolball.Security;
+using Stoolball.Web.Email;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Mvc;
-using Umbraco.Web.Models;
-using Umbraco.Web.Mvc;
-using Umbraco.Web.Controllers;
-using Umbraco.Core.Persistence;
-using Umbraco.Web;
-using Umbraco.Core.Services;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
-using Stoolball.Web.Email;
-using System.Globalization;
-using Stoolball.Security;
+using Umbraco.Core.Persistence;
+using Umbraco.Core.Services;
+using Umbraco.Web;
+using Umbraco.Web.Controllers;
+using Umbraco.Web.Models;
+using Umbraco.Web.Mvc;
+using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Account
 {
@@ -66,7 +65,7 @@ namespace Stoolball.Web.Account
                 Services.MemberService.Save(member);
 
                 // Add to a default group which can be used to assign permissions to all members
-                Services.MemberService.AssignRole(member.Id, "All Members");
+                Services.MemberService.AssignRole(member.Id, Groups.AllMembers);
 
                 // Send the approval validation email
                 var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>("approveMemberSubject"),

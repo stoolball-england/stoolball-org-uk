@@ -1,5 +1,5 @@
-﻿using Humanizer;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Stoolball.Routing;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using System;
 using System.Threading.Tasks;
@@ -14,6 +14,7 @@ using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Editors;
 using Umbraco.Web.Mvc;
+using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
 {
@@ -21,6 +22,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
     public class ClubMigrationController : UmbracoAuthorizedJsonController
     {
         private readonly IClubDataMigrator _clubDataMigrator;
+        private readonly IRouteGenerator _routeGenerator;
 
         public ClubMigrationController(IGlobalSettings globalSettings,
             IUmbracoContextAccessor umbracoContextAccessor,
@@ -30,10 +32,12 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
             IProfilingLogger profilingLogger,
             IRuntimeState runtimeState,
             UmbracoHelper umbracoHelper,
-            IClubDataMigrator clubDataMigrator) :
+            IClubDataMigrator clubDataMigrator,
+            IRouteGenerator routeGenerator) :
             base(globalSettings, umbracoContextAccessor, sqlContext, serviceContext, appCaches, profilingLogger, runtimeState, umbracoHelper)
         {
-            _clubDataMigrator = clubDataMigrator;
+            _clubDataMigrator = clubDataMigrator ?? throw new ArgumentNullException(nameof(clubDataMigrator));
+            _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
         }
 
         [HttpPost]
@@ -46,7 +50,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
 
 
             // Create an owner group
-            var groupName = "club/" + club.ClubName.Kebaberize();
+            var groupName = _routeGenerator.GenerateRoute("club", club.ClubName, NoiseWords.ClubRoute);
             var group = Services.MemberGroupService.GetByName(groupName);
             if (group == null)
             {

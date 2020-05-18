@@ -36,6 +36,10 @@ namespace Stoolball.MatchLocations
         public List<Team> Teams { get; internal set; } = new List<Team>();
 
         public string MatchLocationRoute { get; set; }
+
+        public int MemberGroupId { get; set; }
+        public string MemberGroupName { get; set; }
+
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 
         public Uri EntityUri
@@ -44,20 +48,16 @@ namespace Stoolball.MatchLocations
         }
 
         /// <summary>
-        /// Gets the name of the ground and the town it's in
+        /// Gets <see cref="SecondaryAddressableObjectName"/> and <see cref="PrimaryAddressableObjectName"/> combined
         /// </summary>
-        public override string ToString()
+        /// <returns></returns>
+        public string Name()
         {
             var text = new StringBuilder(SecondaryAddressableObjectName);
             if (!string.IsNullOrWhiteSpace(PrimaryAddressableObjectName))
             {
                 if (text.Length > 0) text.Append(", ");
                 text.Append(PrimaryAddressableObjectName);
-            }
-            var placeName = LocalityOrTown();
-            if (!string.IsNullOrWhiteSpace(placeName))
-            {
-                text.Append(", ").Append(placeName);
             }
 
             return text.ToString();
@@ -85,11 +85,41 @@ namespace Stoolball.MatchLocations
         }
 
         /// <summary>
+        /// Gets the name of the match location and the town it's in
+        /// </summary>
+        public string NameAndLocalityOrTown()
+        {
+            var text = new StringBuilder(Name());
+            var placeName = LocalityOrTown();
+            if (!string.IsNullOrWhiteSpace(placeName))
+            {
+                text.Append(", ").Append(placeName);
+            }
+
+            return text.ToString();
+        }
+
+        /// <summary>
+        /// Gets the name of the match location, and the town it's in if that's not in the name
+        /// </summary>
+        public string NameAndLocalityOrTownIfDifferent()
+        {
+            var name = Name();
+            var placeName = LocalityOrTown();
+            if (!string.IsNullOrWhiteSpace(placeName) && !name.ToUpperInvariant().Contains(placeName.ToUpperInvariant()))
+            {
+                return $"{name}, {placeName}";
+            }
+
+            return name;
+        }
+
+        /// <summary>
         /// Gets a description of the match location suitable for including in metadata or search results
         /// </summary>
         public string Description()
         {
-            var description = new StringBuilder(ToString());
+            var description = new StringBuilder(NameAndLocalityOrTown());
             if (Teams?.Count > 0)
             {
                 description.Append(" is home to ");

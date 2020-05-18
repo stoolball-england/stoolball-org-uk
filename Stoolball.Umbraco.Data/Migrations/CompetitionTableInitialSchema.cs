@@ -74,6 +74,12 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(Overs))]
         public int Overs { get; set; }
 
+        [Column(nameof(MemberGroupId))]
+        public int MemberGroupId { get; set; }
+
+        [Column(nameof(MemberGroupName))]
+        public string MemberGroupName { get; set; }
+
         [Column(nameof(CompetitionRoute))]
         [Index(IndexTypes.UniqueNonClustered)]
         public string CompetitionRoute { get; set; }

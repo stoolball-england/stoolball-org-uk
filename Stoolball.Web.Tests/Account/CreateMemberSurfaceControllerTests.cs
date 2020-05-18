@@ -2,14 +2,8 @@
 using Stoolball.Security;
 using Stoolball.Web.Account;
 using Stoolball.Web.Email;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
-using System.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
@@ -20,6 +14,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Umbraco.Web.Mvc;
 using Xunit;
+using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Tests.Account
 {
@@ -30,7 +25,7 @@ namespace Stoolball.Web.Tests.Account
 
         private class TestCreateMemberSurfaceController : CreateMemberSurfaceController
         {
-            private Mock<IPublishedContent> _currentPage;
+            private readonly Mock<IPublishedContent> _currentPage;
 
             public TestCreateMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services, AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IEmailFormatter emailFormatter, IEmailSender emailSender, IVerificationToken verificationToken)
             : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper, emailFormatter, emailSender, verificationToken)
@@ -110,7 +105,7 @@ namespace Stoolball.Web.Tests.Account
         {
             var model = RegisterModel.CreateModel();
             MemberService.Setup(x => x.GetByEmail(It.IsAny<string>())).Returns(Mock.Of<IMember>());
-            MemberService.Setup(x => x.AssignRole(It.IsAny<int>(), "All Members"));
+            MemberService.Setup(x => x.AssignRole(It.IsAny<int>(), Groups.AllMembers));
             using (var controller = CreateController())
             {
                 controller.CreateMemberSucceeds = true;

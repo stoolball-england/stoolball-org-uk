@@ -84,6 +84,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Overs = competition.Overs,
 				PlayerType = competition.PlayerType,
 				CompetitionRoute = "/competitions/" + competition.CompetitionRoute,
+				MemberGroupId = competition.MemberGroupId,
+				MemberGroupName = competition.MemberGroupName,
 				UntilDate = competition.UntilDate
 			};
 
@@ -99,8 +101,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					{
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Competition}
 						(CompetitionId, MigratedCompetitionId, CompetitionName, Introduction, Twitter, Facebook, Instagram, PublicContactDetails, Website, PlayersPerTeam, 
-						 Overs, PlayerType, FromDate, UntilDate, CompetitionRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14)",
+						 Overs, PlayerType, FromDate, UntilDate, MemberGroupId, MemberGroupName, CompetitionRoute)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16)",
 							migratedCompetition.CompetitionId,
 							migratedCompetition.MigratedCompetitionId,
 							migratedCompetition.CompetitionName,
@@ -115,6 +117,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedCompetition.PlayerType,
 							migratedCompetition.FromDate,
 							migratedCompetition.UntilDate,
+							migratedCompetition.MemberGroupId,
+							migratedCompetition.MemberGroupName,
 							migratedCompetition.CompetitionRoute).ConfigureAwait(false);
 						transaction.Complete();
 					}

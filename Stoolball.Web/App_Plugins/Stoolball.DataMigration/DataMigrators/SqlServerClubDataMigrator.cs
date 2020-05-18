@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
+using static Stoolball.Umbraco.Data.Constants;
 using Tables = Stoolball.Umbraco.Data.Constants.Tables;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
@@ -65,7 +66,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		/// <summary>
 		/// Save the supplied Club to the database with its existing <see cref="Club.ClubId"/>
 		/// </summary>
-		public async Task<MigratedClub> MigrateClub(MigratedClub club)
+		public async Task<Club> MigrateClub(MigratedClub club)
 		{
 			if (club is null)
 			{
@@ -86,7 +87,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			};
 			using (var scope = _scopeProvider.CreateScope())
 			{
-				migratedClub.ClubRoute = _routeGenerator.GenerateRoute("/clubs", club.ClubName);
+				migratedClub.ClubRoute = _routeGenerator.GenerateRoute("/clubs", club.ClubName, NoiseWords.ClubRoute);
 				int count;
 				do
 				{

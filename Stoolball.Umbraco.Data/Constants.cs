@@ -1,4 +1,7 @@
-﻿namespace Stoolball.Umbraco.Data
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
+namespace Stoolball.Umbraco.Data
 {
     /// <summary>
     ///  Constants for working with the stoolball data schema
@@ -44,8 +47,19 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Not a typical class. This is creating a set of constants accessible with IntelliSense.")]
         public static class Groups
         {
-            public const string Administrators = "Administrators";
-            public const string Editors = "Editors";
+            public const string Administrators = "Administrator";
+            public const string Editors = "Editor";
+            public const string AllMembers = "All Members";
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Not a typical class. This is creating a set of constants accessible with IntelliSense.")]
+        public static class NoiseWords
+        {
+            public static IEnumerable<string> ClubRoute { get; } = new ReadOnlyCollection<string>(new[] { "stoolball", "club", "sports" });
+            public static IEnumerable<string> SchoolRoute { get; } = new ReadOnlyCollection<string>(new[] { "stoolball" });
+            public static IEnumerable<string> MatchLocationRoute { get; } = new ReadOnlyCollection<string>(new[] { "stoolball" });
+            public static IEnumerable<string> TeamRoute { get; } = new ReadOnlyCollection<string>(new[] { "stoolball", "club", "team" });
+            public static IEnumerable<string> CompetitionRoute { get; } = new ReadOnlyCollection<string>(new[] { "stoolball" });
         }
     }
 }

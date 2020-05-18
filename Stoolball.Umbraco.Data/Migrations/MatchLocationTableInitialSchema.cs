@@ -74,6 +74,12 @@ namespace Stoolball.Umbraco.Data.Migrations
         [SpecialDbType(SpecialDbTypes.NTEXT)]
         public string MatchLocationNotes { get; set; }
 
+        [Column(nameof(MemberGroupId))]
+        public int MemberGroupId { get; set; }
+
+        [Column(nameof(MemberGroupName))]
+        public string MemberGroupName { get; set; }
+
         [Column(nameof(MatchLocationRoute))]
         [Index(IndexTypes.UniqueNonClustered)]
         public string MatchLocationRoute { get; set; }
