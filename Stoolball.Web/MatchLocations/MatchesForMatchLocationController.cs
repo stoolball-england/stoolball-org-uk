@@ -15,6 +15,7 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
+using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.MatchLocations
 {
@@ -74,10 +75,21 @@ namespace Stoolball.Web.MatchLocations
                     },
                 };
 
+                model.IsAuthorized = IsAuthorized(model);
+
                 model.Metadata.PageTitle = $"Matches for {model.MatchLocation}";
 
                 return CurrentTemplate(model);
             }
+        }
+
+        /// <summary>
+        /// Checks whether the currently signed-in member is authorized to edit this match location
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsAuthorized(MatchLocationViewModel model)
+        {
+            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, model?.MatchLocation.MemberGroupName }, null);
         }
     }
 }

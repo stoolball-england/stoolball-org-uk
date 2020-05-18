@@ -1,0 +1,35 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<MatchLocationViewModel>
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.MatchLocations
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+}
+
+<h1>Add a ground or sports hall</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="/locations">Search</a>
+    </li>
+    @if (Model.IsAuthorized)
+    {
+        <li class="nav-item">
+            <em class="nav-link active">Add</em>
+        </li>
+    }
+</ul>
+
+@if (Model.IsAuthorized)
+{
+   
+}
+else
+{
+    @Html.Partial("_Login")
+}

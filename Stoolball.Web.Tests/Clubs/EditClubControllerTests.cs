@@ -46,7 +46,7 @@ namespace Stoolball.Web.Tests.Clubs
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("Club", model);
+                return View("EditClub", model);
             }
         }
 

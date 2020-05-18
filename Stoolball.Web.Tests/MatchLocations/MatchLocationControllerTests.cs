@@ -43,6 +43,10 @@ namespace Stoolball.Web.Tests.MatchLocations
                 controllerContext.Setup(p => p.HttpContext.User).Returns(new GenericPrincipal(new GenericIdentity("test"), null));
                 ControllerContext = controllerContext.Object;
             }
+            protected override bool IsAuthorized(MatchLocationViewModel model)
+            {
+                return true;
+            }
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {

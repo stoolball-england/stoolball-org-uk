@@ -1,4 +1,5 @@
 ﻿using Stoolball.Routing;
+using System;
 using Xunit;
 
 namespace Stoolball.Tests.Routing
@@ -11,7 +12,7 @@ namespace Stoolball.Tests.Routing
             var original = "MiXeD";
             var generator = new RouteGenerator();
 
-            var result = generator.GenerateRoute(string.Empty, original);
+            var result = generator.GenerateRoute(string.Empty, original, Array.Empty<string>());
 
             Assert.Equal("mixed", result);
         }
@@ -22,7 +23,7 @@ namespace Stoolball.Tests.Routing
             var original = "example? route's punctuation; good! example.";
             var generator = new RouteGenerator();
 
-            var result = generator.GenerateRoute(string.Empty, original);
+            var result = generator.GenerateRoute(string.Empty, original, Array.Empty<string>());
 
             Assert.Equal("example-routes-punctuation-good-example", result);
         }
@@ -33,7 +34,7 @@ namespace Stoolball.Tests.Routing
             var original = "stoolball-ladies";
             var generator = new RouteGenerator();
 
-            var result = generator.GenerateRoute(string.Empty, original);
+            var result = generator.GenerateRoute(string.Empty, original, new[] { "stoolball" });
 
             Assert.Equal("ladies", result);
         }
@@ -44,7 +45,7 @@ namespace Stoolball.Tests.Routing
             var original = "some-stoolball-friends";
             var generator = new RouteGenerator();
 
-            var result = generator.GenerateRoute(string.Empty, original);
+            var result = generator.GenerateRoute(string.Empty, original, new[] { "stoolball" });
 
             Assert.Equal("some-friends", result);
         }
@@ -55,7 +56,7 @@ namespace Stoolball.Tests.Routing
             var original = "somewhere-club";
             var generator = new RouteGenerator();
 
-            var result = generator.GenerateRoute(string.Empty, original);
+            var result = generator.GenerateRoute(string.Empty, original, new[] { "club" });
 
             Assert.Equal("somewhere", result);
         }
@@ -68,7 +69,7 @@ namespace Stoolball.Tests.Routing
             var original = "example";
             var generator = new RouteGenerator();
 
-            var result = generator.GenerateRoute(prefix, original);
+            var result = generator.GenerateRoute(prefix, original, Array.Empty<string>());
 
             Assert.Equal("prefix/example", result);
         }

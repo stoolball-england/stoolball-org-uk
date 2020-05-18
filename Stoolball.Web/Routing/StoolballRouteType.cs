@@ -11,6 +11,8 @@
         EditClub,
         MatchLocation,
         MatchLocations,
+        CreateMatchLocation,
+        EditMatchLocation,
         Team,
         TransientTeam,
         Teams,

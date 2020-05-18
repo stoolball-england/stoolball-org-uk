@@ -1,4 +1,4 @@
-﻿using Stoolball.Clubs;
+﻿using Stoolball.MatchLocations;
 using Stoolball.Web.Routing;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -10,11 +10,11 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using static Stoolball.Umbraco.Data.Constants;
 
-namespace Stoolball.Web.Clubs
+namespace Stoolball.Web.MatchLocations
 {
-    public class CreateClubController : RenderMvcControllerAsync
+    public class CreateMatchLocationController : RenderMvcControllerAsync
     {
-        public CreateClubController(IGlobalSettings globalSettings,
+        public CreateMatchLocationController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
@@ -32,20 +32,20 @@ namespace Stoolball.Web.Clubs
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new ClubViewModel(contentModel.Content)
+            var model = new MatchLocationViewModel(contentModel.Content)
             {
-                Club = new Club()
+                MatchLocation = new MatchLocation()
             };
 
             model.IsAuthorized = IsAuthorized();
 
-            model.Metadata.PageTitle = "Add a club";
+            model.Metadata.PageTitle = "Add a ground or sports hall";
 
             return Task.FromResult(CurrentTemplate(model));
         }
 
         /// <summary>
-        /// Checks whether the currently signed-in member is authorized to add a club
+        /// Checks whether the currently signed-in member is authorized to add a match location
         /// </summary>
         /// <returns></returns>
         protected virtual bool IsAuthorized()

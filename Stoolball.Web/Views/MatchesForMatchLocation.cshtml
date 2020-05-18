@@ -3,7 +3,7 @@
     <meta name="robots" content="noindex,follow" />
 }
 
-<h1>Matches at @Model.MatchLocation</h1>
+<h1>Matches at @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</h1>
 
 <ul class="nav nav-tabs">
     <li class="nav-item">
@@ -12,6 +12,12 @@
     <li class="nav-item">
         <em class="nav-link active">Matches</em>
     </li>
+    @if (Model.IsAuthorized)
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute/edit">Edit</a>
+        </li>
+    }
 </ul>
 
 @if (Model.Matches.Matches.Count > 0)

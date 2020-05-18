@@ -2,12 +2,24 @@
 @using Humanizer
 
 <h1>
-    Match locations
+    Grounds and sports halls
     @if (!string.IsNullOrEmpty(Model.MatchLocationQuery.Query))
     {
         @: matching '@Model.MatchLocationQuery.Query'
     }
 </h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <em class="nav-link active">Search</em>
+    </li>
+    @if (Model.IsAuthorized)
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="/locations/add">Add</a>
+        </li>
+    }
+</ul>
 
 <form method="get" action="@Request.Url" class="form-inline form-search">
     <label class="sr-only" for="location-search">Match location name</label>
@@ -18,12 +30,12 @@
 <dl>
     @foreach (var location in Model.MatchLocations.Where(x => x.Teams.Count > 0))
     {
-        <dt><a href="@location.MatchLocationRoute">@location</a></dt>
+        <dt><a href="@location.MatchLocationRoute">@location.NameAndLocalityOrTownIfDifferent()</a></dt>
         <dd>@(location.Teams.Select(x => x.PlayerType).Distinct().Humanize().Humanize(LetterCasing.Sentence)). @("team".ToQuantity(location.Teams.Count)).</dd>
     }
     @foreach (var location in Model.MatchLocations.Where(x => x.Teams.Count == 0))
     {
-        <dt><a href="@location.MatchLocationRoute">@location</a></dt>
+        <dt><a href="@location.MatchLocationRoute">@location.NameAndLocalityOrTownIfDifferent()</a></dt>
         <dd>
             <p>No active teams.</p>
         </dd>

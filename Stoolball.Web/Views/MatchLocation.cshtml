@@ -8,7 +8,7 @@ Html.RequiresJs("/js/maps.js", 90);
 Html.RequiresJs("/matchlocations/match-location.js");
 }
 
-<h1>@Model.MatchLocation</h1>
+<h1>@Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</h1>
 
 <ul class="nav nav-tabs">
     <li class="nav-item">
@@ -17,6 +17,12 @@ Html.RequiresJs("/matchlocations/match-location.js");
     <li class="nav-item">
         <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute/matches">Matches</a>
     </li>
+    @if (Model.IsAuthorized)
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute/edit">Edit</a>
+        </li>
+    }
 </ul>
 
 @{
@@ -79,7 +85,7 @@ Html.RequiresJs("/matchlocations/match-location.js");
     switch (Model.MatchLocation.GeoPrecision)
     {
         case GeoPrecision.Exact:
-            mapTitle = Model.MatchLocation.ToString();
+            mapTitle = Model.MatchLocation.NameAndLocalityOrTownIfDifferent();
             break;
         case GeoPrecision.Postcode:
             mapTitle = Model.MatchLocation.Postcode;

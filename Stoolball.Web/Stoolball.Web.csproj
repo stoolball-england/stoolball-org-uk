@@ -910,6 +910,8 @@
     <Compile Include="Competitions\CompetitionViewModel.cs" />
     <Compile Include="Competitions\SeasonViewModel.cs" />
     <Compile Include="Competitions\SeasonListViewModel.cs" />
+    <Compile Include="MatchLocations\CreateMatchLocationController.cs" />
+    <Compile Include="MatchLocations\EditMatchLocationController.cs" />
     <Compile Include="WebApi\AutocompleteResult.cs" />
     <Compile Include="WebApi\AutocompleteResultSet.cs" />
     <Compile Include="WebApi\WebApiComposer.cs" />
@@ -1064,6 +1066,8 @@
     <Content Include="Views\Partials\_DeleteIcon.cshtml" />
     <Content Include="Views\CreateClub.cshtml" />
     <Content Include="Views\Partials\_CreateOrEditClub.cshtml" />
+    <Content Include="Views\EditMatchLocation.cshtml" />
+    <Content Include="Views\CreateMatchLocation.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

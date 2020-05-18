@@ -37,7 +37,7 @@ namespace Stoolball.Web.Clubs
                 throw new System.ArgumentNullException(nameof(club));
             }
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null);
+            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, Groups.AllMembers }, null);
 
             if (isAuthorized && ModelState.IsValid)
             {

@@ -1,6 +1,5 @@
-﻿using Stoolball.Email;
-using Stoolball.Umbraco.Data.MatchLocations;
-using Stoolball.Web.Configuration;
+﻿using Stoolball.Umbraco.Data.MatchLocations;
+using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Routing;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -12,28 +11,22 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using static Stoolball.Umbraco.Data.Constants;
 
-namespace Stoolball.Web.MatchLocations
+namespace Stoolball.Web.Clubs
 {
-    public class MatchLocationController : RenderMvcControllerAsync
+    public class EditMatchLocationController : RenderMvcControllerAsync
     {
         private readonly IMatchLocationDataSource _matchLocationDataSource;
-        private readonly IApiKeyProvider _apiKeyProvider;
-        private readonly IEmailProtector _emailProtector;
 
-        public MatchLocationController(IGlobalSettings globalSettings,
+        public EditMatchLocationController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           IMatchLocationDataSource matchLocationDataSource,
-           IApiKeyProvider apiKeyProvider,
-           IEmailProtector emailProtector)
+           IMatchLocationDataSource matchLocationDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchLocationDataSource = matchLocationDataSource ?? throw new System.ArgumentNullException(nameof(matchLocationDataSource));
-            _apiKeyProvider = apiKeyProvider ?? throw new System.ArgumentNullException(nameof(apiKeyProvider));
-            _emailProtector = emailProtector ?? throw new System.ArgumentNullException(nameof(emailProtector));
         }
 
         [HttpGet]
@@ -46,9 +39,9 @@ namespace Stoolball.Web.MatchLocations
 
             var model = new MatchLocationViewModel(contentModel.Content)
             {
-                MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false),
-                GoogleMapsApiKey = _apiKeyProvider.GetApiKey("GoogleMaps")
+                MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.Url.AbsolutePath, false).ConfigureAwait(false)
             };
+
 
             if (model.MatchLocation == null)
             {
@@ -58,10 +51,7 @@ namespace Stoolball.Web.MatchLocations
             {
                 model.IsAuthorized = IsAuthorized(model);
 
-                model.Metadata.PageTitle = model.MatchLocation.NameAndLocalityOrTown();
-                model.Metadata.Description = model.MatchLocation.Description();
-
-                model.MatchLocation.MatchLocationNotes = _emailProtector.ProtectEmailAddresses(model.MatchLocation.MatchLocationNotes, User.Identity.IsAuthenticated);
+                model.Metadata.PageTitle = "Edit " + model.MatchLocation.NameAndLocalityOrTown();
 
                 return CurrentTemplate(model);
             }
@@ -69,7 +59,7 @@ namespace Stoolball.Web.MatchLocations
 
 
         /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this club
+        /// Checks whether the currently signed-in member is authorized to edit this match location
         /// </summary>
         /// <returns></returns>
         protected virtual bool IsAuthorized(MatchLocationViewModel model)
