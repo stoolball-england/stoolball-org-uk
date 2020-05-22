@@ -1,4 +1,5 @@
 ﻿using Stoolball.MatchLocations;
+using Stoolball.Web.Configuration;
 using Stoolball.Web.Routing;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -14,14 +15,18 @@ namespace Stoolball.Web.MatchLocations
 {
     public class CreateMatchLocationController : RenderMvcControllerAsync
     {
+        private readonly IApiKeyProvider _apiKeyProvider;
+
         public CreateMatchLocationController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper)
+           UmbracoHelper umbracoHelper,
+           IApiKeyProvider apiKeyProvider)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
+            _apiKeyProvider = apiKeyProvider ?? throw new System.ArgumentNullException(nameof(apiKeyProvider));
         }
 
         [HttpGet]
@@ -34,7 +39,8 @@ namespace Stoolball.Web.MatchLocations
 
             var model = new MatchLocationViewModel(contentModel.Content)
             {
-                MatchLocation = new MatchLocation()
+                MatchLocation = new MatchLocation(),
+                GoogleMapsApiKey = _apiKeyProvider.GetApiKey("GoogleMaps")
             };
 
             model.IsAuthorized = IsAuthorized();

@@ -46,7 +46,7 @@ namespace Stoolball.Umbraco.Data.Clubs
 
             if (string.IsNullOrWhiteSpace(memberName))
             {
-                throw new ArgumentException("message", nameof(memberName));
+                throw new ArgumentNullException(nameof(memberName));
             }
 
             try
@@ -138,7 +138,7 @@ namespace Stoolball.Umbraco.Data.Clubs
 
             if (string.IsNullOrWhiteSpace(memberName))
             {
-                throw new ArgumentException("message", nameof(memberName));
+                throw new ArgumentNullException(nameof(memberName));
             }
 
             try
@@ -213,7 +213,10 @@ namespace Stoolball.Umbraco.Data.Clubs
                         transaction.Commit();
                     }
 
-                    await _redirectsRepository.InsertRedirect(routeBeforeUpdate, club.ClubRoute, null).ConfigureAwait(false);
+                    if (routeBeforeUpdate != club.ClubRoute)
+                    {
+                        await _redirectsRepository.InsertRedirect(routeBeforeUpdate, club.ClubRoute, null).ConfigureAwait(false);
+                    }
                 }
 
                 await _auditRepository.CreateAudit(new AuditRecord

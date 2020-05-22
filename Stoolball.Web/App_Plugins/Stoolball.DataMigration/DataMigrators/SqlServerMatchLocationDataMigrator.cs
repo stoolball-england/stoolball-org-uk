@@ -92,7 +92,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			};
 			using (var scope = _scopeProvider.CreateScope())
 			{
-				migratedMatchLocation.MatchLocationRoute = _routeGenerator.GenerateRoute("/locations", migratedMatchLocation.NameAndLocalityOrTown(), NoiseWords.MatchLocationRoute);
+				migratedMatchLocation.MatchLocationRoute = _routeGenerator.GenerateRoute("/locations", migratedMatchLocation.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute);
 				int count;
 				do
 				{

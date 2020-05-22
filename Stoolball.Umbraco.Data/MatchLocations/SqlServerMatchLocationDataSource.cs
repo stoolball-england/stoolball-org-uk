@@ -47,8 +47,8 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var locations = await connection.QueryAsync<MatchLocation>(
-                        $@"SELECT ml.MatchLocationId, ml.MatchLocationRoute,
-                            ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, ml.Town 
+                        $@"SELECT ml.MatchLocationId, ml.MatchLocationRoute, ml.Latitude, ml.Longitude, ml.GeoPrecision, ml.MatchLocationNotes,
+                            ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.StreetDescription, ml.Locality, ml.Town, ml.AdministrativeArea, ml.Postcode
                             FROM {Tables.MatchLocation} AS ml
                             WHERE LOWER(ml.MatchLocationRoute) = @Route",
                         new { Route = normalisedRoute }).ConfigureAwait(false);

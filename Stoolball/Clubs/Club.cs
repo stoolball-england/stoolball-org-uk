@@ -11,16 +11,25 @@ namespace Stoolball.Clubs
     {
         public Guid? ClubId { get; set; }
 
-        [Required(ErrorMessage = "The club name field is required")]
+        [Display(Name = "Club name")]
+        [Required]
         public string ClubName { get; set; }
         public List<Team> Teams { get; internal set; } = new List<Team>();
+
+        [Display(Name = "Club website")]
         public string Website { get; set; }
+
+        [Display(Name = "Twitter account")]
         public string Twitter { get; set; }
 
+        [Display(Name = "Facebook page or group")]
         [RegularExpression(@"^(|https?:\/\/(m.|www.|)facebook.com\/.+)", ErrorMessage = "Please enter a valid Facebook link")]
         public string Facebook { get; set; }
+
+        [Display(Name = "Instagram account")]
         public string Instagram { get; set; }
 
+        [Display(Name = "YouTube channel")]
         [RegularExpression(@"^(|https?:\/\/(www.|)youtube.com\/.+)", ErrorMessage = "Please enter a valid YouTube link")]
         public string YouTube { get; set; }
         public bool ClubMark { get; set; }

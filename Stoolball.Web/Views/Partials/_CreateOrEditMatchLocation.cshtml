@@ -1,0 +1,81 @@
+﻿@model MatchLocationViewModel
+@using Stoolball.MatchLocations
+@using Stoolball.Web.MatchLocations
+@Html.ValidationSummary(true)
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.MatchLocation.PrimaryAddressableObjectName)
+    @Html.TextBoxFor(m => Model.MatchLocation.PrimaryAddressableObjectName, new { @class = "form-control", aria_describedby = "paon-validation" })
+    @Html.ValidationMessageFor(m => Model.MatchLocation.PrimaryAddressableObjectName, null, new { id = "paon-validation" })
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.MatchLocation.SecondaryAddressableObjectName)
+    <p class="form-text" id="saon-help"><small>Only if there's more than one. For example, 'Pitch 1' or 'Hall 2'.</small></p>
+    @Html.TextBoxFor(m => Model.MatchLocation.SecondaryAddressableObjectName, new { @class = "form-control", aria_describedby = "saon-validation saon-help" })
+    @Html.ValidationMessageFor(m => Model.MatchLocation.SecondaryAddressableObjectName, null, new { id = "saon-validation" })
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.MatchLocation.StreetDescription)
+    @Html.TextBoxFor(m => Model.MatchLocation.StreetDescription, new { @class = "form-control", aria_describedby = "street-validation" })
+    @Html.ValidationMessageFor(m => Model.MatchLocation.StreetDescription, null, new { id = "street-validation" })
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.MatchLocation.Locality)
+    @Html.TextBoxFor(m => Model.MatchLocation.Locality, new { @class = "form-control", aria_describedby = "locality-validation" })
+    @Html.ValidationMessageFor(m => Model.MatchLocation.Locality, null, new { id = "locality-validation" })
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.MatchLocation.Town)
+    @Html.TextBoxFor(m => Model.MatchLocation.Town, new { @class = "form-control", aria_describedby = "town-validation" })
+    @Html.ValidationMessageFor(m => Model.MatchLocation.Town, null, new { id = "town-validation" })
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.MatchLocation.AdministrativeArea)
+    @Html.TextBoxFor(m => Model.MatchLocation.AdministrativeArea, new { @class = "form-control", aria_describedby = "area-validation" })
+    @Html.ValidationMessageFor(m => Model.MatchLocation.AdministrativeArea, null, new { id = "area-validation" })
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.MatchLocation.Postcode)
+    @Html.TextBoxFor(m => Model.MatchLocation.Postcode, new { @class = "form-control", aria_describedby = "postcode-validation" })
+    @Html.ValidationMessageFor(m => Model.MatchLocation.Postcode, null, new { id = "postcode-validation" })
+</div>
+
+<div id="map" data-apikey="@Model.GoogleMapsApiKey"></div>
+
+<fieldset class="form-group" id="geoprecision">
+    <legend>How accurate is the map?</legend>
+    <div class="form-check form-check-inline">
+        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Town, new { @class = "form-check-input", @id = "geo-3" })
+        <label for="geo-3" class="form-check-label">Town</label>
+    </div>
+    <div class="form-check form-check-inline">
+        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Street, new { @class = "form-check-input", @id = "geo-2" })
+        <label for="geo-2" class="form-check-label">Street</label>
+    </div>
+    <div class="form-check form-check-inline">
+        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Postcode, new { @class = "form-check-input", @id = "geo-1" })
+        <label for="geo-1" class="form-check-label">Postcode</label>
+    </div>
+    <div class="form-check form-check-inline">
+        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Exact, new { @class = "form-check-input", @id = "geo-0" })
+        <label for="geo-0" class="form-check-label">Exact</label>
+    </div>
+    @Html.ValidationMessageFor(m => Model.MatchLocation.GeoPrecision, null, new { id = "precision-validation" })
+    @Html.HiddenFor(m => Model.MatchLocation.Latitude)
+    @Html.HiddenFor(m => Model.MatchLocation.Longitude)
+</fieldset>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.MatchLocation.MatchLocationNotes)
+    <p class="form-text" id="notes-help"><small>Is it easy to find? Is there parking? Disabled facilities? Toilets?</small></p>
+    @Html.TextAreaFor(m => Model.MatchLocation.MatchLocationNotes, new { @class = "form-control", aria_describedby = "notes-validation notes-help" })
+    @Html.ValidationMessageFor(m => Model.MatchLocation.MatchLocationNotes, null, new { id = "notes-validation" })
+</div>
+
+<button class="btn btn-primary">Save ground or sports hall</button>

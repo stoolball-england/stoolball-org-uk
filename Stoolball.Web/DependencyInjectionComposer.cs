@@ -1,4 +1,5 @@
-﻿using Stoolball.Competitions;
+﻿using Ganss.XSS;
+using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Routing;
@@ -38,6 +39,7 @@ namespace Stoolball.Web
             composition.Register<IApiKeyProvider, ConfigApiKeyProvider>(Lifetime.Singleton);
             composition.Register<IDateTimeFormatter, DateTimeFormatter>(Lifetime.Singleton);
             composition.Register<IEstimatedSeason, EstimatedSeason>(Lifetime.Singleton);
+            composition.Register<IHtmlSanitizer, HtmlSanitizer>(Lifetime.Singleton);
 
             // Data migration from the old Stoolball England website
             composition.Register<IAuditHistoryBuilder, AuditHistoryBuilder>(Lifetime.Singleton);
@@ -80,6 +82,7 @@ namespace Stoolball.Web
             composition.Register<IClubRepository, SqlServerClubRepository>(Lifetime.Singleton);
             composition.Register<ITeamDataSource, SqlServerTeamDataSource>(Lifetime.Singleton);
             composition.Register<IMatchLocationDataSource, SqlServerMatchLocationDataSource>(Lifetime.Singleton);
+            composition.Register<IMatchLocationRepository, SqlServerMatchLocationRepository>(Lifetime.Singleton);
             composition.Register<ISeasonDataSource, SqlServerSeasonDataSource>(Lifetime.Singleton);
             composition.Register<IMatchDataSource, SqlServerMatchDataSource>(Lifetime.Singleton);
             composition.Register<ITournamentDataSource, SqlServerTournamentDataSource>(Lifetime.Singleton);

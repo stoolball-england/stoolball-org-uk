@@ -9,6 +9,13 @@
     Html.EnableUnobtrusiveJavaScript();
     Html.RequiresJs("~/scripts/jquery.validate.min.js");
     Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+
+    Html.RequiresJs("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey, 50);
+    Html.RequiresJs("/js/maps.js", 90);
+    Html.RequiresJs("/matchlocations/edit-match-location.js");
+
+    Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
+    Html.RequiresJs("/js/tinymce.js");
 }
 
 <h1>Add a ground or sports hall</h1>
@@ -27,7 +34,12 @@
 
 @if (Model.IsAuthorized)
 {
-   
+    using (Html.BeginUmbracoForm<CreateMatchLocationSurfaceController>
+        ("CreateMatchLocation"))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Partial("_CreateOrEditMatchLocation")
+    }
 }
 else
 {

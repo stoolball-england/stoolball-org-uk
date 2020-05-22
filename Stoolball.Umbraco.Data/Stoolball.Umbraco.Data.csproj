@@ -72,7 +72,9 @@
     <Compile Include="Matches\MatchQuery.cs" />
     <Compile Include="Matches\SqlServerTournamentDataSource.cs" />
     <Compile Include="Matches\SqlServerMatchDataSource.cs" />
+    <Compile Include="MatchLocations\IMatchLocationRepository.cs" />
     <Compile Include="MatchLocations\MatchLocationQuery.cs" />
+    <Compile Include="MatchLocations\SqlServerMatchLocationRepository.cs" />
     <Compile Include="Teams\TeamQuery.cs" />
     <Compile Include="Teams\ITeamDataSource.cs" />
     <Compile Include="Teams\SqlServerTeamDataSource.cs" />
@@ -152,6 +154,9 @@
   <ItemGroup>
     <PackageReference Include="Dapper">
       <Version>2.0.35</Version>
+    </PackageReference>
+    <PackageReference Include="HtmlSanitizer">
+      <Version>5.0.319</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
       <Version>2.9.8</Version>

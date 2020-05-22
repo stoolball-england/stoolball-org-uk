@@ -1,4 +1,4 @@
-﻿window.addEventListener("DOMContentLoaded", (event) => {
+﻿window.addEventListener("DOMContentLoaded", function (event) {
   // Get map placeholder
   const mapContainer = document.getElementById("location-map");
   if (mapContainer) {

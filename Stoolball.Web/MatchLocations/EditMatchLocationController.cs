@@ -1,4 +1,5 @@
 ﻿using Stoolball.Umbraco.Data.MatchLocations;
+using Stoolball.Web.Configuration;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Routing;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace Stoolball.Web.Clubs
     public class EditMatchLocationController : RenderMvcControllerAsync
     {
         private readonly IMatchLocationDataSource _matchLocationDataSource;
+        private readonly IApiKeyProvider _apiKeyProvider;
 
         public EditMatchLocationController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -23,10 +25,12 @@ namespace Stoolball.Web.Clubs
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           IMatchLocationDataSource matchLocationDataSource)
+           IMatchLocationDataSource matchLocationDataSource,
+           IApiKeyProvider apiKeyProvider)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchLocationDataSource = matchLocationDataSource ?? throw new System.ArgumentNullException(nameof(matchLocationDataSource));
+            _apiKeyProvider = apiKeyProvider ?? throw new System.ArgumentNullException(nameof(apiKeyProvider));
         }
 
         [HttpGet]
@@ -39,7 +43,8 @@ namespace Stoolball.Web.Clubs
 
             var model = new MatchLocationViewModel(contentModel.Content)
             {
-                MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.Url.AbsolutePath, false).ConfigureAwait(false)
+                MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.Url.AbsolutePath, false).ConfigureAwait(false),
+                GoogleMapsApiKey = _apiKeyProvider.GetApiKey("GoogleMaps")
             };
 
 

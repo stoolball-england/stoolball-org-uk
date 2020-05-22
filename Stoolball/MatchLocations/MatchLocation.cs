@@ -2,6 +2,7 @@
 using Stoolball.Teams;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Stoolball.MatchLocations
@@ -12,26 +13,42 @@ namespace Stoolball.MatchLocations
 
         public string SortName { get; set; }
 
+        [Display(Name = "Pitch or sports hall")]
+        [MaxLength(100)]
         public string SecondaryAddressableObjectName { get; set; }
 
+        [Display(Name = "Ground or sports centre name")]
+        [MaxLength(100)]
+        [Required]
         public string PrimaryAddressableObjectName { get; set; }
 
+        [Display(Name = "Street address")]
+        [MaxLength(100)]
         public string StreetDescription { get; set; }
 
+        [Display(Name = "Village or part of town")]
+        [MaxLength(35)]
         public string Locality { get; set; }
 
+        [MaxLength(30)]
+        [Required]
         public string Town { get; set; }
 
+        [Display(Name = "County")]
+        [MaxLength(30)]
         public string AdministrativeArea { get; set; }
 
+        [MaxLength(8)]
         public string Postcode { get; set; }
 
         public double? Latitude { get; set; }
 
         public double? Longitude { get; set; }
 
+        [Display(Name = "Accuracy of the map")]
         public GeoPrecision? GeoPrecision { get; set; }
 
+        [Display(Name = "Notes")]
         public string MatchLocationNotes { get; set; }
         public List<Team> Teams { get; internal set; } = new List<Team>();
 
