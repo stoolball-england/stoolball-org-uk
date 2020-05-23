@@ -39,11 +39,6 @@ namespace Stoolball.Web.Tests.MatchLocations
                 ControllerContext = new ControllerContext(context.Object, new RouteData(), this);
             }
 
-            protected override bool IsAuthorized()
-            {
-                return true;
-            }
-
             protected override ActionResult CurrentTemplate<T>(T model)
             {
                 return View("MatchLocations", model);

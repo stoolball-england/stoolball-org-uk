@@ -11,8 +11,6 @@ namespace Stoolball.MatchLocations
     {
         public Guid? MatchLocationId { get; set; }
 
-        public string SortName { get; set; }
-
         [Display(Name = "Pitch or sports hall")]
         [MaxLength(100)]
         public string SecondaryAddressableObjectName { get; set; }
@@ -40,6 +38,14 @@ namespace Stoolball.MatchLocations
 
         [MaxLength(8)]
         public string Postcode { get; set; }
+
+        /// <summary>
+        /// Gets a concatenated version of the address which can be used for sorting addresses
+        /// </summary>
+        public string SortName()
+        {
+            return $" {PrimaryAddressableObjectName} {Town} {SecondaryAddressableObjectName}".ToUpperInvariant().Replace(" THE ", string.Empty).TrimStart();
+        }
 
         public double? Latitude { get; set; }
 

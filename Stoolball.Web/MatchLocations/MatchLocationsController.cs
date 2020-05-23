@@ -8,7 +8,6 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.MatchLocations
 {
@@ -49,8 +48,6 @@ namespace Stoolball.Web.MatchLocations
                 model.MatchLocations = await _matchLocationDataSource.ReadMatchLocationListings(model.MatchLocationQuery).ConfigureAwait(false);
             }
 
-            model.IsAuthorized = IsAuthorized();
-
             model.Metadata.PageTitle = "Grounds and sports halls";
             if (!string.IsNullOrEmpty(model.MatchLocationQuery.Query))
             {
@@ -58,15 +55,6 @@ namespace Stoolball.Web.MatchLocations
             }
 
             return CurrentTemplate(model);
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to add a club
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized()
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, Groups.AllMembers }, null);
         }
     }
 }

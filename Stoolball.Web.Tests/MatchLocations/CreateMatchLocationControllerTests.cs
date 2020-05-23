@@ -1,4 +1,5 @@
 ﻿using Moq;
+using Stoolball.Web.Configuration;
 using Stoolball.Web.MatchLocations;
 using System;
 using System.Threading.Tasks;
@@ -26,7 +27,8 @@ namespace Stoolball.Web.Tests.MatchLocations
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null)
+                null,
+                Mock.Of<IApiKeyProvider>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));

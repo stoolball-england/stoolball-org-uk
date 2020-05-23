@@ -13,12 +13,9 @@
     <li class="nav-item">
         <em class="nav-link active">Search</em>
     </li>
-    @if (Model.IsAuthorized)
-    {
-        <li class="nav-item">
-            <a class="nav-link" href="/locations/add">Add</a>
-        </li>
-    }
+    <li class="nav-item">
+        <a class="nav-link" href="/locations/add">Add</a>
+    </li>
 </ul>
 
 <form method="get" action="@Request.Url" class="form-inline form-search">

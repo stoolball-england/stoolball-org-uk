@@ -51,14 +51,14 @@ namespace Stoolball.Matches
                     // Check for 'the' to get the grammar right
                     var the = (Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? string.Empty : "the ";
                     description.Append("Match in ").Append(the).Append(Tournament.TournamentName);
-                    if (MatchLocation != null) description.Append(" at ").Append(MatchLocation);
+                    if (MatchLocation != null) description.Append(" at ").Append(MatchLocation.NameAndLocalityOrTown());
                     description.Append(".");
                 }
             }
             else
             {
                 description.Append("Stoolball ").Append(MatchType.Humanize(LetterCasing.LowerCase));
-                if (MatchLocation != null) description.Append(" at ").Append(MatchLocation);
+                if (MatchLocation != null) description.Append(" at ").Append(MatchLocation.NameAndLocalityOrTown());
 
                 if (Season != null)
                 {

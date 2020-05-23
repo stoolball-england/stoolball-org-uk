@@ -42,7 +42,7 @@ namespace Stoolball.Matches
             var description = new StringBuilder();
 
             description.Append("Stoolball tournament");
-            if (TournamentLocation != null) description.Append(" at ").Append(TournamentLocation);
+            if (TournamentLocation != null) description.Append(" at ").Append(TournamentLocation.NameAndLocalityOrTown());
 
             var seasonList = string.Empty;
 

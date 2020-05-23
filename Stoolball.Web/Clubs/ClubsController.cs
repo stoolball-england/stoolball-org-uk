@@ -8,7 +8,6 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Clubs
 {
@@ -49,8 +48,6 @@ namespace Stoolball.Web.Clubs
                 model.Clubs = await _clubDataSource.ReadClubListings(model.ClubQuery).ConfigureAwait(false);
             }
 
-            model.IsAuthorized = IsAuthorized();
-
             model.Metadata.PageTitle = "Stoolball clubs";
             if (!string.IsNullOrEmpty(model.ClubQuery.Query))
             {
@@ -58,15 +55,6 @@ namespace Stoolball.Web.Clubs
             }
 
             return CurrentTemplate(model);
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to add a club
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized()
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, Groups.AllMembers }, null);
         }
     }
 }

@@ -75,7 +75,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			{
 				MatchLocationId = Guid.NewGuid(),
 				MigratedMatchLocationId = matchLocation.MigratedMatchLocationId,
-				SortName = matchLocation.SortName,
 				SecondaryAddressableObjectName = matchLocation.SecondaryAddressableObjectName,
 				PrimaryAddressableObjectName = matchLocation.PrimaryAddressableObjectName,
 				StreetDescription = matchLocation.StreetDescription,
@@ -90,6 +89,16 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				MemberGroupId = matchLocation.MemberGroupId,
 				MemberGroupName = matchLocation.MemberGroupName,
 			};
+
+
+			// if there's only a SAON, move it to PAON
+			if (string.IsNullOrEmpty(migratedMatchLocation.PrimaryAddressableObjectName) && !string.IsNullOrEmpty(migratedMatchLocation.SecondaryAddressableObjectName))
+			{
+				migratedMatchLocation.PrimaryAddressableObjectName = migratedMatchLocation.SecondaryAddressableObjectName;
+				migratedMatchLocation.SecondaryAddressableObjectName = string.Empty;
+			}
+
+
 			using (var scope = _scopeProvider.CreateScope())
 			{
 				migratedMatchLocation.MatchLocationRoute = _routeGenerator.GenerateRoute("/locations", migratedMatchLocation.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute);
@@ -121,7 +130,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16)",
 							migratedMatchLocation.MatchLocationId,
 							migratedMatchLocation.MigratedMatchLocationId,
-							migratedMatchLocation.SortName,
+							migratedMatchLocation.SortName(),
 							migratedMatchLocation.SecondaryAddressableObjectName,
 							migratedMatchLocation.PrimaryAddressableObjectName,
 							migratedMatchLocation.StreetDescription,

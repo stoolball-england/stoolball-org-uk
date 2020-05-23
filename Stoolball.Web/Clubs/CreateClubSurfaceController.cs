@@ -65,8 +65,14 @@ namespace Stoolball.Web.Clubs
                 }
                 while (group != null);
 
-                // Create the club
+                // Assign the current member to the group unless they're already admin
                 var currentMember = Members.GetCurrentMember();
+                if (!Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null))
+                {
+                    Services.MemberService.AssignRole(currentMember.Id, group.Name);
+                }
+
+                // Create the club
                 await _clubRepository.CreateClub(club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the club

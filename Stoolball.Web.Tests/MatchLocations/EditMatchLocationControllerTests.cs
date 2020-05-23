@@ -2,6 +2,7 @@
 using Stoolball.MatchLocations;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Clubs;
+using Stoolball.Web.Configuration;
 using Stoolball.Web.MatchLocations;
 using System;
 using System.Threading.Tasks;
@@ -29,7 +30,8 @@ namespace Stoolball.Web.Tests.MatchLocations
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, matchLocationDataSource)
+                null, matchLocationDataSource,
+                Mock.Of<IApiKeyProvider>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));

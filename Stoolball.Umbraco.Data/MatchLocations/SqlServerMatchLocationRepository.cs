@@ -10,6 +10,7 @@ using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
+using Umbraco.Core.Services;
 using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Umbraco.Data.MatchLocations
@@ -21,16 +22,18 @@ namespace Stoolball.Umbraco.Data.MatchLocations
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IAuditRepository _auditRepository;
+        private readonly IMemberService _memberService;
         private readonly ILogger _logger;
         private readonly IRouteGenerator _routeGenerator;
         private readonly IRedirectsRepository _redirectsRepository;
         private readonly IHtmlSanitizer _htmlSanitiser;
 
-        public SqlServerMatchLocationRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
+        public SqlServerMatchLocationRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, IMemberService memberService, ILogger logger, IRouteGenerator routeGenerator,
             IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
+            _memberService = memberService;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
@@ -91,9 +94,9 @@ namespace Stoolball.Umbraco.Data.MatchLocations
 
                         await connection.ExecuteAsync(
                             $@"INSERT INTO {Tables.MatchLocation} (MatchLocationId, SecondaryAddressableObjectName, PrimaryAddressableObjectName, StreetDescription, Locality, Town,
-                                AdministrativeArea, Postcode, GeoPrecision, Latitude, Longitude, MatchLocationNotes, MatchLocationRoute, MemberGroupId, MemberGroupName) 
-                                VALUES (@MatchLocationId, @SecondaryAddressableObjectName, @PrimaryAddressableObjectName, @StreetDescription, @Locality, @Town,
-                                @AdministrativeArea, @Postcode, @GeoPrecision, @Latitude, @Longitude, @MatchLocationNotes, @MatchLocationRoute, @MemberGroupId, @MemberGroupName)",
+                                AdministrativeArea, Postcode, SortName, GeoPrecision, Latitude, Longitude, MatchLocationNotes, MatchLocationRoute, MemberGroupId, MemberGroupName) 
+                                VALUES (@MatchLocationId, @SecondaryAddressableObjectName, @PrimaryAddressableObjectName, @StreetDescription, @Locality, @Town, @AdministrativeArea, 
+                                @Postcode, @SortName, @GeoPrecision, @Latitude, @Longitude, @MatchLocationNotes, @MatchLocationRoute, @MemberGroupId, @MemberGroupName)",
                             new
                             {
                                 matchLocation.MatchLocationId,
@@ -104,6 +107,7 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                                 matchLocation.Town,
                                 matchLocation.AdministrativeArea,
                                 matchLocation.Postcode,
+                                SortName = matchLocation.SortName(),
                                 GeoPrecision = matchLocation.GeoPrecision?.ToString(),
                                 matchLocation.Latitude,
                                 matchLocation.Longitude,
