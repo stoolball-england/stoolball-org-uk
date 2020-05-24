@@ -1,0 +1,14 @@
+@import "_theme.scss";
+@import "../Content/bootstrap/_functions.scss";
+@import "../Content/bootstrap/_mixins.scss";
+@import "../Content/bootstrap/_variables.scss";
+
+a:link,
+a:visited {
+    color: theme-color("primary");
+}
+
+.mce-content-body *[data-mce-selected="inline-boundary"] {
+    background: none;
+    outline: 1px dashed theme-color("primary");
+}

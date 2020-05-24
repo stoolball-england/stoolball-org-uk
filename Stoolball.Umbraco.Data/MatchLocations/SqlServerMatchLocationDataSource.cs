@@ -77,8 +77,8 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                             ml.Latitude, ml.Longitude, ml.GeoPrecision,
                             t.TeamId, tn.TeamName, t.TeamRoute
                             FROM {Tables.MatchLocation} AS ml
-                            LEFT JOIN {Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId AND tml.UntilDate IS NULL
-                            LEFT JOIN {Tables.Team} AS t ON tml.TeamId = t.TeamId AND t.UntilDate IS NULL AND NOT t.TeamType = '{TeamType.Transient}'
+                            LEFT JOIN {Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId 
+                            LEFT JOIN {Tables.Team} AS t ON tml.TeamId = t.TeamId AND t.UntilYear IS NULL AND NOT t.TeamType = '{TeamType.Transient}'
                             LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             WHERE LOWER(ml.MatchLocationRoute) = @Route
                             ORDER BY tn.TeamName",
@@ -121,7 +121,7 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                             t.PlayerType
                             FROM {Tables.MatchLocation} AS ml
                             LEFT JOIN {Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId 
-                            LEFT JOIN {Tables.Team} AS t ON tml.TeamId = t.TeamId AND t.UntilDate IS NULL
+                            LEFT JOIN {Tables.Team} AS t ON tml.TeamId = t.TeamId AND t.UntilYear IS NULL
                             <<WHERE>>
                             ORDER BY ml.SortName";
 
@@ -135,6 +135,12 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                             ml.Locality LIKE @Query OR
                             ml.Town LIKE @Query)");
                         parameters.Add("@Query", $"%{matchLocationQuery.Query}%");
+                    }
+
+                    if (matchLocationQuery?.ExcludeMatchLocationIds?.Count > 0)
+                    {
+                        where.Add("ml.MatchLocationId NOT IN @ExcludeMatchLocationIds");
+                        parameters.Add("@ExcludeMatchLocationIds", matchLocationQuery.ExcludeMatchLocationIds.Select(x => x.ToString()));
                     }
 
                     sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);

@@ -69,6 +69,9 @@
     <Compile Include="MatchLocations\CreateMatchLocationControllerTests.cs" />
     <Compile Include="MatchLocations\EditMatchLocationControllerTests.cs" />
     <Compile Include="MatchLocations\MatchLocationsControllerTests.cs" />
+    <Compile Include="Teams\CreateTeamControllerTests.cs" />
+    <Compile Include="Teams\EditTransientTeamControllerTests.cs" />
+    <Compile Include="Teams\EditTeamControllerTests.cs" />
     <Compile Include="Teams\TeamsControllerTests.cs" />
     <Compile Include="Teams\MatchesForTeamControllerTests.cs" />
     <Compile Include="Teams\TransientTeamControllerTests.cs" />

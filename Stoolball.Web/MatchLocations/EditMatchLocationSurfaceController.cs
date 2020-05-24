@@ -35,12 +35,12 @@ namespace Stoolball.Web.MatchLocations
                 throw new System.ArgumentNullException(nameof(location));
             }
 
-            // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
-            location.MatchLocationNotes = Request.Unvalidated.Form["MatchLocation.MatchLocationNotes"];
-
             var beforeUpdate = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl).ConfigureAwait(false);
             location.MatchLocationId = beforeUpdate.MatchLocationId;
             location.MatchLocationRoute = beforeUpdate.MatchLocationRoute;
+
+            // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
+            location.MatchLocationNotes = Request.Unvalidated.Form["MatchLocation.MatchLocationNotes"];
 
             var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, beforeUpdate.MemberGroupName }, null);
 

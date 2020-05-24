@@ -4,9 +4,9 @@
     <ul>
         @foreach (var team in Model)
         {
-            if (team.UntilDate.HasValue)
+            if (team.UntilYear.HasValue)
             {
-                <li><a href="@team.TeamRoute">@team.TeamName (doesn't play any more)</a></li>
+                <li><a href="@team.TeamRoute">@team.TeamName (no longer active)</a></li>
             }
             else
             {

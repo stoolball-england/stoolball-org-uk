@@ -76,7 +76,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			{
 				MatchId = Guid.NewGuid(),
 				MigratedMatchId = match.MigratedMatchId,
-				MatchName = match.MatchName,
+				MatchName = match.MatchName?.Trim(),
 				UpdateMatchNameAutomatically = match.UpdateMatchNameAutomatically,
 				MigratedMatchLocationId = match.MigratedMatchLocationId,
 				MatchType = match.MatchType,
@@ -234,7 +234,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			{
 				TournamentId = Guid.NewGuid(),
 				MigratedTournamentId = tournament.MigratedTournamentId,
-				TournamentName = tournament.TournamentName,
+				TournamentName = tournament.TournamentName?.Trim(),
 				MigratedTournamentLocationId = tournament.MigratedTournamentLocationId,
 				TournamentQualificationType = tournament.TournamentQualificationType,
 				PlayerType = tournament.PlayerType,
@@ -325,14 +325,14 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 						}
 						await database.ExecuteAsync($@"UPDATE {Tables.Team} SET 
 							TeamRoute = CONCAT(@0, '/teams/', SUBSTRING(TeamRoute, 6, LEN(TeamRoute)-5)),
-							FromDate = @1,
-							UntilDate = @2
-							WHERE TeamType = 'Once' 
+							FromYear = @1,
+							UntilYear = @1
+							WHERE TeamType = 'Transient' 
 							AND TeamRoute NOT LIKE '/tournaments%'
 							AND TeamId IN (
-								SELECT TeamId FROM {Tables.MatchTeam} WHERE MatchId = @3
+								SELECT TeamId FROM {Tables.MatchTeam} WHERE MatchId = @2
 							)",
-							migratedTournament.TournamentRoute, migratedTournament.StartTime.Date, migratedTournament.StartTime.Date.AddDays(1).AddMinutes(-1), migratedTournament.TournamentId).ConfigureAwait(false);
+							migratedTournament.TournamentRoute, migratedTournament.StartTime.Year, migratedTournament.TournamentId).ConfigureAwait(false);
 						transaction.Complete();
 					}
 

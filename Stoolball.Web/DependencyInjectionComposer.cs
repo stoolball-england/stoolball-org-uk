@@ -61,6 +61,8 @@ namespace Stoolball.Web
             composition.Register<EditClubController>(Lifetime.Request);
             composition.Register<TeamsController>(Lifetime.Request);
             composition.Register<TeamController>(Lifetime.Request);
+            composition.Register<CreateTeamController>(Lifetime.Request);
+            composition.Register<EditTeamController>(Lifetime.Request);
             composition.Register<TransientTeamController>(Lifetime.Request);
             composition.Register<MatchesForClubController>(Lifetime.Request);
             composition.Register<MatchesForTeamController>(Lifetime.Request);
@@ -81,6 +83,7 @@ namespace Stoolball.Web
             composition.Register<IClubDataSource, SqlServerClubDataSource>(Lifetime.Singleton);
             composition.Register<IClubRepository, SqlServerClubRepository>(Lifetime.Singleton);
             composition.Register<ITeamDataSource, SqlServerTeamDataSource>(Lifetime.Singleton);
+            composition.Register<ITeamRepository, SqlServerTeamRepository>(Lifetime.Singleton);
             composition.Register<IMatchLocationDataSource, SqlServerMatchLocationDataSource>(Lifetime.Singleton);
             composition.Register<IMatchLocationRepository, SqlServerMatchLocationRepository>(Lifetime.Singleton);
             composition.Register<ISeasonDataSource, SqlServerSeasonDataSource>(Lifetime.Singleton);

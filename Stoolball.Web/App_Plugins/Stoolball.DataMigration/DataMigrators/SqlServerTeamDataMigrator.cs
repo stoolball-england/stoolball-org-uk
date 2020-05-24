@@ -86,8 +86,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Introduction = team.Introduction,
 				AgeRangeLower = team.AgeRangeLower,
 				AgeRangeUpper = team.AgeRangeUpper,
-				FromDate = System.Data.SqlTypes.SqlDateTime.MinValue.Value,
-				UntilDate = team.UntilDate,
+				UntilYear = team.UntilYear,
+				Twitter = team.Twitter,
+				Facebook = team.Facebook,
+				Instagram = team.Instagram,
 				Website = team.Website,
 				PublicContactDetails = team.PublicContactDetails,
 				PrivateContactDetails = team.PrivateContactDetails,
@@ -138,9 +140,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Team}
 						(TeamId, MigratedTeamId, ClubId, SchoolId, TeamType, PlayerType, Introduction, AgeRangeLower, AgeRangeUpper, 
-						 FromDate, UntilDate, Website, PublicContactDetails, PrivateContactDetails, PlayingTimes, Cost,
+						 UntilYear, Twitter, Facebook, Instagram, Website, PublicContactDetails, PrivateContactDetails, PlayingTimes, Cost,
 						 MemberGroupId, MemberGroupName, TeamRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16, @17, @18)",
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16, @17, @18, @19, @20)",
 							migratedTeam.TeamId,
 							migratedTeam.MigratedTeamId,
 							migratedTeam.ClubId,
@@ -150,8 +152,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedTeam.Introduction,
 							migratedTeam.AgeRangeLower,
 							migratedTeam.AgeRangeUpper,
-							migratedTeam.FromDate,
-							migratedTeam.UntilDate,
+							migratedTeam.UntilYear,
+							migratedTeam.Twitter,
+							migratedTeam.Facebook,
+							migratedTeam.Instagram,
 							migratedTeam.Website,
 							migratedTeam.PublicContactDetails,
 							migratedTeam.PrivateContactDetails,
@@ -165,17 +169,16 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							Guid.NewGuid(),
 							migratedTeam.TeamId,
 							migratedTeam.TeamName,
-							migratedTeam.GenerateComparableName(),
+							migratedTeam.ComparableName(),
 							migratedTeam.History[0].AuditDate
 							).ConfigureAwait(false);
 						if (migratedTeam.MatchLocationId.HasValue)
 						{
 							await database.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} 
-							(TeamMatchLocationId, TeamId, MatchLocationId, FromDate) VALUES (@0, @1, @2, @3)",
+							(TeamMatchLocationId, TeamId, MatchLocationId) VALUES (@0, @1, @2)",
 								Guid.NewGuid(),
 								migratedTeam.TeamId,
-								migratedTeam.MatchLocationId,
-								migratedTeam.History[0].AuditDate
+								migratedTeam.MatchLocationId
 								).ConfigureAwait(false);
 						}
 						transaction.Complete();

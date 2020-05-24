@@ -598,6 +598,13 @@
     <Content Include="css\related-items.min.css">
       <DependentUpon>related-items.css</DependentUpon>
     </Content>
+    <None Include="css\tinymce.scss" />
+    <Content Include="css\tinymce.css">
+      <DependentUpon>tinymce.scss</DependentUpon>
+    </Content>
+    <Content Include="css\tinymce.min.css">
+      <DependentUpon>tinymce.css</DependentUpon>
+    </Content>
     <Content Include="Global.asax" />
     <Content Include="images\logos\clubmark.png" />
     <Content Include="images\logos\stoolball-england.svg" />
@@ -931,6 +938,13 @@
     <Compile Include="MatchLocations\CreateMatchLocationController.cs" />
     <Compile Include="MatchLocations\EditMatchLocationSurfaceController.cs" />
     <Compile Include="MatchLocations\EditMatchLocationController.cs" />
+    <Compile Include="MatchLocations\MatchLocationsApiController.cs" />
+    <Compile Include="Teams\CreateTeamSurfaceController.cs" />
+    <Compile Include="Teams\CreateTeamController.cs" />
+    <Compile Include="Teams\EditTransientTeamSurfaceController.cs" />
+    <Compile Include="Teams\EditTransientTeamController.cs" />
+    <Compile Include="Teams\EditTeamSurfaceController.cs" />
+    <Compile Include="Teams\EditTeamController.cs" />
     <Compile Include="WebApi\AutocompleteResult.cs" />
     <Compile Include="WebApi\AutocompleteResultSet.cs" />
     <Compile Include="WebApi\WebApiComposer.cs" />
@@ -1088,6 +1102,10 @@
     <Content Include="Views\EditMatchLocation.cshtml" />
     <Content Include="Views\CreateMatchLocation.cshtml" />
     <Content Include="Views\Partials\_CreateOrEditMatchLocation.cshtml" />
+    <Content Include="Views\CreateTeam.cshtml" />
+    <Content Include="Views\EditTeam.cshtml" />
+    <Content Include="Views\Partials\_CreateOrEditTeam.cshtml" />
+    <Content Include="Views\EditTransientTeam.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

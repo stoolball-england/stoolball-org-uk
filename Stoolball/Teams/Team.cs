@@ -6,6 +6,7 @@ using Stoolball.MatchLocations;
 using Stoolball.Schools;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -15,13 +16,16 @@ namespace Stoolball.Teams
     public class Team : IAuditable
     {
         public Guid? TeamId { get; set; }
+
+        [Display(Name = "Team name")]
+        [Required]
         public string TeamName { get; set; }
 
         /// <summary>
         /// Gets the version of the team's name used to match them for updates
         /// </summary>
         /// <returns></returns>
-        public string GenerateComparableName()
+        public string ComparableName()
         {
             return (TeamRoute + Regex.Replace(TeamNameAndPlayerType(), "[^A-Z0-9]", string.Empty, RegexOptions.IgnoreCase)).ToUpperInvariant();
         }
@@ -70,21 +74,55 @@ namespace Stoolball.Teams
 
         public List<MatchLocation> MatchLocations { get; internal set; } = new List<MatchLocation>();
         public List<TeamInSeason> Seasons { get; internal set; } = new List<TeamInSeason>();
+
+        [Required]
+        [Display(Name = "Type of team")]
         public TeamType TeamType { get; set; }
+
+        [Required]
+        [Display(Name = "Player type")]
         public PlayerType PlayerType { get; set; }
         public string Introduction { get; set; }
+
+        [Display(Name = "Minimum age for players")]
         public int? AgeRangeLower { get; set; }
+
+        [Display(Name = "Maximum age for players")]
         public int? AgeRangeUpper { get; set; }
-        public DateTimeOffset FromDate { get; set; }
-        public DateTimeOffset? UntilDate { get; set; }
+
+        [Display(Name = "What year was this team formed?")]
+        public int? FromYear { get; set; }
+
+        [Display(Name = "If no longer active, when was the last year they played?")]
+        public int? UntilYear { get; set; }
+
+        [Display(Name = "Club or team website")]
         public string Website { get; set; }
+
+        [Display(Name = "Twitter account")]
         public string Twitter { get; set; }
+
+        [Display(Name = "Facebook page or group")]
+        [RegularExpression(@"^((https?:\/\/)?(m.|www.|)facebook.com\/.+|)", ErrorMessage = "Please enter a valid Facebook link")]
         public string Facebook { get; set; }
+
+        [Display(Name = "Instagram account")]
         public string Instagram { get; set; }
+
+        [Display(Name = "YouTube channel")]
+        [RegularExpression(@"^((https?:\/\/)?(www.|)youtube.com\/.+|)", ErrorMessage = "Please enter a valid YouTube link")]
         public string YouTube { get; set; }
+
+        [Display(Name = "Contact details for the public")]
         public string PublicContactDetails { get; set; }
+
+        [Display(Name = "Contact details for Stoolball England")]
         public string PrivateContactDetails { get; set; }
+
+        [Display(Name = "Which days of the week do you play, and at what time?")]
         public string PlayingTimes { get; set; }
+
+        [Display(Name = "Cost to play")]
         public string Cost { get; set; }
         public int MemberGroupId { get; set; }
         public string MemberGroupName { get; set; }

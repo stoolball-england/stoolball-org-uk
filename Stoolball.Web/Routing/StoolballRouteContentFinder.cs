@@ -60,6 +60,7 @@ namespace Stoolball.Web.Routing
                 // in upper, lower or mixed case
                 { $@"clubs{SLASH}add{OPTIONAL_SLASH}", StoolballRouteType.CreateClub },
                 { $@"clubs{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Club },
+                { $@"teams{SLASH}add{OPTIONAL_SLASH}", StoolballRouteType.CreateTeam },
                 { $@"teams{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Team},
                 { $@"locations{SLASH}add{OPTIONAL_SLASH}", StoolballRouteType.CreateMatchLocation},
                 { $@"locations{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.MatchLocation},
@@ -82,13 +83,15 @@ namespace Stoolball.Web.Routing
                 { $@"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForClub },
                 { $@"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.EditClub },
                 { $@"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForTeam },
+                { $@"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.EditTeam },
                 { $@"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForMatchLocation },
                 { $@"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.EditMatchLocation },
 
-                // Match /tournaments/example123/teams/example-team or /tournaments/example123/teams/example-team/ but not 
-                // /tournaments/example123, /tournaments/example123/, /tournaments/example123/teams, /tournaments/example123/teams/
-                // or /tournaments/example123/invalid in upper, lower or mixed case
-                { $@"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}teams{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.TransientTeam }
+                // Match /tournaments/example123/teams/example-team, /tournaments/example123/teams/example-team/ or /tournaments/example123/teams/example-team/edit 
+                // but not /tournaments/example123, /tournaments/example123/, /tournaments/example123/teams, /tournaments/example123/teams/,
+                // /tournaments/example123/invalid or /tournaments/example123/teams/example-team/invalid in upper, lower or mixed case
+                { $@"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}teams{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.TransientTeam },
+                { $@"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.EditTransientTeam }
             };
 
             foreach (var routePattern in routeTypes.Keys)

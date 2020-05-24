@@ -9,6 +9,7 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
+using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Teams
 {
@@ -50,6 +51,8 @@ namespace Stoolball.Web.Teams
             }
             else
             {
+                model.IsAuthorized = IsAuthorized(model);
+
                 model.Metadata.PageTitle = model.Team.TeamName + " stoolball team";
                 model.Metadata.Description = model.Team.Description();
 
@@ -60,6 +63,15 @@ namespace Stoolball.Web.Teams
 
                 return CurrentTemplate(model);
             }
+        }
+
+        /// <summary>
+        /// Checks whether the currently signed-in member is authorized to edit this team
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsAuthorized(TeamViewModel model)
+        {
+            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, model?.Team.MemberGroupName }, null);
         }
     }
 }

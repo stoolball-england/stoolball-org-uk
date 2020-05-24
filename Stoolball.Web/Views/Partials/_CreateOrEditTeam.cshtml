@@ -1,0 +1,231 @@
+﻿@model TeamViewModel
+@using Stoolball.Teams
+@using Stoolball.Web.Teams
+@Html.ValidationSummary(true)
+
+<button class="btn btn-primary sr-only">Save team</button>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.Team.TeamName)
+    @Html.TextBoxFor(m => Model.Team.TeamName, new { @class = "form-control", required = "required", aria_describedby = "team-name" })
+    @Html.ValidationMessageFor(m => Model.Team.TeamName, null, new { id = "team-name" })
+</div>
+
+@if (Model.Team.TeamType != TeamType.Transient)
+{
+    <fieldset class="form-group" id="team-type">
+        <legend>Type of team</legend>
+        <div class="custom-control custom-radio">
+            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.Regular, new { @class = "custom-control-input", @id = "team-type-1" })
+            <label for="team-type-1" class="custom-control-label">Plays regularly, with open membership</label>
+        </div>
+        <div class="custom-control custom-radio">
+            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.Representative, new { @class = "custom-control-input", @id = "team-type-2" })
+            <label for="team-type-2" class="custom-control-label">Represents a league or group</label>
+        </div>
+        <div class="custom-control custom-radio">
+            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.ClosedGroup, new { @class = "custom-control-input", @id = "team-type-3" })
+            <label for="team-type-3" class="custom-control-label">Closed group (for example, only staff can join a work team)</label>
+        </div>
+        <div class="custom-control custom-radio">
+            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.Occasional, new { @class = "custom-control-input", @id = "team-type-4" })
+            <label for="team-type-4" class="custom-control-label">Plays occasionally, with open membership</label>
+        </div>
+        <div class="custom-control custom-radio">
+            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.SchoolAgeGroup, new { @class = "custom-control-input", @id = "team-type-5" })
+            <label for="team-type-5" class="custom-control-label">School year group(s)</label>
+        </div>
+        <div class="custom-control custom-radio">
+            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.SchoolClub, new { @class = "custom-control-input", @id = "team-type-6" })
+            <label for="team-type-6" class="custom-control-label">School club (for example, after school)</label>
+        </div>
+        <div class="custom-control custom-radio">
+            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.SchoolOther, new { @class = "custom-control-input", @id = "team-type-7" })
+            <label for="team-type-7" class="custom-control-label">Other school team</label>
+        </div>
+        @Html.ValidationMessageFor(m => Model.Team.TeamType, null, new { id = "team-type-validation" })
+    </fieldset>
+}
+<div class="form-group">
+    @Html.LabelFor(m => Model.Team.AgeRangeLower)
+    <p class="form-text" id="age-lower-help"><small>Children under 11 must not play in a game with adults. Fielding restrictions apply up to age 16.</small></p>
+    @Html.TextBoxFor(m => Model.Team.AgeRangeLower, new { @class = "form-control", aria_describedby = "age-lower age-lower-help", @type = "number" })
+    @Html.ValidationMessageFor(m => Model.Team.AgeRangeLower, null, new { id = "age-lower" })
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.Team.AgeRangeUpper)
+    @Html.TextBoxFor(m => Model.Team.AgeRangeUpper, new { @class = "form-control", aria_describedby = "age-upper", @type = "number" })
+    @Html.ValidationMessageFor(m => Model.Team.AgeRangeUpper, null, new { id = "age-upper" })
+</div>
+
+@if (Model.Team.TeamType != TeamType.Transient)
+{
+    <div class="form-group">
+        @Html.LabelFor(m => Model.Team.FromYear)
+        <p class="form-text" id="from-help"><small>If you're not sure, an estimate is fine.</small></p>
+        @Html.TextBoxFor(m => Model.Team.FromYear, new { @class = "form-control", aria_describedby = "from-year from-help", @type = "number" })
+        @Html.ValidationMessageFor(m => Model.Team.FromYear, null, new { id = "from-year" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => Model.Team.UntilYear)
+        <p class="form-text" id="until-help"><small>If you're not sure, an estimate is fine.</small></p>
+        @Html.TextBoxFor(m => Model.Team.UntilYear, new { @class = "form-control", aria_describedby = "until-year until-help", @type = "number" })
+        @Html.ValidationMessageFor(m => Model.Team.UntilYear, null, new { id = "until-year" })
+    </div>
+}
+
+<fieldset class="form-group" id="team-type">
+    <legend>Player type</legend>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.Mixed, new { @class = "custom-control-input", @id = "player-type-1" })
+        <label for="player-type-1" class="custom-control-label">Mixed</label>
+    </div>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.Ladies, new { @class = "custom-control-input", @id = "player-type-2" })
+        <label for="player-type-2" class="custom-control-label">Ladies</label>
+    </div>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.JuniorMixed, new { @class = "custom-control-input", @id = "player-type-3" })
+        <label for="player-type-3" class="custom-control-label">Junior mixed</label>
+    </div>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.Girls, new { @class = "custom-control-input", @id = "player-type-4" })
+        <label for="player-type-4" class="custom-control-label">Junior girls</label>
+    </div>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.Boys, new { @class = "custom-control-input", @id = "player-type-5" })
+        <label for="player-type-5" class="custom-control-label">Junior boys</label>
+    </div>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.Men, new { @class = "custom-control-input", @id = "player-type-6" })
+        <label for="player-type-6" class="custom-control-label">Men</label>
+    </div>
+    @Html.ValidationMessageFor(m => Model.Team.PlayerType, null, new { id = "player-type-validation" })
+</fieldset>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.Team.Introduction)
+    @Html.TextAreaFor(m => Model.Team.Introduction, new { @class = "form-control", aria_describedby = "intro-validation" })
+    @Html.ValidationMessageFor(m => Model.Team.Introduction, null, new { id = "intro-validation" })
+</div>
+
+@if (Model.Team.TeamType != TeamType.Transient)
+{
+    <table class="table table-hover related-items">
+        <thead class="thead-dark">
+            <tr><th scope="col" colspan="2">Home grounds and sports halls</th></tr>
+        </thead>
+        <tbody>
+            @for (var i = 0; i < Model.Team.MatchLocations.Count; i++)
+            {
+                /* This posts back PAON and Town because those two fields are [Required] on the MatchLocation class.
+                 *
+                 * PAON and Town both contain the same value returned by the autocomplete. Only MatchLocationId is used in saving,
+                 * and any value for PAON and Town will do to pass that [Required] validation.
+                 *
+                 * The value of PAON and Town is only important to redisplay here if (ModelState.IsValid == false). Because they're duplicated
+                 * it's important to use NameAndLocalityOrTownIfDifferent() rather than NameAndLocalityOrTown(), so that the duplicate 'town' is not displayed.
+                 */
+                <tr>
+                    <td><div class="related-item__animate">@Model.Team.MatchLocations[i].NameAndLocalityOrTownIfDifferent()</div></td>
+                    <td class="related-item__delete">
+                        <div class="related-item__animate">
+                            @Html.Hidden($"Team.MatchLocations[{i}].MatchLocationId", Model.Team.MatchLocations[i].MatchLocationId, new { @class = "related-item__data related-item__id", data_item = Model.Team.MatchLocations[i].MatchLocationId })
+                            @Html.Hidden($"Team.MatchLocations[{i}].PrimaryAddressableObjectName", Model.Team.MatchLocations[i].PrimaryAddressableObjectName, new { @class = "related-item__data", data_item = Model.Team.MatchLocations[i].MatchLocationId })
+                            @Html.Hidden($"Team.MatchLocations[{i}].Town", Model.Team.MatchLocations[i].Town, new { @class = "related-item__data", data_item = Model.Team.MatchLocations[i].MatchLocationId })
+                            @Html.Partial("_DeleteIcon", (Model.Team.MatchLocations[i].MatchLocationId.ToString(), $"Remove {Model.Team.MatchLocations[i].NameAndLocalityOrTownIfDifferent()} from this team"))
+                        </div>
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td colspan="2">
+                    @Html.Label("location-autocomplete", "Add a home ground or sports hall", new { @class = "sr-only" })
+                    @Html.TextBox("location-autocomplete", string.Empty, new
+               {
+                   @class = "form-control related-item__search",
+                   placeholder = "Add a home ground or sports hall",
+                   autocomplete = "off",
+                   type = "search",
+                   data_url = "/api/locations/autocomplete",
+                   data_template = "location-template",
+                   aria_label = "Type a ground or sports hall name add and press down arrow to select from the matching choices"
+               })
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <script type="text/x-template" id="location-template">
+        <tr>
+            <td><div class="related-item__animate">{{value}}</div></td>
+            <td class="related-item__delete">
+                <div class="related-item__animate">
+                    <input name="Team.MatchLocations[0].MatchLocationId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
+                    <input name="Team.MatchLocations[0].PrimaryAddressableObjectName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
+                    <input name="Team.MatchLocations[0].Town" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
+                    @Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this team"))
+                </div>
+            </td>
+        </tr>
+    </script>
+
+    <div class="form-group">
+        @Html.LabelFor(m => Model.Team.PlayingTimes)
+        @Html.TextAreaFor(m => Model.Team.PlayingTimes, new { @class = "form-control", aria_describedby = "times-validation" })
+        @Html.ValidationMessageFor(m => Model.Team.PlayingTimes, null, new { id = "times-validation" })
+    </div>
+}
+    <div class="form-group">
+        @Html.LabelFor(m => Model.Team.Cost)
+        <p class="form-text" id="cost-help"><small>Do you have a membership fee? Match fees? Special rates for juniors?</small></p>
+        @Html.TextAreaFor(m => Model.Team.Cost, new { @class = "form-control", aria_describedby = "cost-validation cost-help" })
+        @Html.ValidationMessageFor(m => Model.Team.Cost, null, new { id = "cost-validation" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => Model.Team.PublicContactDetails)
+        <p class="form-text" id="public-help"><small>Publish a phone number and email so new players can get in touch. Don't include your home address.</small></p>
+        @Html.TextAreaFor(m => Model.Team.PublicContactDetails, new { @class = "form-control", aria_describedby = "public-validation public-help" })
+        @Html.ValidationMessageFor(m => Model.Team.PublicContactDetails, null, new { id = "public-validation" })
+    </div>
+
+    <div class="form-group">
+        <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="facebook-square" class="svg-inline--fa fa-facebook-square fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="30" height="30"><path fill="currentColor" d="M400 32H48A48 48 0 0 0 0 80v352a48 48 0 0 0 48 48h137.25V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.27c-30.81 0-40.42 19.12-40.42 38.73V256h68.78l-11 71.69h-57.78V480H400a48 48 0 0 0 48-48V80a48 48 0 0 0-48-48z"></path></svg>
+        @Html.LabelFor(m => Model.Team.Facebook)
+        @Html.TextBoxFor(m => Model.Team.Facebook, new { @class = "form-control", aria_describedby = "facebook" })
+        @Html.ValidationMessageFor(m => Model.Team.Facebook, null, new { id = "facebook" })
+    </div>
+    <div class="form-group">
+        <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="twitter" class="svg-inline--fa fa-twitter fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="30" height="30"><path fill="currentColor" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path></svg>
+        @Html.LabelFor(m => Model.Team.Twitter)
+        @Html.TextBoxFor(m => Model.Team.Twitter, new { @class = "form-control", aria_describedby = "twitter" })
+        @Html.ValidationMessageFor(m => Model.Team.Twitter, null, new { id = "twitter" })
+    </div>
+    <div class="form-group">
+        <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="instagram" class="svg-inline--fa fa-instagram fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="30" height="30"><path fill="currentColor" d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path></svg>
+        @Html.LabelFor(m => Model.Team.Instagram)
+        @Html.TextBoxFor(m => Model.Team.Instagram, new { @class = "form-control", aria_describedby = "instagram" })
+        @Html.ValidationMessageFor(m => Model.Team.Instagram, null, new { id = "instagram" })
+    </div>
+    <div class="form-group">
+        <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="youtube" class="svg-inline--fa fa-youtube fa-w-18" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="30" height="30"><path fill="currentColor" d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"></path></svg>
+        @Html.LabelFor(m => Model.Team.YouTube)
+        @Html.TextBoxFor(m => Model.Team.YouTube, new { @class = "form-control", aria_describedby = "youtube" })
+        @Html.ValidationMessageFor(m => Model.Team.YouTube, null, new { id = "youtube" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => Model.Team.Website)
+        @Html.TextBoxFor(m => Model.Team.Website, new { @class = "form-control", aria_describedby = "website" })
+        @Html.ValidationMessageFor(m => Model.Team.Website, null, new { id = "website" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => Model.Team.PrivateContactDetails)
+        <p class="form-text" id="private-help"><small>Please provide a phone number and email, if different from above. We won't share this with anyone else.</small></p>
+        @Html.TextAreaFor(m => Model.Team.PrivateContactDetails, new { @class = "form-control", aria_describedby = "private-validation private-help" })
+        @Html.ValidationMessageFor(m => Model.Team.PrivateContactDetails, null, new { id = "private-validation" })
+    </div>
+
+    <button class="btn btn-primary">Save team</button>

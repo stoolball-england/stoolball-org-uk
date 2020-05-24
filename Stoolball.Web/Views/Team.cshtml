@@ -1,13 +1,14 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamViewModel>
 @using Stoolball.Teams
 @using Stoolball.Web.Competitions
+@using Humanizer
 
 <h1>@Model.Team.TeamNameLocationAndPlayerType()</h1>
 
-@if (Model.Team.UntilDate.HasValue)
+@if (Model.Team.UntilYear.HasValue)
 {
 <div class="alert alert-info">
-    <p><strong>This team doesn't play any more.</strong></p>
+    <p><strong>This team is no longer active.</strong></p>
 </div>
 }
 
@@ -18,6 +19,12 @@
     <li class="nav-item">
         <a class="nav-link" href="@Model.Team.TeamRoute/matches">Matches</a>
     </li>
+    @if (Model.IsAuthorized)
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Team.TeamRoute/edit">Edit</a>
+        </li>
+    }
 </ul>
 
 @if (Model.Team.Club != null)
@@ -32,7 +39,7 @@
 {
     whenWhereHeadingRendered = true;
     <h2>When and where</h2>
-    <p>This team plays at <a href="@Model.Team.MatchLocations.First().MatchLocationRoute">@Model.Team.MatchLocations.First().NameAndLocalityOrTown()</a>.</p>
+    <p>This team plays at @Html.Raw(Model.Team.MatchLocations.Humanize(x => $"<a href=\"{Html.Encode(x.MatchLocationRoute)}\">{Html.Encode(x.NameAndLocalityOrTownIfDifferent())}</a>")).</p>
 }
 
 @if (!string.IsNullOrWhiteSpace(Model.Team.PlayingTimes))

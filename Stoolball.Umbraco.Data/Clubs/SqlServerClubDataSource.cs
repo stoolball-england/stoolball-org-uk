@@ -41,8 +41,8 @@ namespace Stoolball.Umbraco.Data.Clubs
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var clubs = await connection.QueryAsync<Club, Team, Club>(
-                        $@"SELECT c.ClubId, cn.ClubName, c.Twitter, c.Facebook, c.Instagram, c.YouTube, c.Website, c.ClubMark, c.MemberGroupName, c.ClubRoute,
-                            t.TeamId, tn.TeamName, t.TeamRoute, t.UntilDate
+                        $@"SELECT c.ClubId, cn.ClubName, c.ClubMark, c.MemberGroupName, c.ClubRoute,
+                            t.TeamId, tn.TeamName, t.TeamRoute, t.UntilYear
                             FROM {Tables.Club} AS c 
                             INNER JOIN {Tables.ClubName} AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
                             LEFT JOIN {Tables.Team} AS t ON c.ClubId = t.ClubId
@@ -88,7 +88,7 @@ namespace Stoolball.Umbraco.Data.Clubs
                             t.PlayerType
                             FROM {Tables.Club} AS c 
                             INNER JOIN {Tables.ClubName} AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
-                            LEFT JOIN {Tables.Team} AS t ON c.ClubId = t.ClubId AND t.UntilDate IS NULL
+                            LEFT JOIN {Tables.Team} AS t ON c.ClubId = t.ClubId AND t.UntilYear IS NULL
                             <<WHERE>>
                             ORDER BY cn.ClubName";
 

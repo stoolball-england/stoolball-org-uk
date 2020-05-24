@@ -159,6 +159,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
 					using (var transaction = database.GetTransaction())
 					{
+						await database.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsAdjustment}").ConfigureAwait(false);
 						await database.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsRule}").ConfigureAwait(false);
 						await database.ExecuteAsync($"DELETE FROM {Tables.SeasonMatchType}").ConfigureAwait(false);
 						await database.ExecuteAsync($"DELETE FROM {Tables.SeasonMatch}").ConfigureAwait(false);

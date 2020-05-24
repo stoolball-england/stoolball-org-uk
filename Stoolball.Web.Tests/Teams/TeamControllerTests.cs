@@ -42,7 +42,10 @@ namespace Stoolball.Web.Tests.Teams
                 controllerContext.Setup(p => p.HttpContext.User).Returns(new GenericPrincipal(new GenericIdentity("test"), null));
                 ControllerContext = controllerContext.Object;
             }
-
+            protected override bool IsAuthorized(TeamViewModel model)
+            {
+                return true;
+            }
             protected override ActionResult CurrentTemplate<T>(T model)
             {
                 return View("Team", model);

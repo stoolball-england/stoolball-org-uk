@@ -68,7 +68,12 @@ namespace Stoolball.Web.Matches
                 };
 
                 model.Metadata.PageTitle = model.Tournament.TournamentName;
-                model.Metadata.PageTitle += $", {_dateFormatter.FormatDate(model.Tournament.StartTime.LocalDateTime, false, false, false)} - stoolball tournament";
+                var saysTournament = model.Tournament.TournamentName.ToUpperInvariant().Contains("TOURNAMENT");
+                if (!saysTournament)
+                {
+                    model.Metadata.PageTitle += " stoolball tournament";
+                }
+                model.Metadata.PageTitle += $", {_dateFormatter.FormatDate(model.Tournament.StartTime.LocalDateTime, false, false, false)}";
 
                 model.Metadata.Description = model.Tournament.Description();
 

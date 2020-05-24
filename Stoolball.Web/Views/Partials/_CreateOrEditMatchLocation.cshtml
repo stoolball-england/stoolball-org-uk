@@ -50,21 +50,21 @@
 
 <fieldset class="form-group" id="geoprecision">
     <legend>How accurate is the map?</legend>
-    <div class="form-check form-check-inline">
-        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Town, new { @class = "form-check-input", @id = "geo-3" })
-        <label for="geo-3" class="form-check-label">Town</label>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Town, new { @class = "custom-control-input", @id = "geo-3" })
+        <label for="geo-3" class="custom-control-label">Town</label>
     </div>
-    <div class="form-check form-check-inline">
-        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Street, new { @class = "form-check-input", @id = "geo-2" })
-        <label for="geo-2" class="form-check-label">Street</label>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Street, new { @class = "custom-control-input", @id = "geo-2" })
+        <label for="geo-2" class="custom-control-label">Street</label>
     </div>
-    <div class="form-check form-check-inline">
-        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Postcode, new { @class = "form-check-input", @id = "geo-1" })
-        <label for="geo-1" class="form-check-label">Postcode</label>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Postcode, new { @class = "custom-control-input", @id = "geo-1" })
+        <label for="geo-1" class="custom-control-label">Postcode</label>
     </div>
-    <div class="form-check form-check-inline">
-        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Exact, new { @class = "form-check-input", @id = "geo-0" })
-        <label for="geo-0" class="form-check-label">Exact</label>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Exact, new { @class = "custom-control-input", @id = "geo-0" })
+        <label for="geo-0" class="custom-control-label">Exact</label>
     </div>
     @Html.ValidationMessageFor(m => Model.MatchLocation.GeoPrecision, null, new { id = "precision-validation" })
     @Html.HiddenFor(m => Model.MatchLocation.Latitude)

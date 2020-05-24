@@ -85,7 +85,11 @@ namespace Stoolball.Umbraco.Data.Matches
                     var tournamentToReturn = tournaments.FirstOrDefault(); // get an example with the properties that are the same for every row
                     if (tournamentToReturn != null)
                     {
-                        tournamentToReturn.Teams = tournaments.Select(match => match.Teams.SingleOrDefault()).OfType<TeamInMatch>().OrderBy(x => x.Team.TeamName).ToList();
+                        tournamentToReturn.Teams = tournaments.Select(match => match.Teams.SingleOrDefault())
+                            .OfType<TeamInMatch>()
+                            .Distinct(new TeamInMatchEqualityComparer())
+                            .OrderBy(x => x.Team.TeamName)
+                            .ToList();
                         tournamentToReturn.Seasons = tournaments.Select(tournament => tournament.Seasons.SingleOrDefault())
                             .OfType<Season>()
                             .Distinct(new SeasonEqualityComparer())

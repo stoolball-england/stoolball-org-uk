@@ -75,6 +75,8 @@
     <Compile Include="MatchLocations\IMatchLocationRepository.cs" />
     <Compile Include="MatchLocations\MatchLocationQuery.cs" />
     <Compile Include="MatchLocations\SqlServerMatchLocationRepository.cs" />
+    <Compile Include="Teams\ITeamRepository.cs" />
+    <Compile Include="Teams\SqlServerTeamRepository.cs" />
     <Compile Include="Teams\TeamQuery.cs" />
     <Compile Include="Teams\ITeamDataSource.cs" />
     <Compile Include="Teams\SqlServerTeamDataSource.cs" />

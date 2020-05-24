@@ -10,19 +10,20 @@
     var playerType = Model.Tournament.PlayerType.Humanize(LetterCasing.Sentence);
     var saysPlayerType = Model.Tournament.TournamentName.Replace("'", string.Empty).ToUpperInvariant().Contains(playerType.ToUpperInvariant());
 
-    var h1 = Model.Tournament.TournamentName + ", " + Model.DateTimeFormatter.FormatDate(Model.Tournament.StartTime.LocalDateTime, false);
+    var h1 = Model.Tournament.TournamentName;
     if (!saysTournament && !saysPlayerType)
     {
-        h1 += " (" + playerType + " stoolball tournament)";
+        h1 += " (" + playerType + " tournament)";
     }
     else if (!saysTournament)
     {
-        h1 += " stoolball tournament";
+        h1 += " tournament";
     }
     else if (!saysPlayerType)
     {
         h1 += " (" + playerType + ")";
     }
+    h1 += ", " + Model.DateTimeFormatter.FormatDate(Model.Tournament.StartTime.LocalDateTime, false);
 }
 <h1>@h1</h1>
 <p>

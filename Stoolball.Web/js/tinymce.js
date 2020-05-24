@@ -10,7 +10,7 @@ $(function () {
     menubar: false,
     toolbar: "formatselect bold italic bullist numlist link removeformat",
     block_formats: "Paragraph=p;Heading=h2",
-    valid_elements: "p,h2,strong/b,em/i,ul,ol,li,a[href]",
+    valid_elements: "p,h2,strong/b,em/i,ul,ol,li,a[href],br",
     link_title: false,
     target_list: false,
 

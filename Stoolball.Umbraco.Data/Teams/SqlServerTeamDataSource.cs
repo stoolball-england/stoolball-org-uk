@@ -49,7 +49,7 @@ namespace Stoolball.Umbraco.Data.Teams
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var teams = await connection.QueryAsync<Team>(
-                        $@"SELECT t.TeamId, tn.TeamName, t.TeamType, t.TeamRoute, t.UntilDate
+                        $@"SELECT t.TeamId, tn.TeamName, t.TeamType, t.TeamRoute, t.UntilYear, t.MemberGroupName
                             FROM {Tables.Team} AS t 
                             INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             WHERE LOWER(t.TeamRoute) = @Route",
@@ -83,17 +83,19 @@ namespace Stoolball.Umbraco.Data.Teams
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var teams = await connection.QueryAsync<Team, Club, MatchLocation, Season, Competition, Team>(
-                        $@"SELECT t.TeamId, tn.TeamName, t.TeamType, t.PlayerType, t.Introduction, t.AgeRangeLower, t.AgeRangeUpper,
-                            t.Website, t.PublicContactDetails, t.PlayingTimes, t.Cost, t.TeamRoute, t.UntilDate,
+                        $@"SELECT t.TeamId, tn.TeamName, t.TeamType, t.PlayerType, t.Introduction, t.AgeRangeLower, t.AgeRangeUpper, 
+                            t.Facebook, t.Twitter, t.Instagram, t.YouTube, t.Website, t.PublicContactDetails, t.PrivateContactDetails, 
+                            t.PlayingTimes, t.Cost, t.TeamRoute, t.FromYear, t.UntilYear, t.MemberGroupName,
                             cn.ClubName, c.ClubRoute, c.ClubMark,
-                            ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, ml.Town, ml.AdministrativeArea, ml.MatchLocationRoute,
+                            ml.MatchLocationId, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, 
+                            ml.Town, ml.AdministrativeArea, ml.MatchLocationRoute,
                             s.StartYear, s.EndYear, s.SeasonRoute,
                             co.CompetitionId, co.CompetitionName
                             FROM {Tables.Team} AS t 
                             INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             LEFT JOIN {Tables.Club} AS c ON t.ClubId = c.ClubId
                             LEFT JOIN {Tables.ClubName} AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
-                            LEFT JOIN {Tables.TeamMatchLocation} AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL
+                            LEFT JOIN {Tables.TeamMatchLocation} AS tml ON tml.TeamId = t.TeamId 
                             LEFT JOIN {Tables.MatchLocation} AS ml ON ml.MatchLocationId = tml.MatchLocationId 
                             LEFT JOIN {Tables.SeasonTeam} AS st ON t.TeamId = st.TeamId
                             LEFT JOIN {Tables.Season} AS s ON st.SeasonId = s.SeasonId
@@ -115,7 +117,7 @@ namespace Stoolball.Umbraco.Data.Teams
                             return team;
                         },
                         new { Route = normalisedRoute },
-                        splitOn: "ClubName, SecondaryAddressableObjectName, StartYear, CompetitionId").ConfigureAwait(false);
+                        splitOn: "ClubName, MatchLocationId, StartYear, CompetitionId").ConfigureAwait(false);
 
                     var teamToReturn = teams.FirstOrDefault(); // get an example with the properties that are the same for every row
                     if (teamToReturn != null)
@@ -144,15 +146,15 @@ namespace Stoolball.Umbraco.Data.Teams
             {
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var sql = $@"SELECT t.TeamId, tn.TeamName, t.TeamRoute, t.PlayerType, t.UntilDate,
+                    var sql = $@"SELECT t.TeamId, tn.TeamName, t.TeamRoute, t.PlayerType, t.UntilYear,
                             ml.Locality, ml.Town
                             FROM {Tables.Team} AS t 
                             INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
-                            LEFT JOIN {Tables.TeamMatchLocation} AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL
+                            LEFT JOIN {Tables.TeamMatchLocation} AS tml ON tml.TeamId = t.TeamId
                             LEFT JOIN {Tables.MatchLocation} AS ml ON ml.MatchLocationId = tml.MatchLocationId 
                             <<WHERE>>
-                            ORDER BY CASE WHEN t.UntilDate IS NULL THEN 0 
-                                          WHEN t.UntilDate IS NOT NULL THEN 1 END, tn.TeamName";
+                            ORDER BY CASE WHEN t.UntilYear IS NULL THEN 0 
+                                          WHEN t.UntilYear IS NOT NULL THEN 1 END, tn.TeamName";
 
                     var where = new List<string>();
                     var parameters = new Dictionary<string, object>();

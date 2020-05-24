@@ -52,11 +52,6 @@ namespace Stoolball.Umbraco.Data.Clubs
             try
             {
                 club.ClubId = Guid.NewGuid();
-                club.Facebook = PrefixUrlProtocol(club.Facebook);
-                club.Twitter = PrefixAtSign(club.Twitter);
-                club.Instagram = PrefixAtSign(club.Instagram);
-                club.YouTube = PrefixUrlProtocol(club.YouTube);
-                club.Website = PrefixUrlProtocol(club.Website);
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
@@ -76,17 +71,12 @@ namespace Stoolball.Umbraco.Data.Clubs
                         while (count > 0);
 
                         await connection.ExecuteAsync(
-                            $@"INSERT INTO {Tables.Club} (ClubId, ClubMark, Facebook, Twitter, Instagram, YouTube, Website, ClubRoute, MemberGroupId, MemberGroupName) 
-                                VALUES (@ClubId, @ClubMark, @Facebook, @Twitter, @Instagram, @YouTube, @Website, @ClubRoute, @MemberGroupId, @MemberGroupName)",
+                            $@"INSERT INTO {Tables.Club} (ClubId, ClubMark, ClubRoute, MemberGroupId, MemberGroupName) 
+                                VALUES (@ClubId, @ClubMark, @ClubRoute, @MemberGroupId, @MemberGroupName)",
                             new
                             {
                                 club.ClubId,
                                 club.ClubMark,
-                                club.Facebook,
-                                club.Twitter,
-                                club.Instagram,
-                                club.YouTube,
-                                club.Website,
                                 club.ClubRoute,
                                 club.MemberGroupId,
                                 club.MemberGroupName
@@ -144,11 +134,6 @@ namespace Stoolball.Umbraco.Data.Clubs
             try
             {
                 string routeBeforeUpdate = club.ClubRoute;
-                club.Facebook = PrefixUrlProtocol(club.Facebook);
-                club.Twitter = PrefixAtSign(club.Twitter);
-                club.Instagram = PrefixAtSign(club.Instagram);
-                club.YouTube = PrefixUrlProtocol(club.YouTube);
-                club.Website = PrefixUrlProtocol(club.Website);
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
@@ -174,21 +159,11 @@ namespace Stoolball.Umbraco.Data.Clubs
                         await connection.ExecuteAsync(
                             $@"UPDATE {Tables.Club} SET
                                 ClubMark = @ClubMark,
-                                Facebook = @Facebook,
-                                Twitter = @Twitter,
-                                Instagram = @Instagram,
-                                YouTube = @YouTube,
-                                Website = @Website,
                                 ClubRoute = @ClubRoute
 						        WHERE ClubId = @ClubId",
                             new
                             {
                                 club.ClubMark,
-                                club.Facebook,
-                                club.Twitter,
-                                club.Instagram,
-                                club.YouTube,
-                                club.Website,
                                 club.ClubRoute,
                                 club.ClubId
                             }, transaction).ConfigureAwait(false);
@@ -236,26 +211,6 @@ namespace Stoolball.Umbraco.Data.Clubs
             }
 
             return club;
-        }
-
-        private string PrefixUrlProtocol(string url)
-        {
-            url = url?.Trim();
-            if (!string.IsNullOrEmpty(url) && !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-            {
-                url = "https://" + url;
-            }
-            return url;
-        }
-
-        private string PrefixAtSign(string account)
-        {
-            account = account?.Trim();
-            if (!string.IsNullOrEmpty(account) && !account.StartsWith("@", StringComparison.OrdinalIgnoreCase))
-            {
-                account = "@" + account;
-            }
-            return account;
         }
     }
 }

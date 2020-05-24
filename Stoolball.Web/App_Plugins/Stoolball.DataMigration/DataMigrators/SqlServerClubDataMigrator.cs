@@ -78,9 +78,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				ClubId = Guid.NewGuid(),
 				MigratedClubId = club.MigratedClubId,
 				ClubName = club.ClubName,
-				Twitter = club.Twitter,
-				Facebook = club.Facebook,
-				Instagram = club.Instagram,
 				ClubMark = club.ClubMark,
 				MemberGroupId = club.MemberGroupId,
 				MemberGroupName = club.MemberGroupName,
@@ -111,13 +108,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					using (var transaction = database.GetTransaction())
 					{
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Club}
-						(ClubId, MigratedClubId, Twitter, Facebook, Instagram, ClubMark, MemberGroupId, MemberGroupName, ClubRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8)",
+						(ClubId, MigratedClubId, ClubMark, MemberGroupId, MemberGroupName, ClubRoute)
+						VALUES (@0, @1, @2, @3, @4, @5)",
 							migratedClub.ClubId,
 							migratedClub.MigratedClubId,
-							migratedClub.Twitter,
-							migratedClub.Facebook,
-							migratedClub.Instagram,
 							migratedClub.ClubMark,
 							migratedClub.MemberGroupId,
 							migratedClub.MemberGroupName,

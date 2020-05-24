@@ -1,0 +1,46 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<TeamViewModel>
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.Teams
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+
+    Html.RequiresJs("~/js/libs/jquery.autocomplete.min.js", 50);
+    Html.RequiresCss("~/css/autocomplete.min.css");
+
+    Html.RequiresCss("~/css/related-items.min.css");
+    Html.RequiresJs("~/js/related-items.js");
+
+    Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
+    Html.RequiresJs("/js/tinymce.js");
+}
+
+<h1>Add a team</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="/clubs">Search</a>
+    </li>
+    <li class="nav-item">
+        <em class="nav-link active">Add</em>
+    </li>
+</ul>
+
+@if (Model.IsAuthorized)
+{
+    using (Html.BeginUmbracoForm<CreateTeamSurfaceController>
+        ("CreateTeam"))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Partial("_CreateOrEditTeam")
+    }
+}
+else
+{
+    @Html.Partial("_Login")
+}

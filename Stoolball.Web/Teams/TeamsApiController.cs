@@ -16,7 +16,7 @@ using Umbraco.Web.WebApi;
 
 namespace Stoolball.Web.Teams
 {
-    public partial class TeamsApiController : UmbracoApiController
+    public class TeamsApiController : UmbracoApiController
     {
         private readonly ITeamDataSource _teamDataSource;
 
@@ -39,6 +39,8 @@ namespace Stoolball.Web.Teams
             var teamQuery = new TeamQuery { Query = query };
             foreach (var guid in not)
             {
+                if (guid == null) continue;
+
                 try
                 {
                     teamQuery.ExcludeTeamIds.Add(new Guid(guid));
@@ -53,7 +55,7 @@ namespace Stoolball.Web.Teams
             {
                 suggestions = teams.Select(x => new AutocompleteResult
                 {
-                    value = (x.UntilDate.HasValue ? x.TeamName + " (no longer active)" : x.TeamName),
+                    value = (x.UntilYear.HasValue ? x.TeamName + " (no longer active)" : x.TeamName),
                     data = x.TeamId.ToString()
                 })
             };

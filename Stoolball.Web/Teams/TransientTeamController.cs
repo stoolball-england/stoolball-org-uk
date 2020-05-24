@@ -7,6 +7,7 @@ using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -15,6 +16,7 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
+using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Teams
 {
@@ -62,6 +64,8 @@ namespace Stoolball.Web.Teams
             }
             else
             {
+                model.IsAuthorized = IsAuthorized(model);
+
                 model.Matches = new MatchListingViewModel
                 {
                     Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
@@ -72,14 +76,23 @@ namespace Stoolball.Web.Teams
                     DateTimeFormatter = _dateFormatter
                 };
 
-                model.Metadata.PageTitle = model.Team.TeamName + " stoolball team, " + _dateFormatter.FormatDate(model.Team.UntilDate.Value.Date, false, false);
-
-                model.Team.Cost = _emailProtector.ProtectEmailAddresses(model.Team.Cost, User.Identity.IsAuthenticated);
-                model.Team.Introduction = _emailProtector.ProtectEmailAddresses(model.Team.Introduction, User.Identity.IsAuthenticated);
-                model.Team.PublicContactDetails = _emailProtector.ProtectEmailAddresses(model.Team.PublicContactDetails, User.Identity.IsAuthenticated);
-
-                return CurrentTemplate(model);
+                model.Metadata.PageTitle = model.Team.TeamNameAndPlayerType() + ", " + _dateFormatter.FormatDate(model.Matches.Matches.First().StartTime, false, false);
             }
+
+            model.Team.Cost = _emailProtector.ProtectEmailAddresses(model.Team.Cost, User.Identity.IsAuthenticated);
+            model.Team.Introduction = _emailProtector.ProtectEmailAddresses(model.Team.Introduction, User.Identity.IsAuthenticated);
+            model.Team.PublicContactDetails = _emailProtector.ProtectEmailAddresses(model.Team.PublicContactDetails, User.Identity.IsAuthenticated);
+
+            return CurrentTemplate(model);
+        }
+
+        /// <summary>
+        /// Checks whether the currently signed-in member is authorized to edit this team
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsAuthorized(TeamViewModel model)
+        {
+            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, model?.Team.MemberGroupName }, null);
         }
     }
 }

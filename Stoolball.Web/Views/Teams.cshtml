@@ -8,6 +8,15 @@
     }
 </h1>
 
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <em class="nav-link active">Search</em>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/teams/add">Add</a>
+    </li>
+</ul>
+
 <form method="get" action="@Request.Url" class="form-inline form-search">
     <label class="sr-only" for="team-search">Team name</label>
     <input type="search" class="form-control" id="team-search" name="q" value="@Model.TeamQuery.Query" />
@@ -17,7 +26,7 @@
 <ul>
     @foreach (var team in Model.Teams)
     {
-        if (!team.UntilDate.HasValue)
+        if (!team.UntilYear.HasValue)
         {
         <li><a href="@team.TeamRoute">@team.TeamNameLocationAndPlayerType()</a></li>
         }

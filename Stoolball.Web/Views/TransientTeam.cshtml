@@ -1,14 +1,17 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamViewModel>
+@{ 
+    var firstAndOnlyMatch = Model.Matches.Matches.FirstOrDefault();
+}
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
 
-<h1>@Model.Team.TeamName, @Model.Matches.DateTimeFormatter.FormatDate(Model.Team.UntilDate.Value.Date, false, false)</h1>
+<h1>@Model.Team.TeamNameAndPlayerType(), @Model.Matches.DateTimeFormatter.FormatDate(firstAndOnlyMatch.StartTime, false, false)</h1>
 
-@if (Model.Team.UntilDate < DateTime.UtcNow)
+@if (firstAndOnlyMatch.StartTime < DateTime.UtcNow)
 {
     <div class="alert alert-info">
-        <p><strong>This team doesn't play any more.</strong></p>
+        <p><strong>This team is no longer active.</strong></p>
     </div>
 }
 
@@ -16,6 +19,12 @@
     <li class="nav-item">
         <em class="nav-link active">Summary</em>
     </li>
+    @if (Model.IsAuthorized)
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Team.TeamRoute/edit">Edit</a>
+        </li>
+    }
 </ul>
 
 @if (Model.Team.Club != null)
@@ -34,7 +43,7 @@
     }
 }
 
-@{ var verb = (Model.Team.UntilDate < DateTime.UtcNow) ? "came" : "will come"; }
+@{ var verb = (firstAndOnlyMatch.StartTime < DateTime.UtcNow) ? "came" : "will come"; }
 <p>This team @verb together once to play in a tournament@(atLocation):</p>
 @Html.Partial("_MatchList", Model.Matches)
 

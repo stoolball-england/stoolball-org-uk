@@ -5,10 +5,10 @@
 
 <h1>Matches for @Model.Team.TeamName</h1>
 
-@if (Model.Team.UntilDate.HasValue)
+@if (Model.Team.UntilYear.HasValue)
 {
     <div class="alert alert-info">
-        <p><strong>This team doesn't play any more.</strong></p>
+        <p><strong>This team is no longer active.</strong></p>
     </div>
 }
 
@@ -19,7 +19,13 @@
     <li class="nav-item">
         <em class="nav-link active">Matches</em>
     </li>
-    </ul>
+    @if (Model.IsAuthorized)
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Team.TeamRoute/edit">Edit</a>
+        </li>
+    }
+</ul>
 
 @if (Model.Matches.Matches.Count > 0)
 {

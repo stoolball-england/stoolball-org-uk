@@ -34,6 +34,9 @@
 /* Forms should have space before any following element */
 form { margin-bottom: $spacer; }
 
+/* Legends should look like labels */
+legend { font-size: $font-size-base;}
+
 /* A simple search form with an input field and button. Apply as <form class="form-inline form-search">. */
 .form-search input[type=search] {
     flex-grow: 1;

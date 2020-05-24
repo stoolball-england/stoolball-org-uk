@@ -22,14 +22,5 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Index(IndexTypes.NonClustered)]
         [Column(nameof(MatchLocationId))]
         public Guid MatchLocationId { get; set; }
-
-        [Column(nameof(FromDate))]
-        [Index(IndexTypes.NonClustered)]
-        public DateTime FromDate { get; set; }
-
-        [Column(nameof(UntilDate))]
-        [Index(IndexTypes.NonClustered)]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public DateTime? UntilDate { get; set; }
     }
 }

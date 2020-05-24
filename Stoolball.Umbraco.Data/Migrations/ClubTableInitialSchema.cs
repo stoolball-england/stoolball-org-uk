@@ -18,26 +18,6 @@ namespace Stoolball.Umbraco.Data.Migrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? MigratedClubId { get; set; }
 
-        [Column(nameof(Website))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public string Website { get; set; }
-
-        [Column(nameof(Twitter))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public string Twitter { get; set; }
-
-        [Column(nameof(Facebook))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public string Facebook { get; set; }
-
-        [Column(nameof(Instagram))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public string Instagram { get; set; }
-
-        [Column(nameof(YouTube))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public string YouTube { get; set; }
-
         [Column(nameof(ClubMark))]
         public bool ClubMark { get; set; }
 

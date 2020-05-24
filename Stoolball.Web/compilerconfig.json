@@ -14,5 +14,9 @@
   {
     "outputFile": "css/autocomplete.css",
     "inputFile": "css/autocomplete.scss"
+  },
+  {
+    "outputFile": "css/tinymce.css",
+    "inputFile": "css/tinymce.scss"
   }
 ]
