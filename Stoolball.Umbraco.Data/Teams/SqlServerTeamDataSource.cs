@@ -122,8 +122,14 @@ namespace Stoolball.Umbraco.Data.Teams
                     var teamToReturn = teams.FirstOrDefault(); // get an example with the properties that are the same for every row
                     if (teamToReturn != null)
                     {
-                        teamToReturn.MatchLocations = teams.Select(team => team.MatchLocations.SingleOrDefault()).OfType<MatchLocation>().ToList();
-                        teamToReturn.Seasons = teams.Select(team => team.Seasons.SingleOrDefault()).OfType<TeamInSeason>().ToList();
+                        teamToReturn.MatchLocations = teams.Select(team => team.MatchLocations.SingleOrDefault())
+                            .OfType<MatchLocation>()
+                            .Distinct(new MatchLocationEqualityComparer())
+                            .OrderBy(x => x.SortName())
+                            .ToList();
+                        teamToReturn.Seasons = teams.Select(team => team.Seasons.SingleOrDefault())
+                            .OfType<TeamInSeason>()
+                            .ToList();
                     }
 
                     return teamToReturn;
