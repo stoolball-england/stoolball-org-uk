@@ -30,12 +30,17 @@ namespace Stoolball.Web.Competitions
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        public async Task<ActionResult> CreateCompetition([Bind(Prefix = "Competition", Include = "CompetitionName")]Competition competition)
+        public async Task<ActionResult> CreateCompetition([Bind(Prefix = "Competition", Include = "CompetitionName,FromYear,UntilYear,PlayerType,PlayersPerTeam,Overs,Facebook,Twitter,Instagram,YouTube,Website")]Competition competition)
         {
             if (competition is null)
             {
                 throw new System.ArgumentNullException(nameof(competition));
             }
+
+            // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
+            competition.Introduction = Request.Unvalidated.Form["Competition.Introduction"];
+            competition.PublicContactDetails = Request.Unvalidated.Form["Competition.PublicContactDetails"];
+            competition.PrivateContactDetails = Request.Unvalidated.Form["Competition.PrivateContactDetails"];
 
             var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, Groups.AllMembers }, null);
 

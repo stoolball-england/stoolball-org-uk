@@ -39,7 +39,7 @@
     IHtmlString atLocation = null;
     if (Model.Team.MatchLocations.Count > 0)
     {
-        atLocation = new HtmlString(" at <a href=\"" + Model.Team.MatchLocations.First().MatchLocationRoute + "\">" + Model.Team.MatchLocations.First() + "</a>");
+        atLocation = new HtmlString(" at <a href=\"" + Model.Team.MatchLocations.First().MatchLocationRoute + "\">" + Model.Team.MatchLocations.First().NameAndLocalityOrTownIfDifferent() + "</a>");
     }
 }
 

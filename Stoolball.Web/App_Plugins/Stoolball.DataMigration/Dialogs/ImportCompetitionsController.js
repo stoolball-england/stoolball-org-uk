@@ -38,7 +38,7 @@
             CompetitionName: competition.name,
             PlayerType: competition.playerType,
             Introduction: competition.introduction,
-            UntilDate: competition.untilDate,
+            UntilYear: competition.untilDate ? 2019 : 0,
             Website: competition.website,
             Twitter: competition.twitterAccount,
             Facebook: competition.facebookUrl,

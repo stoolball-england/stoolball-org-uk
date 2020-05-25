@@ -58,5 +58,16 @@ namespace Stoolball.Web.Tests.Competitions
                 Assert.IsType<CompetitionViewModel>(((ViewResult)result).Model);
             }
         }
+
+        [Fact]
+        public async Task PlayersPerTeam_defaults_to_11()
+        {
+            using (var controller = new TestController())
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                Assert.Equal(11, ((CompetitionViewModel)((ViewResult)result).Model).Competition.PlayersPerTeam);
+            }
+        }
     }
 }

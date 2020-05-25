@@ -86,11 +86,11 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				CompetitionRoute = "/competitions/" + competition.CompetitionRoute,
 				MemberGroupId = competition.MemberGroupId,
 				MemberGroupName = competition.MemberGroupName,
-				UntilDate = competition.UntilDate
+				UntilYear = competition.UntilYear
 			};
 
 			_auditHistoryBuilder.BuildInitialAuditHistory(competition, migratedCompetition, nameof(SqlServerCompetitionDataMigrator));
-			migratedCompetition.FromDate = competition.History[0].AuditDate;
+			migratedCompetition.FromYear = competition.History[0].AuditDate.Year;
 
 			using (var scope = _scopeProvider.CreateScope())
 			{
@@ -101,7 +101,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					{
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Competition}
 						(CompetitionId, MigratedCompetitionId, CompetitionName, Introduction, Twitter, Facebook, Instagram, PublicContactDetails, Website, PlayersPerTeam, 
-						 Overs, PlayerType, FromDate, UntilDate, MemberGroupId, MemberGroupName, CompetitionRoute)
+						 Overs, PlayerType, FromYear, UntilYear, MemberGroupId, MemberGroupName, CompetitionRoute)
 						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16)",
 							migratedCompetition.CompetitionId,
 							migratedCompetition.MigratedCompetitionId,
@@ -115,8 +115,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							migratedCompetition.PlayersPerTeam,
 							migratedCompetition.Overs,
 							migratedCompetition.PlayerType,
-							migratedCompetition.FromDate,
-							migratedCompetition.UntilDate,
+							migratedCompetition.FromYear,
+							migratedCompetition.UntilYear,
 							migratedCompetition.MemberGroupId,
 							migratedCompetition.MemberGroupName,
 							migratedCompetition.CompetitionRoute).ConfigureAwait(false);

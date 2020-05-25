@@ -5,7 +5,7 @@
 
 <h1>@Model.Season.SeasonFullNameAndPlayerType()</h1>
 
-@if (Model.Season.Competition.UntilDate.HasValue)
+@if (Model.Season.Competition.UntilYear.HasValue)
 {
     <div class="alert alert-info">
         <p><strong>This competition isn't played any more.</strong></p>

@@ -34,7 +34,10 @@ namespace Stoolball.Web.Competitions
 
             var model = new CompetitionViewModel(contentModel.Content)
             {
-                Competition = new Competition()
+                Competition = new Competition
+                {
+                    PlayersPerTeam = 11
+                }
             };
 
             model.IsAuthorized = IsAuthorized();

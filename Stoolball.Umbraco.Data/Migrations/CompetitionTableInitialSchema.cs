@@ -55,24 +55,27 @@ namespace Stoolball.Umbraco.Data.Migrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public string YouTube { get; set; }
 
-        [Column(nameof(FromDate))]
-        [Index(IndexTypes.NonClustered)]
-        public DateTime FromDate { get; set; }
-
-        [Column(nameof(UntilDate))]
+        [Column(nameof(FromYear))]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public DateTime? UntilDate { get; set; }
+        public int? FromYear { get; set; }
+
+        [Column(nameof(UntilYear))]
+        [Index(IndexTypes.NonClustered)]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? UntilYear { get; set; }
 
         [Column(nameof(PlayerType))]
         [Index(IndexTypes.NonClustered)]
         public string PlayerType { get; set; }
 
         [Column(nameof(PlayersPerTeam))]
-        public int PlayersPerTeam { get; set; }
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? PlayersPerTeam { get; set; }
 
         [Column(nameof(Overs))]
-        public int Overs { get; set; }
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? Overs { get; set; }
 
         [Column(nameof(MemberGroupId))]
         public int MemberGroupId { get; set; }

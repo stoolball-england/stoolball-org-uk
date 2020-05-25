@@ -59,17 +59,21 @@ namespace Stoolball.Competitions
         [RegularExpression(@"^((https?:\/\/)?(www.|)youtube.com\/.+|)", ErrorMessage = "Please enter a valid YouTube link")]
         public string YouTube { get; set; }
 
-        public DateTimeOffset FromDate { get; set; }
+        [Display(Name = "What year was this competition first played?")]
+        public int? FromYear { get; set; }
 
-        public DateTimeOffset? UntilDate { get; set; }
+        [Display(Name = "If it's no longer played, when was the last year?")]
+        public int? UntilYear { get; set; }
 
         [Required]
         [Display(Name = "Player type")]
         public PlayerType PlayerType { get; set; }
 
-        public int PlayersPerTeam { get; set; } = 11;
+        [Display(Name = "How many players on a team?")]
+        public int? PlayersPerTeam { get; set; }
 
-        public int Overs { get; set; } = 16;
+        [Display(Name = "How many overs in a match?")]
+        public int? Overs { get; set; }
         public int MemberGroupId { get; set; }
         public string MemberGroupName { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Ganss.XSS;
 using Newtonsoft.Json;
 using Stoolball.Audit;
 using Stoolball.Competitions;
@@ -23,14 +24,32 @@ namespace Stoolball.Umbraco.Data.Competitions
         private readonly ILogger _logger;
         private readonly IRouteGenerator _routeGenerator;
         private readonly IRedirectsRepository _redirectsRepository;
+        private readonly IHtmlSanitizer _htmlSanitiser;
 
-        public SqlServerCompetitionRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator, IRedirectsRepository redirectsRepository)
+        public SqlServerCompetitionRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
+            IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
+            _htmlSanitiser = htmlSanitiser ?? throw new ArgumentNullException(nameof(htmlSanitiser));
+
+            _htmlSanitiser.AllowedTags.Clear();
+            _htmlSanitiser.AllowedTags.Add("p");
+            _htmlSanitiser.AllowedTags.Add("h2");
+            _htmlSanitiser.AllowedTags.Add("strong");
+            _htmlSanitiser.AllowedTags.Add("em");
+            _htmlSanitiser.AllowedTags.Add("ul");
+            _htmlSanitiser.AllowedTags.Add("ol");
+            _htmlSanitiser.AllowedTags.Add("li");
+            _htmlSanitiser.AllowedTags.Add("a");
+            _htmlSanitiser.AllowedTags.Add("br");
+            _htmlSanitiser.AllowedAttributes.Clear();
+            _htmlSanitiser.AllowedAttributes.Add("href");
+            _htmlSanitiser.AllowedCssProperties.Clear();
+            _htmlSanitiser.AllowedAtRules.Clear();
         }
 
         /// <summary>
@@ -52,6 +71,14 @@ namespace Stoolball.Umbraco.Data.Competitions
             try
             {
                 competition.CompetitionId = Guid.NewGuid();
+                competition.Introduction = _htmlSanitiser.Sanitize(competition.Introduction);
+                competition.PublicContactDetails = _htmlSanitiser.Sanitize(competition.PublicContactDetails);
+                competition.PrivateContactDetails = _htmlSanitiser.Sanitize(competition.PrivateContactDetails);
+                competition.Facebook = PrefixUrlProtocol(competition.Facebook);
+                competition.Twitter = PrefixAtSign(competition.Twitter);
+                competition.Instagram = PrefixAtSign(competition.Instagram);
+                competition.YouTube = PrefixUrlProtocol(competition.YouTube);
+                competition.Website = PrefixUrlProtocol(competition.Website);
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
@@ -71,12 +98,29 @@ namespace Stoolball.Umbraco.Data.Competitions
                         while (count > 0);
 
                         await connection.ExecuteAsync(
-                            $@"INSERT INTO {Tables.Competition} (CompetitionId, CompetitionName, CompetitionRoute, MemberGroupId, MemberGroupName) 
-                                VALUES (@CompetitionId, @CompetitionName, @CompetitionRoute, @MemberGroupId, @MemberGroupName)",
+                            $@"INSERT INTO {Tables.Competition} (CompetitionId, CompetitionName, FromYear, UntilYear, PlayerType, PlayersPerTeam, Overs, 
+                                Introduction, PublicContactDetails, PrivateContactDetails, Facebook, Twitter, Instagram, YouTube, Website, CompetitionRoute, 
+                                MemberGroupId, MemberGroupName) 
+                                VALUES (@CompetitionId, @CompetitionName, @FromYear, @UntilYear, @PlayerType, @PlayersPerTeam, @Overs, @Introduction, 
+                                @PublicContactDetails, @PrivateContactDetails, @Facebook, @Twitter, @Instagram, @YouTube, @Website, @CompetitionRoute, 
+                                @MemberGroupId, @MemberGroupName)",
                             new
                             {
                                 competition.CompetitionId,
                                 competition.CompetitionName,
+                                competition.FromYear,
+                                competition.UntilYear,
+                                competition.PlayerType,
+                                competition.PlayersPerTeam,
+                                competition.Overs,
+                                competition.Introduction,
+                                competition.PublicContactDetails,
+                                competition.PrivateContactDetails,
+                                competition.Facebook,
+                                competition.Twitter,
+                                competition.Instagram,
+                                competition.YouTube,
+                                competition.Website,
                                 competition.CompetitionRoute,
                                 competition.MemberGroupId,
                                 competition.MemberGroupName
@@ -123,6 +167,14 @@ namespace Stoolball.Umbraco.Data.Competitions
             try
             {
                 string routeBeforeUpdate = competition.CompetitionRoute;
+                competition.Introduction = _htmlSanitiser.Sanitize(competition.Introduction);
+                competition.PublicContactDetails = _htmlSanitiser.Sanitize(competition.PublicContactDetails);
+                competition.PrivateContactDetails = _htmlSanitiser.Sanitize(competition.PrivateContactDetails);
+                competition.Facebook = PrefixUrlProtocol(competition.Facebook);
+                competition.Twitter = PrefixAtSign(competition.Twitter);
+                competition.Instagram = PrefixAtSign(competition.Instagram);
+                competition.YouTube = PrefixUrlProtocol(competition.YouTube);
+                competition.Website = PrefixUrlProtocol(competition.Website);
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
@@ -148,14 +200,48 @@ namespace Stoolball.Umbraco.Data.Competitions
                         await connection.ExecuteAsync(
                             $@"UPDATE {Tables.Competition} SET
                                 CompetitionName = @CompetitionName,
+                                FromYear = @FromYear,
+                                UntilYear = @UntilYear,
+                                PlayerType = @PlayerType, 
+                                PlayersPerTeam = @PlayersPerTeam,
+                                Overs = @Overs,
+                                Introduction = @Introduction, 
+                                PublicContactDetails = @PublicContactDetails, 
+                                PrivateContactDetails = @PrivateContactDetails, 
+                                Facebook = @Facebook, 
+                                Twitter = @Twitter, 
+                                Instagram = @Instagram, 
+                                YouTube = @YouTube, 
+                                Website = @Website,
                                 CompetitionRoute = @CompetitionRoute
 						        WHERE CompetitionId = @CompetitionId",
                             new
                             {
                                 competition.CompetitionName,
+                                competition.FromYear,
+                                competition.UntilYear,
+                                competition.PlayerType,
+                                competition.PlayersPerTeam,
+                                competition.Overs,
+                                competition.Introduction,
+                                competition.PublicContactDetails,
+                                competition.PrivateContactDetails,
+                                competition.Facebook,
+                                competition.Twitter,
+                                competition.Instagram,
+                                competition.YouTube,
+                                competition.Website,
                                 competition.CompetitionRoute,
                                 competition.CompetitionId
                             }, transaction).ConfigureAwait(false);
+
+                        if (routeBeforeUpdate != competition.CompetitionRoute)
+                        {
+                            // Update the season routes to match the amended competition route
+                            await connection.ExecuteAsync($@"UPDATE {Tables.Season} 
+                                SET SeasonRoute = CONCAT(@CompetitionRoute, SUBSTRING(SeasonRoute, {routeBeforeUpdate.Length + 1}, LEN(SeasonRoute)-{routeBeforeUpdate.Length})) 
+                                WHERE CompetitionId = @CompetitionId", new { competition.CompetitionId, competition.CompetitionRoute }, transaction).ConfigureAwait(false);
+                        }
 
                         transaction.Commit();
                     }
@@ -183,6 +269,26 @@ namespace Stoolball.Umbraco.Data.Competitions
             }
 
             return competition;
+        }
+
+        private string PrefixUrlProtocol(string url)
+        {
+            url = url?.Trim();
+            if (!string.IsNullOrEmpty(url) && !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            {
+                url = "https://" + url;
+            }
+            return url;
+        }
+
+        private string PrefixAtSign(string account)
+        {
+            account = account?.Trim();
+            if (!string.IsNullOrEmpty(account) && !account.StartsWith("@", StringComparison.OrdinalIgnoreCase))
+            {
+                account = "@" + account;
+            }
+            return account;
         }
     }
 }

@@ -44,7 +44,7 @@
             Introduction: team.introduction,
             AgeRangeLower: team.ageRangeLower,
             AgeRangeUpper: team.ageRangeUpper,
-            UntilYear: team.untilDate ? 2020 : null,
+            UntilYear: team.untilDate ? 2019 : null,
             Twitter: team.twitterAccount,
             Facebook: team.facebookUrl,
             Instagram: team.instagramAccount,

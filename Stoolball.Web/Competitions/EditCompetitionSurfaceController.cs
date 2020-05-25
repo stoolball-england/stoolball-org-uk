@@ -28,7 +28,7 @@ namespace Stoolball.Web.Competitions
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        public async Task<ActionResult> UpdateCompetition([Bind(Prefix = "Competition", Include = "CompetitionName")]Competition competition)
+        public async Task<ActionResult> UpdateCompetition([Bind(Prefix = "Competition", Include = "CompetitionName,FromYear,UntilYear,PlayerType,PlayersPerTeam,Overs,Facebook,Twitter,Instagram,YouTube,Website")]Competition competition)
         {
             if (competition is null)
             {
@@ -38,6 +38,11 @@ namespace Stoolball.Web.Competitions
             var beforeUpdate = await _seasonDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false);
             competition.CompetitionId = beforeUpdate.CompetitionId;
             competition.CompetitionRoute = beforeUpdate.CompetitionRoute;
+
+            // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
+            competition.Introduction = Request.Unvalidated.Form["Competition.Introduction"];
+            competition.PublicContactDetails = Request.Unvalidated.Form["Competition.PublicContactDetails"];
+            competition.PrivateContactDetails = Request.Unvalidated.Form["Competition.PrivateContactDetails"];
 
             var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, beforeUpdate.MemberGroupName }, null);
 
