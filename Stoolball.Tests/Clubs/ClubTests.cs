@@ -1,12 +1,24 @@
 ﻿using Stoolball.Clubs;
 using Stoolball.Teams;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Stoolball.Tests.Clubs
 {
-    public class ClubTests
+    public class ClubTests : ValidationBaseTest
     {
+        [Fact]
+        public void ClubName_is_required()
+        {
+            var club = new Club();
+
+            Assert.Contains(ValidateModel(club),
+                v => v.MemberNames.Contains(nameof(Club.ClubName)) &&
+                     v.ErrorMessage.Contains("is required", StringComparison.OrdinalIgnoreCase));
+        }
+
         [Fact]
         public void Club_without_teams_has_expected_description()
         {
