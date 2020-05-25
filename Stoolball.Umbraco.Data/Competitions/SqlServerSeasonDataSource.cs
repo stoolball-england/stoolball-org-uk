@@ -40,7 +40,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var competitions = await connection.QueryAsync<Competition, Season, Competition>(
-                        $@"SELECT co.CompetitionName, co.PlayerType, co.Introduction, co.UntilDate, co.PublicContactDetails, co.Website,
+                        $@"SELECT co.CompetitionId, co.CompetitionName, co.PlayerType, co.Introduction, co.UntilDate, co.PublicContactDetails, co.Website, co.CompetitionRoute, co.MemberGroupName,
                             s.SeasonRoute
                             FROM {Tables.Competition} AS co
                             LEFT JOIN {Tables.Season} AS s ON co.CompetitionId = s.CompetitionId
@@ -88,7 +88,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                 {
                     var seasons = await connection.QueryAsync<Season, Competition, Season>(
                         $@"SELECT s.SeasonId, s.StartYear, s.EndYear, s.SeasonRoute,
-                            co.CompetitionName, co.PlayerType, co.UntilDate
+                            co.CompetitionName, co.PlayerType, co.UntilDate, co.CompetitionRoute, co.MemberGroupName
                             FROM {Tables.Season} AS s 
                             INNER JOIN {Tables.Competition} AS co ON co.CompetitionId = s.CompetitionId
                             WHERE LOWER(s.SeasonRoute) = @Route",
@@ -120,7 +120,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                 {
                     var seasons = await connection.QueryAsync<Season, Competition, Season, Team, Season>(
                         $@"SELECT s.StartYear, s.EndYear, s.Introduction, s.Results, s.SeasonRoute,
-                            co.CompetitionName, co.PlayerType, co.Introduction, co.UntilDate, co.PublicContactDetails, co.Website,
+                            co.CompetitionName, co.PlayerType, co.Introduction, co.UntilDate, co.PublicContactDetails, co.Website, co.CompetitionRoute, co.MemberGroupName,
                             s2.SeasonId, s2.StartYear, s2.EndYear, s2.SeasonRoute,
                             t.TeamId, tn.TeamName, t.TeamRoute
                             FROM {Tables.Season} AS s 

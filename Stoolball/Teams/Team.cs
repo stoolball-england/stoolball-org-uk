@@ -34,8 +34,14 @@ namespace Stoolball.Teams
         /// Gets the name of the team and the type of players (if not stated in the name)
         /// </summary>
         /// <returns></returns>
+        /// <exception cref="InvalidOperationException">Thrown if <see cref="TeamName"/> is <c>null</c> or an empty string</exception>
         public string TeamNameAndPlayerType()
         {
+            if (string.IsNullOrEmpty(TeamName))
+            {
+                throw new InvalidOperationException($"{nameof(TeamName)} is null or an empty string");
+            }
+
             var name = TeamName;
             var type = PlayerType.ToString().Humanize(LetterCasing.Sentence);
             if (!name.Replace("'", string.Empty).ToUpperInvariant().Contains(type.Replace("'", string.Empty).ToUpperInvariant()))
@@ -50,8 +56,14 @@ namespace Stoolball.Teams
         /// Gets the name of the team, its location and the type of players (if not stated in the name)
         /// </summary>
         /// <returns></returns>
+        /// <exception cref="InvalidOperationException">Thrown if <see cref="TeamName"/> is <c>null</c> or an empty string</exception>
         public string TeamNameLocationAndPlayerType()
         {
+            if (string.IsNullOrEmpty(TeamName))
+            {
+                throw new InvalidOperationException($"{nameof(TeamName)} is null or an empty string");
+            }
+
             var name = TeamName;
 
             var location = MatchLocations.FirstOrDefault()?.LocalityOrTown();

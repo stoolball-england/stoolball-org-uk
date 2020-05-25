@@ -4,6 +4,7 @@ using Stoolball.Audit;
 using Stoolball.Teams;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Stoolball.Competitions
 {
@@ -11,6 +12,8 @@ namespace Stoolball.Competitions
     {
         public Guid? CompetitionId { get; set; }
 
+        [Display(Name = "Competition name")]
+        [Required]
         public string CompetitionName { get; set; }
 
         /// <summary>
@@ -33,24 +36,35 @@ namespace Stoolball.Competitions
 
         public string Introduction { get; set; }
 
+        [Display(Name = "Contact details for the public")]
         public string PublicContactDetails { get; set; }
 
+        [Display(Name = "Contact details for Stoolball England")]
         public string PrivateContactDetails { get; set; }
 
+        [Display(Name = "Competition website")]
         public string Website { get; set; }
 
+        [Display(Name = "Twitter account")]
         public string Twitter { get; set; }
 
+        [Display(Name = "Facebook page or group")]
+        [RegularExpression(@"^((https?:\/\/)?(m.|www.|)facebook.com\/.+|)", ErrorMessage = "Please enter a valid Facebook link")]
         public string Facebook { get; set; }
 
+        [Display(Name = "Instagram account")]
         public string Instagram { get; set; }
 
+        [Display(Name = "YouTube channel")]
+        [RegularExpression(@"^((https?:\/\/)?(www.|)youtube.com\/.+|)", ErrorMessage = "Please enter a valid YouTube link")]
         public string YouTube { get; set; }
 
         public DateTimeOffset FromDate { get; set; }
 
         public DateTimeOffset? UntilDate { get; set; }
 
+        [Required]
+        [Display(Name = "Player type")]
         public PlayerType PlayerType { get; set; }
 
         public int PlayersPerTeam { get; set; } = 11;

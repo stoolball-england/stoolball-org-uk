@@ -35,6 +35,8 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/clubs/ADD", StoolballRouteType.CreateClub)]
         [InlineData("https://example.org/clubs/add/", StoolballRouteType.CreateClub)]
         [InlineData("https://example.org/CLUBS/EXAMPLE", StoolballRouteType.Club)]
+        [InlineData("https://example.org/competitions/add", StoolballRouteType.CreateCompetition)]
+        [InlineData("https://example.org/COMPETITIONS/add/", StoolballRouteType.CreateCompetition)]
         [InlineData("https://example.org/competitions/example", StoolballRouteType.Competition)]
         [InlineData("https://example.org/competitions/example/", StoolballRouteType.Competition)]
         [InlineData("https://example.org/competitions/example/2020", StoolballRouteType.Season)]

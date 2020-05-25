@@ -69,7 +69,7 @@ namespace Stoolball.Web.Tests.Matches
         public async Task Route_matching_tournament_returns_TournamentViewModel()
         {
             var tournamentDataSource = new Mock<ITournamentDataSource>();
-            tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Tournament());
+            tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentName = "Example tournament" });
 
             var matchDataSource = new Mock<IMatchDataSource>();
             matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());

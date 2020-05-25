@@ -9,6 +9,7 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
+using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
@@ -50,6 +51,8 @@ namespace Stoolball.Web.Competitions
             }
             else
             {
+                model.IsAuthorized = IsAuthorized(model);
+
                 model.Metadata.PageTitle = model.Season.SeasonFullNameAndPlayerType();
                 model.Metadata.Description = model.Season.Description();
 
@@ -61,6 +64,15 @@ namespace Stoolball.Web.Competitions
 
                 return CurrentTemplate(model);
             }
+        }
+
+        /// <summary>
+        /// Checks whether the currently signed-in member is authorized to edit this competition
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsAuthorized(SeasonViewModel model)
+        {
+            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, model?.Season.Competition.MemberGroupName }, null);
         }
     }
 }

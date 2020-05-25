@@ -1,13 +1,12 @@
 ﻿using Moq;
 using Stoolball.Competitions;
-using Stoolball.Email;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Competitions;
 using System;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -18,9 +17,9 @@ using Xunit;
 
 namespace Stoolball.Web.Tests.Competitions
 {
-    public class SeasonControllerTests : UmbracoBaseTest
+    public class EditCompetitionControllerTests : UmbracoBaseTest
     {
-        private class TestController : SeasonController
+        private class TestController : EditCompetitionController
         {
             public TestController(ISeasonDataSource seasonDataSource)
            : base(
@@ -29,7 +28,7 @@ namespace Stoolball.Web.Tests.Competitions
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, seasonDataSource, Mock.Of<IEmailProtector>())
+                null, seasonDataSource)
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -37,28 +36,25 @@ namespace Stoolball.Web.Tests.Competitions
                 var context = new Mock<HttpContextBase>();
                 context.SetupGet(x => x.Request).Returns(request.Object);
 
-                var controllerContext = new Mock<ControllerContext>();
-                controllerContext.Setup(p => p.HttpContext).Returns(context.Object);
-                controllerContext.Setup(p => p.HttpContext.User).Returns(new GenericPrincipal(new GenericIdentity("test"), null));
-                ControllerContext = controllerContext.Object;
+                ControllerContext = new ControllerContext(context.Object, new RouteData(), this);
             }
 
-            protected override bool IsAuthorized(SeasonViewModel model)
+            protected override bool IsAuthorized(CompetitionViewModel model)
             {
                 return true;
             }
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("Season", model);
+                return View("EditCompetition", model);
             }
         }
 
         [Fact]
-        public async Task Route_not_matching_season_returns_404()
+        public async Task Route_not_matching_competition_returns_404()
         {
             var dataSource = new Mock<ISeasonDataSource>();
-            dataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Season>(null));
+            dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).Returns(Task.FromResult<Competition>(null));
 
             using (var controller = new TestController(dataSource.Object))
             {
@@ -69,16 +65,16 @@ namespace Stoolball.Web.Tests.Competitions
         }
 
         [Fact]
-        public async Task Route_matching_season_returns_SeasonViewModel()
+        public async Task Route_matching_competition_returns_CompetitionViewModel()
         {
             var dataSource = new Mock<ISeasonDataSource>();
-            dataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season { Competition = new Competition { CompetitionName = "Example" } });
+            dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition());
 
             using (var controller = new TestController(dataSource.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<SeasonViewModel>(((ViewResult)result).Model);
+                Assert.IsType<CompetitionViewModel>(((ViewResult)result).Model);
             }
         }
     }

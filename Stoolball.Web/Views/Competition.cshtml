@@ -9,6 +9,18 @@
     </div>
 }
 
+<ul class="nav nav-tabs">
+<li class="nav-item">
+    <em class="nav-link active">Summary</em>
+</li>
+@if (Model.IsAuthorized)
+{
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Competition.CompetitionRoute/edit">Edit</a>
+    </li>
+}
+</ul>
+
 @Html.Raw(Model.Competition.Introduction)
 
 @if (!string.IsNullOrWhiteSpace(Model.Competition.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Competition.Website))

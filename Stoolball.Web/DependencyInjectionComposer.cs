@@ -76,6 +76,8 @@ namespace Stoolball.Web
             composition.Register<TournamentController>(Lifetime.Request);
             composition.Register<SeasonController>(Lifetime.Request);
             composition.Register<CompetitionController>(Lifetime.Request);
+            composition.Register<CreateCompetitionController>(Lifetime.Request);
+            composition.Register<EditCompetitionController>(Lifetime.Request);
 
             // Data sources for stoolball data.
             composition.Register<IDatabaseConnectionFactory, UmbracoDatabaseConnectionFactory>(Lifetime.Singleton);
@@ -87,6 +89,7 @@ namespace Stoolball.Web
             composition.Register<IMatchLocationDataSource, SqlServerMatchLocationDataSource>(Lifetime.Singleton);
             composition.Register<IMatchLocationRepository, SqlServerMatchLocationRepository>(Lifetime.Singleton);
             composition.Register<ISeasonDataSource, SqlServerSeasonDataSource>(Lifetime.Singleton);
+            composition.Register<ICompetitionRepository, SqlServerCompetitionRepository>(Lifetime.Singleton);
             composition.Register<IMatchDataSource, SqlServerMatchDataSource>(Lifetime.Singleton);
             composition.Register<ITournamentDataSource, SqlServerTournamentDataSource>(Lifetime.Singleton);
         }

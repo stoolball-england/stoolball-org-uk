@@ -38,6 +38,8 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.MatchLocations, typeof(MatchLocationsController) },
             { StoolballRouteType.MatchesForMatchLocation, typeof(MatchesForMatchLocationController) },
             { StoolballRouteType.Competition, typeof(CompetitionController) },
+            { StoolballRouteType.CreateCompetition, typeof(CreateCompetitionController) },
+            { StoolballRouteType.EditCompetition, typeof(EditCompetitionController) },
             { StoolballRouteType.Season, typeof(SeasonController) },
             { StoolballRouteType.MatchesForSeason, typeof(MatchesForSeasonController) },
             { StoolballRouteType.Match, typeof(MatchController) },

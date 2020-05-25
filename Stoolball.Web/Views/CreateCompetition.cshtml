@@ -1,0 +1,37 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<CompetitionViewModel>
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.Competitions
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+
+    Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
+    Html.RequiresJs("/js/tinymce.js");
+}
+
+<h1>Add a competition</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <em class="nav-link active">Add</em>
+    </li>
+</ul>
+
+@if (Model.IsAuthorized)
+{
+    using (Html.BeginUmbracoForm<CreateCompetitionSurfaceController>
+        ("CreateCompetition"))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Partial("_CreateOrEditCompetition")
+    }
+}
+else
+{
+    @Html.Partial("_Login")
+}

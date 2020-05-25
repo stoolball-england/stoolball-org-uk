@@ -21,6 +21,8 @@
         Teams,
         Season,
         Competition,
+        CreateCompetition,
+        EditCompetition,
         MatchesForClub,
         MatchesForTeam,
         MatchesForMatchLocation,

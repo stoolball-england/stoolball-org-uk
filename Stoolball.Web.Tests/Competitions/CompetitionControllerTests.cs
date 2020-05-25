@@ -43,6 +43,11 @@ namespace Stoolball.Web.Tests.Competitions
                 ControllerContext = controllerContext.Object;
             }
 
+            protected override bool IsAuthorized(CompetitionViewModel model)
+            {
+                return true;
+            }
+
             protected override ActionResult CurrentTemplate<T>(T model)
             {
                 return View("Competition", model);
