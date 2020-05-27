@@ -1,5 +1,6 @@
 ﻿using Stoolball.Competitions;
 using Stoolball.Web.Routing;
+using System;
 using Umbraco.Core.Models.PublishedContent;
 
 namespace Stoolball.Web.Competitions
@@ -10,5 +11,7 @@ namespace Stoolball.Web.Competitions
         {
         }
         public Competition Competition { get; set; }
+
+        public Uri UrlReferrer { get; set; }
     }
 }

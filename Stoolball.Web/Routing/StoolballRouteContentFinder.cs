@@ -78,6 +78,7 @@ namespace Stoolball.Web.Routing
                 // but not /competitions, /competitions/, /competitions/example-entity/2020, /competitions/example-entity/invalid 
                 // or /competitions/example-entity/2020/invalid, in upper, lower or mixed case
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}[0-9]{{4}}(-[0-9]{{2}})?{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForSeason },
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}[0-9]{{4}}(-[0-9]{{2}})?{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.SeasonActions },
 
                 // Match /teams/example-team/valid or /teams/example-team/valid/ but not /teams, /teams/
                 // /teams/example-team, /teams/example-team/ or /teams/example-team/invalid in upper, lower or mixed case

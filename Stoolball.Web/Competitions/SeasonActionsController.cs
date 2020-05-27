@@ -12,11 +12,11 @@ using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
-    public class EditCompetitionController : RenderMvcControllerAsync
+    public class SeasonActionsController : RenderMvcControllerAsync
     {
         private readonly ISeasonDataSource _seasonDataSource;
 
-        public EditCompetitionController(IGlobalSettings globalSettings,
+        public SeasonActionsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
@@ -36,14 +36,12 @@ namespace Stoolball.Web.Competitions
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new CompetitionViewModel(contentModel.Content)
+            var model = new SeasonViewModel(contentModel.Content)
             {
-                Competition = await _seasonDataSource.ReadCompetitionByRoute(Request.Url.AbsolutePath).ConfigureAwait(false),
-                UrlReferrer = Request.UrlReferrer
+                Season = await _seasonDataSource.ReadSeasonByRoute(Request.Url.AbsolutePath).ConfigureAwait(false)
             };
 
-
-            if (model.Competition == null)
+            if (model.Season == null)
             {
                 return new HttpNotFoundResult();
             }
@@ -51,7 +49,7 @@ namespace Stoolball.Web.Competitions
             {
                 model.IsAuthorized = IsAuthorized(model);
 
-                model.Metadata.PageTitle = "Edit " + model.Competition.CompetitionName;
+                model.Metadata.PageTitle = "Edit " + model.Season.SeasonFullNameAndPlayerType();
 
                 return CurrentTemplate(model);
             }
@@ -61,9 +59,9 @@ namespace Stoolball.Web.Competitions
         /// Checks whether the currently signed-in member is authorized to edit this competition
         /// </summary>
         /// <returns></returns>
-        protected virtual bool IsAuthorized(CompetitionViewModel model)
+        protected virtual bool IsAuthorized(SeasonViewModel model)
         {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, model?.Competition.MemberGroupName }, null);
+            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, model?.Season.Competition.MemberGroupName }, null);
         }
     }
 }

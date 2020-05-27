@@ -1,5 +1,6 @@
 ﻿using Stoolball.Competitions;
 using Stoolball.Umbraco.Data.Competitions;
+using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -51,14 +52,21 @@ namespace Stoolball.Web.Competitions
                 var currentMember = Members.GetCurrentMember();
                 await _competitionRepository.UpdateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                // redirect back to the competition
+                // redirect back to the season actions page that led here (ensuring we don't allow off-site redirects), 
+                // or the competition if that's not available
+                if (!string.IsNullOrEmpty(Request.Form["UrlReferrer"]))
+                {
+                    return Redirect(new Uri(Request.Form["UrlReferrer"]).AbsolutePath);
+                }
+
                 return Redirect(competition.CompetitionRoute);
             }
 
             var viewModel = new CompetitionViewModel(CurrentPage)
             {
                 Competition = competition,
-                IsAuthorized = isAuthorized
+                IsAuthorized = isAuthorized,
+                UrlReferrer = string.IsNullOrEmpty(Request.Form["UrlReferrer"]) ? null : new Uri(Request.Form["UrlReferrer"])
             };
             viewModel.Metadata.PageTitle = $"Edit {competition.CompetitionName}";
             return View("EditCompetition", viewModel);

@@ -3,6 +3,8 @@
 @using Stoolball.Web.Competitions
 @Html.ValidationSummary(true)
 
+@Html.HiddenFor(m => Model.UrlReferrer)
+
 <div class="form-group">
     @Html.LabelFor(m => Model.Competition.CompetitionName)
     @Html.TextBoxFor(m => Model.Competition.CompetitionName, new { @class = "form-control", required = "required", aria_describedby = "competition-name" })

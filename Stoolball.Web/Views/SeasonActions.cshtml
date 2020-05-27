@@ -1,0 +1,27 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.SeasonViewModel>
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+
+<h1>Edit @Model.Season.SeasonFullNameAndPlayerType()</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Season.SeasonRoute">Summary</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
+    </li>
+    @if (Model.IsAuthorized)
+    {
+        <li class="nav-item">
+            <em class="nav-link active">Edit</em>
+        </li>
+    }
+</ul>
+
+<h2>Settings which apply to all seasons</h2>
+<dl>
+    <dt><a href="@Model.Season.Competition.CompetitionRoute/edit">Edit the '@Model.Season.Competition.CompetitionName' competition</a></dt>
+    <dd>Set the introduction, contact details, overs per match and more.</dd>
+</dl>
