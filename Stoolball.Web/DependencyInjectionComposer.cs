@@ -77,6 +77,7 @@ namespace Stoolball.Web
             composition.Register<SeasonController>(Lifetime.Request);
             composition.Register<SeasonActionsController>(Lifetime.Request);
             composition.Register<CompetitionController>(Lifetime.Request);
+            composition.Register<CompetitionActionsController>(Lifetime.Request);
             composition.Register<CreateCompetitionController>(Lifetime.Request);
             composition.Register<EditCompetitionController>(Lifetime.Request);
 

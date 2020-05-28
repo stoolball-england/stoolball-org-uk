@@ -88,7 +88,8 @@ namespace Stoolball.Web.Routing
                 { $@"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.EditTeam },
                 { $@"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForMatchLocation },
                 { $@"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.EditMatchLocation },
-                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.EditCompetition },
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.CompetitionActions },
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}competition{OPTIONAL_SLASH}", StoolballRouteType.EditCompetition },
 
                 // Match /tournaments/example123/teams/example-team, /tournaments/example123/teams/example-team/ or /tournaments/example123/teams/example-team/edit 
                 // but not /tournaments/example123, /tournaments/example123/, /tournaments/example123/teams, /tournaments/example123/teams/,

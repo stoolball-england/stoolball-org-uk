@@ -22,6 +22,7 @@
         Season,
         SeasonActions,
         Competition,
+        CompetitionActions,
         CreateCompetition,
         EditCompetition,
         MatchesForClub,
