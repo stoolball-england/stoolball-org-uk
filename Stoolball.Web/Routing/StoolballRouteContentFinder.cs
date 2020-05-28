@@ -79,6 +79,7 @@ namespace Stoolball.Web.Routing
                 // or /competitions/example-entity/2020/invalid, in upper, lower or mixed case
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}[0-9]{{4}}(-[0-9]{{2}})?{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForSeason },
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}[0-9]{{4}}(-[0-9]{{2}})?{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.SeasonActions },
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}[0-9]{{4}}(-[0-9]{{2}})?{SLASH}edit{SLASH}season{OPTIONAL_SLASH}", StoolballRouteType.EditSeason },
 
                 // Match /teams/example-team/valid or /teams/example-team/valid/ but not /teams, /teams/
                 // /teams/example-team, /teams/example-team/ or /teams/example-team/invalid in upper, lower or mixed case
@@ -88,6 +89,7 @@ namespace Stoolball.Web.Routing
                 { $@"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.EditTeam },
                 { $@"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForMatchLocation },
                 { $@"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.EditMatchLocation },
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}add{OPTIONAL_SLASH}", StoolballRouteType.CreateSeason },
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.CompetitionActions },
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}competition{OPTIONAL_SLASH}", StoolballRouteType.EditCompetition },
 

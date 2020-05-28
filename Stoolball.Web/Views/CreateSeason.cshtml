@@ -1,0 +1,43 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<SeasonViewModel>
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.Competitions
+@{
+    var the = Model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";
+}
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+
+    Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
+    Html.RequiresJs("/js/tinymce.js");
+}
+
+<h1>Add a season in @the@Model.Season.Competition.CompetitionName</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Season.Competition.CompetitionRoute">Summary</a>
+    </li>
+    <li class="nav-item">
+        <em class="nav-link active">Edit</em>
+    </li>
+</ul>
+
+@if (Model.IsAuthorized)
+{
+    @*using (Html.BeginUmbracoForm<CreateSeasonSurfaceController>
+            ("CreateSeason"))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Partial("_CreateOrEditSeason")
+        }*@
+}
+else
+{
+    @Html.Partial("_Login")
+}

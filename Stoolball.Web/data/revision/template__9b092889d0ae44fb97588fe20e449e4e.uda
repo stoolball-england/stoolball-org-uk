@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/editSeason.cshtml",
+  "Master": null,
+  "Udi": "umb://template/9b092889d0ae44fb97588fe20e449e4e",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/editSeason.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Edit Season",
+  "Alias": "editSeason",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.4.4"
+}

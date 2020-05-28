@@ -1,4 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.SeasonViewModel>
+@{
+    var the = Model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";
+}
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -12,16 +15,21 @@
     <li class="nav-item">
         <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
     </li>
-    @if (Model.IsAuthorized)
-    {
-        <li class="nav-item">
-            <em class="nav-link active">Edit</em>
-        </li>
-    }
+    <li class="nav-item">
+        <em class="nav-link active">Edit</em>
+    </li>
 </ul>
 
-<h2>Settings which apply to all seasons</h2>
-<dl>
-    <dt><a href="@Model.Season.Competition.CompetitionRoute/edit">Edit the '@Model.Season.Competition.CompetitionName' competition</a></dt>
-    <dd>Set the introduction, contact details, overs per match and more.</dd>
-</dl>
+@if (Model.IsAuthorized)
+{
+    <h2>Settings for @the@Model.Season.Competition.CompetitionName</h2>
+    @Html.Partial("_CompetitionActions", Model.Season.Competition)
+
+    <h2>Settings for the @Model.Season.SeasonName()</h2>
+    <dt><a href="@Model.Season.SeasonRoute/edit/season">Edit the @Model.Season.SeasonName()</a></dt>
+    <dd>Set the introduction, and the types of match played.</dd>
+}
+else
+{
+    @Html.Partial("_Login")
+}

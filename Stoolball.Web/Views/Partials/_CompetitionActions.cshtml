@@ -1,0 +1,10 @@
+﻿@model Stoolball.Competitions.Competition
+@{
+    var the = Model.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";
+}
+<dl>
+    <dt><a href="@Model.CompetitionRoute/edit">Edit @the'@Model.CompetitionName' competition</a></dt>
+    <dd>Set the introduction, contact details, overs per match and more.</dd>
+    <dt><a href="@Model.CompetitionRoute/add">Add a season</a></dt>
+    <dd>Add a new season of competition, then you can add teams and matches.</dd>
+</dl>

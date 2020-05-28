@@ -21,6 +21,8 @@
         Teams,
         Season,
         SeasonActions,
+        CreateSeason,
+        EditSeason,
         Competition,
         CompetitionActions,
         CreateCompetition,
