@@ -15,14 +15,14 @@ namespace Stoolball.Web.Competitions
 {
     public class EditCompetitionSurfaceController : SurfaceController
     {
-        private readonly ISeasonDataSource _seasonDataSource;
+        private readonly ICompetitionDataSource _competitionDataSource;
         private readonly ICompetitionRepository _competitionRepository;
 
         public EditCompetitionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ISeasonDataSource seasonDataSource, ICompetitionRepository competitionRepository)
+            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ICompetitionDataSource competitionDataSource, ICompetitionRepository competitionRepository)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
-            _seasonDataSource = seasonDataSource;
+            _competitionDataSource = competitionDataSource;
             _competitionRepository = competitionRepository ?? throw new System.ArgumentNullException(nameof(competitionRepository));
         }
 
@@ -36,7 +36,7 @@ namespace Stoolball.Web.Competitions
                 throw new System.ArgumentNullException(nameof(competition));
             }
 
-            var beforeUpdate = await _seasonDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false);
+            var beforeUpdate = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false);
             competition.CompetitionId = beforeUpdate.CompetitionId;
             competition.CompetitionRoute = beforeUpdate.CompetitionRoute;
 

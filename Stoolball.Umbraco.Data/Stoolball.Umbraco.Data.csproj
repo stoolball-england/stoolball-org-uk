@@ -63,9 +63,13 @@
     <Compile Include="Clubs\IClubRepository.cs" />
     <Compile Include="Clubs\SqlServerClubRepository.cs" />
     <Compile Include="Clubs\SqlServerClubDataSource.cs" />
+    <Compile Include="Competitions\ISeasonRepository.cs" />
     <Compile Include="Competitions\ICompetitionRepository.cs" />
+    <Compile Include="Competitions\ICompetitionDataSource.cs" />
     <Compile Include="Competitions\ISeasonDataSource.cs" />
+    <Compile Include="Competitions\SqlServerSeasonRepository.cs" />
     <Compile Include="Competitions\SqlServerCompetitionRepository.cs" />
+    <Compile Include="Competitions\SqlServerCompetitionDataSource.cs" />
     <Compile Include="Competitions\SqlServerSeasonDataSource.cs" />
     <Compile Include="DapperDateTimeHandler.cs" />
     <Compile Include="DapperComposer.cs" />

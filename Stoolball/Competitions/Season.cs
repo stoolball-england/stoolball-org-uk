@@ -4,6 +4,7 @@ using Stoolball.Audit;
 using Stoolball.Matches;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Text;
 
@@ -58,10 +59,11 @@ namespace Stoolball.Competitions
 
         public Competition Competition { get; set; }
 
-        public bool IsLatestSeason { get; set; }
-
+        [Display(Name = "What year does the season start?")]
+        [Required]
         public int StartYear { get; set; }
 
+        [Required]
         public int EndYear { get; set; }
 
         public string Introduction { get; set; }

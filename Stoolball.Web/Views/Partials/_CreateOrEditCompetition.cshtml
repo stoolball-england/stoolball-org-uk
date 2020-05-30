@@ -25,7 +25,7 @@
     @Html.ValidationMessageFor(m => Model.Competition.UntilYear, null, new { id = "until-year" })
 </div>
 
-<fieldset class="form-group" id="team-type">
+<fieldset class="form-group">
     <legend>Player type</legend>
     <div class="custom-control custom-radio">
         @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.Mixed, new { @class = "custom-control-input", @id = "player-type-1" })

@@ -54,7 +54,7 @@ namespace Stoolball.Web.Tests.Competitions
         public async Task Route_not_matching_season_returns_404()
         {
             var dataSource = new Mock<ISeasonDataSource>();
-            dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).Returns(Task.FromResult<Competition>(null));
+            dataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Season>(null));
 
             using (var controller = new TestController(dataSource.Object))
             {

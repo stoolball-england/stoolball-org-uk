@@ -2,6 +2,7 @@
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Routing;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -16,7 +17,7 @@ namespace Stoolball.Web.Competitions
 {
     public class CreateSeasonController : RenderMvcControllerAsync
     {
-        private readonly ISeasonDataSource _seasonDataSource;
+        private readonly ICompetitionDataSource _competitionDataSource;
 
         public CreateSeasonController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -24,10 +25,10 @@ namespace Stoolball.Web.Competitions
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           ISeasonDataSource seasonDataSource)
+           ICompetitionDataSource competitionDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
+            _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
         }
 
         [HttpGet]
@@ -38,22 +39,23 @@ namespace Stoolball.Web.Competitions
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new SeasonViewModel(contentModel.Content)
-            {
-                Season = new Season
-                {
-                    Competition = await _seasonDataSource.ReadCompetitionByRoute(Request.Url.AbsolutePath).ConfigureAwait(false),
-                    StartYear = DateTime.Today.Year,
-                    EndYear = DateTime.Today.Year
-                }
-            };
+            var competition = await _competitionDataSource.ReadCompetitionByRoute(Request.Url.AbsolutePath).ConfigureAwait(false);
 
-            if (model.Season.Competition == null)
+            if (competition == null)
             {
                 return new HttpNotFoundResult();
             }
             else
             {
+                var model = new SeasonViewModel(contentModel.Content)
+                {
+                    Season = competition.Seasons.FirstOrDefault() ?? new Season()
+                };
+                var summerSeason = model.Season.StartYear == model.Season.EndYear;
+                model.Season.Competition = competition;
+                model.Season.StartYear = model.Season.StartYear == default ? DateTime.Today.Year : model.Season.StartYear + 1;
+                model.Season.EndYear = summerSeason ? 0 : 1;
+
                 model.IsAuthorized = IsAuthorized(model);
 
                 var the = model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";

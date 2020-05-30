@@ -16,7 +16,7 @@ namespace Stoolball.Web.Competitions
 {
     public class CompetitionController : RenderMvcControllerAsync
     {
-        private readonly ISeasonDataSource _seasonDataSource;
+        private readonly ICompetitionDataSource _competitionDataSource;
         private readonly IEmailProtector _emailProtector;
 
         public CompetitionController(IGlobalSettings globalSettings,
@@ -25,11 +25,11 @@ namespace Stoolball.Web.Competitions
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           ISeasonDataSource seasonDataSource,
+           ICompetitionDataSource competitionDataSource,
            IEmailProtector emailProtector)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _seasonDataSource = seasonDataSource ?? throw new System.ArgumentNullException(nameof(seasonDataSource));
+            _competitionDataSource = competitionDataSource ?? throw new System.ArgumentNullException(nameof(competitionDataSource));
             _emailProtector = emailProtector ?? throw new System.ArgumentNullException(nameof(emailProtector));
         }
 
@@ -43,7 +43,7 @@ namespace Stoolball.Web.Competitions
 
             var model = new CompetitionViewModel(contentModel.Content)
             {
-                Competition = await _seasonDataSource.ReadCompetitionByRoute(Request.Url.AbsolutePath).ConfigureAwait(false)
+                Competition = await _competitionDataSource.ReadCompetitionByRoute(Request.Url.AbsolutePath).ConfigureAwait(false)
             };
 
             if (model.Competition == null)

@@ -930,6 +930,7 @@
     <Compile Include="Clubs\MatchesForClubController.cs" />
     <Compile Include="Competitions\CompetitionActionsController.cs" />
     <Compile Include="Competitions\CompetitionController.cs" />
+    <Compile Include="Competitions\CreateSeasonSurfaceController.cs" />
     <Compile Include="Competitions\CreateSeasonController.cs" />
     <Compile Include="Competitions\CreateCompetitionSurfaceController.cs" />
     <Compile Include="Competitions\CreateCompetitionController.cs" />
@@ -1122,6 +1123,7 @@
     <Content Include="Views\CreateSeason.cshtml" />
     <Content Include="Views\EditSeason.cshtml" />
     <Content Include="Views\Partials\_CompetitionActions.cshtml" />
+    <Content Include="Views\Partials\_CreateOrEditSeason.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

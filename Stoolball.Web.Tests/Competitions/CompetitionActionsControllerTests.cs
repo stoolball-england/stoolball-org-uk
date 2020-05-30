@@ -21,14 +21,14 @@ namespace Stoolball.Web.Tests.Competitions
     {
         private class TestController : CompetitionActionsController
         {
-            public TestController(ISeasonDataSource seasonDataSource)
+            public TestController(ICompetitionDataSource competitionDataSource)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, seasonDataSource)
+                null, competitionDataSource)
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -56,7 +56,7 @@ namespace Stoolball.Web.Tests.Competitions
         [Fact]
         public async Task Route_not_matching_competition_returns_404()
         {
-            var dataSource = new Mock<ISeasonDataSource>();
+            var dataSource = new Mock<ICompetitionDataSource>();
             dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).Returns(Task.FromResult<Competition>(null));
 
             using (var controller = new TestController(dataSource.Object))
@@ -70,7 +70,7 @@ namespace Stoolball.Web.Tests.Competitions
         [Fact]
         public async Task Route_matching_competition_returns_CompetitionViewModel()
         {
-            var dataSource = new Mock<ISeasonDataSource>();
+            var dataSource = new Mock<ICompetitionDataSource>();
             dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionName = "Example" });
 
             using (var controller = new TestController(dataSource.Object))

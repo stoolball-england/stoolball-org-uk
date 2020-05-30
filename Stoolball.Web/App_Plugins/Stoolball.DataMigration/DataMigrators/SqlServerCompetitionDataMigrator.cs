@@ -193,7 +193,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				SeasonId = Guid.NewGuid(),
 				MigratedSeasonId = season.MigratedSeasonId,
 				Competition = season.MigratedCompetition,
-				IsLatestSeason = season.IsLatestSeason,
 				StartYear = season.StartYear,
 				EndYear = season.EndYear,
 				Introduction = season.Introduction,
@@ -220,13 +219,12 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 						migratedSeason.Competition.CompetitionId = await database.ExecuteScalarAsync<Guid>($"SELECT CompetitionId FROM {Tables.Competition} WHERE MigratedCompetitionId = @0", season.MigratedCompetition.MigratedCompetitionId).ConfigureAwait(false);
 
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Season}
-						(SeasonId, MigratedSeasonId, CompetitionId, IsLatestSeason, StartYear, EndYear, Introduction, 
+						(SeasonId, MigratedSeasonId, CompetitionId, StartYear, EndYear, Introduction, 
 						 Results, ShowTable, ShowRunsScored, ShowRunsConceded, SeasonRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11)",
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10)",
 							migratedSeason.SeasonId,
 							migratedSeason.MigratedSeasonId,
 							migratedSeason.Competition.CompetitionId,
-							migratedSeason.IsLatestSeason,
 							migratedSeason.StartYear,
 							migratedSeason.EndYear,
 							migratedSeason.Introduction,

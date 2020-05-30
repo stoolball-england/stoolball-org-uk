@@ -1,0 +1,41 @@
+﻿@model SeasonViewModel
+@using Humanizer
+@using Stoolball.Matches
+@using Stoolball.Web.Competitions
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.Season.Introduction)
+    <p class="form-text" id="intro-help"><small>The introduction to the competition is displayed for all seasons. This is added just for this season.</small></p>
+    @Html.TextAreaFor(m => Model.Season.Introduction, new { @class = "form-control", aria_describedby = "intro-validation intro-help" })
+    @Html.ValidationMessageFor(m => Model.Season.Introduction, null, new { id = "intro-validation" })
+</div>
+
+<fieldset class="form-group">
+    <legend>What matches can be listed?</legend>
+    @{ 
+        // MVC always includes the checked attribute for this one, so build the attribute manually (possibly to do with the enum == 0?)
+        var leagueChecked = Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) ? " checked=\"checked\"" : string.Empty;
+    }
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" name="Season.MatchTypes" value="@MatchType.LeagueMatch" class="custom-control-input" id= "match-type-league"@leagueChecked />
+        <label for="match-type-league" class="custom-control-label">@MatchType.LeagueMatch.ToString().Humanize(LetterCasing.Sentence)</label>
+    </div>
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" name="Season.MatchTypes" value="@MatchType.KnockoutMatch" class="custom-control-input" id="match-type-knockout" checked="@Model.Season.MatchTypes.Contains(MatchType.KnockoutMatch)" />
+        <label for="match-type-knockout" class="custom-control-label">@MatchType.KnockoutMatch.ToString().Humanize(LetterCasing.Sentence)</label>
+    </div>
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" name="Season.MatchTypes" value="@MatchType.FriendlyMatch" class="custom-control-input" id="match-type-friendly" checked="@Model.Season.MatchTypes.Contains(MatchType.FriendlyMatch)" />
+        <label for="match-type-friendly" class="custom-control-label">@MatchType.FriendlyMatch.ToString().Humanize(LetterCasing.Sentence)</label>
+    </div>
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" name="Season.MatchTypes" value="@MatchType.Tournament" class="custom-control-input" id="match-type-tournament" checked="@Model.Season.MatchTypes.Contains(MatchType.Tournament)" />
+        <label for="match-type-tournament" class="custom-control-label">@MatchType.Tournament.ToString().Humanize(LetterCasing.Sentence)</label>
+    </div>
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" name="Season.MatchTypes" value="@MatchType.Practice" class="custom-control-input" id="match-type-practice" checked="@Model.Season.MatchTypes.Contains(MatchType.Practice)" />
+        <label for="match-type-practice" class="custom-control-label">@MatchType.Practice.ToString().Humanize(LetterCasing.Sentence)</label>
+    </div>
+</fieldset>
+
+<button class="btn btn-primary">Save season</button>

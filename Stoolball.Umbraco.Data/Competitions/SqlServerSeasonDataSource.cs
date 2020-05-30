@@ -27,48 +27,6 @@ namespace Stoolball.Umbraco.Data.Competitions
         }
 
         /// <summary>
-        /// Gets a single stoolball competition based on its route, with the route of its latest season, if any
-        /// </summary>
-        /// <param name="route">/competitions/example-competition</param>
-        /// <returns>A matching <see cref="Competition"/> or <c>null</c> if not found</returns>
-        public async Task<Competition> ReadCompetitionByRoute(string route)
-        {
-            try
-            {
-                string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "competitions");
-
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var competitions = await connection.QueryAsync<Competition, Season, Competition>(
-                        $@"SELECT co.CompetitionId, co.CompetitionName, co.PlayerType, co.Introduction, co.FromYear, co.UntilYear, co.Overs, co.PlayersPerTeam,
-                            co.PublicContactDetails, co.PrivateContactDetails, co.Facebook, co.Twitter, co.Instagram, co.YouTube, co.Website, co.CompetitionRoute, co.MemberGroupName,
-                            s.SeasonRoute
-                            FROM {Tables.Competition} AS co
-                            LEFT JOIN {Tables.Season} AS s ON co.CompetitionId = s.CompetitionId
-                            WHERE LOWER(co.CompetitionRoute) = @Route
-                            AND (s.StartYear = (SELECT MAX(StartYear) FROM {Tables.Season} WHERE CompetitionId = co.CompetitionId) 
-                            OR s.StartYear IS NULL)",
-                        (competition, season) =>
-                        {
-                            if (season != null)
-                            {
-                                competition.Seasons.Add(season);
-                            }
-                            return competition;
-                        },
-                        new { Route = normalisedRoute },
-                        splitOn: "SeasonRoute").ConfigureAwait(false);
-
-                    return competitions.FirstOrDefault();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerSeasonDataSource), ex);
-                throw;
-            }
-        }
-        /// <summary>
         /// Gets a single stoolball season based on its route
         /// </summary>
         /// <param name="route">/competitions/example-competition/2020</param>

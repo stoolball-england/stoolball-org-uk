@@ -33,6 +33,6 @@
 		/// <summary>
 		/// A knock-out cup match, in which the loser is usually eliminated from the competition
 		/// </summary>
-		CupMatch
+		KnockoutMatch
 	}
 }

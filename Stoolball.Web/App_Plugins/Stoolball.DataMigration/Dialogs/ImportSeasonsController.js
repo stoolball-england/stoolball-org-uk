@@ -32,7 +32,6 @@ function seasonResource() {
           HomePoints: x.homePoints,
           AwayPoints: x.awayPoints,
         })),
-        IsLatestSeason: season.isLatestSeason,
         StartYear: season.startYear,
         EndYear: season.endYear,
         Introduction: season.introduction,

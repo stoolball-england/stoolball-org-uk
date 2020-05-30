@@ -22,9 +22,6 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Index(IndexTypes.Clustered)]
         public Guid CompetitionId { get; set; }
 
-        [Column(nameof(IsLatestSeason))]
-        public bool IsLatestSeason { get; set; }
-
         [Column(nameof(StartYear))]
         public int StartYear { get; set; }
 
