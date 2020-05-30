@@ -930,6 +930,7 @@
     <Compile Include="Clubs\MatchesForClubController.cs" />
     <Compile Include="Competitions\CompetitionActionsController.cs" />
     <Compile Include="Competitions\CompetitionController.cs" />
+    <Compile Include="Competitions\EditSeasonSurfaceController.cs" />
     <Compile Include="Competitions\CreateSeasonSurfaceController.cs" />
     <Compile Include="Competitions\CreateSeasonController.cs" />
     <Compile Include="Competitions\CreateCompetitionSurfaceController.cs" />

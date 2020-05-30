@@ -30,13 +30,13 @@
 
 @if (Model.IsAuthorized)
 {
-    @*using (Html.BeginUmbracoForm<EditSeasonSurfaceController>
+    using (Html.BeginUmbracoForm<EditSeasonSurfaceController>
         ("UpdateSeason"))
     {
         @Html.AntiForgeryToken()
         @Html.ValidationSummary(true)
         @Html.Partial("_CreateOrEditSeason")
-    }*@
+    }
 }
 else
 {

@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Stoolball.Competitions;
+using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Teams;
 using System;
@@ -77,22 +78,31 @@ namespace Stoolball.Umbraco.Data.Competitions
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var seasons = await connection.QueryAsync<Season, Competition, Season, Team, Season>(
+                    var seasons = await connection.QueryAsync<Season, Competition, Season, Team, string, Season>(
                         $@"SELECT s.StartYear, s.EndYear, s.Introduction, s.Results, s.SeasonRoute,
                             co.CompetitionName, co.PlayerType, co.Introduction, co.UntilYear, co.PublicContactDetails, co.Website, co.CompetitionRoute, co.MemberGroupName,
                             s2.SeasonId, s2.StartYear, s2.EndYear, s2.SeasonRoute,
-                            t.TeamId, tn.TeamName, t.TeamRoute
+                            t.TeamId, tn.TeamName, t.TeamRoute,
+                            mt.MatchType
                             FROM {Tables.Season} AS s 
                             INNER JOIN {Tables.Competition} AS co ON co.CompetitionId = s.CompetitionId
                             LEFT JOIN {Tables.Season} AS s2 ON co.CompetitionId = s2.CompetitionId AND NOT s2.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.SeasonTeam} AS st ON st.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.Team} AS t ON t.TeamId = st.TeamId
                             LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
+                            LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
                             WHERE LOWER(s.SeasonRoute) = @Route
                             ORDER BY s2.StartYear DESC, s2.EndYear ASC",
-                        (season, competition, anotherSeasonInTheCompetition, team) =>
+                        (season, competition, anotherSeasonInTheCompetition, team, matchType) =>
                         {
-                            season.Competition = competition;
+                            if (season != null)
+                            {
+                                season.Competition = competition;
+                                if (!string.IsNullOrEmpty(matchType))
+                                {
+                                    season.MatchTypes.Add((MatchType)Enum.Parse(typeof(MatchType), matchType));
+                                }
+                            }
                             if (anotherSeasonInTheCompetition != null)
                             {
                                 season.Competition.Seasons.Add(anotherSeasonInTheCompetition);
@@ -104,11 +114,16 @@ namespace Stoolball.Umbraco.Data.Competitions
                             return season;
                         },
                         new { Route = normalisedRoute },
-                        splitOn: "CompetitionName, SeasonId, TeamId").ConfigureAwait(false);
+                        splitOn: "CompetitionName, SeasonId, TeamId, MatchType").ConfigureAwait(false);
 
                     var seasonToReturn = seasons.FirstOrDefault(); // get an example with the properties that are the same for every row
                     if (seasonToReturn != null)
                     {
+                        seasonToReturn.MatchTypes = seasons
+                            .Select(season => season.MatchTypes.FirstOrDefault())
+                            .OfType<MatchType>()
+                            .Distinct()
+                            .ToList();
                         seasonToReturn.Competition.Seasons = seasons.Select(season => season.Competition.Seasons.SingleOrDefault())
                             .GroupBy(season => season?.SeasonId)
                             .Select(duplicateSeasons => duplicateSeasons.First())
