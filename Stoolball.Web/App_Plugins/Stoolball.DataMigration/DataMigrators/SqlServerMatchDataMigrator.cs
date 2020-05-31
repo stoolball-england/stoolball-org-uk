@@ -324,7 +324,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 								seasonId).ConfigureAwait(false);
 						}
 						await database.ExecuteAsync($@"UPDATE {Tables.Team} SET 
-							TeamRoute = CONCAT(@0, '/teams/', SUBSTRING(TeamRoute, 6, LEN(TeamRoute)-5)),
+							TeamRoute = CONCAT(@0, SUBSTRING(TeamRoute, 6, LEN(TeamRoute)-5)),
 							FromYear = @1,
 							UntilYear = @1
 							WHERE TeamType = 'Transient' 

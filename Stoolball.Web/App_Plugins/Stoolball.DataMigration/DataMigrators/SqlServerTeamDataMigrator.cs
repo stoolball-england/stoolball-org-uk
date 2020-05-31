@@ -1,4 +1,5 @@
-﻿using Stoolball.Teams;
+﻿using Stoolball.Routing;
+using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
 using Umbraco.Core.Services;
+using static Stoolball.Umbraco.Data.Constants;
 using Tables = Stoolball.Umbraco.Data.Constants.Tables;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
@@ -19,8 +21,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		private readonly IAuditHistoryBuilder _auditHistoryBuilder;
 		private readonly IAuditRepository _auditRepository;
 		private readonly ILogger _logger;
+		private readonly IRouteGenerator _routeGenerator;
 
-		public SqlServerTeamDataMigrator(ServiceContext serviceContext, IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, ILogger logger)
+		public SqlServerTeamDataMigrator(ServiceContext serviceContext, IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository,
+			ILogger logger, IRouteGenerator routeGenerator)
 		{
 			_serviceContext = serviceContext ?? throw new ArgumentNullException(nameof(serviceContext));
 			_redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
@@ -28,6 +32,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			_auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
 			_auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
+			_routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
 		}
 
 		/// <summary>
@@ -96,24 +101,29 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				PlayingTimes = team.PlayingTimes,
 				Cost = team.Cost,
 				MemberGroupId = team.MemberGroupId,
-				MemberGroupName = team.MemberGroupName,
-				TeamRoute = team.TeamRoute
+				MemberGroupName = team.MemberGroupName
 			};
 
-			if (migratedTeam.TeamRoute.EndsWith("team", StringComparison.OrdinalIgnoreCase))
+			using (var scope = _scopeProvider.CreateScope())
 			{
-				migratedTeam.TeamRoute = migratedTeam.TeamRoute.Substring(0, migratedTeam.TeamRoute.Length - 4);
+				migratedTeam.TeamRoute = _routeGenerator.GenerateRoute("/teams", migratedTeam.TeamName, NoiseWords.TeamRoute);
+				int count;
+				do
+				{
+					count = await scope.Database.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { migratedTeam.TeamRoute }).ConfigureAwait(false);
+					if (count > 0)
+					{
+						migratedTeam.TeamRoute = _routeGenerator.IncrementRoute(migratedTeam.TeamRoute);
+					}
+				}
+				while (count > 0);
+				scope.Complete();
 			}
 
 			if (migratedTeam.TeamType == TeamType.Transient)
 			{
 				// Use a partial route that will be updated when the tournament is imported
-				var splitRoute = migratedTeam.TeamRoute.Split('/');
-				migratedTeam.TeamRoute = migratedTeam.MigratedTeamId.ToString("00000", CultureInfo.InvariantCulture) + splitRoute[splitRoute.Length - 1];
-			}
-			else
-			{
-				migratedTeam.TeamRoute = "/teams/" + migratedTeam.TeamRoute;
+				migratedTeam.TeamRoute = migratedTeam.MigratedTeamId.ToString("00000", CultureInfo.InvariantCulture) + migratedTeam.TeamRoute;
 			}
 
 			_auditHistoryBuilder.BuildInitialAuditHistory(team, migratedTeam, nameof(SqlServerTeamDataMigrator));
