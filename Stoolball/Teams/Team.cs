@@ -94,6 +94,9 @@ namespace Stoolball.Teams
         [Required]
         [Display(Name = "Player type")]
         public PlayerType PlayerType { get; set; }
+
+        public List<PlayerIdentity> PlayerIdentities { get; internal set; } = new List<PlayerIdentity>();
+
         public string Introduction { get; set; }
 
         [Display(Name = "Minimum age for players")]

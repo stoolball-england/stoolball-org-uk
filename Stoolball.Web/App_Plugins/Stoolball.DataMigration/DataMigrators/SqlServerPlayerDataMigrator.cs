@@ -70,6 +70,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				var migratedPlayer = new MigratedPlayerIdentity
 				{
 					PlayerIdentityId = Guid.NewGuid(),
+					PlayerId = Guid.NewGuid(),
 					MigratedPlayerIdentityId = player.MigratedPlayerIdentityId,
 					PlayerIdentityName = player.PlayerIdentityName,
 					MigratedTeamId = player.MigratedTeamId,
@@ -113,10 +114,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 								FirstPlayed, LastPlayed, TotalMatches, MissedMatches, Probability, PlayerRole, PlayerIdentityRoute)
 							VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12)",
 								migratedPlayer.PlayerIdentityId,
-								migratedPlayer.PlayerIdentityId,
+								migratedPlayer.PlayerId,
 								migratedPlayer.MigratedPlayerIdentityId,
 								migratedPlayer.PlayerIdentityName,
-								migratedPlayer.GenerateComparableName(),
+								migratedPlayer.ComparableName(),
 								teamId,
 								migratedPlayer.FirstPlayed,
 								migratedPlayer.LastPlayed,

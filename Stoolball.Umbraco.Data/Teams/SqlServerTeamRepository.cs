@@ -152,6 +152,65 @@ namespace Stoolball.Umbraco.Data.Teams
                                 }, transaction).ConfigureAwait(false);
                         }
 
+                        team.PlayerIdentities.Add(new PlayerIdentity
+                        {
+                            PlayerIdentityId = Guid.NewGuid(),
+                            PlayerId = Guid.NewGuid(),
+                            PlayerIdentityRoute = team.TeamRoute + "/players/no-balls",
+                            PlayerRole = PlayerRole.NoBalls,
+                            PlayerIdentityName = "No balls",
+                            TotalMatches = 0
+                        });
+
+                        team.PlayerIdentities.Add(new PlayerIdentity
+                        {
+                            PlayerIdentityId = Guid.NewGuid(),
+                            PlayerId = Guid.NewGuid(),
+                            PlayerIdentityRoute = team.TeamRoute + "/players/wides",
+                            PlayerRole = PlayerRole.Wides,
+                            PlayerIdentityName = "Wides",
+                            TotalMatches = 0
+                        });
+
+                        team.PlayerIdentities.Add(new PlayerIdentity
+                        {
+                            PlayerIdentityId = Guid.NewGuid(),
+                            PlayerId = Guid.NewGuid(),
+                            PlayerIdentityRoute = team.TeamRoute + "/players/byes",
+                            PlayerRole = PlayerRole.Byes,
+                            PlayerIdentityName = "Byes",
+                            TotalMatches = 0
+                        });
+
+                        team.PlayerIdentities.Add(new PlayerIdentity
+                        {
+                            PlayerIdentityId = Guid.NewGuid(),
+                            PlayerId = Guid.NewGuid(),
+                            PlayerIdentityRoute = team.TeamRoute + "/players/bonus-runs",
+                            PlayerRole = PlayerRole.BonusRuns,
+                            PlayerIdentityName = "Bonus runs",
+                            TotalMatches = 0
+                        });
+
+                        foreach (var extrasIdentity in team.PlayerIdentities)
+                        {
+                            await transaction.Connection.ExecuteAsync(
+                                $@"INSERT INTO {Tables.PlayerIdentity} 
+                                (PlayerIdentityId, PlayerId, PlayerRole, PlayerIdentityName, PlayerIdentityComparableName, TeamId, TotalMatches, PlayerIdentityRoute) 
+                                VALUES (@PlayerIdentityId, @PlayerId, @PlayerRole, @PlayerIdentityName, @PlayerIdentityComparableName, @TeamId, @TotalMatches, @PlayerIdentityRoute)",
+                                new
+                                {
+                                    extrasIdentity.PlayerIdentityId,
+                                    extrasIdentity.PlayerId,
+                                    PlayerRole = extrasIdentity.PlayerRole.ToString(),
+                                    extrasIdentity.PlayerIdentityName,
+                                    PlayerIdentityComparableName = extrasIdentity.ComparableName(),
+                                    team.TeamId,
+                                    extrasIdentity.TotalMatches,
+                                    extrasIdentity.PlayerIdentityRoute
+                                }, transaction).ConfigureAwait(false);
+                        }
+
                         transaction.Commit();
                     }
                 }

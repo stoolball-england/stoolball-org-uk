@@ -8,6 +8,7 @@ namespace Stoolball.Teams
     public class PlayerIdentity : IAuditable
     {
         public Guid? PlayerIdentityId { get; set; }
+        public Guid? PlayerId { get; set; }
 
         public Team Team { get; set; }
         public string PlayerIdentityName { get; set; }
@@ -16,7 +17,7 @@ namespace Stoolball.Teams
         /// Gets the version of the player's name used to match them against partial names
         /// </summary>
         /// <returns></returns>
-        public string GenerateComparableName()
+        public string ComparableName()
         {
             return Regex.Replace(PlayerIdentityName, "[^A-Z0-9]", string.Empty, RegexOptions.IgnoreCase).ToUpperInvariant();
         }
