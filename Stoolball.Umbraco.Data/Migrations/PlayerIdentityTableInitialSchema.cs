@@ -9,9 +9,13 @@ namespace Stoolball.Umbraco.Data.Migrations
     [ExplicitColumns]
     public class PlayerIdentityTableInitialSchema
     {
-        [PrimaryKeyColumn(AutoIncrement = false)]
+        [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
         [Column(nameof(PlayerIdentityId))]
         public Guid PlayerIdentityId { get; set; }
+
+        [Column(nameof(PlayerId))]
+        [Index(IndexTypes.Clustered)]
+        public Guid PlayerId { get; set; }
 
         [Column(nameof(MigratedPlayerIdentityId))]
         [NullSetting(NullSetting = NullSettings.Null)]
