@@ -22,9 +22,9 @@ Follow these steps to clone and run the project. You will need the git repositor
 2. Clone the Umbraco Cloud git repository into a folder called `.UmbracoCloud` inside the root folder of this repository
 3. Open `Stoolball.sln` in Visual Studio
 4. Select the solution in Solution Explorer and press Alt+Enter (or right-click, Properties). In the Properties dialog select "Single startup project" and choose Stoolball.Web. Click OK.
-5. Press Ctrl+F5 to run without debugging using IIS Express
-
-This will open the login screen for the Umbraco back office. Login using your Umbraco.io account.
+5. Press Ctrl+F5 to run without debugging using IIS Express. This will open the Umbraco home page for a blank site. Click 'Open Umbraco' to open the login screen for the Umbraco back office. Login using your Umbraco.io account.
+6. Go to the 'Settings' section and select 'uSync'. Click the dropdown next to the 'Import' button and select 'Import Content/Media'. This will load the standard content into the site. Optionally go to the 'Content' section, right-click the 'Content' node and select 'Reload nodes' to see the content.
+7. Go to the 'Settings' section and select 'Languages'. Delete 'English (United States)'.
 
 ### Running the project in Visual Studio Code
 
@@ -43,22 +43,6 @@ You need to run Visual Studio (or the equivalent MSBuild command) at least once 
 ```
 
 You can now use `View > Command Palette > IIS Express: Start Website` to open the Umbraco back office.
-
-## Starting a new feature or fix
-
-Run `.\Scripts\Pull-UmbracoCloud.ps1` to pull changes from Umbraco Cloud into `master` before starting new work.
-
-Always work on a feature branch named `feature/xxx` or `fix/xxx` based off of `master`.
-
-## Merge into `master` and push to Umbraco Cloud
-
-Run `.\Scripts\Pull-UmbracoCloud.ps1` again to pull changes from Umbraco Cloud before merging into `master`.
-
-The pull from Umbraco Cloud always gets committed to `master`, so the changes should be there before you merge yours in. This should avoid the remote changes overwriting yours.
-
-You can merge `master` into your `feature/xxx` or `fix/xxx` branch if required.
-
-Once your branch is merged into `master` run `.\Scripts\Push-UmbracoCloud.ps1` to push your changes. This should keep the remote up-to-date and minimise conflicts.
 
 ## Managing secrets in config files
 
