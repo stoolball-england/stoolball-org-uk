@@ -32,7 +32,7 @@
           </p>
 
           <p>
-            <label for="startFrom">Import 10,000 starting at</label>
+            <label for="startFrom">Import 30,000 starting at</label>
             <input
               type="number"
               ng-init="model.startFrom=0"
@@ -51,10 +51,6 @@
           <ul class="data-migration-progress">
             <li ng-repeat="item in vm.failed" class="alert alert-error">
               Failed: Batter {{item.battingPosition}} for team {{item.teamId}}
-              in match {{item.matchId}}
-            </li>
-            <li ng-repeat="item in vm.imported">
-              Imported: Batter {{item.battingPosition}} for team {{item.teamId}}
               in match {{item.matchId}}
             </li>
           </ul>

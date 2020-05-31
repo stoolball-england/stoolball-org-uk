@@ -75,7 +75,7 @@
           try {
             const batchSize = 50;
             let position = $scope.model.startFrom;
-            let target = position + 10000;
+            let target = position + 30000;
             let first = true;
             while (first || (position < target && position <= vm.total)) {
               first = false;
