@@ -1,4 +1,5 @@
 ﻿using Stoolball.Competitions;
+using Stoolball.Routing;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
@@ -6,6 +7,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
+using static Stoolball.Umbraco.Data.Constants;
 using Tables = Stoolball.Umbraco.Data.Constants.Tables;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
@@ -17,14 +19,17 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 		private readonly IAuditHistoryBuilder _auditHistoryBuilder;
 		private readonly IAuditRepository _auditRepository;
 		private readonly ILogger _logger;
+		private readonly IRouteGenerator _routeGenerator;
 
-		public SqlServerCompetitionDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, ILogger logger)
+		public SqlServerCompetitionDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository,
+			ILogger logger, IRouteGenerator routeGenerator)
 		{
 			_redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
 			_scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
 			_auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
 			_auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
+			_routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
 		}
 
 		/// <summary>
@@ -56,7 +61,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				throw;
 			}
 
-			await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/competition/").ConfigureAwait(false);
+			await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/competitions/").ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -83,11 +88,26 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				PlayersPerTeam = competition.PlayersPerTeam,
 				Overs = competition.Overs,
 				PlayerType = competition.PlayerType,
-				CompetitionRoute = "/competitions/" + competition.CompetitionRoute,
 				MemberGroupId = competition.MemberGroupId,
 				MemberGroupName = competition.MemberGroupName,
 				UntilYear = competition.UntilYear
 			};
+
+			using (var scope = _scopeProvider.CreateScope())
+			{
+				migratedCompetition.CompetitionRoute = _routeGenerator.GenerateRoute("/competitions", migratedCompetition.CompetitionName, NoiseWords.CompetitionRoute);
+				int count;
+				do
+				{
+					count = await scope.Database.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Competition} WHERE CompetitionRoute = @CompetitionRoute", new { migratedCompetition.CompetitionRoute }).ConfigureAwait(false);
+					if (count > 0)
+					{
+						migratedCompetition.CompetitionRoute = _routeGenerator.IncrementRoute(migratedCompetition.CompetitionRoute);
+					}
+				}
+				while (count > 0);
+				scope.Complete();
+			}
 
 			_auditHistoryBuilder.BuildInitialAuditHistory(competition, migratedCompetition, nameof(SqlServerCompetitionDataMigrator));
 			migratedCompetition.FromYear = competition.History[0].AuditDate.Year;
@@ -192,7 +212,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			{
 				SeasonId = Guid.NewGuid(),
 				MigratedSeasonId = season.MigratedSeasonId,
-				Competition = season.MigratedCompetition,
+				MigratedCompetition = season.MigratedCompetition,
 				StartYear = season.StartYear,
 				EndYear = season.EndYear,
 				Introduction = season.Introduction,
@@ -203,9 +223,19 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 				Results = season.Results,
 				ShowTable = season.ShowTable,
 				ShowRunsScored = season.ShowRunsScored,
-				ShowRunsConceded = season.ShowRunsConceded,
-				SeasonRoute = "/competitions/" + season.MigratedCompetition.CompetitionRoute + "/" + season.StartYear + (season.EndYear > season.StartYear ? "-" + season.EndYear.ToString(CultureInfo.CurrentCulture).Substring(2) : string.Empty)
+				ShowRunsConceded = season.ShowRunsConceded
 			};
+
+			using (var scope = _scopeProvider.CreateScope())
+			{
+				var competitionRoute = await scope.Database.ExecuteScalarAsync<string>($"SELECT CompetitionRoute FROM {Tables.Competition} WHERE MigratedCompetitionId = @MigratedCompetitionId", new { migratedSeason.MigratedCompetition.MigratedCompetitionId }).ConfigureAwait(false);
+				migratedSeason.SeasonRoute = $"{competitionRoute}/{migratedSeason.StartYear}";
+				if (migratedSeason.EndYear > migratedSeason.StartYear)
+				{
+					migratedSeason.SeasonRoute = $"{migratedSeason.SeasonRoute}-{migratedSeason.EndYear.ToString(CultureInfo.InvariantCulture).Substring(2)}";
+				}
+				scope.Complete();
+			}
 
 			_auditHistoryBuilder.BuildInitialAuditHistory(season, migratedSeason, nameof(SqlServerCompetitionDataMigrator));
 
@@ -216,7 +246,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 					var database = scope.Database;
 					using (var transaction = database.GetTransaction())
 					{
-						migratedSeason.Competition.CompetitionId = await database.ExecuteScalarAsync<Guid>($"SELECT CompetitionId FROM {Tables.Competition} WHERE MigratedCompetitionId = @0", season.MigratedCompetition.MigratedCompetitionId).ConfigureAwait(false);
+						migratedSeason.MigratedCompetition.CompetitionId = await database.ExecuteScalarAsync<Guid>($"SELECT CompetitionId FROM {Tables.Competition} WHERE MigratedCompetitionId = @0", season.MigratedCompetition.MigratedCompetitionId).ConfigureAwait(false);
 
 						await database.ExecuteAsync($@"INSERT INTO {Tables.Season}
 						(SeasonId, MigratedSeasonId, CompetitionId, StartYear, EndYear, Introduction, 
@@ -224,7 +254,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10)",
 							migratedSeason.SeasonId,
 							migratedSeason.MigratedSeasonId,
-							migratedSeason.Competition.CompetitionId,
+							migratedSeason.MigratedCompetition.CompetitionId,
 							migratedSeason.StartYear,
 							migratedSeason.EndYear,
 							migratedSeason.Introduction,
