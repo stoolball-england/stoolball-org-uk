@@ -10,6 +10,15 @@
     Html.RequiresJs("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey, 50);
     Html.RequiresJs("/js/maps.js", 90);
     Html.RequiresJs("/matchlocations/match-location.js");
+
+    Html.RequiresJs("~/js/libs/jquery.autocomplete.min.js", 50);
+    Html.RequiresCss("~/css/autocomplete.min.css");
+
+    Html.RequiresCss("~/css/related-items.min.css");
+    Html.RequiresJs("~/js/related-items.js");
+
+    Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
+    Html.RequiresJs("/js/tinymce.js");
 }
 <h1>@Model.Name</h1>
 <h2>Tabs</h2>
@@ -59,6 +68,12 @@
     </tbody>
 </table>
 <p>A paragraph following a table.</p>
+<dl>
+    <dt><a href="https://example.org">Definition list title</a></dt>
+    <dd>Definition list detail.</dd>
+    <dt><a href="https://example.org">Definition list title</a></dt>
+    <dd>Definition list detail.</dd>
+</dl>
 <h2>Forms</h2>
 <form>
     <div class="validation-summary-errors">
@@ -94,7 +109,14 @@
         </div>
     </div>
     <div class="form-group">
-        <label for="unvalidated-email-field">Email field</label>
+        <label for="unvalidated-text-field-with-help">Text field</label>
+        <p class="form-text" id="form-text-help"><small>Help for the text field</small></p>
+        <input aria-describedby="form-text form-text-help" class="form-control" data-val="true" data-val-required="The field is required." id="unvalidated-text-field-with-help" name="unvalidated-text-field-with-help" type="text" />
+        <span class="field-validation-valid" data-valmsg-for="unvalidated-text-field-with-help" data-valmsg-replace="true" id="form-text"></span>
+    </div>
+    <div class="form-group">
+        <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="facebook-square" class="svg-inline--fa fa-facebook-square fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="30" height="30"><path fill="currentColor" d="M400 32H48A48 48 0 0 0 0 80v352a48 48 0 0 0 48 48h137.25V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.27c-30.81 0-40.42 19.12-40.42 38.73V256h68.78l-11 71.69h-57.78V480H400a48 48 0 0 0 48-48V80a48 48 0 0 0-48-48z"></path></svg>
+        <label for="unvalidated-email-field">Email field (with icon)</label>
         <input aria-describedby="form-email" autocapitalize="off" autocorrect="off" class="form-control" data-val="true" data-val-regex="Please enter a valid email address" id="unvalidated-email-field" name="unvalidated-email-field" required="required" type="email" value="" />
         <span class="field-validation-valid" data-valmsg-for="unvalidated-email-field" data-valmsg-replace="true" id="form-email"></span>
     </div>
@@ -104,10 +126,79 @@
         <span class="field-validation-valid" data-valmsg-for="unvalidated-password-field" data-valmsg-replace="true" id="form-password"></span>
     </div>
     <div class="form-group">
-        <label for="unvalidated-password-field-with-help">Password field</label>
-        <p class="form-text" id="form-new-password-help"><small>Help for the password field</small></p>
-        <input aria-describedby="form-password form-password-help" autocapitalize="off" autocorrect="off" class="form-control" data-val="true" data-val-required="The Password field is required." id="unvalidated-password-field-with-help" name="unvalidated-password-field-with-help" type="password" />
-        <span class="field-validation-valid" data-valmsg-for="unvalidated-password-field-with-help" data-valmsg-replace="true" id="form-password"></span>
+        <label for="unvalidated-number-field">Number field</label>
+        <input aria-describedby="unvalidated-number-field-validator" class="form-control" data-val="true" data-val-number="The field must be a number." id="unvalidated-number-field" name="unvalidated-number-field" type="number" value="10">
+        <span class="field-validation-valid" data-valmsg-for="unvalidated-number-field" data-valmsg-replace="true" id="unvalidated-number-field-validator"></span>
+    </div>
+    <div class="form-group custom-control custom-checkbox">
+        <input class="custom-control-input" data-val="true" data-val-required="The field is required." id="checkbox-not-checked" name="checkbox-not-checked" type="checkbox" value="true" />
+        <label class="custom-control-label" for="checkbox-not-checked">Checkbox – not checked</label>
+    </div>
+    <div class="form-group custom-control custom-checkbox">
+        <input class="custom-control-input" data-val="true" data-val-required="The field is required." id="checkbox-checked" name="checkbox-checked" type="checkbox" checked="checked" value="true" />
+        <label class="custom-control-label" for="checkbox-checked">Checkbox – checked</label>
+    </div>
+    <fieldset class="form-group">
+        <legend>Radio buttons</legend>
+        <div class="custom-control custom-radio">
+            <input checked="checked" class="custom-control-input" data-val="true" data-val-required="The field is required." id="radio-not-selected" name="radio" type="radio" value="1">
+            <label for="radio-not-selected" class="custom-control-label">Radio button – not selected</label>
+        </div>
+        <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="radio-selected" name="radio" type="radio" value="2" checked="checked">
+            <label for="radio-selected" class="custom-control-label">Radio button – selected</label>
+        </div>
+    </fieldset>
+    <table class="table table-hover related-items">
+        <thead class="thead-dark">
+            <tr><th scope="col" colspan="2">Multiple related items</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><div class="related-item__animate">Selected item</div></td>
+                <td class="related-item__delete">
+                    <div class="related-item__animate">
+                        @Html.Partial("_DeleteIcon", (string.Empty, "Remove item"))
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    @Html.Label("team-autocomplete", "Add a team", new { @class = "sr-only" })
+                    @Html.TextBox("team-autocomplete", string.Empty, new
+                    {
+                        @class = "form-control related-item__search",
+                        placeholder = "Add a team",
+                        autocomplete = "off",
+                        type = "search",
+                        data_url = "/api/teams/autocomplete",
+                        data_template = "team-template",
+                        aria_label = "Type a team name add and press down arrow to select the team"
+                    })
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <script type="text/x-template" id="team-template">
+        <tr>
+            <td><div class="related-item__animate">{{value}}</div></td>
+            <td class="related-item__delete">
+                <div class="related-item__animate">
+                    @Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}}"))
+                </div>
+            </td>
+        </tr>
+    </script>
+    <div class="form-group">
+        <label for="rich-text">Rich text editor</label>
+        <textarea aria-describedby="rich-text-validation" class="form-control" cols="20" id="rich-text" name="rich-text" rows="2"></textarea>
+        <span class="field-validation-valid" data-valmsg-for="rich-text" data-valmsg-replace="true" id="rich-text-validation"></span>
+    </div>
+    <div class="form-group">
+        <label for="rich-text-with-help">Rich text editor with help</label>
+        <p class="form-text" id="rich-text-help"><small>Help for the rich text editor.</small></p>
+        <textarea aria-describedby="rich-text-with-help-validation rich-text-help" class="form-control" cols="20" id="rich-text-with-help" name="rich-text-with-help" rows="2"></textarea>
+        <span class="field-validation-valid" data-valmsg-for="rich-text-with-help" data-valmsg-replace="true" id="rich-text-with-help-validation"></span>
     </div>
     <button class="btn btn-primary">Button text</button>
 </form>
