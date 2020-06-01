@@ -72,8 +72,10 @@
     <Compile Include="Competitions\SeasonActionsControllerTests.cs" />
     <Compile Include="Matches\TournamentControllerTests.cs" />
     <Compile Include="Matches\MatchControllerTests.cs" />
+    <Compile Include="MatchLocations\MatchLocationActionsControllerTests.cs" />
     <Compile Include="MatchLocations\CreateMatchLocationControllerTests.cs" />
     <Compile Include="MatchLocations\EditMatchLocationControllerTests.cs" />
+    <Compile Include="MatchLocations\DeleteMatchLocationControllerTests.cs" />
     <Compile Include="MatchLocations\MatchLocationsControllerTests.cs" />
     <Compile Include="Teams\CreateTeamControllerTests.cs" />
     <Compile Include="Teams\EditTransientTeamControllerTests.cs" />

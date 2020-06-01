@@ -75,7 +75,7 @@ Html.RequiresJs("/matchlocations/match-location.js");
 }
 @if (Model.MatchLocation.Teams?.Count > 0)
 {
-    <h2>Teams based at this ground</h2>
+    <h2>Teams based here</h2>
     @Html.Partial("_TeamList", Model.MatchLocation.Teams)
 }
 

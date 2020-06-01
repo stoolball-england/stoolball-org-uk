@@ -1,0 +1,32 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.MatchLocations.MatchLocationViewModel>
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+
+<h1>Edit @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute">Summary</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute/matches">Matches</a>
+    </li>
+    <li class="nav-item">
+        <em class="nav-link active">Edit</em>
+    </li>
+</ul>
+
+@if (Model.IsAuthorized)
+{
+<dl>
+    <dt><a href="@Model.MatchLocation.MatchLocationRoute/edit/location">Edit @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</a></dt>
+    <dd>Set the address, map and notes.</dd>
+    <dt><a href="@Model.MatchLocation.MatchLocationRoute/delete">Delete @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</a></dt>
+    <dd>Matches played here will have an unknown location. Teams based here will lose their home.</dd>
+</dl>
+}
+else
+{
+    @Html.Partial("_Login")
+}
