@@ -16,5 +16,10 @@ namespace Stoolball.Umbraco.Data.Clubs
         /// Updates a stoolball club
         /// </summary>
         Task<Club> UpdateClub(Club club, Guid memberKey, string memberName);
+
+        /// <summary>
+        /// Delete a stoolball club
+        /// </summary>
+        Task DeleteClub(Club club, Guid memberKey, string memberName);
     }
 }

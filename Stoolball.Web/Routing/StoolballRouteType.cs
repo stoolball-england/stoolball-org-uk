@@ -6,9 +6,11 @@
     public enum StoolballRouteType
     {
         Club,
+        ClubActions,
         Clubs,
         CreateClub,
         EditClub,
+        DeleteClub,
         MatchLocation,
         MatchLocationActions,
         CreateMatchLocation,

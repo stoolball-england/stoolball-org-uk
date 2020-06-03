@@ -21,9 +21,11 @@ namespace Stoolball.Web.Routing
     {
         private readonly Dictionary<StoolballRouteType, Type> _supportedControllers = new Dictionary<StoolballRouteType, Type> {
             { StoolballRouteType.Clubs, typeof(ClubsController) },
+            { StoolballRouteType.ClubActions, typeof(ClubActionsController) },
             { StoolballRouteType.Club, typeof(ClubController) },
             { StoolballRouteType.CreateClub, typeof(CreateClubController) },
             { StoolballRouteType.EditClub, typeof(EditClubController) },
+            { StoolballRouteType.DeleteClub, typeof(DeleteClubController) },
             { StoolballRouteType.MatchesForClub, typeof(MatchesForClubController) },
             { StoolballRouteType.Teams, typeof(TeamsController) },
             { StoolballRouteType.Team, typeof(TeamController) },

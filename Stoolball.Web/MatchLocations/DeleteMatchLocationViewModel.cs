@@ -1,4 +1,5 @@
 ﻿using Stoolball.MatchLocations;
+using Stoolball.Security;
 using Stoolball.Web.Routing;
 using Umbraco.Core.Models.PublishedContent;
 

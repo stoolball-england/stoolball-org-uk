@@ -12,11 +12,11 @@ using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Clubs
 {
-    public class EditClubController : RenderMvcControllerAsync
+    public class ClubActionsController : RenderMvcControllerAsync
     {
         private readonly IClubDataSource _clubDataSource;
 
-        public EditClubController(IGlobalSettings globalSettings,
+        public ClubActionsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
@@ -40,7 +40,6 @@ namespace Stoolball.Web.Clubs
             {
                 Club = await _clubDataSource.ReadClubByRoute(Request.Url.AbsolutePath).ConfigureAwait(false)
             };
-
 
             if (model.Club == null)
             {

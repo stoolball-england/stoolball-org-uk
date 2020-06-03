@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/clubActions.cshtml",
+  "Master": null,
+  "Udi": "umb://template/842af0b889ea48c38e429b41b86eef3a",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/clubActions.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Club Actions",
+  "Alias": "clubActions",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.4.4"
+}

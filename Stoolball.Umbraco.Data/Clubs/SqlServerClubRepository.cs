@@ -212,5 +212,48 @@ namespace Stoolball.Umbraco.Data.Clubs
 
             return club;
         }
+
+        /// <summary>
+        /// Delete a stoolball club
+        /// </summary>
+        public async Task DeleteClub(Club club, Guid memberKey, string memberName)
+        {
+            if (club is null)
+            {
+                throw new ArgumentNullException(nameof(club));
+            }
+
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        await connection.ExecuteAsync($@"UPDATE {Tables.Team} SET ClubId = NULL WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.ClubName} WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.Club} WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
+                        transaction.Commit();
+                    }
+                }
+
+                await _redirectsRepository.DeleteRedirectsByDestinationPrefix(club.ClubRoute).ConfigureAwait(false);
+
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Delete,
+                    MemberKey = memberKey,
+                    ActorName = memberName,
+                    EntityUri = club.EntityUri,
+                    State = JsonConvert.SerializeObject(club),
+                    AuditDate = DateTime.UtcNow
+                }).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                _logger.Error<SqlServerClubRepository>(e);
+                throw;
+            }
+        }
     }
 }

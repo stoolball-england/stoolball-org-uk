@@ -1,4 +1,5 @@
-﻿using Stoolball.Umbraco.Data.Matches;
+﻿using Stoolball.Security;
+using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.MatchLocations;
 using System;
 using System.Collections.Generic;
@@ -40,8 +41,7 @@ namespace Stoolball.Web.MatchLocations
                 throw new System.ArgumentNullException(nameof(model));
             }
 
-            var viewModel = new
-           DeleteMatchLocationViewModel(CurrentPage)
+            var viewModel = new DeleteMatchLocationViewModel(CurrentPage)
             {
                 MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl, true).ConfigureAwait(false)
             };

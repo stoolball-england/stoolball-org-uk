@@ -12,11 +12,11 @@ using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Clubs
 {
-    public class EditClubController : RenderMvcControllerAsync
+    public class DeleteClubController : RenderMvcControllerAsync
     {
         private readonly IClubDataSource _clubDataSource;
 
-        public EditClubController(IGlobalSettings globalSettings,
+        public DeleteClubController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
@@ -36,11 +36,10 @@ namespace Stoolball.Web.Clubs
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new ClubViewModel(contentModel.Content)
+            var model = new DeleteClubViewModel(contentModel.Content)
             {
                 Club = await _clubDataSource.ReadClubByRoute(Request.Url.AbsolutePath).ConfigureAwait(false)
             };
-
 
             if (model.Club == null)
             {
@@ -48,9 +47,11 @@ namespace Stoolball.Web.Clubs
             }
             else
             {
+                model.ConfirmDeleteRequest.RequiredText = model.Club.ClubName;
+
                 model.IsAuthorized = IsAuthorized(model);
 
-                model.Metadata.PageTitle = "Edit " + model.Club.ClubName;
+                model.Metadata.PageTitle = "Delete " + model.Club.ClubName;
 
                 return CurrentTemplate(model);
             }
@@ -58,10 +59,10 @@ namespace Stoolball.Web.Clubs
 
 
         /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this club
+        /// Checks whether the currently signed-in member is authorized to delete this club
         /// </summary>
         /// <returns></returns>
-        protected virtual bool IsAuthorized(ClubViewModel model)
+        protected virtual bool IsAuthorized(DeleteClubViewModel model)
         {
             return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, model?.Club.MemberGroupName }, null);
         }

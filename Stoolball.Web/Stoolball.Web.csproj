@@ -922,13 +922,17 @@
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerMatchLocationDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerSchoolDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerClubDataMigrator.cs" />
+    <Compile Include="Clubs\DeleteClubViewModel.cs" />
+    <Compile Include="Clubs\DeleteClubController.cs" />
     <Compile Include="Clubs\CreateClubController.cs" />
     <Compile Include="Clubs\EditClubController.cs" />
     <Compile Include="Clubs\ClubsController.cs" />
     <Compile Include="Clubs\ClubsViewModel.cs" />
     <Compile Include="Clubs\CreateClubSurfaceController.cs" />
+    <Compile Include="Clubs\DeleteClubSurfaceController.cs" />
     <Compile Include="Clubs\EditClubSurfaceController.cs" />
     <Compile Include="Clubs\MatchesForClubController.cs" />
+    <Compile Include="Clubs\ClubActionsController.cs" />
     <Compile Include="Competitions\CompetitionActionsController.cs" />
     <Compile Include="Competitions\CompetitionController.cs" />
     <Compile Include="Competitions\EditSeasonSurfaceController.cs" />
@@ -1132,6 +1136,8 @@
     <Content Include="Views\Partials\_CreateOrEditSeason.cshtml" />
     <Content Include="Views\DeleteMatchLocation.cshtml" />
     <Content Include="Views\MatchLocationActions.cshtml" />
+    <Content Include="Views\ClubActions.cshtml" />
+    <Content Include="Views\DeleteClub.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

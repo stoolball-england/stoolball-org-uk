@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Stoolball.Web.MatchLocations
+namespace Stoolball.Security
 {
     public class MatchingTextConfirmation
     {

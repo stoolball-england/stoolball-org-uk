@@ -1,6 +1,7 @@
 {
   "DefaultTemplate": "umb://template/f2724e57d127459a81b0cc293e1304b3",
   "AllowedTemplates": [
+    "umb://template/007d4a7a068f4dd8b8a693271d5bb5f4",
     "umb://template/07aa3f0c6fc24d2fa2473da20ad9b400",
     "umb://template/19b067bfa44940cc94c9709af58fedc3",
     "umb://template/1c17d796ea8b4a8888fc6a3b082749b3",
@@ -16,6 +17,7 @@
     "umb://template/65e55e5745634e438ed0faa5a1445a64",
     "umb://template/6e0724f7aa52495d9b0e5e17fb2c729a",
     "umb://template/7770c3e197814c2fb06aea342782894e",
+    "umb://template/842af0b889ea48c38e429b41b86eef3a",
     "umb://template/8cfc82c459294e15b572081a5a782caf",
     "umb://template/975dfe2a53754f208747871a5efb9146",
     "umb://template/9a10f32f8bb94c098cc94727000a8689",
@@ -49,6 +51,11 @@
   "PropertyTypes": [],
   "Udi": "umb://document-type/b406c97934284717ade92aa16d4cb679",
   "Dependencies": [
+    {
+      "Udi": "umb://template/007d4a7a068f4dd8b8a693271d5bb5f4",
+      "Ordering": true,
+      "Mode": 0
+    },
     {
       "Udi": "umb://template/07aa3f0c6fc24d2fa2473da20ad9b400",
       "Ordering": true,
@@ -121,6 +128,11 @@
     },
     {
       "Udi": "umb://template/7770c3e197814c2fb06aea342782894e",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/842af0b889ea48c38e429b41b86eef3a",
       "Ordering": true,
       "Mode": 0
     },
