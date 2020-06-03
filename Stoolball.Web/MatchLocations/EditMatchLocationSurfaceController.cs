@@ -28,7 +28,7 @@ namespace Stoolball.Web.MatchLocations
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        public async Task<ActionResult> UpdateMatchLocation([Bind(Prefix = "MatchLocation", Include = "SecondaryAddressableObjectName,PrimaryAddressableObjectName,StreetDescription,Locality,Town,AdministrativeArea,Postcode,GeoPrecision,Latitude,Longitude")]MatchLocation location)
+        public async Task<ActionResult> UpdateMatchLocation([Bind(Prefix = "MatchLocation", Include = "SecondaryAddressableObjectName,PrimaryAddressableObjectName,StreetDescription,Locality,Town,AdministrativeArea,Postcode,GeoPrecision,Latitude,Longitude")] MatchLocation location)
         {
             if (location is null)
             {
@@ -49,8 +49,8 @@ namespace Stoolball.Web.MatchLocations
                 var currentMember = Members.GetCurrentMember();
                 await _matchLocationRepository.UpdateMatchLocation(location, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                // redirect back to the location
-                return Redirect(location.MatchLocationRoute);
+                // redirect back to the location actions page that led here
+                return Redirect(location.MatchLocationRoute + "/edit");
             }
 
             var viewModel = new

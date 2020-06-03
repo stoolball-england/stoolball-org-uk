@@ -28,7 +28,7 @@ namespace Stoolball.Web.Clubs
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        public async Task<ActionResult> UpdateClub([Bind(Prefix = "Club", Include = "ClubName,ClubMark,Teams")]Club club)
+        public async Task<ActionResult> UpdateClub([Bind(Prefix = "Club", Include = "ClubName,ClubMark,Teams")] Club club)
         {
             if (club is null)
             {
@@ -46,8 +46,8 @@ namespace Stoolball.Web.Clubs
                 var currentMember = Members.GetCurrentMember();
                 await _clubRepository.UpdateClub(club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                // redirect back to the club
-                return Redirect(club.ClubRoute);
+                // redirect back to the club actions page that led here
+                return Redirect(club.ClubRoute + "/edit");
             }
 
             var viewModel = new ClubViewModel(CurrentPage)

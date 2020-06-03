@@ -29,7 +29,7 @@ namespace Stoolball.Web.Competitions
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        public async Task<ActionResult> UpdateCompetition([Bind(Prefix = "Competition", Include = "CompetitionName,FromYear,UntilYear,PlayerType,PlayersPerTeam,Overs,Facebook,Twitter,Instagram,YouTube,Website")]Competition competition)
+        public async Task<ActionResult> UpdateCompetition([Bind(Prefix = "Competition", Include = "CompetitionName,FromYear,UntilYear,PlayerType,PlayersPerTeam,Overs,Facebook,Twitter,Instagram,YouTube,Website")] Competition competition)
         {
             if (competition is null)
             {
@@ -53,13 +53,13 @@ namespace Stoolball.Web.Competitions
                 await _competitionRepository.UpdateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // redirect back to the season actions page that led here (ensuring we don't allow off-site redirects), 
-                // or the competition if that's not available
+                // or the competition actions if that's not available
                 if (!string.IsNullOrEmpty(Request.Form["UrlReferrer"]))
                 {
                     return Redirect(new Uri(Request.Form["UrlReferrer"]).AbsolutePath);
                 }
 
-                return Redirect(competition.CompetitionRoute);
+                return Redirect(competition.CompetitionRoute + "/edit");
             }
 
             var viewModel = new CompetitionViewModel(CurrentPage)

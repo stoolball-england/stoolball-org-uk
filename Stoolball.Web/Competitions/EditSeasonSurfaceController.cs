@@ -58,8 +58,8 @@ namespace Stoolball.Web.Competitions
                 var currentMember = Members.GetCurrentMember();
                 await _seasonRepository.UpdateSeason(season, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                // Redirect to the season
-                return Redirect(season.SeasonRoute);
+                // Redirect to the season actions page that led here
+                return Redirect(season.SeasonRoute + "/edit");
             }
 
             var viewModel = new SeasonViewModel(CurrentPage)
