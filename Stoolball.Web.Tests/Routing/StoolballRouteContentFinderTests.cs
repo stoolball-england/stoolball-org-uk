@@ -17,6 +17,8 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/teams/example123/edit/", StoolballRouteType.TeamActions)]
         [InlineData("https://example.org/teams/example123/EDiT/team", StoolballRouteType.EditTeam)]
         [InlineData("https://example.org/teams/Example123/EDiT/TEAM/", StoolballRouteType.EditTeam)]
+        [InlineData("https://example.org/teams/EXAMPLE123/delete", StoolballRouteType.DeleteTeam)]
+        [InlineData("https://example.org/teams/example123/DElete/", StoolballRouteType.DeleteTeam)]
         [InlineData("https://example.org/teams/example123/matches", StoolballRouteType.MatchesForTeam)]
         [InlineData("https://example.org/teams/example123/MATCHES/", StoolballRouteType.MatchesForTeam)]
         [InlineData("https://example.org/tournaments/example123/teams/example-team", StoolballRouteType.TransientTeam)]

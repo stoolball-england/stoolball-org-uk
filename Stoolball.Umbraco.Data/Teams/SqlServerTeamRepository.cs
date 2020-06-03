@@ -502,6 +502,65 @@ namespace Stoolball.Umbraco.Data.Teams
             return team;
         }
 
+
+        /// <summary>
+        /// Deletes a stoolball team
+        /// </summary>
+        public async Task DeleteTeam(Team team, Guid memberKey, string memberName)
+        {
+            if (team is null)
+            {
+                throw new ArgumentNullException(nameof(team));
+            }
+
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerMatchStatistics} SET OppositionTeamId = NULL, OppositionTeamName = NULL WHERE OppositionTeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerMatchStatistics} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerMatchStatistics} SET BowledById = NULL WHERE BowledById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerMatchStatistics} SET CaughtById = NULL WHERE CaughtById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerMatchStatistics} SET RunOutById = NULL WHERE RunOutById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerInnings} SET DismissedById = NULL WHERE DismissedById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerInnings} SET BowlerId = NULL WHERE BowlerId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.Over} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.MatchAward} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET TeamId = NULL WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.MatchTeam} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonPointsAdjustment} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonTeam} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.TeamMatchLocation} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.TeamName} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.Team} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        transaction.Commit();
+                    }
+                }
+
+                await _redirectsRepository.DeleteRedirectsByDestinationPrefix(team.TeamRoute).ConfigureAwait(false);
+
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Delete,
+                    MemberKey = memberKey,
+                    ActorName = memberName,
+                    EntityUri = team.EntityUri,
+                    State = JsonConvert.SerializeObject(team),
+                    AuditDate = DateTime.UtcNow
+                }).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                _logger.Error<SqlServerTeamRepository>(e);
+                throw;
+            }
+        }
+
         private string PrefixUrlProtocol(string url)
         {
             url = url?.Trim();

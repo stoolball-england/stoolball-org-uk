@@ -85,7 +85,7 @@ namespace Stoolball.Umbraco.Data.Teams
                     var teams = await connection.QueryAsync<Team, Club, MatchLocation, Season, Competition, Team>(
                         $@"SELECT t.TeamId, tn.TeamName, t.TeamType, t.PlayerType, t.Introduction, t.AgeRangeLower, t.AgeRangeUpper, 
                             t.Facebook, t.Twitter, t.Instagram, t.YouTube, t.Website, t.PublicContactDetails, t.PrivateContactDetails, 
-                            t.PlayingTimes, t.Cost, t.TeamRoute, t.FromYear, t.UntilYear, t.MemberGroupName,
+                            t.PlayingTimes, t.Cost, t.TeamRoute, t.FromYear, t.UntilYear, t.MemberGroupId, t.MemberGroupName,
                             cn.ClubName, c.ClubRoute, c.ClubMark,
                             ml.MatchLocationId, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, 
                             ml.Town, ml.AdministrativeArea, ml.MatchLocationRoute,

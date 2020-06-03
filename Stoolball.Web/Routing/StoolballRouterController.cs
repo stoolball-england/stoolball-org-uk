@@ -32,6 +32,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.TeamActions, typeof(TeamActionsController) },
             { StoolballRouteType.CreateTeam, typeof(CreateTeamController) },
             { StoolballRouteType.EditTeam, typeof(EditTeamController) },
+            { StoolballRouteType.DeleteTeam, typeof(DeleteTeamController) },
             { StoolballRouteType.MatchesForTeam, typeof(MatchesForTeamController) },
             { StoolballRouteType.TransientTeam, typeof(TransientTeamController) },
             { StoolballRouteType.EditTransientTeam, typeof(EditTransientTeamController) },

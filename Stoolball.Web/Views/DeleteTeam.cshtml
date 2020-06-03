@@ -1,0 +1,92 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.DeleteTeamViewModel>
+@using Humanizer
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.Teams
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+}
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+
+<h1>Delete @Model.Team.TeamName</h1>
+
+@if (!Model.Deleted)
+{
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Team.TeamRoute">Summary</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Team.TeamRoute/matches">Matches</a>
+        </li>
+        <li class="nav-item">
+            <em class="nav-link active">Edit</em>
+        </li>
+    </ul>
+}
+
+@if (Model.IsAuthorized)
+{
+    if (!Model.Deleted)
+    {
+        <p>If you delete @Model.Team.TeamName you will:</p>
+        <ul>
+            @if (Model.Team.PlayerIdentities.Count > 0)
+            {
+                <li>delete @("player".ToQuantity(Model.Team.PlayerIdentities.Count)) and all their statistics and awards</li>
+            }
+            else
+            {
+                <li>not delete any players</li>
+            }
+            @if (Model.TotalMatches > 0)
+            {
+                <li>leave @("match".ToQuantity(Model.TotalMatches)) with a missing team and an incomplete scorecard</li>
+                <li>delete statistics for this team</li>
+                <li>delete statistics for opposition teams and their players</li>
+            }
+            else
+            {
+                <li>not affect any matches</li>
+                <li>not affect any statistics</li>
+            }
+            @if (Model.Team.Seasons.Count > 0)
+            {
+                <li>remove this team from @("competition season".ToQuantity(Model.Team.Seasons.Count)), changing the results</li>
+            }
+            else
+            {
+                <li>not affect any competitions</li>
+            }
+        </ul>
+        <p><strong><strong>You cannot undo this.</strong></strong></p>
+
+        using (Html.BeginUmbracoForm<DeleteTeamSurfaceController>
+               ("DeleteTeam"))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
+            <div class="form-group">
+                @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Team.TeamName}' into this box:")
+                @Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck="false" })
+                @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
+            </div>
+
+            <button class="btn btn-danger">@Html.Partial("_DeleteIcon", (Model.Team.TeamId.ToString(), string.Empty)) Delete @Model.Team.TeamName</button>
+        }
+    }
+    else
+    {
+        <p>@Model.Team.TeamName has been deleted.</p>
+        <a class="btn btn-primary" href="/teams">Back to teams</a>
+    }
+}
+else
+{
+    @Html.Partial("_Login")
+}

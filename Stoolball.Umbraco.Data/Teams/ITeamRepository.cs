@@ -21,5 +21,10 @@ namespace Stoolball.Umbraco.Data.Teams
         /// Updates a transient stoolball team
         /// </summary>
         Task<Team> UpdateTransientTeam(Team team, Guid memberKey, string memberName);
+
+        /// <summary>
+        /// Delete a stoolball team
+        /// </summary>
+        Task DeleteTeam(Team team, Guid memberKey, string memberName);
     }
 }

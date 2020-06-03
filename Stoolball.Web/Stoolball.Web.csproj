@@ -960,11 +960,14 @@
     <Compile Include="MatchLocations\DeleteMatchLocationViewModel.cs" />
     <Compile Include="Teams\CreateTeamSurfaceController.cs" />
     <Compile Include="Teams\CreateTeamController.cs" />
+    <Compile Include="Teams\DeleteTeamSurfaceController.cs" />
     <Compile Include="Teams\EditTransientTeamSurfaceController.cs" />
     <Compile Include="Teams\EditTransientTeamController.cs" />
     <Compile Include="Teams\EditTeamSurfaceController.cs" />
     <Compile Include="Teams\EditTeamController.cs" />
     <Compile Include="Teams\TeamActionsController.cs" />
+    <Compile Include="Teams\DeleteTeamController.cs" />
+    <Compile Include="Teams\DeleteTeamViewModel.cs" />
     <Compile Include="WebApi\AutocompleteResult.cs" />
     <Compile Include="WebApi\AutocompleteResultSet.cs" />
     <Compile Include="WebApi\WebApiComposer.cs" />
@@ -1140,6 +1143,7 @@
     <Content Include="Views\ClubActions.cshtml" />
     <Content Include="Views\DeleteClub.cshtml" />
     <Content Include="Views\TeamActions.cshtml" />
+    <Content Include="Views\DeleteTeam.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
