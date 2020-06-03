@@ -56,7 +56,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 			}
 			catch (Exception e)
 			{
-				_logger.Error<SqlServerSchoolDataMigrator>(e);
+				_logger.Error<SqlServerMatchLocationDataMigrator>(e);
 				throw;
 			}
 		}

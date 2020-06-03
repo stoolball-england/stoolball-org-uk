@@ -1,22 +1,83 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.MatchLocations.MatchLocationViewModel>
-@using System.Globalization
-@using Stoolball.MatchLocations
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.MatchLocations.DeleteMatchLocationViewModel>
+@using Humanizer
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.MatchLocations
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+}
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
 
 <h1>Delete @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</h1>
 
-<ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute">Summary</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute/matches">Matches</a>
-    </li>
-    <li class="nav-item">
-        <em class="nav-link active">Edit</em>
-    </li>
-</ul>
+@if (!Model.Deleted)
+{
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute">Summary</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute/matches">Matches</a>
+        </li>
+        <li class="nav-item">
+            <em class="nav-link active">Edit</em>
+        </li>
+    </ul>
+}
 
-<p>Are you sure?</p>
+@if (Model.IsAuthorized)
+{
+    if (!Model.Deleted)
+    {
+        <p>If you delete @Model.MatchLocation.Name() you will:</p>
+        <ul>
+            @if (Model.TotalMatches > 0)
+            {
+                <li>leave @("match".ToQuantity(Model.TotalMatches)) with an unknown location</li>
+                <li>change statistics for the teams and players that have played here</li>
+            }
+            else
+            {
+                <li>not affect any matches</li>
+                <li>not affect any statistics</li>
+            }
+            @if (Model.MatchLocation.Teams.Count > 0)
+            {
+                <li>leave @Model.MatchLocation.Teams.Humanize(x => x.TeamName) without their home ground or sports hall</li>
+            }
+            else
+            {
+                <li>not affect any teams</li>
+            }
+        </ul>
+        <p><strong><strong>You cannot undo this.</strong></strong></p>
+
+        using (Html.BeginUmbracoForm<DeleteMatchLocationSurfaceController>
+               ("DeleteMatchLocation"))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
+            <div class="form-group">
+                @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.MatchLocation.Name()}' into this box:")
+                @Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck="false" })
+                @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
+            </div>
+
+            <button class="btn btn-danger">@Html.Partial("_DeleteIcon", (Model.MatchLocation.MatchLocationId.ToString(), string.Empty)) Delete @Model.MatchLocation.Name()</button>
+        }
+    }
+    else
+    {
+        <p>@Model.MatchLocation.Name() has been deleted.</p>
+        <a class="btn btn-primary" href="/locations">Back to grounds and sports halls</a>
+    }
+}
+else
+{
+    @Html.Partial("_Login")
+}

@@ -239,5 +239,48 @@ namespace Stoolball.Umbraco.Data.MatchLocations
 
             return matchLocation;
         }
+
+        /// <summary>
+        /// Deletes a stoolball match location
+        /// </summary>
+        public async Task DeleteMatchLocation(MatchLocation matchLocation, Guid memberKey, string memberName)
+        {
+            if (matchLocation is null)
+            {
+                throw new ArgumentNullException(nameof(matchLocation));
+            }
+
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        await connection.ExecuteAsync($@"UPDATE {Tables.Match} SET MatchLocationId = NULL WHERE MatchLocationId = @MatchLocationId", new { matchLocation.MatchLocationId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.TeamMatchLocation} WHERE MatchLocationId = @MatchLocationId", new { matchLocation.MatchLocationId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.MatchLocation} WHERE MatchLocationId = @MatchLocationId", new { matchLocation.MatchLocationId }, transaction).ConfigureAwait(false);
+                        transaction.Commit();
+                    }
+                }
+
+                await _redirectsRepository.DeleteRedirectsByDestinationPrefix(matchLocation.MatchLocationRoute).ConfigureAwait(false);
+
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Delete,
+                    MemberKey = memberKey,
+                    ActorName = memberName,
+                    EntityUri = matchLocation.EntityUri,
+                    State = JsonConvert.SerializeObject(matchLocation),
+                    AuditDate = DateTime.UtcNow
+                }).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                _logger.Error<SqlServerMatchLocationRepository>(e);
+                throw;
+            }
+        }
     }
 }

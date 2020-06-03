@@ -16,5 +16,10 @@ namespace Stoolball.Umbraco.Data.MatchLocations
         /// Updates a stoolball match location
         /// </summary>
         Task<MatchLocation> UpdateMatchLocation(MatchLocation matchLocation, Guid memberKey, string memberName);
+
+        /// <summary>
+        /// Deletes a stoolball match location
+        /// </summary>
+        Task DeleteMatchLocation(MatchLocation matchLocation, Guid memberKey, string memberName);
     }
 }

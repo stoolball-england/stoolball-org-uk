@@ -158,7 +158,7 @@
                 <td><div class="related-item__animate">Selected item</div></td>
                 <td class="related-item__delete">
                     <div class="related-item__animate">
-                        @Html.Partial("_DeleteIcon", (string.Empty, "Remove item"))
+                        <button class="text-danger">@Html.Partial("_DeleteIcon", (string.Empty, "Remove item"))</button>
                     </div>
                 </td>
             </tr>
@@ -184,7 +184,7 @@
             <td><div class="related-item__animate">{{value}}</div></td>
             <td class="related-item__delete">
                 <div class="related-item__animate">
-                    @Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}}"))
+                    <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}}"))</button>
                 </div>
             </td>
         </tr>
@@ -201,6 +201,7 @@
         <span class="field-validation-valid" data-valmsg-for="rich-text-with-help" data-valmsg-replace="true" id="rich-text-with-help-validation"></span>
     </div>
     <button class="btn btn-primary">Button text</button>
+    <button class="btn btn-danger">@Html.Partial("_DeleteIcon", (string.Empty, string.Empty)) Delete button</button>
 </form>
 <p>Paragraph below a button (outside the form) and above an informational alert.</p>
 <div class="alert alert-info">

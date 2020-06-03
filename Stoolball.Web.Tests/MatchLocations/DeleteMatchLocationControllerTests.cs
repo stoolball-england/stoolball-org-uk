@@ -1,5 +1,6 @@
 ﻿using Moq;
 using Stoolball.MatchLocations;
+using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.MatchLocations;
 using System;
@@ -28,7 +29,7 @@ namespace Stoolball.Web.Tests.MatchLocations
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, matchLocationDataSource)
+                null, matchLocationDataSource, Mock.Of<IMatchDataSource>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -41,7 +42,7 @@ namespace Stoolball.Web.Tests.MatchLocations
                 controllerContext.Setup(p => p.HttpContext.User).Returns(new GenericPrincipal(new GenericIdentity("test"), null));
                 ControllerContext = controllerContext.Object;
             }
-            protected override bool IsAuthorized(MatchLocationViewModel model)
+            protected override bool IsAuthorized(DeleteMatchLocationViewModel model)
             {
                 return true;
             }
@@ -67,16 +68,16 @@ namespace Stoolball.Web.Tests.MatchLocations
         }
 
         [Fact]
-        public async Task Route_matching_location_returns_MatchLocationViewModel()
+        public async Task Route_matching_location_returns_DeleteMatchLocationViewModel()
         {
             var dataSource = new Mock<IMatchLocationDataSource>();
-            dataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), true)).ReturnsAsync(new MatchLocation());
+            dataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), true)).ReturnsAsync(new MatchLocation { MatchLocationId = Guid.NewGuid() });
 
             using (var controller = new TestController(dataSource.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<MatchLocationViewModel>(((ViewResult)result).Model);
+                Assert.IsType<DeleteMatchLocationViewModel>(((ViewResult)result).Model);
             }
         }
     }

@@ -27,7 +27,7 @@
                     <div class="related-item__animate">
                         @Html.Hidden($"Club.Teams[{i}].TeamId", Model.Club.Teams[i].TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Club.Teams[i].TeamId })
                         @Html.Hidden($"Club.Teams[{i}].TeamName", displayName, new { @class = "related-item__data", data_item = Model.Club.Teams[i].TeamId })
-                        @Html.Partial("_DeleteIcon", (Model.Club.Teams[i].TeamId.ToString(), $"Remove {Model.Club.Teams[i].TeamName} from this club"))
+                        <button class="text-danger">@Html.Partial("_DeleteIcon", (Model.Club.Teams[i].TeamId.ToString(), $"Remove {Model.Club.Teams[i].TeamName} from this club"))</button>
                     </div>
                 </td>
             </tr>
@@ -56,7 +56,7 @@
             <div class="related-item__animate">
                 <input name="Club.Teams[0].TeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
                 <input name="Club.Teams[0].TeamName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
-                @Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this club"))
+                <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this club"))</button>
             </div>
         </td>
     </tr>

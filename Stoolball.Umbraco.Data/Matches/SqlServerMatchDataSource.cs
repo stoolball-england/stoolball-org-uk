@@ -32,6 +32,34 @@ namespace Stoolball.Umbraco.Data.Matches
         }
 
         /// <summary>
+        /// Gets the number of matches and tournaments that match a query
+        /// </summary>
+        /// <returns></returns>
+        public async Task<int> ReadTotalMatches(MatchQuery matchQuery)
+        {
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    var sql = $@"SELECT COUNT(*)
+                        FROM {Tables.Match} AS m
+                        <<JOIN>>
+                        <<WHERE>>";
+
+                    var (filteredSql, parameters) = ApplyMatchQuery(matchQuery, sql);
+
+                    return await connection.ExecuteScalarAsync<int>(filteredSql, new DynamicParameters(parameters)).ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(typeof(SqlServerMatchDataSource), ex);
+                throw;
+            }
+        }
+
+
+        /// <summary>
         /// Gets a list of matches and tournaments based on a query
         /// </summary>
         /// <returns>A list of <see cref="MatchListing"/> objects. An empty list if no matches or tournaments are found.</returns>
@@ -48,72 +76,9 @@ namespace Stoolball.Umbraco.Data.Matches
                         <<WHERE>>
                         ORDER BY <<ORDER_BY>>";
 
-                    var join = new StringBuilder();
-                    var where = new StringBuilder();
-                    var orderBy = new List<string>();
-                    var parameters = new Dictionary<string, object>();
+                    var (filteredSql, parameters) = ApplyMatchQuery(matchQuery, sql);
 
-                    if (matchQuery?.MatchTypes?.Count > 0)
-                    {
-                        where.Append(where.Length > 0 ? "AND " : "WHERE ");
-                        where.Append("m.MatchType IN @MatchTypes ");
-                        parameters.Add("@MatchTypes", matchQuery.MatchTypes.Select(x => x.ToString()));
-                    }
-
-                    if (matchQuery?.ExcludeMatchTypes?.Count > 0)
-                    {
-                        where.Append(where.Length > 0 ? "AND " : "WHERE ");
-                        where.Append("m.MatchType NOT IN @ExcludeMatchTypes ");
-                        parameters.Add("@ExcludeMatchTypes", matchQuery.ExcludeMatchTypes.Select(x => x.ToString()));
-                    }
-
-                    if (matchQuery?.TeamIds?.Count > 0)
-                    {
-                        join.Append($"INNER JOIN {Tables.MatchTeam} mt ON m.MatchId = mt.MatchId ");
-
-                        where.Append(where.Length > 0 ? "AND " : "WHERE ");
-                        where.Append("mt.TeamId IN @TeamIds ");
-                        parameters.Add("@TeamIds", matchQuery.TeamIds);
-                    }
-
-                    if (matchQuery?.SeasonIds?.Count > 0)
-                    {
-                        join.Append($"INNER JOIN {Tables.SeasonMatch} sm ON m.MatchId = sm.MatchId ");
-
-                        where.Append(where.Length > 0 ? "AND " : "WHERE ");
-                        where.Append("sm.SeasonId IN @SeasonIds ");
-                        parameters.Add("@SeasonIds", matchQuery.SeasonIds);
-                    }
-
-                    if (matchQuery?.MatchLocationIds?.Count > 0)
-                    {
-                        where.Append(where.Length > 0 ? "AND " : "WHERE ");
-                        where.Append("m.MatchLocationId IN @MatchLocationIds ");
-                        parameters.Add("@MatchLocationIds", matchQuery.MatchLocationIds);
-                    }
-
-                    if (matchQuery?.FromDate != null)
-                    {
-                        where.Append(where.Length > 0 ? "AND " : "WHERE ");
-                        where.Append("m.StartTime >= @FromDate");
-                        parameters.Add("@FromDate", matchQuery.FromDate.Value);
-                    }
-
-                    if (matchQuery?.TournamentId != null)
-                    {
-                        where.Append(where.Length > 0 ? "AND " : "WHERE ");
-                        where.Append("m.TournamentId = @TournamentId");
-                        parameters.Add("@TournamentId", matchQuery.TournamentId.Value);
-                        orderBy.Add("m.OrderInTournament");
-                    }
-
-                    orderBy.Add("m.StartTime");
-
-                    sql = sql.Replace("<<JOIN>>", join.ToString())
-                             .Replace("<<WHERE>>", where.ToString())
-                             .Replace("<<ORDER_BY>>", string.Join(", ", orderBy.ToArray()));
-
-                    var matches = await connection.QueryAsync<MatchListing>(sql, new DynamicParameters(parameters)).ConfigureAwait(false);
+                    var matches = await connection.QueryAsync<MatchListing>(filteredSql, new DynamicParameters(parameters)).ConfigureAwait(false);
 
                     return matches.Distinct(new MatchListingEqualityComparer()).ToList();
                 }
@@ -123,6 +88,76 @@ namespace Stoolball.Umbraco.Data.Matches
                 _logger.Error(typeof(SqlServerMatchDataSource), ex);
                 throw;
             }
+        }
+
+        private static (string filteredSql, Dictionary<string, object> parameters) ApplyMatchQuery(MatchQuery matchQuery, string sql)
+        {
+            var join = new StringBuilder();
+            var where = new StringBuilder();
+            var orderBy = new List<string>();
+            var parameters = new Dictionary<string, object>();
+
+            if (matchQuery?.MatchTypes?.Count > 0)
+            {
+                where.Append(where.Length > 0 ? "AND " : "WHERE ");
+                where.Append("m.MatchType IN @MatchTypes ");
+                parameters.Add("@MatchTypes", matchQuery.MatchTypes.Select(x => x.ToString()));
+            }
+
+            if (matchQuery?.ExcludeMatchTypes?.Count > 0)
+            {
+                where.Append(where.Length > 0 ? "AND " : "WHERE ");
+                where.Append("m.MatchType NOT IN @ExcludeMatchTypes ");
+                parameters.Add("@ExcludeMatchTypes", matchQuery.ExcludeMatchTypes.Select(x => x.ToString()));
+            }
+
+            if (matchQuery?.TeamIds?.Count > 0)
+            {
+                join.Append($"INNER JOIN {Tables.MatchTeam} mt ON m.MatchId = mt.MatchId ");
+
+                where.Append(where.Length > 0 ? "AND " : "WHERE ");
+                where.Append("mt.TeamId IN @TeamIds ");
+                parameters.Add("@TeamIds", matchQuery.TeamIds);
+            }
+
+            if (matchQuery?.SeasonIds?.Count > 0)
+            {
+                join.Append($"INNER JOIN {Tables.SeasonMatch} sm ON m.MatchId = sm.MatchId ");
+
+                where.Append(where.Length > 0 ? "AND " : "WHERE ");
+                where.Append("sm.SeasonId IN @SeasonIds ");
+                parameters.Add("@SeasonIds", matchQuery.SeasonIds);
+            }
+
+            if (matchQuery?.MatchLocationIds?.Count > 0)
+            {
+                where.Append(where.Length > 0 ? "AND " : "WHERE ");
+                where.Append("m.MatchLocationId IN @MatchLocationIds ");
+                parameters.Add("@MatchLocationIds", matchQuery.MatchLocationIds);
+            }
+
+            if (matchQuery?.FromDate != null)
+            {
+                where.Append(where.Length > 0 ? "AND " : "WHERE ");
+                where.Append("m.StartTime >= @FromDate");
+                parameters.Add("@FromDate", matchQuery.FromDate.Value);
+            }
+
+            if (matchQuery?.TournamentId != null)
+            {
+                where.Append(where.Length > 0 ? "AND " : "WHERE ");
+                where.Append("m.TournamentId = @TournamentId");
+                parameters.Add("@TournamentId", matchQuery.TournamentId.Value);
+                orderBy.Add("m.OrderInTournament");
+            }
+
+            orderBy.Add("m.StartTime");
+
+            sql = sql.Replace("<<JOIN>>", join.ToString())
+                     .Replace("<<WHERE>>", where.ToString())
+                     .Replace("<<ORDER_BY>>", string.Join(", ", orderBy.ToArray()));
+
+            return (sql, parameters);
         }
 
         /// <summary>

@@ -1,5 +1,8 @@
-﻿using Stoolball.Umbraco.Data.MatchLocations;
+﻿using Stoolball.Umbraco.Data.Matches;
+using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Routing;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -15,6 +18,7 @@ namespace Stoolball.Web.MatchLocations
     public class DeleteMatchLocationController : RenderMvcControllerAsync
     {
         private readonly IMatchLocationDataSource _matchLocationDataSource;
+        private readonly IMatchDataSource _matchDataSource;
 
         public DeleteMatchLocationController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -22,10 +26,12 @@ namespace Stoolball.Web.MatchLocations
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           IMatchLocationDataSource matchLocationDataSource)
+           IMatchLocationDataSource matchLocationDataSource,
+           IMatchDataSource matchDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchLocationDataSource = matchLocationDataSource ?? throw new System.ArgumentNullException(nameof(matchLocationDataSource));
+            _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
         }
 
         [HttpGet]
@@ -36,7 +42,7 @@ namespace Stoolball.Web.MatchLocations
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new MatchLocationViewModel(contentModel.Content)
+            var model = new DeleteMatchLocationViewModel(contentModel.Content)
             {
                 MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false),
             };
@@ -47,6 +53,9 @@ namespace Stoolball.Web.MatchLocations
             }
             else
             {
+                model.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchQuery { MatchLocationIds = new List<Guid> { model.MatchLocation.MatchLocationId.Value } }).ConfigureAwait(false);
+                model.ConfirmDeleteRequest.RequiredText = model.MatchLocation.Name();
+
                 model.IsAuthorized = IsAuthorized(model);
 
                 model.Metadata.PageTitle = "Delete " + model.MatchLocation.NameAndLocalityOrTown();
@@ -57,10 +66,10 @@ namespace Stoolball.Web.MatchLocations
 
 
         /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this club
+        /// Checks whether the currently signed-in member is authorized to delete this match location
         /// </summary>
         /// <returns></returns>
-        protected virtual bool IsAuthorized(MatchLocationViewModel model)
+        protected virtual bool IsAuthorized(DeleteMatchLocationViewModel model)
         {
             return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, model?.MatchLocation.MemberGroupName }, null);
         }

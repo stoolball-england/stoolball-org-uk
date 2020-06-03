@@ -10,6 +10,12 @@ namespace Stoolball.Umbraco.Data.Matches
     public interface IMatchDataSource
     {
         /// <summary>
+        /// Gets the number of matches and tournaments that match a query
+        /// </summary>
+        /// <returns></returns>
+        Task<int> ReadTotalMatches(MatchQuery matchQuery);
+
+        /// <summary>
         /// Gets a list of matches and tournaments based on a query
         /// </summary>
         /// <returns>A list of <see cref="MatchListing"/> objects. An empty list if no matches or tournaments are found.</returns>

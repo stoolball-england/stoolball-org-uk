@@ -945,6 +945,7 @@
     <Compile Include="Competitions\CompetitionViewModel.cs" />
     <Compile Include="Competitions\SeasonViewModel.cs" />
     <Compile Include="Competitions\SeasonListViewModel.cs" />
+    <Compile Include="MatchLocations\DeleteMatchLocationSurfaceController.cs" />
     <Compile Include="MatchLocations\MatchLocationActionsController.cs" />
     <Compile Include="MatchLocations\CreateMatchLocationSurfaceController.cs" />
     <Compile Include="MatchLocations\CreateMatchLocationController.cs" />
@@ -952,6 +953,7 @@
     <Compile Include="MatchLocations\EditMatchLocationController.cs" />
     <Compile Include="MatchLocations\DeleteMatchLocationController.cs" />
     <Compile Include="MatchLocations\MatchLocationsApiController.cs" />
+    <Compile Include="MatchLocations\DeleteMatchLocationViewModel.cs" />
     <Compile Include="Teams\CreateTeamSurfaceController.cs" />
     <Compile Include="Teams\CreateTeamController.cs" />
     <Compile Include="Teams\EditTransientTeamSurfaceController.cs" />

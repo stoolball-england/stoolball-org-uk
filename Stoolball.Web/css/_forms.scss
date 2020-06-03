@@ -56,3 +56,6 @@ legend { font-size: $font-size-base;}
 svg {
     pointer-events: none;
 }
+
+/* Align the delete icon with the text inside a delete button */
+.btn-danger > svg { margin-top: -4px; }
