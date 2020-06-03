@@ -98,7 +98,7 @@ Html.RequiresJs("/matchlocations/match-location.js");
             break;
     }
 <div id="location-map" data-latitude="@Model.MatchLocation.Latitude" data-longitude="@Model.MatchLocation.Longitude" data-precision="@Model.MatchLocation.GeoPrecision.ToString().ToLowerInvariant()" data-title="@Html.AttributeEncode(mapTitle)">
-    <p><a href="https://maps.google.co.uk/?z=16&amp;q=@HttpUtility.UrlEncode(Model.MatchLocation.ToString())@("@")@Model.MatchLocation.Latitude,@Model.MatchLocation.Longitude&amp;ll=@Model.MatchLocation.Latitude,@Model.MatchLocation.Longitude">Map of @mapTitle on Google Maps</a></p>
+    <p><a href="https://maps.google.co.uk/?z=16&amp;q=@HttpUtility.UrlEncode(Model.MatchLocation.NameAndLocalityOrTown())@("@")@Model.MatchLocation.Latitude,@Model.MatchLocation.Longitude&amp;ll=@Model.MatchLocation.Latitude,@Model.MatchLocation.Longitude">Map of @mapTitle on Google Maps</a></p>
 </div>
 }
 
