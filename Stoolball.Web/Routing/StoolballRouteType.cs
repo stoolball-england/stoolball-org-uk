@@ -19,6 +19,7 @@
         MatchLocations,
         Team,
         TransientTeam,
+        TeamActions,
         CreateTeam,
         EditTeam,
         EditTransientTeam,

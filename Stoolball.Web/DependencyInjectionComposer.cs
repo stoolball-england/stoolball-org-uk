@@ -63,6 +63,7 @@ namespace Stoolball.Web
             composition.Register<DeleteClubController>(Lifetime.Request);
             composition.Register<TeamsController>(Lifetime.Request);
             composition.Register<TeamController>(Lifetime.Request);
+            composition.Register<TeamActionsController>(Lifetime.Request);
             composition.Register<CreateTeamController>(Lifetime.Request);
             composition.Register<EditTeamController>(Lifetime.Request);
             composition.Register<TransientTeamController>(Lifetime.Request);

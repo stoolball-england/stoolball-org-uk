@@ -964,6 +964,7 @@
     <Compile Include="Teams\EditTransientTeamController.cs" />
     <Compile Include="Teams\EditTeamSurfaceController.cs" />
     <Compile Include="Teams\EditTeamController.cs" />
+    <Compile Include="Teams\TeamActionsController.cs" />
     <Compile Include="WebApi\AutocompleteResult.cs" />
     <Compile Include="WebApi\AutocompleteResultSet.cs" />
     <Compile Include="WebApi\WebApiComposer.cs" />
@@ -1138,6 +1139,7 @@
     <Content Include="Views\MatchLocationActions.cshtml" />
     <Content Include="Views\ClubActions.cshtml" />
     <Content Include="Views\DeleteClub.cshtml" />
+    <Content Include="Views\TeamActions.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

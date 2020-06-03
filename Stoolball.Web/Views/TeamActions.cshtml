@@ -1,0 +1,33 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<TeamViewModel>
+@using Stoolball.Web.Teams
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+
+<h1>Edit @Model.Team.TeamName</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Team.TeamRoute">Summary</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Team.TeamRoute/matches">Matches</a>
+    </li>
+    <li class="nav-item">
+        <em class="nav-link active">Edit</em>
+    </li>
+</ul>
+
+@if (Model.IsAuthorized)
+{
+    <dl>
+        <dt><a href="@Model.Team.TeamRoute/edit/team">Edit @Model.Team.TeamName</a></dt>
+        <dd>Set the introduction, type of team, home grounds and sports halls, cost to play, contact details and more.</dd>
+        <dt><a href="@Model.Team.TeamRoute/delete">Delete @Model.Team.TeamName</a></dt>
+        <dd>Remove the team out of all competitions. Delete players and statistics, including for opposition teams.</dd>
+    </dl>
+}
+else
+{
+    @Html.Partial("_Login")
+}

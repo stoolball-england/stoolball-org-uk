@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/teamActions.cshtml",
+  "Master": null,
+  "Udi": "umb://template/d3627b04d13547d3a451451c3f89698d",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/teamActions.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Team Actions",
+  "Alias": "teamActions",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.4.4"
+}
