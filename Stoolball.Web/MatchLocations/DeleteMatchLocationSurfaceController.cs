@@ -34,7 +34,7 @@ namespace Stoolball.Web.MatchLocations
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        public async Task<ActionResult> DeleteMatchLocation([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")]MatchingTextConfirmation model)
+        public async Task<ActionResult> DeleteMatchLocation([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] MatchingTextConfirmation model)
         {
             if (model is null)
             {
@@ -50,6 +50,8 @@ namespace Stoolball.Web.MatchLocations
 
             if (viewModel.IsAuthorized && ModelState.IsValid)
             {
+                Services.MemberGroupService.Delete(Services.MemberGroupService.GetById(viewModel.MatchLocation.MemberGroupId));
+
                 var currentMember = Members.GetCurrentMember();
                 await _matchLocationRepository.DeleteMatchLocation(viewModel.MatchLocation, currentMember.Key, currentMember.Name).ConfigureAwait(false);
                 viewModel.Deleted = true;

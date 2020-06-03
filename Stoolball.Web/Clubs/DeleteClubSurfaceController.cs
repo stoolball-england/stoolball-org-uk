@@ -28,7 +28,7 @@ namespace Stoolball.Web.Clubs
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        public async Task<ActionResult> DeleteClub([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")]MatchingTextConfirmation model)
+        public async Task<ActionResult> DeleteClub([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] MatchingTextConfirmation model)
         {
             if (model is null)
             {
@@ -44,6 +44,8 @@ namespace Stoolball.Web.Clubs
 
             if (viewModel.IsAuthorized && ModelState.IsValid)
             {
+                Services.MemberGroupService.Delete(Services.MemberGroupService.GetById(viewModel.Club.MemberGroupId));
+
                 var currentMember = Members.GetCurrentMember();
                 await _clubRepository.DeleteClub(viewModel.Club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
                 viewModel.Deleted = true;
