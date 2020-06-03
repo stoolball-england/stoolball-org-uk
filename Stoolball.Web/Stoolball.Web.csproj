@@ -696,6 +696,10 @@
       <DependentUpon>tinymce.css</DependentUpon>
     </Content>
     <Content Include="Global.asax" />
+    <Content Include="HttpStatus\410.html" />
+    <Content Include="HttpStatus\500.html" />
+    <Content Include="HttpStatus\400.html" />
+    <Content Include="HttpStatus\404.html" />
     <Content Include="images\logos\clubmark.png" />
     <Content Include="images\logos\stoolball-england.svg" />
     <Content Include="images\maps\map-marker-shadow.png" />
