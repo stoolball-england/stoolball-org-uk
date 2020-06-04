@@ -19,6 +19,7 @@
     "umb://template/7770c3e197814c2fb06aea342782894e",
     "umb://template/842af0b889ea48c38e429b41b86eef3a",
     "umb://template/8cfc82c459294e15b572081a5a782caf",
+    "umb://template/96fd2dc098f84135aebbaec489950c8c",
     "umb://template/975dfe2a53754f208747871a5efb9146",
     "umb://template/9a10f32f8bb94c098cc94727000a8689",
     "umb://template/9b092889d0ae44fb97588fe20e449e4e",
@@ -140,6 +141,11 @@
     },
     {
       "Udi": "umb://template/8cfc82c459294e15b572081a5a782caf",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/96fd2dc098f84135aebbaec489950c8c",
       "Ordering": true,
       "Mode": 0
     },

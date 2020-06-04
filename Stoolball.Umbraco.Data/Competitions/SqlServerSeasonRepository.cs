@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Stoolball.Audit;
 using Stoolball.Competitions;
 using Stoolball.Umbraco.Data.Audit;
+using Stoolball.Umbraco.Data.Redirects;
 using System;
 using System.Data.SqlClient;
 using System.Globalization;
@@ -23,15 +24,16 @@ namespace Stoolball.Umbraco.Data.Competitions
         private readonly IAuditRepository _auditRepository;
         private readonly ILogger _logger;
         private readonly IHtmlSanitizer _htmlSanitiser;
+        private readonly IRedirectsRepository _redirectsRepository;
 
         public SqlServerSeasonRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger,
-            IHtmlSanitizer htmlSanitiser)
+            IHtmlSanitizer htmlSanitiser, IRedirectsRepository redirectsRepository)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _htmlSanitiser = htmlSanitiser ?? throw new ArgumentNullException(nameof(htmlSanitiser));
-
+            _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
             _htmlSanitiser.AllowedTags.Clear();
             _htmlSanitiser.AllowedTags.Add("p");
             _htmlSanitiser.AllowedTags.Add("h2");
@@ -272,6 +274,53 @@ namespace Stoolball.Umbraco.Data.Competitions
             }
 
             return season;
+        }
+
+
+        /// <summary>
+        /// Deletes a stoolball season
+        /// </summary>
+        public async Task DeleteSeason(Season season, Guid memberKey, string memberName)
+        {
+            if (season is null)
+            {
+                throw new ArgumentNullException(nameof(season));
+            }
+
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonTeam} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonPointsRule} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonPointsAdjustment} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonMatchType} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonMatch} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.Season} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
+                        transaction.Commit();
+                    }
+                }
+
+                await _redirectsRepository.DeleteRedirectsByDestinationPrefix(season.SeasonRoute).ConfigureAwait(false);
+
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Delete,
+                    MemberKey = memberKey,
+                    ActorName = memberName,
+                    EntityUri = season.EntityUri,
+                    State = JsonConvert.SerializeObject(season),
+                    AuditDate = DateTime.UtcNow
+                }).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                _logger.Error<SqlServerSeasonRepository>(e);
+                throw;
+            }
         }
     }
 }

@@ -80,6 +80,7 @@ namespace Stoolball.Web.Routing
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}[0-9]{{4}}(-[0-9]{{2}})?{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForSeason },
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}[0-9]{{4}}(-[0-9]{{2}})?{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.SeasonActions },
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}[0-9]{{4}}(-[0-9]{{2}})?{SLASH}edit{SLASH}season{OPTIONAL_SLASH}", StoolballRouteType.EditSeason },
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}[0-9]{{4}}(-[0-9]{{2}})?{SLASH}delete{OPTIONAL_SLASH}", StoolballRouteType.DeleteSeason },
 
                 // Match /teams/example-team/valid or /teams/example-team/valid/ but not /teams, /teams/
                 // /teams/example-team, /teams/example-team/ or /teams/example-team/invalid in upper, lower or mixed case

@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/deleteSeason.cshtml",
+  "Master": null,
+  "Udi": "umb://template/96fd2dc098f84135aebbaec489950c8c",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/deleteSeason.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Delete Season",
+  "Alias": "deleteSeason",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.4.4"
+}
