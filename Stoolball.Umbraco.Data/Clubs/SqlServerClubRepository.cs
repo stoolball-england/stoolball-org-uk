@@ -182,7 +182,7 @@ namespace Stoolball.Umbraco.Data.Clubs
                                 }, transaction).ConfigureAwait(false);
                         }
 
-                        await connection.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = NULL WHERE TeamId NOT IN @TeamIds", new { TeamIds = club.Teams.Select(x => x.TeamId) }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = NULL WHERE ClubId = @ClubId AND TeamId NOT IN @TeamIds", new { club.ClubId, TeamIds = club.Teams.Select(x => x.TeamId) }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = @ClubId WHERE TeamId IN @TeamIds", new { club.ClubId, TeamIds = club.Teams.Select(x => x.TeamId) }, transaction).ConfigureAwait(false);
 
                         transaction.Commit();
