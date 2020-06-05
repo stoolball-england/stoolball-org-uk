@@ -55,6 +55,18 @@
                                 <a href="/teams">Teams</a>
                             </li>
                         }
+                        @if (Regex.IsMatch(Request.Url.AbsolutePath, @"^\/competitions\/?$"))
+                        {
+                            <li class="dropdown-item">
+                                <em>Competitions</em>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="dropdown-item">
+                                <a href="/competitions">Competitions</a>
+                            </li>
+                        }
                         @if (Regex.IsMatch(Request.Url.AbsolutePath, @"^\/locations\/?$"))
                         {
                             <li class="dropdown-item">

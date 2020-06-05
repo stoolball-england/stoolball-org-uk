@@ -72,7 +72,11 @@ namespace Stoolball.Web.Tests.Competitions
         public async Task Route_matching_season_returns_DeleteSeasonViewModel()
         {
             var dataSource = new Mock<ISeasonDataSource>();
-            dataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season { Competition = new Competition { CompetitionName = "Example" } });
+            dataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season
+            {
+                SeasonId = Guid.NewGuid(),
+                Competition = new Competition { CompetitionName = "Example" }
+            });
 
             using (var controller = new TestController(dataSource.Object))
             {

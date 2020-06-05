@@ -959,6 +959,8 @@
     <Compile Include="Competitions\DeleteSeasonViewModel.cs" />
     <Compile Include="Competitions\SeasonViewModel.cs" />
     <Compile Include="Competitions\SeasonListViewModel.cs" />
+    <Compile Include="Competitions\CompetitionsController.cs" />
+    <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="MatchLocations\DeleteMatchLocationSurfaceController.cs" />
     <Compile Include="MatchLocations\MatchLocationActionsController.cs" />
     <Compile Include="MatchLocations\CreateMatchLocationSurfaceController.cs" />
@@ -1156,6 +1158,7 @@
     <Content Include="Views\DeleteTeam.cshtml" />
     <Content Include="Views\DeleteSeason.cshtml" />
     <Content Include="Views\DeleteCompetition.cshtml" />
+    <Content Include="Views\Competitions.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

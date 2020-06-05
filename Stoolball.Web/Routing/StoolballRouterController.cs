@@ -43,6 +43,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.DeleteMatchLocation, typeof(DeleteMatchLocationController) },
             { StoolballRouteType.MatchLocations, typeof(MatchLocationsController) },
             { StoolballRouteType.MatchesForMatchLocation, typeof(MatchesForMatchLocationController) },
+            { StoolballRouteType.Competitions, typeof(CompetitionsController) },
             { StoolballRouteType.Competition, typeof(CompetitionController) },
             { StoolballRouteType.CompetitionActions, typeof(CompetitionActionsController) },
             { StoolballRouteType.CreateCompetition, typeof(CreateCompetitionController) },

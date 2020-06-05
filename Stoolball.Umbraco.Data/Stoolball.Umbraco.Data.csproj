@@ -71,6 +71,7 @@
     <Compile Include="Competitions\SqlServerCompetitionRepository.cs" />
     <Compile Include="Competitions\SqlServerCompetitionDataSource.cs" />
     <Compile Include="Competitions\SqlServerSeasonDataSource.cs" />
+    <Compile Include="Competitions\CompetitionQuery.cs" />
     <Compile Include="DapperDateTimeHandler.cs" />
     <Compile Include="DapperComposer.cs" />
     <Compile Include="Matches\ITournamentDataSource.cs" />

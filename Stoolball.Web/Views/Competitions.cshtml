@@ -1,0 +1,52 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.CompetitionsViewModel>
+@using Humanizer
+@using System.Text.RegularExpressions
+<h1>
+    Stoolball competitions
+    @if (!string.IsNullOrEmpty(Model.CompetitionQuery.Query))
+    {
+        @: matching '@Model.CompetitionQuery.Query'
+    }
+</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <em class="nav-link active">Search</em>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/competitions/add">Add</a>
+    </li>
+</ul>
+
+<form method="get" action="@Request.Url" class="form-inline form-search">
+    <label class="sr-only" for="competition-search">Competition name</label>
+    <input type="search" class="form-control" id="competition-search" name="q" value="@Model.CompetitionQuery.Query" />
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<ul>
+    @foreach (var competition in Model.Competitions)
+    {
+        if (!competition.UntilYear.HasValue && competition.Seasons.Count > 0)
+        {
+            <li>
+                <a href="@competition.Seasons.First().SeasonRoute">@competition.CompetitionName</a>
+                <p>@(Regex.Replace((competition.PlayerType.Humanize(LetterCasing.LowerCase) + " team").ToQuantity(competition.Seasons.First().Teams.Count), "^0 ", "No ")).</p>
+            </li>
+        }
+        else if (!competition.UntilYear.HasValue)
+        {
+            <li>
+                <a href="@(competition.CompetitionRoute)">@competition.CompetitionName</a>
+                <p>@competition.PlayerType.Humanize(LetterCasing.Sentence).</p>
+            </li>
+        }
+        else
+        {
+            <li>
+                <a href="@(competition.Seasons.Count > 0 ? competition.Seasons.First().SeasonRoute : competition.CompetitionRoute)">@competition.CompetitionName</a>
+                <p>@competition.PlayerType.Humanize(LetterCasing.Sentence). No longer played.</p>
+            </li>
+        }
+    }
+</ul>

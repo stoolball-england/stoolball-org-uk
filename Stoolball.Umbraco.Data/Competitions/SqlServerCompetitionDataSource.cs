@@ -2,7 +2,9 @@
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Routing;
+using Stoolball.Teams;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
@@ -76,6 +78,78 @@ namespace Stoolball.Umbraco.Data.Competitions
                     }
 
                     return competitionToReturn;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(typeof(SqlServerCompetitionDataSource), ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Gets a list of competitions based on a query
+        /// </summary>
+        /// <returns>A list of <see cref="Competition"/> objects. An empty list if no competitions are found.</returns>
+        public async Task<List<Competition>> ReadCompetitionListings(CompetitionQuery competitionQuery)
+        {
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    var sql = $@"SELECT co.CompetitionId, co.CompetitionName, co.CompetitionRoute, co.UntilYear, co.PlayerType,
+                            s.SeasonRoute,
+                            st.TeamId
+                            FROM {Tables.Competition} AS co 
+                            LEFT JOIN {Tables.Season} AS s ON co.CompetitionId = s.CompetitionId
+                            LEFT JOIN {Tables.SeasonTeam} AS st ON s.SeasonId = st.SeasonId
+                            <<WHERE>>
+                            (s.StartYear = (SELECT MAX(StartYear) FROM {Tables.Season} WHERE CompetitionId = co.CompetitionId) 
+                            OR s.StartYear IS NULL)
+                            ORDER BY CASE WHEN co.UntilYear IS NULL THEN 0 
+                                          WHEN co.UntilYear IS NOT NULL THEN 1 END, co.CompetitionName";
+
+                    var where = new List<string>();
+                    var parameters = new Dictionary<string, object>();
+
+                    if (!string.IsNullOrEmpty(competitionQuery?.Query))
+                    {
+                        where.Add("(co.CompetitionName LIKE @Query OR co.PlayerType LIKE @Query)");
+                        parameters.Add("@Query", $"%{competitionQuery.Query}%");
+                    }
+
+                    sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) + " AND " : "WHERE");
+
+                    var competitions = await connection.QueryAsync<Competition, Season, Team, Competition>(sql,
+                        (competition, season, team) =>
+                        {
+                            if (season != null)
+                            {
+                                competition.Seasons.Add(season);
+                            }
+
+                            if (team != null)
+                            {
+                                season.Teams.Add(new TeamInSeason { Team = team });
+                            }
+                            return competition;
+                        },
+                        new DynamicParameters(parameters),
+                        splitOn: "SeasonRoute,TeamId").ConfigureAwait(false);
+
+                    var resolvedCompetitions = competitions.GroupBy(competition => competition.CompetitionId).Select(copiesOfCompetition =>
+                    {
+                        var resolvedCompetition = copiesOfCompetition.First();
+                        if (resolvedCompetition.Seasons.Count > 0)
+                        {
+                            resolvedCompetition.Seasons.First().Teams = copiesOfCompetition
+                                        .Select(competition => competition.Seasons.SingleOrDefault()?.Teams.SingleOrDefault())
+                                        .OfType<TeamInSeason>().ToList();
+                        }
+                        return resolvedCompetition;
+                    }).ToList();
+
+                    return resolvedCompetitions;
                 }
             }
             catch (Exception ex)

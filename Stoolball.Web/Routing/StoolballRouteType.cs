@@ -35,6 +35,7 @@
         CreateCompetition,
         EditCompetition,
         DeleteCompetition,
+        Competitions,
         MatchesForClub,
         MatchesForTeam,
         MatchesForMatchLocation,

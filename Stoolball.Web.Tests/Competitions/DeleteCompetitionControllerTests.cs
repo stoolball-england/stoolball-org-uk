@@ -2,6 +2,7 @@
 using Stoolball.Competitions;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
+using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Competitions;
 using System;
 using System.Security.Principal;
@@ -29,7 +30,7 @@ namespace Stoolball.Web.Tests.Competitions
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, competitionDataSource, Mock.Of<IMatchDataSource>())
+                null, competitionDataSource, Mock.Of<IMatchDataSource>(), Mock.Of<ITeamDataSource>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -72,7 +73,7 @@ namespace Stoolball.Web.Tests.Competitions
         public async Task Route_matching_competition_returns_DeleteCompetitionViewModel()
         {
             var dataSource = new Mock<ICompetitionDataSource>();
-            dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition());
+            dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionId = Guid.NewGuid() });
 
             using (var controller = new TestController(dataSource.Object))
             {
