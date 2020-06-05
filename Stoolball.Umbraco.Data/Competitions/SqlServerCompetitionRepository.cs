@@ -290,5 +290,53 @@ namespace Stoolball.Umbraco.Data.Competitions
             }
             return account;
         }
+
+        /// <summary>
+        /// Deletes a stoolball competition
+        /// </summary>
+        public async Task DeleteCompetition(Competition competition, Guid memberKey, string memberName)
+        {
+            if (competition is null)
+            {
+                throw new ArgumentNullException(nameof(competition));
+            }
+
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonTeam} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonPointsRule} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonPointsAdjustment} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonMatchType} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonMatch} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.Season} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"DELETE FROM {Tables.Competition} WHERE CompetitionId = @CompetitionId", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
+                        transaction.Commit();
+                    }
+                }
+
+                await _redirectsRepository.DeleteRedirectsByDestinationPrefix(competition.CompetitionRoute).ConfigureAwait(false);
+
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Delete,
+                    MemberKey = memberKey,
+                    ActorName = memberName,
+                    EntityUri = competition.EntityUri,
+                    State = JsonConvert.SerializeObject(competition),
+                    AuditDate = DateTime.UtcNow
+                }).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                _logger.Error<SqlServerCompetitionRepository>(e);
+                throw;
+            }
+        }
+
     }
 }

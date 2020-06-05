@@ -99,6 +99,7 @@ namespace Stoolball.Web.Routing
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}add{OPTIONAL_SLASH}", StoolballRouteType.CreateSeason },
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.CompetitionActions },
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}competition{OPTIONAL_SLASH}", StoolballRouteType.EditCompetition },
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}delete{OPTIONAL_SLASH}", StoolballRouteType.DeleteCompetition },
 
                 // Match /tournaments/example123/teams/example-team, /tournaments/example123/teams/example-team/ or /tournaments/example123/teams/example-team/edit 
                 // but not /tournaments/example123, /tournaments/example123/, /tournaments/example123/teams, /tournaments/example123/teams/,

@@ -57,6 +57,8 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/competitions/example/edit/", StoolballRouteType.CompetitionActions)]
         [InlineData("https://example.org/competitions/example/EDIT/competition", StoolballRouteType.EditCompetition)]
         [InlineData("https://example.org/competitions/example/edit/COMPETITION", StoolballRouteType.EditCompetition)]
+        [InlineData("https://example.org/competitions/EXAMPLE/DELETE", StoolballRouteType.DeleteCompetition)]
+        [InlineData("https://example.org/competitions/example/delete/", StoolballRouteType.DeleteCompetition)]
         [InlineData("https://example.org/competitions/example/2020", StoolballRouteType.Season)]
         [InlineData("https://example.org/competitions/example/2020/", StoolballRouteType.Season)]
         [InlineData("https://example.org/competitions/example/2020/matches", StoolballRouteType.MatchesForSeason)]

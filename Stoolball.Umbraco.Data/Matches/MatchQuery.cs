@@ -8,6 +8,7 @@ namespace Stoolball.Umbraco.Data.Matches
     {
 
         public List<Guid> TeamIds { get; internal set; } = new List<Guid>();
+        public List<Guid> CompetitionIds { get; internal set; } = new List<Guid>();
         public List<Guid> SeasonIds { get; internal set; } = new List<Guid>();
         public List<MatchType> MatchTypes { get; internal set; } = new List<MatchType>();
 

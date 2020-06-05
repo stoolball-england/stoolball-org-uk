@@ -10,6 +10,12 @@ namespace Stoolball.Umbraco.Data.Teams
     public interface ITeamDataSource
     {
         /// <summary>
+        /// Gets the number of teams that match a query
+        /// </summary>
+        /// <returns></returns>
+        Task<int> ReadTotalTeams(TeamQuery teamQuery);
+
+        /// <summary>
         /// Gets a list of teams based on a query
         /// </summary>
         /// <returns>A list of <see cref="Team"/> objects. An empty list if no teams are found.</returns>

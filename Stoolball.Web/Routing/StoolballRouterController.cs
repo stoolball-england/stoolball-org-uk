@@ -47,6 +47,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.CompetitionActions, typeof(CompetitionActionsController) },
             { StoolballRouteType.CreateCompetition, typeof(CreateCompetitionController) },
             { StoolballRouteType.EditCompetition, typeof(EditCompetitionController) },
+            { StoolballRouteType.DeleteCompetition, typeof(DeleteCompetitionController) },
             { StoolballRouteType.Season, typeof(SeasonController) },
             { StoolballRouteType.SeasonActions, typeof(SeasonActionsController) },
             { StoolballRouteType.CreateSeason, typeof(CreateSeasonController) },

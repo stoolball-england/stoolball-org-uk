@@ -1,4 +1,4 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.DeleteSeasonViewModel>
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.DeleteCompetitionViewModel>
 @using Humanizer
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Competitions
@@ -12,16 +12,13 @@
     <meta name="robots" content="noindex,follow" />
 }
 
-<h1>Delete @Model.Season.SeasonFullName()</h1>
+<h1>Delete @Model.Competition.CompetitionName</h1>
 
 @if (!Model.Deleted)
 {
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link" href="@Model.Season.SeasonRoute">Summary</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
+            <a class="nav-link" href="@Model.Competition.CompetitionRoute">Summary</a>
         </li>
         <li class="nav-item">
             <em class="nav-link active">Edit</em>
@@ -33,25 +30,21 @@
 {
     if (!Model.Deleted)
     {
-        <p>If you delete @Model.Season.SeasonFullName() you will:</p>
+        <p>If you delete @Model.Competition.CompetitionName you will:</p>
         <ul>
-            @if (!string.IsNullOrEmpty(Model.Season.Results) || Model.Season.ShowTable)
-            {
-                <li>lose the results of this season</li>
-            }
             @if (Model.TotalMatches > 0)
             {
-                <li>remove @("match".ToQuantity(Model.TotalMatches)) from the @Model.Season.Competition.CompetitionName competition</li>
-                <li>change statistics for the competition, @("team".ToQuantity(Model.Season.Teams.Count)) and all their players who played this season</li>
+                <li>remove @("match".ToQuantity(Model.TotalMatches)) from the @Model.Competition.CompetitionName competition</li>
+                <li>change statistics for the competition, teams and all their players who played in this competition</li>
             }
             else
             {
                 <li>not affect any matches</li>
                 <li>not affect any statistics</li>
             }
-            @if (Model.Season.Teams.Count > 0)
+            @if (Model.TotalTeams > 0)
             {
-                <li>change the history of @Model.Season.Teams.Humanize(x => x.Team.TeamName)</li>
+                <li>change the history of @("team".ToQuantity(Model.TotalTeams))</li>
             }
             else
             {
@@ -60,25 +53,25 @@
         </ul>
         <p><strong><strong>You cannot undo this.</strong></strong></p>
 
-        using (Html.BeginUmbracoForm<DeleteSeasonSurfaceController>
-               ("DeleteSeason"))
+        using (Html.BeginUmbracoForm<DeleteCompetitionSurfaceController>
+               ("DeleteCompetition"))
         {
             @Html.AntiForgeryToken()
 
             @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
             <div class="form-group">
-                @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Season.SeasonFullName()}' into this box:")
+                @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Competition.CompetitionName}' into this box:")
                 @Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck="false" })
                 @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
             </div>
 
-            <button class="btn btn-danger">@Html.Partial("_DeleteIcon", (Model.Season.SeasonId.ToString(), string.Empty)) Delete @Model.Season.SeasonName()</button>
+            <button class="btn btn-danger">@Html.Partial("_DeleteIcon", (Model.Competition.CompetitionId.ToString(), string.Empty)) Delete @Model.Competition.CompetitionName</button>
         }
     }
     else
     {
-        <p>@Model.Season.SeasonFullName() has been deleted.</p>
-        <a class="btn btn-primary" href="@Model.Season.Competition.CompetitionRoute">Back to @Model.Season.Competition.CompetitionName</a>
+        <p>@Model.Competition.CompetitionName has been deleted.</p>
+        <a class="btn btn-primary" href="/competitions">Back to Competitions</a>
     }
 }
 else

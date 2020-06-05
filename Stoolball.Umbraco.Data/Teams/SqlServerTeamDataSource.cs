@@ -30,6 +30,33 @@ namespace Stoolball.Umbraco.Data.Teams
         }
 
         /// <summary>
+        /// Gets the number of teams that match a query
+        /// </summary>
+        /// <returns></returns>
+        public async Task<int> ReadTotalTeams(TeamQuery teamQuery)
+        {
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    var sql = $@"SELECT COUNT(DISTINCT t.TeamId)
+                        FROM {Tables.Team} AS t
+                        <<JOIN>>
+                        <<WHERE>>";
+
+                    var (filteredSql, parameters) = ApplyTeamQuery(teamQuery, sql);
+
+                    return await connection.ExecuteScalarAsync<int>(filteredSql, new DynamicParameters(parameters)).ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(typeof(SqlServerTeamDataSource), ex);
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Gets a single team based on its route
         /// </summary>
         /// <param name="route">/teams/example-team</param>
@@ -158,28 +185,14 @@ namespace Stoolball.Umbraco.Data.Teams
                             INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             LEFT JOIN {Tables.TeamMatchLocation} AS tml ON tml.TeamId = t.TeamId
                             LEFT JOIN {Tables.MatchLocation} AS ml ON ml.MatchLocationId = tml.MatchLocationId 
+                            <<JOIN>>
                             <<WHERE>>
                             ORDER BY CASE WHEN t.UntilYear IS NULL THEN 0 
                                           WHEN t.UntilYear IS NOT NULL THEN 1 END, tn.TeamName";
 
-                    var where = new List<string>();
-                    var parameters = new Dictionary<string, object>();
+                    var (filteredSql, parameters) = ApplyTeamQuery(teamQuery, sql);
 
-                    if (!string.IsNullOrEmpty(teamQuery?.Query))
-                    {
-                        where.Add("(tn.TeamName LIKE @Query OR ml.Locality LIKE @Query OR ml.Town LIKE @Query)");
-                        parameters.Add("@Query", $"%{teamQuery.Query}%");
-                    }
-
-                    if (teamQuery?.ExcludeTeamIds?.Count > 0)
-                    {
-                        where.Add("t.TeamId NOT IN @ExcludeTeamIds");
-                        parameters.Add("@ExcludeTeamIds", teamQuery.ExcludeTeamIds.Select(x => x.ToString()));
-                    }
-
-                    sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
-
-                    var teams = await connection.QueryAsync<Team, MatchLocation, Team>(sql,
+                    var teams = await connection.QueryAsync<Team, MatchLocation, Team>(filteredSql,
                         (team, matchLocation) =>
                         {
                             if (matchLocation != null)
@@ -206,6 +219,39 @@ namespace Stoolball.Umbraco.Data.Teams
                 _logger.Error(typeof(SqlServerTeamDataSource), ex);
                 throw;
             }
+        }
+
+        private static (string filteredSql, Dictionary<string, object> parameters) ApplyTeamQuery(TeamQuery teamQuery, string sql)
+        {
+            var join = new List<string>();
+            var where = new List<string>();
+            var parameters = new Dictionary<string, object>();
+
+            if (!string.IsNullOrEmpty(teamQuery?.Query))
+            {
+                where.Add("(tn.TeamName LIKE @Query OR ml.Locality LIKE @Query OR ml.Town LIKE @Query)");
+                parameters.Add("@Query", $"%{teamQuery.Query}%");
+            }
+
+            if (teamQuery?.CompetitionIds?.Count > 0)
+            {
+                join.Add($"INNER JOIN {Tables.SeasonTeam} st ON t.TeamId = st.TeamId");
+                join.Add($"INNER JOIN {Tables.Season} s ON st.SeasonId = s.SeasonId");
+
+                where.Add("s.CompetitionId IN @CompetitionIds");
+                parameters.Add("@CompetitionIds", teamQuery.CompetitionIds);
+            }
+
+            if (teamQuery?.ExcludeTeamIds?.Count > 0)
+            {
+                where.Add("t.TeamId NOT IN @ExcludeTeamIds");
+                parameters.Add("@ExcludeTeamIds", teamQuery.ExcludeTeamIds.Select(x => x.ToString()));
+            }
+
+            sql = sql.Replace("<<JOIN>>", join.Count > 0 ? string.Join(" ", join) : string.Empty)
+                     .Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
+
+            return (sql, parameters);
         }
     }
 }
