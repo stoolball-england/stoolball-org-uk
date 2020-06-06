@@ -44,16 +44,13 @@ namespace Stoolball.Matches
             var description = new StringBuilder();
 
             // Display match type/season/tournament
-            if (MatchType == MatchType.TournamentMatch)
+            if (Tournament != null)
             {
-                if (Tournament != null)
-                {
-                    // Check for 'the' to get the grammar right
-                    var the = (Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? string.Empty : "the ";
-                    description.Append("Match in ").Append(the).Append(Tournament.TournamentName);
-                    if (MatchLocation != null) description.Append(" at ").Append(MatchLocation.NameAndLocalityOrTown());
-                    description.Append(".");
-                }
+                // Check for 'the' to get the grammar right
+                var the = (Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? string.Empty : "the ";
+                description.Append("Match in ").Append(the).Append(Tournament.TournamentName);
+                if (MatchLocation != null) description.Append(" at ").Append(MatchLocation.NameAndLocalityOrTown());
+                description.Append(".");
             }
             else
             {

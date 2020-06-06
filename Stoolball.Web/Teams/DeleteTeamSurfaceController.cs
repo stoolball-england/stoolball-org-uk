@@ -61,7 +61,11 @@ namespace Stoolball.Web.Teams
             else
             {
                 var teamIds = new List<Guid> { viewModel.Team.TeamId.Value };
-                viewModel.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchQuery { TeamIds = teamIds }).ConfigureAwait(false);
+                viewModel.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchQuery
+                {
+                    TeamIds = teamIds,
+                    IncludeTournamentMatches = true
+                }).ConfigureAwait(false);
                 viewModel.Team.PlayerIdentities = await _playerDataSource.ReadPlayerIdentities(new PlayerIdentityQuery
                 {
                     TeamIds = teamIds,

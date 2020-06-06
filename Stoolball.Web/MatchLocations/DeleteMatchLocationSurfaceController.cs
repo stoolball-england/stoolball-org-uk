@@ -58,7 +58,11 @@ namespace Stoolball.Web.MatchLocations
             }
             else
             {
-                viewModel.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchQuery { MatchLocationIds = new List<Guid> { viewModel.MatchLocation.MatchLocationId.Value } }).ConfigureAwait(false);
+                viewModel.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchQuery
+                {
+                    MatchLocationIds = new List<Guid> { viewModel.MatchLocation.MatchLocationId.Value },
+                    IncludeTournamentMatches = true
+                }).ConfigureAwait(false);
             }
 
             viewModel.Metadata.PageTitle = $"Delete " + viewModel.MatchLocation.NameAndLocalityOrTown();

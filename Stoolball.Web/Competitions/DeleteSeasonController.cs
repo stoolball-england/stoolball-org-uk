@@ -55,7 +55,8 @@ namespace Stoolball.Web.Competitions
             {
                 model.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchQuery
                 {
-                    SeasonIds = new List<Guid> { model.Season.SeasonId.Value }
+                    SeasonIds = new List<Guid> { model.Season.SeasonId.Value },
+                    IncludeTournamentMatches = true
                 }).ConfigureAwait(false);
 
                 model.ConfirmDeleteRequest.RequiredText = model.Season.SeasonFullName();

@@ -102,12 +102,6 @@ namespace Stoolball.Umbraco.Data.Matches
                 parameters.Add("@MatchTypes", matchQuery.MatchTypes.Select(x => x.ToString()));
             }
 
-            if (matchQuery?.ExcludeMatchTypes?.Count > 0)
-            {
-                where.Add("m.MatchType NOT IN @ExcludeMatchTypes");
-                parameters.Add("@ExcludeMatchTypes", matchQuery.ExcludeMatchTypes.Select(x => x.ToString()));
-            }
-
             if (matchQuery?.TeamIds?.Count > 0)
             {
                 join.Add($"INNER JOIN {Tables.MatchTeam} mt ON m.MatchId = mt.MatchId");
@@ -146,6 +140,11 @@ namespace Stoolball.Umbraco.Data.Matches
             {
                 where.Add("m.StartTime >= @FromDate");
                 parameters.Add("@FromDate", matchQuery.FromDate.Value);
+            }
+
+            if (matchQuery?.IncludeTournamentMatches == false)
+            {
+                where.Add("m.TournamentId IS NULL");
             }
 
             if (matchQuery?.TournamentId != null)

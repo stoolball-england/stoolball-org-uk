@@ -1,6 +1,5 @@
 ﻿using Stoolball.Competitions;
 using Stoolball.Dates;
-using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Matches;
@@ -68,8 +67,7 @@ namespace Stoolball.Web.Teams
                         Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
                         {
                             TeamIds = new List<Guid> { team.TeamId.Value },
-                            FromDate = _estimatedSeason.StartDate,
-                            ExcludeMatchTypes = new List<MatchType> { MatchType.TournamentMatch }
+                            FromDate = _estimatedSeason.StartDate
                         }).ConfigureAwait(false),
                         DateTimeFormatter = _dateFormatter
                     },

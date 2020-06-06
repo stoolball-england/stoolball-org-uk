@@ -62,7 +62,8 @@ namespace Stoolball.Web.Competitions
             {
                 viewModel.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchQuery
                 {
-                    SeasonIds = new List<Guid> { viewModel.Season.SeasonId.Value }
+                    SeasonIds = new List<Guid> { viewModel.Season.SeasonId.Value },
+                    IncludeTournamentMatches = true
                 }).ConfigureAwait(false);
             }
 

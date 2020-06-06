@@ -1,6 +1,5 @@
 ﻿using Stoolball.Dates;
 using Stoolball.Email;
-using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
 using System;
@@ -59,7 +58,7 @@ namespace Stoolball.Web.Matches
             {
                 model.Metadata.PageTitle = model.Match.MatchName;
 
-                if (model.Match.MatchType == MatchType.TournamentMatch)
+                if (model.Match.Tournament != null)
                 {
                     var inThe = (model.Match.Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? " in " : " in the ";
                     model.Metadata.PageTitle += inThe + model.Match.Tournament.TournamentName;

@@ -62,7 +62,8 @@ namespace Stoolball.Web.Competitions
                 var competitionIds = new List<Guid> { viewModel.Competition.CompetitionId.Value };
                 viewModel.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchQuery
                 {
-                    CompetitionIds = competitionIds
+                    CompetitionIds = competitionIds,
+                    IncludeTournamentMatches = true
                 }).ConfigureAwait(false);
 
                 viewModel.TotalTeams = await _teamDataSource.ReadTotalTeams(new TeamQuery

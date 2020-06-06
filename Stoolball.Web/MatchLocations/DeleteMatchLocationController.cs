@@ -53,7 +53,11 @@ namespace Stoolball.Web.MatchLocations
             }
             else
             {
-                model.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchQuery { MatchLocationIds = new List<Guid> { model.MatchLocation.MatchLocationId.Value } }).ConfigureAwait(false);
+                model.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchQuery
+                {
+                    MatchLocationIds = new List<Guid> { model.MatchLocation.MatchLocationId.Value },
+                    IncludeTournamentMatches = true
+                }).ConfigureAwait(false);
                 model.ConfirmDeleteRequest.RequiredText = model.MatchLocation.Name();
 
                 model.IsAuthorized = IsAuthorized(model);

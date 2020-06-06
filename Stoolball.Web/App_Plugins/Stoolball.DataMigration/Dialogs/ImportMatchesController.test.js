@@ -406,6 +406,72 @@ describe("matchReducer", () => {
   });
 });
 
+describe("matchReducer", () => {
+  it("should translate matchType = 0 to MatchType = 0", () => {
+    const objectUnderTest = matchResource();
+    const result = objectUnderTest.matchReducer({
+      matchType: 0,
+    });
+
+    expect(result.MatchType).toBe(0);
+  });
+});
+
+describe("matchReducer", () => {
+  it("should translate matchType = 1 to MatchType = 1", () => {
+    const objectUnderTest = matchResource();
+    const result = objectUnderTest.matchReducer({
+      matchType: 1,
+    });
+
+    expect(result.MatchType).toBe(1);
+  });
+});
+
+describe("matchReducer", () => {
+  it("should translate matchType = 2 to MatchType = 0", () => {
+    const objectUnderTest = matchResource();
+    const result = objectUnderTest.matchReducer({
+      matchType: 2,
+    });
+
+    expect(result.MatchType).toBe(0);
+  });
+});
+
+describe("matchReducer", () => {
+  it("should translate matchType = 3 to MatchType = 2", () => {
+    const objectUnderTest = matchResource();
+    const result = objectUnderTest.matchReducer({
+      matchType: 3,
+    });
+
+    expect(result.MatchType).toBe(2);
+  });
+});
+
+describe("matchReducer", () => {
+  it("should translate matchType = 4 to MatchType = 3", () => {
+    const objectUnderTest = matchResource();
+    const result = objectUnderTest.matchReducer({
+      matchType: 4,
+    });
+
+    expect(result.MatchType).toBe(3);
+  });
+});
+
+describe("matchReducer", () => {
+  it("should translate matchType = 5 to MatchType = 4", () => {
+    const objectUnderTest = matchResource();
+    const result = objectUnderTest.matchReducer({
+      matchType: 5,
+    });
+
+    expect(result.MatchType).toBe(4);
+  });
+});
+
 describe("tournamentReducer", () => {
   it("should translate playerType = 1 to PlayerType = 0", () => {
     const objectUnderTest = matchResource();

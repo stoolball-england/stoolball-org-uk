@@ -22,12 +22,14 @@ function matchResource() {
         });
       }
 
+      const matchTypes = { 0: 0, 1: 1, 2: 0, 3: 2, 4: 3, 5: 4 };
+
       return {
         MigratedMatchId: match.matchId,
         MatchName: match.title,
         UpdateMatchNameAutomatically: !match.customTitle,
         MigratedMatchLocationId: match.groundId,
-        MatchType: match.matchType,
+        MatchType: matchTypes[match.matchType],
         PlayerType: match.playerType - 1,
         PlayersPerTeam: match.playersPerTeam,
         MigratedMatchInnings: [
