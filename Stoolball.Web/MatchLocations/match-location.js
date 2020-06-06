@@ -48,11 +48,14 @@
     });
 
     // Add a heading to introduce the map
+    // Use DOMParser to safely HTMLDecode the attribute value
     const mapHeading = document.createElement("h2");
+    let title = new DOMParser().parseFromString(
+      mapContainer.getAttribute("data-title"),
+      "text/html"
+    );
     mapHeading.appendChild(
-      document.createTextNode(
-        "Map of " + mapContainer.getAttribute("data-title")
-      )
+      document.createTextNode("Map of " + title.documentElement.textContent)
     );
     mapContainer.parentNode.insertBefore(mapHeading, mapContainer);
 
