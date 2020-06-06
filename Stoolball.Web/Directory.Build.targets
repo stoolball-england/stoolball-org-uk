@@ -35,7 +35,7 @@
     <PropertyGroup>
       <UmbracoVersion>8.6.1</UmbracoVersion>
       <UmbracoFormsVersion>8.4.0</UmbracoFormsVersion>
-      <USyncVersion>8.6.1</USyncVersion>
+      <USyncVersion>8.6.3</USyncVersion>
       <BootstrapVersion>4.5.0</BootstrapVersion>
       <JQueryVersion>3.5.1</JQueryVersion>
       <JQueryValidationVersion>1.19.1</JQueryValidationVersion>
