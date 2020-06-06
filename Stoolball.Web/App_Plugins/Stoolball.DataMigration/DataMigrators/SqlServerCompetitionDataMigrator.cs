@@ -87,7 +87,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 Instagram = competition.Instagram,
                 PlayersPerTeam = competition.PlayersPerTeam,
                 Overs = competition.Overs,
-                PlayerType = competition.PlayerType.ToString(),
+                PlayerType = competition.PlayerType,
                 MemberGroupId = competition.MemberGroupId,
                 MemberGroupName = competition.MemberGroupName,
                 UntilYear = competition.UntilYear
@@ -134,7 +134,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                             migratedCompetition.Website,
                             migratedCompetition.PlayersPerTeam,
                             migratedCompetition.Overs,
-                            migratedCompetition.PlayerType,
+                            migratedCompetition.PlayerType.ToString(),
                             migratedCompetition.FromYear,
                             migratedCompetition.UntilYear,
                             migratedCompetition.MemberGroupId,
