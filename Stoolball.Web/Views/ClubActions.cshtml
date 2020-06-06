@@ -22,9 +22,12 @@
 <dl>
     <dt><a href="@Model.Club.ClubRoute/edit/club">Edit @Model.Club.ClubName</a></dt>
     <dd>Add or remove teams in the club and set the ClubMark status.</dd>
-    <dt><a href="@Model.Club.ClubRoute/delete">Delete @Model.Club.ClubName</a></dt>
-    <dd>Teams in the club will no longer be connected. Combined match lists and statistics will not be available.</dd>
-</dl>
+    @if (Model.IsAdministrator)
+    {
+        <dt><a href="@Model.Club.ClubRoute/delete">Delete @Model.Club.ClubName</a> @Html.Partial("_AdminOnly")</dt>
+        <dd>Teams in the club will no longer be connected. Combined match lists and statistics will not be available.</dd>
+    }
+    </dl>
 }
 else
 {

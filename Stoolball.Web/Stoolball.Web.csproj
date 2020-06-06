@@ -1159,6 +1159,7 @@
     <Content Include="Views\DeleteSeason.cshtml" />
     <Content Include="Views\DeleteCompetition.cshtml" />
     <Content Include="Views\Competitions.cshtml" />
+    <Content Include="Views\Partials\_AdminOnly.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

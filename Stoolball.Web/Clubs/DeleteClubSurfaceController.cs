@@ -38,9 +38,8 @@ namespace Stoolball.Web.Clubs
             var viewModel = new DeleteClubViewModel(CurrentPage)
             {
                 Club = await _clubDataSource.ReadClubByRoute(Request.RawUrl).ConfigureAwait(false),
+                IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null)
             };
-
-            viewModel.IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, viewModel.Club.MemberGroupName }, null);
 
             if (viewModel.IsAuthorized && ModelState.IsValid)
             {

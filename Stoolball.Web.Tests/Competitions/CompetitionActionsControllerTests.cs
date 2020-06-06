@@ -42,6 +42,11 @@ namespace Stoolball.Web.Tests.Competitions
                 ControllerContext = controllerContext.Object;
             }
 
+            protected override bool IsAdministrator()
+            {
+                return true;
+            }
+
             protected override bool IsAuthorized(CompetitionViewModel model)
             {
                 return true;

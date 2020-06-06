@@ -7,6 +7,7 @@ using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
 using Umbraco.Web.Mvc;
+using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Routing
 {
@@ -38,6 +39,15 @@ namespace Stoolball.Web.Routing
         protected new virtual ActionResult CurrentTemplate<T>(T model)
         {
             return base.CurrentTemplate<T>(model);
+        }
+
+        /// <summary>
+        /// Checks whether the currently signed-in member is an administrator
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsAdministrator()
+        {
+            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null);
         }
     }
 }

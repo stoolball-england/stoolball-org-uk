@@ -48,6 +48,7 @@ namespace Stoolball.Web.Teams
             else
             {
                 model.IsAuthorized = IsAuthorized(model);
+                model.IsAdministrator = IsAdministrator();
 
                 model.Metadata.PageTitle = "Edit " + model.Team.TeamName;
 

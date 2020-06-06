@@ -41,6 +41,12 @@ namespace Stoolball.Web.Tests.Teams
                 controllerContext.Setup(p => p.HttpContext.User).Returns(new GenericPrincipal(new GenericIdentity("test"), null));
                 ControllerContext = controllerContext.Object;
             }
+
+            protected override bool IsAdministrator()
+            {
+                return true;
+            }
+
             protected override bool IsAuthorized(TeamViewModel model)
             {
                 return true;

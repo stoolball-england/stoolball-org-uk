@@ -23,8 +23,11 @@
     <dl>
         <dt><a href="@Model.Team.TeamRoute/edit/team">Edit @Model.Team.TeamName</a></dt>
         <dd>Set the introduction, type of team, home grounds and sports halls, cost to play, contact details and more.</dd>
-        <dt><a href="@Model.Team.TeamRoute/delete">Delete @Model.Team.TeamName</a></dt>
-        <dd>Remove the team out of all competitions. Delete players and statistics, including for opposition teams.</dd>
+        @if (Model.IsAdministrator)
+        {
+            <dt><a href="@Model.Team.TeamRoute/delete">Delete @Model.Team.TeamName</a> @Html.Partial("_AdminOnly")</dt>
+            <dd>Remove the team out of all competitions. Delete players and statistics, including for opposition teams.</dd>
+        }
     </dl>
 }
 else

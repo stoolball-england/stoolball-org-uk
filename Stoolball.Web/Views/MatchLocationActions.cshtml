@@ -22,9 +22,12 @@
 <dl>
     <dt><a href="@Model.MatchLocation.MatchLocationRoute/edit/location">Edit @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</a></dt>
     <dd>Set the address, map and notes.</dd>
-    <dt><a href="@Model.MatchLocation.MatchLocationRoute/delete">Delete @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</a></dt>
-    <dd>Matches played here will have an unknown location. Teams based here will lose their home.</dd>
-</dl>
+    @if (Model.IsAdministrator)
+    {
+        <dt><a href="@Model.MatchLocation.MatchLocationRoute/delete">Delete @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</a> @Html.Partial("_AdminOnly")</dt>
+        <dd>Matches played here will have an unknown location. Teams based here will lose their home.</dd>
+    }
+    </dl>
 }
 else
 {

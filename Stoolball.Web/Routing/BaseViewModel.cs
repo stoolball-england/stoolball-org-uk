@@ -30,6 +30,7 @@ namespace Stoolball.Web.Routing
         public ViewMetadata Metadata { get; } = new ViewMetadata();
 
         public bool IsAuthorized { get; set; }
+        public bool IsAdministrator { get; set; }
 
         #region Implement IPublishedContent
         public int Id => _contentModel.Id;

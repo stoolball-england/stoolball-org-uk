@@ -39,6 +39,11 @@ namespace Stoolball.Web.Tests.Clubs
                 ControllerContext = new ControllerContext(context.Object, new RouteData(), this);
             }
 
+            protected override bool IsAdministrator()
+            {
+                return true;
+            }
+
             protected override bool IsAuthorized(ClubViewModel model)
             {
                 return true;

@@ -43,10 +43,10 @@ namespace Stoolball.Web.MatchLocations
 
             var viewModel = new DeleteMatchLocationViewModel(CurrentPage)
             {
-                MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl, true).ConfigureAwait(false)
+                MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl, true).ConfigureAwait(false),
+                IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null)
             };
 
-            viewModel.IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, viewModel.MatchLocation.MemberGroupName }, null);
 
             if (viewModel.IsAuthorized && ModelState.IsValid)
             {

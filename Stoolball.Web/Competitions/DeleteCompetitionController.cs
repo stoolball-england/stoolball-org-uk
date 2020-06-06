@@ -84,7 +84,7 @@ namespace Stoolball.Web.Competitions
         /// <returns></returns>
         protected virtual bool IsAuthorized(DeleteCompetitionViewModel model)
         {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, model?.Competition.MemberGroupName }, null);
+            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null);
         }
     }
 }

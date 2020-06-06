@@ -42,6 +42,11 @@ namespace Stoolball.Web.Tests.MatchLocations
                 ControllerContext = controllerContext.Object;
             }
 
+            protected override bool IsAdministrator()
+            {
+                return true;
+            }
+
             protected override bool IsAuthorized(MatchLocationViewModel model)
             {
                 return true;

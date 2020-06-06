@@ -1,4 +1,5 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.SeasonViewModel>
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<SeasonViewModel>
+@using Stoolball.Web.Competitions
 @{
     var the = Model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";
 }
@@ -23,13 +24,16 @@
 @if (Model.IsAuthorized)
 {
     <h2>Settings for @the@Model.Season.Competition.CompetitionName</h2>
-    @Html.Partial("_CompetitionActions", Model.Season.Competition)
+    @Html.Partial("_CompetitionActions", new CompetitionViewModel(Model) { Competition = Model.Season.Competition, IsAdministrator = Model.IsAdministrator })
 
     <h2>Settings for the @Model.Season.SeasonName()</h2>
     <dt><a href="@Model.Season.SeasonRoute/edit/season">Edit the @Model.Season.SeasonName()</a></dt>
     <dd>Set the introduction, and the types of match played.</dd>
-    <dt><a href="@Model.Season.SeasonRoute/delete">Delete the @Model.Season.SeasonName()</a></dt>
-    <dd>Lose the results of this season. Remove it from the details of matches and teams.</dd>
+    if (Model.IsAdministrator)
+    {
+        <dt><a href="@Model.Season.SeasonRoute/delete">Delete the @Model.Season.SeasonName()</a> @Html.Partial("_AdminOnly")</dt>
+        <dd>Lose the results of this season. Remove it from the details of matches and teams.</dd>
+    }
 }
 else
 {

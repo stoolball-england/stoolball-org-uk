@@ -59,3 +59,9 @@ svg {
 
 /* Align the delete icon with the text inside a delete button */
 .btn-danger > svg { margin-top: -4px; }
+
+/* Label an option as admin only */
+.admin-only { margin-left: $spacer/2; }
+.admin-only > svg {
+    margin-top: -4px;
+}

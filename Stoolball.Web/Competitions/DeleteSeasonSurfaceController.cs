@@ -46,12 +46,11 @@ namespace Stoolball.Web.Competitions
             var viewModel = new DeleteSeasonViewModel(CurrentPage)
             {
                 Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false),
+                IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null)
             };
 
             // Create a version without circular references before it gets serialised for audit
             viewModel.Season.Teams = viewModel.Season.Teams.Select(x => new TeamInSeason { Team = x.Team, WithdrawnDate = x.WithdrawnDate }).ToList();
-
-            viewModel.IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, viewModel.Season.Competition.MemberGroupName }, null);
 
             if (viewModel.IsAuthorized && ModelState.IsValid)
             {
