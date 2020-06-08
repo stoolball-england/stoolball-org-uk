@@ -1,5 +1,6 @@
 ﻿using Stoolball.Clubs;
 using Stoolball.Web.Routing;
+using Stoolball.Web.Security;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -25,6 +26,7 @@ namespace Stoolball.Web.Clubs
         }
 
         [HttpGet]
+        [ContentSecurityPolicy(Forms = true)]
         public override Task<ActionResult> Index(ContentModel contentModel)
         {
             if (contentModel is null)

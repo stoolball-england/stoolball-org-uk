@@ -1,5 +1,6 @@
 ﻿using Stoolball.Competitions;
 using Stoolball.Umbraco.Data.Competitions;
+using Stoolball.Web.Security;
 using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -29,6 +30,7 @@ namespace Stoolball.Web.Competitions
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
+        [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
         public async Task<ActionResult> UpdateCompetition([Bind(Prefix = "Competition", Include = "CompetitionName,FromYear,UntilYear,PlayerType,PlayersPerTeam,Overs,Facebook,Twitter,Instagram,YouTube,Website")] Competition competition)
         {
             if (competition is null)

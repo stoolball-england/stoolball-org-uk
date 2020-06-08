@@ -1,5 +1,6 @@
 ﻿using Stoolball.Security;
 using Stoolball.Web.Email;
+using Stoolball.Web.Security;
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
@@ -29,7 +30,8 @@ namespace Stoolball.Web.Account
 
         [HttpPost]
         [ValidateAntiForgeryToken()]
-        public ActionResult RequestPasswordReset([Bind(Prefix = "resetPasswordRequest")]ResetPasswordRequest model)
+        [ContentSecurityPolicy(Forms = true)]
+        public ActionResult RequestPasswordReset([Bind(Prefix = "resetPasswordRequest")] ResetPasswordRequest model)
         {
             if (!ModelState.IsValid || model == null)
             {
@@ -116,7 +118,8 @@ namespace Stoolball.Web.Account
 
         [HttpPost]
         [ValidateAntiForgeryToken()]
-        public ActionResult UpdatePassword([Bind(Prefix = "resetPasswordUpdate")]ResetPasswordUpdate model)
+        [ContentSecurityPolicy(Forms = true)]
+        public ActionResult UpdatePassword([Bind(Prefix = "resetPasswordUpdate")] ResetPasswordUpdate model)
         {
             if (!ModelState.IsValid || model == null)
             {

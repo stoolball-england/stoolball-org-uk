@@ -1,5 +1,6 @@
 ﻿using Stoolball.Metadata;
 using Stoolball.Security;
+using Stoolball.Web.Security;
 using System;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -27,6 +28,7 @@ namespace Stoolball.Web.Account
         protected virtual string ReadApprovalToken() => Request.QueryString["token"];
 
         [HttpGet]
+        [ContentSecurityPolicy]
         public override ActionResult Index(ContentModel model)
         {
             var contentModel = new ApproveMember(model?.Content)

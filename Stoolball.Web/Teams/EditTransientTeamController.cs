@@ -4,6 +4,7 @@ using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
+using Stoolball.Web.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +43,7 @@ namespace Stoolball.Web.Teams
         }
 
         [HttpGet]
+        [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
         public async override Task<ActionResult> Index(ContentModel contentModel)
         {
             if (contentModel is null)

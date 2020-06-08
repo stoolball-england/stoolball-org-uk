@@ -43,6 +43,7 @@ The **controller** is a normal Umbraco controller except that it expects the `In
 
 ```csharp
 using Stoolball.Web.Routing;
+using Stoolball.Web.Security;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Web.Models;
@@ -52,6 +53,7 @@ namespace Stoolball.Web.Example
     public class ExampleController : RenderMvcControllerAsync
     {
         [HttpGet]
+        [ContentSecurityPolicy]
         public override async Task<ActionResult> Index(ContentModel contentModel)
         {
             var model = new ExampleViewModel(contentModel.Content);
@@ -81,7 +83,7 @@ Finally, wire up this controller to be served via `StoolballRouterController` as
 
 3. Update `StoolballRouteContentFinder` to recognise the new route.
 
-4. Add the new `StoolballRouteType` value and its matching controller type to the dictionary in `StoolballRouterController`:
+4. Add the new `StoolballRouteType` value and its matching controller type to the dictionary in `StoolballRouteTypeMapper`:
 
    ```csharp
     private readonly Dictionary<StoolballRouteType, Type> _supportedControllers = new Dictionary<StoolballRouteType, Type> {

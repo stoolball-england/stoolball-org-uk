@@ -1,5 +1,6 @@
 ﻿using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Routing;
+using Stoolball.Web.Security;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -29,6 +30,7 @@ namespace Stoolball.Web.Competitions
         }
 
         [HttpGet]
+        [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
         public async override Task<ActionResult> Index(ContentModel contentModel)
         {
             if (contentModel is null)

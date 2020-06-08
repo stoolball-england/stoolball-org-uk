@@ -1,5 +1,6 @@
 ﻿using Stoolball.Security;
 using Stoolball.Umbraco.Data.Clubs;
+using Stoolball.Web.Security;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -28,6 +29,7 @@ namespace Stoolball.Web.Clubs
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
+        [ContentSecurityPolicy(Forms = true)]
         public async Task<ActionResult> DeleteClub([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] MatchingTextConfirmation model)
         {
             if (model is null)

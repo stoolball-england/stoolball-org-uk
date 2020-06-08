@@ -1,6 +1,7 @@
 ﻿using Stoolball.Email;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Routing;
+using Stoolball.Web.Security;
 using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -34,6 +35,7 @@ namespace Stoolball.Web.Competitions
         }
 
         [HttpGet]
+        [ContentSecurityPolicy]
         public async override Task<ActionResult> Index(ContentModel contentModel)
         {
             if (contentModel is null)

@@ -1,5 +1,6 @@
 ﻿using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Teams;
+using Stoolball.Web.Security;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -28,7 +29,8 @@ namespace Stoolball.Web.Teams
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        public async Task<ActionResult> UpdateTeam([Bind(Prefix = "Team", Include = "TeamName,TeamType,AgeRangeLower,AgeRangeUpper,FromYear,UntilYear,PlayerType,MatchLocations,Facebook,Twitter,Instagram,YouTube,Website")]Team team)
+        [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
+        public async Task<ActionResult> UpdateTeam([Bind(Prefix = "Team", Include = "TeamName,TeamType,AgeRangeLower,AgeRangeUpper,FromYear,UntilYear,PlayerType,MatchLocations,Facebook,Twitter,Instagram,YouTube,Website")] Team team)
         {
             if (team is null)
             {

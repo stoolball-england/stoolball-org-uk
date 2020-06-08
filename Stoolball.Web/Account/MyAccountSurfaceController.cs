@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Web;
+﻿using Stoolball.Web.Security;
 using System.Web.Mvc;
-using System.Web.Security;
 using Umbraco.Web.Mvc;
 
 namespace Stoolball.Web.Account
@@ -14,7 +8,8 @@ namespace Stoolball.Web.Account
     {
         [HttpPost]
         [ValidateAntiForgeryToken()]
-        public ActionResult UpdateAccount([Bind(Prefix = "accountUpdate")]MyAccountUpdate model)
+        [ContentSecurityPolicy(Forms = true)]
+        public ActionResult UpdateAccount([Bind(Prefix = "accountUpdate")] MyAccountUpdate model)
         {
             if (ModelState.IsValid && model != null)
             {

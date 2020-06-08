@@ -1,12 +1,12 @@
-﻿using Stoolball.Web.Clubs;
-using Stoolball.Web.Competitions;
-using Stoolball.Web.Matches;
-using Stoolball.Web.MatchLocations;
-using Stoolball.Web.Teams;
+﻿using Stoolball.Web.Security;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Umbraco.Core.Cache;
+using Umbraco.Core.Configuration;
+using Umbraco.Core.Logging;
+using Umbraco.Core.Services;
+using Umbraco.Web;
 using Umbraco.Web.Models;
 using Umbraco.Web.Mvc;
 using Current = Umbraco.Web.Composing.Current;
@@ -15,61 +15,35 @@ namespace Stoolball.Web.Routing
 {
     /// Controller for the 'Stoolball router' document type in Umbraco. This should only ever be invoked by 
     /// <see cref="StoolballRouteContentFinder" />, which passes the type of stoolball route it has recognised
-    /// through to this controller in a response header. This controller simply looks that route type up in 
-    /// a dictionary and passes off the real work of building the response to the appropriate controller.
+    /// through to this controller as the action. This controller simply looks that route type up using the 
+    /// <see cref="IStoolballRouteTypeMapper"/> and passes off the real work of building the response to the 
+    /// appropriate controller.
     public class StoolballRouterController : RenderMvcController
     {
-        private readonly Dictionary<StoolballRouteType, Type> _supportedControllers = new Dictionary<StoolballRouteType, Type> {
-            { StoolballRouteType.Clubs, typeof(ClubsController) },
-            { StoolballRouteType.ClubActions, typeof(ClubActionsController) },
-            { StoolballRouteType.Club, typeof(ClubController) },
-            { StoolballRouteType.CreateClub, typeof(CreateClubController) },
-            { StoolballRouteType.EditClub, typeof(EditClubController) },
-            { StoolballRouteType.DeleteClub, typeof(DeleteClubController) },
-            { StoolballRouteType.MatchesForClub, typeof(MatchesForClubController) },
-            { StoolballRouteType.Teams, typeof(TeamsController) },
-            { StoolballRouteType.Team, typeof(TeamController) },
-            { StoolballRouteType.TeamActions, typeof(TeamActionsController) },
-            { StoolballRouteType.CreateTeam, typeof(CreateTeamController) },
-            { StoolballRouteType.EditTeam, typeof(EditTeamController) },
-            { StoolballRouteType.DeleteTeam, typeof(DeleteTeamController) },
-            { StoolballRouteType.MatchesForTeam, typeof(MatchesForTeamController) },
-            { StoolballRouteType.TransientTeam, typeof(TransientTeamController) },
-            { StoolballRouteType.EditTransientTeam, typeof(EditTransientTeamController) },
-            { StoolballRouteType.MatchLocation, typeof(MatchLocationController) },
-            { StoolballRouteType.MatchLocationActions, typeof(MatchLocationActionsController) },
-            { StoolballRouteType.CreateMatchLocation, typeof(CreateMatchLocationController) },
-            { StoolballRouteType.EditMatchLocation, typeof(EditMatchLocationController) },
-            { StoolballRouteType.DeleteMatchLocation, typeof(DeleteMatchLocationController) },
-            { StoolballRouteType.MatchLocations, typeof(MatchLocationsController) },
-            { StoolballRouteType.MatchesForMatchLocation, typeof(MatchesForMatchLocationController) },
-            { StoolballRouteType.Competitions, typeof(CompetitionsController) },
-            { StoolballRouteType.Competition, typeof(CompetitionController) },
-            { StoolballRouteType.CompetitionActions, typeof(CompetitionActionsController) },
-            { StoolballRouteType.CreateCompetition, typeof(CreateCompetitionController) },
-            { StoolballRouteType.EditCompetition, typeof(EditCompetitionController) },
-            { StoolballRouteType.DeleteCompetition, typeof(DeleteCompetitionController) },
-            { StoolballRouteType.Season, typeof(SeasonController) },
-            { StoolballRouteType.SeasonActions, typeof(SeasonActionsController) },
-            { StoolballRouteType.CreateSeason, typeof(CreateSeasonController) },
-            { StoolballRouteType.EditSeason, typeof(EditSeasonController) },
-            { StoolballRouteType.DeleteSeason, typeof(DeleteSeasonController) },
-            { StoolballRouteType.MatchesForSeason, typeof(MatchesForSeasonController) },
-            { StoolballRouteType.Match, typeof(MatchController) },
-            { StoolballRouteType.Tournament, typeof(TournamentController) }
-        };
+        private readonly IStoolballRouteTypeMapper _routeTypeMapper;
+
+        public StoolballRouterController(IGlobalSettings globalSettings,
+           IUmbracoContextAccessor umbracoContextAccessor,
+           ServiceContext serviceContext,
+           AppCaches appCaches,
+           IProfilingLogger profilingLogger,
+           UmbracoHelper umbracoHelper,
+           IStoolballRouteTypeMapper routeTypeMapper)
+           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        {
+            _routeTypeMapper = routeTypeMapper ?? throw new ArgumentNullException(nameof(routeTypeMapper));
+        }
 
         [HttpGet]
+        [DelegatedContentSecurityPolicy]
         public new async Task<ActionResult> Index(ContentModel contentModel)
         {
-            // Check that the header value is valid. It should be since it's set as an enum value.
-            if (!Enum.TryParse<StoolballRouteType>(ControllerContext.RouteData.Values["action"].ToString(), true, out var routeType))
+            // Find the appropriate controller from the route value
+            var controllerType = _routeTypeMapper.MapRouteTypeToController(ControllerContext.RouteData.Values["action"].ToString());
+            if (controllerType == null)
             {
                 return new HttpNotFoundResult();
             }
-
-            // Find the appropriate controller, and remove the header which we're now finished with.
-            var controllerType = _supportedControllers[routeType];
 
             // Pass off the work of building a response to the appropriate controller.
             var controller = (RenderMvcControllerAsync)Current.Factory.GetInstance(controllerType);

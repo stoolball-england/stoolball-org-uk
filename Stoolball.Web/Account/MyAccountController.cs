@@ -1,4 +1,5 @@
 ﻿using Stoolball.Metadata;
+using Stoolball.Web.Security;
 using System.Web.Mvc;
 using Umbraco.Web.Models;
 using Umbraco.Web.Mvc;
@@ -9,6 +10,7 @@ namespace Stoolball.Web.Account
     public class MyAccountController : RenderMvcController
     {
         [HttpGet]
+        [ContentSecurityPolicy(Forms = true)]
         public override ActionResult Index(ContentModel contentModel)
         {
             var model = new MyAccount(contentModel?.Content)
@@ -20,7 +22,7 @@ namespace Stoolball.Web.Account
         }
 
         /// <summary>
-        /// This method fires when <see cref="MyAccountSurfaceController"/> handles form submissions.
+        /// This method fires after <see cref="MyAccountSurfaceController"/> handles form submissions, if it doesn't redirect
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>

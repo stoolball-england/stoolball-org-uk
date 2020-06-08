@@ -1,7 +1,7 @@
 ﻿using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Configuration;
-using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Routing;
+using Stoolball.Web.Security;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -12,7 +12,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using static Stoolball.Umbraco.Data.Constants;
 
-namespace Stoolball.Web.Clubs
+namespace Stoolball.Web.MatchLocations
 {
     public class EditMatchLocationController : RenderMvcControllerAsync
     {
@@ -34,6 +34,7 @@ namespace Stoolball.Web.Clubs
         }
 
         [HttpGet]
+        [ContentSecurityPolicy(GoogleMaps = true, TinyMCE = true, Forms = true)]
         public async override Task<ActionResult> Index(ContentModel contentModel)
         {
             if (contentModel is null)

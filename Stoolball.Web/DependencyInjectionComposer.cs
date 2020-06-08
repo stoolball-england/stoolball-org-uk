@@ -18,6 +18,7 @@ using Stoolball.Web.Competitions;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
+using Stoolball.Web.Routing;
 using Stoolball.Web.Teams;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
@@ -55,6 +56,7 @@ namespace Stoolball.Web
 
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 
             // be injected anywhere except the one place where it's serving a page of content.
+            composition.Register<IStoolballRouteTypeMapper, StoolballRouteTypeMapper>(Lifetime.Singleton);
             composition.Register<ClubsController>(Lifetime.Request);
             composition.Register<ClubController>(Lifetime.Request);
             composition.Register<ClubActionsController>(Lifetime.Request);

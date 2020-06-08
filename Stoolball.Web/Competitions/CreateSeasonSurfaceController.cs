@@ -1,6 +1,7 @@
 ﻿using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Competitions;
+using Stoolball.Web.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,8 @@ namespace Stoolball.Web.Competitions
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        public async Task<ActionResult> CreateSeason([Bind(Prefix = "Season", Include = "StartYear,EndYear")]Season season)
+        [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
+        public async Task<ActionResult> CreateSeason([Bind(Prefix = "Season", Include = "StartYear,EndYear")] Season season)
         {
             if (season is null)
             {

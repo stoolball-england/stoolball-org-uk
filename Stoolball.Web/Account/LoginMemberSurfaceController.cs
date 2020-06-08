@@ -1,5 +1,6 @@
 ﻿using Stoolball.Security;
 using Stoolball.Web.Email;
+using Stoolball.Web.Security;
 using System.Collections.Generic;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -30,7 +31,8 @@ namespace Stoolball.Web.Account
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        public ActionResult Login([Bind(Prefix = "loginModel")]LoginModel model)
+        [ContentSecurityPolicy(Forms = true)]
+        public ActionResult Login([Bind(Prefix = "loginModel")] LoginModel model)
         {
             // Check whether login is blocked. If so, don't even try.
             // This is nececesary because we use IsApproved for account activation 

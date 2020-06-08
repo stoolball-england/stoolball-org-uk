@@ -1,5 +1,6 @@
 ﻿using Stoolball.Metadata;
 using Stoolball.Security;
+using Stoolball.Web.Security;
 using System;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -27,6 +28,7 @@ namespace Stoolball.Web.Account
         protected virtual string ReadPasswordResetToken() => Request.QueryString["token"];
 
         [HttpGet]
+        [ContentSecurityPolicy(Forms = true)]
         public override ActionResult Index(ContentModel model)
         {
             var contentModel = new ResetPassword(model?.Content)
@@ -74,7 +76,7 @@ namespace Stoolball.Web.Account
         }
 
         /// <summary>
-        /// This method fires when <see cref="ResetPasswordSurfaceController"/> handles form submissions.
+        /// This method fires after <see cref="ResetPasswordSurfaceController"/> handles form submissions, if it doesn't redirect.
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>

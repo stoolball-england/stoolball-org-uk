@@ -1,5 +1,6 @@
 ﻿using Stoolball.MatchLocations;
 using Stoolball.Umbraco.Data.MatchLocations;
+using Stoolball.Web.Security;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -28,6 +29,7 @@ namespace Stoolball.Web.MatchLocations
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
+        [ContentSecurityPolicy(GoogleMaps = true, TinyMCE = true, Forms = true)]
         public async Task<ActionResult> UpdateMatchLocation([Bind(Prefix = "MatchLocation", Include = "SecondaryAddressableObjectName,PrimaryAddressableObjectName,StreetDescription,Locality,Town,AdministrativeArea,Postcode,GeoPrecision,Latitude,Longitude")] MatchLocation location)
         {
             if (location is null)

@@ -1,5 +1,6 @@
 ﻿using Stoolball.Security;
 using Stoolball.Web.Email;
+using Stoolball.Web.Security;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -34,7 +35,8 @@ namespace Stoolball.Web.Account
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        public ActionResult CreateMember([Bind(Prefix = "createMemberModel")]RegisterModel model)
+        [ContentSecurityPolicy(Forms = true)]
+        public ActionResult CreateMember([Bind(Prefix = "createMemberModel")] RegisterModel model)
         {
             if (ModelState.IsValid == false || model == null)
             {

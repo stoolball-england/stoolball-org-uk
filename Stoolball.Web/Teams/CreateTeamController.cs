@@ -1,5 +1,6 @@
 ﻿using Stoolball.Teams;
 using Stoolball.Web.Routing;
+using Stoolball.Web.Security;
 using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -26,6 +27,7 @@ namespace Stoolball.Web.Teams
         }
 
         [HttpGet]
+        [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
         public override Task<ActionResult> Index(ContentModel contentModel)
         {
             if (contentModel is null)

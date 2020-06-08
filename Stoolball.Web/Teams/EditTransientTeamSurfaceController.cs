@@ -4,6 +4,7 @@ using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Matches;
+using Stoolball.Web.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +41,8 @@ namespace Stoolball.Web.Teams
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        public async Task<ActionResult> UpdateTransientTeam([Bind(Prefix = "Team", Include = "TeamName,AgeRangeLower,AgeRangeUpper,PlayerType,Facebook,Twitter,Instagram,YouTube,Website")]Team team)
+        [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
+        public async Task<ActionResult> UpdateTransientTeam([Bind(Prefix = "Team", Include = "TeamName,AgeRangeLower,AgeRangeUpper,PlayerType,Facebook,Twitter,Instagram,YouTube,Website")] Team team)
         {
             if (team is null)
             {

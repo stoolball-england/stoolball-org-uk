@@ -1,6 +1,7 @@
 ﻿using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Routing;
+using Stoolball.Web.Security;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -35,6 +36,7 @@ namespace Stoolball.Web.MatchLocations
         }
 
         [HttpGet]
+        [ContentSecurityPolicy(Forms = true)]
         public async override Task<ActionResult> Index(ContentModel contentModel)
         {
             if (contentModel is null)

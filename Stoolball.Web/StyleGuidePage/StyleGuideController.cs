@@ -1,5 +1,6 @@
 ﻿using Stoolball.Metadata;
 using Stoolball.Web.Configuration;
+using Stoolball.Web.Security;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -23,6 +24,7 @@ namespace Stoolball.Web.StyleGuidePage
         }
 
         [HttpGet]
+        [ContentSecurityPolicy(GoogleMaps = true, TinyMCE = true)]
         public override ActionResult Index(ContentModel contentModel)
         {
             var model = new StyleGuide(contentModel?.Content)

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using Stoolball.Web.Security;
 using System.Web.Mvc;
 using Umbraco.Web.Mvc;
 
@@ -12,6 +9,7 @@ namespace Stoolball.Web.Account
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
+        [ContentSecurityPolicy]
         public ActionResult HandleLogout()
         {
             if (Umbraco.MemberIsLoggedOn())

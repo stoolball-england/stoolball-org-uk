@@ -4,6 +4,7 @@ using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
+using Stoolball.Web.Security;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,6 +45,7 @@ namespace Stoolball.Web.Clubs
         }
 
         [HttpGet]
+        [ContentSecurityPolicy]
         public async override Task<ActionResult> Index(ContentModel contentModel)
         {
             if (contentModel is null)

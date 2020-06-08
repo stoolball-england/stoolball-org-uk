@@ -1,6 +1,7 @@
 ﻿using Stoolball.Clubs;
 using Stoolball.Routing;
 using Stoolball.Umbraco.Data.Clubs;
+using Stoolball.Web.Security;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -30,7 +31,8 @@ namespace Stoolball.Web.Clubs
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        public async Task<ActionResult> CreateClub([Bind(Prefix = "Club", Include = "ClubName,ClubMark,Teams")]Club club)
+        [ContentSecurityPolicy(Forms = true)]
+        public async Task<ActionResult> CreateClub([Bind(Prefix = "Club", Include = "ClubName,ClubMark,Teams")] Club club)
         {
             if (club is null)
             {
