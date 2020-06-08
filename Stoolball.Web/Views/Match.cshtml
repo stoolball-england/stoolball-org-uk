@@ -27,7 +27,7 @@
 }
 @{
     var h1 = Model.Match.MatchName;
-    if (Model.Match.MatchType == MatchType.TournamentMatch)
+    if (Model.Match.Tournament != null)
     {
         var inThe = (Model.Match.Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? " in " : " in the ";
         h1 += inThe + Model.Match.Tournament.TournamentName;
@@ -57,7 +57,7 @@
 
 <p>
     When:
-    @if (Model.Match.MatchType == MatchType.TournamentMatch)
+    @if (Model.Match.Tournament != null)
     {
         var inTheTournament = (Model.Match.Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? ", in " : ", in the ";
         @(Model.Match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(Model.Match.StartTime.LocalDateTime) : Model.DateTimeFormatter.FormatDate(Model.Match.StartTime.LocalDateTime))@inTheTournament
