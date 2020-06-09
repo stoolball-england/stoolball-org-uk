@@ -23,7 +23,7 @@ else
 {
     if (TempData["FormSuccess"] != null)
     {
-        @Html.ProtectEmailAddresses(Model.Value("memberCreatedSuccessfully").ToString().Replace("{{EMAIL}}", TempData["Email"]?.ToString()))
+        @Html.ProtectEmailAddresses(Model.Value("memberCreatedSuccessfully").ToString(), TempData["Email"]?.ToString())
     }
     else
     {

@@ -16,8 +16,9 @@ namespace Stoolball.Email
         /// </summary>
         /// <param name="html">An HTML fragment</param>
         /// <param name="userIsAuthenticated"></param>
+        /// <param name="excludedAddress">An address which may be obfuscated but may not be entirely hidden</param>
         /// <returns>Updated HTML</returns>
-        public string ProtectEmailAddresses(string html, bool userIsAuthenticated)
+        public string ProtectEmailAddresses(string html, bool userIsAuthenticated, string excludedAddress)
         {
             if (string.IsNullOrEmpty(html)) return html;
 
@@ -25,14 +26,35 @@ namespace Stoolball.Email
             {
                 if (userIsAuthenticated)
                 {
-                    var obfuscatedEmail = Obfuscate(match.Value);
-                    return $@"<a href=""&#0109;&#0097;&#0105;&#0108;&#0116;&#0111;&#0058;{obfuscatedEmail}"">{obfuscatedEmail}</a>";
+                    return ObfuscatedLink(match.Value);
                 }
                 else
                 {
+                    if (excludedAddress == match.Value)
+                    {
+                        return ObfuscatedLink(match.Value);
+                    }
+
                     return @"(email address available – please <a href=""/account/sign-in"">sign in</a>)";
                 }
             });
+        }
+
+        private static string ObfuscatedLink(string emailAddress)
+        {
+            var obfuscatedEmail = Obfuscate(emailAddress);
+            return $@"<a href=""&#0109;&#0097;&#0105;&#0108;&#0116;&#0111;&#0058;{obfuscatedEmail}"">{obfuscatedEmail}</a>";
+        }
+
+        /// <summary>
+        /// Links email addresses in HTML, but protecting them from unauthenticated users
+        /// </summary>
+        /// <param name="html">An HTML fragment</param>
+        /// <param name="userIsAuthenticated"></param>
+        /// <returns>Updated HTML</returns>
+        public string ProtectEmailAddresses(string html, bool userIsAuthenticated)
+        {
+            return ProtectEmailAddresses(html, userIsAuthenticated, null);
         }
 
         private static string Obfuscate(string text)
