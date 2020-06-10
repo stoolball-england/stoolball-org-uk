@@ -1,6 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Metadata.IHasViewMetadata>
 @using ClientDependency.Core.Mvc
 @using System.Text.RegularExpressions
+@using Stoolball.Web.Account
 @{
     Layout = null;
     Html.RequiresCss("~/css/base.css", 1);
@@ -88,10 +89,18 @@
             <div class="navbar__account">
                 <div class="dropdown">
                     <button class="btn dropdown-toggle navbar__account-button" type="button" id="navbar__account-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <svg aria-hidden="true" focusable="true" data-prefix="fas" data-icon="user-circle" class="svg-inline--fa fa-user-circle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" aria-labelledby="account-title" width="30" height="30">
-                            <title id="account-title">Account</title>
-                            <path fill="currentColor" d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"></path>
-                        </svg>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            var gravatar = new Gravatar(User.Identity.Name);
+                            <img src="@gravatar.Url" alt="Account" width="30" height="30" class="navbar__account__account-image" />
+                        }
+                        else
+                        {
+                            <svg aria-hidden="true" focusable="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" aria-labelledby="account-title" width="30" height="30">
+                                <title id="account-title">Account</title>
+                                <path fill="currentColor" d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"></path>
+                            </svg>
+                        }
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbar__account-menu">
                         @if (User.Identity.IsAuthenticated)

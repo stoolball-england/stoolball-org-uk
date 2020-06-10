@@ -34,7 +34,8 @@ img { max-width: 100%; }
         <div class="col">content</div>
     </div>
 */
-.gravatar { flex: 0 0 50px; }
+.gravatar { flex: 0 0 60px; }
+.gravatar > img { border-radius: 50%; }
 
 /* Required for tabbed navigaton */
 @import "../Content/bootstrap/_nav.scss";

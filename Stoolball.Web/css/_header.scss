@@ -40,6 +40,11 @@
     margin-right: -15px;
 }
 
+/* Rounded edges on the account image */
+.navbar__account__account-image {
+    border-radius: 50%;
+}
+
 /* Reduce the default space around the account button, and hide the dropdown arrow */
 .navbar .navbar__account-button {
     padding: $spacer/4;
