@@ -57,6 +57,7 @@ namespace Stoolball.Web
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 
             // be injected anywhere except the one place where it's serving a page of content.
             composition.Register<IStoolballRouteTypeMapper, StoolballRouteTypeMapper>(Lifetime.Singleton);
+            composition.Register<IStoolballRouterController, StoolballRouterController>(Lifetime.Request);
             composition.Register<ClubsController>(Lifetime.Request);
             composition.Register<ClubController>(Lifetime.Request);
             composition.Register<ClubActionsController>(Lifetime.Request);

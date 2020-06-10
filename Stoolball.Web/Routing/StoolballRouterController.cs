@@ -18,7 +18,7 @@ namespace Stoolball.Web.Routing
     /// through to this controller as the action. This controller simply looks that route type up using the 
     /// <see cref="IStoolballRouteTypeMapper"/> and passes off the real work of building the response to the 
     /// appropriate controller.
-    public class StoolballRouterController : RenderMvcController
+    public class StoolballRouterController : RenderMvcController, IStoolballRouterController
     {
         private readonly IStoolballRouteTypeMapper _routeTypeMapper;
 
@@ -48,6 +48,7 @@ namespace Stoolball.Web.Routing
             // Pass off the work of building a response to the appropriate controller.
             var controller = (RenderMvcControllerAsync)Current.Factory.GetInstance(controllerType);
             controller.ControllerContext = ControllerContext;
+            controller.ModelState.Merge(ModelState);
             return await controller.Index(contentModel).ConfigureAwait(false);
         }
     }

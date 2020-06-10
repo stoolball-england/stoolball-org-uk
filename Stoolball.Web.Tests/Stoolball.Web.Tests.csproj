@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Account\CreateMemberSurfaceControllerTests.cs" />
+    <Compile Include="Account\LoginMemberSurfaceControllerTests.cs" />
     <Compile Include="Clubs\ClubActionsControllerTests.cs" />
     <Compile Include="Clubs\DeleteClubControllerTests.cs" />
     <Compile Include="Clubs\CreateClubControllerTests.cs" />
