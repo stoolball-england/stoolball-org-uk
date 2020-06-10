@@ -6,7 +6,11 @@
 @{
     var loginPage = Umbraco.ContentSingleAtXPath("//loginMember");
     var loginModel = new LoginModel();
-    loginModel.RedirectUrl = "/";
+    loginModel.RedirectUrl = Request.QueryString["ReturnUrl"] ?? "/";
+    if (!loginModel.RedirectUrl.StartsWith("/"))
+    {
+        loginModel.RedirectUrl = "/";
+    }
 }
 
 @if (Model.Key != loginPage?.Key)

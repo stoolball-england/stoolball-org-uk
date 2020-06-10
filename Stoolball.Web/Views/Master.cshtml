@@ -102,7 +102,7 @@
                         else
                         {
                             <li class="dropdown-item"><a href="/account/create">Create an account</a></li>
-                            <li class="dropdown-item"><a href="/account/sign-in">Sign in</a></li>
+                            <li class="dropdown-item"><a href="/account/sign-in?ReturnUrl=@HttpUtility.UrlEncode(Request.Url.PathAndQuery)">Sign in</a></li>
                         }
                     </ul>
                 </div>
