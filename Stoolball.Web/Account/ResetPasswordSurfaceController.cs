@@ -153,8 +153,8 @@ namespace Stoolball.Web.Account
                             Umbraco.MembershipHelper.Login(member.Username, model.NewPassword);
                         }
 
-                        TempData["PasswordResetSuccessful"] = true;
-                        return CurrentUmbracoPage();
+                        // Redirect because the login doesn't update the thread identity
+                        return RedirectToCurrentUmbracoPage($"token={model.PasswordResetToken}&successful=yes");
                     }
                     else
                     {

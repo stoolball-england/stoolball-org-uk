@@ -27,6 +27,8 @@ namespace Stoolball.Web.Account
         // Gets the password reset token from the querystring in a way that can be overridden for testing
         protected virtual string ReadPasswordResetToken() => Request.QueryString["token"];
 
+        protected virtual bool PasswordResetSuccessful() => Request.QueryString["successful"] == "yes";
+
         [HttpGet]
         [ContentSecurityPolicy(Forms = true)]
         public override ActionResult Index(ContentModel model)
@@ -39,6 +41,13 @@ namespace Stoolball.Web.Account
             try
             {
                 contentModel.PasswordResetToken = ReadPasswordResetToken();
+
+                // Show a message saying the reset was successful
+                if (PasswordResetSuccessful())
+                {
+                    TempData["PasswordResetSuccessful"] = true;
+                    return CurrentTemplate(contentModel);
+                }
 
                 // If there's no token, show the form to request a password reset
                 if (string.IsNullOrEmpty(contentModel.PasswordResetToken))
