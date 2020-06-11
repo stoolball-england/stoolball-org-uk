@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Stoolball.Umbraco.Data
@@ -59,7 +60,7 @@ namespace Stoolball.Umbraco.Data
             public static IEnumerable<string> SchoolRoute { get; } = new ReadOnlyCollection<string>(new[] { "stoolball" });
             public static IEnumerable<string> MatchLocationRoute { get; } = new ReadOnlyCollection<string>(new[] { "stoolball" });
             public static IEnumerable<string> TeamRoute { get; } = new ReadOnlyCollection<string>(new[] { "stoolball", "club", "team" });
-            public static IEnumerable<string> CompetitionRoute { get; } = new ReadOnlyCollection<string>(new[] { "stoolball" });
+            public static IEnumerable<string> CompetitionRoute { get; } = Array.Empty<string>();
         }
     }
 }
