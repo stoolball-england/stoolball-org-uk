@@ -229,7 +229,7 @@ namespace Stoolball.Umbraco.Data.Teams
 
             if (!string.IsNullOrEmpty(teamQuery?.Query))
             {
-                where.Add("(tn.TeamName LIKE @Query OR ml.Locality LIKE @Query OR ml.Town LIKE @Query)");
+                where.Add("(tn.TeamName LIKE @Query OR ml.Locality LIKE @Query OR ml.Town LIKE @Query OR ml.AdministrativeArea LIKE @Query)");
                 parameters.Add("@Query", $"%{teamQuery.Query}%");
             }
 
