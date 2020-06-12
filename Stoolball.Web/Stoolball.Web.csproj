@@ -972,6 +972,8 @@
     <Compile Include="Matches\DeleteMatchController.cs" />
     <Compile Include="Matches\DeleteMatchViewModel.cs" />
     <Compile Include="Matches\DeleteTournamentViewModel.cs" />
+    <Compile Include="Matches\MatchActionsController.cs" />
+    <Compile Include="Matches\TournamentActionsController.cs" />
     <Compile Include="MatchLocations\DeleteMatchLocationSurfaceController.cs" />
     <Compile Include="MatchLocations\MatchLocationActionsController.cs" />
     <Compile Include="MatchLocations\CreateMatchLocationSurfaceController.cs" />
@@ -1176,6 +1178,10 @@
     <Content Include="Views\Partials\Grid\Editors\Base.cshtml" />
     <Content Include="Views\Partials\Grid\Bootstrap3.cshtml" />
     <Content Include="Views\Partials\Grid\Bootstrap3-Fluid.cshtml" />
+    <Content Include="Views\MatchActions.cshtml" />
+    <Content Include="Views\TournamentActions.cshtml" />
+    <Content Include="Views\DeleteMatch.cshtml" />
+    <Content Include="Views\DeleteTournament.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

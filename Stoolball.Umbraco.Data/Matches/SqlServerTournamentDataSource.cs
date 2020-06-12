@@ -45,7 +45,7 @@ namespace Stoolball.Umbraco.Data.Matches
                     var tournaments = await connection.QueryAsync<Tournament, Team, MatchLocation, Season, Competition, Tournament>(
                         $@"SELECT m.MatchId AS TournamentId, m.MatchName AS TournamentName, m.PlayerType, m.StartTime, m.StartTimeIsKnown, 
                             m.OversPerInningsDefault, m.PlayersPerTeam, m.TournamentQualificationType, 
-                            m.MaximumTeamsInTournament, m.SpacesInTournament, m.MatchNotes,
+                            m.MaximumTeamsInTournament, m.SpacesInTournament, m.MatchNotes, m.MatchRoute AS TournamentRoute,
                             t.TeamRoute, tn.TeamName,
                             ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
                             ml.Locality, ml.Town, ml.Latitude, ml.Longitude,

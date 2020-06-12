@@ -3,7 +3,6 @@ using Stoolball.Email;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -16,23 +15,26 @@ using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Matches
 {
-    public class MatchController : RenderMvcControllerAsync
+    public class TournamentActionsController : RenderMvcControllerAsync
     {
+        private readonly ITournamentDataSource _tournamentDataSource;
         private readonly IMatchDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly IEmailProtector _emailProtector;
 
-        public MatchController(IGlobalSettings globalSettings,
+        public TournamentActionsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
+           ITournamentDataSource tournamentDataSource,
            IMatchDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
            IEmailProtector emailProtector)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
+            _tournamentDataSource = tournamentDataSource ?? throw new System.ArgumentNullException(nameof(tournamentDataSource));
             _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
             _dateFormatter = dateFormatter ?? throw new System.ArgumentNullException(nameof(dateFormatter));
             _emailProtector = emailProtector ?? throw new System.ArgumentNullException(nameof(emailProtector));
@@ -47,13 +49,13 @@ namespace Stoolball.Web.Matches
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new MatchViewModel(contentModel.Content)
+            var model = new TournamentViewModel(contentModel.Content)
             {
-                Match = await _matchDataSource.ReadMatchByRoute(Request.Url.AbsolutePath).ConfigureAwait(false),
+                Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.Url.AbsolutePath).ConfigureAwait(false),
                 DateTimeFormatter = _dateFormatter
             };
 
-            if (model.Match == null)
+            if (model.Tournament == null)
             {
                 return new HttpNotFoundResult();
             }
@@ -61,28 +63,37 @@ namespace Stoolball.Web.Matches
             {
                 model.IsAuthorized = IsAuthorized(model);
 
-                model.Metadata.PageTitle = model.Match.MatchName;
-
-                if (model.Match.Tournament != null)
+                model.Matches = new MatchListingViewModel
                 {
-                    var inThe = (model.Match.Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? " in " : " in the ";
-                    model.Metadata.PageTitle += inThe + model.Match.Tournament.TournamentName;
+                    Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
+                    {
+                        TournamentId = model.Tournament.TournamentId,
+                        IncludeTournamentMatches = true
+                    }).ConfigureAwait(false),
+                    ShowMatchDate = false
+                };
+
+                model.Metadata.PageTitle = model.Tournament.TournamentName;
+                var saysTournament = model.Tournament.TournamentName.ToUpperInvariant().Contains("TOURNAMENT");
+                if (!saysTournament)
+                {
+                    model.Metadata.PageTitle += " stoolball tournament";
                 }
-                model.Metadata.PageTitle += $", {_dateFormatter.FormatDate(model.Match.StartTime.LocalDateTime, false, false, false)} - stoolball match";
+                model.Metadata.PageTitle += $", {_dateFormatter.FormatDate(model.Tournament.StartTime.LocalDateTime, false, false, false)}";
 
-                model.Metadata.Description = model.Match.Description();
+                model.Metadata.Description = model.Tournament.Description();
 
-                model.Match.MatchNotes = _emailProtector.ProtectEmailAddresses(model.Match.MatchNotes, User.Identity.IsAuthenticated);
+                model.Tournament.MatchNotes = _emailProtector.ProtectEmailAddresses(model.Tournament.MatchNotes, User.Identity.IsAuthenticated);
 
                 return CurrentTemplate(model);
             }
         }
 
         /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this match
+        /// Checks whether the currently signed-in member is authorized to edit this tournament
         /// </summary>
         /// <returns></returns>
-        protected virtual bool IsAuthorized(MatchViewModel model)
+        protected virtual bool IsAuthorized(TournamentViewModel model)
         {
             return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null);
         }

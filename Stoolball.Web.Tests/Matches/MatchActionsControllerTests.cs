@@ -18,9 +18,9 @@ using Xunit;
 
 namespace Stoolball.Web.Tests.Matches
 {
-    public class MatchControllerTests : UmbracoBaseTest
+    public class MatchActionsControllerTests : UmbracoBaseTest
     {
-        private class TestController : MatchController
+        private class TestController : MatchActionsController
         {
             public TestController(IMatchDataSource matchDataSource)
            : base(
@@ -50,7 +50,7 @@ namespace Stoolball.Web.Tests.Matches
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("Match", model);
+                return View("MatchActions", model);
             }
         }
 

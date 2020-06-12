@@ -16,13 +16,13 @@ using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Matches
 {
-    public class MatchController : RenderMvcControllerAsync
+    public class MatchActionsController : RenderMvcControllerAsync
     {
         private readonly IMatchDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly IEmailProtector _emailProtector;
 
-        public MatchController(IGlobalSettings globalSettings,
+        public MatchActionsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,

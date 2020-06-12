@@ -11,6 +11,7 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
+using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Matches
 {
@@ -60,6 +61,8 @@ namespace Stoolball.Web.Matches
             }
             else
             {
+                model.IsAuthorized = IsAuthorized(model);
+
                 model.Matches = new MatchListingViewModel
                 {
                     Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
@@ -84,6 +87,15 @@ namespace Stoolball.Web.Matches
 
                 return CurrentTemplate(model);
             }
+        }
+
+        /// <summary>
+        /// Checks whether the currently signed-in member is authorized to edit this tournament
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsAuthorized(TournamentViewModel model)
+        {
+            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null);
         }
     }
 }

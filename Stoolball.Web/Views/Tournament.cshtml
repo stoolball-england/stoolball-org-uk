@@ -26,6 +26,19 @@
     h1 += ", " + Model.DateTimeFormatter.FormatDate(Model.Tournament.StartTime.LocalDateTime, false);
 }
 <h1>@h1</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <em class="nav-link active">Summary</em>
+    </li>
+    @if (Model.IsAuthorized)
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Tournament.TournamentRoute/edit">Edit</a>
+        </li>
+    }
+</ul>
+
 <p>
     When:
     @(Model.Tournament.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(Model.Tournament.StartTime.LocalDateTime) : Model.DateTimeFormatter.FormatDate(Model.Tournament.StartTime.LocalDateTime))

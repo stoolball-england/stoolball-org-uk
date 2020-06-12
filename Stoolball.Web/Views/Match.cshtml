@@ -39,6 +39,18 @@
 }
 <h1>@h1</h1>
 
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <em class="nav-link active">Summary</em>
+    </li>
+    @if (Model.IsAuthorized)
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Match.MatchRoute/edit">Edit</a>
+        </li>
+    }
+    </ul>
+
 <p>
     @Model.Match.MatchType.Humanize(LetterCasing.Sentence)@{
         if (Model.Match.Season != null)

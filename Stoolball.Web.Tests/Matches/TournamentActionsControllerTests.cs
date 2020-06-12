@@ -1,9 +1,11 @@
 ﻿using Moq;
 using Stoolball.Dates;
 using Stoolball.Email;
+using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
 using System;
+using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -18,18 +20,18 @@ using Xunit;
 
 namespace Stoolball.Web.Tests.Matches
 {
-    public class MatchControllerTests : UmbracoBaseTest
+    public class TournamentActionsControllerTests : UmbracoBaseTest
     {
-        private class TestController : MatchController
+        private class TestController : TournamentActionsController
         {
-            public TestController(IMatchDataSource matchDataSource)
+            public TestController(ITournamentDataSource tournamentDataSource, IMatchDataSource matchDataSource)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, matchDataSource, Mock.Of<IDateTimeFormatter>(), Mock.Of<IEmailProtector>())
+                null, tournamentDataSource, matchDataSource, Mock.Of<IDateTimeFormatter>(), Mock.Of<IEmailProtector>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -43,24 +45,24 @@ namespace Stoolball.Web.Tests.Matches
                 ControllerContext = controllerContext.Object;
             }
 
-            protected override bool IsAuthorized(MatchViewModel model)
+            protected override bool IsAuthorized(TournamentViewModel model)
             {
                 return true;
             }
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("Match", model);
+                return View("TournamentActions", model);
             }
         }
 
         [Fact]
-        public async Task Route_not_matching_match_returns_404()
+        public async Task Route_not_matching_tournament_returns_404()
         {
-            var dataSource = new Mock<IMatchDataSource>();
-            dataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).Returns(Task.FromResult<Stoolball.Matches.Match>(null));
+            var tournamentDataSource = new Mock<ITournamentDataSource>();
+            tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).Returns(Task.FromResult<Stoolball.Matches.Tournament>(null));
 
-            using (var controller = new TestController(dataSource.Object))
+            using (var controller = new TestController(tournamentDataSource.Object, Mock.Of<IMatchDataSource>()))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -69,16 +71,19 @@ namespace Stoolball.Web.Tests.Matches
         }
 
         [Fact]
-        public async Task Route_matching_match_returns_MatchViewModel()
+        public async Task Route_matching_tournament_returns_TournamentViewModel()
         {
-            var dataSource = new Mock<IMatchDataSource>();
-            dataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match());
+            var tournamentDataSource = new Mock<ITournamentDataSource>();
+            tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentName = "Example tournament" });
 
-            using (var controller = new TestController(dataSource.Object))
+            var matchDataSource = new Mock<IMatchDataSource>();
+            matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
+
+            using (var controller = new TestController(tournamentDataSource.Object, matchDataSource.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<MatchViewModel>(((ViewResult)result).Model);
+                Assert.IsType<TournamentViewModel>(((ViewResult)result).Model);
             }
         }
     }

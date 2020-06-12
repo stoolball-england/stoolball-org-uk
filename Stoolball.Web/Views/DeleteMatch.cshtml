@@ -1,0 +1,62 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Matches.DeleteMatchViewModel>
+@using Humanizer
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.Matches
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+}
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+
+<h1>Delete @Model.Match.MatchName</h1>
+
+@if (!Model.Deleted)
+{
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Match.MatchRoute">Summary</a>
+        </li>
+        <li class="nav-item">
+            <em class="nav-link active">Edit</em>
+        </li>
+    </ul>
+}
+
+@if (Model.IsAuthorized)
+{
+    if (!Model.Deleted)
+    {
+        <p>If you delete @Model.Match.MatchName you will:</p>
+        <ul>
+        </ul>
+        <p><strong><strong>You cannot undo this.</strong></strong></p>
+
+        @*using (Html.BeginUmbracoForm<DeleteMatchSurfaceController>
+                           ("DeleteMatch"))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Match.MatchName}' into this box:")
+                            @Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck="false" })
+                            @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
+                        </div>
+
+                        <button class="btn btn-danger">@Html.Partial("_DeleteIcon", (Model.Match.MatchId.ToString(), string.Empty)) Delete @Model.Match.MatchName</button>
+                    }*@
+    }
+    else
+    {
+        <p>@Model.Match.MatchName has been deleted.</p>
+        <a class="btn btn-primary" href="/matches">Back to matches</a>
+    }
+}
+else
+{
+    @Html.Partial("_Login")
+}

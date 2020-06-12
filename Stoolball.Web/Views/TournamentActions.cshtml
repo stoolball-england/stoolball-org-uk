@@ -1,0 +1,27 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<TournamentViewModel>
+@using Stoolball.Web.Matches
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+<h1>Edit @Model.Tournament.TournamentName</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Tournament.TournamentRoute">Summary</a>
+    </li>
+    <li class="nav-item">
+        <em class="nav-link active">Edit</em>
+    </li>
+</ul>
+
+@if (Model.IsAuthorized)
+{
+    <dl>
+        <dt><a href="@Model.Tournament.TournamentRoute/delete">Delete @Model.Tournament.TournamentName</a></dt>
+        <dd>Matches and match statistics will be lost. Players and teams that only feature in this tournament will be deleted.</dd>
+    </dl>
+}
+else
+{
+    @Html.Partial("_Login")
+}

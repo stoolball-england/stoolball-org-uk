@@ -41,8 +41,10 @@
         MatchesForMatchLocation,
         MatchesForSeason,
         Match,
+        MatchActions,
         DeleteMatch,
         Tournament,
+        TournamentActions,
         DeleteTournament
     }
 }
