@@ -9,7 +9,7 @@ function tournamentResource() {
         MigratedTournamentId: tournament.matchId,
         TournamentName: tournament.title,
         MigratedTournamentLocationId: tournament.groundId,
-        TournamentQualificationType:
+        QualificationType:
           tournament.qualification === 0 ? null : tournament.qualification - 1,
         PlayerType: tournament.playerType - 1,
         PlayersPerTeam: tournament.playersPerTeam,
@@ -18,7 +18,7 @@ function tournamentResource() {
         SpacesInTournament: tournament.spacesInTournament,
         StartTime: tournament.startTime,
         StartTimeIsKnown: tournament.startTimeKnown,
-        MatchNotes: tournament.notes,
+        TournamentNotes: tournament.notes,
         MigratedTeams: tournament.teams.map((team) => ({
           MigratedTeamId: team.teamId,
           TeamRole: 2,

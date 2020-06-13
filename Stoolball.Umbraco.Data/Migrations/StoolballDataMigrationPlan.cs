@@ -31,10 +31,13 @@ namespace Stoolball.Umbraco.Data.Migrations
                 .To<MatchAwardTypeAddTable>(typeof(MatchAwardTypeAddTable).ToString())
                 .To<MatchAwardAddTable>(typeof(MatchAwardAddTable).ToString())
                 .To<MatchTeamAddTable>(typeof(MatchTeamAddTable).ToString())
-                .To<SeasonMatchAddTable>(typeof(SeasonMatchAddTable).ToString())
                 .To<PlayerInningsAddTable>(typeof(PlayerInningsAddTable).ToString())
                 .To<OverAddTable>(typeof(OverAddTable).ToString())
                 .To<MatchCommentAddTable>(typeof(MatchCommentAddTable).ToString())
+                .To<TournamentAddTable>(typeof(TournamentAddTable).ToString())
+                .To<TournamentTeamAddTable>(typeof(TournamentTeamAddTable).ToString())
+                .To<TournamentSeasonAddTable>(typeof(TournamentSeasonAddTable).ToString())
+                .To<TournamentCommentAddTable>(typeof(TournamentCommentAddTable).ToString())
                 .To<PlayerMatchStatisticsAddTable>(typeof(PlayerMatchStatisticsAddTable).ToString())
                 .To<AuditAddTable>(typeof(AuditAddTable).ToString());
         }

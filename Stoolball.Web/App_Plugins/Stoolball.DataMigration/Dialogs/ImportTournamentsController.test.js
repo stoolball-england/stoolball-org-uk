@@ -67,35 +67,35 @@ describe("tournamentReducer", () => {
 });
 
 describe("tournamentReducer", () => {
-  it("should translate qualification = 0 to TournamentQualificationType = null", () => {
+  it("should translate qualification = 0 to QualificationType = null", () => {
     const objectUnderTest = tournamentResource();
     const result = objectUnderTest.tournamentReducer({
       qualification: 0,
     });
 
-    expect(result.TournamentQualificationType).toBe(null);
+    expect(result.QualificationType).toBe(null);
   });
 });
 
 describe("tournamentReducer", () => {
-  it("should translate qualification = 1 to TournamentQualificationType = 0", () => {
+  it("should translate qualification = 1 to QualificationType = 0", () => {
     const objectUnderTest = tournamentResource();
     const result = objectUnderTest.tournamentReducer({
       qualification: 1,
     });
 
-    expect(result.TournamentQualificationType).toBe(0);
+    expect(result.QualificationType).toBe(0);
   });
 });
 
 describe("tournamentReducer", () => {
-  it("should translate qualification = 2 to TournamentQualificationType = 1", () => {
+  it("should translate qualification = 2 to QualificationType = 1", () => {
     const objectUnderTest = tournamentResource();
     const result = objectUnderTest.tournamentReducer({
       qualification: 2,
     });
 
-    expect(result.TournamentQualificationType).toBe(1);
+    expect(result.QualificationType).toBe(1);
   });
 });
 

@@ -182,7 +182,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         await database.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsAdjustment}").ConfigureAwait(false);
                         await database.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsRule}").ConfigureAwait(false);
                         await database.ExecuteAsync($"DELETE FROM {Tables.SeasonMatchType}").ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.SeasonMatch}").ConfigureAwait(false);
+                        await database.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason}").ConfigureAwait(false);
                         await database.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam}").ConfigureAwait(false);
                         await database.ExecuteAsync($"DELETE FROM {Tables.Season}").ConfigureAwait(false);
                         transaction.Complete();

@@ -44,7 +44,7 @@ namespace Stoolball.Umbraco.Data.Matches
                 {
                     var tournaments = await connection.QueryAsync<Tournament, Team, MatchLocation, Season, Competition, Tournament>(
                         $@"SELECT m.MatchId AS TournamentId, m.MatchName AS TournamentName, m.PlayerType, m.StartTime, m.StartTimeIsKnown, 
-                            m.OversPerInningsDefault, m.PlayersPerTeam, m.TournamentQualificationType, 
+                            m.OversPerInningsDefault, m.PlayersPerTeam, m.QualificationType, 
                             m.MaximumTeamsInTournament, m.SpacesInTournament, m.MatchNotes, m.MatchRoute AS TournamentRoute, m.MemberKey,
                             t.TeamRoute, tn.TeamName,
                             ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
@@ -56,7 +56,7 @@ namespace Stoolball.Umbraco.Data.Matches
                             LEFT JOIN {Tables.Team} AS t ON mt.TeamId = t.TeamId
                             LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             LEFT JOIN {Tables.MatchLocation} AS ml ON m.MatchLocationId = ml.MatchLocationId
-                            LEFT JOIN {Tables.SeasonMatch} AS sm ON m.MatchId = sm.MatchId
+                            LEFT JOIN {Tables.TournamentSeason} AS sm ON m.MatchId = sm.MatchId
                             LEFT JOIN {Tables.Season} AS s ON sm.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.Competition} AS co ON s.CompetitionId = co.CompetitionId
                             WHERE LOWER(m.MatchRoute) = @Route",

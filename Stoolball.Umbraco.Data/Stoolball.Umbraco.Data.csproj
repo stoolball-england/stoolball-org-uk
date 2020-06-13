@@ -82,6 +82,12 @@
     <Compile Include="MatchLocations\IMatchLocationRepository.cs" />
     <Compile Include="MatchLocations\MatchLocationQuery.cs" />
     <Compile Include="MatchLocations\SqlServerMatchLocationRepository.cs" />
+    <Compile Include="Migrations\TournamentCommentTableInitialSchema.cs" />
+    <Compile Include="Migrations\TournamentCommentAddTable.cs" />
+    <Compile Include="Migrations\TournamentTeamTableInitialSchema.cs" />
+    <Compile Include="Migrations\TournamentTeamAddTable.cs" />
+    <Compile Include="Migrations\TournamentTableInitialSchema.cs" />
+    <Compile Include="Migrations\TournamentAddTable.cs" />
     <Compile Include="Teams\IPlayerDataSource.cs" />
     <Compile Include="Teams\ITeamRepository.cs" />
     <Compile Include="Teams\SqlServerPlayerDataSource.cs" />
@@ -128,8 +134,8 @@
     <Compile Include="Migrations\SchoolNameTableInitialSchema.cs" />
     <Compile Include="Migrations\SchoolTableInitialSchema.cs" />
     <Compile Include="Migrations\SeasonAddTable.cs" />
-    <Compile Include="Migrations\SeasonMatchAddTable.cs" />
-    <Compile Include="Migrations\SeasonMatchTableInitialSchema.cs" />
+    <Compile Include="Migrations\TournamentSeasonAddTable.cs" />
+    <Compile Include="Migrations\TournamentSeasonTableInitialSchema.cs" />
     <Compile Include="Migrations\SeasonMatchTypeAddTable.cs" />
     <Compile Include="Migrations\SeasonMatchTypeTableInitialSchema.cs" />
     <Compile Include="Migrations\SeasonPointsAdjustmentAddTable.cs" />

@@ -29,11 +29,14 @@ namespace Stoolball.Umbraco.Data
             public const string MatchInnings = _tablePrefix + "MatchInnings";
             public const string MatchAward = _tablePrefix + "MatchAward";
             public const string MatchAwardType = _tablePrefix + "MatchAwardType";
+            public const string Tournament = _tablePrefix + "Tournament";
+            public const string TournamentTeam = _tablePrefix + "TournamentTeam";
+            public const string TournamentSeason = _tablePrefix + "TournamentSeason";
+            public const string TournamentComment = _tablePrefix + "TournamentComment";
             public const string PlayerIdentity = _tablePrefix + "PlayerIdentity";
             public const string School = _tablePrefix + "School";
             public const string SchoolName = _tablePrefix + "SchoolName";
             public const string Season = _tablePrefix + "Season";
-            public const string SeasonMatch = _tablePrefix + "SeasonMatch";
             public const string SeasonMatchType = _tablePrefix + "SeasonMatchType";
             public const string SeasonPointsAdjustment = _tablePrefix + "SeasonPointsAdjustment";
             public const string SeasonPointsRule = _tablePrefix + "SeasonPointsRule";

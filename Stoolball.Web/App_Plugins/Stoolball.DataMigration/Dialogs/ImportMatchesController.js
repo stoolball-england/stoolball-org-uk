@@ -51,7 +51,6 @@ function matchResource() {
           },
         ],
         InningsOrderIsKnown: match.homeBatFirst !== null,
-        OversPerInningsDefault: match.overs,
         MigratedTournamentId: match.tournamentMatchId,
         OrderInTournament: match.orderInTournament,
         StartTime: match.startTime,

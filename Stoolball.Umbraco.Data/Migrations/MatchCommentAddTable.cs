@@ -4,7 +4,7 @@ using Umbraco.Core.Migrations;
 namespace Stoolball.Umbraco.Data.Migrations
 {
     /// <summary>
-    /// Adds a table for recording comments on stoolball matches and tournaments
+    /// Adds a table for recording comments on stoolball matches 
     /// </summary>
     public partial class MatchCommentAddTable : MigrationBase
     {

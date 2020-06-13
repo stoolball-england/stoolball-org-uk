@@ -4,25 +4,21 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Umbraco.Data.Migrations
 {
-    [TableName(Constants.Tables.Match)]
-    [PrimaryKey(nameof(MatchId), AutoIncrement = false)]
+    [TableName(Constants.Tables.Tournament)]
+    [PrimaryKey(nameof(TournamentId), AutoIncrement = false)]
     [ExplicitColumns]
-    public class MatchTableInitialSchema
+    public class TournamentTableInitialSchema
     {
         [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
-        [Column(nameof(MatchId))]
-        public Guid MatchId { get; set; }
+        [Column(nameof(TournamentId))]
+        public Guid TournamentId { get; set; }
 
         [Column(nameof(MigratedMatchId))]
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? MigratedMatchId { get; set; }
 
-        [Column(nameof(MatchName))]
-        public string MatchName { get; set; }
-
-        [Column(nameof(UpdateMatchNameAutomatically))]
-        [Constraint(Default = 1)]
-        public bool UpdateMatchNameAutomatically { get; set; }
+        [Column(nameof(TournamentName))]
+        public string TournamentName { get; set; }
 
         [Column(nameof(MatchLocationId))]
         [ForeignKey(typeof(MatchLocationTableInitialSchema), Column = nameof(MatchLocationTableInitialSchema.MatchLocationId))]
@@ -37,10 +33,6 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Constraint(Default = 1)]
         public bool StartTimeIsKnown { get; set; }
 
-        [Column(nameof(MatchType))]
-        [Index(IndexTypes.NonClustered)]
-        public string MatchType { get; set; }
-
         [Column(nameof(PlayerType))]
         [Index(IndexTypes.NonClustered)]
         public string PlayerType { get; set; }
@@ -49,36 +41,30 @@ namespace Stoolball.Umbraco.Data.Migrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? PlayersPerTeam { get; set; }
 
-        [Column(nameof(InningsOrderIsKnown))]
+        [Column(nameof(QualificationType))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public bool? InningsOrderIsKnown { get; set; }
+        public string QualificationType { get; set; }
 
-        [Column(nameof(MatchResultType))]
+        [Column(nameof(OversPerInningsDefault))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public string MatchResultType { get; set; }
+        public int? OversPerInningsDefault { get; set; }
 
-        [Column(nameof(TournamentId))]
-        [ForeignKey(typeof(TournamentTableInitialSchema), Column = nameof(TournamentId))]
+        [Column(nameof(MaximumTeamsInTournament))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public Guid? TournamentId { get; set; }
+        public int? MaximumTeamsInTournament { get; set; }
 
-        [Column(nameof(OrderInTournament))]
+        [Column(nameof(SpacesInTournament))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? OrderInTournament { get; set; }
+        public int? SpacesInTournament { get; set; }
 
-        [Column(nameof(MatchNotes))]
+        [Column(nameof(TournamentNotes))]
         [NullSetting(NullSetting = NullSettings.Null)]
         [SpecialDbType(SpecialDbTypes.NTEXT)]
-        public string MatchNotes { get; set; }
+        public string TournamentNotes { get; set; }
 
-        [Column(nameof(SeasonId))]
-        [ForeignKey(typeof(SeasonTableInitialSchema), Column = nameof(SeasonId))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public Guid? SeasonId { get; set; }
-
-        [Column(nameof(MatchRoute))]
+        [Column(nameof(TournamentRoute))]
         [Index(IndexTypes.UniqueNonClustered)]
-        public string MatchRoute { get; set; }
+        public string TournamentRoute { get; set; }
 
         [Column(nameof(MemberKey))]
         [NullSetting(NullSetting = NullSettings.Null)]

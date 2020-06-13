@@ -40,18 +40,18 @@
 @{
     var showSpacesLeft = (Model.Tournament.SpacesInTournament.HasValue &&
         Model.Tournament.StartTime > DateTime.UtcNow &&
-        Model.Tournament.TournamentQualificationType != TournamentQualificationType.ClosedTournament);
+        Model.Tournament.QualificationType != TournamentQualificationType.ClosedTournament);
     if (Model.Tournament.PlayersPerTeam.HasValue ||
         showSpacesLeft ||
         Model.Tournament.Teams.Count > 0 ||
-        Model.Tournament.TournamentQualificationType.HasValue)
+        Model.Tournament.QualificationType.HasValue)
     {
         <h2>Teams</h2>
     }
 
 }
 @if (Model.Tournament.PlayersPerTeam.HasValue ||
-    Model.Tournament.TournamentQualificationType.HasValue ||
+    Model.Tournament.QualificationType.HasValue ||
     showSpacesLeft)
 {
     <p>
@@ -59,11 +59,11 @@
         {
             @Model.Tournament.PlayersPerTeam.Value@: players per team.
         }
-        @if (Model.Tournament.TournamentQualificationType == TournamentQualificationType.OpenTournament)
+        @if (Model.Tournament.QualificationType == TournamentQualificationType.OpenTournament)
         {
             @:Any @Model.Tournament.PlayerType.Humanize(LetterCasing.LowerCase) team may enter this tournament.
         }
-        else if (Model.Tournament.TournamentQualificationType == TournamentQualificationType.ClosedTournament)
+        else if (Model.Tournament.QualificationType == TournamentQualificationType.ClosedTournament)
         {
             @:Only invited or qualifying teams may enter this tournament.
         }

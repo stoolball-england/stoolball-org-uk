@@ -68,7 +68,7 @@ namespace Stoolball.Umbraco.Data.Matches
             {
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var sql = $@"SELECT m.MatchName, m.MatchType, m.PlayerType, m.TournamentQualificationType, 
+                    var sql = $@"SELECT m.MatchName, m.MatchType, m.PlayerType, m.QualificationType, 
                         m.StartTime, m.StartTimeIsKnown, m.SpacesInTournament, m.MatchRoute
                         FROM {Tables.Match} AS m
                         <<JOIN>>
@@ -112,7 +112,7 @@ namespace Stoolball.Umbraco.Data.Matches
 
             if (matchQuery?.CompetitionIds?.Count > 0)
             {
-                join.Add($"INNER JOIN {Tables.SeasonMatch} sm ON m.MatchId = sm.MatchId");
+                join.Add($"INNER JOIN {Tables.TournamentSeason} sm ON m.MatchId = sm.MatchId");
                 join.Add($"INNER JOIN {Tables.Season} s ON sm.SeasonId = s.SeasonId");
 
                 where.Add("s.CompetitionId IN @CompetitionIds");
@@ -121,9 +121,9 @@ namespace Stoolball.Umbraco.Data.Matches
 
             if (matchQuery?.SeasonIds?.Count > 0)
             {
-                if (!string.Join(string.Empty, join).Contains(Tables.SeasonMatch))
+                if (!string.Join(string.Empty, join).Contains(Tables.TournamentSeason))
                 {
-                    join.Add($"INNER JOIN {Tables.SeasonMatch} sm ON m.MatchId = sm.MatchId");
+                    join.Add($"INNER JOIN {Tables.TournamentSeason} sm ON m.MatchId = sm.MatchId");
                 }
 
                 where.Add("sm.SeasonId IN @SeasonIds");
@@ -192,7 +192,7 @@ namespace Stoolball.Umbraco.Data.Matches
                             LEFT JOIN {Tables.Team} AS t ON mt.TeamId = t.TeamId
                             LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             LEFT JOIN {Tables.MatchLocation} AS ml ON m.MatchLocationId = ml.MatchLocationId
-                            LEFT JOIN {Tables.SeasonMatch} AS sm ON m.MatchId = sm.MatchId
+                            LEFT JOIN {Tables.TournamentSeason} AS sm ON m.MatchId = sm.MatchId
                             LEFT JOIN {Tables.Season} AS s ON sm.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.Competition} AS co ON s.CompetitionId = co.CompetitionId
                             WHERE LOWER(m.MatchRoute) = @Route",

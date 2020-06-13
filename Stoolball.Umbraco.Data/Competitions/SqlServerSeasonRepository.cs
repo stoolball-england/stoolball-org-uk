@@ -298,7 +298,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                         await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonPointsRule} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonPointsAdjustment} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonMatchType} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonMatch} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($@"DELETE FROM {Tables.Season} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
                         transaction.Commit();
                     }

@@ -32,9 +32,7 @@ A `Match` might stand alone, it might be part of a league or other `Competition`
 
 ## Tournaments
 
-A `Tournament` shares a lot of properties with a `Match` (it happens at a `MatchLocation` at a specific date and time), but it usually involves more than two `Teams` and it is a container for other `Matches`, which have a type of `TournamentMatch`.
-
-`Tournaments` are managed in the same database table as `Matches` because it makes it easy to include both in listings, which is almost always wanted.
+A `Tournament` happens at a `MatchLocation` at a specific date and time, involves more than two `Teams` and is a container for several `Matches`.
 
 ## Competitions
 
