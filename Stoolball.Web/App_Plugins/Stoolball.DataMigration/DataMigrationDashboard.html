@@ -104,8 +104,9 @@
         <div class="umb-box">
           <div class="umb-box-content">
             <p>
-              Member groups, clubs, schools and match locations must already be imported before
-              importing teams. Deleting teams also deletes players.
+              Member groups, clubs, schools and match locations must already be
+              imported before importing teams. Deleting teams also deletes
+              players.
             </p>
             <button
               class="btn btn-danger"
@@ -163,8 +164,23 @@
           <div class="umb-box-content">
             <p>
               Match locations, teams and seasons must already be imported before
-              importing matches.
+              importing tournaments. Tournaments must be imported before
+              matches.
             </p>
+            <button
+              class="btn btn-danger"
+              ng-click="vm.openDialog('Delete all tournaments - are you sure?', 'DeleteTournaments')"
+            >
+              <i class="icon-trash"></i>
+              Delete all tournaments
+            </button>
+            <button
+              class="btn btn-primary"
+              ng-click="vm.openDialog('Import tournaments', 'ImportTournaments')"
+            >
+              <i class="icon-arrow-right"></i>
+              Import tournaments
+            </button>
             <button
               class="btn btn-danger"
               ng-click="vm.openDialog('Delete all matches - are you sure?', 'DeleteMatches')"

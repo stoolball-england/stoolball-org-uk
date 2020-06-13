@@ -16,8 +16,8 @@
       <umb-box>
         <umb-box-content>
           <p>
-            This will import all stoolball matches and tournaments from the old
-            Stoolball England website into the Umbraco database.
+            This will import all stoolball matches from the old Stoolball
+            England website into the Umbraco database.
           </p>
 
           <label for="dataSource">Import from</label>
@@ -72,12 +72,6 @@
             >
               Failed: {{item.title}}
             </li>
-            <li
-              ng-repeat="item in vm.matchTypes[5].failed"
-              class="alert alert-error"
-            >
-              Failed: {{item.title}}
-            </li>
             <li ng-repeat="item in vm.matchTypes[0].imported">
               Imported: {{item.title}}
             </li>
@@ -91,9 +85,6 @@
               Imported: {{item.title}}
             </li>
             <li ng-repeat="item in vm.matchTypes[4].imported">
-              Imported: {{item.title}}
-            </li>
-            <li ng-repeat="item in vm.matchTypes[5].imported">
               Imported: {{item.title}}
             </li>
           </ul>

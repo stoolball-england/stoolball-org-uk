@@ -1,6 +1,6 @@
 ﻿<div
   class="data-migration-dialog"
-  ng-controller="Stoolball.DataMigration.DeleteMatches as vm"
+  ng-controller="Stoolball.DataMigration.ImportTournaments as vm"
 >
   <umb-editor-view>
     <umb-editor-header
@@ -15,19 +15,33 @@
     <umb-editor-container>
       <umb-box>
         <umb-box-content>
-          <p>This will delete all stoolball matches.</p>
-          <p><strong>This cannot be undone.</strong></p>
+          <p>
+            This will import all stoolball tournaments from the old Stoolball
+            England website into the Umbraco database.
+          </p>
+
+          <label for="dataSource">Import from</label>
+          <select
+            ng-init="model.dataSource='stoolball.local'"
+            ng-model="model.dataSource"
+            ng-options="x for x in model.dataSources"
+            id="dataSource"
+          >
+          </select>
         </umb-box-content>
       </umb-box>
-      <umb-box ng-if="vm.buttonState != 'init'">
+      <umb-box ng-if="vm.processing">
         <umb-box-content>
           <div class="umb-panel-group__details-check-name">
-            Deleting matches
+            Importing: {{vm.imported.length}} of {{vm.total}} tournaments
           </div>
-          <p ng-if="!vm.success && vm.done" class="alert alert-error">
-            Failed
-          </p>
-          <p ng-if="vm.success && vm.done">Done.</p>
+        </umb-box-content>
+      </umb-box>
+      <umb-box ng-if="vm.done && vm.total === 0">
+        <umb-box-content>
+          <div class="umb-panel-group__details-check-name">
+            There are no tournaments to import.
+          </div>
         </umb-box-content>
       </umb-box>
     </umb-editor-container>
@@ -45,9 +59,9 @@
         </umb-button>
         <umb-button
           type="button"
-          button-style="danger"
-          label="Delete all matches"
-          icon="icon-trash"
+          button-style="primary"
+          label="Import tournaments"
+          icon="icon-arrow-right"
           action="vm.submit(model)"
           state="vm.buttonState"
           disabled="vm.buttonState === 'busy'"

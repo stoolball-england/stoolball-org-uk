@@ -51,6 +51,7 @@ namespace Stoolball.Web
             composition.Register<ITeamDataMigrator, SqlServerTeamDataMigrator>(Lifetime.Singleton);
             composition.Register<ICompetitionDataMigrator, SqlServerCompetitionDataMigrator>(Lifetime.Singleton);
             composition.Register<IMatchDataMigrator, SqlServerMatchDataMigrator>(Lifetime.Singleton);
+            composition.Register<ITournamentDataMigrator, SqlServerTournamentDataMigrator>(Lifetime.Singleton);
             composition.Register<IPlayerDataMigrator, SqlServerPlayerDataMigrator>(Lifetime.Singleton);
             composition.Register<IPlayerPerformanceDataMigrator, SqlServerPlayerPerformanceDataMigrator>(Lifetime.Singleton);
 

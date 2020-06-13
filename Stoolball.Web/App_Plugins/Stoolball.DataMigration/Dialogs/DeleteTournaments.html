@@ -1,6 +1,6 @@
 ﻿<div
   class="data-migration-dialog"
-  ng-controller="Stoolball.DataMigration.DeleteMatches as vm"
+  ng-controller="Stoolball.DataMigration.DeleteTournaments as vm"
 >
   <umb-editor-view>
     <umb-editor-header
@@ -15,14 +15,14 @@
     <umb-editor-container>
       <umb-box>
         <umb-box-content>
-          <p>This will delete all stoolball matches.</p>
+          <p>This will delete all stoolball tournaments.</p>
           <p><strong>This cannot be undone.</strong></p>
         </umb-box-content>
       </umb-box>
       <umb-box ng-if="vm.buttonState != 'init'">
         <umb-box-content>
           <div class="umb-panel-group__details-check-name">
-            Deleting matches
+            Deleting tournaments
           </div>
           <p ng-if="!vm.success && vm.done" class="alert alert-error">
             Failed
@@ -46,7 +46,7 @@
         <umb-button
           type="button"
           button-style="danger"
-          label="Delete all matches"
+          label="Delete all tournaments"
           icon="icon-trash"
           action="vm.submit(model)"
           state="vm.buttonState"

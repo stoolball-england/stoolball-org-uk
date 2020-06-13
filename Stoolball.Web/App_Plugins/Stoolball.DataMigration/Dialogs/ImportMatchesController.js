@@ -77,43 +77,6 @@ function matchResource() {
         MatchNotes: match.notes,
       };
     },
-    tournamentReducer(tournament) {
-      tournament.teams = tournament.teams || [];
-
-      return {
-        MigratedTournamentId: tournament.matchId,
-        TournamentName: tournament.title,
-        MigratedTournamentLocationId: tournament.groundId,
-        TournamentQualificationType:
-          tournament.qualification === 0 ? null : tournament.qualification - 1,
-        PlayerType: tournament.playerType - 1,
-        PlayersPerTeam: tournament.playersPerTeam,
-        OversPerInningsDefault: tournament.overs,
-        MaximumTeamsInTournament: tournament.maximumTeamsInTournament,
-        SpacesInTournament: tournament.spacesInTournament,
-        StartTime: tournament.startTime,
-        StartTimeIsKnown: tournament.startTimeKnown,
-        MatchNotes: tournament.notes,
-        MigratedTeams: tournament.teams.map((team) => ({
-          MigratedTeamId: team.teamId,
-          TeamRole: 2,
-        })),
-        MigratedSeasonIds: tournament.seasons,
-        TournamentRoute: tournament.route,
-        History: [
-          {
-            Action: "Create",
-            AuditDate: tournament.dateCreated,
-            ActorName: tournament.createdBy ? tournament.createdBy : null,
-          },
-          {
-            Action: "Update",
-            AuditDate: tournament.dateUpdated,
-            ActorName: tournament.updatedBy ? tournament.updatedBy : null,
-          },
-        ],
-      };
-    },
   };
 }
 
@@ -177,29 +140,11 @@ if (typeof angular !== "undefined") {
         );
       }
 
-      async function importTournaments(tournaments, imported, failed) {
-        await stoolballResource.postManyToApi(
-          "MatchMigration/CreateTournament",
-          tournaments,
-          (tournament) => matchResource.tournamentReducer(tournament),
-          imported,
-          failed
-        );
-      }
-
       vm.matchTypes = [
         {
           id: 0,
           name: "League matches",
           importMatches,
-          imported: [],
-          failed: [],
-          total: "?",
-        },
-        {
-          id: 1,
-          name: "Tournaments",
-          importMatches: importTournaments,
           imported: [],
           failed: [],
           total: "?",

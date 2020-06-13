@@ -16,11 +16,11 @@ using Umbraco.Web.Mvc;
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
 {
     [PluginController("Migration")]
-    public class MatchMigrationController : UmbracoAuthorizedJsonController
+    public class TournamentMigrationController : UmbracoAuthorizedJsonController
     {
-        private readonly IMatchDataMigrator _matchDataMigrator;
+        private readonly ITournamentDataMigrator _tournamentDataMigrator;
 
-        public MatchMigrationController(IGlobalSettings globalSettings,
+        public TournamentMigrationController(IGlobalSettings globalSettings,
             IUmbracoContextAccessor umbracoContextAccessor,
             ISqlContext sqlContext,
             ServiceContext serviceContext,
@@ -28,28 +28,28 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
             IProfilingLogger profilingLogger,
             IRuntimeState runtimeState,
             UmbracoHelper umbracoHelper,
-            IMatchDataMigrator matchDataMigrator) :
+            ITournamentDataMigrator tournamentDataMigrator) :
             base(globalSettings, umbracoContextAccessor, sqlContext, serviceContext, appCaches, profilingLogger, runtimeState, umbracoHelper)
         {
-            _matchDataMigrator = matchDataMigrator;
+            _tournamentDataMigrator = tournamentDataMigrator;
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateMatch(MigratedMatch match)
+        public async Task<IHttpActionResult> CreateTournament(MigratedTournament tournament)
         {
-            if (match is null)
+            if (tournament is null)
             {
-                throw new ArgumentNullException(nameof(match));
+                throw new ArgumentNullException(nameof(tournament));
             }
 
-            var migrated = await _matchDataMigrator.MigrateMatch(match).ConfigureAwait(false);
-            return Created(new Uri(Request.RequestUri, new Uri(migrated.MatchRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
+            var migrated = await _tournamentDataMigrator.MigrateTournament(tournament).ConfigureAwait(false);
+            return Created(new Uri(Request.RequestUri, new Uri(migrated.TournamentRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
         }
 
         [HttpDelete]
-        public async Task<IHttpActionResult> DeleteMatches()
+        public async Task<IHttpActionResult> DeleteTournaments()
         {
-            await _matchDataMigrator.DeleteMatches().ConfigureAwait(false);
+            await _tournamentDataMigrator.DeleteTournaments().ConfigureAwait(false);
             return Ok();
         }
     }
