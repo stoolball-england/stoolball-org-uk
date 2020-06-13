@@ -73,14 +73,7 @@ namespace Stoolball.Web.Matches
                     ShowMatchDate = false
                 };
 
-                model.Metadata.PageTitle = model.Tournament.TournamentName;
-                var saysTournament = model.Tournament.TournamentName.ToUpperInvariant().Contains("TOURNAMENT");
-                if (!saysTournament)
-                {
-                    model.Metadata.PageTitle += " stoolball tournament";
-                }
-                model.Metadata.PageTitle += $", {_dateFormatter.FormatDate(model.Tournament.StartTime.LocalDateTime, false, false, false)}";
-
+                model.Metadata.PageTitle = model.Tournament.TournamentFullNameAndPlayerType(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
                 model.Metadata.Description = model.Tournament.Description();
 
                 model.Tournament.MatchNotes = _emailProtector.ProtectEmailAddresses(model.Tournament.MatchNotes, User.Identity.IsAuthenticated);

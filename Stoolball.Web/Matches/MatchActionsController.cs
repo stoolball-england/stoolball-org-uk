@@ -1,9 +1,7 @@
 ﻿using Stoolball.Dates;
-using Stoolball.Email;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -20,7 +18,6 @@ namespace Stoolball.Web.Matches
     {
         private readonly IMatchDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
-        private readonly IEmailProtector _emailProtector;
 
         public MatchActionsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -29,13 +26,11 @@ namespace Stoolball.Web.Matches
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IMatchDataSource matchDataSource,
-           IDateTimeFormatter dateFormatter,
-           IEmailProtector emailProtector)
+           IDateTimeFormatter dateFormatter)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
             _dateFormatter = dateFormatter ?? throw new System.ArgumentNullException(nameof(dateFormatter));
-            _emailProtector = emailProtector ?? throw new System.ArgumentNullException(nameof(emailProtector));
         }
 
         [HttpGet]
@@ -61,18 +56,7 @@ namespace Stoolball.Web.Matches
             {
                 model.IsAuthorized = IsAuthorized(model);
 
-                model.Metadata.PageTitle = model.Match.MatchName;
-
-                if (model.Match.Tournament != null)
-                {
-                    var inThe = (model.Match.Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? " in " : " in the ";
-                    model.Metadata.PageTitle += inThe + model.Match.Tournament.TournamentName;
-                }
-                model.Metadata.PageTitle += $", {_dateFormatter.FormatDate(model.Match.StartTime.LocalDateTime, false, false, false)} - stoolball match";
-
-                model.Metadata.Description = model.Match.Description();
-
-                model.Match.MatchNotes = _emailProtector.ProtectEmailAddresses(model.Match.MatchNotes, User.Identity.IsAuthenticated);
+                model.Metadata.PageTitle = model.Match.MatchFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false)) + " - stoolball match";
 
                 return CurrentTemplate(model);
             }

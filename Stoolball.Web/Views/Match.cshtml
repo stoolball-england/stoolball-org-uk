@@ -25,19 +25,7 @@
         return description;
     }
 }
-@{
-    var h1 = Model.Match.MatchName;
-    if (Model.Match.Tournament != null)
-    {
-        var inThe = (Model.Match.Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? " in " : " in the ";
-        h1 += inThe + Model.Match.Tournament.TournamentName;
-    }
-    else
-    {
-        h1 += ", " + Model.DateTimeFormatter.FormatDate(Model.Match.StartTime.LocalDateTime, false);
-    }
-}
-<h1>@h1</h1>
+<h1>@Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
 
 <ul class="nav nav-tabs">
     <li class="nav-item">

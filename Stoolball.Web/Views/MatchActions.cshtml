@@ -3,7 +3,7 @@
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
-<h1>Edit @Model.Match.MatchName</h1>
+<h1>Edit @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
 
 <ul class="nav nav-tabs">
     <li class="nav-item">
@@ -17,7 +17,7 @@
 @if (Model.IsAuthorized)
 {
     <dl>
-        <dt><a href="@Model.Match.MatchRoute/delete">Delete @Model.Match.MatchName</a></dt>
+        <dt><a href="@Model.Match.MatchRoute/delete">Delete @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
         <dd>Match statistics will be lost. Competition results may be changed. Players that only feature in this match will be deleted.</dd>
     </dl>
 }

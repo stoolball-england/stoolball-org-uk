@@ -3,7 +3,6 @@ using Stoolball.Email;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -61,15 +60,7 @@ namespace Stoolball.Web.Matches
             {
                 model.IsAuthorized = IsAuthorized(model);
 
-                model.Metadata.PageTitle = model.Match.MatchName;
-
-                if (model.Match.Tournament != null)
-                {
-                    var inThe = (model.Match.Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? " in " : " in the ";
-                    model.Metadata.PageTitle += inThe + model.Match.Tournament.TournamentName;
-                }
-                model.Metadata.PageTitle += $", {_dateFormatter.FormatDate(model.Match.StartTime.LocalDateTime, false, false, false)} - stoolball match";
-
+                model.Metadata.PageTitle = model.Match.MatchFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false)) + " - stoolball match";
                 model.Metadata.Description = model.Match.Description();
 
                 model.Match.MatchNotes = _emailProtector.ProtectEmailAddresses(model.Match.MatchNotes, User.Identity.IsAuthenticated);

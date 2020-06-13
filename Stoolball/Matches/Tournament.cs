@@ -14,6 +14,39 @@ namespace Stoolball.Matches
     {
         public Guid? TournamentId { get; set; }
         public string TournamentName { get; set; }
+
+        public string TournamentFullNameAndPlayerType(Func<DateTimeOffset, string> dateTimeFormatter)
+        {
+            if (dateTimeFormatter is null)
+            {
+                throw new ArgumentNullException(nameof(dateTimeFormatter));
+            }
+
+            var fullName = new StringBuilder(TournamentName);
+
+            var saysTournament = TournamentName.ToUpperInvariant().Contains("TOURNAMENT");
+            var playerType = PlayerType.Humanize(LetterCasing.Sentence);
+            var saysPlayerType = TournamentName.Replace("'", string.Empty).ToUpperInvariant().Contains(playerType.ToUpperInvariant());
+
+            if (!saysTournament && !saysPlayerType)
+            {
+                fullName.Append(" (").Append(playerType).Append(" tournament)");
+            }
+            else if (!saysTournament)
+            {
+                fullName.Append(" tournament");
+            }
+            else if (!saysPlayerType)
+            {
+                fullName.Append(" (").Append(playerType).Append(")");
+            }
+
+            fullName.Append(", ");
+            fullName.Append(dateTimeFormatter(StartTime));
+
+            return fullName.ToString();
+        }
+
         public MatchLocation TournamentLocation { get; set; }
         public DateTimeOffset StartTime { get; set; }
         public bool StartTimeIsKnown { get; set; }

@@ -4,28 +4,7 @@
 @using Stoolball.Matches
 @using Stoolball.Web.Competitions
 @using Stoolball.Web.Matches
-@{
-    // Make sure the reader knows this is a tournament, and the player type
-    var saysTournament = Model.Tournament.TournamentName.ToUpperInvariant().Contains("TOURNAMENT");
-    var playerType = Model.Tournament.PlayerType.Humanize(LetterCasing.Sentence);
-    var saysPlayerType = Model.Tournament.TournamentName.Replace("'", string.Empty).ToUpperInvariant().Contains(playerType.ToUpperInvariant());
-
-    var h1 = Model.Tournament.TournamentName;
-    if (!saysTournament && !saysPlayerType)
-    {
-        h1 += " (" + playerType + " tournament)";
-    }
-    else if (!saysTournament)
-    {
-        h1 += " tournament";
-    }
-    else if (!saysPlayerType)
-    {
-        h1 += " (" + playerType + ")";
-    }
-    h1 += ", " + Model.DateTimeFormatter.FormatDate(Model.Tournament.StartTime.LocalDateTime, false);
-}
-<h1>@h1</h1>
+<h1>@Model.Tournament.TournamentFullNameAndPlayerType(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
 
 <ul class="nav nav-tabs">
     <li class="nav-item">

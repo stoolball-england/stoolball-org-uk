@@ -45,7 +45,8 @@ namespace Stoolball.Web.Matches
 
             var model = new DeleteMatchViewModel(contentModel.Content)
             {
-                Match = await _matchDataSource.ReadMatchByRoute(Request.Url.AbsolutePath).ConfigureAwait(false)
+                Match = await _matchDataSource.ReadMatchByRoute(Request.Url.AbsolutePath).ConfigureAwait(false),
+                DateTimeFormatter = _dateFormatter
             };
 
             if (model.Match == null)
@@ -58,14 +59,7 @@ namespace Stoolball.Web.Matches
 
                 model.IsAuthorized = IsAuthorized(model);
 
-                model.Metadata.PageTitle = "Delete " + model.Match.MatchName;
-
-                if (model.Match.Tournament != null)
-                {
-                    var inThe = (model.Match.Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? " in " : " in the ";
-                    model.Metadata.PageTitle += inThe + model.Match.Tournament.TournamentName;
-                }
-                model.Metadata.PageTitle += $", {_dateFormatter.FormatDate(model.Match.StartTime.LocalDateTime, false, false, false)} - stoolball match";
+                model.Metadata.PageTitle = "Delete " + model.Match.MatchFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false)) + " - stoolball match";
 
                 return CurrentTemplate(model);
             }

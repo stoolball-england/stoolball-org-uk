@@ -48,7 +48,8 @@ namespace Stoolball.Web.Matches
 
             var model = new DeleteTournamentViewModel(contentModel.Content)
             {
-                Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.Url.AbsolutePath).ConfigureAwait(false)
+                Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.Url.AbsolutePath).ConfigureAwait(false),
+                DateTimeFormatter = _dateFormatter
             };
 
             if (model.Tournament == null)
@@ -71,13 +72,7 @@ namespace Stoolball.Web.Matches
 
                 model.IsAuthorized = IsAuthorized(model);
 
-                model.Metadata.PageTitle = "Delete " + model.Tournament.TournamentName;
-                var saysTournament = model.Tournament.TournamentName.ToUpperInvariant().Contains("TOURNAMENT");
-                if (!saysTournament)
-                {
-                    model.Metadata.PageTitle += " stoolball tournament";
-                }
-                model.Metadata.PageTitle += $", {_dateFormatter.FormatDate(model.Tournament.StartTime.LocalDateTime, false, false, false)}";
+                model.Metadata.PageTitle = "Delete " + model.Tournament.TournamentFullNameAndPlayerType(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
                 return CurrentTemplate(model);
             }

@@ -3,7 +3,7 @@
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
-<h1>Edit @Model.Tournament.TournamentName</h1>
+<h1>Edit @Model.Tournament.TournamentFullNameAndPlayerType(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
 
 <ul class="nav nav-tabs">
     <li class="nav-item">
@@ -17,7 +17,7 @@
 @if (Model.IsAuthorized)
 {
     <dl>
-        <dt><a href="@Model.Tournament.TournamentRoute/delete">Delete @Model.Tournament.TournamentName</a></dt>
+        <dt><a href="@Model.Tournament.TournamentRoute/delete">Delete @Model.Tournament.TournamentFullNameAndPlayerType(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
         <dd>Matches and match statistics will be lost. Players and teams that only feature in this tournament will be deleted.</dd>
     </dl>
 }

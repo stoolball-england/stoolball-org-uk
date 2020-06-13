@@ -12,7 +12,7 @@
     <meta name="robots" content="noindex,follow" />
 }
 
-<h1>Delete @Model.Tournament.TournamentName</h1>
+<h1>Delete @Model.Tournament.TournamentFullNameAndPlayerType(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
 
 @if (!Model.Deleted)
 {
@@ -30,7 +30,7 @@
 {
     if (!Model.Deleted)
     {
-        <p>If you delete @Model.Tournament.TournamentName you will:</p>
+        <p>If you delete @Model.Tournament.TournamentFullNameAndPlayerType(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false)) you will:</p>
         <ul>
         </ul>
         <p><strong><strong>You cannot undo this.</strong></strong></p>

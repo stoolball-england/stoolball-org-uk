@@ -1,5 +1,4 @@
 ﻿using Stoolball.Dates;
-using Stoolball.Email;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -20,7 +19,6 @@ namespace Stoolball.Web.Matches
         private readonly ITournamentDataSource _tournamentDataSource;
         private readonly IMatchDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
-        private readonly IEmailProtector _emailProtector;
 
         public TournamentActionsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -30,14 +28,12 @@ namespace Stoolball.Web.Matches
            UmbracoHelper umbracoHelper,
            ITournamentDataSource tournamentDataSource,
            IMatchDataSource matchDataSource,
-           IDateTimeFormatter dateFormatter,
-           IEmailProtector emailProtector)
+           IDateTimeFormatter dateFormatter)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _tournamentDataSource = tournamentDataSource ?? throw new System.ArgumentNullException(nameof(tournamentDataSource));
             _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
             _dateFormatter = dateFormatter ?? throw new System.ArgumentNullException(nameof(dateFormatter));
-            _emailProtector = emailProtector ?? throw new System.ArgumentNullException(nameof(emailProtector));
         }
 
         [HttpGet]
@@ -73,17 +69,7 @@ namespace Stoolball.Web.Matches
                     ShowMatchDate = false
                 };
 
-                model.Metadata.PageTitle = model.Tournament.TournamentName;
-                var saysTournament = model.Tournament.TournamentName.ToUpperInvariant().Contains("TOURNAMENT");
-                if (!saysTournament)
-                {
-                    model.Metadata.PageTitle += " stoolball tournament";
-                }
-                model.Metadata.PageTitle += $", {_dateFormatter.FormatDate(model.Tournament.StartTime.LocalDateTime, false, false, false)}";
-
-                model.Metadata.Description = model.Tournament.Description();
-
-                model.Tournament.MatchNotes = _emailProtector.ProtectEmailAddresses(model.Tournament.MatchNotes, User.Identity.IsAuthenticated);
+                model.Metadata.PageTitle = model.Tournament.TournamentFullNameAndPlayerType(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
                 return CurrentTemplate(model);
             }

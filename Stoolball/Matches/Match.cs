@@ -14,6 +14,27 @@ namespace Stoolball.Matches
         public Guid? MatchId { get; set; }
         public string MatchName { get; set; }
         public bool UpdateMatchNameAutomatically { get; set; }
+
+        public string MatchFullName(Func<DateTimeOffset, string> dateTimeFormatter)
+        {
+            if (dateTimeFormatter is null)
+            {
+                throw new ArgumentNullException(nameof(dateTimeFormatter));
+            }
+
+            var fullName = new StringBuilder(MatchName);
+
+            if (Tournament != null)
+            {
+                fullName.Append(Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? " in " : " in the ");
+                fullName.Append(Tournament.TournamentName);
+            }
+            fullName.Append(", ");
+            fullName.Append(dateTimeFormatter(StartTime));
+
+            return fullName.ToString();
+        }
+
         public MatchLocation MatchLocation { get; set; }
         public DateTimeOffset StartTime { get; set; }
         public bool StartTimeIsKnown { get; set; }

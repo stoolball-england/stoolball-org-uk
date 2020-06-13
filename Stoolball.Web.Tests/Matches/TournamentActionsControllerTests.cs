@@ -1,6 +1,5 @@
 ﻿using Moq;
 using Stoolball.Dates;
-using Stoolball.Email;
 using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
@@ -31,7 +30,7 @@ namespace Stoolball.Web.Tests.Matches
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, tournamentDataSource, matchDataSource, Mock.Of<IDateTimeFormatter>(), Mock.Of<IEmailProtector>())
+                null, tournamentDataSource, matchDataSource, Mock.Of<IDateTimeFormatter>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
