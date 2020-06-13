@@ -2,6 +2,8 @@
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -68,7 +70,20 @@ namespace Stoolball.Web.Matches
         /// <returns></returns>
         protected virtual bool IsAuthorized(MatchViewModel model)
         {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null);
+            if (model is null)
+            {
+                throw new System.ArgumentNullException(nameof(model));
+            }
+
+            var currentMember = Members.GetCurrentMember();
+            if (currentMember == null) return false;
+
+            if (model.Match.MemberKeys().Contains(currentMember.Key)) { return true; }
+
+            var allowedGroups = new List<string>(model.Match.MemberGroupNames());
+            allowedGroups.AddRange(new[] { Groups.Administrators, Groups.Editors });
+
+            return Members.IsMemberAuthorized(null, allowedGroups, null);
         }
     }
 }

@@ -97,5 +97,10 @@ namespace Stoolball.Matches
 
             return description.ToString();
         }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the member who owns the tournament
+        /// </summary>
+        public Guid? MemberKey { get; set; }
     }
 }

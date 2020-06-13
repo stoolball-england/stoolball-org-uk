@@ -90,5 +90,9 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(MatchRoute))]
         [Index(IndexTypes.UniqueNonClustered)]
         public string MatchRoute { get; set; }
+
+        [Column(nameof(MemberKey))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public Guid? MemberKey { get; set; }
     }
 }

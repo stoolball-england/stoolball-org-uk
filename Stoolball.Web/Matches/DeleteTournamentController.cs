@@ -84,6 +84,16 @@ namespace Stoolball.Web.Matches
         /// <returns></returns>
         protected virtual bool IsAuthorized(DeleteTournamentViewModel model)
         {
+            if (model is null)
+            {
+                throw new System.ArgumentNullException(nameof(model));
+            }
+
+            var currentMember = Members.GetCurrentMember();
+            if (currentMember == null) return false;
+
+            if (model.Tournament.MemberKey == currentMember.Key) { return true; }
+
             return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null);
         }
     }

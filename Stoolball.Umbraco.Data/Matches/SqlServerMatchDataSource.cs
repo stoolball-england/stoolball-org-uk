@@ -178,14 +178,14 @@ namespace Stoolball.Umbraco.Data.Matches
                 {
                     var matches = await connection.QueryAsync<Match, Tournament, TeamInMatch, Team, MatchLocation, Season, Competition, Match>(
                         $@"SELECT m.MatchId, m.MatchName, m.MatchType, m.StartTime, m.StartTimeIsKnown, m.MatchResultType, 
-                            m.InningsOrderIsKnown, m.MatchNotes, m.MatchRoute,
+                            m.InningsOrderIsKnown, m.MatchNotes, m.MatchRoute, m.MemberKey,
                             tourney.MatchRoute AS TournamentRoute, tourney.MatchName AS TournamentName,
                             mt.TeamRole, mt.WonToss,
-                            t.TeamId, t.TeamRoute, tn.TeamName, 
+                            t.TeamId, t.TeamRoute, tn.TeamName, t.MemberGroupName,
                             ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
                             ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
                             s.SeasonRoute, s.StartYear, s.EndYear,
-                            co.CompetitionName
+                            co.CompetitionName, co.MemberGroupName
                             FROM {Tables.Match} AS m
                             LEFT JOIN {Tables.Match} AS tourney ON m.TournamentId = tourney.MatchId
                             LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId

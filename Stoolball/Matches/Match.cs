@@ -89,5 +89,51 @@ namespace Stoolball.Matches
 
             return description.ToString();
         }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the member who owns the match
+        /// </summary>
+        public Guid? MemberKey { get; set; }
+
+        /// <summary>
+        /// Gets the unique identifiers of the members who own the match and, if applicable, its containing tournament
+        /// </summary>
+        public IEnumerable<Guid> MemberKeys()
+        {
+            var keys = new List<Guid>();
+            if (MemberKey.HasValue)
+            {
+                keys.Add(MemberKey.Value);
+            }
+            if (Tournament != null && Tournament.MemberKey.HasValue && !keys.Contains(Tournament.MemberKey.Value))
+            {
+                keys.Add(Tournament.MemberKey.Value);
+            }
+            return keys;
+        }
+
+        /// <summary>
+        ///  Gets the member group names who can edit specifically this match (ie: not including groups who can edit any match) 
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<string> MemberGroupNames()
+        {
+            var groups = new List<string>();
+
+            foreach (var team in Teams)
+            {
+                if (!groups.Contains(team.Team.MemberGroupName))
+                {
+                    groups.Add(team.Team.MemberGroupName);
+                }
+            }
+
+            if (Season != null && Season.Competition != null && !string.IsNullOrEmpty(Season.Competition.MemberGroupName))
+            {
+                groups.Add(Season.Competition.MemberGroupName);
+            }
+
+            return groups;
+        }
     }
 }
