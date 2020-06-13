@@ -1,14 +1,17 @@
 ﻿using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
+using Stoolball.Routing;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
+using static Stoolball.Umbraco.Data.Constants;
 using Tables = Stoolball.Umbraco.Data.Constants.Tables;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
@@ -20,14 +23,17 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         private readonly IAuditHistoryBuilder _auditHistoryBuilder;
         private readonly IAuditRepository _auditRepository;
         private readonly ILogger _logger;
+        private readonly IRouteGenerator _routeGenerator;
 
-        public SqlServerMatchDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, ILogger logger)
+        public SqlServerMatchDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder,
+            IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator)
         {
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
             _scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
             _auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
         }
 
         /// <summary>
@@ -92,16 +98,35 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 MigratedTeams = match.MigratedTeams,
                 MigratedSeasonIds = match.MigratedSeasonIds,
                 MatchResultType = match.MatchResultType,
-                MatchNotes = match.MatchNotes,
-                MatchRoute = match.MatchRoute
+                MatchNotes = match.MatchNotes
             };
 
-            if (migratedMatch.MatchRoute.StartsWith("match/", StringComparison.OrdinalIgnoreCase))
+            using (var scope = _scopeProvider.CreateScope())
             {
-                migratedMatch.MatchRoute = migratedMatch.MatchRoute.Substring(6);
-            }
+                string baseRoute = string.Empty;
+                if (migratedMatch.MigratedTeams.Count > 0)
+                {
+                    var teamNames = await scope.Database.QueryAsync<string>($"SELECT TeamName FROM {Tables.Team} WHERE MigratedTeamId IN @MigratedTeamIds", new { MigratedTeamIds = match.MigratedTeams.Select(x => x.MigratedTeamId) }).ConfigureAwait(false);
+                    baseRoute = string.Join(" ", teamNames);
+                }
+                else
+                {
+                    baseRoute = "unconfirmed";
+                }
 
-            migratedMatch.MatchRoute = "/matches/" + migratedMatch.MatchRoute;
+                migratedMatch.MatchRoute = _routeGenerator.GenerateRoute("/matches", baseRoute + " " + migratedMatch.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.MatchRoute);
+                int count;
+                do
+                {
+                    count = await scope.Database.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Match} WHERE MatchRoute = @MatchRoute", new { migratedMatch.MatchRoute }).ConfigureAwait(false);
+                    if (count > 0)
+                    {
+                        migratedMatch.MatchRoute = _routeGenerator.IncrementRoute(migratedMatch.MatchRoute);
+                    }
+                }
+                while (count > 0);
+                scope.Complete();
+            }
 
             _auditHistoryBuilder.BuildInitialAuditHistory(match, migratedMatch, nameof(SqlServerMatchDataMigrator));
 

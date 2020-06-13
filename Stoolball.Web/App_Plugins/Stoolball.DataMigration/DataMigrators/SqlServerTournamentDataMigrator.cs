@@ -1,12 +1,15 @@
 ﻿using Stoolball.Matches;
 using Stoolball.MatchLocations;
+using Stoolball.Routing;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
+using static Stoolball.Umbraco.Data.Constants;
 using Tables = Stoolball.Umbraco.Data.Constants.Tables;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
@@ -18,14 +21,17 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         private readonly IAuditHistoryBuilder _auditHistoryBuilder;
         private readonly IAuditRepository _auditRepository;
         private readonly ILogger _logger;
+        private readonly IRouteGenerator _routeGenerator;
 
-        public SqlServerTournamentDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, ILogger logger)
+        public SqlServerTournamentDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder,
+            IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator)
         {
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
             _scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
             _auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
         }
 
         /// <summary>
@@ -87,20 +93,24 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 StartTimeIsKnown = tournament.StartTimeIsKnown,
                 MigratedTeams = tournament.MigratedTeams,
                 MigratedSeasonIds = tournament.MigratedSeasonIds,
-                TournamentRoute = tournament.TournamentRoute,
                 TournamentNotes = tournament.TournamentNotes,
             };
 
-            if (migratedTournament.TournamentRoute.StartsWith("match/", StringComparison.OrdinalIgnoreCase))
+            using (var scope = _scopeProvider.CreateScope())
             {
-                migratedTournament.TournamentRoute = migratedTournament.TournamentRoute.Substring(6);
+                migratedTournament.TournamentRoute = _routeGenerator.GenerateRoute("/tournaments", migratedTournament.TournamentName + " " + migratedTournament.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.TournamentRoute);
+                int count;
+                do
+                {
+                    count = await scope.Database.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Tournament} WHERE TournamentRoute = @TournamentRoute", new { migratedTournament.TournamentRoute }).ConfigureAwait(false);
+                    if (count > 0)
+                    {
+                        migratedTournament.TournamentRoute = _routeGenerator.IncrementRoute(migratedTournament.TournamentRoute);
+                    }
+                }
+                while (count > 0);
+                scope.Complete();
             }
-
-            if (migratedTournament.TournamentRoute.EndsWith("-tournament", StringComparison.OrdinalIgnoreCase))
-            {
-                migratedTournament.TournamentRoute = migratedTournament.TournamentRoute.Substring(0, migratedTournament.TournamentRoute.Length - 6);
-            }
-            migratedTournament.TournamentRoute = "/tournaments/" + migratedTournament.TournamentRoute;
 
             _auditHistoryBuilder.BuildInitialAuditHistory(tournament, migratedTournament, nameof(SqlServerMatchDataMigrator));
 
