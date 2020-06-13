@@ -11,11 +11,6 @@
         LeagueMatch,
 
         /// <summary>
-        /// A tournament, which is a group of other matches
-        /// </summary>
-        Tournament,
-
-        /// <summary>
         /// A practice session, rather than a real match
         /// </summary>
         Practice,

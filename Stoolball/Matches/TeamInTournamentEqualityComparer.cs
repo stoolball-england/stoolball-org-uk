@@ -2,14 +2,14 @@
 
 namespace Stoolball.Matches
 {
-    public class TeamInMatchEqualityComparer : EqualityComparer<TeamInMatch>
+    public class TeamInTournamentEqualityComparer : EqualityComparer<TeamInTournament>
     {
-        public override bool Equals(TeamInMatch x, TeamInMatch y)
+        public override bool Equals(TeamInTournament x, TeamInTournament y)
         {
             return x?.Team.TeamId == y?.Team.TeamId && x?.TeamRole == y?.TeamRole;
         }
 
-        public override int GetHashCode(TeamInMatch obj)
+        public override int GetHashCode(TeamInTournament obj)
         {
             return base.GetHashCode();
         }

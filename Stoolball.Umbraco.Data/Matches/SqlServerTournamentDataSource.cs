@@ -64,7 +64,7 @@ namespace Stoolball.Umbraco.Data.Matches
                         {
                             if (team != null)
                             {
-                                tournament.Teams.Add(new TeamInMatch
+                                tournament.Teams.Add(new TeamInTournament
                                 {
                                     Team = new Team
                                     {
@@ -86,8 +86,8 @@ namespace Stoolball.Umbraco.Data.Matches
                     if (tournamentToReturn != null)
                     {
                         tournamentToReturn.Teams = tournaments.Select(match => match.Teams.SingleOrDefault())
-                            .OfType<TeamInMatch>()
-                            .Distinct(new TeamInMatchEqualityComparer())
+                            .OfType<TeamInTournament>()
+                            .Distinct(new TeamInTournamentEqualityComparer())
                             .OrderBy(x => x.Team.TeamName)
                             .ToList();
                         tournamentToReturn.Seasons = tournaments.Select(tournament => tournament.Seasons.SingleOrDefault())
