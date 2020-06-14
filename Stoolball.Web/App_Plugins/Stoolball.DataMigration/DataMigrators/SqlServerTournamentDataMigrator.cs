@@ -130,7 +130,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         }
 
                         await database.ExecuteAsync($@"INSERT INTO {Tables.Tournament}
-						(TournamentId, MigratedMatchId, TournamentName, MatchLocationId, QualificationType, PlayerType, PlayersPerTeam, OversPerInningsDefault, 
+						(TournamentId, MigratedTournamentId, TournamentName, MatchLocationId, QualificationType, PlayerType, PlayersPerTeam, OversPerInningsDefault, 
                          MaximumTeamsInTournament, SpacesInTournament, StartTime, StartTimeIsKnown, TournamentNotes, TournamentRoute, MemberKey)
 						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14)",
                             migratedTournament.TournamentId,
@@ -179,7 +179,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 							WHERE TeamType = 'Transient' 
 							AND TeamRoute NOT LIKE '/tournaments%'
 							AND TeamId IN (
-								SELECT TeamId FROM {Tables.TournamentTeam} WHERE MatchId = @2
+								SELECT TeamId FROM {Tables.TournamentTeam} WHERE TournamentId = @2
 							)",
                             migratedTournament.TournamentRoute, migratedTournament.StartTime.Year, migratedTournament.TournamentId).ConfigureAwait(false);
                         transaction.Complete();

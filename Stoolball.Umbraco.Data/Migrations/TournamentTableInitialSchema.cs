@@ -13,9 +13,9 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(TournamentId))]
         public Guid TournamentId { get; set; }
 
-        [Column(nameof(MigratedMatchId))]
+        [Column(nameof(MigratedTournamentId))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? MigratedMatchId { get; set; }
+        public int? MigratedTournamentId { get; set; }
 
         [Column(nameof(TournamentName))]
         public string TournamentName { get; set; }
