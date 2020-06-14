@@ -162,9 +162,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         }
 
                         await database.ExecuteAsync($@"INSERT INTO {Tables.Match}
-						(MatchId, MigratedMatchId, MatchName, UpdateMatchNameAutomatically, MatchLocationId, MatchType, PlayerType, PlayersPerTeam,
-						 InningsOrderIsKnown, TournamentId, OrderInTournament, StartTime, StartTimeIsKnown, MatchResultType, MatchNotes, SeasonId, MatchRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15)",
+						(MatchId, MigratedMatchId, MatchName, UpdateMatchNameAutomatically, MatchLocationId, MatchType, PlayerType, PlayersPerTeam, InningsOrderIsKnown,
+						 TournamentId, OrderInTournament, StartTime, StartTimeIsKnown, MatchResultType, MatchNotes, SeasonId, MatchRoute, MemberKey)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16, @17)",
                             migratedMatch.MatchId,
                             migratedMatch.MigratedMatchId,
                             migratedMatch.MatchName,
@@ -181,7 +181,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                             migratedMatch.MatchResultType?.ToString(),
                             migratedMatch.MatchNotes,
                             migratedMatch.Season?.SeasonId,
-                            migratedMatch.MatchRoute).ConfigureAwait(false);
+                            migratedMatch.MatchRoute,
+                            migratedMatch.History.Count > 0 ? migratedMatch.History[0].MemberKey : null).ConfigureAwait(false);
                         foreach (var innings in migratedMatch.MigratedMatchInnings)
                         {
                             if (innings.MigratedTeamId.HasValue)

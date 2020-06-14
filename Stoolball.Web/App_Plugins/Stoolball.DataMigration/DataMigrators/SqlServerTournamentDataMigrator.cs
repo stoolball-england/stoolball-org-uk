@@ -130,9 +130,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         }
 
                         await database.ExecuteAsync($@"INSERT INTO {Tables.Tournament}
-						(TournamentId, MigratedMatchId, TournamentName, MatchLocationId, QualificationType, PlayerType, PlayersPerTeam, 
-                         OversPerInningsDefault, MaximumTeamsInTournament, SpacesInTournament, StartTime, StartTimeIsKnown, TournamentNotes, TournamentRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13)",
+						(TournamentId, MigratedMatchId, TournamentName, MatchLocationId, QualificationType, PlayerType, PlayersPerTeam, OversPerInningsDefault, 
+                         MaximumTeamsInTournament, SpacesInTournament, StartTime, StartTimeIsKnown, TournamentNotes, TournamentRoute, MemberKey)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14)",
                             migratedTournament.TournamentId,
                             migratedTournament.MigratedTournamentId,
                             migratedTournament.TournamentName,
@@ -146,7 +146,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                             migratedTournament.StartTime,
                             migratedTournament.StartTimeIsKnown,
                             migratedTournament.TournamentNotes,
-                            migratedTournament.TournamentRoute).ConfigureAwait(false);
+                            migratedTournament.TournamentRoute,
+                            migratedTournament.History.Count > 0 ? migratedTournament.History[0].MemberKey : null).ConfigureAwait(false);
                         foreach (var team in migratedTournament.MigratedTeams)
                         {
                             team.Team = new Team
