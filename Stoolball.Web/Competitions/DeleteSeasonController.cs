@@ -19,7 +19,7 @@ namespace Stoolball.Web.Competitions
     public class DeleteSeasonController : RenderMvcControllerAsync
     {
         private readonly ISeasonDataSource _seasonDataSource;
-        private readonly IMatchDataSource _matchDataSource;
+        private readonly IMatchListingDataSource _matchDataSource;
 
         public DeleteSeasonController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -28,7 +28,7 @@ namespace Stoolball.Web.Competitions
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            ISeasonDataSource seasonDataSource,
-           IMatchDataSource matchDataSource)
+           IMatchListingDataSource matchDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _seasonDataSource = seasonDataSource ?? throw new System.ArgumentNullException(nameof(seasonDataSource));

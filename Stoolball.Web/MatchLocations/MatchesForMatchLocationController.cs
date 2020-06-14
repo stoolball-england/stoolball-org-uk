@@ -22,7 +22,7 @@ namespace Stoolball.Web.MatchLocations
     public class MatchesForMatchLocationController : RenderMvcControllerAsync
     {
         private readonly IMatchLocationDataSource _matchLocationDataSource;
-        private readonly IMatchDataSource _matchDataSource;
+        private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly IEstimatedSeason _estimatedSeason;
 
@@ -33,7 +33,7 @@ namespace Stoolball.Web.MatchLocations
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IMatchLocationDataSource matchLocationDataSource,
-           IMatchDataSource matchDataSource,
+           IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
            IEstimatedSeason estimatedSeason)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)

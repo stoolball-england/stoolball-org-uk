@@ -10,7 +10,7 @@
     <ol>
         @foreach (var match in Model.Matches)
         {
-            if (match.MatchType == MatchType.Tournament)
+            if (match.MatchType == null)
             {
                 var playerType = string.Empty;
                 if (!match.MatchName.Replace("'", string.Empty).ToUpperInvariant().Contains(match.PlayerType.ToString().Replace("'", string.Empty).ToUpperInvariant()))
@@ -69,7 +69,7 @@
                 }
 
                 var matchType = string.Empty;
-                if (Model.MatchTypesToLabel.Count > 0 && Model.MatchTypesToLabel.Contains(match.MatchType) && !match.MatchName.Replace("'", string.Empty).ToUpperInvariant().Contains(match.MatchType.Humanize(LetterCasing.AllCaps)))
+                if (Model.MatchTypesToLabel.Count > 0 && Model.MatchTypesToLabel.Contains(match.MatchType.Value) && !match.MatchName.Replace("'", string.Empty).ToUpperInvariant().Contains(match.MatchType.Humanize(LetterCasing.AllCaps)))
                 {
                     matchType = $" ({match.MatchType.Humanize(LetterCasing.LowerCase)})";
                 }

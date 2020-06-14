@@ -22,7 +22,7 @@ namespace Stoolball.Web.Teams
     public class EditTransientTeamController : RenderMvcControllerAsync
     {
         private readonly ITeamDataSource _teamDataSource;
-        private readonly IMatchDataSource _matchDataSource;
+        private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
 
         public EditTransientTeamController(IGlobalSettings globalSettings,
@@ -32,7 +32,7 @@ namespace Stoolball.Web.Teams
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            ITeamDataSource teamDataSource,
-           IMatchDataSource matchDataSource,
+           IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {

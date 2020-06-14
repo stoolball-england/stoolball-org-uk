@@ -23,12 +23,12 @@ namespace Stoolball.Web.Teams
     {
         private readonly ITeamDataSource _teamDataSource;
         private readonly ITeamRepository _teamRepository;
-        private readonly IMatchDataSource _matchDataSource;
+        private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
 
         public EditTransientTeamSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITeamDataSource teamDataSource, ITeamRepository teamRepository,
-            IMatchDataSource matchDataSource, IDateTimeFormatter dateFormatter)
+            IMatchListingDataSource matchDataSource, IDateTimeFormatter dateFormatter)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource;

@@ -26,7 +26,7 @@ namespace Stoolball.Web.Tests.Clubs
     {
         private class TestController : MatchesForClubController
         {
-            public TestController(IClubDataSource clubDataSource, IMatchDataSource matchDataSource)
+            public TestController(IClubDataSource clubDataSource, IMatchListingDataSource matchDataSource)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -61,7 +61,7 @@ namespace Stoolball.Web.Tests.Clubs
             var clubDataSource = new Mock<IClubDataSource>();
             clubDataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).Returns(Task.FromResult<Club>(null));
 
-            var matchesDataSource = new Mock<IMatchDataSource>();
+            var matchesDataSource = new Mock<IMatchListingDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = new TestController(clubDataSource.Object, matchesDataSource.Object))
@@ -78,7 +78,7 @@ namespace Stoolball.Web.Tests.Clubs
             var clubDataSource = new Mock<IClubDataSource>();
             clubDataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).ReturnsAsync(new Club());
 
-            var matchesDataSource = new Mock<IMatchDataSource>();
+            var matchesDataSource = new Mock<IMatchListingDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = new TestController(clubDataSource.Object, matchesDataSource.Object))

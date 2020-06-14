@@ -18,7 +18,7 @@ namespace Stoolball.Web.Matches
     public class TournamentController : RenderMvcControllerAsync
     {
         private readonly ITournamentDataSource _tournamentDataSource;
-        private readonly IMatchDataSource _matchDataSource;
+        private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly IEmailProtector _emailProtector;
 
@@ -29,7 +29,7 @@ namespace Stoolball.Web.Matches
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            ITournamentDataSource tournamentDataSource,
-           IMatchDataSource matchDataSource,
+           IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
            IEmailProtector emailProtector)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
@@ -68,9 +68,11 @@ namespace Stoolball.Web.Matches
                     Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
                     {
                         TournamentId = model.Tournament.TournamentId,
-                        IncludeTournamentMatches = true
+                        IncludeTournamentMatches = true,
+                        IncludeTournaments = false
                     }).ConfigureAwait(false),
-                    ShowMatchDate = false
+                    ShowMatchDate = false,
+                    DateTimeFormatter = _dateFormatter
                 };
 
                 model.Metadata.PageTitle = model.Tournament.TournamentFullNameAndPlayerType(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));

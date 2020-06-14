@@ -20,7 +20,7 @@ namespace Stoolball.Web.Competitions
     public class DeleteCompetitionController : RenderMvcControllerAsync
     {
         private readonly ICompetitionDataSource _competitionDataSource;
-        private readonly IMatchDataSource _matchDataSource;
+        private readonly IMatchListingDataSource _matchDataSource;
         private readonly ITeamDataSource _teamDataSource;
 
         public DeleteCompetitionController(IGlobalSettings globalSettings,
@@ -30,7 +30,7 @@ namespace Stoolball.Web.Competitions
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            ICompetitionDataSource competitionDataSource,
-           IMatchDataSource matchDataSource,
+           IMatchListingDataSource matchDataSource,
            ITeamDataSource teamDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {

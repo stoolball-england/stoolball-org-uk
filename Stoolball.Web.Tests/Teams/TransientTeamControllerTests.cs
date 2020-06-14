@@ -26,7 +26,7 @@ namespace Stoolball.Web.Tests.Teams
     {
         private class TestController : TransientTeamController
         {
-            public TestController(ITeamDataSource teamDataSource, IMatchDataSource matchDataSource)
+            public TestController(ITeamDataSource teamDataSource, IMatchListingDataSource matchDataSource)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -64,7 +64,7 @@ namespace Stoolball.Web.Tests.Teams
             var dataSource = new Mock<ITeamDataSource>();
             dataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Team>(null));
 
-            using (var controller = new TestController(dataSource.Object, Mock.Of<IMatchDataSource>()))
+            using (var controller = new TestController(dataSource.Object, Mock.Of<IMatchListingDataSource>()))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -78,7 +78,7 @@ namespace Stoolball.Web.Tests.Teams
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team { TeamId = Guid.NewGuid(), TeamName = "Example team" });
 
-            var matchDataSource = new Mock<IMatchDataSource>();
+            var matchDataSource = new Mock<IMatchListingDataSource>();
             matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing> { new MatchListing { StartTime = DateTimeOffset.UtcNow } });
 
             using (var controller = new TestController(teamDataSource.Object, matchDataSource.Object))

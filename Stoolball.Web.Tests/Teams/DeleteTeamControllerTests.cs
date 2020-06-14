@@ -29,7 +29,7 @@ namespace Stoolball.Web.Tests.Teams
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, teamDataSource, Mock.Of<IMatchDataSource>(), Mock.Of<IPlayerDataSource>())
+                null, teamDataSource, Mock.Of<IMatchListingDataSource>(), Mock.Of<IPlayerDataSource>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));

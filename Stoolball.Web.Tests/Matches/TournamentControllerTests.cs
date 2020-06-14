@@ -24,7 +24,7 @@ namespace Stoolball.Web.Tests.Matches
     {
         private class TestController : TournamentController
         {
-            public TestController(ITournamentDataSource tournamentDataSource, IMatchDataSource matchDataSource)
+            public TestController(ITournamentDataSource tournamentDataSource, IMatchListingDataSource matchDataSource)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -62,7 +62,7 @@ namespace Stoolball.Web.Tests.Matches
             var tournamentDataSource = new Mock<ITournamentDataSource>();
             tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).Returns(Task.FromResult<Stoolball.Matches.Tournament>(null));
 
-            using (var controller = new TestController(tournamentDataSource.Object, Mock.Of<IMatchDataSource>()))
+            using (var controller = new TestController(tournamentDataSource.Object, Mock.Of<IMatchListingDataSource>()))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -76,7 +76,7 @@ namespace Stoolball.Web.Tests.Matches
             var tournamentDataSource = new Mock<ITournamentDataSource>();
             tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentName = "Example tournament" });
 
-            var matchDataSource = new Mock<IMatchDataSource>();
+            var matchDataSource = new Mock<IMatchListingDataSource>();
             matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = new TestController(tournamentDataSource.Object, matchDataSource.Object))

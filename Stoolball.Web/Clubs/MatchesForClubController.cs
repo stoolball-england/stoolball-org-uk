@@ -22,7 +22,7 @@ namespace Stoolball.Web.Clubs
     public class MatchesForClubController : RenderMvcControllerAsync
     {
         private readonly IClubDataSource _clubDataSource;
-        private readonly IMatchDataSource _matchDataSource;
+        private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly IEstimatedSeason _estimatedSeason;
 
@@ -33,7 +33,7 @@ namespace Stoolball.Web.Clubs
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IClubDataSource clubDataSource,
-           IMatchDataSource matchDataSource,
+           IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
            IEstimatedSeason estimatedSeason)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)

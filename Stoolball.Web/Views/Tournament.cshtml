@@ -1,4 +1,4 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Matches.TournamentViewModel>
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<TournamentViewModel>
 @using Humanizer
 @using Innovative.SolarCalculator
 @using Stoolball.Matches
@@ -84,14 +84,14 @@
     @Html.Partial("_MatchList", Model.Matches)
 }
 
-@if (!string.IsNullOrWhiteSpace(Model.Tournament.MatchNotes) || Model.Tournament.Seasons.Count > 0)
+@if (!string.IsNullOrWhiteSpace(Model.Tournament.TournamentNotes) || Model.Tournament.Seasons.Count > 0)
 {
     <h2>Notes</h2>
 }
 
-@if (!string.IsNullOrWhiteSpace(Model.Tournament.MatchNotes))
+@if (!string.IsNullOrWhiteSpace(Model.Tournament.TournamentNotes))
 {
-    @Html.Raw(Model.Tournament.MatchNotes)
+    @Html.Raw(Model.Tournament.TournamentNotes)
 }
 
 @if (Model.Tournament.Seasons.Count == 1)

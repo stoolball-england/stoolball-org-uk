@@ -18,7 +18,7 @@ namespace Stoolball.Web.Matches
     public class DeleteTournamentController : RenderMvcControllerAsync
     {
         private readonly ITournamentDataSource _tournamentDataSource;
-        private readonly IMatchDataSource _matchDataSource;
+        private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
 
         public DeleteTournamentController(IGlobalSettings globalSettings,
@@ -28,7 +28,7 @@ namespace Stoolball.Web.Matches
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            ITournamentDataSource tournamentDataSource,
-           IMatchDataSource matchDataSource,
+           IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {

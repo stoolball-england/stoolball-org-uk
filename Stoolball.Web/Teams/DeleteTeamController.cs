@@ -20,7 +20,7 @@ namespace Stoolball.Web.Teams
     public class DeleteTeamController : RenderMvcControllerAsync
     {
         private readonly ITeamDataSource _teamDataSource;
-        private readonly IMatchDataSource _matchDataSource;
+        private readonly IMatchListingDataSource _matchDataSource;
         private readonly IPlayerDataSource _playerDataSource;
 
         public DeleteTeamController(IGlobalSettings globalSettings,
@@ -30,7 +30,7 @@ namespace Stoolball.Web.Teams
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            ITeamDataSource teamDataSource,
-           IMatchDataSource matchDataSource,
+           IMatchListingDataSource matchDataSource,
            IPlayerDataSource playerDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {

@@ -29,7 +29,7 @@ namespace Stoolball.Web.Tests.MatchLocations
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, matchLocationDataSource, Mock.Of<IMatchDataSource>())
+                null, matchLocationDataSource, Mock.Of<IMatchListingDataSource>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));

@@ -26,7 +26,7 @@ namespace Stoolball.Web.Tests.Teams
     {
         private class TestController : MatchesForTeamController
         {
-            public TestController(ITeamDataSource teamDataSource, IMatchDataSource matchDataSource)
+            public TestController(ITeamDataSource teamDataSource, IMatchListingDataSource matchDataSource)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -59,7 +59,7 @@ namespace Stoolball.Web.Tests.Teams
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Team>(null));
 
-            var matchesDataSource = new Mock<IMatchDataSource>();
+            var matchesDataSource = new Mock<IMatchListingDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = new TestController(teamDataSource.Object, matchesDataSource.Object))
@@ -76,7 +76,7 @@ namespace Stoolball.Web.Tests.Teams
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).ReturnsAsync(new Team { TeamId = Guid.NewGuid() });
 
-            var matchesDataSource = new Mock<IMatchDataSource>();
+            var matchesDataSource = new Mock<IMatchListingDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = new TestController(teamDataSource.Object, matchesDataSource.Object))

@@ -25,7 +25,7 @@ namespace Stoolball.Web.Tests.Competitions
     {
         private class TestController : MatchesForSeasonController
         {
-            public TestController(ISeasonDataSource seasonDataSource, IMatchDataSource matchDataSource)
+            public TestController(ISeasonDataSource seasonDataSource, IMatchListingDataSource matchDataSource)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -60,7 +60,7 @@ namespace Stoolball.Web.Tests.Competitions
             var seasonDataSource = new Mock<ISeasonDataSource>();
             seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Season>(null));
 
-            var matchesDataSource = new Mock<IMatchDataSource>();
+            var matchesDataSource = new Mock<IMatchListingDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = new TestController(seasonDataSource.Object, matchesDataSource.Object))
@@ -77,7 +77,7 @@ namespace Stoolball.Web.Tests.Competitions
             var seasonDataSource = new Mock<ISeasonDataSource>();
             seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).ReturnsAsync(new Season { SeasonId = Guid.NewGuid() });
 
-            var matchesDataSource = new Mock<IMatchDataSource>();
+            var matchesDataSource = new Mock<IMatchListingDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = new TestController(seasonDataSource.Object, matchesDataSource.Object))

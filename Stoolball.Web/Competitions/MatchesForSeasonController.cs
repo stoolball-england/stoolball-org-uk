@@ -21,7 +21,7 @@ namespace Stoolball.Web.Competitions
     public class MatchesForSeasonController : RenderMvcControllerAsync
     {
         private readonly ISeasonDataSource _seasonDataSource;
-        private readonly IMatchDataSource _matchDataSource;
+        private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
 
         public MatchesForSeasonController(IGlobalSettings globalSettings,
@@ -31,7 +31,7 @@ namespace Stoolball.Web.Competitions
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            ISeasonDataSource seasonDataSource,
-           IMatchDataSource matchDataSource,
+           IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {

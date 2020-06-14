@@ -26,7 +26,7 @@ namespace Stoolball.Web.Tests.MatchLocations
     {
         private class TestController : MatchesForMatchLocationController
         {
-            public TestController(IMatchLocationDataSource matchLocationDataSource, IMatchDataSource matchDataSource)
+            public TestController(IMatchLocationDataSource matchLocationDataSource, IMatchListingDataSource matchDataSource)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -61,7 +61,7 @@ namespace Stoolball.Web.Tests.MatchLocations
             var locationDataSource = new Mock<IMatchLocationDataSource>();
             locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<MatchLocation>(null));
 
-            var matchesDataSource = new Mock<IMatchDataSource>();
+            var matchesDataSource = new Mock<IMatchListingDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = new TestController(locationDataSource.Object, matchesDataSource.Object))
@@ -78,7 +78,7 @@ namespace Stoolball.Web.Tests.MatchLocations
             var locationDataSource = new Mock<IMatchLocationDataSource>();
             locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).ReturnsAsync(new MatchLocation { MatchLocationId = Guid.NewGuid() });
 
-            var matchesDataSource = new Mock<IMatchDataSource>();
+            var matchesDataSource = new Mock<IMatchListingDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = new TestController(locationDataSource.Object, matchesDataSource.Object))

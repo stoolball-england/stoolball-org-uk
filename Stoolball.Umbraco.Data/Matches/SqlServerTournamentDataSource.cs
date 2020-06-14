@@ -43,23 +43,23 @@ namespace Stoolball.Umbraco.Data.Matches
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var tournaments = await connection.QueryAsync<Tournament, Team, MatchLocation, Season, Competition, Tournament>(
-                        $@"SELECT m.MatchId AS TournamentId, m.MatchName AS TournamentName, m.PlayerType, m.StartTime, m.StartTimeIsKnown, 
-                            m.OversPerInningsDefault, m.PlayersPerTeam, m.QualificationType, 
-                            m.MaximumTeamsInTournament, m.SpacesInTournament, m.MatchNotes, m.MatchRoute AS TournamentRoute, m.MemberKey,
+                        $@"SELECT tourney.TournamentId, tourney.TournamentName, tourney.PlayerType, tourney.StartTime, tourney.StartTimeIsKnown, 
+                            tourney.OversPerInningsDefault, tourney.PlayersPerTeam, tourney.QualificationType, tourney.MaximumTeamsInTournament, 
+                            tourney.SpacesInTournament, tourney.TournamentNotes, tourney.TournamentRoute, tourney.MemberKey,
                             t.TeamRoute, tn.TeamName,
                             ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
                             ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
                             s.SeasonRoute, s.StartYear, s.EndYear,
                             co.CompetitionName
-                            FROM {Tables.Match} AS m
-                            LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
-                            LEFT JOIN {Tables.Team} AS t ON mt.TeamId = t.TeamId
+                            FROM {Tables.Tournament} AS tourney
+                            LEFT JOIN {Tables.TournamentTeam} AS tt ON tourney.TournamentId = tt.TournamentId
+                            LEFT JOIN {Tables.Team} AS t ON tt.TeamId = t.TeamId
                             LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
-                            LEFT JOIN {Tables.MatchLocation} AS ml ON m.MatchLocationId = ml.MatchLocationId
-                            LEFT JOIN {Tables.TournamentSeason} AS sm ON m.MatchId = sm.MatchId
-                            LEFT JOIN {Tables.Season} AS s ON sm.SeasonId = s.SeasonId
+                            LEFT JOIN {Tables.MatchLocation} AS ml ON tourney.MatchLocationId = ml.MatchLocationId
+                            LEFT JOIN {Tables.TournamentSeason} AS ts ON tourney.TournamentId = ts.TournamentId
+                            LEFT JOIN {Tables.Season} AS s ON ts.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.Competition} AS co ON s.CompetitionId = co.CompetitionId
-                            WHERE LOWER(m.MatchRoute) = @Route",
+                            WHERE LOWER(tourney.TournamentRoute) = @Route",
                         (tournament, team, tournamentLocation, season, competition) =>
                         {
                             if (team != null)
