@@ -50,10 +50,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     connection.Open();
                     using (var transaction = connection.BeginTransaction())
                     {
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.MatchComment}", transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.MatchInnings}", transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam}", transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.Match}", transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.MatchComment}", null, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.MatchInnings}", null, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam}", null, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.Match}", null, transaction).ConfigureAwait(false);
                         transaction.Commit();
                     }
                 }

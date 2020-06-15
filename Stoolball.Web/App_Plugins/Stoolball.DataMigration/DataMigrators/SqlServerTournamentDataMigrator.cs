@@ -48,10 +48,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
                     using (var transaction = database.GetTransaction())
                     {
-                        await database.ExecuteAsync($"DELETE FROM {Tables.TournamentComment}").ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason}").ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.TournamentTeam}").ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.Tournament}").ConfigureAwait(false);
+                        await database.ExecuteAsync($"DELETE FROM {Tables.TournamentComment}", null, transaction).ConfigureAwait(false);
+                        await database.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason}", null, transaction).ConfigureAwait(false);
+                        await database.ExecuteAsync($"DELETE FROM {Tables.TournamentTeam}", null, transaction).ConfigureAwait(false);
+                        await database.ExecuteAsync($"DELETE FROM {Tables.Tournament}", null, transaction).ConfigureAwait(false);
                         transaction.Complete();
                     }
 
@@ -182,6 +182,11 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 								SELECT TeamId FROM {Tables.TournamentTeam} WHERE TournamentId = @2
 							)",
                             migratedTournament.TournamentRoute, migratedTournament.StartTime.Year, migratedTournament.TournamentId).ConfigureAwait(false);
+                        await database.ExecuteAsync($@"UPDATE SkybrudRedirects SET 
+							DestinationUrl = CONCAT(@0, SUBSTRING(DestinationUrl, 6, LEN(DestinationUrl)-5))
+							WHERE DestinationUrl LIKE '/[0-9][0-9][0-9][0-9][0-9]%'
+							AND Url LIKE '/{tournament.TournamentRoute.TrimStart('/')}%'",
+                           migratedTournament.TournamentRoute).ConfigureAwait(false);
                         transaction.Complete();
                     }
 
