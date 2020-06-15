@@ -54,15 +54,23 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
             if (group != null)
             {
                 group.Name = groupName;
+                Services.MemberGroupService.Save(group);
             }
             else
             {
-                group = new MemberGroup
+                // Maybe it's there and already renamed from a previous import
+                group = Services.MemberGroupService.GetByName(groupName);
+
+                // If neither name matched, it needs to be created
+                if (group == null)
                 {
-                    Name = groupName
-                };
+                    group = new MemberGroup
+                    {
+                        Name = groupName
+                    };
+                    Services.MemberGroupService.Save(group);
+                }
             }
-            Services.MemberGroupService.Save(group);
             team.MemberGroupId = group.Id;
             team.MemberGroupName = group.Name;
 
