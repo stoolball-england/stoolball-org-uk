@@ -43,7 +43,8 @@ namespace Stoolball.Umbraco.Data.Competitions
                 {
                     var competitions = await connection.QueryAsync<Competition, Season, string, Competition>(
                         $@"SELECT co.CompetitionId, co.CompetitionName, co.PlayerType, co.Introduction, co.FromYear, co.UntilYear, co.Overs, co.PlayersPerTeam,
-                            co.PublicContactDetails, co.PrivateContactDetails, co.Facebook, co.Twitter, co.Instagram, co.YouTube, co.Website, co.CompetitionRoute, co.MemberGroupName,
+                            co.PublicContactDetails, co.PrivateContactDetails, co.Facebook, co.Twitter, co.Instagram, co.YouTube, co.Website, co.CompetitionRoute, 
+                            co.MemberGroupId, co.MemberGroupName,
                             s.SeasonRoute, s.StartYear, s.EndYear,
                             mt.MatchType
                             FROM {Tables.Competition} AS co
