@@ -48,7 +48,7 @@ namespace Stoolball.Web.Competitions
             var viewModel = new DeleteSeasonViewModel(CurrentPage)
             {
                 Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false),
-                IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null)
+                IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null)
             };
 
             // Create a version without circular references before it gets serialised for audit

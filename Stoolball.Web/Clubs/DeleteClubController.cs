@@ -66,7 +66,7 @@ namespace Stoolball.Web.Clubs
         /// <returns></returns>
         protected virtual bool IsAuthorized(DeleteClubViewModel model)
         {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null);
+            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null);
         }
     }
 }

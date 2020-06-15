@@ -48,7 +48,7 @@ namespace Stoolball.Web.Teams
             team.PublicContactDetails = Request.Unvalidated.Form["Team.PublicContactDetails"];
             team.PrivateContactDetails = Request.Unvalidated.Form["Team.PrivateContactDetails"];
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, beforeUpdate.MemberGroupName }, null);
+            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, beforeUpdate.MemberGroupName }, null);
 
             if (isAuthorized && ModelState.IsValid)
             {

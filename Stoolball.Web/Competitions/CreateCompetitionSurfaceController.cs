@@ -44,7 +44,7 @@ namespace Stoolball.Web.Competitions
             competition.PublicContactDetails = Request.Unvalidated.Form["Competition.PublicContactDetails"];
             competition.PrivateContactDetails = Request.Unvalidated.Form["Competition.PrivateContactDetails"];
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, Groups.AllMembers }, null);
+            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.AllMembers }, null);
 
             if (isAuthorized && ModelState.IsValid)
             {
@@ -74,7 +74,7 @@ namespace Stoolball.Web.Competitions
 
                 // Assign the current member to the group unless they're already admin
                 var currentMember = Members.GetCurrentMember();
-                if (!Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null))
+                if (!Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null))
                 {
                     Services.MemberService.AssignRole(currentMember.Id, group.Name);
                 }

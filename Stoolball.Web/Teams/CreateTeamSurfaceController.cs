@@ -46,7 +46,7 @@ namespace Stoolball.Web.Teams
             team.PublicContactDetails = Request.Unvalidated.Form["Team.PublicContactDetails"];
             team.PrivateContactDetails = Request.Unvalidated.Form["Team.PrivateContactDetails"];
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, Groups.AllMembers }, null);
+            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.AllMembers }, null);
 
             if (isAuthorized && ModelState.IsValid)
             {
@@ -76,7 +76,7 @@ namespace Stoolball.Web.Teams
 
                 // Assign the current member to the group unless they're already admin
                 var currentMember = Members.GetCurrentMember();
-                if (!Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null))
+                if (!Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null))
                 {
                     Services.MemberService.AssignRole(currentMember.Id, group.Name);
                 }

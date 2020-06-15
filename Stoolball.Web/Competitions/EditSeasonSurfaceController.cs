@@ -52,7 +52,7 @@ namespace Stoolball.Web.Competitions
                 return new HttpStatusCodeResult(400);
             }
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, season.Competition.MemberGroupName }, null);
+            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, season.Competition.MemberGroupName }, null);
 
             if (isAuthorized && ModelState.IsValid)
             {

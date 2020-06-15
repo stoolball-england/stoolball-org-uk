@@ -47,7 +47,7 @@ namespace Stoolball.Web.Competitions
             competition.PublicContactDetails = Request.Unvalidated.Form["Competition.PublicContactDetails"];
             competition.PrivateContactDetails = Request.Unvalidated.Form["Competition.PrivateContactDetails"];
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, beforeUpdate.MemberGroupName }, null);
+            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, beforeUpdate.MemberGroupName }, null);
 
             if (isAuthorized && ModelState.IsValid)
             {

@@ -89,7 +89,7 @@ namespace Stoolball.Web.MatchLocations
         /// <returns></returns>
         protected virtual bool IsAuthorized(MatchLocationViewModel model)
         {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, model?.MatchLocation.MemberGroupName }, null);
+            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, model?.MatchLocation.MemberGroupName }, null);
         }
     }
 }

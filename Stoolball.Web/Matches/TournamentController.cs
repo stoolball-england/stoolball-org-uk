@@ -100,7 +100,7 @@ namespace Stoolball.Web.Matches
 
             if (model.Tournament.MemberKey == currentMember.Key) { return true; }
 
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null);
+            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null);
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Stoolball.Web.MatchLocations
             // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
             location.MatchLocationNotes = Request.Unvalidated.Form["MatchLocation.MatchLocationNotes"];
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, Groups.AllMembers }, null);
+            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.AllMembers }, null);
 
             if (isAuthorized && ModelState.IsValid)
             {
@@ -72,7 +72,7 @@ namespace Stoolball.Web.MatchLocations
 
                 // Assign the current member to the group unless they're already admin
                 var currentMember = Members.GetCurrentMember();
-                if (!Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null))
+                if (!Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null))
                 {
                     Services.MemberService.AssignRole(currentMember.Id, group.Name);
                 }

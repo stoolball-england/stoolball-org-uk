@@ -86,7 +86,7 @@ namespace Stoolball.Web.Teams
         /// <returns></returns>
         protected virtual bool IsAuthorized(TeamViewModel model)
         {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, model?.Team.MemberGroupName }, null);
+            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, model?.Team.MemberGroupName }, null);
         }
     }
 }

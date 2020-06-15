@@ -65,7 +65,7 @@ namespace Stoolball.Web.Competitions
         /// <returns></returns>
         protected virtual bool IsAuthorized(CompetitionViewModel model)
         {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, model?.Competition.MemberGroupName }, null);
+            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, model?.Competition.MemberGroupName }, null);
         }
     }
 }

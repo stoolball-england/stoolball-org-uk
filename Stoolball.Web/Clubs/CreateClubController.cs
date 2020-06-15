@@ -52,7 +52,7 @@ namespace Stoolball.Web.Clubs
         /// <returns></returns>
         protected virtual bool IsAuthorized()
         {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, Groups.AllMembers }, null);
+            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.AllMembers }, null);
         }
     }
 }

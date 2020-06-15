@@ -47,7 +47,7 @@ namespace Stoolball.Web.Routing
         /// <returns></returns>
         protected virtual bool IsAdministrator()
         {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null);
+            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null);
         }
     }
 }

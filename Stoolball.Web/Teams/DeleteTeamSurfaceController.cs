@@ -49,7 +49,7 @@ namespace Stoolball.Web.Teams
             var viewModel = new DeleteTeamViewModel(CurrentPage)
             {
                 Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false),
-                IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null)
+                IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null)
             };
 
             if (viewModel.IsAuthorized && ModelState.IsValid)

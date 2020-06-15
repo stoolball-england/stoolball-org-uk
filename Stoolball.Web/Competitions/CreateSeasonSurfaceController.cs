@@ -76,7 +76,7 @@ namespace Stoolball.Web.Competitions
                 ModelState.AddModelError(string.Empty, $"There is already a {season.SeasonName()}");
             }
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, season.Competition.MemberGroupName }, null);
+            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, season.Competition.MemberGroupName }, null);
 
             if (isAuthorized && ModelState.IsValid)
             {

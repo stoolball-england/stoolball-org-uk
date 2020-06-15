@@ -81,7 +81,7 @@ namespace Stoolball.Web.Matches
             if (model.Match.MemberKeys().Contains(currentMember.Key)) { return true; }
 
             var allowedGroups = new List<string>(model.Match.MemberGroupNames());
-            allowedGroups.AddRange(new[] { Groups.Administrators, Groups.Editors });
+            allowedGroups.AddRange(new[] { Groups.Administrators });
 
             return Members.IsMemberAuthorized(null, allowedGroups, null);
         }

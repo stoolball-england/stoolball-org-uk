@@ -44,7 +44,7 @@ namespace Stoolball.Web.MatchLocations
             // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
             location.MatchLocationNotes = Request.Unvalidated.Form["MatchLocation.MatchLocationNotes"];
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors, beforeUpdate.MemberGroupName }, null);
+            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, beforeUpdate.MemberGroupName }, null);
 
             if (isAuthorized && ModelState.IsValid)
             {

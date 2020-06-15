@@ -77,7 +77,7 @@ namespace Stoolball.Web.MatchLocations
         /// <returns></returns>
         protected virtual bool IsAuthorized(DeleteMatchLocationViewModel model)
         {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null);
+            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null);
         }
     }
 }

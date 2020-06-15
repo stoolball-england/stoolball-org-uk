@@ -49,7 +49,7 @@ namespace Stoolball.Web.Competitions
             var viewModel = new DeleteCompetitionViewModel(CurrentPage)
             {
                 Competition = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false),
-                IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.Editors }, null)
+                IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null)
             };
 
 
