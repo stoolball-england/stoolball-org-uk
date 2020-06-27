@@ -37,7 +37,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     using (var transaction = database.GetTransaction())
                     {
                         await database.ExecuteAsync($@"DELETE FROM {Tables.MatchAward}").ConfigureAwait(false);
-                        await database.ExecuteAsync($@"DELETE FROM {Tables.MatchAwardType}").ConfigureAwait(false);
+                        await database.ExecuteAsync($@"DELETE FROM {Tables.Award}").ConfigureAwait(false);
                         transaction.Complete();
                     }
 
@@ -72,7 +72,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             if (migratedMatchAward.PlayerOfTheMatchId != null)
             {
                 migratedMatchAward.MatchAwardId = Guid.NewGuid();
-                migratedMatchAward.MatchAwardTypeId = await CreateOrGetMatchAwardTypeId("Player of the match").ConfigureAwait(false);
+                migratedMatchAward.AwardId = await CreateOrGetMatchAwardTypeId("Player of the match").ConfigureAwait(false);
                 migratedMatchAward.MatchId = await GetMatchId(migratedMatchAward.MigratedMatchId).ConfigureAwait(false);
                 migratedMatchAward.PlayerIdentityId = await GetPlayerIdentityId(migratedMatchAward.PlayerOfTheMatchId.Value).ConfigureAwait(false);
                 await CreateMatchAward(migratedMatchAward).ConfigureAwait(false);
@@ -80,7 +80,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             if (migratedMatchAward.PlayerOfTheMatchHomeId != null)
             {
                 migratedMatchAward.MatchAwardId = Guid.NewGuid();
-                migratedMatchAward.MatchAwardTypeId = await CreateOrGetMatchAwardTypeId("Player of the match (home)").ConfigureAwait(false);
+                migratedMatchAward.AwardId = await CreateOrGetMatchAwardTypeId("Player of the match (home)").ConfigureAwait(false);
                 migratedMatchAward.MatchId = await GetMatchId(migratedMatchAward.MigratedMatchId).ConfigureAwait(false);
                 migratedMatchAward.PlayerIdentityId = await GetPlayerIdentityId(migratedMatchAward.PlayerOfTheMatchHomeId.Value).ConfigureAwait(false);
                 await CreateMatchAward(migratedMatchAward).ConfigureAwait(false);
@@ -88,7 +88,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             if (migratedMatchAward.PlayerOfTheMatchAwayId != null)
             {
                 migratedMatchAward.MatchAwardId = Guid.NewGuid();
-                migratedMatchAward.MatchAwardTypeId = await CreateOrGetMatchAwardTypeId("Player of the match (away)").ConfigureAwait(false);
+                migratedMatchAward.AwardId = await CreateOrGetMatchAwardTypeId("Player of the match (away)").ConfigureAwait(false);
                 migratedMatchAward.MatchId = await GetMatchId(migratedMatchAward.MigratedMatchId).ConfigureAwait(false);
                 migratedMatchAward.PlayerIdentityId = await GetPlayerIdentityId(migratedMatchAward.PlayerOfTheMatchAwayId.Value).ConfigureAwait(false);
                 await CreateMatchAward(migratedMatchAward).ConfigureAwait(false);
@@ -146,11 +146,11 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     using (var transaction = database.GetTransaction())
                     {
                         await database.ExecuteAsync($@"INSERT INTO {Tables.MatchAward} 
-                            (MatchAwardId, MatchId, MatchAwardTypeId, PlayerIdentityId)
+                            (MatchAwardId, MatchId, AwardId, PlayerIdentityId)
 						    VALUES (@0, @1, @2, @3)",
                             migratedMatchAward.MatchAwardId,
                             migratedMatchAward.MatchId,
-                            migratedMatchAward.MatchAwardTypeId,
+                            migratedMatchAward.AwardId,
                             migratedMatchAward.PlayerIdentityId).ConfigureAwait(false);
 
                         transaction.Complete();
@@ -175,22 +175,40 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             }).ConfigureAwait(false);
         }
 
-        private async Task<Guid> CreateOrGetMatchAwardTypeId(string matchAwardTypeName)
+        private async Task<Guid> CreateOrGetMatchAwardTypeId(string awardName)
         {
             using (var scope = _scopeProvider.CreateScope())
             {
-                var matchAwardTypeId = await scope.Database.ExecuteScalarAsync<Guid?>($"SELECT MatchAwardTypeId FROM {Tables.MatchAwardType} WHERE MatchAwardTypeName = @matchAwardTypeName", new { matchAwardTypeName }).ConfigureAwait(false);
-                if (matchAwardTypeId == null)
+                var awardId = await scope.Database.ExecuteScalarAsync<Guid?>($"SELECT AwardId FROM {Tables.Award} WHERE AwardName = @awardName", new { awardName }).ConfigureAwait(false);
+                if (awardId == null)
                 {
-                    matchAwardTypeId = Guid.NewGuid();
-                    await scope.Database.ExecuteAsync($@"INSERT INTO {Tables.MatchAwardType} 
-                            (MatchAwardTypeId, MatchAwardTypeName)
-						    VALUES (@0, @1)",
-                            matchAwardTypeId,
-                            matchAwardTypeName).ConfigureAwait(false);
+                    var equivalentAwardSet = await scope.Database.ExecuteScalarAsync<Guid?>($"SELECT TOP 1 EquivalentAwardSet FROM {Tables.Award}").ConfigureAwait(false);
+                    if (!equivalentAwardSet.HasValue)
+                    {
+                        equivalentAwardSet = Guid.NewGuid();
+                    }
+
+                    Guid? awardSet = null;
+                    if (awardName.Contains("(home)") || awardName.Contains("away"))
+                    {
+                        awardSet = await scope.Database.ExecuteScalarAsync<Guid?>($"SELECT TOP 1 AwardSet FROM {Tables.Award} WHERE AwardSet IS NOT NULL").ConfigureAwait(false);
+                        if (!awardSet.HasValue)
+                        {
+                            awardSet = Guid.NewGuid();
+                        }
+                    }
+
+                    awardId = Guid.NewGuid();
+                    await scope.Database.ExecuteAsync($@"INSERT INTO {Tables.Award} 
+                            (AwardId, AwardName, AwardSet, EquivalentAwardSet)
+						    VALUES (@0, @1, @2, @3)",
+                            awardId,
+                            awardName,
+                            awardSet,
+                            equivalentAwardSet).ConfigureAwait(false);
                 }
                 scope.Complete();
-                return matchAwardTypeId.Value;
+                return awardId.Value;
             }
         }
     }

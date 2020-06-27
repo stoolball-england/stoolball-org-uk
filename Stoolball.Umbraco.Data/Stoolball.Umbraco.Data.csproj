@@ -118,8 +118,8 @@
     <Compile Include="Migrations\MatchAddTable.cs" />
     <Compile Include="Migrations\MatchAwardAddTable.cs" />
     <Compile Include="Migrations\MatchAwardTableInitialSchema.cs" />
-    <Compile Include="Migrations\MatchAwardTypeAddTable.cs" />
-    <Compile Include="Migrations\MatchAwardTypeTableInitialSchema.cs" />
+    <Compile Include="Migrations\AwardAddTable.cs" />
+    <Compile Include="Migrations\AwardTableInitialSchema.cs" />
     <Compile Include="Migrations\MatchCommentAddTable.cs" />
     <Compile Include="Migrations\MatchCommentTableInitialSchema.cs" />
     <Compile Include="Migrations\MatchInningsAddTable.cs" />

@@ -5,7 +5,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
     public class MigratedMatchAward
     {
         public Guid? MatchId { get; set; }
-        public Guid? MatchAwardTypeId { get; set; }
+        public Guid? AwardId { get; set; }
         public Guid? MatchAwardId { get; internal set; }
         public int MigratedMatchId { get; set; }
         public int? PlayerOfTheMatchId { get; set; }

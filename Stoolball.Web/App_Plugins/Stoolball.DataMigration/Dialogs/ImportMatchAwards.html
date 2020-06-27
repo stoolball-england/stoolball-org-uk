@@ -1,6 +1,6 @@
 ﻿<div
   class="data-migration-dialog"
-  ng-controller="Stoolball.DataMigration.ImportMatchComments as vm"
+  ng-controller="Stoolball.DataMigration.ImportMatchAwards as vm"
 >
   <umb-editor-view>
     <umb-editor-header
@@ -16,8 +16,8 @@
       <umb-box>
         <umb-box-content>
           <p>
-            This will import all stoolball match and tournament comments from
-            the old Stoolball England website into the Umbraco database.
+            This will import all stoolball player of the match awards from the
+            old Stoolball England website into the Umbraco database.
           </p>
 
           <label for="dataSource">Import from</label>
@@ -33,11 +33,11 @@
       <umb-box ng-if="vm.processing">
         <umb-box-content>
           <div class="umb-panel-group__details-check-name">
-            Importing: {{vm.imported.length}} of {{vm.total}} match comments
+            Importing: {{vm.imported.length}} of {{vm.total}} match awards
           </div>
           <ul class="data-migration-progress">
             <li ng-repeat="item in vm.failed" class="alert alert-error">
-              Failed: Comment on match {{item.matchId}} by {{item.user_id}}
+              Failed: {{item | json}}
             </li>
           </ul>
         </umb-box-content>
@@ -45,7 +45,7 @@
       <umb-box ng-if="vm.done && vm.total === 0">
         <umb-box-content>
           <div class="umb-panel-group__details-check-name">
-            There are no match comments to import.
+            There are no player of the match awards to import.
           </div>
         </umb-box-content>
       </umb-box>
@@ -65,7 +65,7 @@
         <umb-button
           type="button"
           button-style="primary"
-          label="Import match comments"
+          label="Import match awards"
           icon="icon-arrow-right"
           action="vm.submit(model)"
           state="vm.buttonState"

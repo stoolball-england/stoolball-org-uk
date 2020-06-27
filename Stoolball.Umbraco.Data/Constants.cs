@@ -28,7 +28,7 @@ namespace Stoolball.Umbraco.Data
             public const string MatchTeam = _tablePrefix + "MatchTeam";
             public const string MatchInnings = _tablePrefix + "MatchInnings";
             public const string MatchAward = _tablePrefix + "MatchAward";
-            public const string MatchAwardType = _tablePrefix + "MatchAwardType";
+            public const string Award = _tablePrefix + "Award";
             public const string Tournament = _tablePrefix + "Tournament";
             public const string TournamentTeam = _tablePrefix + "TournamentTeam";
             public const string TournamentSeason = _tablePrefix + "TournamentSeason";
