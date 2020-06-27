@@ -16,7 +16,7 @@
       <umb-box>
         <umb-box-content>
           <p>
-            This will import all stoolball player of the match awards from the
+            This will import all stoolball player of the match comments from the
             old Stoolball England website into the Umbraco database.
           </p>
 
@@ -33,7 +33,7 @@
       <umb-box ng-if="vm.processing">
         <umb-box-content>
           <div class="umb-panel-group__details-check-name">
-            Importing: {{vm.imported.length}} of {{vm.total}} match awards
+            Importing: {{vm.imported.length}} of {{vm.total}} match comments
           </div>
           <ul class="data-migration-progress">
             <li ng-repeat="item in vm.failed" class="alert alert-error">
@@ -45,7 +45,7 @@
       <umb-box ng-if="vm.done && vm.total === 0">
         <umb-box-content>
           <div class="umb-panel-group__details-check-name">
-            There are no match awards to import.
+            There are no match comments to import.
           </div>
         </umb-box-content>
       </umb-box>

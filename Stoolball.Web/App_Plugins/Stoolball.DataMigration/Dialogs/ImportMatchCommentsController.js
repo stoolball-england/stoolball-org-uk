@@ -35,6 +35,7 @@
           (comment) => ({
             MigratedMatchId: comment.matchId,
             MigratedMemberId: comment.user_id,
+            MigratedMemberEmail: comment.email,
             CommentDate: comment.date_added,
             Comment: comment.message,
           }),

@@ -10,6 +10,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         public Guid? MemberKey { get; set; }
         public string MemberName { get; set; }
         public int MigratedMemberId { get; set; }
+        public string MigratedMemberEmail { get; set; }
         public string Comment { get; set; }
         public DateTimeOffset CommentDate { get; set; }
     }

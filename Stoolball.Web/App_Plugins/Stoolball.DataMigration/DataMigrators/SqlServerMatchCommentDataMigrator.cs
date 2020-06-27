@@ -2,7 +2,6 @@
 using Stoolball.Audit;
 using Stoolball.Umbraco.Data.Audit;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
@@ -23,7 +22,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             _scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _serviceContext = serviceContext;
+            _serviceContext = serviceContext ?? throw new ArgumentNullException(nameof(serviceContext));
         }
 
         /// <summary>
@@ -70,6 +69,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 MatchCommentId = Guid.NewGuid(),
                 MigratedMatchId = comment.MigratedMatchId,
                 MigratedMemberId = comment.MigratedMemberId,
+                MigratedMemberEmail = comment.MigratedMemberEmail,
                 Comment = comment.Comment,
                 CommentDate = comment.CommentDate
             };
@@ -77,13 +77,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             migratedMatchComment.MatchId = await GetMatchId(migratedMatchComment.MigratedMatchId).ConfigureAwait(false);
             if (migratedMatchComment.MatchId.HasValue)
             {
-                (migratedMatchComment.MemberKey, migratedMatchComment.MemberName) = GetMember(comment.MigratedMemberId);
+                (migratedMatchComment.MemberKey, migratedMatchComment.MemberName) = GetMember(comment.MigratedMemberEmail);
                 await CreateMatchComment(migratedMatchComment).ConfigureAwait(false);
             }
             else
             {
                 migratedMatchComment.MatchId = await GetTournamentId(migratedMatchComment.MigratedMatchId).ConfigureAwait(false);
-                (migratedMatchComment.MemberKey, migratedMatchComment.MemberName) = GetMember(comment.MigratedMemberId);
+                (migratedMatchComment.MemberKey, migratedMatchComment.MemberName) = GetMember(comment.MigratedMemberEmail);
                 await CreateTournamentComment(migratedMatchComment).ConfigureAwait(false);
             }
 
@@ -128,14 +128,19 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             }
         }
 
-        private (Guid? memberKey, string memberName) GetMember(int migratedMemberId)
+        private (Guid? memberKey, string memberName) GetMember(string migratedMemberEmail)
         {
-            var member = _serviceContext.MemberService.GetMembersByPropertyValue("migratedMemberId", migratedMemberId).SingleOrDefault();
-            if (member != null)
+            var member = _serviceContext.MemberService.GetByEmail(migratedMemberEmail);
+            if (member == null)
             {
-                return (member.Key, member.Name);
+                var memberType = _serviceContext.MemberTypeService.Get("Member");
+                member = _serviceContext.MemberService.CreateMemberWithIdentity(migratedMemberEmail, migratedMemberEmail, migratedMemberEmail, memberType);
+                member.IsApproved = false;
+                member.IsLockedOut = false;
+                member.SetValue("blockLogin", false);
+                _serviceContext.MemberService.Save(member);
             }
-            return (null, null);
+            return (member.Key, member.Name);
         }
 
         private async Task CreateMatchComment(MigratedMatchComment migratedMatchComment)
@@ -148,11 +153,12 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     using (var transaction = database.GetTransaction())
                     {
                         await database.ExecuteAsync($@"INSERT INTO {Tables.MatchComment} 
-                            (MatchCommentId, MatchId, MemberKey, Comment, CommentDate)
-						    VALUES (@0, @1, @2, @3, @4)",
+                            (MatchCommentId, MatchId, MemberKey, MemberName, Comment, CommentDate)
+						    VALUES (@0, @1, @2, @3, @4, @5)",
                             migratedMatchComment.MatchCommentId,
                             migratedMatchComment.MatchId,
                             migratedMatchComment.MemberKey,
+                            migratedMatchComment.MemberName,
                             migratedMatchComment.Comment,
                             migratedMatchComment.CommentDate
                             ).ConfigureAwait(false);
@@ -190,11 +196,12 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     using (var transaction = database.GetTransaction())
                     {
                         await database.ExecuteAsync($@"INSERT INTO {Tables.TournamentComment} 
-                            (TournamentCommentId, TournamentId, MemberKey, Comment, CommentDate)
-						    VALUES (@0, @1, @2, @3, @4)",
+                            (TournamentCommentId, TournamentId, MemberKey, MemberName, Comment, CommentDate)
+						    VALUES (@0, @1, @2, @3, @4, @5)",
                             migratedMatchComment.MatchCommentId,
                             migratedMatchComment.MatchId,
                             migratedMatchComment.MemberKey,
+                            migratedMatchComment.MemberName,
                             migratedMatchComment.Comment,
                             migratedMatchComment.CommentDate
                             ).ConfigureAwait(false);
