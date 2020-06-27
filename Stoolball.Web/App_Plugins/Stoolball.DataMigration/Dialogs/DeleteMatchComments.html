@@ -1,6 +1,6 @@
 ﻿<div
   class="data-migration-dialog"
-  ng-controller="Stoolball.DataMigration.ImportMatchComments as vm"
+  ng-controller="Stoolball.DataMigration.DeleteMatchComments as vm"
 >
   <umb-editor-view>
     <umb-editor-header
@@ -15,38 +15,19 @@
     <umb-editor-container>
       <umb-box>
         <umb-box-content>
-          <p>
-            This will import all stoolball match and tournament comments from
-            the old Stoolball England website into the Umbraco database.
+          <p>This will delete all stoolball match comments.</p>
+          <p><strong>This cannot be undone.</strong></p>
+        </umb-box-content>
+      </umb-box>
+      <umb-box ng-if="vm.buttonState != 'init'">
+        <umb-box-content>
+          <div class="umb-panel-group__details-check-name">
+            Deleting match comments
+          </div>
+          <p ng-if="!vm.success && vm.done" class="alert alert-error">
+            Failed
           </p>
-
-          <label for="dataSource">Import from</label>
-          <select
-            ng-init="model.dataSource='stoolball.local'"
-            ng-model="model.dataSource"
-            ng-options="x for x in model.dataSources"
-            id="dataSource"
-          >
-          </select>
-        </umb-box-content>
-      </umb-box>
-      <umb-box ng-if="vm.processing">
-        <umb-box-content>
-          <div class="umb-panel-group__details-check-name">
-            Importing: {{vm.imported.length}} of {{vm.total}} match comments
-          </div>
-          <ul class="data-migration-progress">
-            <li ng-repeat="item in vm.failed" class="alert alert-error">
-              Failed: Comment on match {{item.matchId}} by {{item.user_id}}
-            </li>
-          </ul>
-        </umb-box-content>
-      </umb-box>
-      <umb-box ng-if="vm.done && vm.total === 0">
-        <umb-box-content>
-          <div class="umb-panel-group__details-check-name">
-            There are no match comments to import.
-          </div>
+          <p ng-if="vm.success && vm.done">Done.</p>
         </umb-box-content>
       </umb-box>
     </umb-editor-container>
@@ -64,9 +45,9 @@
         </umb-button>
         <umb-button
           type="button"
-          button-style="primary"
-          label="Import match comments"
-          icon="icon-arrow-right"
+          button-style="danger"
+          label="Delete all match comments"
+          icon="icon-trash"
           action="vm.submit(model)"
           state="vm.buttonState"
           disabled="vm.buttonState === 'busy'"

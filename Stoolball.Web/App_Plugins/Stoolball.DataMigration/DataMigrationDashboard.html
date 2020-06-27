@@ -258,6 +258,28 @@
         <div class="umb-box">
           <div class="umb-box-content">
             <p>
+              Tournaments, matches and members must already be imported before
+              importing match comments.
+            </p>
+            <button
+              class="btn btn-danger"
+              ng-click="vm.openDialog('Delete all match comments - are you sure?', 'DeleteMatchComments')"
+            >
+              <i class="icon-trash"></i>
+              Delete all match comments
+            </button>
+            <button
+              class="btn btn-primary"
+              ng-click="vm.openDialog('Import match comments', 'ImportMatchComments')"
+            >
+              <i class="icon-arrow-right"></i>
+              Import match comments
+            </button>
+          </div>
+        </div>
+        <div class="umb-box">
+          <div class="umb-box-content">
+            <p>
               Players and matches must already be imported before importing
               match awards.
             </p>

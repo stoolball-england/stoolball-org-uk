@@ -21,6 +21,9 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(MemberKey))]
         public Guid MemberKey { get; set; }
 
+        [Column(nameof(MemberName))]
+        public string MemberName { get; set; }
+
         [Column(nameof(CommentDate))]
         public DateTime CommentDate { get; set; }
 
