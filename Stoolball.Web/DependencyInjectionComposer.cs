@@ -56,6 +56,8 @@ namespace Stoolball.Web
             composition.Register<IPlayerPerformanceDataMigrator, SqlServerPlayerPerformanceDataMigrator>(Lifetime.Singleton);
             composition.Register<IMatchAwardDataMigrator, SqlServerMatchAwardDataMigrator>(Lifetime.Singleton);
             composition.Register<IMatchCommentDataMigrator, SqlServerMatchCommentDataMigrator>(Lifetime.Singleton);
+            composition.Register<IMatchCommentSubscriptionDataMigrator, SqlServerMatchCommentSubscriptionDataMigrator>(Lifetime.Singleton);
+            composition.Register<ICompetitionSubscriptionDataMigrator, SqlServerCompetitionSubscriptionDataMigrator>(Lifetime.Singleton);
 
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 
             // be injected anywhere except the one place where it's serving a page of content.

@@ -158,6 +158,20 @@
               <i class="icon-arrow-right"></i>
               Import seasons
             </button>
+            <button
+              class="btn btn-danger"
+              ng-click="vm.openDialog('Delete all competition subscriptions - are you sure?', 'DeleteCompetitionSubscriptions')"
+            >
+              <i class="icon-trash"></i>
+              Delete all competition subscriptions
+            </button>
+            <button
+              class="btn btn-primary"
+              ng-click="vm.openDialog('Import competition subscriptions', 'ImportCompetitionSubscriptions')"
+            >
+              <i class="icon-arrow-right"></i>
+              Import competition subscriptions
+            </button>
           </div>
         </div>
         <div class="umb-box">
@@ -274,6 +288,20 @@
             >
               <i class="icon-arrow-right"></i>
               Import match comments
+            </button>
+            <button
+              class="btn btn-danger"
+              ng-click="vm.openDialog('Delete all match comment subscriptions - are you sure?', 'DeleteMatchCommentSubscriptions')"
+            >
+              <i class="icon-trash"></i>
+              Delete all match comment subscriptions
+            </button>
+            <button
+              class="btn btn-primary"
+              ng-click="vm.openDialog('Import match comment subscriptions', 'ImportMatchCommentSubscriptions')"
+            >
+              <i class="icon-arrow-right"></i>
+              Import match comment subscriptions
             </button>
           </div>
         </div>

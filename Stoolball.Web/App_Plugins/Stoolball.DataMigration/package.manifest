@@ -41,6 +41,10 @@
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/DeleteMatchAwardsController.js",
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/ImportMatchCommentsController.js",
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/DeleteMatchCommentsController.js",
+    "~/App_Plugins/Stoolball.DataMigration/Dialogs/ImportMatchCommentSubscriptionsController.js",
+    "~/App_Plugins/Stoolball.DataMigration/Dialogs/DeleteMatchCommentSubscriptionsController.js",
+    "~/App_Plugins/Stoolball.DataMigration/Dialogs/ImportCompetitionSubscriptionsController.js",
+    "~/App_Plugins/Stoolball.DataMigration/Dialogs/DeleteCompetitionSubscriptionsController.js",
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/EnsureRedirectsController.js",
     "~/App_Plugins/Stoolball.DataMigration/stoolballResource.js"
   ],

@@ -890,9 +890,15 @@
     <Compile Include="App_Data\Models\StoolballRouter.generated.cs" />
     <Compile Include="App_Data\Models\StyleGuide.generated.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\CompetitionMigrationController.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\CompetitionSubscriptionMigrationController.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\MatchCommentSubscriptionMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\MatchCommentMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\MatchAwardMigrationController.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\ICompetitionSubscriptionDataMigrator.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IMatchCommentSubscriptionDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IMatchCommentDataMigrator.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedCompetitionSubscription.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedMatchCommentSubscription.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedMatchComment.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IMatchAwardDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedMatchAward.cs" />
@@ -937,6 +943,8 @@
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedTournament.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SkybrudRedirectsDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerCompetitionDataMigrator.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerCompetitionSubscriptionDataMigrator.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerMatchCommentSubscriptionDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerMatchCommentDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerMatchAwardDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerTournamentDataMigrator.cs" />

@@ -44,7 +44,7 @@ namespace Stoolball.Umbraco.Data
             public const string Team = _tablePrefix + "Team";
             public const string TeamName = _tablePrefix + "TeamName";
             public const string TeamMatchLocation = _tablePrefix + "TeamMatchLocation";
-
+            public const string NotificationSubscription = _tablePrefix + "NotificationSubscription";
             public const string PlayerMatchStatistics = _tablePrefix + _statisticsPrefix + "PlayerMatch";
         }
 

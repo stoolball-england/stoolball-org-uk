@@ -84,6 +84,8 @@
     <Compile Include="MatchLocations\IMatchLocationRepository.cs" />
     <Compile Include="MatchLocations\MatchLocationQuery.cs" />
     <Compile Include="MatchLocations\SqlServerMatchLocationRepository.cs" />
+    <Compile Include="Migrations\NotificationSubscriptionAddTable.cs" />
+    <Compile Include="Migrations\NotificationSubscriptionTableInitialSchema.cs" />
     <Compile Include="Migrations\TournamentCommentTableInitialSchema.cs" />
     <Compile Include="Migrations\TournamentCommentAddTable.cs" />
     <Compile Include="Migrations\TournamentTeamTableInitialSchema.cs" />
