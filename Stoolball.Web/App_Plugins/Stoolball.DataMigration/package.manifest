@@ -37,6 +37,8 @@
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/DeletePlayerInningsController.js",
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/ImportOversController.js",
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/DeleteOversController.js",
+    "~/App_Plugins/Stoolball.DataMigration/Dialogs/ImportMatchAwardsController.js",
+    "~/App_Plugins/Stoolball.DataMigration/Dialogs/DeleteMatchAwardsController.js",
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/EnsureRedirectsController.js",
     "~/App_Plugins/Stoolball.DataMigration/stoolballResource.js"
   ],

@@ -255,6 +255,28 @@
             </button>
           </div>
         </div>
+        <div class="umb-box">
+          <div class="umb-box-content">
+            <p>
+              Players and matches must already be imported before importing
+              match awards.
+            </p>
+            <button
+              class="btn btn-danger"
+              ng-click="vm.openDialog('Delete all match awards - are you sure?', 'DeleteMatchAwards')"
+            >
+              <i class="icon-trash"></i>
+              Delete all match awards
+            </button>
+            <button
+              class="btn btn-primary"
+              ng-click="vm.openDialog('Import match awards', 'ImportMatchAwards')"
+            >
+              <i class="icon-arrow-right"></i>
+              Import match awards
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
