@@ -80,18 +80,11 @@
 }
 
 @{
-    var hasBatting = Model.Match.MatchInnings.Select(x => x.PlayerInnings.Count).Sum() > 0;
-    var hasOvers = Model.Match.MatchInnings.Select(x => x.OversBowled.Count).Sum() > 0;
-    var hasRuns = Model.Match.MatchInnings.Select(x => x.Runs.HasValue).Contains(true);
-    var hasWickets = Model.Match.MatchInnings.Select(x => x.Wickets.HasValue).Contains(true);
-
-    var hasScorecard = (hasBatting || hasOvers || hasRuns || hasWickets);
-
-    if (Model.Match.MatchResultType.HasValue || Model.Match.InningsOrderIsKnown || hasScorecard)
+    if (Model.Match.MatchResultType.HasValue || Model.Match.InningsOrderIsKnown || Model.Match.HasScorecard())
     {
         // Put the result in the h2, so long as we have something to put after it. Otherwise put the result after the h2.
         var resultHeader = "Result";
-        if (Model.Match.MatchResultType.HasValue && (Model.Match.InningsOrderIsKnown || hasScorecard))
+        if (Model.Match.MatchResultType.HasValue && (Model.Match.InningsOrderIsKnown || Model.Match.HasScorecard()))
         {
             resultHeader += ": " + ResultDescription();
         }
@@ -111,7 +104,7 @@
         <p>@tossResult.</p>
     }
 
-    if (hasScorecard)
+    if (Model.Match.HasScorecard())
     {
 
     }

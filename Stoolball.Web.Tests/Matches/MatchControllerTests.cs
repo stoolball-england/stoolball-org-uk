@@ -3,6 +3,7 @@ using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
+using Stoolball.Web.Security;
 using System;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -29,7 +30,9 @@ namespace Stoolball.Web.Tests.Matches
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, matchDataSource, Mock.Of<IDateTimeFormatter>(), Mock.Of<IEmailProtector>())
+                null, matchDataSource,
+                Mock.Of<IAuthorizationPolicy<Stoolball.Matches.Match>>(),
+                Mock.Of<IDateTimeFormatter>(), Mock.Of<IEmailProtector>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -42,12 +45,10 @@ namespace Stoolball.Web.Tests.Matches
                 controllerContext.Setup(p => p.HttpContext.User).Returns(new GenericPrincipal(new GenericIdentity("test"), null));
                 ControllerContext = controllerContext.Object;
             }
-
-            protected override bool IsAuthorized(MatchViewModel model)
+            protected override bool IsAuthorized(Stoolball.Matches.Match match)
             {
                 return true;
             }
-
             protected override ActionResult CurrentTemplate<T>(T model)
             {
                 return View("Match", model);

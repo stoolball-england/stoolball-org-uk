@@ -5,6 +5,7 @@ using Stoolball.MatchLocations;
 using Stoolball.Teams;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Stoolball.Matches
@@ -47,6 +48,19 @@ namespace Stoolball.Matches
         public bool InningsOrderIsKnown { get; set; }
         public MatchResultType? MatchResultType { get; set; }
         public List<MatchInnings> MatchInnings { get; internal set; } = new List<MatchInnings>();
+
+        public bool HasScorecard()
+        {
+            var hasBatting = MatchInnings.Select(x => x.PlayerInnings.Count).Sum() > 0;
+            var hasOvers = MatchInnings.Select(x => x.OversBowled.Count).Sum() > 0;
+            var hasRuns = MatchInnings.Select(x => x.Runs.HasValue).Contains(true);
+            var hasWickets = MatchInnings.Select(x => x.Wickets.HasValue).Contains(true);
+
+            return (hasBatting || hasOvers || hasRuns || hasWickets);
+        }
+
+        public List<MatchAward> Awards { get; internal set; } = new List<MatchAward>();
+
         public string MatchNotes { get; set; }
         public string MatchRoute { get; set; }
         public Season Season { get; set; }

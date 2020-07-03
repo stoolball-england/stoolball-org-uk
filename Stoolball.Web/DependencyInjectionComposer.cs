@@ -2,6 +2,7 @@
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Email;
+using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Security;
 using Stoolball.Umbraco.Data;
@@ -19,6 +20,7 @@ using Stoolball.Web.Configuration;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Routing;
+using Stoolball.Web.Security;
 using Stoolball.Web.Teams;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
@@ -120,7 +122,12 @@ namespace Stoolball.Web
             composition.Register<ISeasonRepository, SqlServerSeasonRepository>(Lifetime.Singleton);
             composition.Register<IMatchDataSource, SqlServerMatchDataSource>(Lifetime.Singleton);
             composition.Register<IMatchListingDataSource, SqlServerMatchListingDataSource>(Lifetime.Singleton);
+            composition.Register<IMatchCommentsDataSource, SqlServerMatchCommentsDataSource>(Lifetime.Singleton);
+            composition.Register<IMatchRepository, SqlServerMatchRepository>(Lifetime.Singleton);
             composition.Register<ITournamentDataSource, SqlServerTournamentDataSource>(Lifetime.Singleton);
+
+            // Security checks
+            composition.Register<IAuthorizationPolicy<Match>, MatchAuthorizationPolicy>(Lifetime.Singleton);
         }
     }
 }

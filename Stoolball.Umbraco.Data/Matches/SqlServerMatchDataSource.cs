@@ -86,17 +86,22 @@ namespace Stoolball.Umbraco.Data.Matches
 
                     if (matchToReturn != null)
                     {
-                        var allInnings = await connection.QueryAsync<MatchInnings, Team, PlayerInnings, Over, MatchInnings>(
-                            $@"SELECT i.Runs, i.Wickets, i.InningsOrderInMatch,
+                        // Add match innings and player innings within that to the match
+                        var unprocessedInningsWithBatting = await connection.QueryAsync<MatchInnings, Team, PlayerInnings, PlayerIdentity, PlayerIdentity, PlayerIdentity, MatchInnings>(
+                            $@"SELECT i.MatchInningsId, i.Runs, i.Wickets, i.InningsOrderInMatch,
                                i.TeamId,
-                               b.BattingPosition,
-                               o.OverNumber
+                               pi.BattingPosition,
+                               pi.PlayerIdentityId, bat.PlayerIdentityName, bat.TotalMatches, bat.PlayerRole,
+                               field.PlayerIdentityId, field.PlayerIdentityName, field.TotalMatches,
+                               bowl.PlayerIdentityId, bowl.PlayerIdentityName, bowl.TotalMatches
                                FROM {Tables.MatchInnings} i 
-                               LEFT JOIN {Tables.PlayerInnings} b ON i.MatchInningsId = b.MatchInningsId
-                               LEFT JOIN {Tables.Over} o ON i.MatchInningsId = o.MatchInningsId
+                               LEFT JOIN {Tables.PlayerInnings} pi ON i.MatchInningsId = pi.MatchInningsId
+                               LEFT JOIN {Tables.PlayerIdentity} bat ON pi.PlayerIdentityId = bat.PlayerIdentityId
+                               LEFT JOIN {Tables.PlayerIdentity} field ON pi.DismissedById = field.PlayerIdentityId
+                               LEFT JOIN {Tables.PlayerIdentity} bowl ON pi.BowlerId = bowl.PlayerIdentityId
                                WHERE i.MatchId = @MatchId
-                               ORDER BY i.InningsOrderInMatch, b.BattingPosition, o.OverNumber",
-                            (innings, team, batting, over) =>
+                               ORDER BY i.InningsOrderInMatch, pi.BattingPosition",
+                            (innings, team, batting, batter, dismissedBy, bowledBy) =>
                             {
                                 if (team != null)
                                 {
@@ -104,19 +109,75 @@ namespace Stoolball.Umbraco.Data.Matches
                                 }
                                 if (batting != null)
                                 {
+                                    batting.PlayerIdentity = batter;
+                                    batting.DismissedBy = dismissedBy;
+                                    batting.Bowler = bowledBy;
                                     innings.PlayerInnings.Add(batting);
-                                }
-                                if (over != null)
-                                {
-                                    innings.OversBowled.Add(over);
                                 }
                                 return innings;
                             },
                             new { matchToReturn.MatchId },
-                            splitOn: "TeamId, BattingPosition, OverNumber")
+                            splitOn: "TeamId, BattingPosition, PlayerIdentityId, PlayerIdentityId, PlayerIdentityId")
                             .ConfigureAwait(false);
 
-                        matchToReturn.MatchInnings = allInnings.OrderBy(x => x.InningsOrderInMatch).ToList();
+                        matchToReturn.MatchInnings = unprocessedInningsWithBatting.GroupBy(x => x.MatchInningsId).Select(inningsRows =>
+                        {
+                            var innings = inningsRows.First();
+                            innings.PlayerInnings = inningsRows.Select(inningsRow => inningsRow.PlayerInnings.Single()).OfType<PlayerInnings>().ToList();
+                            return innings;
+
+                        }).OrderBy(x => x.InningsOrderInMatch).ToList();
+
+                        // We now have the match innings. Get the overs recorded for them.
+                        var unprocessedInningsWithOvers = await connection.QueryAsync<MatchInnings, Over, PlayerIdentity, MatchInnings>(
+                                 $@"SELECT i.MatchInningsId,
+                                    o.OverNumber,
+                                    pi.PlayerIdentityId, pi.PlayerIdentityName, pi.TotalMatches
+                                    FROM {Tables.MatchInnings} i 
+                                    INNER JOIN {Tables.Over} o ON i.MatchInningsId = o.MatchInningsId
+                                    INNER JOIN {Tables.PlayerIdentity} pi ON o.PlayerIdentityId = pi.PlayerIdentityId
+                                    WHERE i.MatchId = @MatchId
+                                    ORDER BY i.InningsOrderInMatch, o.OverNumber",
+                                 (innings, over, bowler) =>
+                                 {
+                                     over.PlayerIdentity = bowler;
+                                     innings.OversBowled.Add(over);
+                                     return innings;
+                                 },
+                                 new { matchToReturn.MatchId },
+                                 splitOn: "OverNumber, PlayerIdentityId")
+                                 .ConfigureAwait(false);
+
+                        // Add those overs to the existing instances of the match innings.
+                        var processedInningsWithOvers = unprocessedInningsWithOvers.GroupBy(x => x.MatchInningsId).Select(inningsRows =>
+                        {
+                            var innings = inningsRows.First();
+                            innings.OversBowled = inningsRows.Select(inningsRow => inningsRow.OversBowled.Single()).OfType<Over>().ToList();
+                            return innings;
+                        }).ToList();
+
+                        foreach (var innings in matchToReturn.MatchInnings)
+                        {
+                            var overs = (processedInningsWithOvers.SingleOrDefault(x => x.MatchInningsId == innings.MatchInningsId))?.OversBowled;
+                            if (overs != null)
+                            {
+                                innings.OversBowled = overs;
+                            }
+                        }
+
+                        // Add awards - player of the match etc - to the match
+                        matchToReturn.Awards = (await connection.QueryAsync<MatchAward, PlayerIdentity, MatchAward>(
+                            $@"SELECT ma.MatchAwardId, p.PlayerIdentityId, p.PlayerIdentityName, p.TotalMatches 
+                               FROM {Tables.MatchAward} ma
+                               INNER JOIN {Tables.PlayerIdentity} p ON ma.PlayerIdentityId = p.PlayerIdentityId
+                               WHERE MatchId = @MatchId",
+                            (award, playerIdentity) =>
+                            {
+                                award.PlayerIdentity = playerIdentity;
+                                return award;
+                            },
+                            new { matchToReturn.MatchId },
+                            splitOn: "PlayerIdentityId").ConfigureAwait(false)).ToList();
                     }
 
                     return matchToReturn;

@@ -1,10 +1,9 @@
 ﻿using Stoolball.Dates;
 using Stoolball.Email;
+using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -13,13 +12,13 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Matches
 {
     public class MatchController : RenderMvcControllerAsync
     {
         private readonly IMatchDataSource _matchDataSource;
+        private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly IEmailProtector _emailProtector;
 
@@ -30,11 +29,13 @@ namespace Stoolball.Web.Matches
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IMatchDataSource matchDataSource,
+           IAuthorizationPolicy<Match> authorizationPolicy,
            IDateTimeFormatter dateFormatter,
            IEmailProtector emailProtector)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
             _dateFormatter = dateFormatter ?? throw new System.ArgumentNullException(nameof(dateFormatter));
             _emailProtector = emailProtector ?? throw new System.ArgumentNullException(nameof(emailProtector));
         }
@@ -60,7 +61,7 @@ namespace Stoolball.Web.Matches
             }
             else
             {
-                model.IsAuthorized = IsAuthorized(model);
+                model.IsAuthorized = IsAuthorized(model.Match);
 
                 model.Metadata.PageTitle = model.Match.MatchFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false)) + " - stoolball match";
                 model.Metadata.Description = model.Match.Description();
@@ -71,26 +72,9 @@ namespace Stoolball.Web.Matches
             }
         }
 
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this match
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(MatchViewModel model)
+        protected virtual bool IsAuthorized(Match match)
         {
-            if (model is null)
-            {
-                throw new System.ArgumentNullException(nameof(model));
-            }
-
-            var currentMember = Members.GetCurrentMember();
-            if (currentMember == null) return false;
-
-            if (model.Match.MemberKeys().Contains(currentMember.Key)) { return true; }
-
-            var allowedGroups = new List<string>(model.Match.MemberGroupNames());
-            allowedGroups.AddRange(new[] { Groups.Administrators });
-
-            return Members.IsMemberAuthorized(null, allowedGroups, null);
+            return _authorizationPolicy.CanDelete(match, Members);
         }
     }
 }

@@ -37,7 +37,7 @@ namespace Stoolball.Umbraco.Data.Migrations
         public Guid MatchId { get; set; }
 
         [Column(nameof(TournamentId))]
-        [ForeignKey(typeof(MatchTableInitialSchema), Column = nameof(MatchTableInitialSchema.MatchId), Name = "FK_StoolballStatisticsPlayerMatch_StoolballMatch_TournamentId")]
+        [ForeignKey(typeof(TournamentTableInitialSchema), Column = nameof(TournamentTableInitialSchema.TournamentId))]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
         public Guid? TournamentId { get; set; }
