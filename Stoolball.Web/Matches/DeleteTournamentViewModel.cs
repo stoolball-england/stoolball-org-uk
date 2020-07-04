@@ -16,5 +16,6 @@ namespace Stoolball.Web.Matches
         public MatchListingViewModel Matches { get; set; }
         public MatchingTextConfirmation ConfirmDeleteRequest { get; set; } = new MatchingTextConfirmation();
         public bool Deleted { get; set; }
+        public int TotalComments { get; set; }
     }
 }

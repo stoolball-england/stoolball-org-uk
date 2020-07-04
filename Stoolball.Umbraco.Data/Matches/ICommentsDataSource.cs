@@ -4,14 +4,14 @@ using System.Threading.Tasks;
 namespace Stoolball.Umbraco.Data.Matches
 {
     /// <summary>
-    /// Get stoolball match comments from a data source
+    /// Get comments on a stoolball entity from a data source
     /// </summary>
-    public interface IMatchCommentsDataSource
+    public interface ICommentsDataSource<T>
     {
         /// <summary>
-        /// Gets the number of comments on a match
+        /// Gets the number of comments on an entity
         /// </summary>
         /// <returns></returns>
-        Task<int> ReadTotalComments(Guid matchId);
+        Task<int> ReadTotalComments(Guid entityId);
     }
 }

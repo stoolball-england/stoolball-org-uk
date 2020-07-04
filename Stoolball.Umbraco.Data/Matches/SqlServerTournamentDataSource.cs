@@ -47,7 +47,7 @@ namespace Stoolball.Umbraco.Data.Matches
                             tourney.OversPerInningsDefault, tourney.PlayersPerTeam, tourney.QualificationType, tourney.MaximumTeamsInTournament, 
                             tourney.SpacesInTournament, tourney.TournamentNotes, tourney.TournamentRoute, tourney.MemberKey,
                             tt.TeamRole,
-                            t.TeamId, t.TeamRoute, tn.TeamName,
+                            t.TeamId, t.TeamRoute, t.TeamType, tn.TeamName,
                             ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
                             ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
                             s.SeasonRoute, s.StartYear, s.EndYear,

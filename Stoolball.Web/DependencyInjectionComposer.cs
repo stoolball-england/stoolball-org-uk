@@ -122,12 +122,15 @@ namespace Stoolball.Web
             composition.Register<ISeasonRepository, SqlServerSeasonRepository>(Lifetime.Singleton);
             composition.Register<IMatchDataSource, SqlServerMatchDataSource>(Lifetime.Singleton);
             composition.Register<IMatchListingDataSource, SqlServerMatchListingDataSource>(Lifetime.Singleton);
-            composition.Register<IMatchCommentsDataSource, SqlServerMatchCommentsDataSource>(Lifetime.Singleton);
+            composition.Register<ICommentsDataSource<Match>, SqlServerMatchCommentsDataSource>(Lifetime.Singleton);
+            composition.Register<ICommentsDataSource<Tournament>, SqlServerTournamentCommentsDataSource>(Lifetime.Singleton);
             composition.Register<IMatchRepository, SqlServerMatchRepository>(Lifetime.Singleton);
             composition.Register<ITournamentDataSource, SqlServerTournamentDataSource>(Lifetime.Singleton);
+            composition.Register<ITournamentRepository, SqlServerTournamentRepository>(Lifetime.Singleton);
 
             // Security checks
             composition.Register<IAuthorizationPolicy<Match>, MatchAuthorizationPolicy>(Lifetime.Singleton);
+            composition.Register<IAuthorizationPolicy<Tournament>, TournamentAuthorizationPolicy>(Lifetime.Singleton);
         }
     }
 }

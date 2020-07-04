@@ -1,4 +1,5 @@
 ﻿using Stoolball.Dates;
+using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -10,7 +11,6 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Matches
 {
@@ -18,6 +18,7 @@ namespace Stoolball.Web.Matches
     {
         private readonly ITournamentDataSource _tournamentDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
+        private readonly IAuthorizationPolicy<Tournament> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
 
         public TournamentActionsController(IGlobalSettings globalSettings,
@@ -28,11 +29,13 @@ namespace Stoolball.Web.Matches
            UmbracoHelper umbracoHelper,
            ITournamentDataSource tournamentDataSource,
            IMatchListingDataSource matchDataSource,
+           IAuthorizationPolicy<Tournament> authorizationPolicy,
            IDateTimeFormatter dateFormatter)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _tournamentDataSource = tournamentDataSource ?? throw new System.ArgumentNullException(nameof(tournamentDataSource));
             _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
             _dateFormatter = dateFormatter ?? throw new System.ArgumentNullException(nameof(dateFormatter));
         }
 
@@ -57,7 +60,7 @@ namespace Stoolball.Web.Matches
             }
             else
             {
-                model.IsAuthorized = IsAuthorized(model);
+                model.IsAuthorized = IsAuthorized(model.Tournament);
 
                 model.Matches = new MatchListingViewModel
                 {
@@ -76,22 +79,12 @@ namespace Stoolball.Web.Matches
         }
 
         /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this tournament
+        /// Checks whether the currently signed-in member is authorized to delete this tournament
         /// </summary>
         /// <returns></returns>
-        protected virtual bool IsAuthorized(TournamentViewModel model)
+        protected virtual bool IsAuthorized(Tournament tournament)
         {
-            if (model is null)
-            {
-                throw new System.ArgumentNullException(nameof(model));
-            }
-
-            var currentMember = Members.GetCurrentMember();
-            if (currentMember == null) return false;
-
-            if (model.Tournament.MemberKey == currentMember.Key) { return true; }
-
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null);
+            return _authorizationPolicy.CanDelete(tournament, Members);
         }
     }
 }

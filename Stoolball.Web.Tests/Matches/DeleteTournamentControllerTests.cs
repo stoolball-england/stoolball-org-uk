@@ -3,6 +3,7 @@ using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
+using Stoolball.Web.Security;
 using System;
 using System.Collections.Generic;
 using System.Security.Principal;
@@ -30,7 +31,10 @@ namespace Stoolball.Web.Tests.Matches
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, tournamentDataSource, matchDataSource, Mock.Of<IDateTimeFormatter>())
+                null, tournamentDataSource, matchDataSource,
+                Mock.Of<ICommentsDataSource<Tournament>>(),
+                Mock.Of<IAuthorizationPolicy<Tournament>>(),
+                Mock.Of<IDateTimeFormatter>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -44,7 +48,7 @@ namespace Stoolball.Web.Tests.Matches
                 ControllerContext = controllerContext.Object;
             }
 
-            protected override bool IsAuthorized(DeleteTournamentViewModel model)
+            protected override bool IsAuthorized(Tournament tournament)
             {
                 return true;
             }
@@ -56,7 +60,7 @@ namespace Stoolball.Web.Tests.Matches
         }
 
         [Fact]
-        public async Task Route_not_matching_match_returns_404()
+        public async Task Route_not_matching_tournament_returns_404()
         {
             var tournamentDataSource = new Mock<ITournamentDataSource>();
             tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).Returns(Task.FromResult<Stoolball.Matches.Tournament>(null));
@@ -70,10 +74,10 @@ namespace Stoolball.Web.Tests.Matches
         }
 
         [Fact]
-        public async Task Route_matching_match_returns_DeleteMatchViewModel()
+        public async Task Route_matching_tournament_returns_DeleteMatchViewModel()
         {
             var tournamentDataSource = new Mock<ITournamentDataSource>();
-            tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentName = "Example tournament" });
+            tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentId = Guid.NewGuid(), TournamentName = "Example tournament" });
 
             var matchDataSource = new Mock<IMatchListingDataSource>();
             matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());

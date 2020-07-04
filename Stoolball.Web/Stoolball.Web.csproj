@@ -990,11 +990,13 @@
     <Compile Include="Competitions\SeasonListViewModel.cs" />
     <Compile Include="Competitions\CompetitionsController.cs" />
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
+    <Compile Include="Matches\DeleteTournamentSurfaceController.cs" />
     <Compile Include="Matches\DeleteMatchSurfaceController.cs" />
     <Compile Include="Matches\DeleteTournamentController.cs" />
     <Compile Include="Matches\DeleteMatchController.cs" />
     <Compile Include="Matches\DeleteMatchViewModel.cs" />
     <Compile Include="Matches\DeleteTournamentViewModel.cs" />
+    <Compile Include="Matches\TournamentAuthorizationPolicy.cs" />
     <Compile Include="Security\IAuthorizationPolicy.cs" />
     <Compile Include="Matches\MatchActionsController.cs" />
     <Compile Include="Matches\MatchAuthorizationPolicy.cs" />

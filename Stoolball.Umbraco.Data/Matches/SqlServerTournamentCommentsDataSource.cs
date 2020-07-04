@@ -8,35 +8,35 @@ using static Stoolball.Umbraco.Data.Constants;
 namespace Stoolball.Umbraco.Data.Matches
 {
     /// <summary>
-    /// Gets stoolball match comments from the Umbraco database
+    /// Gets stoolball tournament comments from the Umbraco database
     /// </summary>
-    public class SqlServerMatchCommentsDataSource : ICommentsDataSource<Match>
+    public class SqlServerTournamentCommentsDataSource : ICommentsDataSource<Tournament>
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly ILogger _logger;
 
-        public SqlServerMatchCommentsDataSource(IDatabaseConnectionFactory databaseConnectionFactory, ILogger logger)
+        public SqlServerTournamentCommentsDataSource(IDatabaseConnectionFactory databaseConnectionFactory, ILogger logger)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
-        /// Gets the number of comments on a match
+        /// Gets the number of comments on a tournament
         /// </summary>
         /// <returns></returns>
-        public async Task<int> ReadTotalComments(Guid matchId)
+        public async Task<int> ReadTotalComments(Guid tournamentId)
         {
             try
             {
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    return await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.MatchComment} WHERE MatchId = @MatchId", new { MatchId = matchId }).ConfigureAwait(false);
+                    return await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.TournamentComment} WHERE TournamentId = @TournamentId", new { TournamentId = tournamentId }).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
             {
-                _logger.Error(typeof(SqlServerMatchDataSource), ex);
+                _logger.Error(typeof(SqlServerTournamentDataSource), ex);
                 throw;
             }
         }

@@ -18,7 +18,7 @@ namespace Stoolball.Web.Matches
     public class DeleteMatchController : RenderMvcControllerAsync
     {
         private readonly IMatchDataSource _matchDataSource;
-        private readonly IMatchCommentsDataSource _matchCommentsDataSource;
+        private readonly ICommentsDataSource<Match> _matchCommentsDataSource;
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
 
@@ -29,7 +29,7 @@ namespace Stoolball.Web.Matches
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IMatchDataSource matchDataSource,
-           IMatchCommentsDataSource matchCommentsDataSource,
+           ICommentsDataSource<Match> matchCommentsDataSource,
            IAuthorizationPolicy<Match> authorizationPolicy,
            IDateTimeFormatter dateFormatter)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)

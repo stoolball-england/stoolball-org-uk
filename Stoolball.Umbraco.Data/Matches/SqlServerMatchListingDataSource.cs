@@ -291,6 +291,12 @@ namespace Stoolball.Umbraco.Data.Matches
                 parameters.Add("@FromDate", matchQuery.FromDate.Value);
             }
 
+            if (matchQuery.TournamentId != null)
+            {
+                where.Add("tourney.TournamentId = @TournamentId");
+                parameters.Add("@TournamentId", matchQuery.TournamentId.Value);
+            }
+
             sql = sql.Replace("<<JOIN>>", join.Count > 0 ? string.Join(" ", join) : string.Empty)
                      .Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
 

@@ -4,6 +4,7 @@ using Stoolball.Email;
 using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
+using Stoolball.Web.Security;
 using System;
 using System.Collections.Generic;
 using System.Security.Principal;
@@ -31,7 +32,9 @@ namespace Stoolball.Web.Tests.Matches
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, tournamentDataSource, matchDataSource, Mock.Of<IDateTimeFormatter>(), Mock.Of<IEmailProtector>())
+                null, tournamentDataSource, matchDataSource,
+                Mock.Of<IAuthorizationPolicy<Tournament>>(),
+                Mock.Of<IDateTimeFormatter>(), Mock.Of<IEmailProtector>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -45,7 +48,7 @@ namespace Stoolball.Web.Tests.Matches
                 ControllerContext = controllerContext.Object;
             }
 
-            protected override bool IsAuthorized(TournamentViewModel model)
+            protected override bool IsAuthorized(Tournament tournament)
             {
                 return true;
             }

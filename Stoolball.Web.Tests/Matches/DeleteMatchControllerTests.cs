@@ -29,7 +29,7 @@ namespace Stoolball.Web.Tests.Matches
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, matchDataSource, Mock.Of<IMatchCommentsDataSource>(),
+                null, matchDataSource, Mock.Of<ICommentsDataSource<Stoolball.Matches.Match>>(),
                 Mock.Of<IAuthorizationPolicy<Stoolball.Matches.Match>>(),
                 Mock.Of<IDateTimeFormatter>())
             {

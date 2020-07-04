@@ -74,12 +74,15 @@
     <Compile Include="Competitions\CompetitionQuery.cs" />
     <Compile Include="DapperDateTimeHandler.cs" />
     <Compile Include="DapperComposer.cs" />
-    <Compile Include="Matches\IMatchCommentsDataSource.cs" />
+    <Compile Include="Matches\ICommentsDataSource.cs" />
     <Compile Include="Matches\IMatchListingDataSource.cs" />
+    <Compile Include="Matches\ITournamentRepository.cs" />
     <Compile Include="Matches\IMatchRepository.cs" />
     <Compile Include="Matches\ITournamentDataSource.cs" />
     <Compile Include="Matches\IMatchDataSource.cs" />
     <Compile Include="Matches\MatchQuery.cs" />
+    <Compile Include="Matches\SqlServerTournamentRepository.cs" />
+    <Compile Include="Matches\SqlServerTournamentCommentsDataSource.cs" />
     <Compile Include="Matches\SqlServerMatchRepository.cs" />
     <Compile Include="Matches\SqlServerMatchCommentsDataSource.cs" />
     <Compile Include="Matches\SqlServerMatchListingDataSource.cs" />

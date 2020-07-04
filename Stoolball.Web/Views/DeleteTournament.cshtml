@@ -2,6 +2,7 @@
 @using Humanizer
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Matches
+@using Stoolball.Teams
 @{
     Html.EnableClientValidation();
     Html.EnableUnobtrusiveJavaScript();
@@ -32,10 +33,51 @@
     {
         <p>If you delete @Model.Tournament.TournamentFullNameAndPlayerType(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false)) you will:</p>
         <ul>
+            @if (Model.Tournament.Teams.Count > 0)
+            {
+                var transientTeams = Model.Tournament.Teams.Where(x => x.Team.TeamType == TeamType.Transient);
+                var longLivedTeams = Model.Tournament.Teams.Where(x => x.Team.TeamType != TeamType.Transient);
+                if (transientTeams.Any())
+                {
+                    <li>delete @transientTeams.Humanize(x => x.Team.TeamName), which only ever played in this tournament</li>
+                }
+                if (longLivedTeams.Any())
+                {
+                    <li>remove this tournament from match listings for @longLivedTeams.Humanize(x => x.Team.TeamName)</li>
+                }
+            }
+            else
+            {
+                <li>not affect any teams</li>
+            }
+            @if (Model.Tournament.Seasons.Count > 0)
+            {
+                <li>remove this tournament from @Model.Tournament.Seasons.Select(x => x.Competition.CompetitionName).Humanize()</li>
+            }
+            else
+            {
+                <li>not affect any competitions</li>
+            }
+            @if (Model.Matches.Matches.Count > 0)
+            {
+                <li>delete @("match".ToQuantity(Model.Matches.Matches.Count)), changing batting, bowling and fielding statistics for all teams and players involved</li>
+            }
+            else
+            {
+                <li>not affect any matches, players or statistics</li>
+            }
+            @if (Model.TotalComments > 0)
+            {
+                <li>delete @("comment".ToQuantity(Model.TotalComments)), which may include records of outstanding performances</li>
+            }
+            else
+            {
+                <li>not affect any comments</li>
+            }
         </ul>
         <p><strong><strong>You cannot undo this.</strong></strong></p>
 
-        @*using (Html.BeginUmbracoForm<DeleteTournamentSurfaceController>
+        using (Html.BeginUmbracoForm<DeleteTournamentSurfaceController>
                    ("DeleteTournament"))
             {
                 @Html.AntiForgeryToken()
@@ -48,7 +90,7 @@
                 </div>
 
                 <button class="btn btn-danger">@Html.Partial("_DeleteIcon", (Model.Tournament.TournamentId.ToString(), string.Empty)) Delete @Model.Tournament.TournamentName</button>
-            }*@
+            }
     }
     else
     {
