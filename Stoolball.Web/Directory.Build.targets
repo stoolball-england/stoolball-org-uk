@@ -146,7 +146,7 @@
   <Target Name="StoolballTriggerUmbracoDeploySync" BeforeTargets="AfterBuild">
     <!-- Create a 0-byte file that Umbraco Deploy looks for to trigger a sync of 
          the *.uda files on disk into the Umbraco database -->
-    <Touch Files="$(ProjectDir)data/deploy" AlwaysCreate="true">
+    <Touch Files="$(ProjectDir)data/deploy" AlwaysCreate="true" Condition="!Exists('$(ProjectDir)data/deploy')">
       <Output
           TaskParameter="TouchedFiles"
           ItemName="FilesTouched"/>
