@@ -42,11 +42,12 @@ namespace Stoolball.Umbraco.Data.Matches
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var tournaments = await connection.QueryAsync<Tournament, Team, MatchLocation, Season, Competition, Tournament>(
+                    var tournaments = await connection.QueryAsync<Tournament, TeamInTournament, Team, MatchLocation, Season, Competition, Tournament>(
                         $@"SELECT tourney.TournamentId, tourney.TournamentName, tourney.PlayerType, tourney.StartTime, tourney.StartTimeIsKnown, 
                             tourney.OversPerInningsDefault, tourney.PlayersPerTeam, tourney.QualificationType, tourney.MaximumTeamsInTournament, 
                             tourney.SpacesInTournament, tourney.TournamentNotes, tourney.TournamentRoute, tourney.MemberKey,
-                            t.TeamRoute, tn.TeamName,
+                            tt.TeamRole,
+                            t.TeamId, t.TeamRoute, tn.TeamName,
                             ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
                             ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
                             s.SeasonRoute, s.StartYear, s.EndYear,
@@ -60,18 +61,12 @@ namespace Stoolball.Umbraco.Data.Matches
                             LEFT JOIN {Tables.Season} AS s ON ts.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.Competition} AS co ON s.CompetitionId = co.CompetitionId
                             WHERE LOWER(tourney.TournamentRoute) = @Route",
-                        (tournament, team, tournamentLocation, season, competition) =>
+                        (tournament, teamInTournament, team, tournamentLocation, season, competition) =>
                         {
                             if (team != null)
                             {
-                                tournament.Teams.Add(new TeamInTournament
-                                {
-                                    Team = new Team
-                                    {
-                                        TeamRoute = team.TeamRoute,
-                                        TeamName = team.TeamName
-                                    }
-                                });
+                                teamInTournament.Team = team;
+                                tournament.Teams.Add(teamInTournament);
                             }
                             tournament.TournamentLocation = tournamentLocation;
                             if (season != null) { season.Competition = competition; }
@@ -79,7 +74,7 @@ namespace Stoolball.Umbraco.Data.Matches
                             return tournament;
                         },
                         new { Route = normalisedRoute },
-                        splitOn: "TeamRoute, MatchLocationRoute, SeasonRoute, CompetitionName")
+                        splitOn: "TeamRole, TeamId, MatchLocationRoute, SeasonRoute, CompetitionName")
                         .ConfigureAwait(false);
 
                     var tournamentToReturn = tournaments.FirstOrDefault(); // get an example with the properties that are the same for every row
