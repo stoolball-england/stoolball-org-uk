@@ -13,3 +13,33 @@ table {
 th, td {
     padding: $spacer/4;
 }
+
+caption { caption-side: top; }
+
+
+.table-as-cards thead {
+    display: none
+}
+
+.table-as-cards tr {
+    display: flex;
+    flex-direction: column;
+}
+
+.table-as-cards [data-label]::before {
+    content: attr(data-label)': ';
+}
+
+@include media-breakpoint-up(md) {
+    .table-as-cards thead {
+        display: table-header-group;
+    }
+
+    .table-as-cards tr {
+        display: table-row;
+    }
+
+    .table-as-cards [data-label]::before {
+        content: none;
+    }
+}

@@ -4,6 +4,7 @@ using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Teams;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
@@ -46,21 +47,38 @@ namespace Stoolball.Umbraco.Data.Competitions
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var seasons = await connection.QueryAsync<Season, Competition, Season>(
-                        $@"SELECT s.SeasonId, s.StartYear, s.EndYear, s.SeasonRoute,
-                            co.CompetitionName, co.PlayerType, co.UntilYear, co.CompetitionRoute, co.MemberGroupName
+                    var seasons = await connection.QueryAsync<Season, Competition, string, Season>(
+                        $@"SELECT s.SeasonId, s.StartYear, s.EndYear, s.Results, s.SeasonRoute,
+                            co.CompetitionName, co.PlayerType, co.UntilYear, co.CompetitionRoute, co.MemberGroupName,
+                            smt.MatchType
                             FROM {Tables.Season} AS s 
                             INNER JOIN {Tables.Competition} AS co ON co.CompetitionId = s.CompetitionId
+                            LEFT JOIN {Tables.SeasonMatchType} AS smt ON s.SeasonId = smt.SeasonId
                             WHERE LOWER(s.SeasonRoute) = @Route",
-                        (season, competition) =>
+                        (season, competition, matchType) =>
                         {
                             season.Competition = competition;
+                            if (!string.IsNullOrEmpty(matchType))
+                            {
+                                season.MatchTypes.Add((MatchType)Enum.Parse(typeof(MatchType), matchType));
+                            }
                             return season;
                         },
                         new { Route = normalisedRoute },
-                        splitOn: "CompetitionName").ConfigureAwait(false);
+                        splitOn: "CompetitionName, MatchType").ConfigureAwait(false);
 
-                    return seasons.FirstOrDefault();
+
+                    var seasonToReturn = seasons.FirstOrDefault(); // get an example with the properties that are the same for every row
+                    if (seasonToReturn != null)
+                    {
+                        seasonToReturn.MatchTypes = seasons
+                            .Select(season => season.MatchTypes.FirstOrDefault())
+                            .OfType<MatchType>()
+                            .Distinct()
+                            .ToList();
+                    }
+
+                    return seasonToReturn;
                 }
             }
             catch (Exception ex)
@@ -78,10 +96,11 @@ namespace Stoolball.Umbraco.Data.Competitions
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var seasons = await connection.QueryAsync<Season, Competition, Season, Team, string, Season>(
-                        $@"SELECT s.SeasonId, s.StartYear, s.EndYear, s.Introduction, s.ShowTable, s.Results, s.SeasonRoute,
+                    var seasons = await connection.QueryAsync<Season, Competition, Season, TeamInSeason, Team, string, Season>(
+                        $@"SELECT s.SeasonId, s.StartYear, s.EndYear, s.Introduction, s.ShowTable, s.ShowRunsScored, s.ShowRunsConceded, s.Results, s.SeasonRoute,
                             co.CompetitionName, co.PlayerType, co.Introduction, co.UntilYear, co.PublicContactDetails, co.Website, co.CompetitionRoute, co.MemberGroupName,
                             s2.SeasonId, s2.StartYear, s2.EndYear, s2.SeasonRoute,
+                            st.WithdrawnDate,
                             t.TeamId, tn.TeamName, t.TeamRoute,
                             mt.MatchType
                             FROM {Tables.Season} AS s 
@@ -93,7 +112,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                             LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
                             WHERE LOWER(s.SeasonRoute) = @Route
                             ORDER BY s2.StartYear DESC, s2.EndYear ASC",
-                        (season, competition, anotherSeasonInTheCompetition, team, matchType) =>
+                        (season, competition, anotherSeasonInTheCompetition, teamInSeason, team, matchType) =>
                         {
                             if (season != null)
                             {
@@ -109,12 +128,17 @@ namespace Stoolball.Umbraco.Data.Competitions
                             }
                             if (team != null)
                             {
-                                season.Teams.Add(new TeamInSeason { Season = season, Team = team });
+                                season.Teams.Add(new TeamInSeason
+                                {
+                                    Season = season,
+                                    Team = team,
+                                    WithdrawnDate = teamInSeason?.WithdrawnDate
+                                });
                             }
                             return season;
                         },
                         new { Route = normalisedRoute },
-                        splitOn: "CompetitionName, SeasonId, TeamId, MatchType").ConfigureAwait(false);
+                        splitOn: "CompetitionName, SeasonId, WithdrawnDate, TeamId, MatchType").ConfigureAwait(false);
 
                     var seasonToReturn = seasons.FirstOrDefault(); // get an example with the properties that are the same for every row
                     if (seasonToReturn != null)
@@ -139,6 +163,60 @@ namespace Stoolball.Umbraco.Data.Competitions
                     }
 
                     return seasonToReturn;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(typeof(SqlServerSeasonDataSource), ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Reads the points rules that apply for a specific season
+        /// </summary>
+        public async Task<IEnumerable<PointsRule>> ReadPointsRules(Guid seasonId)
+        {
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    return await connection.QueryAsync<PointsRule>(
+                        $@"SELECT pr.MatchResultType, pr.HomePoints, pr.AwayPoints
+                            FROM {Tables.SeasonPointsRule} AS pr 
+                            WHERE pr.SeasonId = @SeasonId",
+                        new { SeasonId = seasonId }).ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(typeof(SqlServerSeasonDataSource), ex);
+                throw;
+            }
+        }
+
+
+        /// <summary>
+        /// Reads the points adjustments that apply for a specific season
+        /// </summary>
+        public async Task<IEnumerable<PointsAdjustment>> ReadPointsAdjustments(Guid seasonId)
+        {
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    return await connection.QueryAsync<PointsAdjustment, Team, PointsAdjustment>(
+                        $@"SELECT spa.Points, spa.Reason, tn.TeamId, tn.TeamName
+                            FROM {Tables.SeasonPointsAdjustment} AS spa 
+                            INNER JOIN {Tables.TeamName} tn ON spa.TeamId = tn.TeamId AND tn.UntilDate IS NULL
+                            WHERE spa.SeasonId = @SeasonId",
+                        (pointsAdjustment, team) =>
+                        {
+                            pointsAdjustment.Team = team;
+                            return pointsAdjustment;
+                        },
+                        new { SeasonId = seasonId },
+                        splitOn: "TeamId").ConfigureAwait(false);
                 }
             }
             catch (Exception ex)

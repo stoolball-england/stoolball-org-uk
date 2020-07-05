@@ -1,4 +1,5 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<SeasonViewModel>
+@using Stoolball.Matches
 @using Stoolball.Web.Competitions
 @{
     var the = Model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";
@@ -16,6 +17,12 @@
     <li class="nav-item">
         <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
     </li>
+    @if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) || !string.IsNullOrEmpty(Model.Season.Results))
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute/results">Results</a>
+        </li>
+    }
     <li class="nav-item">
         <em class="nav-link active">Edit</em>
     </li>

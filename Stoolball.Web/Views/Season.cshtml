@@ -1,6 +1,6 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.SeasonViewModel>
 @using System.Linq
-@using Stoolball.Competitions
+@using Stoolball.Matches
 @using Stoolball.Web.Competitions
 
 <h1>@Model.Season.SeasonFullNameAndPlayerType()</h1>
@@ -19,6 +19,12 @@
     <li class="nav-item">
         <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
     </li>
+    @if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) || !string.IsNullOrEmpty(Model.Season.Results))
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute/results">Results</a>
+        </li>
+    }
     @if (Model.IsAuthorized)
     {
         <li class="nav-item">
@@ -35,8 +41,6 @@
     <h2>Teams playing in the @Model.Season.SeasonName()</h2>
     @Html.Partial("_TeamList", Model.Season.Teams.Select(x => x.Team).ToList())
 }
-
-@Html.Raw(Model.Season.Results)
 
 @if (!string.IsNullOrWhiteSpace(Model.Season.Competition.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Season.Competition.Website))
 {

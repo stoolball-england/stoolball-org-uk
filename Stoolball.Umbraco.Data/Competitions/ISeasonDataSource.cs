@@ -1,4 +1,6 @@
 ﻿using Stoolball.Competitions;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Stoolball.Umbraco.Data.Competitions
@@ -15,5 +17,15 @@ namespace Stoolball.Umbraco.Data.Competitions
         /// <param name="includeRelated"><c>true</c> to include the teams and other seasons in the competition; <c>false</c> otherwise</param>
         /// <returns>A matching <see cref="Season"/> or <c>null</c> if not found</returns>
         Task<Season> ReadSeasonByRoute(string route, bool includeRelated = false);
+
+        /// <summary>
+        /// Reads the points rules that apply for a specific season
+        /// </summary>
+        Task<IEnumerable<PointsRule>> ReadPointsRules(Guid seasonId);
+
+        /// <summary>
+        /// Reads the points adjustments that apply for a specific season
+        /// </summary>
+        Task<IEnumerable<PointsAdjustment>> ReadPointsAdjustments(Guid seasonId);
     }
 }

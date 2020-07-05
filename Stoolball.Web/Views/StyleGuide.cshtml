@@ -60,14 +60,58 @@
             <td>Table data</td>
             <td>Table data</td>
         </tr>
-        <tr>
-            <td>Table data</td>
-            <td>Table data</td>
-            <td>Table data</td>
+        <tr class="text-muted">
+            <td>Table data (muted style)</td>
+            <td>Table data (muted style)</td>
+            <td>Table data (muted style)</td>
         </tr>
     </tbody>
 </table>
 <p>A paragraph following a table.</p>
+<table class="table table-as-cards">
+    <caption>League table caption. Table displays as cards on mobile.</caption>
+    <thead>
+        <tr>
+            <th scope="col">Team</th>
+            <th scope="col">Played</th>
+            <th scope="col">Won</th>
+            <th scope="col">Lost</th>
+            <th scope="col">Tied</th>
+            <th scope="col">No result</th>
+            <th>Runs scored</th>
+            <th>Runs conceded</th>
+            <th>Points</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row"><a href="https://example.org">Team A</a></th>
+            <td data-label="Played">12</td>
+            <td data-label="Won">9</td>
+            <td data-label="Lost">3</td>
+            <td data-label="Tied">0</td>
+            <td data-label="No result">0</td>
+            <td data-label="Runs scored">0</td>
+            <td data-label="Runs conceded">0</td>
+            <td data-label="Points">18</td>
+        </tr>
+        <tr>
+            <th scope="row"><a href="https://example.org">Team B</a></th>
+            <td data-label="Played">12</td>
+            <td data-label="Won">8</td>
+            <td data-label="Lost">3</td>
+            <td data-label="Tied">1</td>
+            <td data-label="No result">0</td>
+            <td data-label="Runs scored">0</td>
+            <td data-label="Runs conceded">0</td>
+            <td data-label="Points">17</td>
+        </tr>
+        <tr class="text-muted">
+            <th scope="row"><a href="https://example.org">Team C</a></th>
+            <td colspan="8">Withdrawn from league</td>
+        </tr>
+    </tbody>
+</table>
 <dl>
     <dt><a href="https://example.org">Definition list title</a></dt>
     <dd>Definition list detail.</dd>
@@ -236,7 +280,6 @@
     new MatchListing {
         MatchName = "Team A tournament",
         MatchRoute = "/tournaments/team-a-tournament",
-        MatchType = MatchType.Tournament,
         PlayerType = PlayerType.Mixed,
         SpacesInTournament = 5,
         StartTime = DateTime.UtcNow.AddMonths(1)

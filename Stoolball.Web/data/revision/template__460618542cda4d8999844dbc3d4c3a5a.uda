@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/seasonResults.cshtml",
+  "Master": null,
+  "Udi": "umb://template/460618542cda4d8999844dbc3d4c3a5a",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/seasonResults.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Season Results",
+  "Alias": "seasonResults",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.4.4"
+}

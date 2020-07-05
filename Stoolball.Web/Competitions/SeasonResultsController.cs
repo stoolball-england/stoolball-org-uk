@@ -1,7 +1,13 @@
-﻿using Stoolball.Email;
+﻿using Stoolball.Dates;
+using Stoolball.Email;
+using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Competitions;
+using Stoolball.Umbraco.Data.Matches;
+using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -14,23 +20,30 @@ using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
-    public class SeasonController : RenderMvcControllerAsync
+    public class SeasonResultsController : RenderMvcControllerAsync
     {
         private readonly ISeasonDataSource _seasonDataSource;
+        private readonly IMatchListingDataSource _matchDataSource;
         private readonly IEmailProtector _emailProtector;
+        private readonly IDateTimeFormatter _dateTimeFormatter;
 
-        public SeasonController(IGlobalSettings globalSettings,
+        public SeasonResultsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            ISeasonDataSource seasonDataSource,
-           IEmailProtector emailProtector)
+           IMatchListingDataSource matchDataSource,
+           IEmailProtector emailProtector,
+           IDateTimeFormatter dateTimeFormatter
+           )
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _seasonDataSource = seasonDataSource ?? throw new System.ArgumentNullException(nameof(seasonDataSource));
-            _emailProtector = emailProtector ?? throw new System.ArgumentNullException(nameof(emailProtector));
+            _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
+            _emailProtector = emailProtector ?? throw new ArgumentNullException(nameof(emailProtector));
+            _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
         }
 
         [HttpGet]
@@ -47,21 +60,31 @@ namespace Stoolball.Web.Competitions
                 Season = await _seasonDataSource.ReadSeasonByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false)
             };
 
-            if (model.Season == null)
+            if (model.Season == null || (!model.Season.MatchTypes.Contains(MatchType.LeagueMatch) && string.IsNullOrEmpty(model.Season.Results)))
             {
                 return new HttpNotFoundResult();
             }
             else
             {
+                model.Matches = new MatchListingViewModel
+                {
+                    Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
+                    {
+                        SeasonIds = new List<Guid> { model.Season.SeasonId.Value },
+                        IncludeTournaments = false
+                    }).ConfigureAwait(false),
+                    DateTimeFormatter = _dateTimeFormatter
+                };
+                model.Season.PointsRules.AddRange(await _seasonDataSource.ReadPointsRules(model.Season.SeasonId.Value).ConfigureAwait(false));
+                model.Season.PointsAdjustments.AddRange(await _seasonDataSource.ReadPointsAdjustments(model.Season.SeasonId.Value).ConfigureAwait(false));
+
+                model.Season.Results = _emailProtector.ProtectEmailAddresses(model.Season.Results, User.Identity.IsAuthenticated);
+
                 model.IsAuthorized = IsAuthorized(model);
 
-                model.Metadata.PageTitle = model.Season.SeasonFullNameAndPlayerType();
+                var the = model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase);
+                model.Metadata.PageTitle = $"Results for {(the ? string.Empty : "the ")}{model.Season.SeasonFullNameAndPlayerType()}";
                 model.Metadata.Description = model.Season.Description();
-
-                model.Season.Competition.Introduction = _emailProtector.ProtectEmailAddresses(model.Season.Competition.Introduction, User.Identity.IsAuthenticated);
-                model.Season.Competition.PublicContactDetails = _emailProtector.ProtectEmailAddresses(model.Season.Competition.PublicContactDetails, User.Identity.IsAuthenticated);
-
-                model.Season.Introduction = _emailProtector.ProtectEmailAddresses(model.Season.Introduction, User.Identity.IsAuthenticated);
 
                 return CurrentTemplate(model);
             }

@@ -48,6 +48,7 @@ namespace Stoolball.Web.Routing
             const string ANY_VALID_ROUTE = "[a-z0-9-]+";
             const string SLASH = @"\/";
             const string OPTIONAL_SLASH = @"\/?";
+            const string SEASON = @"[0-9]{4}(-[0-9]{2})?";
 
             var routeTypes = new Dictionary<string, StoolballRouteType>
             {
@@ -78,10 +79,11 @@ namespace Stoolball.Web.Routing
                 // Match /competitions/example-entity/2020/matches, /competitions/example-entity/2020-21/matches/, 
                 // but not /competitions, /competitions/, /competitions/example-entity/2020, /competitions/example-entity/invalid 
                 // or /competitions/example-entity/2020/invalid, in upper, lower or mixed case
-                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}[0-9]{{4}}(-[0-9]{{2}})?{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForSeason },
-                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}[0-9]{{4}}(-[0-9]{{2}})?{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.SeasonActions },
-                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}[0-9]{{4}}(-[0-9]{{2}})?{SLASH}edit{SLASH}season{OPTIONAL_SLASH}", StoolballRouteType.EditSeason },
-                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}[0-9]{{4}}(-[0-9]{{2}})?{SLASH}delete{OPTIONAL_SLASH}", StoolballRouteType.DeleteSeason },
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForSeason },
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}results{OPTIONAL_SLASH}", StoolballRouteType.SeasonResults },
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.SeasonActions },
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}edit{SLASH}season{OPTIONAL_SLASH}", StoolballRouteType.EditSeason },
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}delete{OPTIONAL_SLASH}", StoolballRouteType.DeleteSeason },
 
                 // Match /teams/example-team/valid or /teams/example-team/valid/ but not /teams, /teams/
                 // /teams/example-team, /teams/example-team/ or /teams/example-team/invalid in upper, lower or mixed case

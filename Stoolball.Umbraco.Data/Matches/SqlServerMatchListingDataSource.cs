@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Stoolball.Matches;
+using Stoolball.Teams;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -120,9 +121,14 @@ namespace Stoolball.Umbraco.Data.Matches
                     if (matchQuery.IncludeMatches)
                     {
                         var (matchSql, matchParameters) = BuildMatchQuery(matchQuery,
-                            $@"SELECT m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, 
-                                NULL AS TournamentQualificationType, NULL AS SpacesInTournament, m.OrderInTournament
+                            $@"SELECT m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, m.MatchResultType,
+                                NULL AS TournamentQualificationType, NULL AS SpacesInTournament, m.OrderInTournament,
+                                mt.TeamRole,
+                                mt.TeamId,
+                                i.Runs, i.Wickets
                                 FROM { Tables.Match } AS m
+                                LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
+                                LEFT JOIN {Tables.MatchInnings} AS i ON m.MatchId = i.MatchId AND i.TeamId = mt.TeamId
                                 <<JOIN>>
                                 <<WHERE>> ");
                         sql.Append(matchSql);
@@ -142,8 +148,12 @@ namespace Stoolball.Umbraco.Data.Matches
                     if (matchQuery.IncludeTournaments)
                     {
                         var (tournamentSql, tournamentParameters) = BuildTournamentQuery(matchQuery,
-                            $@"SELECT tourney.TournamentName AS MatchName, tourney.TournamentRoute AS MatchRoute, tourney.StartTime, tourney.StartTimeIsKnown, NULL AS MatchType, tourney.PlayerType, 
-                                tourney.QualificationType AS TournamentQualificationType, tourney.SpacesInTournament, NULL AS OrderInTournament
+                            $@"SELECT tourney.TournamentName AS MatchName, tourney.TournamentRoute AS MatchRoute, tourney.StartTime, tourney.StartTimeIsKnown, 
+                                NULL AS MatchType, tourney.PlayerType, NULL AS MatchResultType,
+                                tourney.QualificationType AS TournamentQualificationType, tourney.SpacesInTournament, NULL AS OrderInTournament,
+                                NULL AS TeamRole, 
+                                NULL AS TeamId,
+                                NULL AS Runs, NULL AS Wickets
                                 FROM { Tables.Tournament} AS tourney
                                 <<JOIN>>
                                 <<WHERE>> ");
@@ -160,9 +170,35 @@ namespace Stoolball.Umbraco.Data.Matches
                     orderBy.Add("StartTime");
                     sql.Append("ORDER BY ").Append(string.Join(", ", orderBy.ToArray()));
 
-                    var matches = await connection.QueryAsync<MatchListing>(sql.ToString(), new DynamicParameters(parameters)).ConfigureAwait(false);
+                    var matches = await connection.QueryAsync<MatchListing, TeamInMatch, Team, MatchInnings, MatchListing>(sql.ToString(),
+                    (matchListing, teamInMatch, team, matchInnings) =>
+                    {
+                        if (teamInMatch != null)
+                        {
+                            teamInMatch.Team = team;
+                            matchListing.Teams.Add(teamInMatch);
 
-                    return matches.Distinct(new MatchListingEqualityComparer()).ToList();
+                            matchListing.MatchInnings.Add(new MatchInnings
+                            {
+                                Team = team,
+                                Runs = matchInnings?.Runs,
+                                Wickets = matchInnings?.Wickets
+                            });
+                        }
+                        return matchListing;
+                    },
+                    new DynamicParameters(parameters),
+                    splitOn: "TeamRole, TeamId, Runs").ConfigureAwait(false);
+
+                    var listingsToReturn = matches.GroupBy(match => match.MatchRoute).Select(copiesOfMatch =>
+                    {
+                        var matchToReturn = copiesOfMatch.First();
+                        matchToReturn.MatchInnings = copiesOfMatch.Select(match => match.MatchInnings.SingleOrDefault()).OfType<MatchInnings>().ToList();
+                        matchToReturn.Teams = copiesOfMatch.Select(match => match.Teams.SingleOrDefault()).OfType<TeamInMatch>().ToList();
+                        return matchToReturn;
+                    }).ToList();
+
+                    return listingsToReturn;
                 }
             }
             catch (Exception ex)
@@ -191,8 +227,6 @@ namespace Stoolball.Umbraco.Data.Matches
 
             if (matchQuery.TeamIds?.Count > 0)
             {
-                join.Add($"INNER JOIN {Tables.MatchTeam} mt ON m.MatchId = mt.MatchId");
-
                 where.Add("mt.TeamId IN @TeamIds");
                 parameters.Add("@TeamIds", matchQuery.TeamIds);
             }

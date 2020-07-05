@@ -1,6 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.DeleteSeasonViewModel>
 @using Humanizer
 @using ClientDependency.Core.Mvc
+@using Stoolball.Matches
 @using Stoolball.Web.Competitions
 @{
     Html.EnableClientValidation();
@@ -16,17 +17,23 @@
 
 @if (!Model.Deleted)
 {
-    <ul class="nav nav-tabs">
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Season.SeasonRoute">Summary</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
+    </li>
+    @if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) || !string.IsNullOrEmpty(Model.Season.Results))
+    {
         <li class="nav-item">
-            <a class="nav-link" href="@Model.Season.SeasonRoute">Summary</a>
+            <a class="nav-link" href="@Model.Season.SeasonRoute/results">Results</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
-        </li>
-        <li class="nav-item">
-            <em class="nav-link active">Edit</em>
-        </li>
-    </ul>
+    }
+    <li class="nav-item">
+        <em class="nav-link active">Edit</em>
+    </li>
+</ul>
 }
 
 @if (Model.IsAuthorized)
