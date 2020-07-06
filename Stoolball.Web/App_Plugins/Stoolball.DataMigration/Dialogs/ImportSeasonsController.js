@@ -6,6 +6,21 @@ function seasonResource() {
       season.teams = season.teams || [];
       season.pointsRules = season.pointsRules || [];
       season.pointsAdjustments = season.pointsAdjustments || [];
+      season.matchTypes = season.matchTypes || [];
+
+      const matchTypes = [];
+      if (season.matchTypes.includes(0) || season.matchTypes.includes(2)) {
+        matchTypes.push(0);
+      }
+      if (season.matchTypes.includes(3)) {
+        matchTypes.push(1);
+      }
+      if (season.matchTypes.includes(4)) {
+        matchTypes.push(2);
+      }
+      if (season.matchTypes.includes(5)) {
+        matchTypes.push(3);
+      }
 
       return {
         MigratedSeasonId: season.seasonId,
@@ -26,19 +41,20 @@ function seasonResource() {
             Reason: x.reason,
           };
         }),
-        MatchTypes: season.matchTypes,
+        MatchTypes: matchTypes,
+        EnableTournaments: season.matchTypes.includes(1),
         PointsRules: season.pointsRules.map((x) => ({
           MatchResultType: x.resultType - (x.resultType > 3 ? 2 : 1),
           HomePoints: x.homePoints,
           AwayPoints: x.awayPoints,
         })),
-        StartYear: season.startYear,
-        EndYear: season.endYear,
+        FromYear: season.startYear,
+        UntilYear: season.endYear,
         Introduction: season.introduction,
         Results: season.results,
-        ShowTable: season.showTable,
-        ShowRunsScored: season.showRunsScored,
-        ShowRunsConceded: season.showRunsConceded,
+        EnableResultsTable: season.showTable,
+        EnableRunsScored: season.showRunsScored,
+        EnableRunsConceded: season.showRunsConceded,
         SeasonRoute: season.route,
         History: [
           {

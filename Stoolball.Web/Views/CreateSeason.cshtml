@@ -37,22 +37,22 @@
         @Html.ValidationSummary(true)
 
         <div class="form-group">
-            @Html.LabelFor(m => Model.Season.StartYear)
-            @Html.TextBoxFor(m => Model.Season.StartYear, new { @class = "form-control", aria_describedby = "from-year", @type = "number" })
-            @Html.ValidationMessageFor(m => Model.Season.StartYear, null, new { id = "from-year" })
+            @Html.LabelFor(m => Model.Season.FromYear)
+            @Html.TextBoxFor(m => Model.Season.FromYear, new { @class = "form-control", aria_describedby = "from-year", @type = "number" })
+            @Html.ValidationMessageFor(m => Model.Season.FromYear, null, new { id = "from-year" })
         </div>
 
         <fieldset class="form-group">
             <legend>What year does it end?</legend>
             <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Season.EndYear, 0, new { @class = "custom-control-input", @id = "end-year-1" })
+                @Html.RadioButtonFor(m => Model.Season.UntilYear, 0, new { @class = "custom-control-input", @id = "end-year-1" })
                 <label for="end-year-1" class="custom-control-label">the same year (for example, April to September)</label>
             </div>
             <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Season.EndYear, 1, new { @class = "custom-control-input", @id = "end-year-2" })
+                @Html.RadioButtonFor(m => Model.Season.UntilYear, 1, new { @class = "custom-control-input", @id = "end-year-2" })
                 <label for="end-year-2" class="custom-control-label">the next year (for example, October to March)</label>
             </div>
-            @Html.ValidationMessageFor(m => Model.Season.EndYear, null, new { id = "end-year-validation" })
+            @Html.ValidationMessageFor(m => Model.Season.UntilYear, null, new { id = "end-year-validation" })
         </fieldset>
 
         @Html.Partial("_CreateOrEditSeason")

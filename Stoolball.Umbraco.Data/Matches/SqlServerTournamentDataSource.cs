@@ -50,7 +50,7 @@ namespace Stoolball.Umbraco.Data.Matches
                             t.TeamId, t.TeamRoute, t.TeamType, tn.TeamName,
                             ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
                             ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
-                            s.SeasonRoute, s.StartYear, s.EndYear,
+                            s.SeasonRoute, s.FromYear, s.UntilYear,
                             co.CompetitionName
                             FROM {Tables.Tournament} AS tourney
                             LEFT JOIN {Tables.TournamentTeam} AS tt ON tourney.TournamentId = tt.TournamentId

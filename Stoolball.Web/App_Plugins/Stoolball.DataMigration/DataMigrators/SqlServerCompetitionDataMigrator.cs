@@ -213,26 +213,27 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 SeasonId = Guid.NewGuid(),
                 MigratedSeasonId = season.MigratedSeasonId,
                 MigratedCompetition = season.MigratedCompetition,
-                StartYear = season.StartYear,
-                EndYear = season.EndYear,
+                FromYear = season.FromYear,
+                UntilYear = season.UntilYear,
                 Introduction = season.Introduction,
                 MigratedTeams = season.MigratedTeams,
                 MatchTypes = season.MatchTypes,
                 PointsRules = season.PointsRules,
                 MigratedPointsAdjustments = season.MigratedPointsAdjustments,
                 Results = season.Results,
-                ShowTable = season.ShowTable,
-                ShowRunsScored = season.ShowRunsScored,
-                ShowRunsConceded = season.ShowRunsConceded
+                EnableTournaments = season.EnableTournaments,
+                EnableResultsTable = season.EnableResultsTable,
+                EnableRunsScored = season.EnableRunsScored,
+                EnableRunsConceded = season.EnableRunsConceded
             };
 
             using (var scope = _scopeProvider.CreateScope())
             {
                 var competitionRoute = await scope.Database.ExecuteScalarAsync<string>($"SELECT CompetitionRoute FROM {Tables.Competition} WHERE MigratedCompetitionId = @MigratedCompetitionId", new { migratedSeason.MigratedCompetition.MigratedCompetitionId }).ConfigureAwait(false);
-                migratedSeason.SeasonRoute = $"{competitionRoute}/{migratedSeason.StartYear}";
-                if (migratedSeason.EndYear > migratedSeason.StartYear)
+                migratedSeason.SeasonRoute = $"{competitionRoute}/{migratedSeason.FromYear}";
+                if (migratedSeason.UntilYear > migratedSeason.FromYear)
                 {
-                    migratedSeason.SeasonRoute = $"{migratedSeason.SeasonRoute}-{migratedSeason.EndYear.ToString(CultureInfo.InvariantCulture).Substring(2)}";
+                    migratedSeason.SeasonRoute = $"{migratedSeason.SeasonRoute}-{migratedSeason.UntilYear.ToString(CultureInfo.InvariantCulture).Substring(2)}";
                 }
                 scope.Complete();
             }
@@ -249,19 +250,21 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         migratedSeason.MigratedCompetition.CompetitionId = await database.ExecuteScalarAsync<Guid>($"SELECT CompetitionId FROM {Tables.Competition} WHERE MigratedCompetitionId = @0", season.MigratedCompetition.MigratedCompetitionId).ConfigureAwait(false);
 
                         await database.ExecuteAsync($@"INSERT INTO {Tables.Season}
-						(SeasonId, MigratedSeasonId, CompetitionId, StartYear, EndYear, Introduction, 
-						 Results, ShowTable, ShowRunsScored, ShowRunsConceded, SeasonRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10)",
+						(SeasonId, MigratedSeasonId, CompetitionId, FromYear, UntilYear, Introduction, 
+						 Results, EnableTournaments, EnableResultsTable, ResultsTableIsLeagueTable, EnableRunsScored, EnableRunsConceded, SeasonRoute)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12)",
                             migratedSeason.SeasonId,
                             migratedSeason.MigratedSeasonId,
                             migratedSeason.MigratedCompetition.CompetitionId,
-                            migratedSeason.StartYear,
-                            migratedSeason.EndYear,
+                            migratedSeason.FromYear,
+                            migratedSeason.UntilYear,
                             migratedSeason.Introduction,
                             migratedSeason.Results,
-                            migratedSeason.ShowTable,
-                            migratedSeason.ShowRunsScored,
-                            migratedSeason.ShowRunsConceded,
+                            migratedSeason.EnableTournaments,
+                            migratedSeason.EnableResultsTable,
+                            true,
+                            migratedSeason.EnableRunsScored,
+                            migratedSeason.EnableRunsConceded,
                             migratedSeason.SeasonRoute).ConfigureAwait(false);
                         foreach (var teamInSeason in migratedSeason.MigratedTeams)
                         {

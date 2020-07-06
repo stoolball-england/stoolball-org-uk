@@ -22,11 +22,11 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Index(IndexTypes.Clustered)]
         public Guid CompetitionId { get; set; }
 
-        [Column(nameof(StartYear))]
-        public int StartYear { get; set; }
+        [Column(nameof(FromYear))]
+        public int FromYear { get; set; }
 
-        [Column(nameof(EndYear))]
-        public int EndYear { get; set; }
+        [Column(nameof(UntilYear))]
+        public int UntilYear { get; set; }
 
         [Column(nameof(Introduction))]
         [NullSetting(NullSetting = NullSettings.Null)]
@@ -38,14 +38,20 @@ namespace Stoolball.Umbraco.Data.Migrations
         [SpecialDbType(SpecialDbTypes.NTEXT)]
         public string Results { get; set; }
 
-        [Column(nameof(ShowTable))]
-        public bool ShowTable { get; set; }
+        [Column(nameof(EnableTournaments))]
+        public bool EnableTournaments { get; set; }
 
-        [Column(nameof(ShowRunsScored))]
-        public bool ShowRunsScored { get; set; }
+        [Column(nameof(EnableResultsTable))]
+        public bool EnableResultsTable { get; set; }
 
-        [Column(nameof(ShowRunsConceded))]
-        public bool ShowRunsConceded { get; set; }
+        [Column(nameof(ResultsTableIsLeagueTable))]
+        public bool ResultsTableIsLeagueTable { get; set; }
+
+        [Column(nameof(EnableRunsScored))]
+        public bool EnableRunsScored { get; set; }
+
+        [Column(nameof(EnableRunsConceded))]
+        public bool EnableRunsConceded { get; set; }
 
         [Column(nameof(SeasonRoute))]
         [Index(IndexTypes.UniqueNonClustered)]

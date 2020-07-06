@@ -20,13 +20,13 @@ namespace Stoolball.Competitions
         /// <returns></returns>
         public string SeasonName()
         {
-            if (StartYear == EndYear)
+            if (FromYear == UntilYear)
             {
-                return $"{StartYear} season";
+                return $"{FromYear} season";
             }
             else
             {
-                return $"{StartYear}/{new DateTime(EndYear, 1, 1).ToString("yy", CultureInfo.CurrentCulture)} season";
+                return $"{FromYear}/{new DateTime(UntilYear, 1, 1).ToString("yy", CultureInfo.CurrentCulture)} season";
             }
         }
 
@@ -61,12 +61,13 @@ namespace Stoolball.Competitions
 
         [Display(Name = "What year does the season start?")]
         [Required]
-        public int StartYear { get; set; }
+        public int FromYear { get; set; }
 
         [Required]
-        public int EndYear { get; set; }
+        public int UntilYear { get; set; }
 
         public string Introduction { get; set; }
+        public bool EnableTournaments { get; set; }
         public List<MatchType> MatchTypes { get; internal set; } = new List<MatchType>();
 
         public List<TeamInSeason> Teams { get; internal set; } = new List<TeamInSeason>();
@@ -75,11 +76,13 @@ namespace Stoolball.Competitions
 
         public string Results { get; set; }
 
-        public bool ShowTable { get; set; }
+        public bool EnableResultsTable { get; set; }
 
-        public bool ShowRunsScored { get; set; }
+        public bool ResultsTableIsLeagueTable { get; set; }
 
-        public bool ShowRunsConceded { get; set; }
+        public bool EnableRunsScored { get; set; }
+
+        public bool EnableRunsConceded { get; set; }
 
         public string SeasonRoute { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
@@ -88,6 +91,8 @@ namespace Stoolball.Competitions
         {
             get { return new Uri($"https://www.stoolball.org.uk/id/season/{SeasonId}"); }
         }
+
+
 
         /// <summary>
         /// Gets a description of the season suitable for metadata or search results

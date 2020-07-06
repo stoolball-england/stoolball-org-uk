@@ -42,7 +42,7 @@
     {
         <p>If you delete @Model.Season.SeasonFullName() you will:</p>
         <ul>
-            @if (!string.IsNullOrEmpty(Model.Season.Results) || Model.Season.ShowTable)
+            @if (!string.IsNullOrEmpty(Model.Season.Results) || Model.Season.EnableResultsTable)
             {
                 <li>lose the results of this season</li>
             }

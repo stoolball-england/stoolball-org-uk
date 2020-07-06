@@ -45,14 +45,14 @@ namespace Stoolball.Umbraco.Data.Competitions
                         $@"SELECT co.CompetitionId, co.CompetitionName, co.PlayerType, co.Introduction, co.FromYear, co.UntilYear, co.Overs, co.PlayersPerTeam,
                             co.PublicContactDetails, co.PrivateContactDetails, co.Facebook, co.Twitter, co.Instagram, co.YouTube, co.Website, co.CompetitionRoute, 
                             co.MemberGroupId, co.MemberGroupName,
-                            s.SeasonRoute, s.StartYear, s.EndYear,
+                            s.SeasonRoute, s.FromYear, s.UntilYear,
                             mt.MatchType
                             FROM {Tables.Competition} AS co
                             LEFT JOIN {Tables.Season} AS s ON co.CompetitionId = s.CompetitionId
                             LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
                             WHERE LOWER(co.CompetitionRoute) = @Route
-                            AND (s.StartYear = (SELECT MAX(StartYear) FROM {Tables.Season} WHERE CompetitionId = co.CompetitionId) 
-                            OR s.StartYear IS NULL)",
+                            AND (s.FromYear = (SELECT MAX(FromYear) FROM {Tables.Season} WHERE CompetitionId = co.CompetitionId) 
+                            OR s.FromYear IS NULL)",
                         (competition, season, matchType) =>
                         {
                             if (season != null)
@@ -105,8 +105,8 @@ namespace Stoolball.Umbraco.Data.Competitions
                             LEFT JOIN {Tables.Season} AS s ON co.CompetitionId = s.CompetitionId
                             LEFT JOIN {Tables.SeasonTeam} AS st ON s.SeasonId = st.SeasonId
                             <<WHERE>>
-                            (s.StartYear = (SELECT MAX(StartYear) FROM {Tables.Season} WHERE CompetitionId = co.CompetitionId) 
-                            OR s.StartYear IS NULL)
+                            (s.FromYear = (SELECT MAX(FromYear) FROM {Tables.Season} WHERE CompetitionId = co.CompetitionId) 
+                            OR s.FromYear IS NULL)
                             ORDER BY CASE WHEN co.UntilYear IS NULL THEN 0 
                                           WHEN co.UntilYear IS NOT NULL THEN 1 END, co.CompetitionName";
 

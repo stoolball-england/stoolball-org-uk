@@ -12,6 +12,12 @@
 
 <fieldset class="form-group">
     <legend>What matches can be listed?</legend>
+    <div class="custom-control custom-checkbox">
+        @*<input type="checkbox" name="Season.MatchTypes" value="" class="custom-control-input" id="match-type-tournament" checked="" />
+        <label for="match-type-tournament" class="custom-control-label">Tournament</label>*@
+        @Html.CheckBoxFor(m => Model.Season.EnableTournaments, new { @class = "custom-control-input" })
+        @Html.LabelFor(m => Model.Season.EnableTournaments, "Tournament", new { @class = "custom-control-label" })
+    </div>
     @{ 
         // MVC always includes the checked attribute for this one, so build the attribute manually (possibly to do with the enum == 0?)
         var leagueChecked = Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) ? " checked=\"checked\"" : string.Empty;
@@ -27,10 +33,6 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" name="Season.MatchTypes" value="@MatchType.FriendlyMatch" class="custom-control-input" id="match-type-friendly" checked="@Model.Season.MatchTypes.Contains(MatchType.FriendlyMatch)" />
         <label for="match-type-friendly" class="custom-control-label">@MatchType.FriendlyMatch.ToString().Humanize(LetterCasing.Sentence)</label>
-    </div>
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" name="Season.MatchTypes" value="@MatchType.Tournament" class="custom-control-input" id="match-type-tournament" checked="@Model.Season.MatchTypes.Contains(MatchType.Tournament)" />
-        <label for="match-type-tournament" class="custom-control-label">@MatchType.Tournament.ToString().Humanize(LetterCasing.Sentence)</label>
     </div>
     <div class="custom-control custom-checkbox">
         <input type="checkbox" name="Season.MatchTypes" value="@MatchType.Practice" class="custom-control-input" id="match-type-practice" checked="@Model.Season.MatchTypes.Contains(MatchType.Practice)" />

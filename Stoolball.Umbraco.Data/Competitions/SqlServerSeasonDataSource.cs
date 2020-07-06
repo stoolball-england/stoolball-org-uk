@@ -48,7 +48,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var seasons = await connection.QueryAsync<Season, Competition, string, Season>(
-                        $@"SELECT s.SeasonId, s.StartYear, s.EndYear, s.Results, s.SeasonRoute,
+                        $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Results, s.SeasonRoute,
                             co.CompetitionName, co.PlayerType, co.UntilYear, co.CompetitionRoute, co.MemberGroupName,
                             smt.MatchType
                             FROM {Tables.Season} AS s 
@@ -97,9 +97,9 @@ namespace Stoolball.Umbraco.Data.Competitions
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var seasons = await connection.QueryAsync<Season, Competition, Season, TeamInSeason, Team, string, Season>(
-                        $@"SELECT s.SeasonId, s.StartYear, s.EndYear, s.Introduction, s.ShowTable, s.ShowRunsScored, s.ShowRunsConceded, s.Results, s.SeasonRoute,
+                        $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Introduction, s.EnableTournaments, s.EnableResultsTable, s.ResultsTableIsLeagueTable, s.EnableRunsScored, s.EnableRunsConceded, s.Results, s.SeasonRoute,
                             co.CompetitionName, co.PlayerType, co.Introduction, co.UntilYear, co.PublicContactDetails, co.Website, co.CompetitionRoute, co.MemberGroupName,
-                            s2.SeasonId, s2.StartYear, s2.EndYear, s2.SeasonRoute,
+                            s2.SeasonId, s2.FromYear, s2.UntilYear, s2.SeasonRoute,
                             st.WithdrawnDate,
                             t.TeamId, tn.TeamName, t.TeamRoute,
                             mt.MatchType
@@ -111,7 +111,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                             LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
                             WHERE LOWER(s.SeasonRoute) = @Route
-                            ORDER BY s2.StartYear DESC, s2.EndYear ASC",
+                            ORDER BY s2.FromYear DESC, s2.UntilYear ASC",
                         (season, competition, anotherSeasonInTheCompetition, teamInSeason, team, matchType) =>
                         {
                             if (season != null)

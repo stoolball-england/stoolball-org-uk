@@ -49,7 +49,7 @@
             }
         }
 
-        if (Model.Season.ShowTable && hasLeagueMatch)
+        if (Model.Season.EnableResultsTable && hasLeagueMatch)
         {
             var matchesAwaitingResults = new MatchListingViewModel { DateTimeFormatter = Model.Matches.DateTimeFormatter };
             var withdrawnTeams = Model.Season.Teams.Where(x => x.WithdrawnDate.HasValue);
@@ -64,12 +64,12 @@
                         <th scope="col">Lost</th>
                         <th scope="col">Tied</th>
                         <th scope="col">No result</th>
-                        @if (Model.Season.ShowRunsScored)
+                        @if (Model.Season.EnableRunsScored)
                         {
                             columns++;
                             <th>Runs scored</th>
                         }
-                        @if (Model.Season.ShowRunsConceded)
+                        @if (Model.Season.EnableRunsConceded)
                         {
                             columns++;
                             <th>Runs conceded</th>
@@ -123,8 +123,8 @@
                                 else if (match.IsAwayWin()) { rows[homeTeamId.Value].Lost++; }
                                 else if (match.IsEqualResult()) { rows[homeTeamId.Value].Tied++; }
                                 else if (match.IsNoResult()) { rows[homeTeamId.Value].NoResult++; }
-                                if (Model.Season.ShowRunsScored && homeRuns.HasValue) { rows[homeTeamId.Value].RunsScored = (rows[homeTeamId.Value].RunsScored + homeRuns.Value); }
-                                if (Model.Season.ShowRunsConceded && awayRuns.HasValue) { rows[homeTeamId.Value].RunsConceded = (rows[homeTeamId.Value].RunsConceded + awayRuns.Value); }
+                                if (Model.Season.EnableRunsScored && homeRuns.HasValue) { rows[homeTeamId.Value].RunsScored = (rows[homeTeamId.Value].RunsScored + homeRuns.Value); }
+                                if (Model.Season.EnableRunsConceded && awayRuns.HasValue) { rows[homeTeamId.Value].RunsConceded = (rows[homeTeamId.Value].RunsConceded + awayRuns.Value); }
                                 rows[homeTeamId.Value].Points = (rows[homeTeamId.Value].Points + (Model.Season.PointsRules.First(x => x.MatchResultType == match.MatchResultType)?.HomePoints ?? 0));
                             }
 
@@ -136,8 +136,8 @@
                                 else if (match.IsAwayWin()) { rows[awayTeamId.Value].Won++; }
                                 else if (match.IsEqualResult()) { rows[awayTeamId.Value].Tied++; }
                                 else if (match.IsNoResult()) { rows[awayTeamId.Value].NoResult++; }
-                                if (Model.Season.ShowRunsScored && awayRuns.HasValue) { rows[awayTeamId.Value].RunsScored = (rows[awayTeamId.Value].RunsScored + awayRuns.Value); }
-                                if (Model.Season.ShowRunsConceded && homeRuns.HasValue) { rows[awayTeamId.Value].RunsConceded = (rows[awayTeamId.Value].RunsConceded + homeRuns.Value); }
+                                if (Model.Season.EnableRunsScored && awayRuns.HasValue) { rows[awayTeamId.Value].RunsScored = (rows[awayTeamId.Value].RunsScored + awayRuns.Value); }
+                                if (Model.Season.EnableRunsConceded && homeRuns.HasValue) { rows[awayTeamId.Value].RunsConceded = (rows[awayTeamId.Value].RunsConceded + homeRuns.Value); }
                                 rows[awayTeamId.Value].Points = (rows[awayTeamId.Value].Points + (Model.Season.PointsRules.FirstOrDefault(x => x.MatchResultType == match.MatchResultType)?.AwayPoints ?? 0));
                             }
                         }
@@ -161,11 +161,11 @@
                                 <td data-label="Lost">@row.Lost</td>
                                 <td data-label="Tied">@row.Tied</td>
                                 <td data-label="No result">@row.NoResult</td>
-                                @if (Model.Season.ShowRunsScored)
+                                @if (Model.Season.EnableRunsScored)
                                 {
                                     <td data-label="Runs scored">@row.RunsScored</td>
                                 }
-                                @if (Model.Season.ShowRunsConceded)
+                                @if (Model.Season.EnableRunsConceded)
                                 {
                                     <td data-label="Runs conceded">@row.RunsConceded</td>
                                 }

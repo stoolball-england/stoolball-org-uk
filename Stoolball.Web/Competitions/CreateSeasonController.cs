@@ -53,10 +53,10 @@ namespace Stoolball.Web.Competitions
                 {
                     Season = competition.Seasons.FirstOrDefault() ?? new Season()
                 };
-                var summerSeason = model.Season.StartYear == model.Season.EndYear;
+                var summerSeason = model.Season.FromYear == model.Season.UntilYear;
                 model.Season.Competition = competition;
-                model.Season.StartYear = model.Season.StartYear == default ? DateTime.Today.Year : model.Season.StartYear + 1;
-                model.Season.EndYear = summerSeason ? 0 : 1;
+                model.Season.FromYear = model.Season.FromYear == default ? DateTime.Today.Year : model.Season.FromYear + 1;
+                model.Season.UntilYear = summerSeason ? 0 : 1;
 
                 model.IsAuthorized = IsAuthorized(model);
 

@@ -116,7 +116,7 @@ namespace Stoolball.Umbraco.Data.Teams
                             cn.ClubName, c.ClubRoute, c.ClubMark,
                             ml.MatchLocationId, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, 
                             ml.Town, ml.AdministrativeArea, ml.MatchLocationRoute,
-                            s.StartYear, s.EndYear, s.SeasonRoute,
+                            s.FromYear, s.UntilYear, s.SeasonRoute,
                             co.CompetitionId, co.CompetitionName
                             FROM {Tables.Team} AS t 
                             INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
@@ -128,7 +128,7 @@ namespace Stoolball.Umbraco.Data.Teams
                             LEFT JOIN {Tables.Season} AS s ON st.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.Competition} AS co ON co.CompetitionId = s.CompetitionId
                             WHERE LOWER(t.TeamRoute) = @Route
-                            ORDER BY co.CompetitionName, s.StartYear DESC, s.EndYear ASC",
+                            ORDER BY co.CompetitionName, s.FromYear DESC, s.UntilYear ASC",
                         (team, club, matchLocation, season, competition) =>
                         {
                             team.Club = club;
@@ -144,7 +144,7 @@ namespace Stoolball.Umbraco.Data.Teams
                             return team;
                         },
                         new { Route = normalisedRoute },
-                        splitOn: "ClubName, MatchLocationId, StartYear, CompetitionId").ConfigureAwait(false);
+                        splitOn: "ClubName, MatchLocationId, UntilYear, CompetitionId").ConfigureAwait(false);
 
                     var teamToReturn = teams.FirstOrDefault(); // get an example with the properties that are the same for every row
                     if (teamToReturn != null)

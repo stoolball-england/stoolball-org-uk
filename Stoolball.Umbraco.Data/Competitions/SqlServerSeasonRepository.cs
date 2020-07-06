@@ -76,25 +76,27 @@ namespace Stoolball.Umbraco.Data.Competitions
                     connection.Open();
                     using (var transaction = connection.BeginTransaction())
                     {
-                        season.SeasonRoute = $"{season.Competition.CompetitionRoute}/{season.StartYear}";
-                        if (season.EndYear > season.StartYear)
+                        season.SeasonRoute = $"{season.Competition.CompetitionRoute}/{season.FromYear}";
+                        if (season.UntilYear > season.FromYear)
                         {
-                            season.SeasonRoute = $"{season.SeasonRoute}-{season.EndYear.ToString(CultureInfo.InvariantCulture).Substring(2)}";
+                            season.SeasonRoute = $"{season.SeasonRoute}-{season.UntilYear.ToString(CultureInfo.InvariantCulture).Substring(2)}";
                         }
 
                         await connection.ExecuteAsync(
-                            $@"INSERT INTO {Tables.Season} (SeasonId, CompetitionId, StartYear, EndYear, Introduction, ShowTable, ShowRunsScored, ShowRunsConceded, SeasonRoute) 
-                                VALUES (@SeasonId, @CompetitionId, @StartYear, @EndYear, @Introduction, @ShowTable, @ShowRunsScored, @ShowRunsConceded, @SeasonRoute)",
+                            $@"INSERT INTO {Tables.Season} (SeasonId, CompetitionId, FromYear, UntilYear, Introduction, EnableTournaments, EnableResultsTable, ResultsTableIsLeagueTable, EnableRunsScored, EnableRunsConceded, SeasonRoute) 
+                                VALUES (@SeasonId, @CompetitionId, @FromYear, @UntilYear, @Introduction, @EnableTournaments, @EnableResultsTable, @ResultsTableIsLeagueTable, @EnableRunsScored, @EnableRunsConceded, @SeasonRoute)",
                             new
                             {
                                 season.SeasonId,
                                 season.Competition.CompetitionId,
-                                season.StartYear,
-                                season.EndYear,
+                                season.FromYear,
+                                season.UntilYear,
                                 season.Introduction,
-                                season.ShowTable,
-                                season.ShowRunsScored,
-                                season.ShowRunsConceded,
+                                season.EnableTournaments,
+                                season.EnableResultsTable,
+                                season.ResultsTableIsLeagueTable,
+                                season.EnableRunsScored,
+                                season.EnableRunsConceded,
                                 season.SeasonRoute
                             }, transaction).ConfigureAwait(false);
 
@@ -115,12 +117,12 @@ namespace Stoolball.Umbraco.Data.Competitions
                         var pointsRules = await connection.QueryAsync<PointsRule>(
                             $@"SELECT MatchResultType, HomePoints, AwayPoints FROM { Tables.SeasonPointsRule } WHERE SeasonId = 
                                 (
-                                    SELECT TOP 1 SeasonId FROM StoolballSeason WHERE CompetitionId = @CompetitionId AND StartYear < @StartYear ORDER BY StartYear DESC
+                                    SELECT TOP 1 SeasonId FROM StoolballSeason WHERE CompetitionId = @CompetitionId AND FromYear < @FromYear ORDER BY FromYear DESC
                                 )",
                                 new
                                 {
                                     season.Competition.CompetitionId,
-                                    season.StartYear
+                                    season.FromYear
                                 },
                                 transaction).ConfigureAwait(false);
 
@@ -144,15 +146,15 @@ namespace Stoolball.Umbraco.Data.Competitions
                         var teamIds = await connection.QueryAsync<Guid>(
                             $@"SELECT t.TeamId FROM { Tables.SeasonTeam } st INNER JOIN { Tables.Team } t ON st.TeamId = t.TeamId 
                                 WHERE st.SeasonId = (
-                                    SELECT TOP 1 SeasonId FROM { Tables.Season } WHERE CompetitionId = @CompetitionId AND StartYear < @StartYear ORDER BY StartYear DESC
+                                    SELECT TOP 1 SeasonId FROM { Tables.Season } WHERE CompetitionId = @CompetitionId AND FromYear < @FromYear ORDER BY FromYear DESC
                                 )
                                 AND 
                                 st.WithdrawnDate IS NULL
-                                AND (t.UntilYear IS NULL OR t.UntilYear <= @StartYear)",
+                                AND (t.UntilYear IS NULL OR t.UntilYear <= @FromYear)",
                             new
                             {
                                 season.Competition.CompetitionId,
-                                season.StartYear
+                                season.FromYear
                             },
                             transaction).ConfigureAwait(false);
 
@@ -220,11 +222,13 @@ namespace Stoolball.Umbraco.Data.Competitions
 
                         await connection.ExecuteAsync(
                             $@"UPDATE {Tables.Season} SET
-                                Introduction = @Introduction
+                                Introduction = @Introduction,
+                                EnableTournaments = @EnableTournaments
 						        WHERE SeasonId = @SeasonId",
                             new
                             {
                                 season.Introduction,
+                                season.EnableTournaments,
                                 season.SeasonId
                             }, transaction).ConfigureAwait(false);
 

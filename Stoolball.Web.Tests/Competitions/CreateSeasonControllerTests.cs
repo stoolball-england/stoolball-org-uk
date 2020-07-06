@@ -65,7 +65,7 @@ namespace Stoolball.Web.Tests.Competitions
         }
 
         [Fact]
-        public async Task StartYear_defaults_to_current_year()
+        public async Task FromYear_defaults_to_current_year()
         {
             var dataSource = new Mock<ICompetitionDataSource>();
             dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionName = "Example" });
@@ -74,12 +74,12 @@ namespace Stoolball.Web.Tests.Competitions
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Equal(DateTime.Today.Year, ((SeasonViewModel)((ViewResult)result).Model).Season.StartYear);
+                Assert.Equal(DateTime.Today.Year, ((SeasonViewModel)((ViewResult)result).Model).Season.FromYear);
             }
         }
 
         [Fact]
-        public async Task EndYear_defaults_to_zero()
+        public async Task UntilYear_defaults_to_zero()
         {
             var dataSource = new Mock<ICompetitionDataSource>();
             dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionName = "Example" });
@@ -88,7 +88,7 @@ namespace Stoolball.Web.Tests.Competitions
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Equal(0, ((SeasonViewModel)((ViewResult)result).Model).Season.EndYear);
+                Assert.Equal(0, ((SeasonViewModel)((ViewResult)result).Model).Season.UntilYear);
             }
         }
     }

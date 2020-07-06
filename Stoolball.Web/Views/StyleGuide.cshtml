@@ -295,8 +295,8 @@
         ShowCompetitionHeading = true
     };
     var competition = new Competition { CompetitionName = "Example competition" };
-    competition.Seasons.Add(new Season { StartYear = 2020, EndYear = 2020, SeasonRoute = "/competitions/example/2020" });
-    competition.Seasons.Add(new Season { StartYear = 2020, EndYear = 2021, SeasonRoute = "/competitions/example/2020-21" });
+    competition.Seasons.Add(new Season { FromYear = 2020, UntilYear = 2020, SeasonRoute = "/competitions/example/2020" });
+    competition.Seasons.Add(new Season { FromYear = 2020, UntilYear = 2021, SeasonRoute = "/competitions/example/2020-21" });
 
     seasonList.Competitions.Add(competition);
 }

@@ -58,13 +58,69 @@ describe("seasonReducer", () => {
 });
 
 describe("seasonReducer", () => {
-  it("should translate matchTypes to MatchTypes", () => {
+  it("should translate matchType = 0 to MatchType = 0", () => {
     const objectUnderTest = seasonResource();
     const result = objectUnderTest.seasonReducer({
-      matchTypes: [1, 2, 3],
+      matchTypes: [0],
     });
 
-    expect(result.MatchTypes).toEqual([1, 2, 3]);
+    expect(result.MatchTypes).toEqual([0]);
+  });
+});
+
+describe("seasonReducer", () => {
+  it("should translate matchType = 1 to empty MatchTypes, EnableTournaments = 1", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      matchTypes: [1],
+    });
+
+    expect(result.MatchTypes).toEqual([]);
+    expect(result.EnableTournaments).toEqual(true);
+  });
+});
+
+describe("seasonReducer", () => {
+  it("should translate matchType = 2 to MatchType = 0", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      matchTypes: [2],
+    });
+
+    expect(result.MatchTypes).toEqual([0]);
+  });
+});
+
+describe("seasonReducer", () => {
+  it("should translate matchType = 3 to MatchType = 1", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      matchTypes: [3],
+    });
+
+    expect(result.MatchTypes).toEqual([1]);
+  });
+});
+
+describe("seasonReducer", () => {
+  it("should translate matchType = 4 to MatchType = 2", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      matchTypes: [4],
+    });
+
+    expect(result.MatchTypes).toEqual([2]);
+  });
+});
+
+describe("seasonReducer", () => {
+  it("should translate matchType = 5 to MatchType = 3", () => {
+    const objectUnderTest = seasonResource();
+    const result = objectUnderTest.seasonReducer({
+      matchTypes: [5],
+    });
+
+    expect(result.MatchTypes).toEqual([3]);
   });
 });
 

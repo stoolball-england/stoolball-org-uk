@@ -1,4 +1,5 @@
-﻿using Stoolball.Matches;
+﻿using Stoolball.Competitions;
+using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Security;
 using System;
@@ -34,12 +35,17 @@ namespace Stoolball.Web.Competitions
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
-        public async Task<ActionResult> UpdateSeason()
+        public async Task<ActionResult> UpdateSeason([Bind(Prefix = "Season", Include = "EnableTournaments")] Season season)
         {
+            if (season is null)
+            {
+                throw new ArgumentNullException(nameof(season));
+            }
 
-            var season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl).ConfigureAwait(false);
+            var beforeUpdate = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl).ConfigureAwait(false);
 
             // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
+            season.SeasonId = beforeUpdate.SeasonId;
             season.Introduction = Request.Unvalidated.Form["Season.Introduction"];
 
             try
@@ -52,7 +58,7 @@ namespace Stoolball.Web.Competitions
                 return new HttpStatusCodeResult(400);
             }
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, season.Competition.MemberGroupName }, null);
+            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, beforeUpdate.Competition.MemberGroupName }, null);
 
             if (isAuthorized && ModelState.IsValid)
             {
@@ -61,15 +67,15 @@ namespace Stoolball.Web.Competitions
                 await _seasonRepository.UpdateSeason(season, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the season actions page that led here
-                return Redirect(season.SeasonRoute + "/edit");
+                return Redirect(beforeUpdate.SeasonRoute + "/edit");
             }
 
             var viewModel = new SeasonViewModel(CurrentPage)
             {
-                Season = season,
+                Season = beforeUpdate,
                 IsAuthorized = isAuthorized
             };
-            viewModel.Metadata.PageTitle = $"Edit {season.SeasonFullNameAndPlayerType()}";
+            viewModel.Metadata.PageTitle = $"Edit {beforeUpdate.SeasonFullNameAndPlayerType()}";
             return View("EditSeason", viewModel);
         }
     }
