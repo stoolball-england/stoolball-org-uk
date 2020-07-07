@@ -2,10 +2,12 @@
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Email;
+using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Competitions;
 using System;
+using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -20,7 +22,7 @@ using Xunit;
 
 namespace Stoolball.Web.Tests.Competitions
 {
-    public class SeasonTableControllerTests : UmbracoBaseTest
+    public class SeasonResultsControllerTests : UmbracoBaseTest
     {
         private class TestController : SeasonResultsController
         {
@@ -73,8 +75,9 @@ namespace Stoolball.Web.Tests.Competitions
             }
         }
 
+
         [Fact]
-        public async Task Route_matching_season_returns_SeasonViewModel()
+        public async Task Route_matching_season_without_results_returns_404()
         {
             var dataSource = new Mock<ISeasonDataSource>();
             dataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season { Competition = new Competition { CompetitionName = "Example" } });
@@ -83,8 +86,65 @@ namespace Stoolball.Web.Tests.Competitions
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
+                Assert.IsType<HttpNotFoundResult>(result);
+            }
+        }
+
+        [Fact]
+        public async Task Route_matching_season_with_friendly_matches_returns_404()
+        {
+            var dataSource = new Mock<ISeasonDataSource>();
+            dataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season
+            {
+                Competition = new Competition { CompetitionName = "Example" },
+                MatchTypes = new List<MatchType>() { MatchType.FriendlyMatch }
+            });
+
+            using (var controller = new TestController(dataSource.Object))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                Assert.IsType<HttpNotFoundResult>(result);
+            }
+        }
+
+        [Fact]
+        public async Task Route_matching_season_with_results_returns_SeasonViewModel()
+        {
+            var dataSource = new Mock<ISeasonDataSource>();
+            dataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season
+            {
+                SeasonId = Guid.NewGuid(),
+                Competition = new Competition { CompetitionName = "Example" },
+                Results = "Example"
+            });
+
+            using (var controller = new TestController(dataSource.Object))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
                 Assert.IsType<SeasonViewModel>(((ViewResult)result).Model);
             }
         }
+
+        [Fact]
+        public async Task Route_matching_season_with_league_matches_returns_SeasonViewModel()
+        {
+            var dataSource = new Mock<ISeasonDataSource>();
+            dataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season
+            {
+                SeasonId = Guid.NewGuid(),
+                Competition = new Competition { CompetitionName = "Example" },
+                MatchTypes = new List<MatchType>() { MatchType.LeagueMatch }
+            });
+
+            using (var controller = new TestController(dataSource.Object))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                Assert.IsType<SeasonViewModel>(((ViewResult)result).Model);
+            }
+        }
+
     }
 }
