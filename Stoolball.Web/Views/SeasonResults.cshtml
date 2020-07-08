@@ -103,7 +103,7 @@
                             if (match.MatchType != MatchType.LeagueMatch) { continue; }
 
                             // Discount postponed matches
-                            if (match.MatchResultType == MatchResultType.Postponed) { continue; }
+                            if (match.MatchResultType == MatchResultType.Postponed || match.MatchResultType == MatchResultType.AbandonedDuringPlayAndPostponed) { continue; }
 
                             // Discount matches where a team has withdrawn from the league
                             if (homeTeamId.HasValue && withdrawnTeams.Any(x => x.Team.TeamId == homeTeamId)) { continue; }

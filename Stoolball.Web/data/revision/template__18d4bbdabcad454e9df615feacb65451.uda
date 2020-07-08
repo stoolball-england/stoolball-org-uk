@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/editSeasonPoints.cshtml",
+  "Master": null,
+  "Udi": "umb://template/18d4bbdabcad454e9df615feacb65451",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/editSeasonPoints.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Edit Season Points",
+  "Alias": "editSeasonPoints",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.4.4"
+}

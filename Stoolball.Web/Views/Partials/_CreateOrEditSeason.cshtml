@@ -1,5 +1,6 @@
 ﻿@model SeasonViewModel
 @using Humanizer
+@using Stoolball.Competitions
 @using Stoolball.Matches
 @using Stoolball.Web.Competitions
 
@@ -13,17 +14,15 @@
 <fieldset class="form-group">
     <legend>What matches can be listed?</legend>
     <div class="custom-control custom-checkbox">
-        @*<input type="checkbox" name="Season.MatchTypes" value="" class="custom-control-input" id="match-type-tournament" checked="" />
-        <label for="match-type-tournament" class="custom-control-label">Tournament</label>*@
         @Html.CheckBoxFor(m => Model.Season.EnableTournaments, new { @class = "custom-control-input" })
         @Html.LabelFor(m => Model.Season.EnableTournaments, "Tournament", new { @class = "custom-control-label" })
     </div>
-    @{ 
+    @{
         // MVC always includes the checked attribute for this one, so build the attribute manually (possibly to do with the enum == 0?)
         var leagueChecked = Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) ? " checked=\"checked\"" : string.Empty;
     }
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" name="Season.MatchTypes" value="@MatchType.LeagueMatch" class="custom-control-input" id= "match-type-league"@leagueChecked />
+        <input type="checkbox" name="Season.MatchTypes" value="@MatchType.LeagueMatch" class="custom-control-input" id="match-type-league" @leagueChecked />
         <label for="match-type-league" class="custom-control-label">@MatchType.LeagueMatch.ToString().Humanize(LetterCasing.Sentence)</label>
     </div>
     <div class="custom-control custom-checkbox">
@@ -39,5 +38,39 @@
         <label for="match-type-practice" class="custom-control-label">@MatchType.Practice.ToString().Humanize(LetterCasing.Sentence)</label>
     </div>
 </fieldset>
+
+<fieldset class="form-group">
+    <legend>Results table</legend>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.Season.ResultsTableType, ResultsTableType.None, new { @class = "custom-control-input", @id = ResultsTableType.None.ToString() })
+        <label for="@ResultsTableType.None.ToString()" class="custom-control-label">@ResultsTableType.None.ToString()</label>
+    </div>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.Season.ResultsTableType, ResultsTableType.LeagueTable, new { @class = "custom-control-input", @id = ResultsTableType.LeagueTable.ToString() })
+        <label for="@ResultsTableType.LeagueTable.ToString()" class="custom-control-label">@ResultsTableType.LeagueTable.ToString().Humanize() (sorted by league points)</label>
+    </div>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.Season.ResultsTableType, ResultsTableType.NonLeagueResultsTable, new { @class = "custom-control-input", @id = ResultsTableType.NonLeagueResultsTable.ToString() })
+        <label for="@ResultsTableType.NonLeagueResultsTable.ToString()" class="custom-control-label">@ResultsTableType.NonLeagueResultsTable.ToString().Humanize() (no points, sorted alphabetically)</label>
+    </div>
+    @Html.ValidationMessageFor(m => Model.Season.ResultsTableType, null, new { id = "table-type-validation" })
+
+    <div class="form-group custom-control custom-checkbox">
+        @Html.CheckBoxFor(m => Model.Season.EnableRunsScored, new { @class = "custom-control-input" })
+        @Html.LabelFor(m => Model.Season.EnableRunsScored, "Show runs scored", new { @class = "custom-control-label" })
+    </div>
+
+    <div class="form-group custom-control custom-checkbox">
+        @Html.CheckBoxFor(m => Model.Season.EnableRunsConceded, new { @class = "custom-control-input" })
+        @Html.LabelFor(m => Model.Season.EnableRunsConceded, "Show runs conceded", new { @class = "custom-control-label" })
+    </div>
+</fieldset>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.Season.Results)
+    <p class="form-text" id="results-help"><small>For example, say who won if scorecards were not added, or how a tie was resolved in a league.</small></p>
+    @Html.TextAreaFor(m => Model.Season.Results, new { @class = "form-control", aria_describedby = "results-validation results-help" })
+    @Html.ValidationMessageFor(m => Model.Season.Results, null, new { id = "results-validation" })
+</div>
 
 <button class="btn btn-primary">Save season</button>

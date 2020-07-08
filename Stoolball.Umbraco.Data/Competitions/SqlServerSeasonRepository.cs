@@ -71,6 +71,7 @@ namespace Stoolball.Umbraco.Data.Competitions
             {
                 season.SeasonId = Guid.NewGuid();
                 season.Introduction = _htmlSanitiser.Sanitize(season.Introduction);
+                season.Results = _htmlSanitiser.Sanitize(season.Results);
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
@@ -84,8 +85,11 @@ namespace Stoolball.Umbraco.Data.Competitions
                         }
 
                         await connection.ExecuteAsync(
-                            $@"INSERT INTO {Tables.Season} (SeasonId, CompetitionId, FromYear, UntilYear, Introduction, EnableTournaments, ResultsTableType, EnableRunsScored, EnableRunsConceded, SeasonRoute) 
-                                VALUES (@SeasonId, @CompetitionId, @FromYear, @UntilYear, @Introduction, @EnableTournaments, @ResultsTableType, @EnableRunsScored, @EnableRunsConceded, @SeasonRoute)",
+                            $@"INSERT INTO {Tables.Season} (SeasonId, CompetitionId, FromYear, UntilYear, Introduction, EnableTournaments, 
+                                ResultsTableType, EnableRunsScored, EnableRunsConceded, Results, SeasonRoute) 
+                                VALUES 
+                                (@SeasonId, @CompetitionId, @FromYear, @UntilYear, @Introduction, @EnableTournaments, 
+                                @ResultsTableType, @EnableRunsScored, @EnableRunsConceded, @Results, @SeasonRoute)",
                             new
                             {
                                 season.SeasonId,
@@ -97,6 +101,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                                 ResultsTableType = season.ResultsTableType.ToString(),
                                 season.EnableRunsScored,
                                 season.EnableRunsConceded,
+                                season.Results,
                                 season.SeasonRoute
                             }, transaction).ConfigureAwait(false);
 
@@ -227,6 +232,7 @@ namespace Stoolball.Umbraco.Data.Competitions
             try
             {
                 season.Introduction = _htmlSanitiser.Sanitize(season.Introduction);
+                season.Results = _htmlSanitiser.Sanitize(season.Results);
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
@@ -237,12 +243,20 @@ namespace Stoolball.Umbraco.Data.Competitions
                         await connection.ExecuteAsync(
                             $@"UPDATE {Tables.Season} SET
                                 Introduction = @Introduction,
-                                EnableTournaments = @EnableTournaments
+                                EnableTournaments = @EnableTournaments,
+                                ResultsTableType = @ResultsTableType,
+                                EnableRunsScored = @EnableRunsScored,
+                                EnableRunsConceded = @EnableRunsConceded,
+                                Results = @Results
 						        WHERE SeasonId = @SeasonId",
                             new
                             {
                                 season.Introduction,
                                 season.EnableTournaments,
+                                ResultsTableType = season.ResultsTableType.ToString(),
+                                season.EnableRunsScored,
+                                season.EnableRunsConceded,
+                                season.Results,
                                 season.SeasonId
                             }, transaction).ConfigureAwait(false);
 
@@ -295,9 +309,9 @@ namespace Stoolball.Umbraco.Data.Competitions
         }
 
         /// <summary>
-        /// Updates results settings for a stoolball season
+        /// Updates league points settings for a stoolball season
         /// </summary>
-        public async Task<Season> UpdateSeasonResults(Season season, Guid memberKey, string memberName)
+        public async Task<Season> UpdateSeasonPoints(Season season, Guid memberKey, string memberName)
         {
             if (season is null)
             {
@@ -318,23 +332,6 @@ namespace Stoolball.Umbraco.Data.Competitions
                     connection.Open();
                     using (var transaction = connection.BeginTransaction())
                     {
-
-                        await connection.ExecuteAsync(
-                            $@"UPDATE {Tables.Season} SET
-                                Results = @Results,
-                                ResultsTableType = @ResultsTableType,
-                                EnableRunsScored = @EnableRunsScored,
-                                EnableRunsConceded = @EnableRunsConceded
-						        WHERE SeasonId = @SeasonId",
-                            new
-                            {
-                                season.Results,
-                                ResultsTableType = season.ResultsTableType.ToString(),
-                                season.EnableRunsScored,
-                                season.EnableRunsConceded,
-                                season.SeasonId
-                            }, transaction).ConfigureAwait(false);
-
                         foreach (var rule in season.PointsRules)
                         {
                             await connection.ExecuteAsync($@"UPDATE {Tables.SeasonPointsRule} SET 

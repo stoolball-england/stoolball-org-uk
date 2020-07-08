@@ -3,9 +3,9 @@
   "AllowedTemplates": [
     "umb://template/007d4a7a068f4dd8b8a693271d5bb5f4",
     "umb://template/07aa3f0c6fc24d2fa2473da20ad9b400",
+    "umb://template/18d4bbdabcad454e9df615feacb65451",
     "umb://template/19b067bfa44940cc94c9709af58fedc3",
     "umb://template/1c17d796ea8b4a8888fc6a3b082749b3",
-    "umb://template/325bed4379564da49b9f4afbeb84fca0",
     "umb://template/3665664f1024441fb4dd184d3e2eb7d7",
     "umb://template/399d14d2ca3d42f790bb53c42bc79c73",
     "umb://template/3dbb05ec3f9d4c8097cd4dc4ac593d00",
@@ -73,17 +73,17 @@
       "Mode": 0
     },
     {
+      "Udi": "umb://template/18d4bbdabcad454e9df615feacb65451",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
       "Udi": "umb://template/19b067bfa44940cc94c9709af58fedc3",
       "Ordering": true,
       "Mode": 0
     },
     {
       "Udi": "umb://template/1c17d796ea8b4a8888fc6a3b082749b3",
-      "Ordering": true,
-      "Mode": 0
-    },
-    {
-      "Udi": "umb://template/325bed4379564da49b9f4afbeb84fca0",
       "Ordering": true,
       "Mode": 0
     },

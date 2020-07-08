@@ -30,7 +30,7 @@
         SeasonResults,
         CreateSeason,
         EditSeason,
-        EditSeasonResults,
+        EditSeasonPoints,
         DeleteSeason,
         Competition,
         CompetitionActions,

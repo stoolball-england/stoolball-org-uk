@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Stoolball.Web.Tests.Competitions
 {
-    public class EditSeasonResultsControllerTests : UmbracoBaseTest
+    public class EditSeasonPointsControllerTests : UmbracoBaseTest
     {
         private class TestController : EditSeasonResultsController
         {
@@ -46,7 +46,7 @@ namespace Stoolball.Web.Tests.Competitions
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("EditSeasonResults", model);
+                return View("EditSeasonPoints", model);
             }
         }
 

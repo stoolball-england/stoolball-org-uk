@@ -35,7 +35,7 @@ namespace Stoolball.Web.Competitions
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
-        public async Task<ActionResult> CreateSeason([Bind(Prefix = "Season", Include = "FromYear,UntilYear,EnableTournaments")] Season season)
+        public async Task<ActionResult> CreateSeason([Bind(Prefix = "Season", Include = "FromYear,UntilYear,EnableTournaments,ResultsTableType,EnableRunsScored,EnableRunsConceded")] Season season)
         {
             if (season is null)
             {
@@ -49,6 +49,7 @@ namespace Stoolball.Web.Competitions
 
             // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
             season.Introduction = Request.Unvalidated.Form["Season.Introduction"];
+            season.Results = Request.Unvalidated.Form["Season.Results"];
 
             try
             {
@@ -61,15 +62,6 @@ namespace Stoolball.Web.Competitions
             }
 
             season.Competition = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false);
-
-            // If there's already at least one season, copy settings from the most recent
-            if (season.Competition.Seasons.Count > 0)
-            {
-                season.EnableTournaments = season.Competition.Seasons[0].EnableTournaments;
-                season.ResultsTableType = season.Competition.Seasons[0].ResultsTableType;
-                season.EnableRunsScored = season.Competition.Seasons[0].EnableRunsScored;
-                season.EnableRunsConceded = season.Competition.Seasons[0].EnableRunsConceded;
-            }
 
             // Ensure there isn't already a season with the submitted year(s)
             if (season.Competition.Seasons.Any(x => x.FromYear == season.FromYear && x.UntilYear == season.UntilYear))

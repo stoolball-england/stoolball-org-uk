@@ -35,7 +35,7 @@ namespace Stoolball.Web.Competitions
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
-        public async Task<ActionResult> UpdateSeason([Bind(Prefix = "Season", Include = "EnableTournaments")] Season season)
+        public async Task<ActionResult> UpdateSeason([Bind(Prefix = "Season", Include = "EnableTournaments,ResultsTableType,EnableRunsScored,EnableRunsConceded")] Season season)
         {
             if (season is null)
             {
@@ -47,6 +47,7 @@ namespace Stoolball.Web.Competitions
             // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
             season.SeasonId = beforeUpdate.SeasonId;
             season.Introduction = Request.Unvalidated.Form["Season.Introduction"];
+            season.Results = Request.Unvalidated.Form["Season.Results"];
 
             try
             {

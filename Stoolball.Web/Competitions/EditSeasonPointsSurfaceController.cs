@@ -14,12 +14,12 @@ using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
-    public class EditSeasonResultsSurfaceController : SurfaceController
+    public class EditSeasonPointsSurfaceController : SurfaceController
     {
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly ISeasonRepository _seasonRepository;
 
-        public EditSeasonResultsSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
+        public EditSeasonPointsSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ISeasonDataSource seasonDataSource,
             ISeasonRepository seasonRepository)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
@@ -31,8 +31,8 @@ namespace Stoolball.Web.Competitions
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
-        public async Task<ActionResult> UpdateSeason([Bind(Prefix = "Season", Include = "ResultsTableType,EnableRunsScored,EnableRunsConceded,PointsRules")] Season season)
+        [ContentSecurityPolicy(Forms = true)]
+        public async Task<ActionResult> UpdateSeason([Bind(Prefix = "Season", Include = "PointsRules")] Season season)
         {
             if (season is null)
             {
@@ -40,10 +40,7 @@ namespace Stoolball.Web.Competitions
             }
 
             var beforeUpdate = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl).ConfigureAwait(false);
-
-            // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
             season.SeasonId = beforeUpdate.SeasonId;
-            season.Results = Request.Unvalidated.Form["Season.Results"];
 
             var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, beforeUpdate.Competition.MemberGroupName }, null);
 
@@ -51,7 +48,7 @@ namespace Stoolball.Web.Competitions
             {
                 // Update the season
                 var currentMember = Members.GetCurrentMember();
-                await _seasonRepository.UpdateSeasonResults(season, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _seasonRepository.UpdateSeasonPoints(season, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the season actions page that led here
                 return Redirect(beforeUpdate.SeasonRoute + "/edit");
@@ -67,7 +64,7 @@ namespace Stoolball.Web.Competitions
             season.UntilYear = beforeUpdate.UntilYear;
             season.SeasonRoute = beforeUpdate.SeasonRoute;
 
-            viewModel.Metadata.PageTitle = $"Edit {beforeUpdate.SeasonFullNameAndPlayerType()} results";
+            viewModel.Metadata.PageTitle = $"Edit points for {beforeUpdate.SeasonFullNameAndPlayerType()}";
             return View("EditSeasonResults", viewModel);
         }
     }

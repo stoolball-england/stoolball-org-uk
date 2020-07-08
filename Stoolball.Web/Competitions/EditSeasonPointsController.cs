@@ -13,11 +13,11 @@ using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
-    public class EditSeasonResultsController : RenderMvcControllerAsync
+    public class EditSeasonPointsController : RenderMvcControllerAsync
     {
         private readonly ISeasonDataSource _seasonDataSource;
 
-        public EditSeasonResultsController(IGlobalSettings globalSettings,
+        public EditSeasonPointsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
@@ -30,7 +30,7 @@ namespace Stoolball.Web.Competitions
         }
 
         [HttpGet]
-        [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
+        [ContentSecurityPolicy(Forms = true)]
         public async override Task<ActionResult> Index(ContentModel contentModel)
         {
             if (contentModel is null)
@@ -54,7 +54,7 @@ namespace Stoolball.Web.Competitions
 
                 model.IsAuthorized = IsAuthorized(model);
 
-                model.Metadata.PageTitle = "Edit " + model.Season.SeasonFullNameAndPlayerType() + " results";
+                model.Metadata.PageTitle = "Edit points for " + model.Season.SeasonFullNameAndPlayerType();
 
                 return CurrentTemplate(model);
             }
