@@ -123,7 +123,7 @@ namespace Stoolball.Umbraco.Data.Matches
                         matchToReturn.MatchInnings = unprocessedInningsWithBatting.GroupBy(x => x.MatchInningsId).Select(inningsRows =>
                         {
                             var innings = inningsRows.First();
-                            innings.PlayerInnings = inningsRows.Select(inningsRow => inningsRow.PlayerInnings.Single()).OfType<PlayerInnings>().ToList();
+                            innings.PlayerInnings = inningsRows.Select(inningsRow => inningsRow.PlayerInnings.SingleOrDefault()).OfType<PlayerInnings>().ToList();
                             return innings;
 
                         }).OrderBy(x => x.InningsOrderInMatch).ToList();
