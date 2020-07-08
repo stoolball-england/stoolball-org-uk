@@ -70,13 +70,14 @@
     <Compile Include="Competitions\DeleteCompetitionControllerTests.cs" />
     <Compile Include="Competitions\CreateSeasonControllerTests.cs" />
     <Compile Include="Competitions\CreateCompetitionControllerTests.cs" />
+    <Compile Include="Competitions\EditSeasonResultsControllerTests.cs" />
     <Compile Include="Competitions\EditSeasonControllerTests.cs" />
     <Compile Include="Competitions\EditCompetitionControllerTests.cs" />
     <Compile Include="Competitions\MatchesForSeasonControllerTests.cs" />
     <Compile Include="Competitions\CompetitionActionsControllerTests.cs" />
     <Compile Include="Competitions\SeasonActionsControllerTests.cs" />
     <Compile Include="Competitions\DeleteSeasonControllerTests.cs" />
-    <Compile Include="Competitions\SeasonTableControllerTests.cs" />
+    <Compile Include="Competitions\SeasonResultsControllerTests.cs" />
     <Compile Include="Matches\DeleteTournamentControllerTests.cs" />
     <Compile Include="Matches\DeleteMatchControllerTests.cs" />
     <Compile Include="Matches\MatchActionsControllerTests.cs" />

@@ -97,7 +97,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var seasons = await connection.QueryAsync<Season, Competition, Season, TeamInSeason, Team, string, Season>(
-                        $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Introduction, s.EnableTournaments, s.EnableResultsTable, s.ResultsTableIsLeagueTable, s.EnableRunsScored, s.EnableRunsConceded, s.Results, s.SeasonRoute,
+                        $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Introduction, s.EnableTournaments, s.ResultsTableType, s.EnableRunsScored, s.EnableRunsConceded, s.Results, s.SeasonRoute,
                             co.CompetitionName, co.PlayerType, co.Introduction, co.UntilYear, co.PublicContactDetails, co.Website, co.CompetitionRoute, co.MemberGroupName,
                             s2.SeasonId, s2.FromYear, s2.UntilYear, s2.SeasonRoute,
                             st.WithdrawnDate,
@@ -182,7 +182,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     return await connection.QueryAsync<PointsRule>(
-                        $@"SELECT pr.MatchResultType, pr.HomePoints, pr.AwayPoints
+                        $@"SELECT pr.SeasonPointsRuleId AS PointsRuleId, pr.MatchResultType, pr.HomePoints, pr.AwayPoints
                             FROM {Tables.SeasonPointsRule} AS pr 
                             WHERE pr.SeasonId = @SeasonId",
                         new { SeasonId = seasonId }).ConfigureAwait(false);

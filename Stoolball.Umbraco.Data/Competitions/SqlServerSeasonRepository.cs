@@ -3,6 +3,7 @@ using Ganss.XSS;
 using Newtonsoft.Json;
 using Stoolball.Audit;
 using Stoolball.Competitions;
+using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
@@ -83,8 +84,8 @@ namespace Stoolball.Umbraco.Data.Competitions
                         }
 
                         await connection.ExecuteAsync(
-                            $@"INSERT INTO {Tables.Season} (SeasonId, CompetitionId, FromYear, UntilYear, Introduction, EnableTournaments, EnableResultsTable, ResultsTableIsLeagueTable, EnableRunsScored, EnableRunsConceded, SeasonRoute) 
-                                VALUES (@SeasonId, @CompetitionId, @FromYear, @UntilYear, @Introduction, @EnableTournaments, @EnableResultsTable, @ResultsTableIsLeagueTable, @EnableRunsScored, @EnableRunsConceded, @SeasonRoute)",
+                            $@"INSERT INTO {Tables.Season} (SeasonId, CompetitionId, FromYear, UntilYear, Introduction, EnableTournaments, ResultsTableType, EnableRunsScored, EnableRunsConceded, SeasonRoute) 
+                                VALUES (@SeasonId, @CompetitionId, @FromYear, @UntilYear, @Introduction, @EnableTournaments, @ResultsTableType, @EnableRunsScored, @EnableRunsConceded, @SeasonRoute)",
                             new
                             {
                                 season.SeasonId,
@@ -93,8 +94,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                                 season.UntilYear,
                                 season.Introduction,
                                 season.EnableTournaments,
-                                season.EnableResultsTable,
-                                season.ResultsTableIsLeagueTable,
+                                ResultsTableType = season.ResultsTableType.ToString(),
                                 season.EnableRunsScored,
                                 season.EnableRunsConceded,
                                 season.SeasonRoute
@@ -114,7 +114,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                         }
 
                         // Copy points rules from the most recent season
-                        var pointsRules = await connection.QueryAsync<PointsRule>(
+                        var pointsRules = (await connection.QueryAsync<PointsRule>(
                             $@"SELECT MatchResultType, HomePoints, AwayPoints FROM { Tables.SeasonPointsRule } WHERE SeasonId = 
                                 (
                                     SELECT TOP 1 SeasonId FROM StoolballSeason WHERE CompetitionId = @CompetitionId AND FromYear < @FromYear ORDER BY FromYear DESC
@@ -124,7 +124,21 @@ namespace Stoolball.Umbraco.Data.Competitions
                                     season.Competition.CompetitionId,
                                     season.FromYear
                                 },
-                                transaction).ConfigureAwait(false);
+                                transaction).ConfigureAwait(false)).ToList();
+
+                        // If there are none, start with some default points rules
+                        if (pointsRules.Count == 0)
+                        {
+                            pointsRules.AddRange(new PointsRule[] {
+                                new PointsRule{ MatchResultType = MatchResultType.HomeWin, HomePoints = 2, AwayPoints = 0 },
+                                new PointsRule{ MatchResultType = MatchResultType.AwayWin, HomePoints = 0, AwayPoints = 2 },
+                                new PointsRule{ MatchResultType = MatchResultType.HomeWinByForfeit, HomePoints = 2, AwayPoints = 0 },
+                                new PointsRule{ MatchResultType = MatchResultType.AwayWinByForfeit, HomePoints = 0, AwayPoints = 2 },
+                                new PointsRule{ MatchResultType = MatchResultType.Tie, HomePoints = 1, AwayPoints = 1 },
+                                new PointsRule{ MatchResultType = MatchResultType.Cancelled, HomePoints = 1, AwayPoints = 1 },
+                                new PointsRule{ MatchResultType = MatchResultType.AbandonedDuringPlayAndCancelled, HomePoints = 1, AwayPoints = 1 }
+                            });
+                        }
 
                         foreach (var pointsRule in pointsRules)
                         {
@@ -255,6 +269,85 @@ namespace Stoolball.Umbraco.Data.Competitions
                                             MatchType = matchType.ToString()
                                         }, transaction).ConfigureAwait(false);
                             }
+                        }
+
+                        transaction.Commit();
+                    }
+                }
+
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Update,
+                    MemberKey = memberKey,
+                    ActorName = memberName,
+                    EntityUri = season.EntityUri,
+                    State = JsonConvert.SerializeObject(season),
+                    AuditDate = DateTime.UtcNow
+                }).ConfigureAwait(false);
+
+            }
+            catch (SqlException ex)
+            {
+                _logger.Error(typeof(SqlServerSeasonRepository), ex);
+            }
+
+            return season;
+        }
+
+        /// <summary>
+        /// Updates results settings for a stoolball season
+        /// </summary>
+        public async Task<Season> UpdateSeasonResults(Season season, Guid memberKey, string memberName)
+        {
+            if (season is null)
+            {
+                throw new ArgumentNullException(nameof(season));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            try
+            {
+                season.Results = _htmlSanitiser.Sanitize(season.Results);
+
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+
+                        await connection.ExecuteAsync(
+                            $@"UPDATE {Tables.Season} SET
+                                Results = @Results,
+                                ResultsTableType = @ResultsTableType,
+                                EnableRunsScored = @EnableRunsScored,
+                                EnableRunsConceded = @EnableRunsConceded
+						        WHERE SeasonId = @SeasonId",
+                            new
+                            {
+                                season.Results,
+                                ResultsTableType = season.ResultsTableType.ToString(),
+                                season.EnableRunsScored,
+                                season.EnableRunsConceded,
+                                season.SeasonId
+                            }, transaction).ConfigureAwait(false);
+
+                        foreach (var rule in season.PointsRules)
+                        {
+                            await connection.ExecuteAsync($@"UPDATE {Tables.SeasonPointsRule} SET 
+                                    HomePoints = @HomePoints, 
+                                    AwayPoints = @AwayPoints 
+                                    WHERE SeasonPointsRuleId = @PointsRuleId",
+                                    new
+                                    {
+                                        rule.HomePoints,
+                                        rule.AwayPoints,
+                                        rule.PointsRuleId
+                                    },
+                                    transaction).ConfigureAwait(false);
                         }
 
                         transaction.Commit();

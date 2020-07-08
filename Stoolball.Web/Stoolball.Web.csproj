@@ -972,6 +972,8 @@
     <Compile Include="Competitions\CompetitionController.cs" />
     <Compile Include="Competitions\DeleteCompetitionSurfaceController.cs" />
     <Compile Include="Competitions\DeleteSeasonSurfaceController.cs" />
+    <Compile Include="Competitions\EditSeasonResultsController.cs" />
+    <Compile Include="Competitions\EditSeasonResultsSurfaceController.cs" />
     <Compile Include="Competitions\EditSeasonSurfaceController.cs" />
     <Compile Include="Competitions\CreateSeasonSurfaceController.cs" />
     <Compile Include="Competitions\CreateSeasonController.cs" />
@@ -1211,6 +1213,7 @@
     <Content Include="Views\DeleteMatch.cshtml" />
     <Content Include="Views\DeleteTournament.cshtml" />
     <Content Include="Views\SeasonResults.cshtml" />
+    <Content Include="Views\EditSeasonResults.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

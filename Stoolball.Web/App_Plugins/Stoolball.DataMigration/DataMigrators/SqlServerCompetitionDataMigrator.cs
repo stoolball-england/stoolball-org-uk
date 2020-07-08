@@ -1,9 +1,11 @@
 ﻿using Stoolball.Competitions;
+using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
@@ -222,10 +224,40 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 MigratedPointsAdjustments = season.MigratedPointsAdjustments,
                 Results = season.Results,
                 EnableTournaments = season.EnableTournaments,
-                EnableResultsTable = season.EnableResultsTable,
+                ResultsTableType = season.ResultsTableType,
                 EnableRunsScored = season.EnableRunsScored,
                 EnableRunsConceded = season.EnableRunsConceded
             };
+
+            // create some default points rules to ensure all seasons have them
+            if (migratedSeason.PointsRules.SingleOrDefault(x => x.MatchResultType == MatchResultType.HomeWin) == null)
+            {
+                migratedSeason.PointsRules.Add(new PointsRule { MatchResultType = MatchResultType.HomeWin, HomePoints = 2, AwayPoints = 0 });
+            }
+            if (migratedSeason.PointsRules.SingleOrDefault(x => x.MatchResultType == MatchResultType.AwayWin) == null)
+            {
+                migratedSeason.PointsRules.Add(new PointsRule { MatchResultType = MatchResultType.AwayWin, HomePoints = 0, AwayPoints = 2 });
+            }
+            if (migratedSeason.PointsRules.SingleOrDefault(x => x.MatchResultType == MatchResultType.HomeWinByForfeit) == null)
+            {
+                migratedSeason.PointsRules.Add(new PointsRule { MatchResultType = MatchResultType.HomeWinByForfeit, HomePoints = 2, AwayPoints = 0 });
+            }
+            if (migratedSeason.PointsRules.SingleOrDefault(x => x.MatchResultType == MatchResultType.AwayWinByForfeit) == null)
+            {
+                migratedSeason.PointsRules.Add(new PointsRule { MatchResultType = MatchResultType.AwayWinByForfeit, HomePoints = 0, AwayPoints = 2 });
+            }
+            if (migratedSeason.PointsRules.SingleOrDefault(x => x.MatchResultType == MatchResultType.Tie) == null)
+            {
+                migratedSeason.PointsRules.Add(new PointsRule { MatchResultType = MatchResultType.Tie, HomePoints = 1, AwayPoints = 1 });
+            }
+            if (migratedSeason.PointsRules.SingleOrDefault(x => x.MatchResultType == MatchResultType.Cancelled) == null)
+            {
+                migratedSeason.PointsRules.Add(new PointsRule { MatchResultType = MatchResultType.Cancelled, HomePoints = 1, AwayPoints = 1 });
+            }
+            if (migratedSeason.PointsRules.SingleOrDefault(x => x.MatchResultType == MatchResultType.AbandonedDuringPlayAndCancelled) == null)
+            {
+                migratedSeason.PointsRules.Add(new PointsRule { MatchResultType = MatchResultType.AbandonedDuringPlayAndCancelled, HomePoints = 1, AwayPoints = 1 });
+            }
 
             using (var scope = _scopeProvider.CreateScope())
             {
@@ -251,8 +283,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
                         await database.ExecuteAsync($@"INSERT INTO {Tables.Season}
 						(SeasonId, MigratedSeasonId, CompetitionId, FromYear, UntilYear, Introduction, 
-						 Results, EnableTournaments, EnableResultsTable, ResultsTableIsLeagueTable, EnableRunsScored, EnableRunsConceded, SeasonRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12)",
+						 Results, EnableTournaments, ResultsTableType, EnableRunsScored, EnableRunsConceded, SeasonRoute)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11)",
                             migratedSeason.SeasonId,
                             migratedSeason.MigratedSeasonId,
                             migratedSeason.MigratedCompetition.CompetitionId,
@@ -261,8 +293,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                             migratedSeason.Introduction,
                             migratedSeason.Results,
                             migratedSeason.EnableTournaments,
-                            migratedSeason.EnableResultsTable,
-                            true,
+                            migratedSeason.ResultsTableType.ToString(),
                             migratedSeason.EnableRunsScored,
                             migratedSeason.EnableRunsConceded,
                             migratedSeason.SeasonRoute).ConfigureAwait(false);
@@ -276,6 +307,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                                 migratedSeason.SeasonId,
                                 teamId,
                                 teamInSeason.WithdrawnDate
+
                                 ).ConfigureAwait(false);
                         }
                         foreach (var matchType in migratedSeason.MatchTypes)
@@ -311,6 +343,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                                 teamId,
                                 point.Points,
                                 point.Reason
+
                                 ).ConfigureAwait(false);
                         }
                         transaction.Complete();

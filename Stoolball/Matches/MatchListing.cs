@@ -49,7 +49,8 @@ namespace Stoolball.Matches
         /// </summary>
         public bool IsNoResult()
         {
-            if (MatchResultType == Matches.MatchResultType.Adandoned) return true;
+            if (MatchResultType == Matches.MatchResultType.AbandonedDuringPlayAndCancelled) return true;
+            if (MatchResultType == Matches.MatchResultType.AbandonedDuringPlayAndPostponed) return true;
             if (MatchResultType == Matches.MatchResultType.Cancelled) return true;
             if (MatchResultType == Matches.MatchResultType.Postponed) return true;
             return false;

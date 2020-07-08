@@ -74,11 +74,11 @@ namespace Stoolball.Competitions
         public List<PointsRule> PointsRules { get; internal set; } = new List<PointsRule>();
         public List<PointsAdjustment> PointsAdjustments { get; internal set; } = new List<PointsAdjustment>();
 
+        [Display(Name = "Results commentary")]
         public string Results { get; set; }
 
-        public bool EnableResultsTable { get; set; }
-
-        public bool ResultsTableIsLeagueTable { get; set; }
+        [Display(Name = "results table type")]
+        public ResultsTableType ResultsTableType { get; set; }
 
         public bool EnableRunsScored { get; set; }
 

@@ -8,7 +8,7 @@
     <meta name="robots" content="noindex,follow" />
 }
 
-<h1>Edit @Model.Season.SeasonFullNameAndPlayerType()</h1>
+<h1>Edit @Model.Season.SeasonFullName()</h1>
 
 <ul class="nav nav-tabs">
     <li class="nav-item">
@@ -36,6 +36,8 @@
     <h2>Settings for the @Model.Season.SeasonName()</h2>
     <dt><a href="@Model.Season.SeasonRoute/edit/season">Edit the @Model.Season.SeasonName()</a></dt>
     <dd>Set the introduction, and the types of match played.</dd>
+    <dt><a href="@Model.Season.SeasonRoute/edit/results">Edit the @Model.Season.SeasonName() results</a></dt>
+    <dd>Configure a results table, or note which team won the season.</dd>
     if (Model.IsAdministrator)
     {
         <dt><a href="@Model.Season.SeasonRoute/delete">Delete the @Model.Season.SeasonName()</a> @Html.Partial("_AdminOnly")</dt>

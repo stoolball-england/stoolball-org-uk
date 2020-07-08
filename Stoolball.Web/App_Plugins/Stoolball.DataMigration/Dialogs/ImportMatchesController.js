@@ -23,6 +23,7 @@ function matchResource() {
       }
 
       const matchTypes = { 0: 0, 2: 0, 3: 1, 4: 2, 5: 3 };
+      const resultTypes = { 1: 0, 2: 1, 3: 4, 5: 8, 6: 2, 7: 3, 8: 6, 9: 5 };
 
       return {
         MigratedMatchId: match.matchId,
@@ -71,7 +72,7 @@ function matchResource() {
           },
         ],
         MatchResultType: match.resultType
-          ? match.resultType - (match.resultType > 3 ? 2 : 1)
+          ? resultTypes[match.resultType]
           : null,
         MatchNotes: match.notes,
       };

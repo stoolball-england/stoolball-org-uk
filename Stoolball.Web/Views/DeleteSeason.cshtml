@@ -1,6 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.DeleteSeasonViewModel>
 @using Humanizer
 @using ClientDependency.Core.Mvc
+@using Stoolball.Competitions
 @using Stoolball.Matches
 @using Stoolball.Web.Competitions
 @{
@@ -17,23 +18,23 @@
 
 @if (!Model.Deleted)
 {
-<ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.Season.SeasonRoute">Summary</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
-    </li>
-    @if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) || !string.IsNullOrEmpty(Model.Season.Results))
-    {
+    <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link" href="@Model.Season.SeasonRoute/results">Results</a>
+            <a class="nav-link" href="@Model.Season.SeasonRoute">Summary</a>
         </li>
-    }
-    <li class="nav-item">
-        <em class="nav-link active">Edit</em>
-    </li>
-</ul>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
+        </li>
+        @if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) || !string.IsNullOrEmpty(Model.Season.Results))
+        {
+            <li class="nav-item">
+                <a class="nav-link" href="@Model.Season.SeasonRoute/results">Results</a>
+            </li>
+        }
+        <li class="nav-item">
+            <em class="nav-link active">Edit</em>
+        </li>
+    </ul>
 }
 
 @if (Model.IsAuthorized)
@@ -42,7 +43,7 @@
     {
         <p>If you delete @Model.Season.SeasonFullName() you will:</p>
         <ul>
-            @if (!string.IsNullOrEmpty(Model.Season.Results) || Model.Season.EnableResultsTable)
+            @if (!string.IsNullOrEmpty(Model.Season.Results) || Model.Season.ResultsTableType != ResultsTableType.None)
             {
                 <li>lose the results of this season</li>
             }
@@ -75,7 +76,7 @@
             @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
             <div class="form-group">
                 @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Season.SeasonFullName()}' into this box:")
-                @Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck="false" })
+                @Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck = "false" })
                 @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
             </div>
 

@@ -21,6 +21,7 @@ function seasonResource() {
       if (season.matchTypes.includes(5)) {
         matchTypes.push(3);
       }
+      const resultTypes = { 1: 0, 2: 1, 3: 4, 5: 8, 6: 2, 7: 3, 8: 6, 9: 5 };
 
       return {
         MigratedSeasonId: season.seasonId,
@@ -44,7 +45,7 @@ function seasonResource() {
         MatchTypes: matchTypes,
         EnableTournaments: season.matchTypes.includes(1),
         PointsRules: season.pointsRules.map((x) => ({
-          MatchResultType: x.resultType - (x.resultType > 3 ? 2 : 1),
+          MatchResultType: resultTypes[x.resultType],
           HomePoints: x.homePoints,
           AwayPoints: x.awayPoints,
         })),
@@ -52,7 +53,7 @@ function seasonResource() {
         UntilYear: season.endYear,
         Introduction: season.introduction,
         Results: season.results,
-        EnableResultsTable: season.showTable,
+        ResultsTableType: season.showTable ? "LeagueTable" : "None",
         EnableRunsScored: season.showRunsScored,
         EnableRunsConceded: season.showRunsConceded,
         SeasonRoute: season.route,

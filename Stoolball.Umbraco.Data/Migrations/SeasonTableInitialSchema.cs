@@ -41,11 +41,8 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(EnableTournaments))]
         public bool EnableTournaments { get; set; }
 
-        [Column(nameof(EnableResultsTable))]
-        public bool EnableResultsTable { get; set; }
-
-        [Column(nameof(ResultsTableIsLeagueTable))]
-        public bool ResultsTableIsLeagueTable { get; set; }
+        [Column(nameof(ResultsTableType))]
+        public string ResultsTableType { get; set; }
 
         [Column(nameof(EnableRunsScored))]
         public bool EnableRunsScored { get; set; }

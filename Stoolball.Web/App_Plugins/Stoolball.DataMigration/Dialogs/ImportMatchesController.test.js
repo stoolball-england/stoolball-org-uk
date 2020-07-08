@@ -280,43 +280,43 @@ describe("matchReducer", () => {
   });
 });
 describe("matchReducer", () => {
-  it("should translate resultType = 3 to MatchResultType = 2", () => {
+  it("should translate resultType = 3 to MatchResultType = 4", () => {
     const objectUnderTest = matchResource();
     const result = objectUnderTest.matchReducer({
       resultType: 3,
-    });
-
-    expect(result.MatchResultType).toBe(2);
-  });
-});
-describe("matchReducer", () => {
-  it("should translate resultType = 5 to MatchResultType = 3", () => {
-    const objectUnderTest = matchResource();
-    const result = objectUnderTest.matchReducer({
-      resultType: 5,
-    });
-
-    expect(result.MatchResultType).toBe(3);
-  });
-});
-describe("matchReducer", () => {
-  it("should translate resultType = 6 to MatchResultType = 4", () => {
-    const objectUnderTest = matchResource();
-    const result = objectUnderTest.matchReducer({
-      resultType: 6,
     });
 
     expect(result.MatchResultType).toBe(4);
   });
 });
 describe("matchReducer", () => {
-  it("should translate resultType = 7 to MatchResultType = 5", () => {
+  it("should translate resultType = 5 to MatchResultType = 8", () => {
+    const objectUnderTest = matchResource();
+    const result = objectUnderTest.matchReducer({
+      resultType: 5,
+    });
+
+    expect(result.MatchResultType).toBe(8);
+  });
+});
+describe("matchReducer", () => {
+  it("should translate resultType = 6 to MatchResultType = 2", () => {
+    const objectUnderTest = matchResource();
+    const result = objectUnderTest.matchReducer({
+      resultType: 6,
+    });
+
+    expect(result.MatchResultType).toBe(2);
+  });
+});
+describe("matchReducer", () => {
+  it("should translate resultType = 7 to MatchResultType = 3", () => {
     const objectUnderTest = matchResource();
     const result = objectUnderTest.matchReducer({
       resultType: 7,
     });
 
-    expect(result.MatchResultType).toBe(5);
+    expect(result.MatchResultType).toBe(3);
   });
 });
 describe("matchReducer", () => {
@@ -330,13 +330,13 @@ describe("matchReducer", () => {
   });
 });
 describe("matchReducer", () => {
-  it("should translate resultType = 9 to MatchResultType = 7", () => {
+  it("should translate resultType = 9 to MatchResultType = 5", () => {
     const objectUnderTest = matchResource();
     const result = objectUnderTest.matchReducer({
       resultType: 9,
     });
 
-    expect(result.MatchResultType).toBe(7);
+    expect(result.MatchResultType).toBe(5);
   });
 });
 

@@ -66,8 +66,7 @@ namespace Stoolball.Web.Competitions
             if (season.Competition.Seasons.Count > 0)
             {
                 season.EnableTournaments = season.Competition.Seasons[0].EnableTournaments;
-                season.EnableResultsTable = season.Competition.Seasons[0].EnableResultsTable;
-                season.ResultsTableIsLeagueTable = season.Competition.Seasons[0].ResultsTableIsLeagueTable;
+                season.ResultsTableType = season.Competition.Seasons[0].ResultsTableType;
                 season.EnableRunsScored = season.Competition.Seasons[0].EnableRunsScored;
                 season.EnableRunsConceded = season.Competition.Seasons[0].EnableRunsConceded;
             }
