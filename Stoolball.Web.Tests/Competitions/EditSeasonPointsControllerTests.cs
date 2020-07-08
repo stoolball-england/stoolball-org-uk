@@ -19,7 +19,7 @@ namespace Stoolball.Web.Tests.Competitions
 {
     public class EditSeasonPointsControllerTests : UmbracoBaseTest
     {
-        private class TestController : EditSeasonResultsController
+        private class TestController : EditSeasonPointsController
         {
             public TestController(ISeasonDataSource seasonDataSource)
            : base(
@@ -68,7 +68,7 @@ namespace Stoolball.Web.Tests.Competitions
         public async Task Route_matching_season_returns_SeasonViewModel()
         {
             var dataSource = new Mock<ISeasonDataSource>();
-            dataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season());
+            dataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season { SeasonId = Guid.NewGuid() });
 
             using (var controller = new TestController(dataSource.Object))
             {
