@@ -91,13 +91,13 @@ namespace Stoolball.Web.Tests.Competitions
         }
 
         [Fact]
-        public async Task Route_matching_season_with_friendly_matches_returns_404()
+        public async Task Route_matching_season_with_practice_matches_returns_404()
         {
             var dataSource = new Mock<ISeasonDataSource>();
             dataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season
             {
                 Competition = new Competition { CompetitionName = "Example" },
-                MatchTypes = new List<MatchType>() { MatchType.FriendlyMatch }
+                MatchTypes = new List<MatchType>() { MatchType.Practice }
             });
 
             using (var controller = new TestController(dataSource.Object))

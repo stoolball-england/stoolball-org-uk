@@ -19,7 +19,10 @@
     <li class="nav-item">
         <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
     </li>
-    @if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) || !string.IsNullOrEmpty(Model.Season.Results))
+    @if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) || 
+        Model.Season.MatchTypes.Contains(MatchType.KnockoutMatch) || 
+        Model.Season.MatchTypes.Contains(MatchType.FriendlyMatch) || 
+        !string.IsNullOrEmpty(Model.Season.Results))
     {
         <li class="nav-item">
             <a class="nav-link" href="@Model.Season.SeasonRoute/results">Results</a>

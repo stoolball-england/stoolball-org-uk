@@ -60,7 +60,10 @@ namespace Stoolball.Web.Competitions
                 Season = await _seasonDataSource.ReadSeasonByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false)
             };
 
-            if (model.Season == null || (!model.Season.MatchTypes.Contains(MatchType.LeagueMatch) && string.IsNullOrEmpty(model.Season.Results)))
+            if (model.Season == null || (!model.Season.MatchTypes.Contains(MatchType.LeagueMatch) &&
+                !model.Season.MatchTypes.Contains(MatchType.KnockoutMatch) &&
+                !model.Season.MatchTypes.Contains(MatchType.FriendlyMatch) &&
+                string.IsNullOrEmpty(model.Season.Results)))
             {
                 return new HttpNotFoundResult();
             }

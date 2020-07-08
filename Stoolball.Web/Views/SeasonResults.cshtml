@@ -39,24 +39,13 @@
     var noResults = true;
     if (Model.Season.Teams.Count > 0)
     {
-        // Check whether there's at least one league match to show a league table for
-        var hasLeagueMatch = false;
-        foreach (var match in Model.Matches.Matches)
-        {
-            if (match.MatchType == MatchType.LeagueMatch)
-            {
-                hasLeagueMatch = true;
-                break;
-            }
-        }
-
-        if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable && hasLeagueMatch)
+        if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable || Model.Season.ResultsTableType == ResultsTableType.NonLeagueResultsTable)
         {
             var matchesAwaitingResults = new MatchListingViewModel { DateTimeFormatter = Model.Matches.DateTimeFormatter };
             var withdrawnTeams = Model.Season.Teams.Where(x => x.WithdrawnDate.HasValue);
             var columns = 7;
             <table class="table table-as-cards">
-                <caption>League table for the @Model.Season.SeasonName()</caption>
+                <caption>@(Model.Season.ResultsTableType == ResultsTableType.LeagueTable ? "League" : "Results") table for the @Model.Season.SeasonName()</caption>
                 <thead>
                     <tr>
                         <th scope="col">Team</th>
@@ -67,15 +56,18 @@
                         <th scope="col">No result</th>
                         @if (Model.Season.EnableRunsScored)
                         {
-                            columns++;
+                columns++;
                             <th>Runs scored</th>
                         }
-                        @if (Model.Season.EnableRunsConceded)
-                        {
-                            columns++;
+            @if (Model.Season.EnableRunsConceded)
+            {
+                columns++;
                             <th>Runs conceded</th>
                         }
+            @if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
+            {
                         <th>Points</th>
+            }
                     </tr>
                 </thead>
                 <tbody>
@@ -100,12 +92,12 @@
                             if (match.StartTime >= DateTime.UtcNow) { break; }
 
                             // Discount non-league matches
-                            if (match.MatchType != MatchType.LeagueMatch) { continue; }
+                            if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable && match.MatchType != MatchType.LeagueMatch) { continue; }
 
                             // Discount postponed matches
                             if (match.MatchResultType == MatchResultType.Postponed || match.MatchResultType == MatchResultType.AbandonedDuringPlayAndPostponed) { continue; }
 
-                            // Discount matches where a team has withdrawn from the league
+                            // Discount matches where a team has withdrawn from the season
                             if (homeTeamId.HasValue && withdrawnTeams.Any(x => x.Team.TeamId == homeTeamId)) { continue; }
                             if (awayTeamId.HasValue && withdrawnTeams.Any(x => x.Team.TeamId == awayTeamId)) { continue; }
 
@@ -126,7 +118,10 @@
                                 else if (match.IsNoResult()) { rows[homeTeamId.Value].NoResult++; }
                                 if (Model.Season.EnableRunsScored && homeRuns.HasValue) { rows[homeTeamId.Value].RunsScored = (rows[homeTeamId.Value].RunsScored + homeRuns.Value); }
                                 if (Model.Season.EnableRunsConceded && awayRuns.HasValue) { rows[homeTeamId.Value].RunsConceded = (rows[homeTeamId.Value].RunsConceded + awayRuns.Value); }
-                                rows[homeTeamId.Value].Points = (rows[homeTeamId.Value].Points + (Model.Season.PointsRules.First(x => x.MatchResultType == match.MatchResultType)?.HomePoints ?? 0));
+                                if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
+                                {
+                                    rows[homeTeamId.Value].Points = (rows[homeTeamId.Value].Points + (Model.Season.PointsRules.First(x => x.MatchResultType == match.MatchResultType)?.HomePoints ?? 0));
+                                }
                             }
 
                             // Away team
@@ -139,19 +134,28 @@
                                 else if (match.IsNoResult()) { rows[awayTeamId.Value].NoResult++; }
                                 if (Model.Season.EnableRunsScored && awayRuns.HasValue) { rows[awayTeamId.Value].RunsScored = (rows[awayTeamId.Value].RunsScored + awayRuns.Value); }
                                 if (Model.Season.EnableRunsConceded && homeRuns.HasValue) { rows[awayTeamId.Value].RunsConceded = (rows[awayTeamId.Value].RunsConceded + homeRuns.Value); }
-                                rows[awayTeamId.Value].Points = (rows[awayTeamId.Value].Points + (Model.Season.PointsRules.FirstOrDefault(x => x.MatchResultType == match.MatchResultType)?.AwayPoints ?? 0));
+                                if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
+                                {
+                                    rows[awayTeamId.Value].Points = (rows[awayTeamId.Value].Points + (Model.Season.PointsRules.FirstOrDefault(x => x.MatchResultType == match.MatchResultType)?.AwayPoints ?? 0));
+                                }
                             }
                         }
 
                         // Apply points adjustments
-                        foreach (var point in Model.Season.PointsAdjustments)
+                        if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
                         {
-                            rows[point.Team.TeamId.Value].Points += point.Points;
+                            foreach (var point in Model.Season.PointsAdjustments)
+                            {
+                                rows[point.Team.TeamId.Value].Points += point.Points;
+                            }
                         }
-
-                        // Sort the teams so that the highest points come first
+                        
+                        // For league tables, sort the teams so that the highest points come first
                         var sortedRows = new List<ResultsTableRow>(rows.Values);
-                        sortedRows.Sort();
+                        if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
+                        {
+                            sortedRows.Sort();
+                        }
 
                         foreach (var row in sortedRows)
                         {
@@ -170,33 +174,36 @@
                                 {
                                     <td data-label="Runs conceded">@row.RunsConceded</td>
                                 }
-                                <td data-label="Points">@row.Points</td>
+                                @if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
+                                {
+                                    <td data-label="Points">@row.Points</td>
+                                }
                             </tr>
                         }
                         foreach (var team in withdrawnTeams)
                         {
-                            <tr class="text-muted"><th scope="row"><a href="@team.Team.TeamRoute">@team.Team.TeamName</a></th><td colspan="@(columns-1)">Withdrew from league</td></tr>
+                            <tr class="text-muted"><th scope="row"><a href="@team.Team.TeamRoute">@team.Team.TeamName</a></th><td colspan="@(columns-1)">Withdrew from season</td></tr>
                         }
                     }
                 </tbody>
             </table>
 
-            if (Model.Season.PointsAdjustments.Count > 0)
+            if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable && Model.Season.PointsAdjustments.Count > 0)
             {
                 <p>The league table includes the following points adjustments:</p>
                 <ul>
                     @foreach (var adjustment in Model.Season.PointsAdjustments)
-                    {
-                        var reason = !string.IsNullOrEmpty(adjustment.Reason) ? $"for {adjustment.Reason}" : string.Empty;
-                        if (adjustment.Points > 0)
-                        {
+    {
+        var reason = !string.IsNullOrEmpty(adjustment.Reason) ? $"for {adjustment.Reason}" : string.Empty;
+        if (adjustment.Points > 0)
+        {
                             <li>@("point".ToQuantity(adjustment.Points)) awarded to @adjustment.Team.TeamName @reason</li>
                         }
-                        else if (adjustment.Points < 0)
-                        {
+        else if (adjustment.Points < 0)
+        {
                             <li>@("point".ToQuantity(adjustment.Points *-1)) deducted from @adjustment.Team.TeamName @reason</li>
                         }
-                    }
+    }
                 </ul>
             }
 
@@ -219,10 +226,8 @@
 
     if (noResults)
     {
-        <p>There's no league table for this season yet.</p>
-        <p>
-            You can have your league table updated automatically by adding your matches
-            and results to this website. If you're the administrator for the @Model.Season.Competition.CompetitionName you can switch this on now by editing the season.
-        </p>
+        <p>There's no results table for this season yet.</p>
+        <p>Add match results to this website to see your table updated instantly. For leagues, points are calculated.</p>
+        <p>If you're the administrator for the @Model.Season.Competition.CompetitionName edit the season to switch this on now.</p>
     }
 }
