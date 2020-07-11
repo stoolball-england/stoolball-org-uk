@@ -13,11 +13,11 @@ using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
-    public class EditSeasonPointsController : RenderMvcControllerAsync
+    public class EditSeasonTeamsController : RenderMvcControllerAsync
     {
         private readonly ISeasonDataSource _seasonDataSource;
 
-        public EditSeasonPointsController(IGlobalSettings globalSettings,
+        public EditSeasonTeamsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
@@ -50,11 +50,9 @@ namespace Stoolball.Web.Competitions
             }
             else
             {
-                model.Season.PointsRules.AddRange(await _seasonDataSource.ReadPointsRules(model.Season.SeasonId.Value).ConfigureAwait(false));
-
                 model.IsAuthorized = IsAuthorized(model);
 
-                model.Metadata.PageTitle = "Points for " + model.Season.SeasonFullNameAndPlayerType();
+                model.Metadata.PageTitle = "Teams in the " + model.Season.SeasonFullNameAndPlayerType();
 
                 return CurrentTemplate(model);
             }

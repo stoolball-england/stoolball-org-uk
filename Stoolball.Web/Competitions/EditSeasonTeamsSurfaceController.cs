@@ -14,12 +14,12 @@ using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
-    public class EditSeasonPointsSurfaceController : SurfaceController
+    public class EditSeasonTeamsSurfaceController : SurfaceController
     {
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly ISeasonRepository _seasonRepository;
 
-        public EditSeasonPointsSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
+        public EditSeasonTeamsSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ISeasonDataSource seasonDataSource,
             ISeasonRepository seasonRepository)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
@@ -32,7 +32,7 @@ namespace Stoolball.Web.Competitions
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> UpdateSeason([Bind(Prefix = "Season", Include = "PointsRules")] Season season)
+        public async Task<ActionResult> UpdateSeason([Bind(Prefix = "Season", Include = "Teams")] Season season)
         {
             if (season is null)
             {
@@ -48,7 +48,7 @@ namespace Stoolball.Web.Competitions
             {
                 // Update the season
                 var currentMember = Members.GetCurrentMember();
-                await _seasonRepository.UpdatePoints(season, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _seasonRepository.UpdateTeams(season, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the season actions page that led here
                 return Redirect(beforeUpdate.SeasonRoute + "/edit");
@@ -64,8 +64,8 @@ namespace Stoolball.Web.Competitions
             season.UntilYear = beforeUpdate.UntilYear;
             season.SeasonRoute = beforeUpdate.SeasonRoute;
 
-            viewModel.Metadata.PageTitle = $"Points for {beforeUpdate.SeasonFullNameAndPlayerType()}";
-            return View("EditSeasonResults", viewModel);
+            viewModel.Metadata.PageTitle = $"Teams in the {beforeUpdate.SeasonFullNameAndPlayerType()}";
+            return View("EditSeasonTeams", viewModel);
         }
     }
 }

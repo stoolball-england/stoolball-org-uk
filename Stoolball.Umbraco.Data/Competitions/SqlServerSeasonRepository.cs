@@ -311,7 +311,7 @@ namespace Stoolball.Umbraco.Data.Competitions
         /// <summary>
         /// Updates league points settings for a stoolball season
         /// </summary>
-        public async Task<Season> UpdateSeasonPoints(Season season, Guid memberKey, string memberName)
+        public async Task<Season> UpdatePoints(Season season, Guid memberKey, string memberName)
         {
             if (season is null)
             {
@@ -370,6 +370,67 @@ namespace Stoolball.Umbraco.Data.Competitions
             return season;
         }
 
+
+        /// <summary>
+        /// Updates teams in a stoolball season
+        /// </summary>
+        public async Task<Season> UpdateTeams(Season season, Guid memberKey, string memberName)
+        {
+            if (season is null)
+            {
+                throw new ArgumentNullException(nameof(season));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
+                        foreach (var team in season.Teams)
+                        {
+                            await connection.ExecuteAsync($@"INSERT INTO {Tables.SeasonTeam} 
+                                    (SeasonTeamId, SeasonId, TeamId, WithdrawnDate) 
+                                    VALUES (@SeasonTeamId, @SeasonId, @TeamId, @WithdrawnDate)",
+                                    new
+                                    {
+                                        SeasonTeamId = Guid.NewGuid(),
+                                        season.SeasonId,
+                                        team.Team.TeamId,
+                                        team.WithdrawnDate
+                                    },
+                                    transaction).ConfigureAwait(false);
+                        }
+
+                        transaction.Commit();
+                    }
+                }
+
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Update,
+                    MemberKey = memberKey,
+                    ActorName = memberName,
+                    EntityUri = season.EntityUri,
+                    State = JsonConvert.SerializeObject(season),
+                    AuditDate = DateTime.UtcNow
+                }).ConfigureAwait(false);
+
+            }
+            catch (SqlException ex)
+            {
+                _logger.Error(typeof(SqlServerSeasonRepository), ex);
+            }
+
+            return season;
+        }
 
         /// <summary>
         /// Deletes a stoolball season

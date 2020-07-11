@@ -1,0 +1,112 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<SeasonViewModel>
+@using ClientDependency.Core.Mvc
+@using Stoolball.Matches
+@using Stoolball.Web.Competitions
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+
+    Html.RequiresJs("~/js/libs/jquery.autocomplete.min.js", 50);
+    Html.RequiresCss("~/css/autocomplete.min.css");
+
+    Html.RequiresCss("~/css/related-items.min.css");
+    Html.RequiresJs("~/js/related-items.js");}
+
+<h1>Teams in the @Model.Season.SeasonFullName()</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Season.SeasonRoute">Summary</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
+    </li>
+    @if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) ||
+        Model.Season.MatchTypes.Contains(MatchType.KnockoutMatch) ||
+        Model.Season.MatchTypes.Contains(MatchType.FriendlyMatch) ||
+        !string.IsNullOrEmpty(Model.Season.Results))
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute/results">Results</a>
+        </li>
+    }
+    <li class="nav-item">
+        <em class="nav-link active">Edit</em>
+    </li>
+</ul>
+
+@if (Model.IsAuthorized)
+{
+    using (Html.BeginUmbracoForm<EditSeasonTeamsSurfaceController>
+        ("UpdateSeason"))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <button class="sr-only">Save season</button>
+
+        <table class="table table-hover related-items">
+            <thead class="thead-dark">
+                <tr><th scope="col">Teams</th><th scope="col">Date withdrew</th><th scope="col"></th></tr>
+            </thead>
+            <tbody>
+                @for (var i = 0; i < Model.Season.Teams.Count; i++)
+                {
+                    var displayName = Model.Season.Teams[i].Team.UntilYear.HasValue ? Model.Season.Teams[i].Team.TeamName + " (no longer active)" : Model.Season.Teams[i].Team.TeamName;
+                    <tr>
+                        <td><div class="related-item__animate">@displayName</div></td>
+                        <td><div class="related-item__animate">@Html.TextBoxFor(m => Model.Season.Teams[i].WithdrawnDate, "{0:yyyy-MM-dd}", new { @type = "date", @class = "related-item__data", data_item = Model.Season.Teams[i].Team.TeamId })</div></td>
+                        <td class="related-item__delete">
+                            <div class="related-item__animate">
+                                @Html.Hidden($"Season.Teams[{i}].Team.TeamId", Model.Season.Teams[i].Team.TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Season.Teams[i].Team.TeamId })
+                                @Html.Hidden($"Season.Teams[{i}].Team.TeamName", displayName, new { @class = "related-item__data", data_item = Model.Season.Teams[i].Team.TeamId })
+                                <button class="text-danger">@Html.Partial("_DeleteIcon", (Model.Season.Teams[i].Team.TeamId.ToString(), $"Remove {Model.Season.Teams[i].Team.TeamName} from this season"))</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="3">
+                        @Html.Label("team-autocomplete", "Add a team", new { @class = "sr-only" })
+                        @Html.TextBox("team-autocomplete", string.Empty, new
+                        {
+                            @class = "form-control related-item__search",
+                            placeholder = "Add a team",
+                            autocomplete = "off",
+                            type = "search",
+                            data_url = "/api/teams/autocomplete",
+                            data_template = "team-template",
+                            aria_label = "Type a team name add and press down arrow to select the team"
+                        })
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <script type="text/x-template" id="team-template">
+            <table>
+                <tr>
+                    <td><div class="related-item__animate">{{value}}</div></td>
+                    <td><div class="related-item__animate"><input name="Season.Teams[0].WithdrawnDate" type="date" class="related-item__data" data-item="{{data}}" /></div></td>
+                    <td class="related-item__delete">
+                        <div class="related-item__animate">
+                            <input name="Season.Teams[0].Team.TeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
+                            <input name="Season.Teams[0].Team.TeamName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
+                            <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this season"))</button>
+                        </div>
+                    </td>
+            </tr>
+            </table>
+        </script>
+
+        <button class="btn btn-primary">Save season</button>
+    }
+}
+else
+{
+    @Html.Partial("_Login")
+}

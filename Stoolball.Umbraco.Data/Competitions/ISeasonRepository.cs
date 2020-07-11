@@ -20,7 +20,12 @@ namespace Stoolball.Umbraco.Data.Competitions
         /// <summary>
         /// Updates league points settings for a stoolball season
         /// </summary>
-        Task<Season> UpdateSeasonPoints(Season season, Guid memberKey, string memberName);
+        Task<Season> UpdatePoints(Season season, Guid memberKey, string memberName);
+
+        /// <summary>
+        /// Updates the teams in a stoolball season
+        /// </summary>
+        Task<Season> UpdateTeams(Season season, Guid memberKey, string memberName);
 
         /// <summary>
         /// Delete a stoolball season

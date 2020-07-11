@@ -70,6 +70,7 @@
     <Compile Include="Competitions\DeleteCompetitionControllerTests.cs" />
     <Compile Include="Competitions\CreateSeasonControllerTests.cs" />
     <Compile Include="Competitions\CreateCompetitionControllerTests.cs" />
+    <Compile Include="Competitions\EditSeasonTeamsControllerTests.cs" />
     <Compile Include="Competitions\EditSeasonPointsControllerTests.cs" />
     <Compile Include="Competitions\EditSeasonControllerTests.cs" />
     <Compile Include="Competitions\EditCompetitionControllerTests.cs" />

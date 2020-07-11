@@ -31,6 +31,7 @@
         CreateSeason,
         EditSeason,
         EditSeasonPoints,
+        EditSeasonTeams,
         DeleteSeason,
         Competition,
         CompetitionActions,
