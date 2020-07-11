@@ -158,17 +158,19 @@
         </tbody>
     </table>
     <script type="text/x-template" id="location-template">
-        <tr>
-            <td><div class="related-item__animate">{{value}}</div></td>
-            <td class="related-item__delete">
-                <div class="related-item__animate">
-                    <input name="Team.MatchLocations[0].MatchLocationId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
-                    <input name="Team.MatchLocations[0].PrimaryAddressableObjectName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
-                    <input name="Team.MatchLocations[0].Town" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
-                    <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this team"))</button>
-                </div>
-            </td>
-        </tr>
+        <table>
+            <tr>
+                <td><div class="related-item__animate">{{value}}</div></td>
+                <td class="related-item__delete">
+                    <div class="related-item__animate">
+                        <input name="Team.MatchLocations[0].MatchLocationId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
+                        <input name="Team.MatchLocations[0].PrimaryAddressableObjectName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
+                        <input name="Team.MatchLocations[0].Town" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
+                        <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this team"))</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
     </script>
 
     <div class="form-group">

@@ -228,14 +228,16 @@
         </tbody>
     </table>
     <script type="text/x-template" id="team-template">
-        <tr>
-            <td><div class="related-item__animate">{{value}}</div></td>
-            <td class="related-item__delete">
-                <div class="related-item__animate">
-                    <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}}"))</button>
-                </div>
-            </td>
-        </tr>
+        <table>
+            <tr>
+                <td><div class="related-item__animate">{{value}}</div></td>
+                <td class="related-item__delete">
+                    <div class="related-item__animate">
+                        <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}}"))</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
     </script>
     <div class="form-group">
         <label for="rich-text">Rich text editor</label>

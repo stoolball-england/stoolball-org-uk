@@ -50,16 +50,18 @@
     </tbody>
 </table>
 <script type="text/x-template" id="team-template">
-    <tr>
-        <td><div class="related-item__animate">{{value}}</div></td>
-        <td class="related-item__delete">
-            <div class="related-item__animate">
-                <input name="Club.Teams[0].TeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
-                <input name="Club.Teams[0].TeamName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
-                <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this club"))</button>
-            </div>
-        </td>
-    </tr>
+    <table>
+        <tr>
+            <td><div class="related-item__animate">{{value}}</div></td>
+            <td class="related-item__delete">
+                <div class="related-item__animate">
+                    <input name="Club.Teams[0].TeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
+                    <input name="Club.Teams[0].TeamName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
+                    <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this club"))</button>
+                </div>
+            </td>
+        </tr>
+    </table>
 </script>
 
 <button class="btn btn-primary">Save club</button>
