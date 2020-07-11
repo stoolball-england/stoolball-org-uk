@@ -83,10 +83,10 @@
                         // Look at matches to build data for each team
                         foreach (var match in Model.Matches.Matches)
                         {
-                            var homeTeamId = match.Teams.FirstOrDefault(team => team.TeamRole == TeamRole.Home)?.Team.TeamId;
-                            var awayTeamId = match.Teams.FirstOrDefault(team => team.TeamRole == TeamRole.Away)?.Team.TeamId;
-                            var homeRuns = homeTeamId != null ? match.MatchInnings.SingleOrDefault(x => x.Team.TeamId == homeTeamId)?.Runs : null;
-                            var awayRuns = awayTeamId != null ? match.MatchInnings.SingleOrDefault(x => x.Team.TeamId == awayTeamId)?.Runs : null;
+                            var homeTeam = match.Teams.FirstOrDefault(team => team.TeamRole == TeamRole.Home);
+                            var awayTeam = match.Teams.FirstOrDefault(team => team.TeamRole == TeamRole.Away);
+                            var homeRuns = homeTeam != null ? match.MatchInnings.SingleOrDefault(x => x.MatchTeamId == homeTeam.MatchTeamId)?.Runs : null;
+                            var awayRuns = awayTeam != null ? match.MatchInnings.SingleOrDefault(x => x.MatchTeamId == awayTeam.MatchTeamId)?.Runs : null;
 
                             // Discount matches in the future
                             if (match.StartTime >= DateTime.UtcNow) { break; }
@@ -98,8 +98,8 @@
                             if (match.MatchResultType == MatchResultType.Postponed || match.MatchResultType == MatchResultType.AbandonedDuringPlayAndPostponed) { continue; }
 
                             // Discount matches where a team has withdrawn from the season
-                            if (homeTeamId.HasValue && withdrawnTeams.Any(x => x.Team.TeamId == homeTeamId)) { continue; }
-                            if (awayTeamId.HasValue && withdrawnTeams.Any(x => x.Team.TeamId == awayTeamId)) { continue; }
+                            if (homeTeam != null && withdrawnTeams.Any(x => x.Team.TeamId == homeTeam.Team.TeamId)) { continue; }
+                            if (awayTeam != null && withdrawnTeams.Any(x => x.Team.TeamId == awayTeam.Team.TeamId)) { continue; }
 
                             // Make a note of missing results, to excuse inaccuracies
                             if (!match.MatchResultType.HasValue)
@@ -109,34 +109,34 @@
                             }
 
                             // Home team
-                            if (homeTeamId.HasValue && rows.ContainsKey(homeTeamId.Value))
+                            if (homeTeam != null && rows.ContainsKey(homeTeam.Team.TeamId.Value))
                             {
-                                rows[homeTeamId.Value].Played++;
-                                if (match.IsHomeWin()) { rows[homeTeamId.Value].Won++; }
-                                else if (match.IsAwayWin()) { rows[homeTeamId.Value].Lost++; }
-                                else if (match.IsEqualResult()) { rows[homeTeamId.Value].Tied++; }
-                                else if (match.IsNoResult()) { rows[homeTeamId.Value].NoResult++; }
-                                if (Model.Season.EnableRunsScored && homeRuns.HasValue) { rows[homeTeamId.Value].RunsScored = (rows[homeTeamId.Value].RunsScored + homeRuns.Value); }
-                                if (Model.Season.EnableRunsConceded && awayRuns.HasValue) { rows[homeTeamId.Value].RunsConceded = (rows[homeTeamId.Value].RunsConceded + awayRuns.Value); }
+                                rows[homeTeam.Team.TeamId.Value].Played++;
+                                if (match.IsHomeWin()) { rows[homeTeam.Team.TeamId.Value].Won++; }
+                                else if (match.IsAwayWin()) { rows[homeTeam.Team.TeamId.Value].Lost++; }
+                                else if (match.IsEqualResult()) { rows[homeTeam.Team.TeamId.Value].Tied++; }
+                                else if (match.IsNoResult()) { rows[homeTeam.Team.TeamId.Value].NoResult++; }
+                                if (Model.Season.EnableRunsScored && homeRuns.HasValue) { rows[homeTeam.Team.TeamId.Value].RunsScored = (rows[homeTeam.Team.TeamId.Value].RunsScored + homeRuns.Value); }
+                                if (Model.Season.EnableRunsConceded && awayRuns.HasValue) { rows[homeTeam.Team.TeamId.Value].RunsConceded = (rows[homeTeam.Team.TeamId.Value].RunsConceded + awayRuns.Value); }
                                 if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
                                 {
-                                    rows[homeTeamId.Value].Points = (rows[homeTeamId.Value].Points + (Model.Season.PointsRules.First(x => x.MatchResultType == match.MatchResultType)?.HomePoints ?? 0));
+                                    rows[homeTeam.Team.TeamId.Value].Points = (rows[homeTeam.Team.TeamId.Value].Points + (Model.Season.PointsRules.First(x => x.MatchResultType == match.MatchResultType)?.HomePoints ?? 0));
                                 }
                             }
 
                             // Away team
-                            if (awayTeamId.HasValue && rows.ContainsKey(awayTeamId.Value))
+                            if (awayTeam != null && rows.ContainsKey(awayTeam.Team.TeamId.Value))
                             {
-                                rows[awayTeamId.Value].Played++;
-                                if (match.IsHomeWin()) { rows[awayTeamId.Value].Lost++; }
-                                else if (match.IsAwayWin()) { rows[awayTeamId.Value].Won++; }
-                                else if (match.IsEqualResult()) { rows[awayTeamId.Value].Tied++; }
-                                else if (match.IsNoResult()) { rows[awayTeamId.Value].NoResult++; }
-                                if (Model.Season.EnableRunsScored && awayRuns.HasValue) { rows[awayTeamId.Value].RunsScored = (rows[awayTeamId.Value].RunsScored + awayRuns.Value); }
-                                if (Model.Season.EnableRunsConceded && homeRuns.HasValue) { rows[awayTeamId.Value].RunsConceded = (rows[awayTeamId.Value].RunsConceded + homeRuns.Value); }
+                                rows[awayTeam.Team.TeamId.Value].Played++;
+                                if (match.IsHomeWin()) { rows[awayTeam.Team.TeamId.Value].Lost++; }
+                                else if (match.IsAwayWin()) { rows[awayTeam.Team.TeamId.Value].Won++; }
+                                else if (match.IsEqualResult()) { rows[awayTeam.Team.TeamId.Value].Tied++; }
+                                else if (match.IsNoResult()) { rows[awayTeam.Team.TeamId.Value].NoResult++; }
+                                if (Model.Season.EnableRunsScored && awayRuns.HasValue) { rows[awayTeam.Team.TeamId.Value].RunsScored = (rows[awayTeam.Team.TeamId.Value].RunsScored + awayRuns.Value); }
+                                if (Model.Season.EnableRunsConceded && homeRuns.HasValue) { rows[awayTeam.Team.TeamId.Value].RunsConceded = (rows[awayTeam.Team.TeamId.Value].RunsConceded + homeRuns.Value); }
                                 if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
                                 {
-                                    rows[awayTeamId.Value].Points = (rows[awayTeamId.Value].Points + (Model.Season.PointsRules.FirstOrDefault(x => x.MatchResultType == match.MatchResultType)?.AwayPoints ?? 0));
+                                    rows[awayTeam.Team.TeamId.Value].Points = (rows[awayTeam.Team.TeamId.Value].Points + (Model.Season.PointsRules.FirstOrDefault(x => x.MatchResultType == match.MatchResultType)?.AwayPoints ?? 0));
                                 }
                             }
                         }
@@ -149,7 +149,7 @@
                                 rows[point.Team.TeamId.Value].Points += point.Points;
                             }
                         }
-                        
+
                         // For league tables, sort the teams so that the highest points come first
                         var sortedRows = new List<ResultsTableRow>(rows.Values);
                         if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)

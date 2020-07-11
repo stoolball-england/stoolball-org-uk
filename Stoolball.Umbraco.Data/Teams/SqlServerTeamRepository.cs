@@ -531,7 +531,7 @@ namespace Stoolball.Umbraco.Data.Teams
                         await connection.ExecuteAsync($"DELETE FROM {Tables.Over} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"DELETE FROM {Tables.MatchAward} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET TeamId = NULL WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET MatchTeamId = NULL WHERE MatchTeamId IN (SELECT MatchTeamId FROM {Tables.MatchTeam} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($@"DELETE FROM {Tables.MatchTeam} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonPointsAdjustment} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonTeam} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);

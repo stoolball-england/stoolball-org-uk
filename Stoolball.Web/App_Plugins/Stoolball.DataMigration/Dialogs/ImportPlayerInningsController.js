@@ -49,6 +49,7 @@
             MigratedMatchId: batting.matchId,
             MigratedPlayerIdentityId: batting.playerId,
             MigratedTeamId: batting.teamId,
+            MigratedMatchTeamId: batting.matchTeamId,
             BattingPosition: batting.battingPosition,
             HowOut: batting.howOut,
             MigratedDismissedById: batting.dismissedById,

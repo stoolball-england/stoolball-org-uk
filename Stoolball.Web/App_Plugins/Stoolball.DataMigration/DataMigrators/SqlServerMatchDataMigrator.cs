@@ -190,8 +190,46 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                             migratedMatch.MatchRoute,
                             MemberKey = migratedMatch.History.Count > 0 ? migratedMatch.History[0].MemberKey : null
                         }, transaction).ConfigureAwait(false);
-                        foreach (var innings in migratedMatch.MigratedMatchInnings)
+
+                        Guid? homeMatchTeamId = null;
+                        Guid? awayMatchTeamId = null;
+
+                        foreach (var team in migratedMatch.MigratedTeams)
                         {
+                            team.Team = new Team
+                            {
+                                TeamId = await connection.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @MigratedTeamId", new { team.MigratedTeamId }, transaction).ConfigureAwait(false)
+                            };
+
+                            Guid matchTeamId;
+                            if (team.TeamRole == TeamRole.Home)
+                            {
+                                homeMatchTeamId = Guid.NewGuid();
+                                matchTeamId = homeMatchTeamId.Value;
+                            }
+                            else
+                            {
+                                awayMatchTeamId = Guid.NewGuid();
+                                matchTeamId = awayMatchTeamId.Value;
+                            }
+
+                            await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
+								(MatchTeamId, MigratedMatchTeamId, MatchId, TeamId, TeamRole, WonToss) VALUES (@MatchTeamId, @MigratedMatchTeamId, @MatchId, @TeamId, @TeamRole, @WonToss)",
+                                new
+                                {
+                                    MatchTeamId = matchTeamId,
+                                    team.MigratedMatchTeamId,
+                                    migratedMatch.MatchId,
+                                    team.Team.TeamId,
+                                    TeamRole = team.TeamRole.ToString(),
+                                    team.WonToss
+                                },
+                                transaction).ConfigureAwait(false);
+                        }
+
+                        for (var i = 0; i < migratedMatch.MigratedMatchInnings.Count; i++)
+                        {
+                            var innings = migratedMatch.MigratedMatchInnings[i];
                             if (innings.MigratedTeamId.HasValue)
                             {
                                 innings.Team = new Team
@@ -201,13 +239,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                             }
 
                             await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchInnings} 
-								(MatchInningsId, MatchId, TeamId, InningsOrderInMatch, Overs, Runs, Wickets)
-								VALUES (@MatchInningsId, @MatchId, @TeamId, @InningsOrderInMatch, @Overs, @Runs, @Wickets)",
+								(MatchInningsId, MatchId, MatchTeamId, InningsOrderInMatch, Overs, Runs, Wickets)
+								VALUES (@MatchInningsId, @MatchId, @MatchTeamId, @InningsOrderInMatch, @Overs, @Runs, @Wickets)",
                                 new
                                 {
                                     MatchInningsId = Guid.NewGuid(),
                                     migratedMatch.MatchId,
-                                    innings.Team?.TeamId,
+                                    MatchTeamId = (i == 0) ? homeMatchTeamId : awayMatchTeamId,
                                     innings.InningsOrderInMatch,
                                     innings.Overs,
                                     innings.Runs,
@@ -215,25 +253,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                                 },
                                 transaction).ConfigureAwait(false);
                         }
-                        foreach (var team in migratedMatch.MigratedTeams)
-                        {
-                            team.Team = new Team
-                            {
-                                TeamId = await connection.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @MigratedTeamId", new { team.MigratedTeamId }, transaction).ConfigureAwait(false)
-                            };
 
-                            await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
-								(MatchTeamId, MatchId, TeamId, TeamRole, WonToss) VALUES (@MatchTeamId, @MatchId, @TeamId, @TeamRole, @WonToss)",
-                                new
-                                {
-                                    MatchTeamId = Guid.NewGuid(),
-                                    migratedMatch.MatchId,
-                                    team.Team.TeamId,
-                                    TeamRole = team.TeamRole.ToString(),
-                                    team.WonToss
-                                },
-                                transaction).ConfigureAwait(false);
-                        }
                         transaction.Commit();
                     }
 

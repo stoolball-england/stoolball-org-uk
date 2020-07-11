@@ -89,12 +89,13 @@ namespace Stoolball.Umbraco.Data.Matches
                         // Add match innings and player innings within that to the match
                         var unprocessedInningsWithBatting = await connection.QueryAsync<MatchInnings, Team, PlayerInnings, PlayerIdentity, PlayerIdentity, PlayerIdentity, MatchInnings>(
                             $@"SELECT i.MatchInningsId, i.Runs, i.Wickets, i.InningsOrderInMatch,
-                               i.TeamId,
+                               mt.TeamId,
                                pi.BattingPosition,
                                pi.PlayerIdentityId, bat.PlayerIdentityName, bat.TotalMatches, bat.PlayerRole,
                                field.PlayerIdentityId, field.PlayerIdentityName, field.TotalMatches,
                                bowl.PlayerIdentityId, bowl.PlayerIdentityName, bowl.TotalMatches
                                FROM {Tables.MatchInnings} i 
+                               LEFT JOIN {Tables.MatchTeam} mt ON i.MatchTeamId = mt.MatchTeamId
                                LEFT JOIN {Tables.PlayerInnings} pi ON i.MatchInningsId = pi.MatchInningsId
                                LEFT JOIN {Tables.PlayerIdentity} bat ON pi.PlayerIdentityId = bat.PlayerIdentityId
                                LEFT JOIN {Tables.PlayerIdentity} field ON pi.DismissedById = field.PlayerIdentityId

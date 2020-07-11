@@ -123,12 +123,12 @@ namespace Stoolball.Umbraco.Data.Matches
                         var (matchSql, matchParameters) = BuildMatchQuery(matchQuery,
                             $@"SELECT m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, m.MatchResultType,
                                 NULL AS TournamentQualificationType, NULL AS SpacesInTournament, m.OrderInTournament,
-                                mt.TeamRole,
+                                mt.TeamRole, mt.MatchTeamId,
                                 mt.TeamId,
                                 i.Runs, i.Wickets
                                 FROM { Tables.Match } AS m
                                 LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
-                                LEFT JOIN {Tables.MatchInnings} AS i ON m.MatchId = i.MatchId AND i.TeamId = mt.TeamId
+                                LEFT JOIN {Tables.MatchInnings} AS i ON m.MatchId = i.MatchId AND i.MatchTeamId = mt.MatchTeamId
                                 <<JOIN>>
                                 <<WHERE>> ");
                         sql.Append(matchSql);
@@ -151,7 +151,7 @@ namespace Stoolball.Umbraco.Data.Matches
                             $@"SELECT tourney.TournamentName AS MatchName, tourney.TournamentRoute AS MatchRoute, tourney.StartTime, tourney.StartTimeIsKnown, 
                                 NULL AS MatchType, tourney.PlayerType, NULL AS MatchResultType,
                                 tourney.QualificationType AS TournamentQualificationType, tourney.SpacesInTournament, NULL AS OrderInTournament,
-                                NULL AS TeamRole, 
+                                NULL AS TeamRole, NULL AS MatchTeamId,
                                 NULL AS TeamId,
                                 NULL AS Runs, NULL AS Wickets
                                 FROM { Tables.Tournament} AS tourney
@@ -180,6 +180,7 @@ namespace Stoolball.Umbraco.Data.Matches
 
                             matchListing.MatchInnings.Add(new MatchInnings
                             {
+                                MatchTeamId = teamInMatch.MatchTeamId,
                                 Team = team,
                                 Runs = matchInnings?.Runs,
                                 Wickets = matchInnings?.Wickets

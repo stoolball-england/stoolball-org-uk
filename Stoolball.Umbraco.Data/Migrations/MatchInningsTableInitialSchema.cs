@@ -21,10 +21,10 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(InningsOrderInMatch))]
         public int InningsOrderInMatch { get; set; }
 
-        [ForeignKey(typeof(TeamTableInitialSchema), Column = nameof(TeamTableInitialSchema.TeamId))]
-        [Column(nameof(TeamId))]
+        [ForeignKey(typeof(MatchTeamTableInitialSchema), Column = nameof(MatchTeamTableInitialSchema.MatchTeamId))]
+        [Column(nameof(MatchTeamId))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public Guid? TeamId { get; set; }
+        public Guid? MatchTeamId { get; set; }
 
         [Column(nameof(Overs))]
         [NullSetting(NullSetting = NullSettings.Null)]

@@ -49,6 +49,7 @@
             MigratedMatchId: bowling.matchId,
             MigratedPlayerIdentityId: bowling.playerId,
             MigratedTeamId: bowling.teamId,
+            MigratedMatchTeamId: bowling.matchTeamId,
             OverNumber: bowling.overNumber,
             BallsBowled: bowling.ballsBowled,
             NoBalls: bowling.noBalls,

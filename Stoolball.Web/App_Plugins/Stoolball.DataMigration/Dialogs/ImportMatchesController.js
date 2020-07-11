@@ -9,6 +9,7 @@ function matchResource() {
       if (home.length) {
         teams.push({
           MigratedTeamId: home[0].teamId,
+          MigratedMatchTeamId: home[0].matchTeamId,
           TeamRole: 0,
           WonToss: match.tossWonBy ? match.tossWonBy === 1 : null,
         });
@@ -17,6 +18,7 @@ function matchResource() {
       if (away.length) {
         teams.push({
           MigratedTeamId: away[0].teamId,
+          MigratedMatchTeamId: away[0].matchTeamId,
           TeamRole: 1,
           WonToss: match.tossWonBy ? match.tossWonBy === 2 : null,
         });
@@ -36,6 +38,7 @@ function matchResource() {
         MigratedMatchInnings: [
           {
             MigratedTeamId: home.length ? home[0].teamId : null,
+            MigratedMatchTeamId: home.length ? home[0].matchTeamId : null,
             InningsOrderInMatch:
               match.homeBatFirst !== null ? (match.homeBatFirst ? 1 : 2) : 1,
             Overs: match.overs,
@@ -44,6 +47,7 @@ function matchResource() {
           },
           {
             MigratedTeamId: away.length ? away[0].teamId : null,
+            MigratedMatchTeamId: away.length ? away[0].matchTeamId : null,
             InningsOrderInMatch:
               match.homeBatFirst !== null ? (match.homeBatFirst ? 2 : 1) : 2,
             Overs: match.overs,
