@@ -1001,6 +1001,8 @@
     <Compile Include="Matches\DeleteMatchController.cs" />
     <Compile Include="Matches\DeleteMatchViewModel.cs" />
     <Compile Include="Matches\DeleteTournamentViewModel.cs" />
+    <Compile Include="Matches\CreateLeagueMatchController.cs" />
+    <Compile Include="Matches\CreateMatchViewModel.cs" />
     <Compile Include="Matches\TournamentAuthorizationPolicy.cs" />
     <Compile Include="Security\IAuthorizationPolicy.cs" />
     <Compile Include="Matches\MatchActionsController.cs" />
@@ -1217,6 +1219,7 @@
     <Content Include="Views\SeasonResults.cshtml" />
     <Content Include="Views\EditSeasonPoints.cshtml" />
     <Content Include="Views\EditSeasonTeams.cshtml" />
+    <Content Include="Views\CreateLeagueMatch.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

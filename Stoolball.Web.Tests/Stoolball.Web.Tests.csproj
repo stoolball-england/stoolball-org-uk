@@ -82,6 +82,7 @@
     <Compile Include="Matches\DeleteTournamentControllerTests.cs" />
     <Compile Include="Matches\DeleteMatchControllerTests.cs" />
     <Compile Include="Matches\MatchActionsControllerTests.cs" />
+    <Compile Include="Matches\CreateLeagueMatchControllerTests.cs" />
     <Compile Include="Matches\TournamentActionsControllerTests.cs" />
     <Compile Include="Matches\TournamentControllerTests.cs" />
     <Compile Include="Matches\MatchControllerTests.cs" />

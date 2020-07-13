@@ -1,4 +1,5 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamViewModel>
+@using Stoolball.Matches
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -26,6 +27,11 @@
         </li>
     }
 </ul>
+
+@if (Model.Team.Seasons.Any(x => x.Season.MatchTypes.Contains(MatchType.LeagueMatch)))
+{
+<p><a href="@Model.Team.TeamRoute/matches/add/league">Add a league match</a></p>
+}
 
 @if (Model.Matches.Matches.Count > 0)
 {

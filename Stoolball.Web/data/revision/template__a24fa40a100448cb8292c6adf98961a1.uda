@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/createLeagueMatch.cshtml",
+  "Master": null,
+  "Udi": "umb://template/a24fa40a100448cb8292c6adf98961a1",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/createLeagueMatch.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Create League Match",
+  "Alias": "createLeagueMatch",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.4.4"
+}

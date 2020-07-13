@@ -1,0 +1,36 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<CreateMatchViewModel>
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.Matches
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+}
+
+<h1>Add a league match</h1>
+
+@if (Model.IsAuthorized)
+{
+    if (Model.Team != null)
+    {
+        <p>Context team is @Model.Team.TeamName</p>
+    }
+    else if (Model.Season != null)
+    {
+        <p>Context season is @Model.Season.SeasonFullName()</p>
+    }
+
+    /*using (Html.BeginUmbracoForm<CreateLeagueMatchSurfaceController>
+        ("CreateMatch"))
+    {
+        @Html.AntiForgeryToken()
+    }*/
+}
+else
+{
+    @Html.Partial("_Login")
+}

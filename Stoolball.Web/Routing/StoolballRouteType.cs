@@ -45,6 +45,7 @@
         MatchesForSeason,
         Match,
         MatchActions,
+        CreateLeagueMatch,
         DeleteMatch,
         Tournament,
         TournamentActions,

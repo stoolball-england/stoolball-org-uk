@@ -30,6 +30,11 @@
     }
 </ul>
 
+@if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch))
+{
+<p><a href="@Model.Season.SeasonRoute/matches/add/league">Add a league match</a></p>
+}
+
 @if (Model.Matches.Matches.Count > 0)
 {
     @Html.Partial("_MatchList", Model.Matches)

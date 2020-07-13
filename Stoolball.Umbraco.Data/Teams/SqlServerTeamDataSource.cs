@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
+using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Teams;
@@ -109,15 +110,16 @@ namespace Stoolball.Umbraco.Data.Teams
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var teams = await connection.QueryAsync<Team, Club, MatchLocation, Season, Competition, Team>(
+                    var teams = await connection.QueryAsync<Team, Club, MatchLocation, Season, Competition, string, Team>(
                         $@"SELECT t.TeamId, tn.TeamName, t.TeamType, t.PlayerType, t.Introduction, t.AgeRangeLower, t.AgeRangeUpper, 
                             t.Facebook, t.Twitter, t.Instagram, t.YouTube, t.Website, t.PublicContactDetails, t.PrivateContactDetails, 
                             t.PlayingTimes, t.Cost, t.TeamRoute, t.FromYear, t.UntilYear, t.MemberGroupId, t.MemberGroupName,
                             cn.ClubName, c.ClubRoute, c.ClubMark,
                             ml.MatchLocationId, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, 
                             ml.Town, ml.AdministrativeArea, ml.MatchLocationRoute,
-                            s.FromYear, s.UntilYear, s.SeasonRoute,
-                            co.CompetitionId, co.CompetitionName
+                            s.SeasonId, s.FromYear, s.UntilYear, s.SeasonRoute,
+                            co.CompetitionId, co.CompetitionName,
+                            mt.MatchType
                             FROM {Tables.Team} AS t 
                             INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             LEFT JOIN {Tables.Club} AS c ON t.ClubId = c.ClubId
@@ -127,9 +129,10 @@ namespace Stoolball.Umbraco.Data.Teams
                             LEFT JOIN {Tables.SeasonTeam} AS st ON t.TeamId = st.TeamId
                             LEFT JOIN {Tables.Season} AS s ON st.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.Competition} AS co ON co.CompetitionId = s.CompetitionId
+                            LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
                             WHERE LOWER(t.TeamRoute) = @Route
                             ORDER BY co.CompetitionName, s.FromYear DESC, s.UntilYear ASC",
-                        (team, club, matchLocation, season, competition) =>
+                        (team, club, matchLocation, season, competition, matchType) =>
                         {
                             team.Club = club;
                             if (matchLocation != null)
@@ -139,12 +142,16 @@ namespace Stoolball.Umbraco.Data.Teams
                             if (season != null)
                             {
                                 season.Competition = competition;
+                                if (!string.IsNullOrEmpty(matchType))
+                                {
+                                    season.MatchTypes.Add((MatchType)Enum.Parse(typeof(MatchType), matchType));
+                                }
                                 team.Seasons.Add(new TeamInSeason { Season = season });
                             }
                             return team;
                         },
                         new { Route = normalisedRoute },
-                        splitOn: "ClubName, MatchLocationId, UntilYear, CompetitionId").ConfigureAwait(false);
+                        splitOn: "ClubName, MatchLocationId, SeasonId, CompetitionId, MatchType").ConfigureAwait(false);
 
                     var teamToReturn = teams.FirstOrDefault(); // get an example with the properties that are the same for every row
                     if (teamToReturn != null)
@@ -156,7 +163,19 @@ namespace Stoolball.Umbraco.Data.Teams
                             .ToList();
                         teamToReturn.Seasons = teams.Select(team => team.Seasons.SingleOrDefault())
                             .OfType<TeamInSeason>()
+                            .Distinct(new TeamInSeasonEqualityComparer())
                             .ToList();
+
+                        var allSeasons = teams.SelectMany(team => team.Seasons);
+                        foreach (var teamInSeason in teamToReturn.Seasons)
+                        {
+                            teamInSeason.Season.MatchTypes = allSeasons
+                                .Where(season => season.Season.SeasonId == teamInSeason.Season.SeasonId)
+                                .Select(season => season.Season.MatchTypes.FirstOrDefault())
+                                .OfType<MatchType>()
+                                .Distinct()
+                                .ToList();
+                        }
                     }
 
                     return teamToReturn;
