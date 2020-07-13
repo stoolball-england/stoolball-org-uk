@@ -68,6 +68,37 @@
     </tbody>
 </table>
 <p>A paragraph following a table.</p>
+<table class="table">
+    <caption>Table with edit options</caption>
+    <thead><tr><th>Example</th><th>Date</th><th>Number</th></tr></thead>
+    <tbody>
+        <tr>
+            <th scope="row">Unvalidated</th>
+            <td><input class="related-item__data" data-item="3040d68b-bc9e-4bad-a8fe-354b72f214c1" id="Season_Teams_0__WithdrawnDate" name="Season.Teams[0].WithdrawnDate" type="date" value=""></td>
+            <td>
+                <input data-val="true" data-val-number="The field Points for away team must be a number." data-val-required="The Points for away team field is required." id="Season_PointsRules_0__AwayPoints" maxlength="2" name="Season.PointsRules[0].AwayPoints" type="number" value="2">
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">Valid</th>
+            <td>
+                Not applicable
+            </td>
+            <td>
+                <input data-val="true" data-val-number="The field Points for home team must be a number." data-val-required="The Points for home team field is required." id="Season_PointsRules_0__HomePoints" maxlength="2" name="Season.PointsRules[0].HomePoints" type="number" value="0" aria-describedby="Season_PointsRules_0__HomePoints-error" class="valid" aria-invalid="false">
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">Invalid</th>
+            <td>Not applicable</td>
+            <td>
+                <input data-val="true" data-val-number="The field Points for away team must be a number." data-val-required="The Points for away team field is required." id="Season_PointsRules_0__AwayPoints" maxlength="2" name="Season.PointsRules[0].AwayPoints" type="number" value="2" class="input-validation-error" aria-describedby="Season_PointsRules_0__AwayPoints-error" aria-invalid="true">
+                <span class="field-validation-error" data-valmsg-for="Season.PointsRules[0].AwayPoints" data-valmsg-replace="true"><span id="Season_PointsRules_0__AwayPoints-error" class="">The Points for away team field is required.</span></span>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<p>A paragraph following a Bootstrap table.</p>
 <table class="table table-as-cards">
     <caption>League table caption. Table displays as cards on mobile.</caption>
     <thead>
