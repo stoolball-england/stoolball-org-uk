@@ -5,6 +5,7 @@ using Stoolball.Email;
 using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Security;
+using Stoolball.Teams;
 using Stoolball.Umbraco.Data;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Clubs;
@@ -43,6 +44,7 @@ namespace Stoolball.Web
             composition.Register<IDateTimeFormatter, DateTimeFormatter>(Lifetime.Singleton);
             composition.Register<IEstimatedSeason, EstimatedSeason>(Lifetime.Singleton);
             composition.Register<IHtmlSanitizer, HtmlSanitizer>(Lifetime.Singleton);
+            composition.Register<ICreateLeagueMatchEligibleSeasons, CreateLeagueMatchEligibleSeasons>(Lifetime.Singleton);
 
             // Data migration from the old Stoolball England website
             composition.Register<IAuditHistoryBuilder, AuditHistoryBuilder>(Lifetime.Singleton);

@@ -12,5 +12,6 @@ namespace Stoolball.Web.Teams
         }
         public Team Team { get; set; }
         public MatchListingViewModel Matches { get; set; }
+        public bool IsInACurrentLeague { get; set; }
     }
 }

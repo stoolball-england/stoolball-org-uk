@@ -28,7 +28,7 @@
     }
 </ul>
 
-@if (Model.Team.Seasons.Any(x => x.Season.MatchTypes.Contains(MatchType.LeagueMatch)))
+@if (Model.IsInACurrentLeague)
 {
 <p><a href="@Model.Team.TeamRoute/matches/add/league">Add a league match</a></p>
 }

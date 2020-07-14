@@ -52,6 +52,14 @@ namespace Stoolball.Umbraco.Data.Matches
         }
 
         /// <summary>
+        /// Creates a stoolball match
+        /// </summary>
+        public async Task<Match> CreateMatch(Match match, Guid memberKey, string memberName)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Deletes a stoolball match
         /// </summary>
         public async Task DeleteMatch(Match match, Guid memberKey, string memberName)

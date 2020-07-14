@@ -1,5 +1,6 @@
 ﻿using Stoolball.Competitions;
 using Stoolball.Dates;
+using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Matches;
@@ -7,6 +8,7 @@ using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -25,6 +27,7 @@ namespace Stoolball.Web.Teams
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly IEstimatedSeason _estimatedSeason;
+        private readonly ICreateLeagueMatchEligibleSeasons _createLeagueMatchEligibleSeasons;
 
         public MatchesForTeamController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -35,13 +38,15 @@ namespace Stoolball.Web.Teams
            ITeamDataSource teamDataSource,
            IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
-           IEstimatedSeason estimatedSeason)
+           IEstimatedSeason estimatedSeason,
+           ICreateLeagueMatchEligibleSeasons createLeagueMatchEligibleSeasons)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
             _estimatedSeason = estimatedSeason ?? throw new ArgumentNullException(nameof(estimatedSeason));
+            _createLeagueMatchEligibleSeasons = createLeagueMatchEligibleSeasons ?? throw new ArgumentNullException(nameof(createLeagueMatchEligibleSeasons));
         }
 
         [HttpGet]
@@ -76,6 +81,7 @@ namespace Stoolball.Web.Teams
                 };
 
                 model.IsAuthorized = IsAuthorized(model);
+                model.IsInACurrentLeague = _createLeagueMatchEligibleSeasons.SelectEligibleSeasons(model.Team.Seasons).Any();
 
                 model.Metadata.PageTitle = $"Matches for {model.Team.TeamName} stoolball team";
 

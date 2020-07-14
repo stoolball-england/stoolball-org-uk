@@ -12,6 +12,7 @@ namespace Stoolball.Competitions
 {
     public class Season : IAuditable
     {
+        [Display(Name = "Season")]
         public Guid? SeasonId { get; set; }
 
         /// <summary>

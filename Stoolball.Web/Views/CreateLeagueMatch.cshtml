@@ -1,5 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<CreateMatchViewModel>
 @using ClientDependency.Core.Mvc
+@using Stoolball.Competitions
+@using Stoolball.Matches
 @using Stoolball.Web.Matches
 @section head {
     <meta name="robots" content="noindex,follow" />
@@ -9,26 +11,61 @@
     Html.EnableUnobtrusiveJavaScript();
     Html.RequiresJs("~/scripts/jquery.validate.min.js");
     Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
-}
 
-<h1>Add a league match</h1>
-
-@if (Model.IsAuthorized)
-{
+    var h1 = string.Empty;
+    var seasons = new List<Season>();
     if (Model.Team != null)
     {
-        <p>Context team is @Model.Team.TeamName</p>
+        h1 = $"Add a league match for {Model.Team.TeamName}";
+        if (seasons.Count == 1)
+        {
+            Model.Match.Season = seasons[0];
+        }
     }
     else if (Model.Season != null)
     {
-        <p>Context season is @Model.Season.SeasonFullName()</p>
+        h1 = $"Add a league match in the {Model.Season.SeasonFullName()}";
+        Model.Match.Season = Model.Season;
     }
+}
 
-    /*using (Html.BeginUmbracoForm<CreateLeagueMatchSurfaceController>
+<h1>@h1</h1>
+
+@if (Model.IsAuthorized)
+{
+    using (Html.BeginUmbracoForm<CreateLeagueMatchSurfaceController>
         ("CreateMatch"))
     {
         @Html.AntiForgeryToken()
-    }*/
+        @Html.ValidationSummary(true)
+
+        if (Model.Match.Season != null)
+        {
+            @Html.HiddenFor(m => Model.Match.Season.SeasonId)
+        }
+        else
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => Model.Match.Season.SeasonId)
+                @Html.DropDownListFor(m => Model.Match.Season.SeasonId, Model.PossibleSeasons, new { @class = "form-control", required = "required", aria_describedby = "match-season" })
+                @Html.ValidationMessageFor(m => Model.Match.Season.SeasonId, null, new { id = "match-season" })
+            </div>
+        }
+
+        <div class="form-group">
+            @Html.LabelFor(m => Model.Match.StartTime)
+            @Html.TextBoxFor(m => Model.Match.StartTime, new { @type = "date", @class = "form-control", required = "required", aria_describedby = "match-date" })
+            @Html.ValidationMessageFor(m => Model.Match.StartTime, null, new { id = "match-date" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => Model.Match.StartTime)
+            @Html.TextBoxFor(m => Model.Match.StartTime, new { @type = "time", @class = "form-control", required = "required", aria_describedby = "match-date" })
+            @Html.ValidationMessageFor(m => Model.Match.StartTime, null, new { id = "match-date" })
+        </div>
+
+        <button class="btn btn-primary">Save match</button>
+    }
 }
 else
 {

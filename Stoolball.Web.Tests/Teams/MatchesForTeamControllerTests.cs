@@ -33,7 +33,10 @@ namespace Stoolball.Web.Tests.Teams
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, teamDataSource, matchDataSource, Mock.Of<IDateTimeFormatter>(), Mock.Of<IEstimatedSeason>())
+                null, teamDataSource, matchDataSource,
+                Mock.Of<IDateTimeFormatter>(),
+                Mock.Of<IEstimatedSeason>(),
+                Mock.Of<ICreateLeagueMatchEligibleSeasons>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -74,7 +77,7 @@ namespace Stoolball.Web.Tests.Teams
         public async Task Route_matching_team_returns_TeamViewModel()
         {
             var teamDataSource = new Mock<ITeamDataSource>();
-            teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).ReturnsAsync(new Team { TeamId = Guid.NewGuid() });
+            teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team { TeamId = Guid.NewGuid() });
 
             var matchesDataSource = new Mock<IMatchListingDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
