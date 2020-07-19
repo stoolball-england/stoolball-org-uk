@@ -370,7 +370,6 @@ splashes
 **/Views/Partials/Grid
 **/Views/MacroPartials
 .UmbracoCloud
-media
 **/data/deploy*
 **/data/Revision/documents/*
 **/data/Revision/media/*

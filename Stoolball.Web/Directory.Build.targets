@@ -29,7 +29,7 @@
       </Code>
     </Task>
   </UsingTask>
-  
+
   <!-- Copy files from NuGet packages that are needed to run but are not restored by NuGet restore. -->
   <Target Name="StoolballCopyFilesFromNuGetPackages" BeforeTargets="WebCompile">
     <PropertyGroup>
@@ -43,7 +43,7 @@
       <PopperVersion>1.16.0</PopperVersion>
       <SkybrudRedirectsVersion>2.0.3</SkybrudRedirectsVersion>
     </PropertyGroup>
-    
+
     <Error Text="UmbracoCms NuGet package v$(UmbracoVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\UmbracoCms.$(UmbracoVersion)\')" />
     <Error Text="UmbracoForms NuGet package v$(UmbracoFormsVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\UmbracoForms.$(UmbracoFormsVersion)\')" />
     <Error Text="uSync NuGet package v$(USyncVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\uSync.$(USyncVersion)\')" />
@@ -137,7 +137,7 @@
     <Copy SourceFiles="@(UmbracoCloudWebConfigSecrets)"
       DestinationFiles="$(ProjectDir)%(Filename)%(Extension)"
       Condition="!Exists('$(ProjectDir)%(Filename)%(Extension)')" />
-    
+
     <!-- Always overwrite these files with the version from Umbraco Cloud -->
     <Copy SourceFiles="@(UmbracoCloudWebConfig)"
       DestinationFiles="$(ProjectDir)%(Filename)%(Extension)" />
@@ -151,6 +151,18 @@
           TaskParameter="TouchedFiles"
           ItemName="FilesTouched"/>
     </Touch>
+  </Target>
+
+  <Target Name="StoolballTransformuSynconfig" AfterTargets="StoolballCopyFilesFromUmbracoCloud">
+    <!-- Applies changes to uSync8.config on build from XDT transforms so that the unaltered uSync8.config 
+         can always be copied from the uSync package. -->
+    <PropertyGroup>
+      <OriginaluSyncConfig>$(ProjectDir)\config\uSync8.config</OriginaluSyncConfig>
+      <TempuSyncConfig>$(ProjectDir)\config\uSync8.temp.config</TempuSyncConfig>
+    </PropertyGroup>
+    <Copy SourceFiles="$(OriginaluSyncConfig)" DestinationFiles="$(TempuSyncConfig)" />
+    <TransformXml Source="$(TempuSyncConfig)" Transform="$(ProjectDir)\config\uSync8.local.xdt.config" Destination="$(OriginaluSyncConfig)" StackTrace="true" />
+    <Delete Files="$(TempuSyncConfig)" />
   </Target>
 
   <Target Name="StoolballTransformWebConfig" AfterTargets="StoolballCopyFilesFromUmbracoCloud">
