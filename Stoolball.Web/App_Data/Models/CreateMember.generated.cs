@@ -21,7 +21,7 @@ namespace Umbraco.Web.PublishedModels
 {
 	/// <summary>Create Member</summary>
 	[PublishedModel("createMember")]
-	public partial class CreateMember : PublishedContentModel, IMetadata
+	public partial class CreateMember : PublishedContentModel, IDesign, IMetadata
 	{
 		// helpers
 #pragma warning disable 0109 // new is redundant
@@ -99,6 +99,13 @@ namespace Umbraco.Web.PublishedModels
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.6.2")]
 		[ImplementPropertyType("passwordHelp")]
 		public string PasswordHelp => this.Value<string>("passwordHelp");
+
+		///<summary>
+		/// Header photo: The photo which appears across the site header.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.6.2")]
+		[ImplementPropertyType("headerPhoto")]
+		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent HeaderPhoto => global::Umbraco.Web.PublishedModels.Design.GetHeaderPhoto(this);
 
 		///<summary>
 		/// URL segment: Sets the URL for this page. Defaults to the page title.

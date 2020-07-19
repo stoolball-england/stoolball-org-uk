@@ -17,11 +17,18 @@
     ]
   },
   "Parent": null,
-  "CompositionContentTypes": [],
+  "CompositionContentTypes": [
+    "umb://document-type/4669a249dba648a4826ac76d2042af4d"
+  ],
   "PropertyGroups": [],
   "PropertyTypes": [],
   "Udi": "umb://document-type/e7c3c3747a964291b0c362dd6315ffce",
   "Dependencies": [
+    {
+      "Udi": "umb://document-type/4669a249dba648a4826ac76d2042af4d",
+      "Ordering": true,
+      "Mode": 0
+    },
     {
       "Udi": "umb://document-type/9d4a4f9e28df449882067990797df794",
       "Ordering": false,
@@ -36,5 +43,5 @@
   "Name": "Home",
   "Alias": "home",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.3.0"
+  "__version": "3.4.4"
 }

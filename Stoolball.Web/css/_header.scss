@@ -1,4 +1,5 @@
-﻿@import "../Content/bootstrap/_functions.scss";
+﻿@import "_theme.scss";
+@import "../Content/bootstrap/_functions.scss";
 @import "../Content/bootstrap/_mixins.scss";
 @import "../Content/bootstrap/_variables.scss";
 
@@ -6,10 +7,33 @@
   Sitewide header 
 *******************/
 
+/* Display an image behind the header */
+header > .container-xl {
+    position: relative;
+    z-index: 2;
+}
+
+.header-photo {
+    display: block;
+    transform: skewY($skew);
+    margin-top: -35px;
+    border-top: theme-color("primary") solid 5px;
+    border-bottom: theme-color("primary") solid 5px;
+    max-width: none;
+    position: relative;
+    z-index: 1;
+}
+
+/* Move the <main /> element down below the header */
+main {
+    margin-top: 30px;
+}
+
 /* Combine flex-grow and flex-shrink to place the logo on the left and the dropdown menus as a group on the right */
 .navbar {
     display: flex;
     padding: $spacer/2 $spacer/2 $spacer/2 0;
+    align-items: start;
 }
 
 .navbar-brand {
@@ -20,19 +44,49 @@
     flex-shrink: 0;
 }
 
+/* Style the brand to sit on top of the .header-bg image */
 /* Set a maximum width on the logo which allows the group on the right not to wrap */
-.navbar-brand > a {
-    display: inline-block;
+.navbar-brand__wrapper {
+    display: block;
+    background: white;
+    padding: 10px 15px;
+    border-radius: 0 0 10px 10px;
+    margin: -20px 0 0 -10px;
+    max-width: 170px;
+    border: theme-color("primary") solid 2px;
 }
 
-.navbar-brand img {
-    max-width: 150px;
-}
-
-@media (min-width: 400px) {
-    .navbar-brand img {
+@include media-breakpoint-up(sm) {
+    .navbar-brand__wrapper {
+        padding: 10px 15px;
         max-width: 200px;
     }
+}
+
+@include media-breakpoint-up(md) {
+.header-photo {
+    margin-top: -60px;
+}
+.navbar-brand__wrapper {
+        padding: 15px 20px 15px;
+        max-width: 250px;
+        border-width: 3px;
+    }
+}
+
+/* Style the menu to sit on top of the .header-bg image */
+.navbar__menu > .dropdown {
+    background: white;
+    border-radius: 10px;
+    margin-right: $spacer;
+    box-shadow: 5px 5px 10px rgba(0,0,0,.5);
+}
+
+/* Style the account button to sit on top of the .header-bg image */
+.navbar__account > .dropdown {
+    background: white;
+    border-radius: 50%;
+    box-shadow: 5px 5px 10px rgba(0,0,0,.5);
 }
 
 /* Offset the padding on the container, so that the account button is in the top-right corner */

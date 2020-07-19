@@ -22,6 +22,7 @@
   },
   "Parent": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
   "CompositionContentTypes": [
+    "umb://document-type/4669a249dba648a4826ac76d2042af4d",
     "umb://document-type/d9999f5ac07b4f379d013f0316d8678c"
   ],
   "PropertyGroups": [
@@ -98,6 +99,11 @@
       "Mode": 0
     },
     {
+      "Udi": "umb://document-type/4669a249dba648a4826ac76d2042af4d",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
       "Udi": "umb://document-type/60449f5c60f54153ae5f9ddd4d2c1d15",
       "Ordering": false,
       "Mode": 0
@@ -126,5 +132,5 @@
   "Name": "My Account",
   "Alias": "myAccount",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.3.0"
+  "__version": "3.4.4"
 }

@@ -59,11 +59,18 @@
     "AllowedChildContentTypes": []
   },
   "Parent": null,
-  "CompositionContentTypes": [],
+  "CompositionContentTypes": [
+    "umb://document-type/4669a249dba648a4826ac76d2042af4d"
+  ],
   "PropertyGroups": [],
   "PropertyTypes": [],
   "Udi": "umb://document-type/b406c97934284717ade92aa16d4cb679",
   "Dependencies": [
+    {
+      "Udi": "umb://document-type/4669a249dba648a4826ac76d2042af4d",
+      "Ordering": true,
+      "Mode": 0
+    },
     {
       "Udi": "umb://template/007d4a7a068f4dd8b8a693271d5bb5f4",
       "Ordering": true,

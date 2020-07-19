@@ -21,7 +21,7 @@ namespace Umbraco.Web.PublishedModels
 {
 	/// <summary>Style guide</summary>
 	[PublishedModel("styleGuide")]
-	public partial class StyleGuide : PublishedContentModel
+	public partial class StyleGuide : PublishedContentModel, IDesign
 	{
 		// helpers
 #pragma warning disable 0109 // new is redundant
@@ -43,5 +43,12 @@ namespace Umbraco.Web.PublishedModels
 		{ }
 
 		// properties
+
+		///<summary>
+		/// Header photo: The photo which appears across the site header.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.6.2")]
+		[ImplementPropertyType("headerPhoto")]
+		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent HeaderPhoto => global::Umbraco.Web.PublishedModels.Design.GetHeaderPhoto(this);
 	}
 }

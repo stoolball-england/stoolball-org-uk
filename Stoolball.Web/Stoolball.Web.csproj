@@ -708,12 +708,19 @@
     <Content Include="config\serilog.config" />
     <Content Include="config\HealthChecks.config" />
     <Content Include="config\BackOfficeTours\getting-started.json" />
+    <None Include="config\uSync8.local.xdt.config" />
     <None Include="css\tinymce.scss" />
     <Content Include="css\tinymce.css">
       <DependentUpon>tinymce.scss</DependentUpon>
     </Content>
     <Content Include="css\tinymce.min.css">
       <DependentUpon>tinymce.css</DependentUpon>
+    </Content>
+    <Content Include="css\_footer.css">
+      <DependentUpon>_footer.scss</DependentUpon>
+    </Content>
+    <Content Include="css\_footer.min.css">
+      <DependentUpon>_footer.css</DependentUpon>
     </Content>
     <Content Include="Global.asax" />
     <Content Include="HttpStatus\410.html" />
@@ -777,6 +784,7 @@
     <Content Include="Scripts\bootstrap.bundle.min.js.map" />
     <Content Include="js\libs\purify.js.map" />
     <Content Include="js\libs\purify.min.js.map" />
+    <Content Include="css\_footer.scss" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
     <Content Include="Scripts\jquery-3.5.1.min.js" />
@@ -884,6 +892,7 @@
     <Compile Include="Account\ResetPasswordSurfaceController.cs" />
     <Compile Include="Account\ResetPasswordUpdate.cs" />
     <Compile Include="App_Data\Models\CreateMember.generated.cs" />
+    <Compile Include="App_Data\Models\Design.generated.cs" />
     <Compile Include="App_Data\Models\LoginMember.generated.cs" />
     <Compile Include="App_Data\Models\LogoutMember.generated.cs" />
     <Compile Include="App_Data\Models\ResetPassword.generated.cs" />
@@ -1005,6 +1014,7 @@
     <Compile Include="Matches\CreateLeagueMatchController.cs" />
     <Compile Include="Matches\CreateMatchViewModel.cs" />
     <Compile Include="Matches\TournamentAuthorizationPolicy.cs" />
+    <Compile Include="Metadata\IHasViewMetadata.cs" />
     <Compile Include="Security\IAuthorizationPolicy.cs" />
     <Compile Include="Matches\MatchActionsController.cs" />
     <Compile Include="Matches\MatchAuthorizationPolicy.cs" />

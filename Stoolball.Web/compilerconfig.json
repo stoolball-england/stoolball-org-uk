@@ -18,5 +18,9 @@
   {
     "outputFile": "css/tinymce.css",
     "inputFile": "css/tinymce.scss"
+  },
+  {
+    "outputFile": "css/_footer.css",
+    "inputFile": "css/_footer.scss"
   }
 ]

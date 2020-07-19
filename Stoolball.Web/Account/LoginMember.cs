@@ -1,4 +1,5 @@
 ﻿using Stoolball.Metadata;
+using Stoolball.Web.Metadata;
 
 namespace Umbraco.Web.PublishedModels
 {

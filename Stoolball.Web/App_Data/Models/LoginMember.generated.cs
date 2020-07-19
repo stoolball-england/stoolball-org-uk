@@ -21,7 +21,7 @@ namespace Umbraco.Web.PublishedModels
 {
 	/// <summary>Login Member</summary>
 	[PublishedModel("loginMember")]
-	public partial class LoginMember : PublishedContentModel, IMetadata
+	public partial class LoginMember : PublishedContentModel, IDesign, IMetadata
 	{
 		// helpers
 #pragma warning disable 0109 // new is redundant
@@ -113,6 +113,13 @@ namespace Umbraco.Web.PublishedModels
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.6.2")]
 		[ImplementPropertyType("resetPasswordSubject")]
 		public string ResetPasswordSubject => this.Value<string>("resetPasswordSubject");
+
+		///<summary>
+		/// Header photo: The photo which appears across the site header.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.6.2")]
+		[ImplementPropertyType("headerPhoto")]
+		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent HeaderPhoto => global::Umbraco.Web.PublishedModels.Design.GetHeaderPhoto(this);
 
 		///<summary>
 		/// URL segment: Sets the URL for this page. Defaults to the page title.

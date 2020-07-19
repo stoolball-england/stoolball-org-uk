@@ -21,7 +21,7 @@ namespace Umbraco.Web.PublishedModels
 {
 	/// <summary>Logout Member</summary>
 	[PublishedModel("logoutMember")]
-	public partial class LogoutMember : PublishedContentModel, IMetadata
+	public partial class LogoutMember : PublishedContentModel, IDesign, IMetadata
 	{
 		// helpers
 #pragma warning disable 0109 // new is redundant
@@ -64,6 +64,13 @@ namespace Umbraco.Web.PublishedModels
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.6.2")]
 		[ImplementPropertyType("logoutButton")]
 		public string LogoutButton => this.Value<string>("logoutButton");
+
+		///<summary>
+		/// Header photo: The photo which appears across the site header.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder", "8.6.2")]
+		[ImplementPropertyType("headerPhoto")]
+		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent HeaderPhoto => global::Umbraco.Web.PublishedModels.Design.GetHeaderPhoto(this);
 
 		///<summary>
 		/// URL segment: Sets the URL for this page. Defaults to the page title.

@@ -16,6 +16,7 @@
   },
   "Parent": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
   "CompositionContentTypes": [
+    "umb://document-type/4669a249dba648a4826ac76d2042af4d",
     "umb://document-type/d9999f5ac07b4f379d013f0316d8678c"
   ],
   "PropertyGroups": [
@@ -242,6 +243,11 @@
       "Mode": 0
     },
     {
+      "Udi": "umb://document-type/4669a249dba648a4826ac76d2042af4d",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
       "Udi": "umb://document-type/d9999f5ac07b4f379d013f0316d8678c",
       "Ordering": true,
       "Mode": 0
@@ -260,5 +266,5 @@
   "Name": "Reset Password",
   "Alias": "resetPassword",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.3.0"
+  "__version": "3.4.4"
 }

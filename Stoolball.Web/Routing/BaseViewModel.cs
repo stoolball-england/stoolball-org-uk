@@ -1,7 +1,9 @@
 ﻿using Stoolball.Metadata;
+using Stoolball.Web.Metadata;
 using System;
 using System.Collections.Generic;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Web;
 using Umbraco.Web.PublishedModels;
 
 namespace Stoolball.Web.Routing
@@ -28,6 +30,7 @@ namespace Stoolball.Web.Routing
         /// Gets the metadata for a view
         /// </summary>
         public ViewMetadata Metadata { get; } = new ViewMetadata();
+        public IPublishedContent HeaderPhoto => _contentModel.Value<IPublishedContent>("headerPhoto");
 
         public bool IsAuthorized { get; set; }
         public bool IsAdministrator { get; set; }

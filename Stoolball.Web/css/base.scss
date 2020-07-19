@@ -6,6 +6,7 @@
 @import "../Content/bootstrap/_navbar";
 @import "../Content/bootstrap/transitions";
 @import "../Content/bootstrap/_dropdown.scss";
+@import "../Content/bootstrap/_type.scss"; // for .list-unstyled
 @import "_header.scss";
 
 /* Makes .sr-only available */
@@ -21,6 +22,9 @@ img { max-width: 100%; }
 
 /* Required to use boxed content using alert styles */
 @import "../Content/bootstrap/_alert.scss";
+
+/* Required for footer */
+@import "_footer.scss";
 
 /* An alert has even padding, so remove any bottom margin on the last child which would make that look extra large. */
 .alert > :last-child {

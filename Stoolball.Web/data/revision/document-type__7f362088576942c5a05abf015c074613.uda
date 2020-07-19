@@ -15,11 +15,18 @@
     "AllowedChildContentTypes": []
   },
   "Parent": null,
-  "CompositionContentTypes": [],
+  "CompositionContentTypes": [
+    "umb://document-type/4669a249dba648a4826ac76d2042af4d"
+  ],
   "PropertyGroups": [],
   "PropertyTypes": [],
   "Udi": "umb://document-type/7f362088576942c5a05abf015c074613",
   "Dependencies": [
+    {
+      "Udi": "umb://document-type/4669a249dba648a4826ac76d2042af4d",
+      "Ordering": true,
+      "Mode": 0
+    },
     {
       "Udi": "umb://template/edb47a3c34b0473b8473a2ebcbf05a00",
       "Ordering": true,
@@ -29,5 +36,5 @@
   "Name": "Style guide",
   "Alias": "styleGuide",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.3.0"
+  "__version": "3.4.4"
 }

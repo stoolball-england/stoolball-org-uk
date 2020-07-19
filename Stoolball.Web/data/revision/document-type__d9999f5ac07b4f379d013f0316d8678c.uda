@@ -52,5 +52,5 @@
   "Name": "_Metadata",
   "Alias": "metadata",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.3.0"
+  "__version": "3.4.4"
 }

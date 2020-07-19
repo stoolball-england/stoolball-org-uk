@@ -1,0 +1,56 @@
+{
+  "DefaultTemplate": null,
+  "AllowedTemplates": [],
+  "Icon": "icon-document",
+  "Thumbnail": "folder.png",
+  "Description": null,
+  "IsContainer": false,
+  "Permissions": {
+    "AllowVaryingByCulture": false,
+    "AllowVaryingBySegment": false,
+    "AllowedAtRoot": false,
+    "IsElementType": false,
+    "AllowedChildContentTypes": []
+  },
+  "Parent": "umb://document-type-container/adb1648975db4732b1178ed4e821552f",
+  "CompositionContentTypes": [],
+  "PropertyGroups": [
+    {
+      "Key": "a9949d8c-655b-4ad2-95ec-b54ec318a877",
+      "Name": "Design",
+      "SortOrder": 0,
+      "PropertyTypes": [
+        {
+          "Key": "ad6eae9f-1634-4678-ac6e-da4f4e31bdfa",
+          "Alias": "headerPhoto",
+          "DataType": "umb://data-type/cbab061489c04c018a9a227e4015e191",
+          "Description": "The photo which appears across the site header.",
+          "Mandatory": false,
+          "Name": "Header photo",
+          "SortOrder": 0,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        }
+      ]
+    }
+  ],
+  "PropertyTypes": [],
+  "Udi": "umb://document-type/4669a249dba648a4826ac76d2042af4d",
+  "Dependencies": [
+    {
+      "Udi": "umb://data-type/cbab061489c04c018a9a227e4015e191",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type-container/adb1648975db4732b1178ed4e821552f",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "_Design",
+  "Alias": "design",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
+  "__version": "3.4.4"
+}

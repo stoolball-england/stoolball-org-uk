@@ -1,0 +1,12 @@
+{
+  "EditorAlias": "Umbraco.ImageCropper",
+  "DatabaseType": 0,
+  "Configuration": {"crops":[{"alias":"Extra-small","width":576,"height":100},{"alias":"Small","width":768,"height":150},{"alias":"Medium","width":992,"height":180},{"alias":"Large","width":1200,"height":200},{"alias":"Extra-large","width":2000,"height":300}]},
+  "Parent": null,
+  "Udi": "umb://data-type/591881c432eb4748ae90eb86b143a93e",
+  "Dependencies": [],
+  "Name": "Header photo",
+  "Alias": null,
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.DataTypeArtifact",
+  "__version": "3.4.4"
+}
