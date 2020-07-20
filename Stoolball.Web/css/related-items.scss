@@ -6,16 +6,16 @@
    can't have its height animated - it will not collapse beyond the height of its children. .related-item__animate also
    doesn't work when applied to the <button />.
 
-   <table class="table related-item">
+   <table class="table related-items">
         <tbody>
         <tr class="(|related-item__deleted)">
-            <td>
+            <td class="related-item__selected__section">
                 <div class="related-item__animate">value</div>
             </td>
-            <td class="related-item__delete">
+            <td class="related-item__delete related-item__selected__section">
                 <div class="related-item__animate">
                     <input type="hidden" class="related-item__data related-item__id" data-item="{{item-id}}" />
-                    <button><svg /></button>
+                    <button class="text-danger><svg /></button>
                 </div>
             </td>
         </tr>
@@ -25,19 +25,46 @@
         </tbody>
     </table>
     <script id="template-id" type="text/x-template">
+        <table>
         <tr>... any HTML, with {{value}} and {{data}} replaced with the selected item from autocomplete</tr>
+        </table>
+    </script>
+
+    Also for a single-item version where the display is similar but there's only ever one row so it's not a table.
+    
+    <div class="form-group related-item">
+        <label for="search">Search</label>
+        <input type="search" class="related-item__search" data-url="/path/to/autocomplete" data-template="template-id" id="search" />
+    </div>
+    <script type="text/x-template" id="location-template">
+        <div class="related-item__selected">
+            <div class="related-item__selected__section">
+                <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="search" />
+            </div>
+            <div class="related-item__delete related-item__selected__section">
+                <input name="xxx" type="hidden" class="related-item__data related-item__id" value="{{data}}" />
+                <button class="text-danger><svg /></button>
+            </div>
+        </div>
     </script>
 */
 
-.related-item__delete {
-    width: 20px;
+/* .related-item the single item version, which is not in a table */
+.related-item {
+    display: table;
+    width: 100%;
 }
 
-.related-items td {
+.related-item__selected {
+    display: table-row;
+}
+
+.related-item__selected__section {
     transition: padding .5s;
+    display: table-cell;
 }
 
-.related-item__deleted > td {
+.related-item__deleted > .related-item__selected__section {
     padding: 0;
 }
 
@@ -50,18 +77,25 @@
     height: 0;
 }
 
+.related-item__delete {
+    width: 55px;
+    text-align: right;
+}
+
 .related-item__delete button {
     border: none;
     background: none;
 }
 
+
+
 /* For reduced motion, instead of animating the row strike out the text and remove the delete button */
 @media (prefers-reduced-motion: reduce) {
-    .related-items td, .related-item__animate {
+    .related-items .related-item__selected__section, .related-item__animate {
         transition: none;
     }
 
-    .related-item__deleted > td {
+    .related-item__deleted > .related-item__selected__section {
         padding: ($spacer/4)*3;
     }
 

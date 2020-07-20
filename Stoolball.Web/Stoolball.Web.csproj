@@ -737,6 +737,7 @@
     <Content Include="js\libs\purify.js" />
     <Content Include="js\libs\purify.min.js" />
     <Content Include="js\maps.js" />
+    <Content Include="js\related-item.js" />
     <Content Include="js\related-items.js" />
     <Content Include="js\tinymce.js" />
     <Content Include="js\trusted-types-policy.js" />
@@ -1013,6 +1014,7 @@
     <Compile Include="Matches\DeleteTournamentViewModel.cs" />
     <Compile Include="Matches\CreateLeagueMatchController.cs" />
     <Compile Include="Matches\CreateMatchViewModel.cs" />
+    <Compile Include="Matches\TeamComparer.cs" />
     <Compile Include="Matches\TournamentAuthorizationPolicy.cs" />
     <Compile Include="Metadata\IHasViewMetadata.cs" />
     <Compile Include="Security\IAuthorizationPolicy.cs" />

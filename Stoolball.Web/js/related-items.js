@@ -1,7 +1,7 @@
 ﻿(function () {
-  function resetIndexes(tableRow) {
+  function resetIndexes(selectedItem) {
     /* Reset the indexes on the remaining fields so that ASP.NET model binding reads them all */
-    const remainingData = tableRow.parentNode.querySelectorAll(
+    const remainingData = selectedItem.parentNode.querySelectorAll(
       ".related-item__data"
     );
 
@@ -22,8 +22,8 @@
     }
   }
 
-  function resetAutocompleteParams(tableRow) {
-    const existingIdFields = tableRow.parentNode.querySelectorAll(
+  function resetAutocompleteParams(selectedItem) {
+    const existingIdFields = selectedItem.parentNode.querySelectorAll(
       ".related-item__id"
     );
     const existingIds = [];
@@ -37,39 +37,42 @@
     const relatedItems = document.querySelectorAll(".related-items");
     for (let i = 0; i < relatedItems.length; i++) {
       relatedItems[i].addEventListener("click", function (e) {
-        /* Get a consistent target of the table row, or null if it wasn't the delete button clicked */
+        /* Get a consistent target of the selected item container element, or null if it wasn't the delete button clicked */
         const className = "related-item__delete";
-        const tableRow = e.target.parentNode.parentNode.classList.contains(
+        const selectedItem = e.target.parentNode.parentNode.classList.contains(
           className
         )
           ? e.target.parentNode.parentNode.parentNode
           : null;
 
-        if (tableRow) {
+        if (selectedItem) {
           /* Stop the link from activating and the event from bubbling up further */
           e.preventDefault();
           e.stopPropagation();
 
           /* Remove any data fields so that the item isn't posted */
-          const dataFields = tableRow.querySelectorAll(".related-item__data");
+          const dataFields = selectedItem.querySelectorAll(
+            ".related-item__data"
+          );
           for (let j = 0; j < dataFields.length; j++) {
             dataFields[j].parentNode.removeChild(dataFields[j]);
           }
 
-          resetIndexes(tableRow);
+          resetIndexes(selectedItem);
 
           /* Reset autocomplete options so the deleted team is available for reselection */
-          const searchField = tableRow.parentNode.querySelector(
+          const searchField = selectedItem.parentNode.querySelector(
             ".related-item__search"
           );
           $(searchField)
             .autocomplete()
-            .setOptions({ params: resetAutocompleteParams(tableRow) });
+            .setOptions({ params: resetAutocompleteParams(selectedItem) });
 
-          /* Set a class on the table row so that CSS can transition it, then delete it after the transition */
-          tableRow.classList.add("related-item__deleted");
-          tableRow.addEventListener("transitionend", function () {
-            tableRow.parentNode && tableRow.parentNode.removeChild(tableRow);
+          /* Set a class on the selected item container element so that CSS can transition it, then delete it after the transition */
+          selectedItem.classList.add("related-item__deleted");
+          selectedItem.addEventListener("transitionend", function () {
+            selectedItem.parentNode &&
+              selectedItem.parentNode.removeChild(selectedItem);
           });
 
           /* Create an alert for assistive technology */
@@ -83,30 +86,30 @@
           searchField.focus();
         }
       });
-      relatedItems[i]
-        .querySelector(".related-item__search")
-        .addEventListener("keypress", function (e) {
-          // Prevent enter submitting the form within this editor
-          if (e.keyCode === 13) {
-            e.preventDefault();
-          }
-        });
-    }
 
-    const searchFields = document.querySelectorAll(".related-item__search");
-    for (let i = 0; i < searchFields.length; i++) {
-      let url = searchFields[i].getAttribute("data-url");
+      const searchField = relatedItems[i].querySelector(
+        ".related-item__search"
+      );
+
+      searchField.addEventListener("keypress", function (e) {
+        // Prevent enter submitting the form within this editor
+        if (e.keyCode === 13) {
+          e.preventDefault();
+        }
+      });
+
+      let url = searchField.getAttribute("data-url");
       let template = document.getElementById(
-        searchFields[i].getAttribute("data-template")
+        searchField.getAttribute("data-template")
       ).innerHTML;
-      const tableRow = searchFields[i].parentNode.parentNode;
-      const params = resetAutocompleteParams(tableRow);
+      const selectedItem = searchField.parentNode.parentNode;
+      const params = resetAutocompleteParams(selectedItem);
 
-      $(searchFields[i]).autocomplete({
+      $(searchField).autocomplete({
         serviceUrl: url,
         params: params,
         onSelect: function (suggestion) {
-          tableRow.insertAdjacentHTML(
+          selectedItem.insertAdjacentHTML(
             "beforebegin",
             template
               .replace(/{{value}}/g, suggestion.value)
@@ -118,16 +121,16 @@
           alert.setAttribute("role", "alert");
           alert.setAttribute("class", "sr-only");
           alert.appendChild(
-            document.createTextNode("Added" + suggestion.value)
+            document.createTextNode("Added " + suggestion.value)
           );
           document.body.appendChild(alert);
 
-          resetIndexes(tableRow);
+          resetIndexes(selectedItem);
 
           /* Reset autocomplete options to the added team is excluded from further suggestions */
           $(this)
             .autocomplete()
-            .setOptions({ params: resetAutocompleteParams(tableRow) });
+            .setOptions({ params: resetAutocompleteParams(selectedItem) });
 
           /* Clear the search field */
           this.value = "";

@@ -128,9 +128,9 @@
                  * The value of PAON and Town is only important to redisplay here if (ModelState.IsValid == false). Because they're duplicated
                  * it's important to use NameAndLocalityOrTownIfDifferent() rather than NameAndLocalityOrTown(), so that the duplicate 'town' is not displayed.
                  */
-                <tr>
-                    <td><div class="related-item__animate">@Model.Team.MatchLocations[i].NameAndLocalityOrTownIfDifferent()</div></td>
-                    <td class="related-item__delete">
+                <tr class="related-item__selected">
+                    <td class="related-item__selected__section"><div class="related-item__animate">@Model.Team.MatchLocations[i].NameAndLocalityOrTownIfDifferent()</div></td>
+                    <td class="related-item__delete related-item__selected__section">
                         <div class="related-item__animate">
                             @Html.Hidden($"Team.MatchLocations[{i}].MatchLocationId", Model.Team.MatchLocations[i].MatchLocationId, new { @class = "related-item__data related-item__id", data_item = Model.Team.MatchLocations[i].MatchLocationId })
                             @Html.Hidden($"Team.MatchLocations[{i}].PrimaryAddressableObjectName", Model.Team.MatchLocations[i].PrimaryAddressableObjectName, new { @class = "related-item__data", data_item = Model.Team.MatchLocations[i].MatchLocationId })
@@ -159,9 +159,9 @@
     </table>
     <script type="text/x-template" id="location-template">
         <table>
-            <tr>
-                <td><div class="related-item__animate">{{value}}</div></td>
-                <td class="related-item__delete">
+            <tr class="related-item__selected">
+                <td class="related-item__selected__section"><div class="related-item__animate">{{value}}</div></td>
+                <td class="related-item__delete related-item__selected__section">
                     <div class="related-item__animate">
                         <input name="Team.MatchLocations[0].MatchLocationId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
                         <input name="Team.MatchLocations[0].PrimaryAddressableObjectName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />

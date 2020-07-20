@@ -9,6 +9,7 @@ namespace Stoolball.MatchLocations
 {
     public class MatchLocation : IAuditable
     {
+        [Display(Name = "Ground or sports hall")]
         public Guid? MatchLocationId { get; set; }
 
         [Display(Name = "Pitch or sports hall")]

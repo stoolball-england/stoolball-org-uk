@@ -15,6 +15,7 @@
     Html.RequiresCss("~/css/autocomplete.min.css");
 
     Html.RequiresCss("~/css/related-items.min.css");
+    Html.RequiresJs("~/js/related-item.js");
     Html.RequiresJs("~/js/related-items.js");
 
     Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
@@ -233,9 +234,9 @@
             <tr><th scope="col" colspan="2">Multiple related items</th></tr>
         </thead>
         <tbody>
-            <tr>
-                <td><div class="related-item__animate">Selected item</div></td>
-                <td class="related-item__delete">
+            <tr class="related-item__selected">
+                <td class="related-item__selected__section"><div class="related-item__animate">Selected item</div></td>
+                <td class="related-item__delete related-item__selected__section">
                     <div class="related-item__animate">
                         <button class="text-danger">@Html.Partial("_DeleteIcon", (string.Empty, "Remove item"))</button>
                     </div>
@@ -260,15 +261,38 @@
     </table>
     <script type="text/x-template" id="team-template">
         <table>
-            <tr>
-                <td><div class="related-item__animate">{{value}}</div></td>
-                <td class="related-item__delete">
+            <tr class="related-item__selected">
+                <td class="related-item__selected__section"><div class="related-item__animate">{{value}}</div></td>
+                <td class="related-item__delete related-item__selected__section">
                     <div class="related-item__animate">
                         <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}}"))</button>
                     </div>
                 </td>
             </tr>
         </table>
+    </script>
+    <div class="form-group related-item">
+        <label for="Match.MatchLocation.PrimaryAddressableObjectName">Single related item</label>
+        @Html.TextBox("Match.MatchLocation.PrimaryAddressableObjectName", string.Empty, new
+      {
+          @class = "form-control related-item__search",
+          placeholder = "Type the ground or sports hall name",
+          autocomplete = "off",
+          type = "search",
+          data_url = "/api/locations/autocomplete",
+          data_template = "location-template",
+          aria_label = "Type a ground or sports hall name add and press down arrow to select from the matching choices"
+      })
+    </div>
+    <script type="text/x-template" id="location-template">
+        <div class="related-item__selected">
+            <div class="related-item__selected__section">
+                <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="Match_MatchLocation_PrimaryAddressableObjectName" />
+            </div>
+            <div class="related-item__delete related-item__selected__section">
+                <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}}"))</button>
+            </div>
+        </div>
     </script>
     <div class="form-group">
         <label for="rich-text">Rich text editor</label>

@@ -21,9 +21,9 @@
         @for (var i = 0; i < Model.Club.Teams.Count; i++)
         {
             var displayName = Model.Club.Teams[i].UntilYear.HasValue ? Model.Club.Teams[i].TeamName + " (no longer active)" : Model.Club.Teams[i].TeamName;
-            <tr>
-                <td><div class="related-item__animate">@displayName</div></td>
-                <td class="related-item__delete">
+            <tr class="related-item__selected">
+                <td class="related-item__selected__section"><div class="related-item__animate">@displayName</div></td>
+                <td class="related-item__delete related-item__selected__section">
                     <div class="related-item__animate">
                         @Html.Hidden($"Club.Teams[{i}].TeamId", Model.Club.Teams[i].TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Club.Teams[i].TeamId })
                         @Html.Hidden($"Club.Teams[{i}].TeamName", displayName, new { @class = "related-item__data", data_item = Model.Club.Teams[i].TeamId })
@@ -51,9 +51,9 @@
 </table>
 <script type="text/x-template" id="team-template">
     <table>
-        <tr>
-            <td><div class="related-item__animate">{{value}}</div></td>
-            <td class="related-item__delete">
+        <tr class="related-item__selected">
+            <td class="related-item__selected__section"><div class="related-item__animate">{{value}}</div></td>
+            <td class="related-item__delete related-item__selected__section">
                 <div class="related-item__animate">
                     <input name="Club.Teams[0].TeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
                     <input name="Club.Teams[0].TeamName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />

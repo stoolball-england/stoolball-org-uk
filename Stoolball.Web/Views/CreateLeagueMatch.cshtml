@@ -12,20 +12,20 @@
     Html.RequiresJs("~/scripts/jquery.validate.min.js");
     Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
 
+    Html.RequiresJs("~/js/libs/jquery.autocomplete.min.js", 50);
+    Html.RequiresCss("~/css/autocomplete.min.css");
+
+    Html.RequiresCss("~/css/related-items.min.css");
+    Html.RequiresJs("~/js/related-item.js");
+
     var h1 = string.Empty;
-    var seasons = new List<Season>();
     if (Model.Team != null)
     {
         h1 = $"Add a league match for {Model.Team.TeamName}";
-        if (seasons.Count == 1)
-        {
-            Model.Match.Season = seasons[0];
-        }
     }
     else if (Model.Season != null)
     {
         h1 = $"Add a league match in the {Model.Season.SeasonFullName()}";
-        Model.Match.Season = Model.Season;
     }
 }
 
@@ -53,16 +53,64 @@
         }
 
         <div class="form-group">
-            @Html.LabelFor(m => Model.Match.StartTime)
-            @Html.TextBoxFor(m => Model.Match.StartTime, new { @type = "date", @class = "form-control", required = "required", aria_describedby = "match-date" })
-            @Html.ValidationMessageFor(m => Model.Match.StartTime, null, new { id = "match-date" })
+            @Html.LabelFor(m => Model.MatchDate)
+            @Html.TextBoxFor(m => Model.MatchDate, new { @type = "date", @class = "form-control", required = "required", aria_describedby = "match-date" })
+            @Html.ValidationMessageFor(m => Model.MatchDate, null, new { id = "match-date" })
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(m => Model.Match.StartTime)
-            @Html.TextBoxFor(m => Model.Match.StartTime, new { @type = "time", @class = "form-control", required = "required", aria_describedby = "match-date" })
-            @Html.ValidationMessageFor(m => Model.Match.StartTime, null, new { id = "match-date" })
+            @Html.LabelFor(m => Model.StartTime)
+            @Html.TextBoxFor(m => Model.StartTime, new { @type = "time", @class = "form-control", required = "required", aria_describedby = "match-date" })
+            @Html.ValidationMessageFor(m => Model.StartTime, null, new { id = "match-date" })
         </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => Model.HomeTeamId)
+            @Html.DropDownListFor(m => Model.HomeTeamId, Model.PossibleTeams, new { @class = "form-control", required = "required", aria_describedby = "home-team" })
+            @Html.ValidationMessageFor(m => Model.HomeTeamId, null, new { id = "home-team" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => Model.AwayTeamId)
+            @Html.DropDownListFor(m => Model.AwayTeamId, Model.PossibleTeams, new { @class = "form-control", required = "required", aria_describedby = "home-team" })
+            @Html.ValidationMessageFor(m => Model.AwayTeamId, null, new { id = "home-team" })
+        </div>
+
+        <div class="form-group related-item">
+            @Html.LabelFor(m => Model.Match.MatchLocation.PrimaryAddressableObjectName)
+            @Html.TextBox("Match.MatchLocation.PrimaryAddressableObjectName", string.Empty, new
+          {
+              @class = "form-control related-item__search",
+              placeholder = "Type the ground or sports hall name",
+              autocomplete = "off",
+              type = "search",
+              data_url = "/api/locations/autocomplete",
+              data_template = "location-template",
+              aria_label = "Type a ground or sports hall name add and press down arrow to select from the matching choices"
+          })
+
+        </div>
+        <script type="text/x-template" id="location-template">
+            <div class="related-item__selected">
+                <div class="related-item__selected__section">
+                    <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="Match_MatchLocation_PrimaryAddressableObjectName" />
+                </div>
+                <div class="related-item__delete related-item__selected__section">
+                    <input name="Match.MatchLocation.MatchLocationId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
+                    <input name="Match.MatchLocation.PrimaryAddressableObjectName" class="related-item__data" type="hidden" value="{{value}}" />
+                    <input name="Match.MatchLocation.Town" class="related-item__data" type="hidden" value="{{value}}" />
+                    <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this match"))</button>
+                </div>
+            </div>
+            @* This posts back PAON and Town because those two fields are [Required] on the MatchLocation class.
+                *
+                * PAON and Town both contain the same value returned by the autocomplete. Only MatchLocationId is used in saving,
+                * and any value for PAON and Town will do to pass that [Required] validation.
+                *
+                * The value of PAON and Town is only important to redisplay here if (ModelState.IsValid == false). Because they're duplicated
+                * it's important to use NameAndLocalityOrTownIfDifferent() rather than NameAndLocalityOrTown(), so that the duplicate 'town' is not displayed.
+            *@
+        </script>
 
         <button class="btn btn-primary">Save match</button>
     }
