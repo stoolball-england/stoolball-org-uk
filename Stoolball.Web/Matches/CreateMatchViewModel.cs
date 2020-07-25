@@ -24,7 +24,6 @@ namespace Stoolball.Web.Matches
         public DateTimeOffset? MatchDate { get; set; }
 
         [Display(Name = "Start time")]
-        [Required]
         public DateTimeOffset? StartTime { get; set; }
 
         [Display(Name = "Home team")]
@@ -34,6 +33,10 @@ namespace Stoolball.Web.Matches
         [Display(Name = "Away team")]
         [Required]
         public Guid? AwayTeamId { get; set; }
+
+        [Display(Name = "Ground or sports centre name")]
+        public string MatchLocationName { get; set; }
+        public Guid? MatchLocationId { get; set; }
 
         public List<SelectListItem> PossibleSeasons { get; internal set; } = new List<SelectListItem>();
 

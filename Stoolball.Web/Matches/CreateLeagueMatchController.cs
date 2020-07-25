@@ -23,7 +23,7 @@ namespace Stoolball.Web.Matches
     {
         private readonly ITeamDataSource _teamDataSource;
         private readonly ISeasonDataSource _seasonDataSource;
-        private readonly ICreateLeagueMatchEligibleSeasons _createLeagueMatchEligibleSeasons;
+        private readonly ICreateLeagueMatchSeasonSelector _createLeagueMatchSeasonSelector;
 
         public CreateLeagueMatchController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -33,16 +33,16 @@ namespace Stoolball.Web.Matches
            UmbracoHelper umbracoHelper,
            ITeamDataSource teamDataSource,
            ISeasonDataSource seasonDataSource,
-           ICreateLeagueMatchEligibleSeasons createLeagueMatchEligibleSeasons)
+           ICreateLeagueMatchSeasonSelector createLeagueMatchSeasonSelector)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
-            _createLeagueMatchEligibleSeasons = createLeagueMatchEligibleSeasons ?? throw new ArgumentNullException(nameof(createLeagueMatchEligibleSeasons));
+            _createLeagueMatchSeasonSelector = createLeagueMatchSeasonSelector ?? throw new ArgumentNullException(nameof(createLeagueMatchSeasonSelector));
         }
 
         [HttpGet]
-        [ContentSecurityPolicy(Forms = true)]
+        [ContentSecurityPolicy(Forms = true, TinyMCE = true)]
         public async override Task<ActionResult> Index(ContentModel contentModel)
         {
             if (contentModel is null)
@@ -59,7 +59,7 @@ namespace Stoolball.Web.Matches
                     return new HttpNotFoundResult();
                 }
 
-                var possibleSeasons = _createLeagueMatchEligibleSeasons.SelectEligibleSeasons(model.Team.Seasons).ToList();
+                var possibleSeasons = _createLeagueMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons).ToList();
                 if (possibleSeasons == null || !possibleSeasons.Any())
                 {
                     return new HttpNotFoundResult();

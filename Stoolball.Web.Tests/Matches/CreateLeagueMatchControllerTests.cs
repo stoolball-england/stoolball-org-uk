@@ -25,7 +25,7 @@ namespace Stoolball.Web.Tests.Matches
     {
         private class TestController : CreateLeagueMatchController
         {
-            public TestController(ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource, ICreateLeagueMatchEligibleSeasons createLeagueMatchEligibleSeasons, Uri requestUrl)
+            public TestController(ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource, ICreateLeagueMatchSeasonSelector createLeagueMatchEligibleSeasons, Uri requestUrl)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -64,7 +64,7 @@ namespace Stoolball.Web.Tests.Matches
             var seasonDataSource = new Mock<ISeasonDataSource>();
             seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Season>(null));
 
-            var eligibleSeasons = new Mock<ICreateLeagueMatchEligibleSeasons>();
+            var eligibleSeasons = new Mock<ICreateLeagueMatchSeasonSelector>();
 
             using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, eligibleSeasons.Object, new Uri("https://example.org")))
             {
@@ -83,7 +83,7 @@ namespace Stoolball.Web.Tests.Matches
             var seasonDataSource = new Mock<ISeasonDataSource>();
             seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Season>(null));
 
-            var eligibleSeasons = new Mock<ICreateLeagueMatchEligibleSeasons>();
+            var eligibleSeasons = new Mock<ICreateLeagueMatchSeasonSelector>();
 
             using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, eligibleSeasons.Object, new Uri("https://example.org/teams/")))
             {
@@ -103,7 +103,7 @@ namespace Stoolball.Web.Tests.Matches
             var seasonDataSource = new Mock<ISeasonDataSource>();
             seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult(new Season()));
 
-            var eligibleSeasons = new Mock<ICreateLeagueMatchEligibleSeasons>();
+            var eligibleSeasons = new Mock<ICreateLeagueMatchSeasonSelector>();
 
             using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, eligibleSeasons.Object, new Uri("https://example.org/competitions/")))
             {
@@ -123,8 +123,8 @@ namespace Stoolball.Web.Tests.Matches
             var seasonDataSource = new Mock<ISeasonDataSource>();
             seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Season>(null));
 
-            var eligibleSeasons = new Mock<ICreateLeagueMatchEligibleSeasons>();
-            eligibleSeasons.Setup(x => x.SelectEligibleSeasons(It.IsAny<IEnumerable<TeamInSeason>>())).Returns(new List<Season>
+            var eligibleSeasons = new Mock<ICreateLeagueMatchSeasonSelector>();
+            eligibleSeasons.Setup(x => x.SelectPossibleSeasons(It.IsAny<IEnumerable<TeamInSeason>>())).Returns(new List<Season>
                 {
                         new Season{
                             SeasonId = Guid.NewGuid(),
@@ -154,7 +154,7 @@ namespace Stoolball.Web.Tests.Matches
                 MatchTypes = new List<MatchType> { MatchType.LeagueMatch }
             }));
 
-            var eligibleSeasons = new Mock<ICreateLeagueMatchEligibleSeasons>();
+            var eligibleSeasons = new Mock<ICreateLeagueMatchSeasonSelector>();
 
             using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, eligibleSeasons.Object, new Uri("https://example.org/competitions/")))
             {

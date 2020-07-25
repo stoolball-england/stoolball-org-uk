@@ -27,7 +27,7 @@ namespace Stoolball.Web.Teams
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly IEstimatedSeason _estimatedSeason;
-        private readonly ICreateLeagueMatchEligibleSeasons _createLeagueMatchEligibleSeasons;
+        private readonly ICreateLeagueMatchSeasonSelector _createLeagueMatchEligibleSeasons;
 
         public MatchesForTeamController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -39,7 +39,7 @@ namespace Stoolball.Web.Teams
            IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
            IEstimatedSeason estimatedSeason,
-           ICreateLeagueMatchEligibleSeasons createLeagueMatchEligibleSeasons)
+           ICreateLeagueMatchSeasonSelector createLeagueMatchEligibleSeasons)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
@@ -81,7 +81,7 @@ namespace Stoolball.Web.Teams
                 };
 
                 model.IsAuthorized = IsAuthorized(model);
-                model.IsInACurrentLeague = _createLeagueMatchEligibleSeasons.SelectEligibleSeasons(model.Team.Seasons).Any();
+                model.IsInACurrentLeague = _createLeagueMatchEligibleSeasons.SelectPossibleSeasons(model.Team.Seasons).Any();
 
                 model.Metadata.PageTitle = $"Matches for {model.Team.TeamName} stoolball team";
 

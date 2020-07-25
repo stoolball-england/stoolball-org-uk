@@ -5,6 +5,7 @@ using Stoolball.MatchLocations;
 using Stoolball.Teams;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 
@@ -61,6 +62,7 @@ namespace Stoolball.Matches
 
         public List<MatchAward> Awards { get; internal set; } = new List<MatchAward>();
 
+        [Display(Name = "Notes")]
         public string MatchNotes { get; set; }
         public string MatchRoute { get; set; }
         public Season Season { get; set; }

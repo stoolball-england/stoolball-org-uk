@@ -1,10 +1,13 @@
 ﻿using Stoolball.Matches;
+using Stoolball.MatchLocations;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Security;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -20,17 +23,17 @@ namespace Stoolball.Web.Matches
     public class CreateLeagueMatchSurfaceController : SurfaceController
     {
         private readonly IMatchRepository _matchRepository;
-        private readonly ICreateLeagueMatchEligibleSeasons _createLeagueMatchEligibleSeasons;
+        private readonly ICreateLeagueMatchSeasonSelector _createLeagueMatchSeasonSelector;
         private readonly ITeamDataSource _teamDataSource;
         private readonly ISeasonDataSource _seasonDataSource;
 
         public CreateLeagueMatchSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource,
-            IMatchRepository matchRepository, ICreateLeagueMatchEligibleSeasons createLeagueMatchEligibleSeasons)
+            IMatchRepository matchRepository, ICreateLeagueMatchSeasonSelector createLeagueMatchSeasonSelector)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
-            _createLeagueMatchEligibleSeasons = createLeagueMatchEligibleSeasons ?? throw new ArgumentNullException(nameof(createLeagueMatchEligibleSeasons));
+            _createLeagueMatchSeasonSelector = createLeagueMatchSeasonSelector ?? throw new ArgumentNullException(nameof(createLeagueMatchSeasonSelector));
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
         }
@@ -38,49 +41,101 @@ namespace Stoolball.Web.Matches
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> CreateMatch([Bind(Prefix = "Match", Include = "Season.SeasonId")] Match model)
+        [ContentSecurityPolicy(Forms = true, TinyMCE = true)]
+        public async Task<ActionResult> CreateMatch([Bind(Prefix = "Match", Include = "Season")] Match postedMatch)
         {
-            if (model is null)
+            if (postedMatch is null)
             {
-                throw new ArgumentNullException(nameof(model));
+                throw new ArgumentNullException(nameof(postedMatch));
             }
 
-            var viewModel = new CreateMatchViewModel(CurrentPage) { Match = new Match() };
-            if (Request.Url.AbsolutePath.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
+            // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
+            postedMatch.MatchNotes = Request.Unvalidated.Form["Match.MatchNotes"];
+
+            var model = new CreateMatchViewModel(CurrentPage) { Match = postedMatch };
+            if (!string.IsNullOrEmpty(Request.Form["MatchDate"]))
             {
-                viewModel.Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false);
-                viewModel.PossibleSeasons = _createLeagueMatchEligibleSeasons.SelectEligibleSeasons(viewModel.Team?.Seasons)
-                    .Select(x => new SelectListItem { Text = x.SeasonFullName(), Value = x.SeasonId.Value.ToString() })
-                    .ToList();
+                model.MatchDate = DateTimeOffset.Parse(Request.Form["MatchDate"], CultureInfo.CurrentCulture);
+                postedMatch.StartTime = model.MatchDate.Value;
+                postedMatch.StartTimeIsKnown = false;
+                if (!string.IsNullOrEmpty(Request.Form["StartTime"]))
+                {
+                    model.StartTime = DateTimeOffset.Parse(Request.Form["StartTime"], CultureInfo.CurrentCulture);
+                    postedMatch.StartTime = postedMatch.StartTime.Add(model.StartTime.Value.TimeOfDay);
+                    postedMatch.StartTimeIsKnown = true;
+                }
             }
-            else if (Request.Url.AbsolutePath.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrEmpty(Request.Form["HomeTeamId"]))
             {
-                viewModel.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl).ConfigureAwait(false);
+                model.HomeTeamId = new Guid(Request.Form["HomeTeamId"]);
+                postedMatch.Teams.Add(new TeamInMatch
+                {
+                    Team = new Team { TeamId = model.HomeTeamId },
+                    TeamRole = TeamRole.Home
+                });
+            }
+            if (!string.IsNullOrEmpty(Request.Form["AwayTeamId"]))
+            {
+                model.AwayTeamId = new Guid(Request.Form["AwayTeamId"]);
+                postedMatch.Teams.Add(new TeamInMatch
+                {
+                    Team = new Team { TeamId = model.AwayTeamId },
+                    TeamRole = TeamRole.Away
+                });
+            }
+            if (!string.IsNullOrEmpty(Request.Form["MatchLocationId"]))
+            {
+                model.MatchLocationId = new Guid(Request.Form["MatchLocationId"]);
+                model.MatchLocationName = Request.Form["MatchLocationName"];
+                postedMatch.MatchLocation = new MatchLocation
+                {
+                    MatchLocationId = model.MatchLocationId
+                };
             }
 
-            viewModel.IsAuthorized = User.Identity.IsAuthenticated;
+            model.IsAuthorized = User.Identity.IsAuthenticated;
 
-            if (viewModel.IsAuthorized && ModelState.IsValid &&
-                (viewModel.Team == null || viewModel.PossibleSeasons == null || !viewModel.PossibleSeasons.Any()) &&
-                (viewModel.Season == null || !viewModel.Season.MatchTypes.Contains(MatchType.LeagueMatch)))
+            if (model.IsAuthorized && ModelState.IsValid &&
+                (model.Team == null || (model.PossibleSeasons != null && model.PossibleSeasons.Any())) &&
+                (model.Season == null || model.Season.MatchTypes.Contains(MatchType.LeagueMatch)))
             {
                 var currentMember = Members.GetCurrentMember();
-                await _matchRepository.CreateMatch(viewModel.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _matchRepository.CreateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the match
-                return Redirect(viewModel.Match.MatchRoute);
+                return Redirect(model.Match.MatchRoute);
             }
 
-            if (viewModel.Team != null)
+            if (Request.RawUrl.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
-                viewModel.Metadata.PageTitle = $"Add a league match for {viewModel.Team.TeamName}";
+                model.Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false);
+                var possibleSeasons = _createLeagueMatchSeasonSelector.SelectPossibleSeasons(model.Team?.Seasons).ToList();
+                if (possibleSeasons.Count == 1)
+                {
+                    model.Match.Season = possibleSeasons[0];
+                }
+                model.PossibleSeasons = possibleSeasons
+                    .Select(x => new SelectListItem { Text = x.SeasonFullName(), Value = x.SeasonId.Value.ToString() })
+                    .ToList();
+
+                var possibleTeams = new List<Team>();
+                foreach (var season in possibleSeasons)
+                {
+                    possibleTeams.AddRange((await _seasonDataSource.ReadSeasonByRoute(season.SeasonRoute, true).ConfigureAwait(false))?.Teams.Where(x => x.WithdrawnDate == null).Select(x => x.Team));
+                }
+                model.PossibleTeams = possibleTeams.OfType<Team>().Distinct(new TeamEqualityComparer()).Select(x => new SelectListItem { Text = x.TeamName, Value = x.TeamId.Value.ToString() }).ToList();
+                model.PossibleTeams.Sort(new TeamComparer(model.Team.TeamId));
+
+                model.Metadata.PageTitle = $"Add a league match for {model.Team.TeamName}";
             }
-            else if (model.Season != null)
+            else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
-                viewModel.Metadata.PageTitle = $"Add a league match in the {viewModel.Season.SeasonFullName()}";
+                model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false);
+                model.PossibleTeams = model.Season.Teams.Select(x => new SelectListItem { Text = x.Team.TeamName, Value = x.Team.TeamId.Value.ToString() }).ToList();
+                model.PossibleTeams.Sort(new TeamComparer(null));
+                model.Metadata.PageTitle = $"Add a league match in the {model.Season.SeasonFullName()}";
             }
-            return View("CreateLeagueMatch", viewModel);
+            return View("CreateLeagueMatch", model);
         }
     }
 }

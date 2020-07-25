@@ -26,6 +26,7 @@
             ".related-item__search"
           );
           searchField.style.display = "block";
+          searchField.removeAttribute("disabled");
           searchField.focus();
 
           /* Remove the deleted item */
@@ -72,6 +73,7 @@
           /* Clear and hide the search field */
           this.value = "";
           this.style.display = "none";
+          this.setAttribute("disabled", "disabled");
         },
       });
     }

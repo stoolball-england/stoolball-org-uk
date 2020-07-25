@@ -1,7 +1,5 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<CreateMatchViewModel>
 @using ClientDependency.Core.Mvc
-@using Stoolball.Competitions
-@using Stoolball.Matches
 @using Stoolball.Web.Matches
 @section head {
     <meta name="robots" content="noindex,follow" />
@@ -17,6 +15,9 @@
 
     Html.RequiresCss("~/css/related-items.min.css");
     Html.RequiresJs("~/js/related-item.js");
+
+    Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
+    Html.RequiresJs("/js/tinymce.js");
 
     var h1 = string.Empty;
     if (Model.Team != null)
@@ -39,6 +40,8 @@
         @Html.AntiForgeryToken()
         @Html.ValidationSummary(true)
 
+        <button class="sr-only">Save match</button>
+
         if (Model.Match.Season != null)
         {
             @Html.HiddenFor(m => Model.Match.Season.SeasonId)
@@ -54,14 +57,14 @@
 
         <div class="form-group">
             @Html.LabelFor(m => Model.MatchDate)
-            @Html.TextBoxFor(m => Model.MatchDate, new { @type = "date", @class = "form-control", required = "required", aria_describedby = "match-date" })
+            @Html.TextBoxFor(m => Model.MatchDate, "{0:yyyy-MM-dd}", new { @type = "date", @class = "form-control", required = "required", aria_describedby = "match-date" })
             @Html.ValidationMessageFor(m => Model.MatchDate, null, new { id = "match-date" })
         </div>
 
         <div class="form-group">
             @Html.LabelFor(m => Model.StartTime)
-            @Html.TextBoxFor(m => Model.StartTime, new { @type = "time", @class = "form-control", required = "required", aria_describedby = "match-date" })
-            @Html.ValidationMessageFor(m => Model.StartTime, null, new { id = "match-date" })
+            @Html.TextBoxFor(m => Model.StartTime, "{0:HH:mm}", new { @type = "time", @class = "form-control", aria_describedby = "start-time" })
+            @Html.ValidationMessageFor(m => Model.StartTime, null, new { id = "start-time" })
         </div>
 
         <div class="form-group">
@@ -77,40 +80,50 @@
         </div>
 
         <div class="form-group related-item">
-            @Html.LabelFor(m => Model.Match.MatchLocation.PrimaryAddressableObjectName)
-            @Html.TextBox("Match.MatchLocation.PrimaryAddressableObjectName", string.Empty, new
-          {
-              @class = "form-control related-item__search",
-              placeholder = "Type the ground or sports hall name",
-              autocomplete = "off",
-              type = "search",
-              data_url = "/api/locations/autocomplete",
-              data_template = "location-template",
-              aria_label = "Type a ground or sports hall name add and press down arrow to select from the matching choices"
-          })
-
+            @Html.LabelFor(m => Model.MatchLocationName)
+            @if (Model.MatchLocationId.HasValue)
+            {
+                <div class="related-item__selected">
+                    <div class="related-item__selected__section">
+                        @Html.TextBoxFor(m => Model.MatchLocationName, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                    <div class="related-item__delete related-item__selected__section">
+                        @Html.HiddenFor(m => Model.MatchLocationId, new { @class = "related-item__data related-item__id" })
+                        <button class="text-danger">@Html.Partial("_DeleteIcon", (Model.MatchLocationId.Value.ToString(), $"Remove {Model.MatchLocationName} from this match"))</button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                @Html.TextBoxFor(m => Model.MatchLocationName, new
+                {
+                    @class = "form-control related-item__search",
+                    placeholder = "Type the ground or sports hall name",
+                    autocomplete = "off",
+                    type = "search",
+                    data_url = "/api/locations/autocomplete",
+                    data_template = "location-template",
+                    aria_label = "Type a ground or sports hall name add and press down arrow to select from the matching choices"
+                })
+            }
         </div>
         <script type="text/x-template" id="location-template">
             <div class="related-item__selected">
                 <div class="related-item__selected__section">
-                    <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="Match_MatchLocation_PrimaryAddressableObjectName" />
+                    <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="MatchLocationName" name="MatchLocationName" />
                 </div>
                 <div class="related-item__delete related-item__selected__section">
-                    <input name="Match.MatchLocation.MatchLocationId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
-                    <input name="Match.MatchLocation.PrimaryAddressableObjectName" class="related-item__data" type="hidden" value="{{value}}" />
-                    <input name="Match.MatchLocation.Town" class="related-item__data" type="hidden" value="{{value}}" />
+                    <input name="MatchLocationId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
                     <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this match"))</button>
                 </div>
             </div>
-            @* This posts back PAON and Town because those two fields are [Required] on the MatchLocation class.
-                *
-                * PAON and Town both contain the same value returned by the autocomplete. Only MatchLocationId is used in saving,
-                * and any value for PAON and Town will do to pass that [Required] validation.
-                *
-                * The value of PAON and Town is only important to redisplay here if (ModelState.IsValid == false). Because they're duplicated
-                * it's important to use NameAndLocalityOrTownIfDifferent() rather than NameAndLocalityOrTown(), so that the duplicate 'town' is not displayed.
-            *@
         </script>
+
+        <div class="form-group">
+            @Html.LabelFor(m => Model.Match.MatchNotes)
+            @Html.TextAreaFor(m => Model.Match.MatchNotes, new { @class = "form-control", aria_describedby = "notes-validation" })
+            @Html.ValidationMessageFor(m => Model.Match.MatchNotes, null, new { id = "notes-validation" })
+        </div>
 
         <button class="btn btn-primary">Save match</button>
     }
