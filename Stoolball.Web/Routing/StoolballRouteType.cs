@@ -7,7 +7,6 @@
     {
         Club,
         ClubActions,
-        Clubs,
         CreateClub,
         EditClub,
         DeleteClub,

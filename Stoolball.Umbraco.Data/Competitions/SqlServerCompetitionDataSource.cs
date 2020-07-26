@@ -92,7 +92,7 @@ namespace Stoolball.Umbraco.Data.Competitions
         /// Gets a list of competitions based on a query
         /// </summary>
         /// <returns>A list of <see cref="Competition"/> objects. An empty list if no competitions are found.</returns>
-        public async Task<List<Competition>> ReadCompetitionListings(CompetitionQuery competitionQuery)
+        public async Task<List<Competition>> ReadCompetitions(CompetitionQuery competitionQuery)
         {
             try
             {

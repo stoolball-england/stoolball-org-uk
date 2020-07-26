@@ -11,7 +11,6 @@ namespace Stoolball.Web.Routing
     public class StoolballRouteTypeMapper : IStoolballRouteTypeMapper
     {
         private readonly Dictionary<StoolballRouteType, Type> _supportedControllers = new Dictionary<StoolballRouteType, Type> {
-            { StoolballRouteType.Clubs, typeof(ClubsController) },
             { StoolballRouteType.ClubActions, typeof(ClubActionsController) },
             { StoolballRouteType.Club, typeof(ClubController) },
             { StoolballRouteType.CreateClub, typeof(CreateClubController) },

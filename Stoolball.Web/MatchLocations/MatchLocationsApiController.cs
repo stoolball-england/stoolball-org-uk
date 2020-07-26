@@ -50,7 +50,7 @@ namespace Stoolball.Web.MatchLocations
                     // ignore that one
                 }
             }
-            var locations = await _locationDataSource.ReadMatchLocationListings(locationQuery).ConfigureAwait(false);
+            var locations = await _locationDataSource.ReadMatchLocations(locationQuery).ConfigureAwait(false);
             return new AutocompleteResultSet
             {
                 suggestions = locations.Select(x => new AutocompleteResult

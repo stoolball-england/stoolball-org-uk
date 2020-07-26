@@ -35,8 +35,6 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/locations/EXAMPLE-location/edit/location", StoolballRouteType.EditMatchLocation)]
         [InlineData("https://example.org/locations/EXAMPLE-location/EDIT/location/", StoolballRouteType.EditMatchLocation)]
         [InlineData("https://example.org/locations/EXAMPLE-location/delete", StoolballRouteType.DeleteMatchLocation)]
-        [InlineData("https://example.org/clubs", StoolballRouteType.Clubs)]
-        [InlineData("https://example.org/clubs/", StoolballRouteType.Clubs)]
         [InlineData("https://example.org/clubs/example-name/", StoolballRouteType.Club)]
         [InlineData("https://example.org/clubs/example-name/edit", StoolballRouteType.ClubActions)]
         [InlineData("https://example.org/clubs/example-name/EDit/", StoolballRouteType.ClubActions)]
@@ -117,6 +115,8 @@ namespace Stoolball.Web.Tests.Routing
         }
 
         [Theory]
+        [InlineData("https://example.org/clubs")]
+        [InlineData("https://example.org/clubs/")]
         [InlineData("https://example.org/clubs/example/invalid")]
         [InlineData("https://example.org/teams/example/invalid")]
         [InlineData("https://example.org/teams/example123/teams/example-team/")]

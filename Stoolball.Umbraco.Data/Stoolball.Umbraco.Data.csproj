@@ -58,7 +58,6 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Audit\IAuditRepository.cs" />
     <Compile Include="Audit\SqlServerAuditRepository.cs" />
-    <Compile Include="Clubs\ClubQuery.cs" />
     <Compile Include="Clubs\IClubDataSource.cs" />
     <Compile Include="Clubs\IClubRepository.cs" />
     <Compile Include="Clubs\SqlServerClubRepository.cs" />
@@ -100,8 +99,10 @@
     <Compile Include="Migrations\TournamentTableInitialSchema.cs" />
     <Compile Include="Migrations\TournamentAddTable.cs" />
     <Compile Include="Teams\IPlayerDataSource.cs" />
+    <Compile Include="Teams\ITeamListingDataSource.cs" />
     <Compile Include="Teams\ITeamRepository.cs" />
     <Compile Include="Teams\SqlServerPlayerDataSource.cs" />
+    <Compile Include="Teams\SqlServerTeamListingDataSource.cs" />
     <Compile Include="Teams\SqlServerTeamRepository.cs" />
     <Compile Include="Teams\PlayerIdentityQuery.cs" />
     <Compile Include="Teams\TeamQuery.cs" />

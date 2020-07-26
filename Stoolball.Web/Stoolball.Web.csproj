@@ -969,8 +969,6 @@
     <Compile Include="Clubs\DeleteClubController.cs" />
     <Compile Include="Clubs\CreateClubController.cs" />
     <Compile Include="Clubs\EditClubController.cs" />
-    <Compile Include="Clubs\ClubsController.cs" />
-    <Compile Include="Clubs\ClubsViewModel.cs" />
     <Compile Include="Clubs\CreateClubSurfaceController.cs" />
     <Compile Include="Clubs\DeleteClubSurfaceController.cs" />
     <Compile Include="Clubs\EditClubSurfaceController.cs" />
@@ -1146,7 +1144,6 @@
     <Content Include="Views\TransientTeam.cshtml" />
     <Content Include="Views\Match.cshtml" />
     <Content Include="Views\Tournament.cshtml" />
-    <Content Include="Views\Clubs.cshtml" />
     <Content Include="Views\MatchLocations.cshtml" />
     <Content Include="Views\Teams.cshtml" />
     <Content Include="Views\EditClub.cshtml" />

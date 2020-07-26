@@ -19,7 +19,7 @@ namespace Stoolball.Umbraco.Data.Teams
         /// Gets a list of teams based on a query
         /// </summary>
         /// <returns>A list of <see cref="Team"/> objects. An empty list if no teams are found.</returns>
-        Task<List<Team>> ReadTeamListings(TeamQuery teamQuery);
+        Task<List<Team>> ReadTeams(TeamQuery teamQuery);
 
         /// <summary>
         /// Gets a single team based on its route

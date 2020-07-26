@@ -14,7 +14,7 @@ namespace Stoolball.Web.Teams
 {
     public class TeamsController : RenderMvcControllerAsync
     {
-        private readonly ITeamDataSource _teamDataSource;
+        private readonly ITeamListingDataSource _teamDataSource;
 
         public TeamsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -22,7 +22,7 @@ namespace Stoolball.Web.Teams
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           ITeamDataSource teamDataSource)
+           ITeamListingDataSource teamDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource ?? throw new System.ArgumentNullException(nameof(teamDataSource));

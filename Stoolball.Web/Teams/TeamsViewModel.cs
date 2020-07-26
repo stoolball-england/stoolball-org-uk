@@ -13,6 +13,6 @@ namespace Stoolball.Web.Teams
         }
 
         public TeamQuery TeamQuery { get; set; } = new TeamQuery();
-        public List<Team> Teams { get; internal set; } = new List<Team>();
+        public List<TeamListing> Teams { get; internal set; } = new List<TeamListing>();
     }
 }

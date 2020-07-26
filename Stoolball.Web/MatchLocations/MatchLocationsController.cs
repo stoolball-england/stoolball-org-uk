@@ -47,7 +47,7 @@ namespace Stoolball.Web.MatchLocations
 
             if (!string.IsNullOrEmpty(model.MatchLocationQuery.Query))
             {
-                model.MatchLocations = await _matchLocationDataSource.ReadMatchLocationListings(model.MatchLocationQuery).ConfigureAwait(false);
+                model.MatchLocations = await _matchLocationDataSource.ReadMatchLocations(model.MatchLocationQuery).ConfigureAwait(false);
             }
 
             model.Metadata.PageTitle = "Grounds and sports halls";

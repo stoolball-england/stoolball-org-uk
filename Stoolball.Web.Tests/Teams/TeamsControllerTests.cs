@@ -20,7 +20,7 @@ namespace Stoolball.Web.Tests.Teams
     {
         private class TestController : TeamsController
         {
-            public TestController(ITeamDataSource teamDataSource, string queryString = "")
+            public TestController(ITeamListingDataSource teamDataSource, string queryString = "")
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -48,7 +48,7 @@ namespace Stoolball.Web.Tests.Teams
         [Fact]
         public async Task Returns_TeamsViewModel()
         {
-            var dataSource = new Mock<ITeamDataSource>();
+            var dataSource = new Mock<ITeamListingDataSource>();
 
             using (var controller = new TestController(dataSource.Object))
             {
@@ -61,7 +61,7 @@ namespace Stoolball.Web.Tests.Teams
         [Fact]
         public async Task Reads_query_from_querystring_into_view_model()
         {
-            var dataSource = new Mock<ITeamDataSource>();
+            var dataSource = new Mock<ITeamListingDataSource>();
 
             using (var controller = new TestController(dataSource.Object, "q=example"))
             {
@@ -75,7 +75,7 @@ namespace Stoolball.Web.Tests.Teams
         [Fact]
         public async Task Reads_query_from_querystring_into_page_title()
         {
-            var dataSource = new Mock<ITeamDataSource>();
+            var dataSource = new Mock<ITeamListingDataSource>();
 
             using (var controller = new TestController(dataSource.Object, "q=example"))
             {

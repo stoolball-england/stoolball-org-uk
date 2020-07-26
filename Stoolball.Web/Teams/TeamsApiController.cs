@@ -50,7 +50,7 @@ namespace Stoolball.Web.Teams
                     // ignore that one
                 }
             }
-            var teams = await _teamDataSource.ReadTeamListings(teamQuery).ConfigureAwait(false);
+            var teams = await _teamDataSource.ReadTeams(teamQuery).ConfigureAwait(false);
             return new AutocompleteResultSet
             {
                 suggestions = teams.Select(x => new AutocompleteResult

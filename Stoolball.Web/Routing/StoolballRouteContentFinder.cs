@@ -53,7 +53,6 @@ namespace Stoolball.Web.Routing
             var routeTypes = new Dictionary<string, StoolballRouteType>
             {
                 // Match /prefix or /prefix/ but not /prefix/invalid, in upper, lower or mixed case
-                { $@"clubs{OPTIONAL_SLASH}", StoolballRouteType.Clubs },
                 { $@"competitions{OPTIONAL_SLASH}", StoolballRouteType.Competitions },
                 { $@"teams{OPTIONAL_SLASH}", StoolballRouteType.Teams },
                 { $@"locations{OPTIONAL_SLASH}", StoolballRouteType.MatchLocations },

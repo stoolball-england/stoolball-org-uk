@@ -13,7 +13,7 @@ namespace Stoolball.Umbraco.Data.MatchLocations
         /// Gets a list of match locations based on a query
         /// </summary>
         /// <returns>A list of <see cref="MatchLocation"/> objects. An empty list if no match locations are found.</returns>
-        Task<List<MatchLocation>> ReadMatchLocationListings(MatchLocationQuery matchLocationQuery);
+        Task<List<MatchLocation>> ReadMatchLocations(MatchLocationQuery matchLocationQuery);
 
         /// <summary>
         /// Gets a single match location based on its route

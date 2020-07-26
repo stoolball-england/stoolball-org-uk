@@ -69,7 +69,6 @@ namespace Stoolball.Web
             // be injected anywhere except the one place where it's serving a page of content.
             composition.Register<IStoolballRouteTypeMapper, StoolballRouteTypeMapper>(Lifetime.Singleton);
             composition.Register<IStoolballRouterController, StoolballRouterController>(Lifetime.Request);
-            composition.Register<ClubsController>(Lifetime.Request);
             composition.Register<ClubController>(Lifetime.Request);
             composition.Register<ClubActionsController>(Lifetime.Request);
             composition.Register<CreateClubController>(Lifetime.Request);
@@ -120,6 +119,7 @@ namespace Stoolball.Web
             composition.Register<IClubDataSource, SqlServerClubDataSource>(Lifetime.Singleton);
             composition.Register<IClubRepository, SqlServerClubRepository>(Lifetime.Singleton);
             composition.Register<ITeamDataSource, SqlServerTeamDataSource>(Lifetime.Singleton);
+            composition.Register<ITeamListingDataSource, SqlServerTeamListingDataSource>(Lifetime.Singleton);
             composition.Register<ITeamRepository, SqlServerTeamRepository>(Lifetime.Singleton);
             composition.Register<IPlayerDataSource, SqlServerPlayerDataSource>(Lifetime.Singleton);
             composition.Register<IMatchLocationDataSource, SqlServerMatchLocationDataSource>(Lifetime.Singleton);

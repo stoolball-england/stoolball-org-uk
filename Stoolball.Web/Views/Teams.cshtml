@@ -1,5 +1,5 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamsViewModel>
-
+@using Humanizer
 <h1>
     Stoolball teams
     @if (!string.IsNullOrEmpty(Model.TeamQuery.Query))
@@ -13,7 +13,10 @@
         <em class="nav-link active">Search</em>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="/teams/add">Add</a>
+        <a class="nav-link" href="/clubs/add">Add club</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/teams/add">Add team</a>
     </li>
 </ul>
 
@@ -24,18 +27,23 @@
 </form>
 
 <ul>
-    @foreach (var team in Model.Teams)
+    @foreach (var listing in Model.Teams)
     {
-        if (!team.UntilYear.HasValue)
+        var listingText = listing.ClubOrTeamName;
+        var location = listing.MatchLocations.FirstOrDefault()?.LocalityOrTown();
+        if (!string.IsNullOrEmpty(location) &&
+            !listingText.Replace("'", string.Empty).ToUpperInvariant().Contains(location.Replace("'", string.Empty).ToUpperInvariant()))
         {
-        <li><a href="@team.TeamRoute">@team.TeamNameLocationAndPlayerType()</a></li>
+            location += ", " + location;
+        }
+        if (listing.Active)
+        {
+            listingText = $"{listingText} ({listing.PlayerTypes.Humanize().Humanize(LetterCasing.Sentence)})";
         }
         else
         {
-        <li>
-            <a href="@team.TeamRoute">@team.TeamNameLocationAndPlayerType()</a>
-            <p>No longer active.</p>
-        </li>
+            listingText = $"{listingText} (No longer active)";
         }
+        <li><a href="@listing.ClubOrTeamRoute">@listingText</a></li>
     }
 </ul>

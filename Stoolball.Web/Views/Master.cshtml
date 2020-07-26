@@ -37,18 +37,6 @@
                             Menu
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbar__account-menu">
-                            @if (Regex.IsMatch(Request.Url.AbsolutePath, @"^\/clubs\/?$"))
-                            {
-                                <li class="dropdown-item">
-                                    <em>Clubs</em>
-                                </li>
-                            }
-                            else
-                            {
-                                <li class="dropdown-item">
-                                    <a href="/clubs">Clubs</a>
-                                </li>
-                            }
                             @if (Regex.IsMatch(Request.Url.AbsolutePath, @"^\/teams\/?$"))
                             {
                                 <li class="dropdown-item">
