@@ -33,7 +33,7 @@
   <!-- Copy files from NuGet packages that are needed to run but are not restored by NuGet restore. -->
   <Target Name="StoolballCopyFilesFromNuGetPackages" BeforeTargets="WebCompile">
     <PropertyGroup>
-      <UmbracoVersion>8.6.2</UmbracoVersion>
+      <UmbracoVersion>8.6.3</UmbracoVersion>
       <UmbracoFormsVersion>8.4.1</UmbracoFormsVersion>
       <USyncVersion>8.6.3</USyncVersion>
       <BootstrapVersion>4.5.0</BootstrapVersion>
