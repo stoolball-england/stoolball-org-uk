@@ -30,7 +30,11 @@
 
 @if (Model.IsInACurrentLeague)
 {
-<p><a href="@Model.Team.TeamRoute/matches/add/league">Add a league match</a></p>
+    <p><a href="@Model.Team.TeamRoute/matches/add/league">Add a league match</a></p>
+}
+@if (Model.IsInACurrentKnockoutCompetition)
+{
+    <p><a href="@Model.Team.TeamRoute/matches/add/knockout">Add a knockout match</a></p>
 }
 
 @if (Model.Matches.Matches.Count > 0)

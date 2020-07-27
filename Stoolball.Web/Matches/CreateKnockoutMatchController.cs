@@ -16,9 +16,9 @@ using Umbraco.Web.Models;
 
 namespace Stoolball.Web.Matches
 {
-    public class CreateLeagueMatchController : BaseCreateMatchController
+    public class CreateKnockoutMatchController : BaseCreateMatchController
     {
-        public CreateLeagueMatchController(IGlobalSettings globalSettings,
+        public CreateKnockoutMatchController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
@@ -40,30 +40,21 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new CreateLeagueMatchViewModel(contentModel.Content) { Match = new Match { MatchLocation = new MatchLocation() } };
+            var model = new CreateKnockoutMatchViewModel(contentModel.Content) { Match = new Match { MatchLocation = new MatchLocation() } };
             if (Request.Url.AbsolutePath.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
-                var actionResult = await ConfigureModelForContextTeam(model, MatchType.LeagueMatch).ConfigureAwait(false);
+                var actionResult = await ConfigureModelForContextTeam(model, MatchType.KnockoutMatch).ConfigureAwait(false);
                 if (actionResult != null) return actionResult;
             }
             else if (Request.Url.AbsolutePath.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
-                var actionResult = await ConfigureModelForContextSeason(model, MatchType.LeagueMatch).ConfigureAwait(false);
+                var actionResult = await ConfigureModelForContextSeason(model, MatchType.KnockoutMatch).ConfigureAwait(false);
                 if (actionResult != null) return actionResult;
-
-                if (model.PossibleTeams.Count > 0)
-                {
-                    model.HomeTeamId = new Guid(model.PossibleTeams[0].Value);
-                }
-                if (model.PossibleTeams.Count > 1)
-                {
-                    model.AwayTeamId = new Guid(model.PossibleTeams[1].Value);
-                }
             }
 
             model.IsAuthorized = User.Identity.IsAuthenticated;
 
-            ConfigureModelMetadata(model, MatchType.LeagueMatch);
+            ConfigureModelMetadata(model, MatchType.KnockoutMatch);
 
             return CurrentTemplate(model);
         }

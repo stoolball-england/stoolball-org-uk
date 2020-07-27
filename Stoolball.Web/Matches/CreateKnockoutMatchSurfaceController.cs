@@ -17,11 +17,11 @@ using Umbraco.Web.Mvc;
 
 namespace Stoolball.Web.Matches
 {
-    public class CreateLeagueMatchSurfaceController : BaseCreateMatchSurfaceController
+    public class CreateKnockoutMatchSurfaceController : BaseCreateMatchSurfaceController
     {
         private readonly IMatchRepository _matchRepository;
 
-        public CreateLeagueMatchSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
+        public CreateKnockoutMatchSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource,
             IMatchRepository matchRepository, ICreateMatchSeasonSelector createMatchSeasonSelector)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper, teamDataSource, seasonDataSource,
@@ -34,22 +34,22 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true, TinyMCE = true)]
-        public async Task<ActionResult> CreateMatch([Bind(Prefix = "Match", Include = "Season")] Match postedMatch)
+        public async Task<ActionResult> CreateMatch([Bind(Prefix = "Match", Include = "MatchName,Season")] Match postedMatch)
         {
             if (postedMatch is null)
             {
                 throw new ArgumentNullException(nameof(postedMatch));
             }
 
-            var model = new CreateLeagueMatchViewModel(CurrentPage) { Match = postedMatch };
-            model.Match.MatchType = MatchType.LeagueMatch;
-            ConfigureModelFromRequestData(model, postedMatch);
+            var model = new CreateKnockoutMatchViewModel(CurrentPage) { Match = postedMatch };
+            model.Match.MatchType = MatchType.KnockoutMatch;
+            ConfigureModelFromRequestData(model as ICreateMatchViewModel, postedMatch);
 
             model.IsAuthorized = User.Identity.IsAuthenticated;
 
             if (model.IsAuthorized && ModelState.IsValid &&
                 (model.Team == null || (model.PossibleSeasons != null && model.PossibleSeasons.Any())) &&
-                (model.Season == null || model.Season.MatchTypes.Contains(MatchType.LeagueMatch)))
+                (model.Season == null || model.Season.MatchTypes.Contains(MatchType.KnockoutMatch)))
             {
                 var currentMember = Members.GetCurrentMember();
                 await _matchRepository.CreateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
@@ -58,10 +58,9 @@ namespace Stoolball.Web.Matches
                 return Redirect(model.Match.MatchRoute);
             }
 
-            await ConfigureModelForRedisplay(model, MatchType.LeagueMatch).ConfigureAwait(false);
+            await ConfigureModelForRedisplay(model as ICreateMatchViewModel, MatchType.KnockoutMatch).ConfigureAwait(false);
 
-            return View("CreateLeagueMatch", model);
+            return View("CreateKnockoutMatch", model);
         }
-
     }
 }

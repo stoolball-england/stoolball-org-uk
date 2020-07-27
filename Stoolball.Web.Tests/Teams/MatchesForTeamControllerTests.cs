@@ -36,7 +36,7 @@ namespace Stoolball.Web.Tests.Teams
                 null, teamDataSource, matchDataSource,
                 Mock.Of<IDateTimeFormatter>(),
                 Mock.Of<IEstimatedSeason>(),
-                Mock.Of<ICreateLeagueMatchSeasonSelector>())
+                Mock.Of<ICreateMatchSeasonSelector>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));

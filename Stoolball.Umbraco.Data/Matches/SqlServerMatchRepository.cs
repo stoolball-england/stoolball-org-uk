@@ -77,7 +77,15 @@ namespace Stoolball.Umbraco.Data.Matches
             try
             {
                 match.MatchId = Guid.NewGuid();
-                match.UpdateMatchNameAutomatically = true;
+                if (string.IsNullOrEmpty(match.MatchName))
+                {
+                    match.MatchName = _matchNameBuilder.BuildMatchName(match);
+                    match.UpdateMatchNameAutomatically = true;
+                }
+                else
+                {
+                    match.UpdateMatchNameAutomatically = false;
+                }
                 match.MatchNotes = _htmlSanitiser.Sanitize(match.MatchNotes);
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
@@ -103,9 +111,13 @@ namespace Stoolball.Umbraco.Data.Matches
 
                             baseRoute = string.Join(" ", teamsWithNames.Select(x => x.TeamName));
                         }
+                        else if (!string.IsNullOrEmpty(match.MatchName))
+                        {
+                            baseRoute = match.MatchName;
+                        }
                         else
                         {
-                            baseRoute = "unconfirmed";
+                            baseRoute = "to-be-confirmed";
                         }
 
                         match.MatchRoute = _routeGenerator.GenerateRoute("/matches", baseRoute + " " + match.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.MatchRoute);
@@ -140,7 +152,7 @@ namespace Stoolball.Umbraco.Data.Matches
                         new
                         {
                             match.MatchId,
-                            MatchName = _matchNameBuilder.BuildMatchName(match),
+                            match.MatchName,
                             match.UpdateMatchNameAutomatically,
                             match.MatchLocation?.MatchLocationId,
                             MatchType = match.MatchType.ToString(),

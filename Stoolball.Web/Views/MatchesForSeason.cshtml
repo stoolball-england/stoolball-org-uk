@@ -32,7 +32,11 @@
 
 @if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch))
 {
-<p><a href="@Model.Season.SeasonRoute/matches/add/league">Add a league match</a></p>
+    <p><a href="@Model.Season.SeasonRoute/matches/add/league">Add a league match</a></p>
+}
+@if (Model.Season.MatchTypes.Contains(MatchType.KnockoutMatch))
+{
+    <p><a href="@Model.Season.SeasonRoute/matches/add/knockout">Add a knockout match</a></p>
 }
 
 @if (Model.Matches.Matches.Count > 0)

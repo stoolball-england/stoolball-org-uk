@@ -1003,7 +1003,13 @@
     <Compile Include="Competitions\SeasonListViewModel.cs" />
     <Compile Include="Competitions\CompetitionsController.cs" />
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
+    <Compile Include="Matches\CreateKnockoutMatchController.cs" />
+    <Compile Include="Matches\BaseCreateMatchSurfaceController.cs" />
+    <Compile Include="Matches\CreateKnockoutMatchSurfaceController.cs" />
+    <Compile Include="Matches\BaseCreateMatchController.cs" />
     <Compile Include="Matches\CreateLeagueMatchSurfaceController.cs" />
+    <Compile Include="Matches\CreateKnockoutMatchViewModel.cs" />
+    <Compile Include="Matches\CreateLeagueMatchViewModel.cs" />
     <Compile Include="Matches\DeleteTournamentSurfaceController.cs" />
     <Compile Include="Matches\DeleteMatchSurfaceController.cs" />
     <Compile Include="Matches\DeleteTournamentController.cs" />
@@ -1011,7 +1017,7 @@
     <Compile Include="Matches\DeleteMatchViewModel.cs" />
     <Compile Include="Matches\DeleteTournamentViewModel.cs" />
     <Compile Include="Matches\CreateLeagueMatchController.cs" />
-    <Compile Include="Matches\CreateMatchViewModel.cs" />
+    <Compile Include="Matches\ICreateMatchViewModel.cs" />
     <Compile Include="Matches\TeamComparer.cs" />
     <Compile Include="Matches\TournamentAuthorizationPolicy.cs" />
     <Compile Include="Metadata\IHasViewMetadata.cs" />
@@ -1222,6 +1228,7 @@
     <Content Include="Views\EditSeasonPoints.cshtml" />
     <Content Include="Views\EditSeasonTeams.cshtml" />
     <Content Include="Views\CreateLeagueMatch.cshtml" />
+    <Content Include="Views\CreateKnockoutMatch.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

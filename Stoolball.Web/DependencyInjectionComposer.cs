@@ -44,7 +44,7 @@ namespace Stoolball.Web
             composition.Register<IDateTimeFormatter, DateTimeFormatter>(Lifetime.Singleton);
             composition.Register<IEstimatedSeason, EstimatedSeason>(Lifetime.Singleton);
             composition.Register<IHtmlSanitizer, HtmlSanitizer>(Lifetime.Singleton);
-            composition.Register<ICreateLeagueMatchSeasonSelector, CreateLeagueMatchSeasonSelector>(Lifetime.Singleton);
+            composition.Register<ICreateMatchSeasonSelector, CreateMatchSeasonSelector>(Lifetime.Singleton);
             composition.Register<IMatchNameBuilder, MatchNameBuilder>(Lifetime.Singleton);
             composition.Register<IPlayerTypeSelector, PlayerTypeSelector>(Lifetime.Singleton);
 
@@ -93,6 +93,7 @@ namespace Stoolball.Web
             composition.Register<DeleteMatchLocationController>(Lifetime.Request);
             composition.Register<MatchController>(Lifetime.Request);
             composition.Register<MatchActionsController>(Lifetime.Request);
+            composition.Register<CreateKnockoutMatchController>(Lifetime.Request);
             composition.Register<CreateLeagueMatchController>(Lifetime.Request);
             composition.Register<DeleteMatchController>(Lifetime.Request);
             composition.Register<TournamentController>(Lifetime.Request);

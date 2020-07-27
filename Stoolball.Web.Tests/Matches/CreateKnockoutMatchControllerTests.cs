@@ -21,9 +21,9 @@ using Xunit;
 
 namespace Stoolball.Web.Tests.Matches
 {
-    public class CreateLeagueMatchControllerTests : UmbracoBaseTest
+    public class CreateKnockoutMatchControllerTests : UmbracoBaseTest
     {
-        private class TestController : CreateLeagueMatchController
+        private class TestController : CreateKnockoutMatchController
         {
             public TestController(ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource, ICreateMatchSeasonSelector createLeagueMatchEligibleSeasons, Uri requestUrl)
            : base(
@@ -51,7 +51,7 @@ namespace Stoolball.Web.Tests.Matches
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("CreateLeagueMatch", model);
+                return View("CreateKnockoutMatch", model);
             }
         }
 
@@ -75,7 +75,7 @@ namespace Stoolball.Web.Tests.Matches
         }
 
         [Fact]
-        public async Task Route_matching_team_without_a_league_returns_404()
+        public async Task Route_matching_team_without_a_knockout_competition_returns_404()
         {
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult(new Team()));
@@ -95,7 +95,7 @@ namespace Stoolball.Web.Tests.Matches
 
 
         [Fact]
-        public async Task Route_matching_non_league_season_returns_404()
+        public async Task Route_matching_non_knockout_season_returns_404()
         {
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Team>(null));
@@ -115,7 +115,7 @@ namespace Stoolball.Web.Tests.Matches
 
 
         [Fact]
-        public async Task Route_matching_league_team_returns_CreateLeagueMatchViewModel()
+        public async Task Route_matching_team_playing_knockout_matches_returns_CreateKnockoutMatchViewModel()
         {
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult(new Team()));
@@ -124,11 +124,11 @@ namespace Stoolball.Web.Tests.Matches
             seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Season>(null));
 
             var eligibleSeasons = new Mock<ICreateMatchSeasonSelector>();
-            eligibleSeasons.Setup(x => x.SelectPossibleSeasons(It.IsAny<IEnumerable<TeamInSeason>>(), MatchType.LeagueMatch)).Returns(new List<Season>
+            eligibleSeasons.Setup(x => x.SelectPossibleSeasons(It.IsAny<IEnumerable<TeamInSeason>>(), MatchType.KnockoutMatch)).Returns(new List<Season>
                 {
                         new Season{
                             SeasonId = Guid.NewGuid(),
-                            MatchTypes = new List<MatchType>{ MatchType.LeagueMatch},
+                            MatchTypes = new List<MatchType>{ MatchType.KnockoutMatch},
                             UntilYear = DateTime.Now.Year
                         }
                 });
@@ -137,13 +137,13 @@ namespace Stoolball.Web.Tests.Matches
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<CreateLeagueMatchViewModel>(((ViewResult)result).Model);
+                Assert.IsType<CreateKnockoutMatchViewModel>(((ViewResult)result).Model);
             }
         }
 
 
         [Fact]
-        public async Task Route_matching_league_season_returns_CreateLeagueMatchViewModel()
+        public async Task Route_matching_knockout_season_returns_CreateKnockoutMatchViewModel()
         {
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Team>(null));
@@ -151,7 +151,7 @@ namespace Stoolball.Web.Tests.Matches
             var seasonDataSource = new Mock<ISeasonDataSource>();
             seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult(new Season
             {
-                MatchTypes = new List<MatchType> { MatchType.LeagueMatch }
+                MatchTypes = new List<MatchType> { MatchType.KnockoutMatch }
             }));
 
             var eligibleSeasons = new Mock<ICreateMatchSeasonSelector>();
@@ -160,7 +160,7 @@ namespace Stoolball.Web.Tests.Matches
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<CreateLeagueMatchViewModel>(((ViewResult)result).Model);
+                Assert.IsType<CreateKnockoutMatchViewModel>(((ViewResult)result).Model);
             }
         }
     }
