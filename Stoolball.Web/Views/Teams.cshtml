@@ -34,7 +34,7 @@
         if (!string.IsNullOrEmpty(location) &&
             !listingText.Replace("'", string.Empty).ToUpperInvariant().Contains(location.Replace("'", string.Empty).ToUpperInvariant()))
         {
-            location += ", " + location;
+            listingText += ", " + location;
         }
         if (listing.Active)
         {
