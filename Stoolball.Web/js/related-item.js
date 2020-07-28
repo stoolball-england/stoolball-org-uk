@@ -25,7 +25,6 @@
           const searchField = selectedItem.parentNode.querySelector(
             ".related-item__search"
           );
-          searchField.style.display = "block";
           searchField.removeAttribute("disabled");
           searchField.focus();
 
@@ -72,7 +71,6 @@
 
           /* Clear and hide the search field */
           this.value = "";
-          this.style.display = "none";
           this.setAttribute("disabled", "disabled");
         },
       });

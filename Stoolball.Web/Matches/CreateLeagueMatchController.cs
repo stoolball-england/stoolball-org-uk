@@ -1,4 +1,5 @@
-﻿using Stoolball.Matches;
+﻿using Stoolball.Competitions;
+using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Competitions;
@@ -43,8 +44,13 @@ namespace Stoolball.Web.Matches
             var model = new CreateLeagueMatchViewModel(contentModel.Content) { Match = new Match { MatchLocation = new MatchLocation() } };
             if (Request.Url.AbsolutePath.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
-                var actionResult = await ConfigureModelForContextTeam(model, MatchType.LeagueMatch).ConfigureAwait(false);
+                var actionResult = await ConfigureModelForContextTeam(model, MatchType.LeagueMatch, true).ConfigureAwait(false);
                 if (actionResult != null) return actionResult;
+
+                if (model.PossibleSeasons.Count == 1)
+                {
+                    model.Match.Season = new Season { SeasonId = new Guid(model.PossibleSeasons[0].Value) };
+                }
             }
             else if (Request.Url.AbsolutePath.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {

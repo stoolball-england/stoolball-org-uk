@@ -44,6 +44,7 @@
         MatchesForSeason,
         Match,
         MatchActions,
+        CreateFriendlyMatch,
         CreateKnockoutMatch,
         CreateLeagueMatch,
         DeleteMatch,

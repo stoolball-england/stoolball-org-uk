@@ -30,13 +30,22 @@
     }
 </ul>
 
-@if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch))
+@if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) || Model.Season.MatchTypes.Contains(MatchType.KnockoutMatch) || Model.Season.MatchTypes.Contains(MatchType.FriendlyMatch))
 {
-    <p><a href="@Model.Season.SeasonRoute/matches/add/league">Add a league match</a></p>
-}
-@if (Model.Season.MatchTypes.Contains(MatchType.KnockoutMatch))
-{
-    <p><a href="@Model.Season.SeasonRoute/matches/add/knockout">Add a knockout match</a></p>
+<p>
+    @if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch))
+    {
+        <a href="@Model.Season.SeasonRoute/matches/add/league" class="btn btn-primary">Add a league match</a>
+    }
+    @if (Model.Season.MatchTypes.Contains(MatchType.KnockoutMatch))
+    {
+        <a href="@Model.Season.SeasonRoute/matches/add/knockout" class="btn btn-primary">Add a knockout match</a>
+    }
+    @if (Model.Season.MatchTypes.Contains(MatchType.FriendlyMatch))
+    {
+        <a href="@Model.Season.SeasonRoute/matches/add/friendly" class="btn btn-primary">Add a friendly match</a>
+    }
+</p>
 }
 
 @if (Model.Matches.Matches.Count > 0)

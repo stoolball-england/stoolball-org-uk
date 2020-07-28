@@ -1,4 +1,5 @@
 ﻿using Stoolball.Dates;
+using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
@@ -69,6 +70,10 @@ namespace Stoolball.Web.Competitions
                         DateTimeFormatter = _dateFormatter
                     },
                 };
+                if (model.Season.MatchTypes.Contains(MatchType.LeagueMatch) || model.Season.MatchTypes.Contains(MatchType.KnockoutMatch))
+                {
+                    model.Matches.MatchTypesToLabel.Add(MatchType.FriendlyMatch);
+                }
 
                 model.IsAuthorized = IsAuthorized(model);
 

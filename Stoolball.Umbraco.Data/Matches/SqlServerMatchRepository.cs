@@ -77,15 +77,7 @@ namespace Stoolball.Umbraco.Data.Matches
             try
             {
                 match.MatchId = Guid.NewGuid();
-                if (string.IsNullOrEmpty(match.MatchName))
-                {
-                    match.MatchName = _matchNameBuilder.BuildMatchName(match);
-                    match.UpdateMatchNameAutomatically = true;
-                }
-                else
-                {
-                    match.UpdateMatchNameAutomatically = false;
-                }
+                match.UpdateMatchNameAutomatically = string.IsNullOrEmpty(match.MatchName);
                 match.MatchNotes = _htmlSanitiser.Sanitize(match.MatchNotes);
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
@@ -109,6 +101,7 @@ namespace Stoolball.Umbraco.Data.Matches
                                 team.Team = teamsWithNames.Single(x => x.TeamId == team.Team.TeamId);
                             }
 
+
                             baseRoute = string.Join(" ", teamsWithNames.Select(x => x.TeamName));
                         }
                         else if (!string.IsNullOrEmpty(match.MatchName))
@@ -119,6 +112,7 @@ namespace Stoolball.Umbraco.Data.Matches
                         {
                             baseRoute = "to-be-confirmed";
                         }
+
 
                         match.MatchRoute = _routeGenerator.GenerateRoute("/matches", baseRoute + " " + match.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.MatchRoute);
                         int count;
@@ -131,6 +125,11 @@ namespace Stoolball.Umbraco.Data.Matches
                             }
                         }
                         while (count > 0);
+
+                        if (match.UpdateMatchNameAutomatically)
+                        {
+                            match.MatchName = _matchNameBuilder.BuildMatchName(match);
+                        }
 
                         if (match.Season != null)
                         {

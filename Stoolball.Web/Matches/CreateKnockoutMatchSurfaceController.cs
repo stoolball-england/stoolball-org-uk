@@ -1,4 +1,5 @@
-﻿using Stoolball.Matches;
+﻿using Stoolball.Competitions;
+using Stoolball.Matches;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
@@ -43,7 +44,7 @@ namespace Stoolball.Web.Matches
 
             var model = new CreateKnockoutMatchViewModel(CurrentPage) { Match = postedMatch };
             model.Match.MatchType = MatchType.KnockoutMatch;
-            ConfigureModelFromRequestData(model as ICreateMatchViewModel, postedMatch);
+            ConfigureModelFromRequestData(model, postedMatch);
 
             model.IsAuthorized = User.Identity.IsAuthenticated;
 
@@ -58,7 +59,14 @@ namespace Stoolball.Web.Matches
                 return Redirect(model.Match.MatchRoute);
             }
 
-            await ConfigureModelForRedisplay(model as ICreateMatchViewModel, MatchType.KnockoutMatch).ConfigureAwait(false);
+            await ConfigureModelForRedisplay(model, MatchType.KnockoutMatch, true).ConfigureAwait(false);
+            if (model.Team != null)
+            {
+                if (model.PossibleSeasons.Count == 1)
+                {
+                    model.Match.Season = new Season { SeasonId = new Guid(model.PossibleSeasons[0].Value) };
+                }
+            }
 
             return View("CreateKnockoutMatch", model);
         }

@@ -1,5 +1,4 @@
-﻿using Stoolball.Competitions;
-using Stoolball.Matches;
+﻿using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Competitions;
@@ -17,9 +16,9 @@ using Umbraco.Web.Models;
 
 namespace Stoolball.Web.Matches
 {
-    public class CreateKnockoutMatchController : BaseCreateMatchController
+    public class CreateFriendlyMatchController : BaseCreateMatchController
     {
-        public CreateKnockoutMatchController(IGlobalSettings globalSettings,
+        public CreateFriendlyMatchController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
@@ -41,26 +40,23 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new CreateKnockoutMatchViewModel(contentModel.Content) { Match = new Match { MatchLocation = new MatchLocation() } };
+            var model = new CreateFriendlyMatchViewModel(contentModel.Content) { Match = new Match { MatchLocation = new MatchLocation() } };
             if (Request.Url.AbsolutePath.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
-                var actionResult = await ConfigureModelForContextTeam(model, MatchType.KnockoutMatch, true).ConfigureAwait(false);
+                var actionResult = await ConfigureModelForContextTeam(model, MatchType.FriendlyMatch, false).ConfigureAwait(false);
                 if (actionResult != null) return actionResult;
 
-                if (model.PossibleSeasons.Count == 1)
-                {
-                    model.Match.Season = new Season { SeasonId = new Guid(model.PossibleSeasons[0].Value) };
-                }
+                model.HomeTeamName = model.Team.TeamName;
             }
             else if (Request.Url.AbsolutePath.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
-                var actionResult = await ConfigureModelForContextSeason(model, MatchType.KnockoutMatch).ConfigureAwait(false);
+                var actionResult = await ConfigureModelForContextSeason(model, MatchType.FriendlyMatch).ConfigureAwait(false);
                 if (actionResult != null) return actionResult;
             }
 
             model.IsAuthorized = User.Identity.IsAuthenticated;
 
-            ConfigureModelMetadata(model, MatchType.KnockoutMatch);
+            ConfigureModelMetadata(model, MatchType.FriendlyMatch);
 
             return CurrentTemplate(model);
         }

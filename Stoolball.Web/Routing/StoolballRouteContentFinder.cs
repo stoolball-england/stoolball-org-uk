@@ -79,6 +79,7 @@ namespace Stoolball.Web.Routing
                 // but not /competitions, /competitions/, /competitions/example-entity/2020, /competitions/example-entity/invalid 
                 // or /competitions/example-entity/2020/invalid, in upper, lower or mixed case
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForSeason },
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches/add/friendly{OPTIONAL_SLASH}", StoolballRouteType.CreateFriendlyMatch },
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches/add/knockout{OPTIONAL_SLASH}", StoolballRouteType.CreateKnockoutMatch },
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches/add/league{OPTIONAL_SLASH}", StoolballRouteType.CreateLeagueMatch },
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}results{OPTIONAL_SLASH}", StoolballRouteType.SeasonResults },
@@ -95,6 +96,7 @@ namespace Stoolball.Web.Routing
                 { $@"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}club{OPTIONAL_SLASH}", StoolballRouteType.EditClub },
                 { $@"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}delete{OPTIONAL_SLASH}", StoolballRouteType.DeleteClub },
                 { $@"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForTeam },
+                { $@"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}matches/add/friendly{OPTIONAL_SLASH}", StoolballRouteType.CreateFriendlyMatch },
                 { $@"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}matches/add/knockout{OPTIONAL_SLASH}", StoolballRouteType.CreateKnockoutMatch },
                 { $@"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}matches/add/league{OPTIONAL_SLASH}", StoolballRouteType.CreateLeagueMatch },
                 { $@"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.TeamActions },

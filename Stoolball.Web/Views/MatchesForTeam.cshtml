@@ -28,14 +28,16 @@
     }
 </ul>
 
+<p>
 @if (Model.IsInACurrentLeague)
 {
-    <p><a href="@Model.Team.TeamRoute/matches/add/league">Add a league match</a></p>
+    <a href="@Model.Team.TeamRoute/matches/add/league" class="btn btn-primary">Add a league match</a>
 }
 @if (Model.IsInACurrentKnockoutCompetition)
 {
-    <p><a href="@Model.Team.TeamRoute/matches/add/knockout">Add a knockout match</a></p>
+    <a href="@Model.Team.TeamRoute/matches/add/knockout" class="btn btn-primary">Add a knockout match</a>
 }
+<a href="@Model.Team.TeamRoute/matches/add/friendly" class="btn btn-primary">Add a friendly match</a></p>
 
 @if (Model.Matches.Matches.Count > 0)
 {

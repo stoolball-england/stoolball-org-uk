@@ -87,6 +87,10 @@
     background: none;
 }
 
+.related-item__search:disabled {
+    display: none;
+}
+
 
 
 /* For reduced motion, instead of animating the row strike out the text and remove the delete button */

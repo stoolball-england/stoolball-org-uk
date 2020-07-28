@@ -50,6 +50,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.SeasonResults, typeof(SeasonResultsController) },
             { StoolballRouteType.Match, typeof(MatchController) },
             { StoolballRouteType.MatchActions, typeof(MatchActionsController) },
+            { StoolballRouteType.CreateFriendlyMatch, typeof(CreateFriendlyMatchController) },
             { StoolballRouteType.CreateKnockoutMatch, typeof(CreateKnockoutMatchController) },
             { StoolballRouteType.CreateLeagueMatch, typeof(CreateLeagueMatchController) },
             { StoolballRouteType.DeleteMatch, typeof(DeleteMatchController) },

@@ -39,7 +39,7 @@ namespace Stoolball.Web.Matches
             _createMatchSeasonSelector = createMatchSeasonSelector ?? throw new ArgumentNullException(nameof(createMatchSeasonSelector));
         }
 
-        protected async Task<ActionResult> ConfigureModelForContextTeam(ICreateMatchViewModel model, MatchType matchType)
+        protected async Task<ActionResult> ConfigureModelForContextTeam(ICreateMatchViewModel model, MatchType matchType, bool populatePossibleTeams)
         {
             if (model is null)
             {
@@ -51,34 +51,40 @@ namespace Stoolball.Web.Matches
             {
                 return new HttpNotFoundResult();
             }
+            model.HomeTeamId = model.Team.TeamId;
+
+            var initialLocation = model.Team.MatchLocations.FirstOrDefault();
+            if (initialLocation != null)
+            {
+                model.MatchLocationId = initialLocation.MatchLocationId;
+                model.MatchLocationName = initialLocation.NameAndLocalityOrTownIfDifferent();
+            }
 
             var possibleSeasons = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, matchType).ToList();
             if (possibleSeasons == null || !possibleSeasons.Any())
             {
                 return new HttpNotFoundResult();
             }
-            if (possibleSeasons.Count == 1)
-            {
-                model.Match.Season = possibleSeasons[0];
-            }
             model.PossibleSeasons.AddRange(possibleSeasons.Select(x => new SelectListItem { Text = x.SeasonFullName(), Value = x.SeasonId.Value.ToString() }));
 
-            var possibleTeams = new List<Team>();
-            foreach (var season in possibleSeasons)
+            if (populatePossibleTeams)
             {
-                var teamsInSeason = (await _seasonDataSource.ReadSeasonByRoute(season.SeasonRoute, true).ConfigureAwait(false))?.Teams.Where(x => x.WithdrawnDate == null).Select(x => x.Team);
-                if (teamsInSeason != null)
+                var possibleTeams = new List<Team>();
+                foreach (var season in possibleSeasons)
                 {
-                    possibleTeams.AddRange(teamsInSeason);
+                    var teamsInSeason = (await _seasonDataSource.ReadSeasonByRoute(season.SeasonRoute, true).ConfigureAwait(false))?.Teams.Where(x => x.WithdrawnDate == null).Select(x => x.Team);
+                    if (teamsInSeason != null)
+                    {
+                        possibleTeams.AddRange(teamsInSeason);
+                    }
                 }
-            }
-            model.PossibleTeams.AddRange(possibleTeams.OfType<Team>().Distinct(new TeamEqualityComparer()).Select(x => new SelectListItem { Text = x.TeamName, Value = x.TeamId.Value.ToString() }));
+                model.PossibleTeams.AddRange(possibleTeams.OfType<Team>().Distinct(new TeamEqualityComparer()).Select(x => new SelectListItem { Text = x.TeamName, Value = x.TeamId.Value.ToString() }));
 
-            model.PossibleTeams.Sort(new TeamComparer(model.Team.TeamId));
-            model.HomeTeamId = model.Team.TeamId;
-            if (model.PossibleTeams.Count > 1)
-            {
-                model.AwayTeamId = new Guid(model.PossibleTeams[1].Value);
+                model.PossibleTeams.Sort(new TeamComparer(model.Team.TeamId));
+                if (model.PossibleTeams.Count > 1)
+                {
+                    model.AwayTeamId = new Guid(model.PossibleTeams[1].Value);
+                }
             }
 
             return null;

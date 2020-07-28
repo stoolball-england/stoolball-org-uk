@@ -92,6 +92,18 @@
                         <button class="text-danger">@Html.Partial("_DeleteIcon", (Model.MatchLocationId.Value.ToString(), $"Remove {Model.MatchLocationName} from this match"))</button>
                     </div>
                 </div>
+                Model.MatchLocationName = string.Empty;
+                @Html.TextBoxFor(m => Model.MatchLocationName, new
+                {
+                    @class = "form-control related-item__search",
+                    placeholder = "Type the ground or sports hall name",
+                    autocomplete = "off",
+                    type = "search",
+                    data_url = "/api/locations/autocomplete",
+                    data_template = "location-template",
+                    aria_label = "Type a ground or sports hall name add and press down arrow to select from the matching choices",
+                    disabled = "disabled"
+                })
             }
             else
             {
