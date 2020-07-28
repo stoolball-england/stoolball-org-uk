@@ -38,6 +38,7 @@
         }
         if (listing.Active)
         {
+            listing.PlayerTypes.Sort(); // by id, which puts adult teams before junior
             listingText = $"{listingText} ({listing.PlayerTypes.Humanize().Humanize(LetterCasing.Sentence)})";
         }
         else
