@@ -39,7 +39,7 @@ namespace Stoolball.Web.Matches
             _createMatchSeasonSelector = createMatchSeasonSelector ?? throw new ArgumentNullException(nameof(createMatchSeasonSelector));
         }
 
-        protected async Task<ActionResult> ConfigureModelForContextTeam(ICreateMatchViewModel model, MatchType matchType, bool populatePossibleTeams)
+        protected async Task ConfigureModelForContextTeam(ICreateMatchViewModel model, MatchType matchType, bool populatePossibleTeams)
         {
             if (model is null)
             {
@@ -47,47 +47,43 @@ namespace Stoolball.Web.Matches
             }
 
             model.Team = await _teamDataSource.ReadTeamByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false);
-            if (model.Team == null)
-            {
-                return new HttpNotFoundResult();
-            }
-            model.HomeTeamId = model.Team.TeamId;
+            model.HomeTeamId = model.Team?.TeamId;
 
-            var initialLocation = model.Team.MatchLocations.FirstOrDefault();
+            var initialLocation = model.Team?.MatchLocations.FirstOrDefault();
             if (initialLocation != null)
             {
                 model.MatchLocationId = initialLocation.MatchLocationId;
                 model.MatchLocationName = initialLocation.NameAndLocalityOrTownIfDifferent();
             }
 
-            var possibleSeasons = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, matchType).ToList();
-            if (possibleSeasons == null || !possibleSeasons.Any())
+            if (model.Team != null)
             {
-                return new HttpNotFoundResult();
-            }
-            model.PossibleSeasons.AddRange(possibleSeasons.Select(x => new SelectListItem { Text = x.SeasonFullName(), Value = x.SeasonId.Value.ToString() }));
-
-            if (populatePossibleTeams)
-            {
-                var possibleTeams = new List<Team>();
-                foreach (var season in possibleSeasons)
+                var possibleSeasons = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, matchType).ToList();
+                if (possibleSeasons.Count > 0)
                 {
-                    var teamsInSeason = (await _seasonDataSource.ReadSeasonByRoute(season.SeasonRoute, true).ConfigureAwait(false))?.Teams.Where(x => x.WithdrawnDate == null).Select(x => x.Team);
-                    if (teamsInSeason != null)
+                    model.PossibleSeasons.AddRange(possibleSeasons.Select(x => new SelectListItem { Text = x.SeasonFullName(), Value = x.SeasonId.Value.ToString() }));
+                }
+
+                if (populatePossibleTeams)
+                {
+                    var possibleTeams = new List<Team>();
+                    foreach (var season in possibleSeasons)
                     {
-                        possibleTeams.AddRange(teamsInSeason);
+                        var teamsInSeason = (await _seasonDataSource.ReadSeasonByRoute(season.SeasonRoute, true).ConfigureAwait(false))?.Teams.Where(x => x.WithdrawnDate == null).Select(x => x.Team);
+                        if (teamsInSeason != null)
+                        {
+                            possibleTeams.AddRange(teamsInSeason);
+                        }
+                    }
+                    model.PossibleTeams.AddRange(possibleTeams.OfType<Team>().Distinct(new TeamEqualityComparer()).Select(x => new SelectListItem { Text = x.TeamName, Value = x.TeamId.Value.ToString() }));
+
+                    model.PossibleTeams.Sort(new TeamComparer(model.Team.TeamId));
+                    if (model.PossibleTeams.Count > 1)
+                    {
+                        model.AwayTeamId = new Guid(model.PossibleTeams[1].Value);
                     }
                 }
-                model.PossibleTeams.AddRange(possibleTeams.OfType<Team>().Distinct(new TeamEqualityComparer()).Select(x => new SelectListItem { Text = x.TeamName, Value = x.TeamId.Value.ToString() }));
-
-                model.PossibleTeams.Sort(new TeamComparer(model.Team.TeamId));
-                if (model.PossibleTeams.Count > 1)
-                {
-                    model.AwayTeamId = new Guid(model.PossibleTeams[1].Value);
-                }
             }
-
-            return null;
         }
 
         protected async Task<ActionResult> ConfigureModelForContextSeason(ICreateMatchViewModel model, MatchType matchType)

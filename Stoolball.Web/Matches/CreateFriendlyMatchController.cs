@@ -43,8 +43,7 @@ namespace Stoolball.Web.Matches
             var model = new CreateFriendlyMatchViewModel(contentModel.Content) { Match = new Match { MatchLocation = new MatchLocation() } };
             if (Request.Url.AbsolutePath.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
-                var actionResult = await ConfigureModelForContextTeam(model, MatchType.FriendlyMatch, false).ConfigureAwait(false);
-                if (actionResult != null) return actionResult;
+                await ConfigureModelForContextTeam(model, MatchType.FriendlyMatch, false).ConfigureAwait(false);
 
                 model.HomeTeamName = model.Team.TeamName;
             }

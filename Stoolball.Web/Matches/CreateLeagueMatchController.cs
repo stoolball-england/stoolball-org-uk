@@ -44,8 +44,12 @@ namespace Stoolball.Web.Matches
             var model = new CreateLeagueMatchViewModel(contentModel.Content) { Match = new Match { MatchLocation = new MatchLocation() } };
             if (Request.Url.AbsolutePath.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
-                var actionResult = await ConfigureModelForContextTeam(model, MatchType.LeagueMatch, true).ConfigureAwait(false);
-                if (actionResult != null) return actionResult;
+                await ConfigureModelForContextTeam(model, MatchType.LeagueMatch, true).ConfigureAwait(false);
+
+                if (model.Team == null || model.PossibleSeasons.Count == 0)
+                {
+                    return new HttpNotFoundResult();
+                }
 
                 if (model.PossibleSeasons.Count == 1)
                 {
