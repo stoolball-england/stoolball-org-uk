@@ -107,6 +107,29 @@ namespace Stoolball.Umbraco.Data.MatchLocations
         }
 
         /// <summary>
+        /// Gets the number of match locations that match a query
+        /// </summary>
+        /// <returns></returns>
+        public async Task<int> ReadTotalMatchLocations(MatchLocationQuery matchLocationQuery)
+        {
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    var (where, parameters) = BuildWhereInnerQuery(matchLocationQuery);
+                    return await connection.ExecuteScalarAsync<int>($@"SELECT COUNT(MatchLocationId)
+                            FROM {Tables.MatchLocation} AS ml
+                            {where}", new DynamicParameters(parameters)).ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(typeof(SqlServerMatchLocationDataSource), ex);
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Gets a list of match locations based on a query
         /// </summary>
         /// <returns>A list of <see cref="MatchLocation"/> objects. An empty list if no match locations are found.</returns>
@@ -116,34 +139,37 @@ namespace Stoolball.Umbraco.Data.MatchLocations
             {
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var sql = $@"SELECT ml.MatchLocationId, ml.MatchLocationRoute,
-                            ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, ml.Town,
-                            t.PlayerType
-                            FROM {Tables.MatchLocation} AS ml
-                            LEFT JOIN {Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId 
-                            LEFT JOIN {Tables.Team} AS t ON tml.TeamId = t.TeamId AND t.UntilYear IS NULL
+                    // order by clause places locations with active teams above those which have none
+
+                    var sql = $@"SELECT ml2.MatchLocationId, ml2.MatchLocationRoute,
+                            ml2.SecondaryAddressableObjectName, ml2.PrimaryAddressableObjectName, ml2.Locality, ml2.Town,
+                            t2.PlayerType
+                            FROM {Tables.MatchLocation} AS ml2
+                            LEFT JOIN {Tables.TeamMatchLocation} AS tml2 ON ml2.MatchLocationId = tml2.MatchLocationId 
+                            LEFT JOIN {Tables.Team} AS t2 ON tml2.TeamId = t2.TeamId AND t2.UntilYear IS NULL
                             <<WHERE>>
-                            ORDER BY ml.SortName";
+                            ORDER BY 
+                                CASE WHEN (
+                                    SELECT COUNT(t3.TeamId) FROM {Tables.TeamMatchLocation} AS tml3 
+                                    INNER JOIN {Tables.Team} AS t3 ON tml3.TeamId = t3.TeamId AND t3.UntilYear IS NULL 
+                                    WHERE ml2.MatchLocationId = tml3.MatchLocationId 
+                                ) > 0 THEN 0 ELSE 1 END,
+                            ml2.SortName";
 
-                    var where = new List<string>();
-                    var parameters = new Dictionary<string, object>();
+                    var (where, parameters) = BuildWhereInnerQuery(matchLocationQuery);
 
-                    if (!string.IsNullOrEmpty(matchLocationQuery?.Query))
-                    {
-                        where.Add(@"(ml.SecondaryAddressableObjectName LIKE @Query OR 
-                            ml.PrimaryAddressableObjectName LIKE @Query OR 
-                            ml.Locality LIKE @Query OR
-                            ml.Town LIKE @Query)");
-                        parameters.Add("@Query", $"%{matchLocationQuery.Query}%");
-                    }
-
-                    if (matchLocationQuery?.ExcludeMatchLocationIds?.Count > 0)
-                    {
-                        where.Add("ml.MatchLocationId NOT IN @ExcludeMatchLocationIds");
-                        parameters.Add("@ExcludeMatchLocationIds", matchLocationQuery.ExcludeMatchLocationIds.Select(x => x.ToString()));
-                    }
-
-                    sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
+                    sql = sql.Replace("<<WHERE>>", $@"WHERE ml2.MatchLocationId IN (
+                            SELECT ml.MatchLocationId
+                            FROM {Tables.MatchLocation} AS ml 
+                            {where}
+                            ORDER BY 
+                                CASE WHEN (
+                                    SELECT COUNT(t.TeamId) FROM {Tables.TeamMatchLocation} AS tml 
+                                    INNER JOIN StoolballTeam AS t ON tml.TeamId = t.TeamId AND t.UntilYear IS NULL 
+                                    WHERE ml.MatchLocationId = tml.MatchLocationId 
+                                ) > 0 THEN 0 ELSE 1 END,
+                            ml.SortName
+                            OFFSET {(matchLocationQuery.PageNumber - 1) * matchLocationQuery.PageSize} ROWS FETCH NEXT {matchLocationQuery.PageSize} ROWS ONLY)");
 
                     var locations = await connection.QueryAsync<MatchLocation, Team, MatchLocation>(sql,
                         (location, team) =>
@@ -172,6 +198,29 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                 _logger.Error(typeof(SqlServerMatchLocationDataSource), ex);
                 throw;
             }
+        }
+
+        private static (string sql, Dictionary<string, object> parameters) BuildWhereInnerQuery(MatchLocationQuery matchLocationQuery)
+        {
+            var where = new List<string>();
+            var parameters = new Dictionary<string, object>();
+
+            if (!string.IsNullOrEmpty(matchLocationQuery?.Query))
+            {
+                where.Add(@"(ml.SecondaryAddressableObjectName LIKE @Query OR 
+                            ml.PrimaryAddressableObjectName LIKE @Query OR 
+                            ml.Locality LIKE @Query OR
+                            ml.Town LIKE @Query)");
+                parameters.Add("@Query", $"%{matchLocationQuery.Query}%");
+            }
+
+            if (matchLocationQuery?.ExcludeMatchLocationIds?.Count > 0)
+            {
+                where.Add("ml.MatchLocationId NOT IN @ExcludeMatchLocationIds");
+                parameters.Add("@ExcludeMatchLocationIds", matchLocationQuery.ExcludeMatchLocationIds.Select(x => x.ToString()));
+            }
+
+            return (where.Count > 0 ? $@"WHERE " + string.Join(" AND ", where) : string.Empty, parameters);
         }
     }
 }

@@ -37,18 +37,19 @@ namespace Stoolball.Web.MatchLocations
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
+            _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
             var model = new MatchLocationsViewModel(contentModel.Content)
             {
                 MatchLocationQuery = new MatchLocationQuery
                 {
-                    Query = Request.QueryString["q"]?.Trim()
+                    Query = Request.QueryString["q"]?.Trim(),
+                    PageSize = 50,
+                    PageNumber = pageNumber > 0 ? pageNumber : 1
                 }
             };
 
-            if (!string.IsNullOrEmpty(model.MatchLocationQuery.Query))
-            {
-                model.MatchLocations = await _matchLocationDataSource.ReadMatchLocations(model.MatchLocationQuery).ConfigureAwait(false);
-            }
+            model.TotalMatchLocations = await _matchLocationDataSource.ReadTotalMatchLocations(model.MatchLocationQuery).ConfigureAwait(false);
+            model.MatchLocations = await _matchLocationDataSource.ReadMatchLocations(model.MatchLocationQuery).ConfigureAwait(false);
 
             model.Metadata.PageTitle = "Grounds and sports halls";
             if (!string.IsNullOrEmpty(model.MatchLocationQuery.Query))

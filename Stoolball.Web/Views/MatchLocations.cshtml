@@ -25,16 +25,24 @@
 </form>
 
 <dl>
-    @foreach (var location in Model.MatchLocations.Where(x => x.Teams.Count > 0))
-    {
-        <dt><a href="@location.MatchLocationRoute">@location.NameAndLocalityOrTownIfDifferent()</a></dt>
-        <dd>@(location.Teams.Select(x => x.PlayerType).Distinct().Humanize().Humanize(LetterCasing.Sentence)). @("team".ToQuantity(location.Teams.Count)).</dd>
-    }
-    @foreach (var location in Model.MatchLocations.Where(x => x.Teams.Count == 0))
+    @foreach (var location in Model.MatchLocations)
     {
         <dt><a href="@location.MatchLocationRoute">@location.NameAndLocalityOrTownIfDifferent()</a></dt>
         <dd>
+        @if (location.Teams.Count > 0)
+        {
+            @(location.Teams.Select(x => x.PlayerType).Distinct().Humanize().Humanize(LetterCasing.Sentence))@:. @("team".ToQuantity(location.Teams.Count)).
+        }
+        else
+        {
             <p>No active teams.</p>
+        }
         </dd>
     }
 </dl>
+@if (Model.TotalMatchLocations > (Model.MatchLocationQuery.PageNumber * Model.MatchLocationQuery.PageSize))
+{
+    var query = HttpUtility.ParseQueryString(Request.Url.Query);
+    query["page"] = (Model.MatchLocationQuery.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+    <p><a href="/locations?@query">Load more</a></p>
+}
