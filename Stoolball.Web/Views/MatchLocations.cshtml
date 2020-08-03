@@ -1,6 +1,6 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.MatchLocations.MatchLocationsViewModel>
 @using Humanizer
-
+@using System.Linq
 <h1>
     Grounds and sports halls
     @if (!string.IsNullOrEmpty(Model.MatchLocationQuery.Query))
@@ -31,7 +31,9 @@
         <dd>
         @if (location.Teams.Count > 0)
         {
-            @(location.Teams.Select(x => x.PlayerType).Distinct().Humanize().Humanize(LetterCasing.Sentence))@:. @("team".ToQuantity(location.Teams.Count)).
+            var playerTypes = location.Teams.Select(x => x.PlayerType).Distinct().ToList();
+            playerTypes.Sort(); // by id, which puts adult teams before junior
+            @(playerTypes.Select((value, index) => value.Humanize(index > 0 ? LetterCasing.LowerCase : LetterCasing.Sentence)).Humanize())@:. @("team".ToQuantity(location.Teams.Count)).
         }
         else
         {
