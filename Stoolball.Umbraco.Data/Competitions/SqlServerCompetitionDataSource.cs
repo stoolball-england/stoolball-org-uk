@@ -89,6 +89,29 @@ namespace Stoolball.Umbraco.Data.Competitions
         }
 
         /// <summary>
+        /// Gets the number of competitions that match a query
+        /// </summary>
+        /// <returns></returns>
+        public async Task<int> ReadTotalCompetitions(CompetitionQuery competitionQuery)
+        {
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    var (where, parameters) = BuildWhereClause(competitionQuery);
+                    return await connection.ExecuteScalarAsync<int>($@"SELECT COUNT(CompetitionId)
+                            FROM {Tables.Competition} AS co
+                            {where}", new DynamicParameters(parameters)).ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(typeof(SqlServerCompetitionDataSource), ex);
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Gets a list of competitions based on a query
         /// </summary>
         /// <returns>A list of <see cref="Competition"/> objects. An empty list if no competitions are found.</returns>
@@ -98,28 +121,25 @@ namespace Stoolball.Umbraco.Data.Competitions
             {
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var sql = $@"SELECT co.CompetitionId, co.CompetitionName, co.CompetitionRoute, co.UntilYear, co.PlayerType,
-                            s.SeasonRoute,
-                            st.TeamId
-                            FROM {Tables.Competition} AS co 
-                            LEFT JOIN {Tables.Season} AS s ON co.CompetitionId = s.CompetitionId
-                            LEFT JOIN {Tables.SeasonTeam} AS st ON s.SeasonId = st.SeasonId
-                            <<WHERE>>
-                            (s.FromYear = (SELECT MAX(FromYear) FROM {Tables.Season} WHERE CompetitionId = co.CompetitionId) 
-                            OR s.FromYear IS NULL)
-                            ORDER BY CASE WHEN co.UntilYear IS NULL THEN 0 
-                                          WHEN co.UntilYear IS NOT NULL THEN 1 END, co.CompetitionName";
+                    var (where, parameters) = BuildWhereClause(competitionQuery);
 
-                    var where = new List<string>();
-                    var parameters = new Dictionary<string, object>();
-
-                    if (!string.IsNullOrEmpty(competitionQuery?.Query))
-                    {
-                        where.Add("(co.CompetitionName LIKE @Query OR co.PlayerType LIKE @Query)");
-                        parameters.Add("@Query", $"%{competitionQuery.Query}%");
-                    }
-
-                    sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) + " AND " : "WHERE");
+                    var sql = $@"SELECT co2.CompetitionId, co2.CompetitionName, co2.CompetitionRoute, co2.UntilYear, co2.PlayerType,
+                            s2.SeasonRoute,
+                            st2.TeamId
+                            FROM {Tables.Competition} AS co2
+                            LEFT JOIN {Tables.Season} AS s2 ON co2.CompetitionId = s2.CompetitionId
+                            LEFT JOIN {Tables.SeasonTeam} AS st2 ON s2.SeasonId = st2.SeasonId
+                            WHERE co2.CompetitionId IN(
+                                SELECT co.CompetitionId
+                                FROM {Tables.Competition} AS co
+                                {where}
+                                ORDER BY CASE WHEN co.UntilYear IS NULL THEN 0
+                                          WHEN co.UntilYear IS NOT NULL THEN 1 END, co.CompetitionName
+                                OFFSET {(competitionQuery.PageNumber - 1) * competitionQuery.PageSize} ROWS FETCH NEXT {competitionQuery.PageSize} ROWS ONLY
+                            )
+                            AND(s2.FromYear = (SELECT MAX(FromYear) FROM {Tables.Season} WHERE CompetitionId = co2.CompetitionId) OR s2.FromYear IS NULL)
+                            ORDER BY CASE WHEN co2.UntilYear IS NULL THEN 0
+                                          WHEN co2.UntilYear IS NOT NULL THEN 1 END, co2.CompetitionName";
 
                     var competitions = await connection.QueryAsync<Competition, Season, Team, Competition>(sql,
                         (competition, season, team) =>
@@ -158,6 +178,20 @@ namespace Stoolball.Umbraco.Data.Competitions
                 _logger.Error(typeof(SqlServerCompetitionDataSource), ex);
                 throw;
             }
+        }
+
+        private static (string sql, Dictionary<string, object> parameters) BuildWhereClause(CompetitionQuery competitionQuery)
+        {
+            var where = new List<string>();
+            var parameters = new Dictionary<string, object>();
+
+            if (!string.IsNullOrEmpty(competitionQuery?.Query))
+            {
+                where.Add("(co.CompetitionName LIKE @Query OR co.PlayerType LIKE @Query)");
+                parameters.Add("@Query", $"%{competitionQuery.Query}%");
+            }
+
+            return (where.Count > 0 ? $@"WHERE " + string.Join(" AND ", where) : string.Empty, parameters);
         }
     }
 }

@@ -37,18 +37,18 @@ namespace Stoolball.Web.Competitions
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
+            _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
             var model = new CompetitionsViewModel(contentModel.Content)
             {
                 CompetitionQuery = new CompetitionQuery
                 {
-                    Query = Request.QueryString["q"]?.Trim()
+                    Query = Request.QueryString["q"]?.Trim(),
+                    PageNumber = pageNumber > 0 ? pageNumber : 1
                 }
             };
 
-            if (!string.IsNullOrEmpty(model.CompetitionQuery.Query))
-            {
-                model.Competitions = await _competitionDataSource.ReadCompetitions(model.CompetitionQuery).ConfigureAwait(false);
-            }
+            model.TotalCompetitions = await _competitionDataSource.ReadTotalCompetitions(model.CompetitionQuery).ConfigureAwait(false);
+            model.Competitions = await _competitionDataSource.ReadCompetitions(model.CompetitionQuery).ConfigureAwait(false);
 
             model.Metadata.PageTitle = "Stoolball competitions";
             if (!string.IsNullOrEmpty(model.CompetitionQuery.Query))

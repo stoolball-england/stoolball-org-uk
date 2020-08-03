@@ -24,29 +24,29 @@
     <button type="submit" class="btn btn-primary">Search</button>
 </form>
 
-<ul>
+<dl>
     @foreach (var competition in Model.Competitions)
     {
         if (!competition.UntilYear.HasValue && competition.Seasons.Count > 0)
         {
-            <li>
-                <a href="@competition.Seasons.First().SeasonRoute">@competition.CompetitionName</a>
-                <p>@(Regex.Replace((competition.PlayerType.Humanize(LetterCasing.LowerCase) + " team").ToQuantity(competition.Seasons.First().Teams.Count), "^0 ", "No ")).</p>
-            </li>
+            <dt><a href="@competition.Seasons.First().SeasonRoute">@competition.CompetitionName</a></dt>
+            <dd>@(Regex.Replace((competition.PlayerType.Humanize(LetterCasing.LowerCase) + " team").ToQuantity(competition.Seasons.First().Teams.Count), "^0 ", "No ")).</dd>
         }
         else if (!competition.UntilYear.HasValue)
         {
-            <li>
-                <a href="@(competition.CompetitionRoute)">@competition.CompetitionName</a>
-                <p>@competition.PlayerType.Humanize(LetterCasing.Sentence).</p>
-            </li>
+            <dt><a href="@(competition.CompetitionRoute)">@competition.CompetitionName</a></dt>
+            <dd>@competition.PlayerType.Humanize(LetterCasing.Sentence).</dd>
         }
         else
         {
-            <li>
-                <a href="@(competition.Seasons.Count > 0 ? competition.Seasons.First().SeasonRoute : competition.CompetitionRoute)">@competition.CompetitionName</a>
-                <p>@competition.PlayerType.Humanize(LetterCasing.Sentence). No longer played.</p>
-            </li>
+            <dt><a href="@(competition.Seasons.Count > 0 ? competition.Seasons.First().SeasonRoute : competition.CompetitionRoute)">@competition.CompetitionName</a></dt>
+            <dd>@competition.PlayerType.Humanize(LetterCasing.Sentence). No longer played.</dd>
         }
     }
-</ul>
+</dl>
+@if (Model.TotalCompetitions > (Model.CompetitionQuery.PageNumber * Model.CompetitionQuery.PageSize))
+{
+    var query = HttpUtility.ParseQueryString(Request.Url.Query);
+    query["page"] = (Model.CompetitionQuery.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+    <p><a href="/competitions?@query">Load more</a></p>
+}

@@ -10,6 +10,12 @@ namespace Stoolball.Umbraco.Data.Competitions
     public interface ICompetitionDataSource
     {
         /// <summary>
+        /// Gets the number of competitions that match a query
+        /// </summary>
+        /// <returns></returns>
+        Task<int> ReadTotalCompetitions(CompetitionQuery competitionQuery);
+
+        /// <summary>
         /// Gets a list of competitions based on a query
         /// </summary>
         /// <returns>A list of <see cref="Competition"/> objects. An empty list if no competitions are found.</returns>
