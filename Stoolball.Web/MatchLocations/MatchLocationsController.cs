@@ -43,7 +43,6 @@ namespace Stoolball.Web.MatchLocations
                 MatchLocationQuery = new MatchLocationQuery
                 {
                     Query = Request.QueryString["q"]?.Trim(),
-                    PageSize = 50,
                     PageNumber = pageNumber > 0 ? pageNumber : 1
                 }
             };

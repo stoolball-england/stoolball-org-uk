@@ -116,7 +116,7 @@ namespace Stoolball.Umbraco.Data.MatchLocations
             {
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var (where, parameters) = BuildWhereInnerQuery(matchLocationQuery);
+                    var (where, parameters) = BuildWhereClause(matchLocationQuery);
                     return await connection.ExecuteScalarAsync<int>($@"SELECT COUNT(MatchLocationId)
                             FROM {Tables.MatchLocation} AS ml
                             {where}", new DynamicParameters(parameters)).ConfigureAwait(false);
@@ -141,13 +141,26 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                 {
                     // order by clause places locations with active teams above those which have none
 
+                    var (where, parameters) = BuildWhereClause(matchLocationQuery);
+
                     var sql = $@"SELECT ml2.MatchLocationId, ml2.MatchLocationRoute,
                             ml2.SecondaryAddressableObjectName, ml2.PrimaryAddressableObjectName, ml2.Locality, ml2.Town,
                             t2.PlayerType
                             FROM {Tables.MatchLocation} AS ml2
                             LEFT JOIN {Tables.TeamMatchLocation} AS tml2 ON ml2.MatchLocationId = tml2.MatchLocationId 
                             LEFT JOIN {Tables.Team} AS t2 ON tml2.TeamId = t2.TeamId AND t2.UntilYear IS NULL
-                            <<WHERE>>
+                            WHERE ml2.MatchLocationId IN (
+                                SELECT ml.MatchLocationId
+                                FROM {Tables.MatchLocation} AS ml 
+                                {where}
+                                ORDER BY 
+                                    CASE WHEN (
+                                        SELECT COUNT(t.TeamId) FROM {Tables.TeamMatchLocation} AS tml 
+                                        INNER JOIN StoolballTeam AS t ON tml.TeamId = t.TeamId AND t.UntilYear IS NULL 
+                                        WHERE ml.MatchLocationId = tml.MatchLocationId 
+                                    ) > 0 THEN 0 ELSE 1 END,
+                                ml.SortName
+                                OFFSET {(matchLocationQuery.PageNumber - 1) * matchLocationQuery.PageSize} ROWS FETCH NEXT {matchLocationQuery.PageSize} ROWS ONLY)
                             ORDER BY 
                                 CASE WHEN (
                                     SELECT COUNT(t3.TeamId) FROM {Tables.TeamMatchLocation} AS tml3 
@@ -155,21 +168,6 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                                     WHERE ml2.MatchLocationId = tml3.MatchLocationId 
                                 ) > 0 THEN 0 ELSE 1 END,
                             ml2.SortName";
-
-                    var (where, parameters) = BuildWhereInnerQuery(matchLocationQuery);
-
-                    sql = sql.Replace("<<WHERE>>", $@"WHERE ml2.MatchLocationId IN (
-                            SELECT ml.MatchLocationId
-                            FROM {Tables.MatchLocation} AS ml 
-                            {where}
-                            ORDER BY 
-                                CASE WHEN (
-                                    SELECT COUNT(t.TeamId) FROM {Tables.TeamMatchLocation} AS tml 
-                                    INNER JOIN StoolballTeam AS t ON tml.TeamId = t.TeamId AND t.UntilYear IS NULL 
-                                    WHERE ml.MatchLocationId = tml.MatchLocationId 
-                                ) > 0 THEN 0 ELSE 1 END,
-                            ml.SortName
-                            OFFSET {(matchLocationQuery.PageNumber - 1) * matchLocationQuery.PageSize} ROWS FETCH NEXT {matchLocationQuery.PageSize} ROWS ONLY)");
 
                     var locations = await connection.QueryAsync<MatchLocation, Team, MatchLocation>(sql,
                         (location, team) =>
@@ -200,7 +198,7 @@ namespace Stoolball.Umbraco.Data.MatchLocations
             }
         }
 
-        private static (string sql, Dictionary<string, object> parameters) BuildWhereInnerQuery(MatchLocationQuery matchLocationQuery)
+        private static (string sql, Dictionary<string, object> parameters) BuildWhereClause(MatchLocationQuery matchLocationQuery)
         {
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();
