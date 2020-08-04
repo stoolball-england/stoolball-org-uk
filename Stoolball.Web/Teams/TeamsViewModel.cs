@@ -14,5 +14,6 @@ namespace Stoolball.Web.Teams
 
         public TeamQuery TeamQuery { get; set; } = new TeamQuery();
         public List<TeamListing> Teams { get; internal set; } = new List<TeamListing>();
+        public int TotalTeams { get; set; }
     }
 }

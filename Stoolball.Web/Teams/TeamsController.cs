@@ -37,18 +37,18 @@ namespace Stoolball.Web.Teams
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
+            _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
             var model = new TeamsViewModel(contentModel.Content)
             {
                 TeamQuery = new TeamQuery
                 {
-                    Query = Request.QueryString["q"]?.Trim()
+                    Query = Request.QueryString["q"]?.Trim(),
+                    PageNumber = pageNumber > 0 ? pageNumber : 1
                 }
             };
 
-            if (!string.IsNullOrEmpty(model.TeamQuery.Query))
-            {
-                model.Teams = await _teamDataSource.ReadTeamListings(model.TeamQuery).ConfigureAwait(false);
-            }
+            model.TotalTeams = await _teamDataSource.ReadTotalTeams(model.TeamQuery).ConfigureAwait(false);
+            model.Teams = await _teamDataSource.ReadTeamListings(model.TeamQuery).ConfigureAwait(false);
 
             model.Metadata.PageTitle = "Stoolball teams";
             if (!string.IsNullOrEmpty(model.TeamQuery.Query))

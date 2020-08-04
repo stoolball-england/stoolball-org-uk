@@ -48,3 +48,9 @@
         <li><a href="@listing.ClubOrTeamRoute">@listingText</a></li>
     }
 </ul>
+@if (Model.TotalTeams > (Model.TeamQuery.PageNumber * Model.TeamQuery.PageSize))
+{
+    var query = HttpUtility.ParseQueryString(Request.Url.Query);
+    query["page"] = (Model.TeamQuery.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+    <p><a href="/teams?@query">Load more</a></p>
+}

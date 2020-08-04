@@ -58,6 +58,18 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/play/manage/insurance").ConfigureAwait(false);
                 await _redirectsRepository.InsertRedirect("/insurance", "/play/manage/insurance", null).ConfigureAwait(false);
                 await _redirectsRepository.InsertRedirect("/manage/insurance", "/play/manage/insurance", null).ConfigureAwait(false);
+
+                await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/teams/all").ConfigureAwait(false);
+                await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/teams/ladies").ConfigureAwait(false);
+                await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/teams/mixed").ConfigureAwait(false);
+                await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/teams/junior").ConfigureAwait(false);
+                await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/teams/past").ConfigureAwait(false);
+
+                await _redirectsRepository.InsertRedirect("/teams/all", "/teams", null).ConfigureAwait(false);
+                await _redirectsRepository.InsertRedirect("/teams/ladies", "/teams?q=ladies", null).ConfigureAwait(false);
+                await _redirectsRepository.InsertRedirect("/teams/mixed", "/teams?q=mixed", null).ConfigureAwait(false);
+                await _redirectsRepository.InsertRedirect("/teams/junior", "/teams?q=junior", null).ConfigureAwait(false);
+                await _redirectsRepository.InsertRedirect("/teams/past", "/teams", null).ConfigureAwait(false);
             }
             catch (Exception e)
             {
