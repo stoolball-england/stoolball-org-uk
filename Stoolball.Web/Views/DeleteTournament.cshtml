@@ -79,23 +79,23 @@
 
         using (Html.BeginUmbracoForm<DeleteTournamentSurfaceController>
                    ("DeleteTournament"))
-            {
-                @Html.AntiForgeryToken()
+        {
+            @Html.AntiForgeryToken()
 
-                @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
-                <div class="form-group">
-                    @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Tournament.TournamentName}' into this box:")
-                    @Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck="false" })
-                    @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
-                </div>
+            @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
+            <div class="form-group">
+                @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Tournament.TournamentName}' into this box:")
+                @Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck = "false" })
+                @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
+            </div>
 
-                <button class="btn btn-danger">@Html.Partial("_DeleteIcon", (Model.Tournament.TournamentId.ToString(), string.Empty)) Delete @Model.Tournament.TournamentName</button>
-            }
+            <button class="btn btn-danger">@Html.Partial("_DeleteIcon", (Model.Tournament.TournamentId.ToString(), string.Empty)) Delete @Model.Tournament.TournamentName</button>
+        }
     }
     else
     {
         <p>@Model.Tournament.TournamentName has been deleted.</p>
-        <a class="btn btn-primary" href="/tournaments">Back to tournaments</a>
+        @*<a class="btn btn-primary" href="/tournaments">Back to tournaments</a>*@
     }
 }
 else
