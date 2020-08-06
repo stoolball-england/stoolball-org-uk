@@ -128,7 +128,7 @@ namespace Stoolball.Umbraco.Data.Matches
                                 i.Runs, i.Wickets
                                 FROM { Tables.Match } AS m
                                 LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
-                                LEFT JOIN {Tables.MatchInnings} AS i ON m.MatchId = i.MatchId AND i.MatchTeamId = mt.MatchTeamId
+                                LEFT JOIN {Tables.MatchInnings} AS i ON m.MatchId = i.MatchId AND i.BattingMatchTeamId = mt.MatchTeamId
                                 <<JOIN>>
                                 <<WHERE>> ");
                         sql.Append(matchSql);
@@ -180,8 +180,8 @@ namespace Stoolball.Umbraco.Data.Matches
 
                             matchListing.MatchInnings.Add(new MatchInnings
                             {
-                                MatchTeamId = teamInMatch.MatchTeamId,
-                                Team = team,
+                                BattingMatchTeamId = teamInMatch.MatchTeamId,
+                                BattingTeam = teamInMatch,
                                 Runs = matchInnings?.Runs,
                                 Wickets = matchInnings?.Wickets
                             });

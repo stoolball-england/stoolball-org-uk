@@ -196,26 +196,28 @@ namespace Stoolball.Umbraco.Data.Matches
                         }
 
                         await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchInnings} 
-							(MatchInningsId, MatchId, MatchTeamId, InningsOrderInMatch, Overs)
-							VALUES (@MatchInningsId, @MatchId, @MatchTeamId, @InningsOrderInMatch, @Overs)",
+							(MatchInningsId, MatchId, BattingMatchTeamId, BowlingMatchTeamId, InningsOrderInMatch, Overs)
+							VALUES (@MatchInningsId, @MatchId, @BattingMatchTeamId, @BowlingMatchTeamId, @InningsOrderInMatch, @Overs)",
                             new
                             {
                                 MatchInningsId = Guid.NewGuid(),
                                 match.MatchId,
-                                MatchTeamId = homeMatchTeamId,
+                                BattingMatchTeamId = homeMatchTeamId,
+                                BowlingMatchTeamId = awayMatchTeamId,
                                 InningsOrderInMatch = 1,
                                 match.Season?.Competition.Overs
                             },
                             transaction).ConfigureAwait(false);
 
                         await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchInnings} 
-							(MatchInningsId, MatchId, MatchTeamId, InningsOrderInMatch, Overs)
-							VALUES (@MatchInningsId, @MatchId, @MatchTeamId, @InningsOrderInMatch, @Overs)",
+							(MatchInningsId, MatchId, BattingMatchTeamId, BowlingMatchTeamId, InningsOrderInMatch, Overs)
+							VALUES (@MatchInningsId, @MatchId, @BattingMatchTeamId, @BowlingMatchTeamI, @InningsOrderInMatch, @Overs)",
                             new
                             {
                                 MatchInningsId = Guid.NewGuid(),
                                 match.MatchId,
-                                MatchTeamId = awayMatchTeamId,
+                                BattingMatchTeamId = awayMatchTeamId,
+                                BowlingMatchTeamId = homeMatchTeamId,
                                 InningsOrderInMatch = 2,
                                 match.Season?.Competition.Overs
                             },

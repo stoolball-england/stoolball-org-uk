@@ -1,0 +1,93 @@
+﻿@model MatchInnings
+@using Stoolball.Matches
+@using Stoolball.Teams
+@using Stoolball.Web.Matches
+@using System.Globalization
+@using Humanizer
+@{
+    // If no player innings, only show a minimal scorecard
+    var minimalScorecard = !Model.PlayerInnings.Any(x => x.PlayerIdentity.PlayerRole == PlayerRole.Player);
+
+    // If no total, wickets, or batters, don't show anything
+    var nothingToDisplay = (minimalScorecard && !Model.Runs.HasValue && !Model.Wickets.HasValue);
+    if (!nothingToDisplay)
+    {
+        <table class="table batting-scorecard">
+            <caption>@Model.BattingTeam.Team.TeamName's batting</caption>
+
+            @if (!minimalScorecard)
+            {
+                <thead>
+                    <tr><th scope="col">Batter</th><th scope="col">How out</th><th scope="col">Bowler</th><th scope="col" class="numeric">Runs</th><th scope="col" class="numeric balls-faced-header">Balls</th></tr>
+                </thead>
+            }
+
+            <tbody>
+                @foreach (var playerInnings in Model.PlayerInnings.Where(x => x.PlayerIdentity.PlayerRole == PlayerRole.Player))
+                {
+                    <tr>
+                        <th class="player-name">@playerInnings.PlayerIdentity.PlayerIdentityName</th>
+                        <td>
+                            @if (playerInnings.HowOut == DismissalType.NotOut)
+                            {
+                                <strong>@(playerInnings.HowOut?.Humanize(LetterCasing.LowerCase))</strong>
+                            }
+                            else
+                            {
+                                @(playerInnings.HowOut?.Humanize(LetterCasing.LowerCase).Replace("run out", "run-out"))
+                            }
+                            @if ((playerInnings.HowOut == DismissalType.Caught || playerInnings.HowOut == DismissalType.RunOut) && playerInnings.DismissedBy != null)
+                            {
+                                <span class="player-name">(@playerInnings.DismissedBy.PlayerIdentityName)</span>
+                            }
+                        </td>
+                        <td class="player-name">
+                            @if (playerInnings.Bowler != null)
+                            {
+                                @playerInnings.Bowler.PlayerIdentityName
+                            }
+                        </td>
+                        <td class="numeric runs">
+                            @playerInnings.RunsScored
+                        </td>
+                        <td class="numeric">
+                            @if (playerInnings.BallsFaced.HasValue)
+                            {
+                                <span class="balls-faced">@playerInnings.BallsFaced</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                @{
+                    var byes = Model.PlayerInnings.SingleOrDefault(x => x.PlayerIdentity.PlayerRole == PlayerRole.Byes)?.RunsScored;
+                    var wides = Model.PlayerInnings.SingleOrDefault(x => x.PlayerIdentity.PlayerRole == PlayerRole.Wides)?.RunsScored;
+                    var no_balls = Model.PlayerInnings.SingleOrDefault(x => x.PlayerIdentity.PlayerRole == PlayerRole.NoBalls)?.RunsScored;
+                    var bonus = Model.PlayerInnings.SingleOrDefault(x => x.PlayerIdentity.PlayerRole == PlayerRole.BonusRuns)?.RunsScored;
+                    if (byes.HasValue || !minimalScorecard)
+                    {
+                        @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Byes", CssClass = "extras", RowValue = byes?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = false });
+                    }
+                    if (wides.HasValue || !minimalScorecard)
+                    {
+                        @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Wides", CssClass = "extras", RowValue = wides?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = false });
+                    }
+                    if (no_balls.HasValue || !minimalScorecard)
+                    {
+                        @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "No balls", CssClass = "extras", RowValue = no_balls?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = false });
+                    }
+                    // don't show a 0 here, only if actual runs awarded or taken away
+                    if (bonus < 0)
+                    {
+                        @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Penalty runs", CssClass = "extras", RowValue = bonus?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = false });
+                    }
+                    else if (bonus > 0)
+                    {
+                        @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Bonus runs", CssClass = "extras", RowValue = bonus?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = false });
+                    }
+                    @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Total", CssClass = "totals", RowValue = Model.Runs?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
+                    @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Wickets", CssClass = "totals", RowValue = (Model.Wickets == -1) ? "all out" : Model.Wickets?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
+                }
+            </tbody>
+        </table>
+    }
+}

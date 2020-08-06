@@ -119,7 +119,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                             }
                             var inningsId = (await database.ExecuteScalarAsync<Guid>(
                                 $@"SELECT MatchInningsId FROM {Tables.MatchInnings} 
-									WHERE MatchId = @0 AND MatchTeamId = (
+									WHERE MatchId = @0 AND BattingMatchTeamId = (
 										SELECT MatchTeamId FROM {Tables.MatchTeam} WHERE MigratedMatchTeamId = @1
 									)",
                                 migratedInnings.Match.MatchId,
@@ -240,7 +240,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                             };
                             var inningsId = (await database.ExecuteScalarAsync<Guid>(
                                 $@"SELECT MatchInningsId FROM {Tables.MatchInnings} 
-									WHERE MatchId = @0 AND MatchTeamId = (
+									WHERE MatchId = @0 AND BowlingMatchTeamId = (
 										SELECT MatchTeamId FROM {Tables.MatchTeam} WHERE MigratedMatchTeamId = @1
 									)",
                                 migratedOver.Match.MatchId,

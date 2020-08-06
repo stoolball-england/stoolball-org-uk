@@ -1020,6 +1020,7 @@
     <Compile Include="Matches\DeleteMatchViewModel.cs" />
     <Compile Include="Matches\DeleteTournamentViewModel.cs" />
     <Compile Include="Matches\CreateLeagueMatchController.cs" />
+    <Compile Include="Matches\ExtrasRowViewModel.cs" />
     <Compile Include="Matches\ICreateMatchViewModel.cs" />
     <Compile Include="Matches\TeamComparer.cs" />
     <Compile Include="Matches\TournamentAuthorizationPolicy.cs" />
@@ -1233,6 +1234,9 @@
     <Content Include="Views\CreateLeagueMatch.cshtml" />
     <Content Include="Views\CreateKnockoutMatch.cshtml" />
     <Content Include="Views\CreateFriendlyMatch.cshtml" />
+    <Content Include="Views\Partials\_BattingScorecard.cshtml" />
+    <Content Include="Views\Partials\_BattingScorecardExtrasRow.cshtml" />
+    <Content Include="Views\Partials\_BowlingScorecard.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

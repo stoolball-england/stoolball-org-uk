@@ -14,7 +14,9 @@ th, td {
     padding: $spacer/4;
 }
 
-caption { caption-side: top; }
+caption {
+    caption-side: top;
+}
 
 
 .table-as-cards thead {
@@ -30,6 +32,13 @@ caption { caption-side: top; }
     content: attr(data-label)': ';
 }
 
+td.numeric, th.numeric {
+    text-align: right;
+    white-space: nowrap;
+}
+
+tr.totals { background: #ccc; }
+
 @include media-breakpoint-up(md) {
     .table-as-cards thead {
         display: table-header-group;
@@ -42,4 +51,42 @@ caption { caption-side: top; }
     .table-as-cards [data-label]::before {
         content: none;
     }
+}
+
+/* Scorecards */
+.batting-scorecard .runs, .batting-scorecard .balls {
+    width: 3em;
+}
+
+.player-name {
+    width: 20%;
+    white-space: nowrap;
+}
+
+.balls-faced-header {
+    width: 1em;
+}
+
+.balls-faced:before {
+    content: '(';
+}
+
+.balls-faced {
+    font-size: .8em;
+}
+
+.balls-faced:after {
+    content: ')';
+}
+
+.batting-scorecard thead th, .bowling-scorecard thead th {
+    white-space: nowrap;
+}
+
+.batting-scorecard .extras th {
+    text-align: right;
+    font-weight: normal;
+}
+.batting-scorecard .totals th {
+    text-align: right;
 }

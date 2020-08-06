@@ -1,5 +1,4 @@
-﻿using Stoolball.Teams;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Stoolball.Matches
@@ -9,8 +8,9 @@ namespace Stoolball.Matches
         public Guid? MatchInningsId { get; set; }
         public int InningsOrderInMatch { get; set; }
 
-        public Guid? MatchTeamId { get; set; }
-        public Team Team { get; set; }
+        public Guid? BattingMatchTeamId { get; set; }
+        public TeamInMatch BattingTeam { get; set; }
+        public TeamInMatch BowlingTeam { get; set; }
 
         public int? Overs { get; set; }
 

@@ -1,0 +1,38 @@
+﻿@model MatchInnings
+@using Stoolball.Matches
+@if (Model.OversBowled.Count > 0)
+{
+    <table class="table bowling-scorecard">
+        <caption>@Model.BowlingTeam.Team.TeamName's bowling, over-by-over</caption>
+        <thead>
+            <tr>
+                <th scope="col">Bowler</th>
+                <th scope="col" class="numeric">Balls</th>
+                <th scope="col" class="numeric">Wides</th>
+                <th scope="col" class="numeric">No balls</th>
+                <th scope="col" class="numeric">Runs</th>
+                <th scope="col" class="numeric">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                var total = 0;
+                foreach (var over in Model.OversBowled)
+                {
+                    if (over.RunsConceded.HasValue)
+                    {
+                        total += over.RunsConceded.Value;
+                    }
+                    <tr>
+                        <th scope="row" class="player-name">@over.PlayerIdentity.PlayerIdentityName</th>
+                        <td class="numeric">@over.BallsBowled</td>
+                        <td class="numeric">@over.Wides</td>
+                        <td class="numeric">@over.NoBalls</td>
+                        <td class="numeric">@over.RunsConceded</td>
+                        <td class="numeric">@total</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}

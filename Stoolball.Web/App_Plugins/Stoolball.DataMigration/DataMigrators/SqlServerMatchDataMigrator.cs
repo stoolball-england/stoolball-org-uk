@@ -230,22 +230,16 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         for (var i = 0; i < migratedMatch.MigratedMatchInnings.Count; i++)
                         {
                             var innings = migratedMatch.MigratedMatchInnings[i];
-                            if (innings.MigratedTeamId.HasValue)
-                            {
-                                innings.Team = new Team
-                                {
-                                    TeamId = await connection.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @MigratedTeamId", new { innings.MigratedTeamId }, transaction).ConfigureAwait(false)
-                                };
-                            }
 
                             await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchInnings} 
-								(MatchInningsId, MatchId, MatchTeamId, InningsOrderInMatch, Overs, Runs, Wickets)
-								VALUES (@MatchInningsId, @MatchId, @MatchTeamId, @InningsOrderInMatch, @Overs, @Runs, @Wickets)",
+								(MatchInningsId, MatchId, BattingMatchTeamId, BowlingMatchTeamId, InningsOrderInMatch, Overs, Runs, Wickets)
+								VALUES (@MatchInningsId, @MatchId, @BattingMatchTeamId, @BowlingMatchTeamId, @InningsOrderInMatch, @Overs, @Runs, @Wickets)",
                                 new
                                 {
                                     MatchInningsId = Guid.NewGuid(),
                                     migratedMatch.MatchId,
-                                    MatchTeamId = (i == 0) ? homeMatchTeamId : awayMatchTeamId,
+                                    BattingMatchTeamId = (i == 0) ? homeMatchTeamId : awayMatchTeamId,
+                                    BowlingMatchTeamId = (i == 0) ? awayMatchTeamId : homeMatchTeamId,
                                     innings.InningsOrderInMatch,
                                     innings.Overs,
                                     innings.Runs,

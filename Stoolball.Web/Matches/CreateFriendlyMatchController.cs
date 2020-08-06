@@ -44,6 +44,7 @@ namespace Stoolball.Web.Matches
             if (Request.Url.AbsolutePath.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
                 await ConfigureModelForContextTeam(model, MatchType.FriendlyMatch, false).ConfigureAwait(false);
+                if (model.Team == null) return new HttpNotFoundResult();
 
                 model.HomeTeamName = model.Team.TeamName;
             }

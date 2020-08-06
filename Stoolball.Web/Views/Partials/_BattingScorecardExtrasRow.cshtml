@@ -1,0 +1,9 @@
+﻿@model Stoolball.Web.Matches.ExtrasRowViewModel
+<tr class="@Model.CssClass">
+    <th scope="row" colspan="3">@Model.RowLabel</th>
+    <td class="numeric runs">@Model.RowValue</td>
+    @if (!Model.IsMinimalScorecard)
+    {
+        <td></td>
+    }
+</tr>
