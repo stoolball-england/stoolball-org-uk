@@ -154,7 +154,7 @@
                         var sortedRows = new List<ResultsTableRow>(rows.Values);
                         if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
                         {
-                            sortedRows.Sort();
+                            sortedRows.Sort(new LeagueTableRowComparer());
                         }
 
                         foreach (var row in sortedRows)
