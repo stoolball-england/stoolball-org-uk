@@ -10,11 +10,12 @@ using Umbraco.Core.Models.PublishedContent;
 
 namespace Stoolball.Web.Matches
 {
-    public class CreateLeagueMatchViewModel : BaseViewModel, ICreateMatchViewModel
+    public class EditKnockoutMatchViewModel : BaseViewModel, IEditMatchViewModel
     {
-        public CreateLeagueMatchViewModel(IPublishedContent contentModel) : base(contentModel)
+        public EditKnockoutMatchViewModel(IPublishedContent contentModel) : base(contentModel)
         {
         }
+
         public Match Match { get; set; }
         public Team Team { get; set; }
         public Season Season { get; set; }
@@ -34,11 +35,9 @@ namespace Stoolball.Web.Matches
         public List<SelectListItem> PossibleTeams { get; internal set; } = new List<SelectListItem>();
 
         [Display(Name = "Home team")]
-        [Required]
         public Guid? HomeTeamId { get; set; }
 
         [Display(Name = "Away team")]
-        [Required]
         public Guid? AwayTeamId { get; set; }
     }
 }

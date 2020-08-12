@@ -1,11 +1,12 @@
-﻿using Stoolball.Competitions;
-using Stoolball.Matches;
+﻿using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Teams;
+using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -17,8 +18,13 @@ using Umbraco.Web.Models;
 
 namespace Stoolball.Web.Matches
 {
-    public class CreateLeagueMatchController : BaseCreateMatchController
+    public class CreateLeagueMatchController : RenderMvcControllerAsync
     {
+        private readonly ITeamDataSource _teamDataSource;
+        private readonly ISeasonDataSource _seasonDataSource;
+        private readonly ICreateMatchSeasonSelector _createMatchSeasonSelector;
+        private readonly IEditMatchHelper _editMatchHelper;
+
         public CreateLeagueMatchController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
@@ -27,9 +33,14 @@ namespace Stoolball.Web.Matches
            UmbracoHelper umbracoHelper,
            ITeamDataSource teamDataSource,
            ISeasonDataSource seasonDataSource,
-           ICreateMatchSeasonSelector createMatchSeasonSelector)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper, teamDataSource, seasonDataSource, createMatchSeasonSelector)
+           ICreateMatchSeasonSelector createMatchSeasonSelector,
+           IEditMatchHelper editMatchHelper)
+           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
+            _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
+            _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
+            _createMatchSeasonSelector = createMatchSeasonSelector ?? throw new ArgumentNullException(nameof(createMatchSeasonSelector));
+            _editMatchHelper = editMatchHelper ?? throw new ArgumentNullException(nameof(editMatchHelper));
         }
 
         [HttpGet]
@@ -41,26 +52,53 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new CreateLeagueMatchViewModel(contentModel.Content) { Match = new Match { MatchLocation = new MatchLocation() } };
+            var model = new EditLeagueMatchViewModel(contentModel.Content)
+            {
+                Match = new Match
+                {
+                    MatchType = MatchType.LeagueMatch,
+                    MatchLocation = new MatchLocation()
+                }
+            };
             if (Request.Url.AbsolutePath.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
-                await ConfigureModelForContextTeam(model, MatchType.LeagueMatch, true).ConfigureAwait(false);
-
-                if (model.Team == null || model.PossibleSeasons.Count == 0)
+                model.Team = await _teamDataSource.ReadTeamByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false);
+                if (model.Team == null)
                 {
                     return new HttpNotFoundResult();
                 }
 
-                if (model.PossibleSeasons.Count == 1)
+                var possibleSeasons = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, model.Match.MatchType).ToList();
+
+                if (possibleSeasons.Count == 0)
                 {
-                    model.Match.Season = new Season { SeasonId = new Guid(model.PossibleSeasons[0].Value) };
+                    return new HttpNotFoundResult();
+                }
+
+                if (possibleSeasons.Count == 1)
+                {
+                    model.Match.Season = possibleSeasons.First();
+                }
+
+                model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(possibleSeasons);
+
+                await _editMatchHelper.ConfigureModelPossibleTeams(model, possibleSeasons).ConfigureAwait(false);
+
+                _editMatchHelper.ConfigureModelHomeTeamAndLocation(model);
+                if (model.PossibleTeams.Count > 1)
+                {
+                    model.AwayTeamId = new Guid(model.PossibleTeams[1].Value);
                 }
             }
             else if (Request.Url.AbsolutePath.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
-                var actionResult = await ConfigureModelForContextSeason(model, MatchType.LeagueMatch).ConfigureAwait(false);
-                if (actionResult != null) return actionResult;
+                model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false);
+                if (model.Season == null || !model.Season.MatchTypes.Contains(MatchType.LeagueMatch))
+                {
+                    return new HttpNotFoundResult();
+                }
 
+                model.PossibleTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season.Teams);
                 if (model.PossibleTeams.Count > 0)
                 {
                     model.HomeTeamId = new Guid(model.PossibleTeams[0].Value);
@@ -73,7 +111,7 @@ namespace Stoolball.Web.Matches
 
             model.IsAuthorized = User.Identity.IsAuthenticated;
 
-            ConfigureModelMetadata(model, MatchType.LeagueMatch);
+            _editMatchHelper.ConfigureAddMatchModelMetadata(model);
 
             return CurrentTemplate(model);
         }

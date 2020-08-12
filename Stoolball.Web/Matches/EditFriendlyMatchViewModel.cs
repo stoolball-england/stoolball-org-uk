@@ -10,9 +10,9 @@ using Umbraco.Core.Models.PublishedContent;
 
 namespace Stoolball.Web.Matches
 {
-    public class CreateKnockoutMatchViewModel : BaseViewModel, ICreateMatchViewModel
+    public class EditFriendlyMatchViewModel : BaseViewModel, IEditMatchViewModel
     {
-        public CreateKnockoutMatchViewModel(IPublishedContent contentModel) : base(contentModel)
+        public EditFriendlyMatchViewModel(IPublishedContent contentModel) : base(contentModel)
         {
         }
 
@@ -36,8 +36,10 @@ namespace Stoolball.Web.Matches
 
         [Display(Name = "Home team")]
         public Guid? HomeTeamId { get; set; }
+        public string HomeTeamName { get; set; }
 
         [Display(Name = "Away team")]
         public Guid? AwayTeamId { get; set; }
+        public string AwayTeamName { get; set; }
     }
 }

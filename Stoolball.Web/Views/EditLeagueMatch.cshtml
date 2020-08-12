@@ -1,0 +1,76 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<EditLeagueMatchViewModel>
+@using ClientDependency.Core.Mvc
+@using Stoolball.Matches
+@using Stoolball.Web.Matches
+@using Humanizer
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+
+    Html.RequiresJs("~/js/libs/jquery.autocomplete.min.js", 50);
+    Html.RequiresCss("~/css/autocomplete.min.css");
+
+    Html.RequiresCss("~/css/related-items.min.css");
+    Html.RequiresJs("~/js/related-item.js");
+
+    Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
+    Html.RequiresJs("/js/tinymce.js");
+}
+
+<h1>Edit @Model.Match.MatchFullName(x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
+
+@if (Model.IsAuthorized)
+{
+    using (Html.BeginUmbracoForm<EditLeagueMatchSurfaceController>
+        ("UpdateMatch"))
+    {
+        <button class="sr-only">Save match</button>
+
+        @Html.Partial("_CreateOrEditLeagueMatch")
+
+        object noResultAttributes;
+        if (Model.Match.MatchResultType.HasValue)
+        {
+            noResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeYes" };
+        }
+        else
+        {
+            noResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeYes", @checked = "checked" };
+        }
+        <fieldset class="form-group">
+            <legend>Will the match happen?</legend>
+            <div class="custom-control custom-radio">
+                @Html.RadioButtonFor(m => Model.Match.MatchResultType, -1, noResultAttributes)
+                <label for="MatchResultTypeYes" class="custom-control-label">The match will happen</label>
+            </div>
+            <div class="custom-control custom-radio">
+                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.HomeWinByForfeit, new { @class = "custom-control-input", @id = MatchResultType.HomeWinByForfeit.ToString() })
+                <label for="@MatchResultType.HomeWinByForfeit.ToString()" class="custom-control-label">@MatchResultType.HomeWinByForfeit.ToString().Humanize()</label>
+            </div>
+            <div class="custom-control custom-radio">
+                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.AwayWinByForfeit, new { @class = "custom-control-input", @id = MatchResultType.AwayWinByForfeit.ToString() })
+                <label for="@MatchResultType.AwayWinByForfeit.ToString()" class="custom-control-label">@MatchResultType.AwayWinByForfeit.ToString().Humanize()</label>
+            </div>
+            <div class="custom-control custom-radio">
+                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.Postponed, new { @class = "custom-control-input", @id = MatchResultType.Postponed.ToString() })
+                <label for="@MatchResultType.Postponed.ToString()" class="custom-control-label">@MatchResultType.Postponed.ToString().Humanize()</label>
+            </div>
+            <div class="custom-control custom-radio">
+                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.Cancelled, new { @class = "custom-control-input", @id = MatchResultType.Cancelled.ToString() })
+                <label for="@MatchResultType.Cancelled.ToString()" class="custom-control-label">@MatchResultType.Cancelled.ToString().Humanize()</label>
+            </div>
+            @Html.ValidationMessageFor(m => Model.Match.MatchResultType, null, new { id = "result-type-validation" })
+        </fieldset>
+    
+        <button class="btn btn-primary">Save match</button>
+    }
+}
+else
+{
+    @Html.Partial("_Login")
+}

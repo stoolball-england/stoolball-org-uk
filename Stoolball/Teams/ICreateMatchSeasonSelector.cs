@@ -6,6 +6,6 @@ namespace Stoolball.Teams
 {
     public interface ICreateMatchSeasonSelector
     {
-        IEnumerable<Season> SelectPossibleSeasons(IEnumerable<TeamInSeason> seasons, MatchType matchType);
+        IList<Season> SelectPossibleSeasons(IEnumerable<TeamInSeason> seasons, MatchType matchType);
     }
 }

@@ -11,7 +11,7 @@ namespace Stoolball.Web.Matches
         /// Gets whether the current member can delete the given <see cref="Tournament"/>
         /// </summary>
         /// <remarks>It's recommended to inject MembershipHelper but GetCurrentMember() returns null (https://github.com/umbraco/Umbraco-CMS/blob/2f10051ee9780cd22d4d1313e5e7c6b0bc4661b1/src/Umbraco.Web/UmbracoHelper.cs#L98)</remarks>
-        public bool CanDelete(Tournament tournament, MembershipHelper membershipHelper)
+        public bool CanEdit(Tournament tournament, MembershipHelper membershipHelper)
         {
             if (tournament is null)
             {
@@ -29,6 +29,15 @@ namespace Stoolball.Web.Matches
             if (tournament.MemberKey == currentMember.Key) { return true; }
 
             return membershipHelper.IsMemberAuthorized(null, new[] { Groups.Administrators }, null);
+        }
+
+        /// <summary>
+        /// Gets whether the current member can delete the given <see cref="Tournament"/>
+        /// </summary>
+        /// <remarks>It's recommended to inject MembershipHelper but GetCurrentMember() returns null (https://github.com/umbraco/Umbraco-CMS/blob/2f10051ee9780cd22d4d1313e5e7c6b0bc4661b1/src/Umbraco.Web/UmbracoHelper.cs#L98)</remarks>
+        public bool CanDelete(Tournament tournament, MembershipHelper membershipHelper)
+        {
+            return CanEdit(tournament, membershipHelper);
         }
     }
 }

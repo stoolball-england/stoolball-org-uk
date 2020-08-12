@@ -1005,14 +1005,15 @@
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Matches\CreateFriendlyMatchController.cs" />
     <Compile Include="Matches\CreateKnockoutMatchController.cs" />
-    <Compile Include="Matches\BaseCreateMatchSurfaceController.cs" />
     <Compile Include="Matches\CreateFriendlyMatchSurfaceController.cs" />
     <Compile Include="Matches\CreateKnockoutMatchSurfaceController.cs" />
-    <Compile Include="Matches\BaseCreateMatchController.cs" />
-    <Compile Include="Matches\CreateFriendlyMatchViewModel.cs" />
+    <Compile Include="Matches\EditMatchHelper.cs" />
+    <Compile Include="Matches\EditLeagueMatchSurfaceController.cs" />
+    <Compile Include="Matches\EditFriendlyMatchViewModel.cs" />
+    <Compile Include="Matches\EditLeagueMatchController.cs" />
     <Compile Include="Matches\CreateLeagueMatchSurfaceController.cs" />
-    <Compile Include="Matches\CreateKnockoutMatchViewModel.cs" />
-    <Compile Include="Matches\CreateLeagueMatchViewModel.cs" />
+    <Compile Include="Matches\EditKnockoutMatchViewModel.cs" />
+    <Compile Include="Matches\EditLeagueMatchViewModel.cs" />
     <Compile Include="Matches\DeleteTournamentSurfaceController.cs" />
     <Compile Include="Matches\DeleteMatchSurfaceController.cs" />
     <Compile Include="Matches\DeleteTournamentController.cs" />
@@ -1021,7 +1022,8 @@
     <Compile Include="Matches\DeleteTournamentViewModel.cs" />
     <Compile Include="Matches\CreateLeagueMatchController.cs" />
     <Compile Include="Matches\ExtrasRowViewModel.cs" />
-    <Compile Include="Matches\ICreateMatchViewModel.cs" />
+    <Compile Include="Matches\IEditMatchHelper.cs" />
+    <Compile Include="Matches\IEditMatchViewModel.cs" />
     <Compile Include="Matches\TeamComparer.cs" />
     <Compile Include="Matches\TournamentAuthorizationPolicy.cs" />
     <Compile Include="Metadata\IHasViewMetadata.cs" />
@@ -1237,6 +1239,8 @@
     <Content Include="Views\Partials\_BattingScorecard.cshtml" />
     <Content Include="Views\Partials\_BattingScorecardExtrasRow.cshtml" />
     <Content Include="Views\Partials\_BowlingScorecard.cshtml" />
+    <Content Include="Views\EditLeagueMatch.cshtml" />
+    <Content Include="Views\Partials\_CreateOrEditLeagueMatch.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

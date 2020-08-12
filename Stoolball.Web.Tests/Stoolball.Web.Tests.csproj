@@ -80,6 +80,7 @@
     <Compile Include="Competitions\SeasonResultsControllerTests.cs" />
     <Compile Include="Matches\CreateKnockoutMatchControllerTests.cs" />
     <Compile Include="Matches\CreateFriendlyMatchControllerTests.cs" />
+    <Compile Include="Matches\EditLeagueMatchControllerTests.cs" />
     <Compile Include="Matches\DeleteTournamentControllerTests.cs" />
     <Compile Include="Matches\DeleteMatchControllerTests.cs" />
     <Compile Include="Matches\MatchActionsControllerTests.cs" />

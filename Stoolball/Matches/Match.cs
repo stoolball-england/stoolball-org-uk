@@ -40,6 +40,8 @@ namespace Stoolball.Matches
         }
 
         public MatchLocation MatchLocation { get; set; }
+
+        [Display(Name = "Match date")]
         public DateTimeOffset StartTime { get; set; }
         public bool StartTimeIsKnown { get; set; }
         public MatchType MatchType { get; set; }

@@ -25,7 +25,7 @@ namespace Stoolball.Web.Tests.Matches
     {
         private class TestController : CreateFriendlyMatchController
         {
-            public TestController(ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource, ICreateMatchSeasonSelector createLeagueMatchEligibleSeasons, Uri requestUrl)
+            public TestController(ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource, Uri requestUrl)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -35,7 +35,8 @@ namespace Stoolball.Web.Tests.Matches
                 null,
                 teamDataSource,
                 seasonDataSource,
-                createLeagueMatchEligibleSeasons)
+                Mock.Of<ICreateMatchSeasonSelector>(),
+                Mock.Of<IEditMatchHelper>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(requestUrl);
@@ -56,17 +57,31 @@ namespace Stoolball.Web.Tests.Matches
         }
 
         [Fact]
-        public async Task Route_not_matching_season_or_team_returns_404()
+        public async Task Route_not_matching_team_returns_404()
         {
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Team>(null));
 
             var seasonDataSource = new Mock<ISeasonDataSource>();
+
+            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, new Uri("https://example.org/teams/example/")))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                Assert.IsType<HttpNotFoundResult>(result);
+            }
+        }
+
+
+        [Fact]
+        public async Task Route_not_matching_season_returns_404()
+        {
+            var teamDataSource = new Mock<ITeamDataSource>();
+
+            var seasonDataSource = new Mock<ISeasonDataSource>();
             seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Season>(null));
 
-            var eligibleSeasons = new Mock<ICreateMatchSeasonSelector>();
-
-            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, eligibleSeasons.Object, new Uri("https://example.org/teams/example/")))
+            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, new Uri("https://example.org/competitions/example/2020/")))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -75,52 +90,38 @@ namespace Stoolball.Web.Tests.Matches
         }
 
         [Fact]
-        public async Task Route_matching_team_returns_CreateFriendlyMatchViewModel()
+        public async Task Route_matching_team_returns_EditFriendlyMatchViewModel()
         {
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult(new Team()));
 
             var seasonDataSource = new Mock<ISeasonDataSource>();
-            seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Season>(null));
 
-            var eligibleSeasons = new Mock<ICreateMatchSeasonSelector>();
-            eligibleSeasons.Setup(x => x.SelectPossibleSeasons(It.IsAny<IEnumerable<TeamInSeason>>(), MatchType.FriendlyMatch)).Returns(new List<Season>
-                {
-                        new Season{
-                            SeasonId = Guid.NewGuid(),
-                            MatchTypes = new List<MatchType>{ MatchType.LeagueMatch},
-                            UntilYear = DateTime.Now.Year
-                        }
-                });
-
-            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, eligibleSeasons.Object, new Uri("https://example.org/teams/example/")))
+            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, new Uri("https://example.org/teams/example/")))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<CreateFriendlyMatchViewModel>(((ViewResult)result).Model);
+                Assert.IsType<EditFriendlyMatchViewModel>(((ViewResult)result).Model);
             }
         }
 
 
         [Fact]
-        public async Task Route_matching_league_season_returns_CreateFriendlyMatchViewModel()
+        public async Task Route_matching_friendly_season_returns_EditFriendlyMatchViewModel()
         {
             var teamDataSource = new Mock<ITeamDataSource>();
-            teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Team>(null));
 
             var seasonDataSource = new Mock<ISeasonDataSource>();
-            seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult(new Season
+            seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Season>(new Season
             {
                 MatchTypes = new List<MatchType> { MatchType.FriendlyMatch }
             }));
 
-            var eligibleSeasons = new Mock<ICreateMatchSeasonSelector>();
-
-            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, eligibleSeasons.Object, new Uri("https://example.org/competitions/example/2020/")))
+            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, new Uri("https://example.org/competitions/example/2020/")))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<CreateFriendlyMatchViewModel>(((ViewResult)result).Model);
+                Assert.IsType<EditFriendlyMatchViewModel>(((ViewResult)result).Model);
             }
         }
     }

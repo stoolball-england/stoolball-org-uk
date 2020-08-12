@@ -47,6 +47,7 @@
         CreateFriendlyMatch,
         CreateKnockoutMatch,
         CreateLeagueMatch,
+        EditLeagueMatch,
         DeleteMatch,
         Tournament,
         TournamentActions,

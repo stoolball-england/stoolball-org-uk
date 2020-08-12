@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/editLeagueMatch.cshtml",
+  "Master": null,
+  "Udi": "umb://template/f189650a4adf47b7818dea25f801ade0",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/editLeagueMatch.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Edit League Match",
+  "Alias": "editLeagueMatch",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.4.4"
+}

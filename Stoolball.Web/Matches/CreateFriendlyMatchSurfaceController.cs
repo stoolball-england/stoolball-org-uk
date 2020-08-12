@@ -1,4 +1,5 @@
-﻿using Stoolball.Matches;
+﻿using Humanizer;
+using Stoolball.Matches;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
@@ -16,17 +17,24 @@ using Umbraco.Web.Mvc;
 
 namespace Stoolball.Web.Matches
 {
-    public class CreateFriendlyMatchSurfaceController : BaseCreateMatchSurfaceController
+    public class CreateFriendlyMatchSurfaceController : SurfaceController
     {
         private readonly IMatchRepository _matchRepository;
+        private readonly ITeamDataSource _teamDataSource;
+        private readonly ISeasonDataSource _seasonDataSource;
+        private readonly ICreateMatchSeasonSelector _createMatchSeasonSelector;
+        private readonly IEditMatchHelper _editMatchHelper;
 
         public CreateFriendlyMatchSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource,
-            IMatchRepository matchRepository, ICreateMatchSeasonSelector createMatchSeasonSelector)
-            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper, teamDataSource, seasonDataSource,
-                  createMatchSeasonSelector)
+            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchRepository matchRepository, ITeamDataSource teamDataSource,
+            ISeasonDataSource seasonDataSource, ICreateMatchSeasonSelector createMatchSeasonSelector, IEditMatchHelper editMatchHelper)
+            : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
+            _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
+            _seasonDataSource = seasonDataSource;
+            _createMatchSeasonSelector = createMatchSeasonSelector;
+            _editMatchHelper = editMatchHelper ?? throw new ArgumentNullException(nameof(editMatchHelper));
         }
 
         [HttpPost]
@@ -40,13 +48,13 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(postedMatch));
             }
 
-            var model = new CreateFriendlyMatchViewModel(CurrentPage) { Match = postedMatch };
+            var model = new EditFriendlyMatchViewModel(CurrentPage) { Match = postedMatch };
             model.Match.MatchType = MatchType.FriendlyMatch;
             if (!model.Match.Season.SeasonId.HasValue)
             {
                 model.Match.Season = null;
             }
-            ConfigureModelFromRequestData(model, postedMatch);
+            _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form);
 
             model.IsAuthorized = User.Identity.IsAuthenticated;
 
@@ -60,7 +68,19 @@ namespace Stoolball.Web.Matches
                 return Redirect(model.Match.MatchRoute);
             }
 
-            await ConfigureModelForRedisplay(model, MatchType.FriendlyMatch, false).ConfigureAwait(false);
+            if (Request.RawUrl.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
+            {
+                model.Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false);
+                var possibleSeasons = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, model.Match.MatchType);
+                model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(possibleSeasons);
+                model.Metadata.PageTitle = $"Add a {MatchType.FriendlyMatch.Humanize(LetterCasing.LowerCase)} for {model.Team.TeamName}";
+            }
+            else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
+            {
+                model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false);
+                model.Metadata.PageTitle = $"Add a {MatchType.FriendlyMatch.Humanize(LetterCasing.LowerCase)} in the {model.Season.SeasonFullName()}";
+            }
+
             if (!string.IsNullOrEmpty(Request.Form["HomeTeamName"]))
             {
                 model.HomeTeamName = Request.Form["HomeTeamName"];

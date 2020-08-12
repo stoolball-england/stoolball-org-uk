@@ -8,7 +8,7 @@ using System.Web.Mvc;
 
 namespace Stoolball.Web.Matches
 {
-    public interface ICreateMatchViewModel : IHasViewMetadata
+    public interface IEditMatchViewModel : IHasViewMetadata
     {
         Guid? AwayTeamId { get; set; }
         Guid? HomeTeamId { get; set; }

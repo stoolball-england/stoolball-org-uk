@@ -85,46 +85,7 @@ namespace Stoolball.Umbraco.Data.Matches
                     connection.Open();
                     using (var transaction = connection.BeginTransaction())
                     {
-                        string baseRoute = string.Empty;
-                        if (match.Teams.Count > 0)
-                        {
-                            var teamsWithNames = await connection.QueryAsync<Team>($@"SELECT t.TeamId, t.PlayerType, tn.TeamName 
-                                                                                    FROM {Tables.Team} AS t INNER JOIN {Tables.TeamName} tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL 
-                                                                                    WHERE t.TeamId IN @TeamIds",
-                                                                                new { TeamIds = match.Teams.Select(x => x.Team.TeamId).ToList() },
-                                                                                transaction
-                                                                            ).ConfigureAwait(false);
-
-                            // Used in generating the match name
-                            foreach (var team in match.Teams)
-                            {
-                                team.Team = teamsWithNames.Single(x => x.TeamId == team.Team.TeamId);
-                            }
-
-
-                            baseRoute = string.Join(" ", teamsWithNames.Select(x => x.TeamName));
-                        }
-                        else if (!string.IsNullOrEmpty(match.MatchName))
-                        {
-                            baseRoute = match.MatchName;
-                        }
-                        else
-                        {
-                            baseRoute = "to-be-confirmed";
-                        }
-
-
-                        match.MatchRoute = _routeGenerator.GenerateRoute("/matches", baseRoute + " " + match.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.MatchRoute);
-                        int count;
-                        do
-                        {
-                            count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Match} WHERE MatchRoute = @MatchRoute", new { match.MatchRoute }, transaction).ConfigureAwait(false);
-                            if (count > 0)
-                            {
-                                match.MatchRoute = _routeGenerator.IncrementRoute(match.MatchRoute);
-                            }
-                        }
-                        while (count > 0);
+                        await PopulateMatchWithTeamNamesAndGeneratedRoute(match, string.Empty, transaction).ConfigureAwait(false);
 
                         if (match.UpdateMatchNameAutomatically)
                         {
@@ -211,7 +172,7 @@ namespace Stoolball.Umbraco.Data.Matches
 
                         await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchInnings} 
 							(MatchInningsId, MatchId, BattingMatchTeamId, BowlingMatchTeamId, InningsOrderInMatch, Overs)
-							VALUES (@MatchInningsId, @MatchId, @BattingMatchTeamId, @BowlingMatchTeamI, @InningsOrderInMatch, @Overs)",
+							VALUES (@MatchInningsId, @MatchId, @BattingMatchTeamId, @BowlingMatchTeamId, @InningsOrderInMatch, @Overs)",
                             new
                             {
                                 MatchInningsId = Guid.NewGuid(),
@@ -243,6 +204,201 @@ namespace Stoolball.Umbraco.Data.Matches
             }
 
             return match;
+        }
+
+        private class MatchTeamResult
+        {
+            public Guid? MatchTeamId { get; set; }
+            public Guid? TeamId { get; set; }
+            public TeamRole TeamRole { get; set; }
+        }
+
+        /// <summary>
+        /// Updates a stoolball match
+        /// </summary>
+        public async Task<Match> UpdateMatch(Match match, Guid memberKey, string memberName)
+        {
+            if (match is null)
+            {
+                throw new ArgumentNullException(nameof(match));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            try
+            {
+                string routeBeforeUpdate = match.MatchRoute;
+                match.MatchNotes = _htmlSanitiser.Sanitize(match.MatchNotes);
+
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        await PopulateMatchWithTeamNamesAndGeneratedRoute(match, routeBeforeUpdate, transaction).ConfigureAwait(false);
+
+                        if (match.UpdateMatchNameAutomatically)
+                        {
+                            match.MatchName = _matchNameBuilder.BuildMatchName(match);
+                        }
+
+                        await connection.ExecuteAsync($@"UPDATE {Tables.Match} SET
+						MatchName = @MatchName, 
+                        UpdateMatchNameAutomatically = @UpdateMatchNameAutomatically,
+                        MatchLocationId = @MatchLocationId, 
+                        StartTime = @StartTime,
+                        StartTimeIsKnown = @StartTimeIsKnown, 
+                        MatchNotes = @MatchNotes, 
+                        MatchResultType = @MatchResultType,
+                        MatchRoute = @MatchRoute
+                        WHERE MatchId = @MatchId",
+                        new
+                        {
+                            match.MatchName,
+                            match.UpdateMatchNameAutomatically,
+                            match.MatchLocation?.MatchLocationId,
+                            StartTime = match.StartTime.UtcDateTime,
+                            match.StartTimeIsKnown,
+                            match.MatchNotes,
+                            MatchResultType = match.MatchResultType?.ToString(),
+                            match.MatchRoute,
+                            match.MatchId
+                        }, transaction).ConfigureAwait(false);
+
+
+                        var currentTeams = await connection.QueryAsync<MatchTeamResult>(
+                                $@"SELECT MatchTeamId, TeamId, TeamRole FROM {Tables.MatchTeam} WHERE MatchId = @MatchId", new { match.MatchId }, transaction
+                            ).ConfigureAwait(false);
+
+                        foreach (var team in match.Teams)
+                        {
+                            var currentTeamInRole = currentTeams.SingleOrDefault(x => x.TeamRole == team.TeamRole);
+
+                            // Team added
+                            if (currentTeamInRole == null)
+                            {
+                                await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
+								(MatchTeamId, MatchId, TeamId, TeamRole) VALUES (@MatchTeamId, @MatchId, @TeamId, @TeamRole)",
+                                    new
+                                    {
+                                        MatchTeamId = Guid.NewGuid(),
+                                        match.MatchId,
+                                        team.Team.TeamId,
+                                        TeamRole = team.TeamRole.ToString()
+                                    },
+                                    transaction).ConfigureAwait(false);
+                            }
+                            // Team changed
+                            else if (currentTeamInRole.TeamId != team.Team.TeamId)
+                            {
+                                await connection.ExecuteAsync($"UPDATE {Tables.MatchTeam} SET TeamId = @TeamId WHERE MatchTeamId = @MatchTeamId",
+                                new { team.Team.TeamId, currentTeamInRole.MatchTeamId },
+                                transaction).ConfigureAwait(false);
+                            }
+                        }
+
+                        // Team removed?
+                        var currentHomeTeam = currentTeams.SingleOrDefault(x => x.TeamRole == TeamRole.Home);
+                        var newHomeTeam = match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home);
+                        if (currentHomeTeam != null && newHomeTeam == null)
+                        {
+                            await connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET BattingMatchTeamId = NULL WHERE BattingMatchTeamId = @MatchTeamId", new { currentHomeTeam.MatchTeamId }, transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET BowlingMatchTeamId = NULL WHERE BowlingMatchTeamId = @MatchTeamId", new { currentHomeTeam.MatchTeamId }, transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync($"DELETE FROM { Tables.MatchTeam } WHERE MatchTeamId = @MatchTeamId", new { currentHomeTeam.MatchTeamId }, transaction).ConfigureAwait(false);
+                        }
+
+                        // Update innings with the new values for match team ids (assuming the match hasn't happened yet, 
+                        // therefore the innings order is home bats first as assumed in CreateMatch)
+                        await connection.ExecuteAsync($@"UPDATE { Tables.MatchInnings } SET
+                                BattingMatchTeamId = (SELECT MatchTeamId FROM { Tables.MatchTeam } WHERE MatchId = @MatchId AND TeamRole = '{TeamRole.Home.ToString()}'), 
+                                BowlingMatchTeamId = (SELECT MatchTeamId FROM { Tables.MatchTeam } WHERE MatchId = @MatchId AND TeamRole = '{TeamRole.Away.ToString()}')
+                                WHERE MatchId = @MatchId AND InningsOrderInMatch = 1",
+                            new
+                            {
+                                match.MatchId,
+                            },
+                            transaction).ConfigureAwait(false);
+
+                        await connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET
+                                BattingMatchTeamId = (SELECT MatchTeamId FROM { Tables.MatchTeam } WHERE MatchId = @MatchId AND TeamRole = '{TeamRole.Away.ToString()}'), 
+                                BowlingMatchTeamId = (SELECT MatchTeamId FROM { Tables.MatchTeam } WHERE MatchId = @MatchId AND TeamRole = '{TeamRole.Home.ToString()}')
+                                WHERE MatchId = @MatchId AND InningsOrderInMatch = 2",
+                            new
+                            {
+                                match.MatchId,
+                            },
+                            transaction).ConfigureAwait(false);
+
+                        transaction.Commit();
+                    }
+                }
+
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Update,
+                    MemberKey = memberKey,
+                    ActorName = memberName,
+                    EntityUri = match.EntityUri,
+                    State = JsonConvert.SerializeObject(match),
+                    AuditDate = DateTime.UtcNow
+                }).ConfigureAwait(false);
+            }
+            catch (SqlException ex)
+            {
+                _logger.Error(typeof(SqlServerMatchRepository), ex);
+            }
+
+            return match;
+        }
+
+        private async Task PopulateMatchWithTeamNamesAndGeneratedRoute(Match match, string routeBeforeUpdate, System.Data.IDbTransaction transaction)
+        {
+            string baseRoute = string.Empty;
+            if (match.Teams.Count > 0)
+            {
+                var teamsWithNames = await transaction.Connection.QueryAsync<Team>($@"SELECT t.TeamId, t.PlayerType, tn.TeamName 
+                                                                                    FROM {Tables.Team} AS t INNER JOIN {Tables.TeamName} tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL 
+                                                                                    WHERE t.TeamId IN @TeamIds",
+                                                                    new { TeamIds = match.Teams.Select(x => x.Team.TeamId).ToList() },
+                                                                    transaction
+                                                                ).ConfigureAwait(false);
+
+                // Used in generating the match name
+                foreach (var team in match.Teams)
+                {
+                    team.Team = teamsWithNames.Single(x => x.TeamId == team.Team.TeamId);
+                }
+
+
+                baseRoute = string.Join(" ", teamsWithNames.Select(x => x.TeamName));
+            }
+            else if (!string.IsNullOrEmpty(match.MatchName))
+            {
+                baseRoute = match.MatchName;
+            }
+            else
+            {
+                baseRoute = "to-be-confirmed";
+            }
+
+
+            match.MatchRoute = _routeGenerator.GenerateRoute("/matches", baseRoute + " " + match.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.MatchRoute);
+            if (match.MatchRoute != routeBeforeUpdate)
+            {
+                int count;
+                do
+                {
+                    count = await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Match} WHERE MatchRoute = @MatchRoute", new { match.MatchRoute }, transaction).ConfigureAwait(false);
+                    if (count > 0)
+                    {
+                        match.MatchRoute = _routeGenerator.IncrementRoute(match.MatchRoute);
+                    }
+                }
+                while (count > 0);
+            }
         }
 
         /// <summary>

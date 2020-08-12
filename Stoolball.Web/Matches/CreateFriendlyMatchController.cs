@@ -3,6 +3,7 @@ using Stoolball.MatchLocations;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Teams;
+using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using System;
 using System.Threading.Tasks;
@@ -16,8 +17,13 @@ using Umbraco.Web.Models;
 
 namespace Stoolball.Web.Matches
 {
-    public class CreateFriendlyMatchController : BaseCreateMatchController
+    public class CreateFriendlyMatchController : RenderMvcControllerAsync
     {
+        private readonly ITeamDataSource _teamDataSource;
+        private readonly ISeasonDataSource _seasonDataSource;
+        private readonly ICreateMatchSeasonSelector _createMatchSeasonSelector;
+        private readonly IEditMatchHelper _editMatchHelper;
+
         public CreateFriendlyMatchController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
@@ -26,9 +32,14 @@ namespace Stoolball.Web.Matches
            UmbracoHelper umbracoHelper,
            ITeamDataSource teamDataSource,
            ISeasonDataSource seasonDataSource,
-           ICreateMatchSeasonSelector createMatchSeasonSelector)
-           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper, teamDataSource, seasonDataSource, createMatchSeasonSelector)
+           ICreateMatchSeasonSelector createMatchSeasonSelector,
+           IEditMatchHelper editMatchHelper)
+           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
+            _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
+            _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
+            _createMatchSeasonSelector = createMatchSeasonSelector ?? throw new ArgumentNullException(nameof(createMatchSeasonSelector));
+            _editMatchHelper = editMatchHelper ?? throw new ArgumentNullException(nameof(editMatchHelper));
         }
 
         [HttpGet]
@@ -40,23 +51,41 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new CreateFriendlyMatchViewModel(contentModel.Content) { Match = new Match { MatchLocation = new MatchLocation() } };
+            var model = new EditFriendlyMatchViewModel(contentModel.Content)
+            {
+                Match = new Match
+                {
+                    MatchType = MatchType.FriendlyMatch,
+                    MatchLocation = new MatchLocation()
+                }
+            };
             if (Request.Url.AbsolutePath.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
-                await ConfigureModelForContextTeam(model, MatchType.FriendlyMatch, false).ConfigureAwait(false);
+                model.Team = await _teamDataSource.ReadTeamByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false);
                 if (model.Team == null) return new HttpNotFoundResult();
 
+                var possibleSeasons = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, model.Match.MatchType);
+                model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(possibleSeasons);
+
+                _editMatchHelper.ConfigureModelHomeTeamAndLocation(model);
                 model.HomeTeamName = model.Team.TeamName;
+                if (model.PossibleTeams.Count > 1)
+                {
+                    model.AwayTeamId = new Guid(model.PossibleTeams[1].Value);
+                }
             }
             else if (Request.Url.AbsolutePath.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
-                var actionResult = await ConfigureModelForContextSeason(model, MatchType.FriendlyMatch).ConfigureAwait(false);
-                if (actionResult != null) return actionResult;
+                model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false);
+                if (model.Season == null || !model.Season.MatchTypes.Contains(MatchType.FriendlyMatch))
+                {
+                    return new HttpNotFoundResult();
+                }
             }
 
             model.IsAuthorized = User.Identity.IsAuthenticated;
 
-            ConfigureModelMetadata(model, MatchType.FriendlyMatch);
+            _editMatchHelper.ConfigureAddMatchModelMetadata(model);
 
             return CurrentTemplate(model);
         }

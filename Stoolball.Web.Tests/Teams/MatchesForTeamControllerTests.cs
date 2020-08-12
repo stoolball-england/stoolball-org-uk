@@ -26,7 +26,7 @@ namespace Stoolball.Web.Tests.Teams
     {
         private class TestController : MatchesForTeamController
         {
-            public TestController(ITeamDataSource teamDataSource, IMatchListingDataSource matchDataSource)
+            public TestController(ITeamDataSource teamDataSource, IMatchListingDataSource matchDataSource, ICreateMatchSeasonSelector createMatchSeasonSelector)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -36,7 +36,7 @@ namespace Stoolball.Web.Tests.Teams
                 null, teamDataSource, matchDataSource,
                 Mock.Of<IDateTimeFormatter>(),
                 Mock.Of<IEstimatedSeason>(),
-                Mock.Of<ICreateMatchSeasonSelector>())
+                createMatchSeasonSelector)
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -65,7 +65,9 @@ namespace Stoolball.Web.Tests.Teams
             var matchesDataSource = new Mock<IMatchListingDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
 
-            using (var controller = new TestController(teamDataSource.Object, matchesDataSource.Object))
+            var seasonSelector = new Mock<ICreateMatchSeasonSelector>();
+
+            using (var controller = new TestController(teamDataSource.Object, matchesDataSource.Object, seasonSelector.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -82,7 +84,10 @@ namespace Stoolball.Web.Tests.Teams
             var matchesDataSource = new Mock<IMatchListingDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
 
-            using (var controller = new TestController(teamDataSource.Object, matchesDataSource.Object))
+            var seasonSelector = new Mock<ICreateMatchSeasonSelector>();
+            seasonSelector.Setup(x => x.SelectPossibleSeasons(It.IsAny<IEnumerable<TeamInSeason>>(), It.IsAny<MatchType>())).Returns(new List<Season>());
+
+            using (var controller = new TestController(teamDataSource.Object, matchesDataSource.Object, seasonSelector.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

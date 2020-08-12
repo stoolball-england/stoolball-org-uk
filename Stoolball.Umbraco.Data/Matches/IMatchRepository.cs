@@ -15,5 +15,10 @@ namespace Stoolball.Umbraco.Data.Matches
         /// Creates a stoolball match
         /// </summary>
         Task<Match> CreateMatch(Match match, Guid memberKey, string memberName);
+
+        /// <summary>
+        /// Updates a stoolball match
+        /// </summary>
+        Task<Match> UpdateMatch(Match match, Guid memberKey, string memberName);
     }
 }

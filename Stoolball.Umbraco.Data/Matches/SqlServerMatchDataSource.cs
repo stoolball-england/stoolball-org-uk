@@ -50,11 +50,11 @@ namespace Stoolball.Umbraco.Data.Matches
                 {
                     var matches = await connection.QueryAsync<Match, Tournament, TeamInMatch, Team, MatchLocation, Season, Competition, Match>(
                         $@"SELECT m.MatchId, m.MatchName, m.MatchType, m.StartTime, m.StartTimeIsKnown, m.MatchResultType, 
-                            m.InningsOrderIsKnown, m.MatchNotes, m.MatchRoute, m.MemberKey,
-                            tourney.TournamentRoute, tourney.TournamentName,
+                            m.InningsOrderIsKnown, m.MatchNotes, m.MatchRoute, m.MemberKey, m.UpdateMatchNameAutomatically,
+                            tourney.TournamentRoute, tourney.TournamentName, tourney.MemberKey,
                             mt.MatchTeamId, mt.TeamRole, mt.WonToss,
                             t.TeamId, t.TeamRoute, tn.TeamName, t.MemberGroupName,
-                            ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
+                            ml.MatchLocationId, ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
                             ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
                             s.SeasonRoute, s.FromYear, s.UntilYear,
                             co.CompetitionName, co.MemberGroupName
@@ -81,7 +81,7 @@ namespace Stoolball.Umbraco.Data.Matches
                             return match;
                         },
                         new { Route = normalisedRoute },
-                        splitOn: "TournamentRoute, MatchTeamId, TeamId, MatchLocationRoute, SeasonRoute, CompetitionName")
+                        splitOn: "TournamentRoute, MatchTeamId, TeamId, MatchLocationId, SeasonRoute, CompetitionName")
                         .ConfigureAwait(false);
 
                     var matchToReturn = matches.FirstOrDefault(); // get an example with the properties that are the same for every row

@@ -17,6 +17,11 @@
 @if (Model.IsAuthorized)
 {
     <dl>
+        @if (Model.Match.StartTime > DateTime.UtcNow)
+        {
+        <dt><a href="@Model.Match.MatchRoute/edit/league">Edit @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
+        <dd>Set the date and time, teams, location and notes.</dd>
+        }
         <dt><a href="@Model.Match.MatchRoute/delete">Delete @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
         <dd>Match statistics will be lost. Competition results may be changed. Players that only feature in this match will be deleted.</dd>
     </dl>
