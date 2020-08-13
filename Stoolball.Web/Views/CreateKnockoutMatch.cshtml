@@ -42,7 +42,7 @@
 
         <button class="sr-only">Save match</button>
 
-        if (Model.Match.Season != null)
+        if (Model.PossibleSeasons.Count == 1)
         {
             @Html.HiddenFor(m => Model.Match.Season.SeasonId)
         }

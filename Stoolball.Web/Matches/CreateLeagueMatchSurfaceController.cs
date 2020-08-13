@@ -1,5 +1,4 @@
 ﻿using Humanizer;
-using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Competitions;
@@ -69,25 +68,22 @@ namespace Stoolball.Web.Matches
 
             if (Request.RawUrl.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
-                model.Team = await _teamDataSource.ReadTeamByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false);
+                model.Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false);
                 var possibleSeasons = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, model.Match.MatchType).ToList();
+                if (possibleSeasons.Count == 1)
+                {
+                    model.Match.Season = possibleSeasons.First();
+                }
                 model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(possibleSeasons);
                 await _editMatchHelper.ConfigureModelPossibleTeams(model, possibleSeasons).ConfigureAwait(false);
                 model.Metadata.PageTitle = $"Add a {MatchType.LeagueMatch.Humanize(LetterCasing.LowerCase)} for {model.Team.TeamName}";
             }
             else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
-                model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false);
+                model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false);
+                model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(new[] { model.Match.Season });
                 model.PossibleTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season?.Teams);
                 model.Metadata.PageTitle = $"Add a {MatchType.LeagueMatch.Humanize(LetterCasing.LowerCase)} in the {model.Season.SeasonFullName()}";
-            }
-
-            if (model.Team != null)
-            {
-                if (model.PossibleSeasons.Count == 1)
-                {
-                    model.Match.Season = new Season { SeasonId = new Guid(model.PossibleSeasons[0].Value) };
-                }
             }
 
             return View("CreateLeagueMatch", model);

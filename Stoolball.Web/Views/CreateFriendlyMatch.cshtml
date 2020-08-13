@@ -42,11 +42,11 @@
 
         <button class="sr-only">Save match</button>
 
-        if (Model.Match.Season != null)
+        if (Model.Season != null)
         {
             @Html.HiddenFor(m => Model.Match.Season.SeasonId)
         }
-        else
+        else if (Model.PossibleSeasons.Count > 0)
         {
             <div class="form-group">
                 @Html.LabelFor(m => Model.Match.Season.SeasonId)

@@ -97,6 +97,7 @@ namespace Stoolball.Web.Matches
                 {
                     return new HttpNotFoundResult();
                 }
+                model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(new[] { model.Match.Season });
                 model.PossibleTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season.Teams);
             }
 
