@@ -1,4 +1,5 @@
 ﻿using Stoolball.Competitions;
+using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Teams;
 using Stoolball.Web.Routing;
@@ -39,5 +40,6 @@ namespace Stoolball.Web.Matches
 
         [Display(Name = "Away team")]
         public Guid? AwayTeamId { get; set; }
+        public IDateTimeFormatter DateFormatter { get; set; }
     }
 }

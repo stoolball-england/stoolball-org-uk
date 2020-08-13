@@ -1,8 +1,6 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<EditLeagueMatchViewModel>
 @using ClientDependency.Core.Mvc
-@using Stoolball.Matches
 @using Stoolball.Web.Matches
-@using Humanizer
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -30,43 +28,8 @@
         ("UpdateMatch"))
     {
         <button class="sr-only">Save match</button>
-
         @Html.Partial("_CreateOrEditLeagueMatch")
-
-        object noResultAttributes;
-        if (Model.Match.MatchResultType.HasValue)
-        {
-            noResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeYes" };
-        }
-        else
-        {
-            noResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeYes", @checked = "checked" };
-        }
-        <fieldset class="form-group">
-            <legend>Will the match happen?</legend>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, -1, noResultAttributes)
-                <label for="MatchResultTypeYes" class="custom-control-label">The match will happen</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.HomeWinByForfeit, new { @class = "custom-control-input", @id = MatchResultType.HomeWinByForfeit.ToString() })
-                <label for="@MatchResultType.HomeWinByForfeit.ToString()" class="custom-control-label">@MatchResultType.HomeWinByForfeit.ToString().Humanize()</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.AwayWinByForfeit, new { @class = "custom-control-input", @id = MatchResultType.AwayWinByForfeit.ToString() })
-                <label for="@MatchResultType.AwayWinByForfeit.ToString()" class="custom-control-label">@MatchResultType.AwayWinByForfeit.ToString().Humanize()</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.Postponed, new { @class = "custom-control-input", @id = MatchResultType.Postponed.ToString() })
-                <label for="@MatchResultType.Postponed.ToString()" class="custom-control-label">@MatchResultType.Postponed.ToString().Humanize()</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.Cancelled, new { @class = "custom-control-input", @id = MatchResultType.Cancelled.ToString() })
-                <label for="@MatchResultType.Cancelled.ToString()" class="custom-control-label">@MatchResultType.Cancelled.ToString().Humanize()</label>
-            </div>
-            @Html.ValidationMessageFor(m => Model.Match.MatchResultType, null, new { id = "result-type-validation" })
-        </fieldset>
-    
+        @Html.Partial("_EditMatchResultTypeFuture")
         <button class="btn btn-primary">Save match</button>
     }
 }

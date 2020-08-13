@@ -48,6 +48,7 @@
         CreateKnockoutMatch,
         CreateLeagueMatch,
         EditLeagueMatch,
+        EditKnockoutMatch,
         DeleteMatch,
         Tournament,
         TournamentActions,

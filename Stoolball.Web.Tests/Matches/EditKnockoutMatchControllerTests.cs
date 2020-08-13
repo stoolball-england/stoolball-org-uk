@@ -22,9 +22,9 @@ using Xunit;
 
 namespace Stoolball.Web.Tests.Matches
 {
-    public class EditLeagueMatchControllerTests : UmbracoBaseTest
+    public class EditKnockoutMatchControllerTests : UmbracoBaseTest
     {
-        private class TestController : EditLeagueMatchController
+        private class TestController : EditKnockoutMatchController
         {
             public TestController(IMatchDataSource matchDataSource, ISeasonDataSource seasonDataSource, IEditMatchHelper editMatchHelper, Uri requestUrl)
            : base(
@@ -59,7 +59,7 @@ namespace Stoolball.Web.Tests.Matches
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("EditLeagueMatch", model);
+                return View("EditKnockoutMatch", model);
             }
         }
 
@@ -83,7 +83,7 @@ namespace Stoolball.Web.Tests.Matches
 
 
         [Fact]
-        public async Task Route_matching_match_returns_EditLeagueMatchViewModel()
+        public async Task Route_matching_match_returns_EditKnockoutMatchViewModel()
         {
             var matchDataSource = new Mock<IMatchDataSource>();
             matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { Season = new Season() });
@@ -97,7 +97,7 @@ namespace Stoolball.Web.Tests.Matches
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<EditLeagueMatchViewModel>(((ViewResult)result).Model);
+                Assert.IsType<EditKnockoutMatchViewModel>(((ViewResult)result).Model);
             }
         }
 

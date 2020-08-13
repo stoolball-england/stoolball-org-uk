@@ -1,4 +1,5 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<MatchViewModel>
+@using Stoolball.Matches
 @using Stoolball.Web.Matches
 @section head {
     <meta name="robots" content="noindex,follow" />
@@ -16,15 +17,24 @@
 
 @if (Model.IsAuthorized)
 {
-    <dl>
-        @if (Model.Match.StartTime > DateTime.UtcNow)
+<dl>
+    @if (Model.Match.StartTime > DateTime.UtcNow)
+    {
+        switch (Model.Match.MatchType)
         {
-        <dt><a href="@Model.Match.MatchRoute/edit/league">Edit @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
-        <dd>Set the date and time, teams, location and notes.</dd>
+            case MatchType.LeagueMatch:
+                <dt><a href="@Model.Match.MatchRoute/edit/league">Edit @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
+                <dd>Set the date and time, teams, location and notes.</dd>
+                break;
+            case MatchType.KnockoutMatch:
+                <dt><a href="@Model.Match.MatchRoute/edit/knockout">Edit @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
+                <dd>Set the date and time, teams, location and notes.</dd>
+                break;
         }
-        <dt><a href="@Model.Match.MatchRoute/delete">Delete @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
-        <dd>Match statistics will be lost. Competition results may be changed. Players that only feature in this match will be deleted.</dd>
-    </dl>
+    }
+    <dt><a href="@Model.Match.MatchRoute/delete">Delete @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
+    <dd>Match statistics will be lost. Competition results may be changed. Players that only feature in this match will be deleted.</dd>
+</dl>
 }
 else
 {
