@@ -141,7 +141,7 @@ namespace Stoolball.Matches
 
             foreach (var team in Teams)
             {
-                if (!groups.Contains(team.Team.MemberGroupName))
+                if (!string.IsNullOrEmpty(team.Team.MemberGroupName) && !groups.Contains(team.Team.MemberGroupName))
                 {
                     groups.Add(team.Team.MemberGroupName);
                 }

@@ -49,18 +49,25 @@ namespace Stoolball.Web.Matches
             }
 
             var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false);
-            postedMatch.MatchId = beforeUpdate.MatchId;
-            postedMatch.MatchRoute = beforeUpdate.MatchRoute;
-            postedMatch.UpdateMatchNameAutomatically = beforeUpdate.UpdateMatchNameAutomatically;
-            postedMatch.Season = beforeUpdate.Season;
 
-            var model = new EditLeagueMatchViewModel(CurrentPage) { Match = postedMatch };
+            var model = new EditLeagueMatchViewModel(CurrentPage)
+            {
+                Match = postedMatch,
+                DateFormatter = _dateTimeFormatter
+            };
+            model.Match.MatchId = beforeUpdate.MatchId;
+            model.Match.MatchRoute = beforeUpdate.MatchRoute;
+            model.Match.UpdateMatchNameAutomatically = beforeUpdate.UpdateMatchNameAutomatically;
+            model.Match.Season = beforeUpdate.Season;
+
             _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form);
 
-            model.IsAuthorized = IsAuthorized(model.Match);
+            model.IsAuthorized = IsAuthorized(beforeUpdate);
 
             if (model.IsAuthorized && ModelState.IsValid)
             {
+                if ((int)model.Match.MatchResultType == -1) { model.Match.MatchResultType = null; }
+
                 var currentMember = Members.GetCurrentMember();
                 await _matchRepository.UpdateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
@@ -68,7 +75,8 @@ namespace Stoolball.Web.Matches
                 return Redirect(model.Match.MatchRoute);
             }
 
-            model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(model.Season.SeasonRoute, true).ConfigureAwait(false);
+            model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(model.Match.Season.SeasonRoute, true).ConfigureAwait(false);
+            model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(new[] { model.Match.Season });
             model.PossibleTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season.Teams);
             model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
