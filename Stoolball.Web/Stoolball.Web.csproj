@@ -1007,6 +1007,8 @@
     <Compile Include="Matches\CreateKnockoutMatchController.cs" />
     <Compile Include="Matches\CreateFriendlyMatchSurfaceController.cs" />
     <Compile Include="Matches\CreateKnockoutMatchSurfaceController.cs" />
+    <Compile Include="Matches\EditFriendlyMatchController.cs" />
+    <Compile Include="Matches\EditFriendlyMatchSurfaceController.cs" />
     <Compile Include="Matches\EditKnockoutMatchSurfaceController.cs" />
     <Compile Include="Matches\EditKnockoutMatchController.cs" />
     <Compile Include="Matches\EditMatchHelper.cs" />
@@ -1246,6 +1248,8 @@
     <Content Include="Views\EditKnockoutMatch.cshtml" />
     <Content Include="Views\Partials\_CreateOrEditKnockoutMatch.cshtml" />
     <Content Include="Views\Partials\_EditMatchResultTypeFuture.cshtml" />
+    <Content Include="Views\Partials\_CreateOrEditFriendlyMatch.cshtml" />
+    <Content Include="Views\EditFriendlyMatch.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

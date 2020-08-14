@@ -111,6 +111,8 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/matches/example-MaTcH/", StoolballRouteType.Match)]
         [InlineData("https://example.org/matches/example-match/edit", StoolballRouteType.MatchActions)]
         [InlineData("https://example.org/matches/example-MaTcH/Edit/", StoolballRouteType.MatchActions)]
+        [InlineData("https://example.org/matches/example-match/edit/friendly", StoolballRouteType.EditFriendlyMatch)]
+        [InlineData("https://example.org/matches/example-MaTcH/Edit/Friendly/", StoolballRouteType.EditFriendlyMatch)]
         [InlineData("https://example.org/matches/example-match/edit/League", StoolballRouteType.EditLeagueMatch)]
         [InlineData("https://example.org/matches/example-MaTcH/Edit/league/", StoolballRouteType.EditLeagueMatch)]
         [InlineData("https://example.org/matches/example-match/edit/knockout", StoolballRouteType.EditKnockoutMatch)]

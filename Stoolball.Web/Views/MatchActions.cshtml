@@ -22,6 +22,10 @@
     {
         switch (Model.Match.MatchType)
         {
+            case MatchType.FriendlyMatch:
+                <dt><a href="@Model.Match.MatchRoute/edit/friendly">Edit @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
+                <dd>Set the date and time, teams, location and notes.</dd>
+                break;
             case MatchType.LeagueMatch:
                 <dt><a href="@Model.Match.MatchRoute/edit/league">Edit @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
                 <dd>Set the date and time, teams, location and notes.</dd>
