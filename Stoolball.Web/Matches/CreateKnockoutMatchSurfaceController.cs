@@ -42,7 +42,7 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true, TinyMCE = true)]
-        public async Task<ActionResult> CreateMatch([Bind(Prefix = "Match", Include = "MatchName,Season")] Match postedMatch)
+        public async Task<ActionResult> CreateMatch([Bind(Prefix = "Match", Include = "Season")] Match postedMatch)
         {
             if (postedMatch is null)
             {
@@ -82,7 +82,8 @@ namespace Stoolball.Web.Matches
             {
                 model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false);
                 model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(new[] { model.Match.Season });
-                model.PossibleTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season?.Teams);
+                model.PossibleHomeTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season?.Teams);
+                model.PossibleAwayTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season?.Teams);
                 model.Metadata.PageTitle = $"Add a {MatchType.KnockoutMatch.Humanize(LetterCasing.LowerCase)} in the {model.Season.SeasonFullName()}";
             }
 

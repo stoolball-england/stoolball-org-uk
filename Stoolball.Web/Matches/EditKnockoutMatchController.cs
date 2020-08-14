@@ -68,9 +68,11 @@ namespace Stoolball.Web.Matches
             {
                 model.IsAuthorized = IsAuthorized(model.Match);
 
+                model.MatchName = model.Match.UpdateMatchNameAutomatically ? string.Empty : model.Match.MatchName;
                 model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(model.Match.Season.SeasonRoute, true).ConfigureAwait(false);
                 model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(new[] { model.Match.Season });
-                model.PossibleTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season.Teams);
+                model.PossibleHomeTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season.Teams);
+                model.PossibleAwayTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season.Teams);
 
                 model.MatchDate = model.Match.StartTime;
                 if (model.Match.StartTimeIsKnown)

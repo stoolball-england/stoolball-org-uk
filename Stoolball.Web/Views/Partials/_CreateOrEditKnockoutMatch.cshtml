@@ -17,10 +17,10 @@ else
 }
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.Match.MatchName)
+    @Html.LabelFor(m => Model.MatchName)
     <p class="form-text" id="match-name-help"><small>For 'Semi-final', 'Cup final' or similar matches. For most matches, leave this blank.</small></p>
-    @Html.TextBoxFor(m => Model.Match.MatchName, new { @class = "form-control", aria_describedby = "match-name match-name-help" })
-    @Html.ValidationMessageFor(m => Model.Match.MatchName, null, new { id = "match-name" })
+    @Html.TextBoxFor(m => Model.MatchName, new { @class = "form-control", aria_describedby = "match-name match-name-help" })
+    @Html.ValidationMessageFor(m => Model.MatchName, null, new { id = "match-name" })
 </div>
 
 <div class="form-group">
@@ -37,13 +37,13 @@ else
 
 <div class="form-group">
     @Html.LabelFor(m => Model.HomeTeamId)
-    @Html.DropDownListFor(m => Model.HomeTeamId, Model.PossibleTeams, "To be confirmed", new { @class = "form-control", aria_describedby = "home-team" })
+    @Html.DropDownListFor(m => Model.HomeTeamId, Model.PossibleHomeTeams, "To be confirmed", new { @class = "form-control", aria_describedby = "home-team" })
     @Html.ValidationMessageFor(m => Model.HomeTeamId, null, new { id = "home-team" })
 </div>
 
 <div class="form-group">
     @Html.LabelFor(m => Model.AwayTeamId)
-    @Html.DropDownListFor(m => Model.AwayTeamId, Model.PossibleTeams, "To be confirmed", new { @class = "form-control", aria_describedby = "away-team" })
+    @Html.DropDownListFor(m => Model.AwayTeamId, Model.PossibleAwayTeams, "To be confirmed", new { @class = "form-control", aria_describedby = "away-team" })
     @Html.ValidationMessageFor(m => Model.AwayTeamId, null, new { id = "away-team" })
 </div>
 

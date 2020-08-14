@@ -15,7 +15,6 @@ namespace Stoolball.Matches
     {
         public Guid? MatchId { get; set; }
 
-        [Display(Name = "Match name")]
         public string MatchName { get; set; }
         public bool UpdateMatchNameAutomatically { get; set; }
 

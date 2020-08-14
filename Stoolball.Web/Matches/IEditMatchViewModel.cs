@@ -17,7 +17,8 @@ namespace Stoolball.Web.Matches
         Guid? MatchLocationId { get; set; }
         string MatchLocationName { get; set; }
         List<SelectListItem> PossibleSeasons { get; }
-        List<SelectListItem> PossibleTeams { get; }
+        List<SelectListItem> PossibleHomeTeams { get; }
+        List<SelectListItem> PossibleAwayTeams { get; }
         Season Season { get; set; }
         DateTimeOffset? StartTime { get; set; }
         Team Team { get; set; }

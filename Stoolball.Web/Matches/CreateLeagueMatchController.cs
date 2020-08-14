@@ -85,9 +85,9 @@ namespace Stoolball.Web.Matches
                 await _editMatchHelper.ConfigureModelPossibleTeams(model, possibleSeasons).ConfigureAwait(false);
 
                 _editMatchHelper.ConfigureModelHomeTeamAndLocation(model);
-                if (model.PossibleTeams.Count > 1)
+                if (model.PossibleAwayTeams.Count > 1)
                 {
-                    model.AwayTeamId = new Guid(model.PossibleTeams[1].Value);
+                    model.AwayTeamId = new Guid(model.PossibleAwayTeams[1].Value);
                 }
             }
             else if (Request.Url.AbsolutePath.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
@@ -99,14 +99,16 @@ namespace Stoolball.Web.Matches
                 }
                 model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(new[] { model.Match.Season });
 
-                model.PossibleTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season.Teams);
-                if (model.PossibleTeams.Count > 0)
+                model.PossibleHomeTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season.Teams);
+                if (model.PossibleHomeTeams.Count > 0)
                 {
-                    model.HomeTeamId = new Guid(model.PossibleTeams[0].Value);
+                    model.HomeTeamId = new Guid(model.PossibleHomeTeams[0].Value);
                 }
-                if (model.PossibleTeams.Count > 1)
+
+                model.PossibleAwayTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season.Teams);
+                if (model.PossibleAwayTeams.Count > 1)
                 {
-                    model.AwayTeamId = new Guid(model.PossibleTeams[1].Value);
+                    model.AwayTeamId = new Guid(model.PossibleAwayTeams[1].Value);
                 }
             }
 

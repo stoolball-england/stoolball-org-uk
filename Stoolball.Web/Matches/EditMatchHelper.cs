@@ -87,8 +87,10 @@ namespace Stoolball.Web.Matches
                     possibleTeams.AddRange(teamsInSeason);
                 }
             }
-            model.PossibleTeams.AddRange(possibleTeams.OfType<Team>().Distinct(new TeamEqualityComparer()).Select(x => new SelectListItem { Text = x.TeamName, Value = x.TeamId.Value.ToString() }));
-            model.PossibleTeams.Sort(new TeamComparer(model.Team.TeamId));
+            model.PossibleHomeTeams.AddRange(possibleTeams.OfType<Team>().Distinct(new TeamEqualityComparer()).Select(x => new SelectListItem { Text = x.TeamName, Value = x.TeamId.Value.ToString() }));
+            model.PossibleHomeTeams.Sort(new TeamComparer(model.Team.TeamId));
+            model.PossibleAwayTeams.AddRange(possibleTeams.OfType<Team>().Distinct(new TeamEqualityComparer()).Select(x => new SelectListItem { Text = x.TeamName, Value = x.TeamId.Value.ToString() }));
+            model.PossibleAwayTeams.Sort(new TeamComparer(model.Team.TeamId));
         }
 
         public void ConfigureModelFromRequestData(IEditMatchViewModel model, NameValueCollection unvalidatedFormData, NameValueCollection formData)
@@ -110,6 +112,11 @@ namespace Stoolball.Web.Matches
 
             // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
             model.Match.MatchNotes = unvalidatedFormData["Match.MatchNotes"];
+
+            if (!string.IsNullOrEmpty(formData["MatchName"]))
+            {
+                model.Match.MatchName = formData["MatchName"];
+            }
 
             if (!string.IsNullOrEmpty(formData["MatchDate"]))
             {

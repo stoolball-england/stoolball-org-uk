@@ -21,6 +21,9 @@ namespace Stoolball.Web.Matches
         public Team Team { get; set; }
         public Season Season { get; set; }
 
+        [Display(Name = "Match name")]
+        public string MatchName { get; set; }
+
         [Display(Name = "Match date")]
         public DateTimeOffset? MatchDate { get; set; }
 
@@ -33,7 +36,8 @@ namespace Stoolball.Web.Matches
 
         public List<SelectListItem> PossibleSeasons { get; internal set; } = new List<SelectListItem>();
 
-        public List<SelectListItem> PossibleTeams { get; internal set; } = new List<SelectListItem>();
+        public List<SelectListItem> PossibleHomeTeams { get; internal set; } = new List<SelectListItem>();
+        public List<SelectListItem> PossibleAwayTeams { get; internal set; } = new List<SelectListItem>();
 
         [Display(Name = "Home team")]
         public Guid? HomeTeamId { get; set; }

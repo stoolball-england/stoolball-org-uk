@@ -9,6 +9,7 @@ using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
@@ -85,7 +86,8 @@ namespace Stoolball.Umbraco.Data.Matches
                     connection.Open();
                     using (var transaction = connection.BeginTransaction())
                     {
-                        await PopulateMatchWithTeamNamesAndGeneratedRoute(match, string.Empty, transaction).ConfigureAwait(false);
+                        await PopulateTeamNames(match, transaction).ConfigureAwait(false);
+                        await UpdateMatchRoute(match, string.Empty, transaction).ConfigureAwait(false);
 
                         if (match.UpdateMatchNameAutomatically)
                         {
@@ -231,6 +233,7 @@ namespace Stoolball.Umbraco.Data.Matches
             try
             {
                 string routeBeforeUpdate = match.MatchRoute;
+                match.UpdateMatchNameAutomatically = string.IsNullOrEmpty(match.MatchName);
                 match.MatchNotes = _htmlSanitiser.Sanitize(match.MatchNotes);
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
@@ -238,7 +241,8 @@ namespace Stoolball.Umbraco.Data.Matches
                     connection.Open();
                     using (var transaction = connection.BeginTransaction())
                     {
-                        await PopulateMatchWithTeamNamesAndGeneratedRoute(match, routeBeforeUpdate, transaction).ConfigureAwait(false);
+                        await PopulateTeamNames(match, transaction).ConfigureAwait(false);
+                        await UpdateMatchRoute(match, routeBeforeUpdate, transaction).ConfigureAwait(false);
 
                         if (match.UpdateMatchNameAutomatically)
                         {
@@ -301,14 +305,8 @@ namespace Stoolball.Umbraco.Data.Matches
                         }
 
                         // Team removed?
-                        var currentHomeTeam = currentTeams.SingleOrDefault(x => x.TeamRole == TeamRole.Home);
-                        var newHomeTeam = match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home);
-                        if (currentHomeTeam != null && newHomeTeam == null)
-                        {
-                            await connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET BattingMatchTeamId = NULL WHERE BattingMatchTeamId = @MatchTeamId", new { currentHomeTeam.MatchTeamId }, transaction).ConfigureAwait(false);
-                            await connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET BowlingMatchTeamId = NULL WHERE BowlingMatchTeamId = @MatchTeamId", new { currentHomeTeam.MatchTeamId }, transaction).ConfigureAwait(false);
-                            await connection.ExecuteAsync($"DELETE FROM { Tables.MatchTeam } WHERE MatchTeamId = @MatchTeamId", new { currentHomeTeam.MatchTeamId }, transaction).ConfigureAwait(false);
-                        }
+                        await RemoveTeamIfRequired(TeamRole.Home, currentTeams, match.Teams, transaction).ConfigureAwait(false);
+                        await RemoveTeamIfRequired(TeamRole.Away, currentTeams, match.Teams, transaction).ConfigureAwait(false);
 
                         // Update innings with the new values for match team ids (assuming the match hasn't happened yet, 
                         // therefore the innings order is home bats first as assumed in CreateMatch)
@@ -354,26 +352,28 @@ namespace Stoolball.Umbraco.Data.Matches
             return match;
         }
 
-        private async Task PopulateMatchWithTeamNamesAndGeneratedRoute(Match match, string routeBeforeUpdate, System.Data.IDbTransaction transaction)
+        private static async Task RemoveTeamIfRequired(TeamRole teamRole, IEnumerable<MatchTeamResult> currentTeams, IEnumerable<TeamInMatch> updatedTeams, System.Data.IDbTransaction transaction)
+        {
+            var currentTeamInRole = currentTeams.SingleOrDefault(x => x.TeamRole == teamRole);
+            var newTeamInRole = updatedTeams.SingleOrDefault(x => x.TeamRole == teamRole);
+            if (currentTeamInRole != null && newTeamInRole == null)
+            {
+                await transaction.Connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET BattingMatchTeamId = NULL WHERE BattingMatchTeamId = @MatchTeamId", new { currentTeamInRole.MatchTeamId }, transaction).ConfigureAwait(false);
+                await transaction.Connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET BowlingMatchTeamId = NULL WHERE BowlingMatchTeamId = @MatchTeamId", new { currentTeamInRole.MatchTeamId }, transaction).ConfigureAwait(false);
+                await transaction.Connection.ExecuteAsync($"DELETE FROM { Tables.MatchTeam } WHERE MatchTeamId = @MatchTeamId", new { currentTeamInRole.MatchTeamId }, transaction).ConfigureAwait(false);
+            }
+        }
+
+        private async Task UpdateMatchRoute(Match match, string routeBeforeUpdate, System.Data.IDbTransaction transaction)
         {
             string baseRoute = string.Empty;
-            if (match.Teams.Count > 0)
+            if (!match.UpdateMatchNameAutomatically)
             {
-                var teamsWithNames = await transaction.Connection.QueryAsync<Team>($@"SELECT t.TeamId, t.PlayerType, tn.TeamName 
-                                                                                    FROM {Tables.Team} AS t INNER JOIN {Tables.TeamName} tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL 
-                                                                                    WHERE t.TeamId IN @TeamIds",
-                                                                    new { TeamIds = match.Teams.Select(x => x.Team.TeamId).ToList() },
-                                                                    transaction
-                                                                ).ConfigureAwait(false);
-
-                // Used in generating the match name
-                foreach (var team in match.Teams)
-                {
-                    team.Team = teamsWithNames.Single(x => x.TeamId == team.Team.TeamId);
-                }
-
-
-                baseRoute = string.Join(" ", teamsWithNames.Select(x => x.TeamName));
+                baseRoute = match.MatchName;
+            }
+            else if (match.Teams.Count > 0)
+            {
+                baseRoute = string.Join(" ", match.Teams.Select(x => x.Team.TeamName));
             }
             else if (!string.IsNullOrEmpty(match.MatchName))
             {
@@ -398,6 +398,25 @@ namespace Stoolball.Umbraco.Data.Matches
                     }
                 }
                 while (count > 0);
+            }
+        }
+
+        private static async Task PopulateTeamNames(Match match, System.Data.IDbTransaction transaction)
+        {
+            if (match.Teams.Count > 0)
+            {
+                var teamsWithNames = await transaction.Connection.QueryAsync<Team>($@"SELECT t.TeamId, t.PlayerType, tn.TeamName 
+                                                                                    FROM {Tables.Team} AS t INNER JOIN {Tables.TeamName} tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL 
+                                                                                    WHERE t.TeamId IN @TeamIds",
+                                                                    new { TeamIds = match.Teams.Select(x => x.Team.TeamId).ToList() },
+                                                                    transaction
+                                                                ).ConfigureAwait(false);
+
+                // Used in generating the match name
+                foreach (var team in match.Teams)
+                {
+                    team.Team = teamsWithNames.Single(x => x.TeamId == team.Team.TeamId);
+                }
             }
         }
 

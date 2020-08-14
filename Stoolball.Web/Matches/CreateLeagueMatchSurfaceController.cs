@@ -82,7 +82,8 @@ namespace Stoolball.Web.Matches
             {
                 model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false);
                 model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(new[] { model.Match.Season });
-                model.PossibleTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season?.Teams);
+                model.PossibleHomeTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season?.Teams);
+                model.PossibleAwayTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season?.Teams);
                 model.Metadata.PageTitle = $"Add a {MatchType.LeagueMatch.Humanize(LetterCasing.LowerCase)} in the {model.Season.SeasonFullName()}";
             }
 

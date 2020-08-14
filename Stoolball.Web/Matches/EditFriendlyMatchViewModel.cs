@@ -32,7 +32,8 @@ namespace Stoolball.Web.Matches
 
         public List<SelectListItem> PossibleSeasons { get; internal set; } = new List<SelectListItem>();
 
-        public List<SelectListItem> PossibleTeams { get; internal set; } = new List<SelectListItem>();
+        public List<SelectListItem> PossibleHomeTeams { get; internal set; } = new List<SelectListItem>();
+        public List<SelectListItem> PossibleAwayTeams { get; internal set; } = new List<SelectListItem>();
 
         [Display(Name = "Home team")]
         public Guid? HomeTeamId { get; set; }
