@@ -24,7 +24,7 @@ namespace Stoolball.Web.Clubs
         private readonly IClubDataSource _clubDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
-        private readonly IEstimatedSeason _estimatedSeason;
+        private readonly ISeasonEstimator _seasonEstimator;
 
         public MatchesForClubController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -35,13 +35,13 @@ namespace Stoolball.Web.Clubs
            IClubDataSource clubDataSource,
            IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
-           IEstimatedSeason estimatedSeason)
+           ISeasonEstimator seasonEstimator)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
-            _estimatedSeason = estimatedSeason ?? throw new ArgumentNullException(nameof(estimatedSeason));
+            _seasonEstimator = seasonEstimator ?? throw new ArgumentNullException(nameof(seasonEstimator));
         }
 
         [HttpGet]
@@ -69,7 +69,7 @@ namespace Stoolball.Web.Clubs
                         Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
                         {
                             TeamIds = club.Teams.Select(team => team.TeamId.Value).ToList(),
-                            FromDate = _estimatedSeason.StartDate
+                            FromDate = _seasonEstimator.EstimateSeasonDates(DateTimeOffset.UtcNow).fromDate
                         }).ConfigureAwait(false),
                         DateTimeFormatter = _dateFormatter
                     },

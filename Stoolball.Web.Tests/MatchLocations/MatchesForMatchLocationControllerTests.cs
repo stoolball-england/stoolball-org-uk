@@ -33,7 +33,7 @@ namespace Stoolball.Web.Tests.MatchLocations
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, matchLocationDataSource, matchDataSource, Mock.Of<IDateTimeFormatter>(), Mock.Of<IEstimatedSeason>())
+                null, matchLocationDataSource, matchDataSource, Mock.Of<IDateTimeFormatter>(), Mock.Of<ISeasonEstimator>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));

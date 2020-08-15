@@ -24,7 +24,7 @@ namespace Stoolball.Web.MatchLocations
         private readonly IMatchLocationDataSource _matchLocationDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
-        private readonly IEstimatedSeason _estimatedSeason;
+        private readonly ISeasonEstimator _seasonEstimator;
 
         public MatchesForMatchLocationController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -35,13 +35,13 @@ namespace Stoolball.Web.MatchLocations
            IMatchLocationDataSource matchLocationDataSource,
            IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
-           IEstimatedSeason estimatedSeason)
+           ISeasonEstimator seasonEstimator)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchLocationDataSource = matchLocationDataSource ?? throw new ArgumentNullException(nameof(matchLocationDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
-            _estimatedSeason = estimatedSeason ?? throw new ArgumentNullException(nameof(estimatedSeason));
+            _seasonEstimator = seasonEstimator ?? throw new ArgumentNullException(nameof(seasonEstimator));
         }
 
         [HttpGet]
@@ -69,7 +69,7 @@ namespace Stoolball.Web.MatchLocations
                         Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
                         {
                             MatchLocationIds = new List<Guid> { location.MatchLocationId.Value },
-                            FromDate = _estimatedSeason.StartDate
+                            FromDate = _seasonEstimator.EstimateSeasonDates(DateTimeOffset.UtcNow).fromDate
                         }).ConfigureAwait(false),
                         DateTimeFormatter = _dateFormatter
                     },

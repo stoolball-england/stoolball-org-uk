@@ -35,7 +35,7 @@ namespace Stoolball.Web.Tests.Teams
                 Mock.Of<IProfilingLogger>(),
                 null, teamDataSource, matchDataSource,
                 Mock.Of<IDateTimeFormatter>(),
-                Mock.Of<IEstimatedSeason>(),
+                Mock.Of<ISeasonEstimator>(),
                 createMatchSeasonSelector)
             {
                 var request = new Mock<HttpRequestBase>();

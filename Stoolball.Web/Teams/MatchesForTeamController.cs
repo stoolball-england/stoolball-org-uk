@@ -27,7 +27,7 @@ namespace Stoolball.Web.Teams
         private readonly ITeamDataSource _teamDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
-        private readonly IEstimatedSeason _estimatedSeason;
+        private readonly ISeasonEstimator _seasonEstimator;
         private readonly ICreateMatchSeasonSelector _createMatchSeasonSelector;
 
         public MatchesForTeamController(IGlobalSettings globalSettings,
@@ -39,14 +39,14 @@ namespace Stoolball.Web.Teams
            ITeamDataSource teamDataSource,
            IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
-           IEstimatedSeason estimatedSeason,
+           ISeasonEstimator seasonEstimator,
            ICreateMatchSeasonSelector createMatchSeasonSelector)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
-            _estimatedSeason = estimatedSeason ?? throw new ArgumentNullException(nameof(estimatedSeason));
+            _seasonEstimator = seasonEstimator ?? throw new ArgumentNullException(nameof(seasonEstimator));
             _createMatchSeasonSelector = createMatchSeasonSelector ?? throw new ArgumentNullException(nameof(createMatchSeasonSelector));
         }
 
@@ -75,7 +75,7 @@ namespace Stoolball.Web.Teams
                         Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
                         {
                             TeamIds = new List<Guid> { team.TeamId.Value },
-                            FromDate = _estimatedSeason.StartDate
+                            FromDate = _seasonEstimator.EstimateSeasonDates(DateTimeOffset.UtcNow).fromDate
                         }).ConfigureAwait(false),
                         DateTimeFormatter = _dateFormatter
                     },
