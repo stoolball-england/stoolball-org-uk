@@ -15,6 +15,60 @@ else if (Model.PossibleSeasons.Count > 0)
         @Html.ValidationMessageFor(m => Model.Match.Season.SeasonId, null, new { id = "match-season" })
     </div>
 }
+else
+{
+    <div class="form-group related-item">
+        @Html.LabelFor(m => Model.Match.Season.SeasonId)
+        @if (Model.Match.Season != null)
+        {
+            <div class="related-item__selected">
+                <div class="related-item__selected__section">
+                    @Html.TextBoxFor(m => Model.SeasonFullName, new { @class = "form-control", @readonly = "readonly" })
+                </div>
+                <div class="related-item__delete related-item__selected__section">
+                    @Html.HiddenFor(m => Model.Match.Season.SeasonId, new { @class = "related-item__data related-item__id" })
+                    <button class="text-danger">@Html.Partial("_DeleteIcon", (Model.Match.Season.SeasonId.Value.ToString(), $"Remove this match from {Model.SeasonFullName}"))</button>
+                </div>
+            </div>
+            Model.SeasonFullName = string.Empty;
+            @Html.TextBoxFor(m => Model.SeasonFullName, new
+            {
+                @class = "form-control related-item__search",
+                placeholder = "Type the season name",
+                autocomplete = "off",
+                type = "search",
+                data_url = "/api/seasons/autocomplete?matchType=FriendlyMatch",
+                data_template = "season-template",
+                aria_label = "Type a season name and press down arrow to select from the matching choices",
+                disabled = "disabled"
+            })
+        }
+        else
+        {
+            @Html.TextBoxFor(m => Model.SeasonFullName, new
+            {
+                @class = "form-control related-item__search",
+                placeholder = "Type the season name",
+                autocomplete = "off",
+                type = "search",
+                data_url = "/api/seasons/autocomplete",
+                data_template = "season-template",
+                aria_label = "Type a season name and press down arrow to select from the matching choices"
+            })
+        }
+    </div>
+    <script type="text/x-template" id="season-template">
+        <div class="related-item__selected">
+            <div class="related-item__selected__section">
+                <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="SeasonFullName" name="SeasonFullName" />
+            </div>
+            <div class="related-item__delete related-item__selected__section">
+                <input name="Match.Season.SeasonId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
+                <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove this match from {{value}}"))</button>
+            </div>
+        </div>
+    </script>
+}
 
 <div class="form-group">
     @Html.LabelFor(m => Model.MatchDate)
@@ -50,7 +104,7 @@ else if (Model.PossibleSeasons.Count > 0)
             type = "search",
             data_url = "/api/teams/autocomplete",
             data_template = "home-team-template",
-            aria_label = "Type a team name add and press down arrow to select from the matching choices",
+            aria_label = "Type a team name and press down arrow to select from the matching choices",
             disabled = "disabled"
         })
     }
@@ -64,7 +118,7 @@ else if (Model.PossibleSeasons.Count > 0)
             type = "search",
             data_url = "/api/teams/autocomplete",
             data_template = "home-team-template",
-            aria_label = "Type a team name add and press down arrow to select from the matching choices"
+            aria_label = "Type a team name and press down arrow to select from the matching choices"
         })
     }
 </div>
@@ -102,7 +156,7 @@ else if (Model.PossibleSeasons.Count > 0)
             type = "search",
             data_url = "/api/teams/autocomplete",
             data_template = "away-team-template",
-            aria_label = "Type a team name add and press down arrow to select from the matching choices",
+            aria_label = "Type a team name and press down arrow to select from the matching choices",
             disabled = "disabled"
         })
     }
@@ -116,7 +170,7 @@ else if (Model.PossibleSeasons.Count > 0)
             type = "search",
             data_url = "/api/teams/autocomplete",
             data_template = "away-team-template",
-            aria_label = "Type a team name add and press down arrow to select from the matching choices"
+            aria_label = "Type a team name and press down arrow to select from the matching choices"
         })
     }
 </div>

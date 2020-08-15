@@ -69,10 +69,6 @@ namespace Stoolball.Web.Matches
 
                 _editMatchHelper.ConfigureModelHomeTeamAndLocation(model);
                 model.HomeTeamName = model.Team.TeamName;
-                if (model.PossibleHomeTeams.Count > 1)
-                {
-                    model.AwayTeamId = new Guid(model.PossibleHomeTeams[1].Value);
-                }
             }
             else if (Request.Url.AbsolutePath.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {

@@ -29,6 +29,79 @@ namespace Stoolball.Umbraco.Data.Competitions
         }
 
         /// <summary>
+        /// Gets a list of seasons based on a query
+        /// </summary>
+        /// <returns>A list of <see cref="Season"/> objects. An empty list if no seasons are found.</returns>
+        public async Task<List<Season>> ReadSeasons(CompetitionQuery competitionQuery)
+        {
+            if (competitionQuery is null)
+            {
+                throw new ArgumentNullException(nameof(competitionQuery));
+            }
+
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    var (where, parameters) = BuildWhereClause(competitionQuery);
+
+                    //LEFT JOIN {Tables.SeasonTeam} AS st2 ON s2.SeasonId = st2.SeasonId
+                    var sql = $@"SELECT s2.SeasonId, s2.FromYear, s2.UntilYear,
+                            co2.CompetitionName
+                            FROM {Tables.Season} AS s2 
+                            INNER JOIN {Tables.Competition} AS co2 ON co2.CompetitionId = s2.CompetitionId
+                            WHERE s2.SeasonId IN(
+                                SELECT s.SeasonId
+                                FROM {Tables.Season} AS s
+                                INNER JOIN {Tables.Competition} AS co ON co.CompetitionId = s.CompetitionId
+                                {where}
+                                ORDER BY CASE WHEN co.UntilYear IS NULL THEN 0
+                                          WHEN co.UntilYear IS NOT NULL THEN 1 END, s.FromYear DESC, s.UntilYear DESC, co.CompetitionName
+                                OFFSET {(competitionQuery.PageNumber - 1) * competitionQuery.PageSize} ROWS FETCH NEXT {competitionQuery.PageSize} ROWS ONLY
+                            )
+                            ORDER BY CASE WHEN co2.UntilYear IS NULL THEN 0
+                                          WHEN co2.UntilYear IS NOT NULL THEN 1 END, s2.FromYear DESC, s2.UntilYear DESC, co2.CompetitionName";
+
+                    var seasons = await connection.QueryAsync<Season, Competition, Season>(sql,
+                        (season, competition) =>
+                        {
+                            season.Competition = competition;
+                            return season;
+                        },
+                        new DynamicParameters(parameters),
+                        splitOn: "CompetitionName").ConfigureAwait(false);
+
+                    return seasons.ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(typeof(SqlServerSeasonDataSource), ex);
+                throw;
+            }
+        }
+
+        private static (string sql, Dictionary<string, object> parameters) BuildWhereClause(CompetitionQuery competitionQuery)
+        {
+            var where = new List<string>();
+            var parameters = new Dictionary<string, object>();
+
+            if (!string.IsNullOrEmpty(competitionQuery.Query))
+            {
+                where.Add("(CONCAT(CompetitionName, ', ', s.FromYear, ' season') LIKE @Query OR CONCAT(CompetitionName, ', ', s.FromYear, '/', RIGHT(s.UntilYear,2), ' season') LIKE @Query OR co.PlayerType LIKE @Query)");
+                parameters.Add("@Query", $"%{competitionQuery.Query}%");
+            }
+
+            if (competitionQuery.MatchTypes?.Count > 0)
+            {
+                where.Add($"s.SeasonId IN (SELECT SeasonId FROM {Tables.SeasonMatchType} WHERE MatchType IN @MatchTypes)");
+                parameters.Add("@MatchTypes", competitionQuery.MatchTypes.Select(x => x.ToString()));
+            }
+
+            return (where.Count > 0 ? $@"WHERE " + string.Join(" AND ", where) : string.Empty, parameters);
+        }
+
+        /// <summary>
         /// Gets a single stoolball season based on its route
         /// </summary>
         /// <param name="route">/competitions/example-competition/2020</param>

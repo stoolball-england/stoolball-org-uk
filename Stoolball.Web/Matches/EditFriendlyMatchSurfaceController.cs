@@ -41,7 +41,7 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true, TinyMCE = true)]
-        public async Task<ActionResult> UpdateMatch([Bind(Prefix = "Match", Include = "MatchResultType")] Match postedMatch)
+        public async Task<ActionResult> UpdateMatch([Bind(Prefix = "Match", Include = "Season,MatchResultType")] Match postedMatch)
         {
             if (postedMatch is null)
             {
@@ -58,7 +58,6 @@ namespace Stoolball.Web.Matches
             model.Match.MatchId = beforeUpdate.MatchId;
             model.Match.MatchRoute = beforeUpdate.MatchRoute;
             model.Match.UpdateMatchNameAutomatically = beforeUpdate.UpdateMatchNameAutomatically;
-            model.Match.Season = beforeUpdate.Season;
 
             _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form);
 
@@ -75,10 +74,7 @@ namespace Stoolball.Web.Matches
                 return Redirect(model.Match.MatchRoute);
             }
 
-            model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(model.Match.Season.SeasonRoute, true).ConfigureAwait(false);
-            model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(new[] { model.Match.Season });
-            model.PossibleHomeTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season.Teams);
-            model.PossibleAwayTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season.Teams);
+            model.Match.MatchName = beforeUpdate.MatchName;
             model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
             return View("EditFriendlyMatch", model);

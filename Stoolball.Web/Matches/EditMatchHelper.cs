@@ -133,18 +133,20 @@ namespace Stoolball.Web.Matches
             if (!string.IsNullOrEmpty(formData["HomeTeamId"]))
             {
                 model.HomeTeamId = new Guid(formData["HomeTeamId"]);
+                model.HomeTeamName = formData["HomeTeamName"];
                 model.Match.Teams.Add(new TeamInMatch
                 {
-                    Team = new Team { TeamId = model.HomeTeamId },
+                    Team = new Team { TeamId = model.HomeTeamId, TeamName = model.HomeTeamName },
                     TeamRole = TeamRole.Home
                 });
             }
             if (!string.IsNullOrEmpty(formData["AwayTeamId"]))
             {
                 model.AwayTeamId = new Guid(formData["AwayTeamId"]);
+                model.AwayTeamName = formData["AwayTeamName"];
                 model.Match.Teams.Add(new TeamInMatch
                 {
-                    Team = new Team { TeamId = model.AwayTeamId },
+                    Team = new Team { TeamId = model.AwayTeamId, TeamName = model.AwayTeamName },
                     TeamRole = TeamRole.Away
                 });
             }
@@ -157,6 +159,7 @@ namespace Stoolball.Web.Matches
                     MatchLocationId = model.MatchLocationId
                 };
             }
+            model.SeasonFullName = formData["SeasonFullName"];
         }
 
 

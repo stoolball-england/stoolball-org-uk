@@ -23,7 +23,6 @@ namespace Stoolball.Web.Matches
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly ISeasonDataSource _seasonDataSource;
-        private readonly IEditMatchHelper _editMatchHelper;
 
         public EditFriendlyMatchController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -34,15 +33,13 @@ namespace Stoolball.Web.Matches
            IMatchDataSource matchDataSource,
            IAuthorizationPolicy<Match> authorizationPolicy,
            IDateTimeFormatter dateFormatter,
-           ISeasonDataSource seasonDataSource,
-           IEditMatchHelper editMatchHelper)
+           ISeasonDataSource seasonDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
-            _editMatchHelper = editMatchHelper ?? throw new ArgumentNullException(nameof(editMatchHelper));
         }
 
         [HttpGet]
@@ -68,10 +65,8 @@ namespace Stoolball.Web.Matches
             {
                 model.IsAuthorized = IsAuthorized(model.Match);
 
-                model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(model.Match.Season.SeasonRoute, true).ConfigureAwait(false);
-                model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(new[] { model.Match.Season });
-                model.PossibleHomeTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season.Teams);
-                model.PossibleAwayTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season.Teams);
+                model.Match.Season = await _seasonDataSource.ReadSeasonByRoute(model.Match.Season.SeasonRoute, true).ConfigureAwait(false);
+                model.SeasonFullName = model.Match.Season?.SeasonFullName();
 
                 model.MatchDate = model.Match.StartTime;
                 if (model.Match.StartTimeIsKnown)
@@ -79,7 +74,9 @@ namespace Stoolball.Web.Matches
                     model.StartTime = model.Match.StartTime.LocalDateTime;
                 }
                 model.HomeTeamId = model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.Team.TeamId;
+                model.HomeTeamName = model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.Team.TeamName;
                 model.AwayTeamId = model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.Team.TeamId;
+                model.AwayTeamName = model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.Team.TeamName;
                 model.MatchLocationId = model.Match.MatchLocation?.MatchLocationId;
                 model.MatchLocationName = model.Match.MatchLocation?.NameAndLocalityOrTownIfDifferent();
 

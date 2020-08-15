@@ -255,6 +255,7 @@ namespace Stoolball.Umbraco.Data.Matches
                         MatchLocationId = @MatchLocationId, 
                         StartTime = @StartTime,
                         StartTimeIsKnown = @StartTimeIsKnown, 
+                        SeasonId = @SeasonId,
                         MatchNotes = @MatchNotes, 
                         MatchResultType = @MatchResultType,
                         MatchRoute = @MatchRoute
@@ -266,6 +267,7 @@ namespace Stoolball.Umbraco.Data.Matches
                             match.MatchLocation?.MatchLocationId,
                             StartTime = match.StartTime.UtcDateTime,
                             match.StartTimeIsKnown,
+                            match.Season?.SeasonId,
                             match.MatchNotes,
                             MatchResultType = match.MatchResultType?.ToString(),
                             match.MatchRoute,

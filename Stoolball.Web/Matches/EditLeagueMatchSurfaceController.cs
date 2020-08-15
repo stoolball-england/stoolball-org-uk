@@ -75,6 +75,7 @@ namespace Stoolball.Web.Matches
                 return Redirect(model.Match.MatchRoute);
             }
 
+            model.Match.MatchName = beforeUpdate.MatchName;
             model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(model.Match.Season.SeasonRoute, true).ConfigureAwait(false);
             model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(new[] { model.Match.Season });
             model.PossibleHomeTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season.Teams);

@@ -19,6 +19,7 @@ namespace Stoolball.Web.Matches
         public Match Match { get; set; }
         public Team Team { get; set; }
         public Season Season { get; set; }
+        public string SeasonFullName { get; set; }
 
         [Display(Name = "Match date")]
         public DateTimeOffset? MatchDate { get; set; }
@@ -38,10 +39,12 @@ namespace Stoolball.Web.Matches
         [Display(Name = "Home team")]
         [Required]
         public Guid? HomeTeamId { get; set; }
+        public string HomeTeamName { get; set; }
 
         [Display(Name = "Away team")]
         [Required]
         public Guid? AwayTeamId { get; set; }
+        public string AwayTeamName { get; set; }
         public IDateTimeFormatter DateFormatter { get; set; }
     }
 }

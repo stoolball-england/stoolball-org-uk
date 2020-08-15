@@ -42,7 +42,7 @@ namespace Stoolball.Web
             composition.Register<IRouteNormaliser, RouteNormaliser>(Lifetime.Singleton);
             composition.Register<IApiKeyProvider, ConfigApiKeyProvider>(Lifetime.Singleton);
             composition.Register<IDateTimeFormatter, DateTimeFormatter>(Lifetime.Singleton);
-            composition.Register<IEstimatedSeason, EstimatedSeason>(Lifetime.Singleton);
+            composition.Register<ISeasonEstimator, SeasonEstimator>(Lifetime.Singleton);
             composition.Register<IHtmlSanitizer, HtmlSanitizer>(Lifetime.Singleton);
             composition.Register<ICreateMatchSeasonSelector, CreateMatchSeasonSelector>(Lifetime.Singleton);
             composition.Register<IMatchNameBuilder, MatchNameBuilder>(Lifetime.Singleton);

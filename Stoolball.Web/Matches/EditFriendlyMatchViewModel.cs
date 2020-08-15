@@ -21,6 +21,8 @@ namespace Stoolball.Web.Matches
         public Team Team { get; set; }
         public Season Season { get; set; }
 
+        public string SeasonFullName { get; set; }
+
         [Display(Name = "Match date")]
         public DateTimeOffset? MatchDate { get; set; }
 

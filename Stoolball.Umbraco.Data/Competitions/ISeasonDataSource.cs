@@ -11,6 +11,12 @@ namespace Stoolball.Umbraco.Data.Competitions
     public interface ISeasonDataSource
     {
         /// <summary>
+        /// Gets a list of seasons based on a query
+        /// </summary>
+        /// <returns>A list of <see cref="Season"/> objects. An empty list if no seasons are found.</returns>
+        Task<List<Season>> ReadSeasons(CompetitionQuery competitionQuery);
+
+        /// <summary>
         /// Gets a single stoolball season based on its route
         /// </summary>
         /// <param name="route">/competitions/example-competition/2020</param>

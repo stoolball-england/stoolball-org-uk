@@ -6,8 +6,6 @@ using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Security;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -26,7 +24,7 @@ namespace Stoolball.Web.Tests.Matches
     {
         private class TestController : EditFriendlyMatchController
         {
-            public TestController(IMatchDataSource matchDataSource, ISeasonDataSource seasonDataSource, IEditMatchHelper editMatchHelper, Uri requestUrl)
+            public TestController(IMatchDataSource matchDataSource, ISeasonDataSource seasonDataSource, Uri requestUrl)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -37,8 +35,7 @@ namespace Stoolball.Web.Tests.Matches
                 matchDataSource,
                 Mock.Of<IAuthorizationPolicy<Stoolball.Matches.Match>>(),
                 Mock.Of<IDateTimeFormatter>(),
-                seasonDataSource,
-                editMatchHelper)
+                seasonDataSource)
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(requestUrl);
@@ -71,9 +68,7 @@ namespace Stoolball.Web.Tests.Matches
 
             var seasonDataSource = new Mock<ISeasonDataSource>();
 
-            var helper = new Mock<IEditMatchHelper>();
-
-            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/not-a-match")))
+            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, new Uri("https://example.org/not-a-match")))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -91,9 +86,7 @@ namespace Stoolball.Web.Tests.Matches
             var seasonDataSource = new Mock<ISeasonDataSource>();
             seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult(new Season()));
 
-            var helper = new Mock<IEditMatchHelper>();
-
-            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match")))
+            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, new Uri("https://example.org/matches/example-match")))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -111,54 +104,11 @@ namespace Stoolball.Web.Tests.Matches
             var seasonDataSource = new Mock<ISeasonDataSource>();
             seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult(season));
 
-            var helper = new Mock<IEditMatchHelper>();
-
-            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match")))
+            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, new Uri("https://example.org/matches/example-match")))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
                 Assert.Equal(season.SeasonId, ((IEditMatchViewModel)((ViewResult)result).Model).Match.Season.SeasonId);
-            }
-        }
-
-        [Fact]
-        public async Task ModelU002ESeason_gets_SeasonId_from_Route()
-        {
-            var matchDataSource = new Mock<IMatchDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { Season = new Season() });
-
-            var season = new Season { SeasonId = Guid.NewGuid() };
-            var seasonDataSource = new Mock<ISeasonDataSource>();
-            seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult(season));
-
-            var helper = new Mock<IEditMatchHelper>();
-
-            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match")))
-            {
-                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
-
-                Assert.Equal(season.SeasonId, ((IEditMatchViewModel)((ViewResult)result).Model).Season.SeasonId);
-            }
-        }
-
-        [Fact]
-        public async Task ModelU002EPossibleSeasons_gets_SeasonId_from_Route()
-        {
-            var matchDataSource = new Mock<IMatchDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { Season = new Season() });
-
-            var season = new Season { SeasonId = Guid.NewGuid() };
-            var seasonDataSource = new Mock<ISeasonDataSource>();
-            seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult(season));
-
-            var helper = new Mock<IEditMatchHelper>();
-            helper.Setup(x => x.PossibleSeasonsAsListItems(It.IsAny<IEnumerable<Season>>())).Returns((IEnumerable<Season> x) => new List<SelectListItem> { new SelectListItem { Value = season.SeasonId.ToString() } });
-
-            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match")))
-            {
-                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
-
-                Assert.Equal(season.SeasonId.ToString(), ((IEditMatchViewModel)((ViewResult)result).Model).PossibleSeasons.First().Value);
             }
         }
     }

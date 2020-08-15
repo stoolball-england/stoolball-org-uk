@@ -1003,6 +1003,7 @@
     <Compile Include="Competitions\SeasonListViewModel.cs" />
     <Compile Include="Competitions\CompetitionsController.cs" />
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
+    <Compile Include="Competitions\SeasonsApiController.cs" />
     <Compile Include="Matches\CreateFriendlyMatchController.cs" />
     <Compile Include="Matches\CreateKnockoutMatchController.cs" />
     <Compile Include="Matches\CreateFriendlyMatchSurfaceController.cs" />

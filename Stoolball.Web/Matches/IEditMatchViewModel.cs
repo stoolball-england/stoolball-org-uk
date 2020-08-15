@@ -11,6 +11,8 @@ namespace Stoolball.Web.Matches
     public interface IEditMatchViewModel : IHasViewMetadata
     {
         Guid? AwayTeamId { get; set; }
+        string HomeTeamName { get; set; }
+        string AwayTeamName { get; set; }
         Guid? HomeTeamId { get; set; }
         Match Match { get; set; }
         DateTimeOffset? MatchDate { get; set; }
@@ -20,6 +22,7 @@ namespace Stoolball.Web.Matches
         List<SelectListItem> PossibleHomeTeams { get; }
         List<SelectListItem> PossibleAwayTeams { get; }
         Season Season { get; set; }
+        string SeasonFullName { get; set; }
         DateTimeOffset? StartTime { get; set; }
         Team Team { get; set; }
     }

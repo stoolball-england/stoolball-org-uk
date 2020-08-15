@@ -56,7 +56,7 @@ namespace Stoolball.Umbraco.Data.Matches
                             t.TeamId, t.TeamRoute, tn.TeamName, t.MemberGroupName,
                             ml.MatchLocationId, ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
                             ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
-                            s.SeasonRoute, s.FromYear, s.UntilYear,
+                            s.SeasonId, s.SeasonRoute, s.FromYear, s.UntilYear,
                             co.CompetitionName, co.MemberGroupName
                             FROM {Tables.Match} AS m
                             LEFT JOIN {Tables.Tournament} AS tourney ON m.TournamentId = tourney.TournamentId
@@ -81,7 +81,7 @@ namespace Stoolball.Umbraco.Data.Matches
                             return match;
                         },
                         new { Route = normalisedRoute },
-                        splitOn: "TournamentRoute, MatchTeamId, TeamId, MatchLocationId, SeasonRoute, CompetitionName")
+                        splitOn: "TournamentRoute, MatchTeamId, TeamId, MatchLocationId, SeasonId, CompetitionName")
                         .ConfigureAwait(false);
 
                     var matchToReturn = matches.FirstOrDefault(); // get an example with the properties that are the same for every row
