@@ -18,29 +18,23 @@ using Umbraco.Web.Models;
 
 namespace Stoolball.Web.Matches
 {
-    public class CreateFriendlyMatchController : RenderMvcControllerAsync
+    public class CreateTournamentController : RenderMvcControllerAsync
     {
         private readonly ITeamDataSource _teamDataSource;
         private readonly ISeasonDataSource _seasonDataSource;
-        private readonly ICreateMatchSeasonSelector _createMatchSeasonSelector;
-        private readonly IEditMatchHelper _editMatchHelper;
 
-        public CreateFriendlyMatchController(IGlobalSettings globalSettings,
+        public CreateTournamentController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            ITeamDataSource teamDataSource,
-           ISeasonDataSource seasonDataSource,
-           ICreateMatchSeasonSelector createMatchSeasonSelector,
-           IEditMatchHelper editMatchHelper)
+           ISeasonDataSource seasonDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
-            _createMatchSeasonSelector = createMatchSeasonSelector ?? throw new ArgumentNullException(nameof(createMatchSeasonSelector));
-            _editMatchHelper = editMatchHelper ?? throw new ArgumentNullException(nameof(editMatchHelper));
         }
 
         [HttpGet]
@@ -52,39 +46,58 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new EditFriendlyMatchViewModel(contentModel.Content)
+            var model = new EditTournamentViewModel(contentModel.Content)
             {
-                Match = new Match
+                Tournament = new Tournament
                 {
-                    MatchType = MatchType.FriendlyMatch,
-                    MatchLocation = new MatchLocation()
+                    QualificationType = TournamentQualificationType.OpenTournament,
+                    PlayerType = PlayerType.Mixed,
+                    PlayersPerTeam = 8,
+                    OversPerInningsDefault = 4,
+                    TournamentLocation = new MatchLocation()
                 }
             };
             if (Request.Url.AbsolutePath.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
                 model.Team = await _teamDataSource.ReadTeamByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false);
-                if (model.Team == null) return new HttpNotFoundResult();
-
-                var possibleSeasons = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, model.Match.MatchType);
-                model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(possibleSeasons);
-
-                model.HomeTeamId = model.Team.TeamId;
-                model.HomeTeamName = model.Team.TeamName;
-                model.MatchLocationId = model.Team.MatchLocations.FirstOrDefault()?.MatchLocationId;
-                model.MatchLocationName = model.Team.MatchLocations.FirstOrDefault()?.NameAndLocalityOrTownIfDifferent();
-            }
-            else if (Request.Url.AbsolutePath.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
-            {
-                model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false);
-                if (model.Season == null || !model.Season.MatchTypes.Contains(MatchType.FriendlyMatch))
+                if (model.Team == null)
                 {
                     return new HttpNotFoundResult();
                 }
+
+                model.Tournament.TournamentName = model.Team.TeamName;
+                if (model.Tournament.TournamentName.IndexOf("tournament", StringComparison.OrdinalIgnoreCase) == -1)
+                {
+                    model.Tournament.TournamentName += " tournament";
+                }
+
+                model.TournamentLocationId = model.Team.MatchLocations.FirstOrDefault()?.MatchLocationId;
+                model.TournamentLocationName = model.Team.MatchLocations.FirstOrDefault()?.NameAndLocalityOrTownIfDifferent();
+
+                model.Tournament.PlayerType = model.Team.PlayerType;
+
+                model.Metadata.PageTitle = $"Add a tournament for {model.Team.TeamName}";
+            }
+            else if (Request.Url.AbsolutePath.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
+            {
+                model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.Url.AbsolutePath, false).ConfigureAwait(false);
+                if (model.Season == null || !model.Season.EnableTournaments)
+                {
+                    return new HttpNotFoundResult();
+                }
+
+                model.Tournament.TournamentName = model.Season.Competition.CompetitionName;
+                if (model.Tournament.TournamentName.IndexOf("tournament", StringComparison.OrdinalIgnoreCase) == -1)
+                {
+                    model.Tournament.TournamentName += " tournament";
+                }
+
+                model.Tournament.PlayerType = model.Season.Competition.PlayerType;
+
+                model.Metadata.PageTitle = $"Add a tournament in the {model.Season.SeasonFullName()}";
             }
 
             model.IsAuthorized = User.Identity.IsAuthenticated;
-
-            _editMatchHelper.ConfigureAddMatchModelMetadata(model);
 
             return CurrentTemplate(model);
         }

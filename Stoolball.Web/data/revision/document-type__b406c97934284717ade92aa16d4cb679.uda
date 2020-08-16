@@ -3,6 +3,7 @@
   "AllowedTemplates": [
     "umb://template/007d4a7a068f4dd8b8a693271d5bb5f4",
     "umb://template/07aa3f0c6fc24d2fa2473da20ad9b400",
+    "umb://template/120b2463988a40b886de1036b758087d",
     "umb://template/18d4bbdabcad454e9df615feacb65451",
     "umb://template/19b067bfa44940cc94c9709af58fedc3",
     "umb://template/1c17d796ea8b4a8888fc6a3b082749b3",
@@ -82,6 +83,11 @@
     },
     {
       "Udi": "umb://template/07aa3f0c6fc24d2fa2473da20ad9b400",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/120b2463988a40b886de1036b758087d",
       "Ordering": true,
       "Mode": 0
     },

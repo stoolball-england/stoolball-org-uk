@@ -84,7 +84,10 @@ namespace Stoolball.Web.Matches
 
                 await _editMatchHelper.ConfigureModelPossibleTeams(model, possibleSeasons).ConfigureAwait(false);
 
-                _editMatchHelper.ConfigureModelHomeTeamAndLocation(model);
+                model.HomeTeamId = model.Team.TeamId;
+                model.MatchLocationId = model.Team.MatchLocations.FirstOrDefault()?.MatchLocationId;
+                model.MatchLocationName = model.Team.MatchLocations.FirstOrDefault()?.NameAndLocalityOrTownIfDifferent();
+
                 if (model.PossibleAwayTeams.Count > 1)
                 {
                     model.AwayTeamId = new Guid(model.PossibleAwayTeams[1].Value);

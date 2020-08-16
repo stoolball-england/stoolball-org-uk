@@ -121,7 +121,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var seasons = await connection.QueryAsync<Season, Competition, string, Season>(
-                        $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Results, s.SeasonRoute,
+                        $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Results, s.SeasonRoute, s.EnableTournaments,
                             co.CompetitionName, co.PlayerType, co.UntilYear, co.CompetitionRoute, co.MemberGroupName,
                             smt.MatchType
                             FROM {Tables.Season} AS s 

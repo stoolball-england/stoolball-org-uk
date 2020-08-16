@@ -30,7 +30,7 @@
     }
 </ul>
 
-@if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) || Model.Season.MatchTypes.Contains(MatchType.KnockoutMatch) || Model.Season.MatchTypes.Contains(MatchType.FriendlyMatch))
+@if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) || Model.Season.MatchTypes.Contains(MatchType.KnockoutMatch) || Model.Season.MatchTypes.Contains(MatchType.FriendlyMatch) || Model.Season.EnableTournaments)
 {
 <p>
     @if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch))
@@ -44,6 +44,10 @@
     @if (Model.Season.MatchTypes.Contains(MatchType.FriendlyMatch))
     {
         <a href="@Model.Season.SeasonRoute/matches/add/friendly" class="btn btn-primary">Add a friendly match</a>
+    }
+    @if (Model.Season.EnableTournaments)
+    {
+        <a href="@Model.Season.SeasonRoute/matches/add/tournament" class="btn btn-primary">Add a tournament</a>
     }
 </p>
 }

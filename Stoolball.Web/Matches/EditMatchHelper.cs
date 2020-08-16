@@ -49,23 +49,6 @@ namespace Stoolball.Web.Matches
             }
         }
 
-        public void ConfigureModelHomeTeamAndLocation(IEditMatchViewModel model)
-        {
-            if (model is null)
-            {
-                throw new ArgumentNullException(nameof(model));
-            }
-
-            model.HomeTeamId = model.Team?.TeamId;
-
-            var initialLocation = model.Team?.MatchLocations.FirstOrDefault();
-            if (initialLocation != null)
-            {
-                model.MatchLocationId = initialLocation.MatchLocationId;
-                model.MatchLocationName = initialLocation.NameAndLocalityOrTownIfDifferent();
-            }
-        }
-
         public async Task ConfigureModelPossibleTeams(IEditMatchViewModel model, IEnumerable<Season> possibleSeasons)
         {
             if (model is null)

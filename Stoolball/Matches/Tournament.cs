@@ -5,6 +5,7 @@ using Stoolball.MatchLocations;
 using Stoolball.Teams;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 
@@ -13,6 +14,9 @@ namespace Stoolball.Matches
     public class Tournament : IAuditable
     {
         public Guid? TournamentId { get; set; }
+
+        [Display(Name = "Tournament name")]
+        [Required]
         public string TournamentName { get; set; }
 
         public string TournamentFullNameAndPlayerType(Func<DateTimeOffset, string> dateTimeFormatter)
@@ -50,13 +54,25 @@ namespace Stoolball.Matches
         public MatchLocation TournamentLocation { get; set; }
         public DateTimeOffset StartTime { get; set; }
         public bool StartTimeIsKnown { get; set; }
+
+        [Display(Name = "Player type")]
+        [Required]
         public PlayerType PlayerType { get; set; }
+
+        [Display(Name = "How many players per team?")]
         public int? PlayersPerTeam { get; set; }
+
+        [Required]
+        [Display(Name = "Who can play?")]
         public TournamentQualificationType? QualificationType { get; set; }
         public List<TeamInTournament> Teams { get; internal set; } = new List<TeamInTournament>();
+
+        [Display(Name = "Overs per innings")]
         public int? OversPerInningsDefault { get; set; }
         public int? MaximumTeamsInTournament { get; set; }
         public int? SpacesInTournament { get; set; }
+
+        [Display(Name = "Notes")]
         public string TournamentNotes { get; set; }
         public string TournamentRoute { get; set; }
         public List<Season> Seasons { get; internal set; } = new List<Season>();

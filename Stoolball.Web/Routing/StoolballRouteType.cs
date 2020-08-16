@@ -53,6 +53,7 @@
         DeleteMatch,
         Tournament,
         TournamentActions,
+        CreateTournament,
         DeleteTournament
     }
 }

@@ -11,7 +11,6 @@ namespace Stoolball.Web.Matches
         List<SelectListItem> PossibleTeamsAsListItems(IEnumerable<TeamInSeason> teams);
         List<SelectListItem> PossibleSeasonsAsListItems(IEnumerable<Season> seasons);
         Task ConfigureModelPossibleTeams(IEditMatchViewModel model, IEnumerable<Season> possibleSeasons);
-        void ConfigureModelHomeTeamAndLocation(IEditMatchViewModel model);
         void ConfigureAddMatchModelMetadata(IEditMatchViewModel model);
         void ConfigureModelFromRequestData(IEditMatchViewModel model, NameValueCollection unvalidatedFormData, NameValueCollection formData);
     }
