@@ -1,12 +1,11 @@
-﻿using Humanizer;
-using Stoolball.Matches;
-using Stoolball.Teams;
+﻿using Stoolball.Matches;
+using Stoolball.MatchLocations;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Security;
 using System;
-using System.Linq;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -20,71 +19,81 @@ namespace Stoolball.Web.Matches
 {
     public class CreateTournamentSurfaceController : SurfaceController
     {
-        private readonly IMatchRepository _matchRepository;
+        private readonly ITournamentRepository _tournamentRepository;
         private readonly ITeamDataSource _teamDataSource;
         private readonly ISeasonDataSource _seasonDataSource;
-        private readonly ICreateMatchSeasonSelector _createMatchSeasonSelector;
-        private readonly IEditMatchHelper _editMatchHelper;
 
         public CreateTournamentSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchRepository matchRepository, ITeamDataSource teamDataSource,
-            ISeasonDataSource seasonDataSource, ICreateMatchSeasonSelector createMatchSeasonSelector, IEditMatchHelper editMatchHelper)
+            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITournamentRepository tournamentRepository,
+            ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
-            _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
+            _tournamentRepository = tournamentRepository ?? throw new ArgumentNullException(nameof(tournamentRepository));
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
-            _createMatchSeasonSelector = createMatchSeasonSelector ?? throw new ArgumentNullException(nameof(createMatchSeasonSelector));
-            _editMatchHelper = editMatchHelper ?? throw new ArgumentNullException(nameof(editMatchHelper));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true, TinyMCE = true)]
-        public async Task<ActionResult> CreateTournament([Bind(Prefix = "Match", Include = "Season")] Match postedMatch)
+        public async Task<ActionResult> CreateTournament([Bind(Prefix = "Tournament", Include = "TournamentName,QualificationType,PlayerType,PlayersPerTeam,OversPerInningsDefault")] Tournament postedTournament)
         {
-            if (postedMatch is null)
+            if (postedTournament is null)
             {
-                throw new ArgumentNullException(nameof(postedMatch));
+                throw new ArgumentNullException(nameof(postedTournament));
             }
 
-            var model = new EditLeagueMatchViewModel(CurrentPage) { Match = postedMatch };
-            model.Match.MatchType = MatchType.LeagueMatch;
-            _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form);
+            var model = new EditTournamentViewModel(CurrentPage) { Tournament = postedTournament };
+            // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
+            model.Tournament.TournamentNotes = Request.Unvalidated.Form["Tournament.TournamentNotes"];
 
-            model.IsAuthorized = User.Identity.IsAuthenticated;
-
-            if (model.IsAuthorized && ModelState.IsValid &&
-                (model.Team == null || (model.PossibleSeasons != null && model.PossibleSeasons.Any())) &&
-                (model.Season == null || model.Season.MatchTypes.Contains(MatchType.LeagueMatch)))
+            if (!string.IsNullOrEmpty(Request.Form["TournamentDate"]))
             {
-                var currentMember = Members.GetCurrentMember();
-                await _matchRepository.CreateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-
-                // Redirect to the match
-                return Redirect(model.Match.MatchRoute);
+                model.TournamentDate = DateTimeOffset.Parse(Request.Form["TournamentDate"], CultureInfo.CurrentCulture);
+                model.Tournament.StartTime = model.TournamentDate.Value;
+                model.Tournament.StartTimeIsKnown = false;
+                if (!string.IsNullOrEmpty(Request.Form["StartTime"]))
+                {
+                    model.StartTime = DateTimeOffset.Parse(Request.Form["StartTime"], CultureInfo.CurrentCulture);
+                    model.Tournament.StartTime = model.Tournament.StartTime.Add(model.StartTime.Value.TimeOfDay);
+                    model.Tournament.StartTimeIsKnown = true;
+                }
+            }
+            if (!string.IsNullOrEmpty(Request.Form["TournamentLocationId"]))
+            {
+                model.TournamentLocationId = new Guid(Request.Form["TournamentLocationId"]);
+                model.TournamentLocationName = Request.Form["TournamentLocationName"];
+                model.Tournament.TournamentLocation = new MatchLocation
+                {
+                    MatchLocationId = model.TournamentLocationId
+                };
             }
 
             if (Request.RawUrl.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
                 model.Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false);
-                var possibleSeasons = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, model.Match.MatchType).ToList();
-                if (possibleSeasons.Count == 1)
-                {
-                    model.Match.Season = possibleSeasons.First();
-                }
-                model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(possibleSeasons);
-                await _editMatchHelper.ConfigureModelPossibleTeams(model, possibleSeasons).ConfigureAwait(false);
-                model.Metadata.PageTitle = $"Add a {MatchType.LeagueMatch.Humanize(LetterCasing.LowerCase)} for {model.Team.TeamName}";
+                model.Tournament.Teams.Add(new TeamInTournament { Team = model.Team, TeamRole = TournamentTeamRole.Organiser });
+                model.Metadata.PageTitle = $"Add a tournament for {model.Team.TeamName}";
             }
             else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
-                model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false);
-                model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(new[] { model.Match.Season });
-                model.PossibleHomeTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season?.Teams);
-                model.PossibleAwayTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season?.Teams);
-                model.Metadata.PageTitle = $"Add a {MatchType.LeagueMatch.Humanize(LetterCasing.LowerCase)} in the {model.Season.SeasonFullName()}";
+                model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false);
+                model.Tournament.Seasons.Add(model.Season);
+                model.Metadata.PageTitle = $"Add a tournament in the {model.Season.SeasonFullName()}";
+            }
+
+            model.IsAuthorized = User.Identity.IsAuthenticated;
+
+            if (model.IsAuthorized && ModelState.IsValid &&
+                (model.Team != null ||
+                (model.Season != null && model.Season.EnableTournaments)))
+            {
+                var currentMember = Members.GetCurrentMember();
+                await _tournamentRepository.CreateTournament(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+
+                // Redirect to the tournament
+                return Redirect(model.Tournament.TournamentRoute);
             }
 
             return View("CreateTournament", model);

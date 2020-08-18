@@ -8,6 +8,8 @@ using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
+using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
@@ -51,6 +53,115 @@ namespace Stoolball.Umbraco.Data.Matches
             _htmlSanitiser.AllowedAttributes.Add("href");
             _htmlSanitiser.AllowedCssProperties.Clear();
             _htmlSanitiser.AllowedAtRules.Clear();
+        }
+
+        /// <summary>
+        /// Creates a stoolball tournament
+        /// </summary>
+        public async Task<Tournament> CreateTournament(Tournament tournament, Guid memberKey, string memberName)
+        {
+            if (tournament is null)
+            {
+                throw new ArgumentNullException(nameof(tournament));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            try
+            {
+                tournament.TournamentId = Guid.NewGuid();
+                tournament.TournamentNotes = _htmlSanitiser.Sanitize(tournament.TournamentNotes);
+
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        tournament.TournamentRoute = _routeGenerator.GenerateRoute("/tournaments", tournament.TournamentName + " " + tournament.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.TournamentRoute);
+                        int count;
+                        do
+                        {
+                            count = await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Tournament} WHERE TournamentRoute = @TournamentRoute", new { tournament.TournamentRoute }, transaction).ConfigureAwait(false);
+                            if (count > 0)
+                            {
+                                tournament.TournamentRoute = _routeGenerator.IncrementRoute(tournament.TournamentRoute);
+                            }
+                        }
+                        while (count > 0);
+
+                        await connection.ExecuteAsync($@"INSERT INTO {Tables.Tournament}
+						(TournamentId, TournamentName, MatchLocationId, PlayerType, PlayersPerTeam, OversPerInningsDefault,
+						 QualificationType, StartTime, StartTimeIsKnown, TournamentNotes, TournamentRoute, MemberKey)
+						VALUES (@TournamentId, @TournamentName, @MatchLocationId, @PlayerType, @PlayersPerTeam, @OversPerInningsDefault, 
+                        @QualificationType, @StartTime, @StartTimeIsKnown, @TournamentNotes, @TournamentRoute, @MemberKey)",
+                        new
+                        {
+                            tournament.TournamentId,
+                            tournament.TournamentName,
+                            tournament.TournamentLocation?.MatchLocationId,
+                            PlayerType = tournament.PlayerType.ToString(),
+                            tournament.PlayersPerTeam,
+                            tournament.OversPerInningsDefault,
+                            QualificationType = tournament.QualificationType.ToString(),
+                            StartTime = tournament.StartTime.UtcDateTime,
+                            tournament.StartTimeIsKnown,
+                            tournament.TournamentNotes,
+                            tournament.TournamentRoute,
+                            MemberKey = memberKey
+                        }, transaction).ConfigureAwait(false);
+
+                        foreach (var team in tournament.Teams)
+                        {
+                            await connection.ExecuteAsync($@"INSERT INTO {Tables.TournamentTeam} 
+								(TournamentTeamId, TournamentId, TeamId, TeamRole) 
+                                VALUES (@TournamentTeamId, @TournamentId, @TeamId, @TeamRole)",
+                                new
+                                {
+                                    TournamentTeamId = Guid.NewGuid(),
+                                    tournament.TournamentId,
+                                    team.Team.TeamId,
+                                    TeamRole = team.TeamRole.ToString()
+                                },
+                                transaction).ConfigureAwait(false);
+                        }
+
+                        foreach (var season in tournament.Seasons)
+                        {
+                            await connection.ExecuteAsync($@"INSERT INTO {Tables.TournamentSeason} 
+								(TournamentSeasonId, TournamentId, SeasonId) 
+                                VALUES (@TournamentSeasonId, @TournamentId, @SeasonId)",
+                                new
+                                {
+                                    TournamentSeasonId = Guid.NewGuid(),
+                                    tournament.TournamentId,
+                                    season.SeasonId
+                                },
+                                transaction).ConfigureAwait(false);
+                        }
+
+                        transaction.Commit();
+                    }
+                }
+
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Create,
+                    MemberKey = memberKey,
+                    ActorName = memberName,
+                    EntityUri = tournament.EntityUri,
+                    State = JsonConvert.SerializeObject(tournament),
+                    AuditDate = DateTime.UtcNow
+                }).ConfigureAwait(false);
+            }
+            catch (SqlException ex)
+            {
+                _logger.Error(typeof(SqlServerTournamentRepository), ex);
+            }
+
+            return tournament;
         }
 
         /// <summary>
