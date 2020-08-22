@@ -33,15 +33,15 @@
   <!-- Copy files from NuGet packages that are needed to run but are not restored by NuGet restore. -->
   <Target Name="StoolballCopyFilesFromNuGetPackages" BeforeTargets="WebCompile">
     <PropertyGroup>
-      <UmbracoVersion>8.6.3</UmbracoVersion>
+      <UmbracoVersion>8.6.4</UmbracoVersion>
       <UmbracoFormsVersion>8.4.1</UmbracoFormsVersion>
-      <USyncVersion>8.6.3</USyncVersion>
-      <BootstrapVersion>4.5.0</BootstrapVersion>
+      <USyncVersion>8.6.5</USyncVersion>
+      <BootstrapVersion>4.5.2</BootstrapVersion>
       <JQueryVersion>3.5.1</JQueryVersion>
-      <JQueryValidationVersion>1.19.1</JQueryValidationVersion>
+      <JQueryValidationVersion>1.19.2</JQueryValidationVersion>
       <JQueryUnobtrusiveValidationVersion>3.2.11</JQueryUnobtrusiveValidationVersion>
-      <PopperVersion>1.16.0</PopperVersion>
-      <SkybrudRedirectsVersion>2.0.3</SkybrudRedirectsVersion>
+      <PopperVersion>1.16.1</PopperVersion>
+      <SkybrudRedirectsVersion>2.0.4</SkybrudRedirectsVersion>
     </PropertyGroup>
 
     <Error Text="UmbracoCms NuGet package v$(UmbracoVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\UmbracoCms.$(UmbracoVersion)\')" />

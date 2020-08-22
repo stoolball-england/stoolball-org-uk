@@ -186,15 +186,15 @@
       <Version>2.0.35</Version>
     </PackageReference>
     <PackageReference Include="HtmlSanitizer">
-      <Version>5.0.319</Version>
+      <Version>5.0.343</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>2.9.8</Version>
+      <Version>3.3.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="UmbracoCms.Core">
-      <Version>8.6.3</Version>
+      <Version>8.6.4</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
