@@ -19,7 +19,17 @@ namespace Stoolball.Matches
         [Required]
         public string TournamentName { get; set; }
 
+        public string TournamentFullName(Func<DateTimeOffset, string> dateTimeFormatter)
+        {
+            return TournamentFullNameAndPlayerType(dateTimeFormatter, false);
+        }
+
         public string TournamentFullNameAndPlayerType(Func<DateTimeOffset, string> dateTimeFormatter)
+        {
+            return TournamentFullNameAndPlayerType(dateTimeFormatter, true);
+        }
+
+        private string TournamentFullNameAndPlayerType(Func<DateTimeOffset, string> dateTimeFormatter, bool includePlayerType)
         {
             if (dateTimeFormatter is null)
             {
@@ -32,7 +42,7 @@ namespace Stoolball.Matches
             var playerType = PlayerType.Humanize(LetterCasing.Sentence);
             var saysPlayerType = TournamentName.Replace("'", string.Empty).ToUpperInvariant().Contains(playerType.ToUpperInvariant());
 
-            if (!saysTournament && !saysPlayerType)
+            if (includePlayerType && !saysTournament && !saysPlayerType)
             {
                 fullName.Append(" (").Append(playerType).Append(" tournament)");
             }
@@ -40,9 +50,9 @@ namespace Stoolball.Matches
             {
                 fullName.Append(" tournament");
             }
-            else if (!saysPlayerType)
+            else if (includePlayerType && !saysPlayerType)
             {
-                fullName.Append(" (").Append(playerType).Append(")");
+                fullName.Append(" (").Append(playerType).Append(')');
             }
 
             fullName.Append(", ");

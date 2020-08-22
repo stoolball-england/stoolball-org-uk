@@ -12,6 +12,11 @@ namespace Stoolball.Umbraco.Data.Matches
         Task<Tournament> CreateTournament(Tournament tournament, Guid memberKey, string memberName);
 
         /// <summary>
+        /// Updates a stoolball tournament
+        /// </summary>
+        Task<Tournament> UpdateTournament(Tournament tournament, Guid memberKey, string memberName);
+
+        /// <summary>
         /// Deletes a stoolball tournament
         /// </summary>
         Task DeleteTournament(Tournament tournament, Guid memberKey, string memberName);

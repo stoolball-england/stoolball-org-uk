@@ -164,6 +164,137 @@ namespace Stoolball.Umbraco.Data.Matches
             return tournament;
         }
 
+
+        /// <summary>
+        /// Updates a stoolball tournament
+        /// </summary>
+        public async Task<Tournament> UpdateTournament(Tournament tournament, Guid memberKey, string memberName)
+        {
+            if (tournament is null)
+            {
+                throw new ArgumentNullException(nameof(tournament));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            try
+            {
+                string routeBeforeUpdate = tournament.TournamentRoute;
+                tournament.TournamentNotes = _htmlSanitiser.Sanitize(tournament.TournamentNotes);
+
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        tournament.TournamentRoute = _routeGenerator.GenerateRoute("/tournaments", tournament.TournamentName + " " + tournament.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.TournamentRoute);
+                        if (tournament.TournamentRoute != routeBeforeUpdate)
+                        {
+                            int count;
+                            do
+                            {
+                                count = await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Tournament} WHERE TournamentRoute = @TournamentRoute", new { tournament.TournamentRoute }, transaction).ConfigureAwait(false);
+                                if (count > 0)
+                                {
+                                    tournament.TournamentRoute = _routeGenerator.IncrementRoute(tournament.TournamentRoute);
+                                }
+                            }
+                            while (count > 0);
+                        }
+
+                        await connection.ExecuteAsync($@"UPDATE {Tables.Tournament} SET
+						    TournamentName = @TournamentName,
+                            MatchLocationId = @MatchLocationId, 
+                            PlayerType = @PlayerType,
+                            PlayersPerTeam = @PlayersPerTeam,
+                            OversPerInningsDefault = @OversPerInningsDefault,
+						    QualificationType = @QualificationType, 
+                            StartTime = @StartTime, 
+                            StartTimeIsKnown = @StartTimeIsKnown, 
+                            TournamentNotes = @TournamentNotes, 
+                            TournamentRoute = @TournamentRoute
+                            WHERE TournamentId = @TournamentId",
+                        new
+                        {
+                            tournament.TournamentName,
+                            tournament.TournamentLocation?.MatchLocationId,
+                            PlayerType = tournament.PlayerType.ToString(),
+                            tournament.PlayersPerTeam,
+                            tournament.OversPerInningsDefault,
+                            QualificationType = tournament.QualificationType.ToString(),
+                            StartTime = tournament.StartTime.UtcDateTime,
+                            tournament.StartTimeIsKnown,
+                            tournament.TournamentNotes,
+                            tournament.TournamentRoute,
+                            tournament.TournamentId
+                        }, transaction).ConfigureAwait(false);
+
+                        // Set approximate start time based on 45 mins per match
+                        await connection.ExecuteAsync($@"UPDATE {Tables.Match} SET
+                            MatchLocationId = @MatchLocationId,
+                            PlayerType = @PlayerType,
+                            PlayersPerTeam = @PlayersPerTeam,
+                            StartTime = DATEADD(MINUTE, 45*(ISNULL(OrderInTournament,1)-1), @StartTime)
+                            WHERE TournamentId = @TournamentId",
+                            new
+                            {
+                                tournament.TournamentLocation?.MatchLocationId,
+                                PlayerType = tournament.PlayerType.ToString(),
+                                tournament.PlayersPerTeam,
+                                tournament.StartTime,
+                                tournament.TournamentId
+                            },
+                            transaction).ConfigureAwait(false);
+
+                        await connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET
+                            Overs = @OversPerInningsDefault
+                            WHERE MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId)",
+                            new
+                            {
+                                tournament.OversPerInningsDefault,
+                                tournament.TournamentId
+                            },
+                            transaction).ConfigureAwait(false);
+
+                        if (routeBeforeUpdate != tournament.TournamentRoute)
+                        {
+                            // Update the transient team routes to match the amended tournament route
+                            await connection.ExecuteAsync($@"UPDATE {Tables.Team} 
+                                SET TeamRoute = CONCAT(@TournamentRoute, SUBSTRING(TeamRoute, {routeBeforeUpdate.Length + 1}, LEN(TeamRoute)-{routeBeforeUpdate.Length})) 
+                                WHERE TeamRoute LIKE CONCAT(@routeBeforeUpdate, '/teams/%')",
+                                new { tournament.TournamentRoute, routeBeforeUpdate }, transaction).ConfigureAwait(false);
+                        }
+
+                        transaction.Commit();
+                    }
+                }
+
+                if (routeBeforeUpdate != tournament.TournamentRoute)
+                {
+                    await _redirectsRepository.InsertRedirect(routeBeforeUpdate, tournament.TournamentRoute, null).ConfigureAwait(false);
+                }
+
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Update,
+                    MemberKey = memberKey,
+                    ActorName = memberName,
+                    EntityUri = tournament.EntityUri,
+                    State = JsonConvert.SerializeObject(tournament),
+                    AuditDate = DateTime.UtcNow
+                }).ConfigureAwait(false);
+            }
+            catch (SqlException ex)
+            {
+                _logger.Error(typeof(SqlServerTournamentRepository), ex);
+            }
+
+            return tournament;
+        }
+
         /// <summary>
         /// Deletes a stoolball tournament
         /// </summary>

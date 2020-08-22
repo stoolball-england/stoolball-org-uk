@@ -1,4 +1,5 @@
 ﻿using Stoolball.Competitions;
+using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Teams;
 using Stoolball.Web.Routing;
@@ -27,5 +28,6 @@ namespace Stoolball.Web.Matches
 
         [Display(Name = "Ground or sports centre name")]
         public string TournamentLocationName { get; set; }
+        public IDateTimeFormatter DateFormatter { get; set; }
     }
 }

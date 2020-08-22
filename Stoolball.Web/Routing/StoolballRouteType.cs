@@ -54,6 +54,7 @@
         Tournament,
         TournamentActions,
         CreateTournament,
+        EditTournament,
         DeleteTournament
     }
 }

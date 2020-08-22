@@ -1,8 +1,7 @@
-﻿using Stoolball.Matches;
+﻿using Stoolball.Dates;
+using Stoolball.Matches;
 using Stoolball.MatchLocations;
-using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
-using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Security;
 using System;
 using System.Globalization;
@@ -17,34 +16,45 @@ using Umbraco.Web.Mvc;
 
 namespace Stoolball.Web.Matches
 {
-    public class CreateTournamentSurfaceController : SurfaceController
+    public class EditTournamentSurfaceController : SurfaceController
     {
+        private readonly ITournamentDataSource _tournamentDataSource;
         private readonly ITournamentRepository _tournamentRepository;
-        private readonly ITeamDataSource _teamDataSource;
-        private readonly ISeasonDataSource _seasonDataSource;
+        private readonly IAuthorizationPolicy<Tournament> _authorizationPolicy;
+        private readonly IDateTimeFormatter _dateTimeFormatter;
 
-        public CreateTournamentSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITournamentRepository tournamentRepository,
-            ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource)
+        public EditTournamentSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
+            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITournamentDataSource tournamentDataSource,
+            ITournamentRepository tournamentRepository, IAuthorizationPolicy<Tournament> authorizationPolicy, IDateTimeFormatter dateTimeFormatter)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
+            _tournamentDataSource = tournamentDataSource ?? throw new ArgumentNullException(nameof(tournamentDataSource));
             _tournamentRepository = tournamentRepository ?? throw new ArgumentNullException(nameof(tournamentRepository));
-            _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
-            _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
+            _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true, TinyMCE = true)]
-        public async Task<ActionResult> CreateTournament([Bind(Prefix = "Tournament", Include = "TournamentName,QualificationType,PlayerType,PlayersPerTeam,OversPerInningsDefault")] Tournament postedTournament)
+        public async Task<ActionResult> UpdateTournament([Bind(Prefix = "Tournament", Include = "TournamentName,QualificationType,PlayerType,PlayersPerTeam,OversPerInningsDefault")] Tournament postedTournament)
         {
             if (postedTournament is null)
             {
                 throw new ArgumentNullException(nameof(postedTournament));
             }
 
-            var model = new EditTournamentViewModel(CurrentPage) { Tournament = postedTournament };
+            var beforeUpdate = await _tournamentDataSource.ReadTournamentByRoute(Request.RawUrl).ConfigureAwait(false);
+
+            var model = new EditTournamentViewModel(CurrentPage)
+            {
+                Tournament = postedTournament,
+                DateFormatter = _dateTimeFormatter
+            };
+            model.Tournament.TournamentId = beforeUpdate.TournamentId;
+            model.Tournament.TournamentRoute = beforeUpdate.TournamentRoute;
+
             // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
             model.Tournament.TournamentNotes = Request.Unvalidated.Form["Tournament.TournamentNotes"];
 
@@ -75,34 +85,25 @@ namespace Stoolball.Web.Matches
                 };
             }
 
-            if (Request.RawUrl.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
-            {
-                model.Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false);
-                model.Tournament.Teams.Add(new TeamInTournament { Team = model.Team, TeamRole = TournamentTeamRole.Organiser });
-                model.Metadata.PageTitle = $"Add a tournament for {model.Team.TeamName}";
-            }
-            else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
-            {
-                model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false);
-                model.Tournament.Seasons.Add(model.Season);
-                model.Metadata.PageTitle = $"Add a tournament in the {model.Season.SeasonFullName()}";
-            }
+            model.IsAuthorized = IsAuthorized(beforeUpdate);
 
-            model.IsAuthorized = User.Identity.IsAuthenticated;
-
-            if (model.IsAuthorized && ModelState.IsValid &&
-                (model.Team != null ||
-                (model.Season != null && model.Season.EnableTournaments)))
+            if (model.IsAuthorized && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
-                await _tournamentRepository.CreateTournament(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _tournamentRepository.UpdateTournament(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the tournament
                 return Redirect(model.Tournament.TournamentRoute);
             }
 
-            return View("CreateTournament", model);
+            model.Metadata.PageTitle = "Edit " + model.Tournament.TournamentFullName(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false));
+
+            return View("EditTournament", model);
         }
 
+        protected virtual bool IsAuthorized(Tournament tournament)
+        {
+            return _authorizationPolicy.CanEdit(tournament, Members);
+        }
     }
 }

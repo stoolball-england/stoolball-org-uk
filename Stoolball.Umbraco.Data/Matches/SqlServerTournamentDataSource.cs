@@ -48,7 +48,7 @@ namespace Stoolball.Umbraco.Data.Matches
                             tourney.SpacesInTournament, tourney.TournamentNotes, tourney.TournamentRoute, tourney.MemberKey,
                             tt.TeamRole,
                             t.TeamId, t.TeamRoute, t.TeamType, tn.TeamName,
-                            ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
+                            ml.MatchLocationId, ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
                             ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
                             s.SeasonRoute, s.FromYear, s.UntilYear,
                             co.CompetitionName
@@ -74,7 +74,7 @@ namespace Stoolball.Umbraco.Data.Matches
                             return tournament;
                         },
                         new { Route = normalisedRoute },
-                        splitOn: "TeamRole, TeamId, MatchLocationRoute, SeasonRoute, CompetitionName")
+                        splitOn: "TeamRole, TeamId, MatchLocationId, SeasonRoute, CompetitionName")
                         .ConfigureAwait(false);
 
                     var tournamentToReturn = tournaments.FirstOrDefault(); // get an example with the properties that are the same for every row

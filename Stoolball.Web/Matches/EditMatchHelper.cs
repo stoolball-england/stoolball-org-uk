@@ -105,12 +105,17 @@ namespace Stoolball.Web.Matches
             {
                 model.MatchDate = DateTimeOffset.Parse(formData["MatchDate"], CultureInfo.CurrentCulture);
                 model.Match.StartTime = model.MatchDate.Value;
-                model.Match.StartTimeIsKnown = false;
                 if (!string.IsNullOrEmpty(formData["StartTime"]))
                 {
                     model.StartTime = DateTimeOffset.Parse(formData["StartTime"], CultureInfo.CurrentCulture);
                     model.Match.StartTime = model.Match.StartTime.Add(model.StartTime.Value.TimeOfDay);
                     model.Match.StartTimeIsKnown = true;
+                }
+                else
+                {
+                    // If no start time specified, use a typical one but don't show it
+                    model.Match.StartTime.AddHours(19);
+                    model.Match.StartTimeIsKnown = false;
                 }
             }
             if (!string.IsNullOrEmpty(formData["HomeTeamId"]))
