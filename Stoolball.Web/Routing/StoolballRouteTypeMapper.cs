@@ -58,9 +58,10 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.EditKnockoutMatch, typeof(EditKnockoutMatchController) },
             { StoolballRouteType.DeleteMatch, typeof(DeleteMatchController) },
             { StoolballRouteType.Tournament, typeof(TournamentController) },
+            { StoolballRouteType.TournamentActions, typeof(TournamentActionsController) },
             { StoolballRouteType.CreateTournament, typeof(CreateTournamentController) },
             { StoolballRouteType.EditTournament, typeof(EditTournamentController) },
-            { StoolballRouteType.TournamentActions, typeof(TournamentActionsController) },
+            { StoolballRouteType.EditTournamentTeams, typeof(EditTournamentTeamsController) },
             { StoolballRouteType.DeleteTournament, typeof(DeleteTournamentController) }
         };
 

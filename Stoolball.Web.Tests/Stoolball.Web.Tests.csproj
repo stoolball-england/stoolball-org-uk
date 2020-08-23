@@ -82,6 +82,7 @@
     <Compile Include="Matches\CreateFriendlyMatchControllerTests.cs" />
     <Compile Include="Matches\CreateTournamentControllerTests.cs" />
     <Compile Include="Matches\EditFriendlyMatchControllerTests.cs" />
+    <Compile Include="Matches\EditTournamentTeamsControllerTests.cs" />
     <Compile Include="Matches\EditTournamentControllerTests.cs" />
     <Compile Include="Matches\EditKnockoutMatchControllerTests.cs" />
     <Compile Include="Matches\EditLeagueMatchControllerTests.cs" />

@@ -295,6 +295,130 @@ namespace Stoolball.Umbraco.Data.Matches
             return tournament;
         }
 
+        private class TournamentTeamResult
+        {
+            public Guid? TournamentTeamId { get; set; }
+            public Guid? TeamId { get; set; }
+            public TeamType TeamType { get; set; }
+        }
+
+        /// <summary>
+        /// Updates teams in a stoolball tournament
+        /// </summary>
+        public async Task<Tournament> UpdateTeams(Tournament tournament, Guid memberKey, string memberName)
+        {
+            if (tournament is null)
+            {
+                throw new ArgumentNullException(nameof(tournament));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            try
+            {
+                if (tournament.MaximumTeamsInTournament.HasValue)
+                {
+                    tournament.SpacesInTournament = (tournament.MaximumTeamsInTournament - tournament.Teams.Count) >= 0 ? (tournament.MaximumTeamsInTournament - tournament.Teams.Count) : 0;
+                }
+
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        await connection.ExecuteAsync($@"UPDATE {Tables.Tournament} SET
+						    MaximumTeamsInTournament = @MaximumTeamsInTournament,
+                            SpacesInTournament = @SpacesInTournament
+                            WHERE TournamentId = @TournamentId",
+                        new
+                        {
+                            tournament.MaximumTeamsInTournament,
+                            tournament.SpacesInTournament,
+                            tournament.TournamentId
+                        }, transaction).ConfigureAwait(false);
+
+                        var currentTeams = await connection.QueryAsync<TournamentTeamResult>(
+                                $@"SELECT tt.TournamentTeamId, t.TeamId, t.TeamType 
+                                   FROM {Tables.TournamentTeam} tt INNER JOIN {Tables.Team} t ON tt.TeamId = t.TeamId
+                                   WHERE tt.TournamentId = @TournamentId", new { tournament.TournamentId }, transaction
+                            ).ConfigureAwait(false);
+
+                        foreach (var team in tournament.Teams)
+                        {
+                            var currentTeam = currentTeams.SingleOrDefault(x => x.TeamId == team.Team.TeamId);
+
+                            // Team added
+                            if (currentTeam == null)
+                            {
+                                await connection.ExecuteAsync($@"INSERT INTO {Tables.TournamentTeam} 
+                                    (TournamentTeamId, TournamentId, TeamId, TeamRole) 
+                                    VALUES (@TournamentTeamId, @TournamentId, @TeamId, @TeamRole)",
+                                    new
+                                    {
+                                        TournamentTeamId = Guid.NewGuid(),
+                                        tournament.TournamentId,
+                                        team.Team.TeamId,
+                                        TeamRole = TournamentTeamRole.Confirmed.ToString()
+                                    },
+                                    transaction).ConfigureAwait(false);
+                            }
+                        }
+
+                        // Team removed?
+                        var tournamentTeamIds = tournament.Teams.Select(x => x.Team.TeamId);
+                        var teamsToRemove = currentTeams.Where(x => !tournamentTeamIds.Contains(x.TeamId));
+                        foreach (var team in teamsToRemove)
+                        {
+                            await connection.ExecuteAsync($"UPDATE {Tables.PlayerMatchStatistics} SET OppositionTeamId = NULL, OppositionTeamName = NULL WHERE OppositionTeamId = @TeamId AND TournamentId = @TournamentId", new { team.TeamId, tournament.TournamentId }, transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerMatchStatistics} WHERE TeamId = @TeamId AND TournamentId = @TournamentId", new { team.TeamId, tournament.TournamentId }, transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync($"UPDATE {Tables.PlayerMatchStatistics} SET BowledById = NULL WHERE BowledById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId) AND TournamentId = @TournamentId", new { team.TeamId, tournament.TournamentId }, transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync($"UPDATE {Tables.PlayerMatchStatistics} SET CaughtById = NULL WHERE CaughtById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId) AND TournamentId = @TournamentId", new { team.TeamId, tournament.TournamentId }, transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync($"UPDATE {Tables.PlayerMatchStatistics} SET RunOutById = NULL WHERE RunOutById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId) AND TournamentId = @TournamentId", new { team.TeamId, tournament.TournamentId }, transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync($"UPDATE {Tables.PlayerInnings} SET DismissedById = NULL WHERE DismissedById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId) AND MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId))", new { team.TeamId, tournament.TournamentId }, transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync($"UPDATE {Tables.PlayerInnings} SET BowlerId = NULL WHERE BowlerId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId) AND MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId))", new { team.TeamId, tournament.TournamentId }, transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId) AND MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId))", new { team.TeamId, tournament.TournamentId }, transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync($"DELETE FROM {Tables.Over} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId) AND MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId))", new { team.TeamId, tournament.TournamentId }, transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync($"DELETE FROM {Tables.MatchAward} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId) AND MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId)", new { team.TeamId, tournament.TournamentId }, transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync($"UPDATE {Tables.MatchInnings} SET BattingMatchTeamId = NULL WHERE BattingMatchTeamId IN (SELECT MatchTeamId FROM {Tables.MatchTeam} WHERE TeamId = @TeamId) AND MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId)", new { team.TeamId, tournament.TournamentId }, transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync($"UPDATE {Tables.MatchInnings} SET BowlingMatchTeamId = NULL WHERE BowlingMatchTeamId IN (SELECT MatchTeamId FROM {Tables.MatchTeam} WHERE TeamId = @TeamId) AND MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId)", new { team.TeamId, tournament.TournamentId }, transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam} WHERE TeamId = @TeamId AND MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId)", new { team.TeamId, tournament.TournamentId }, transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync($"DELETE FROM {Tables.TournamentTeam} WHERE TournamentTeamId = @TournamentTeamId", new { team.TournamentTeamId }, transaction).ConfigureAwait(false);
+
+                            if (team.TeamType == TeamType.Transient)
+                            {
+                                await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                                await connection.ExecuteAsync($"DELETE FROM {Tables.TeamMatchLocation} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                                await connection.ExecuteAsync($"DELETE FROM {Tables.TeamName} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                                await connection.ExecuteAsync($"DELETE FROM {Tables.Team} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                            }
+                        }
+
+                        transaction.Commit();
+                    }
+                }
+
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Update,
+                    MemberKey = memberKey,
+                    ActorName = memberName,
+                    EntityUri = tournament.EntityUri,
+                    State = JsonConvert.SerializeObject(tournament),
+                    AuditDate = DateTime.UtcNow
+                }).ConfigureAwait(false);
+
+            }
+            catch (SqlException ex)
+            {
+                _logger.Error(typeof(SqlServerTournamentRepository), ex);
+            }
+
+            return tournament;
+        }
+
         /// <summary>
         /// Deletes a stoolball tournament
         /// </summary>

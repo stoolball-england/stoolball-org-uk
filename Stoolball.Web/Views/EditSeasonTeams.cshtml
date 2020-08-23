@@ -59,9 +59,9 @@
                 {
                     var displayName = Model.Season.Teams[i].Team.UntilYear.HasValue ? Model.Season.Teams[i].Team.TeamName + " (no longer active)" : Model.Season.Teams[i].Team.TeamName;
                     <tr>
-                        <td><div class="related-item__animate">@displayName</div></td>
-                        <td><div class="related-item__animate">@Html.TextBoxFor(m => Model.Season.Teams[i].WithdrawnDate, "{0:yyyy-MM-dd}", new { @type = "date", @class = "related-item__data", data_item = Model.Season.Teams[i].Team.TeamId })</div></td>
-                        <td class="related-item__delete">
+                        <td class="related-item__selected__section"><div class="related-item__animate">@displayName</div></td>
+                        <td class="related-item__selected__section"><div class="related-item__animate">@Html.TextBoxFor(m => Model.Season.Teams[i].WithdrawnDate, "{0:yyyy-MM-dd}", new { @type = "date", @class = "related-item__data", data_item = Model.Season.Teams[i].Team.TeamId })</div></td>
+                        <td class="related-item__delete related-item__selected__section">
                             <div class="related-item__animate">
                                 @Html.Hidden($"Season.Teams[{i}].Team.TeamId", Model.Season.Teams[i].Team.TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Season.Teams[i].Team.TeamId })
                                 @Html.Hidden($"Season.Teams[{i}].Team.TeamName", displayName, new { @class = "related-item__data", data_item = Model.Season.Teams[i].Team.TeamId })
@@ -90,9 +90,9 @@
         <script type="text/x-template" id="team-template">
             <table>
                 <tr>
-                    <td><div class="related-item__animate">{{value}}</div></td>
-                    <td><div class="related-item__animate"><input name="Season.Teams[0].WithdrawnDate" type="date" class="related-item__data" data-item="{{data}}" /></div></td>
-                    <td class="related-item__delete">
+                    <td class="related-item__selected__section"><div class="related-item__animate">{{value}}</div></td>
+                    <td class="related-item__selected__section"><div class="related-item__animate"><input name="Season.Teams[0].WithdrawnDate" type="date" class="related-item__data" data-item="{{data}}" /></div></td>
+                    <td class="related-item__delete related-item__selected__section">
                         <div class="related-item__animate">
                             <input name="Season.Teams[0].Team.TeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
                             <input name="Season.Teams[0].Team.TeamName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />

@@ -1010,6 +1010,8 @@
     <Compile Include="Matches\CreateKnockoutMatchSurfaceController.cs" />
     <Compile Include="Matches\CreateTournamentSurfaceController.cs" />
     <Compile Include="Matches\CreateTournamentController.cs" />
+    <Compile Include="Matches\EditTournamentTeamsSurfaceController.cs" />
+    <Compile Include="Matches\EditTournamentTeamsController.cs" />
     <Compile Include="Matches\EditTournamentSurfaceController.cs" />
     <Compile Include="Matches\EditTournamentController.cs" />
     <Compile Include="Matches\EditTournamentViewModel.cs" />
@@ -1259,6 +1261,7 @@
     <Content Include="Views\Partials\_CreateOrEditTournament.cshtml" />
     <Content Include="Views\CreateTournament.cshtml" />
     <Content Include="Views\EditTournament.cshtml" />
+    <Content Include="Views\EditTournamentTeams.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

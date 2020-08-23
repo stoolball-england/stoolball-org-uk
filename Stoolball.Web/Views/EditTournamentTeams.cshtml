@@ -1,0 +1,111 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<EditTournamentViewModel>
+@using ClientDependency.Core.Mvc
+@using Humanizer
+@using Stoolball.Web.Matches
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+
+    Html.RequiresJs("~/js/libs/jquery.autocomplete.min.js", 50);
+    Html.RequiresCss("~/css/autocomplete.min.css");
+
+    Html.RequiresCss("~/css/related-items.min.css");
+    Html.RequiresJs("~/js/related-items.js");}
+
+<h1>Teams in the @Model.Tournament.TournamentFullName(x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Tournament.TournamentRoute">Summary</a>
+    </li>
+    <li class="nav-item">
+        <em class="nav-link active">Edit</em>
+    </li>
+</ul>
+
+@if (Model.IsAuthorized)
+{
+    using (Html.BeginUmbracoForm<EditTournamentTeamsSurfaceController>
+        ("UpdateTeams"))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <button class="sr-only">Save tournament</button>
+        
+        @* Include hidden fields to pass validation *@
+        @Html.HiddenFor(m => m.Tournament.TournamentName)
+        @Html.HiddenFor(m => m.Tournament.QualificationType)
+
+        <div class="form-group">
+            @Html.LabelFor(m => Model.Tournament.MaximumTeamsInTournament)
+            <p class="form-text" id="maximum-teams-help"><small>Tell us how many teams you have room for and who's coming, and we'll list your tournament with how many spaces are left.</small></p>
+            @Html.TextBoxFor(m => Model.Tournament.MaximumTeamsInTournament, new { @class = "form-control", aria_describedby = "maximum-teams maximum-teams-help", @type = "number" })
+            @Html.ValidationMessageFor(m => Model.Tournament.MaximumTeamsInTournament, null, new { id = "maximum-teams" })
+        </div>
+
+        <table class="table table-hover related-items">
+            <thead class="thead-dark">
+                <tr><th scope="col">Confirmed teams</th><th scope="col">Team created for this tournament</th><th scope="col"></th></tr>
+            </thead>
+            <tbody>
+                @for (var i = 0; i < Model.Tournament.Teams.Count; i++)
+                {
+                    var displayName = Model.Tournament.Teams[i].Team.UntilYear.HasValue ? Model.Tournament.Teams[i].Team.TeamName + " (no longer active)" : Model.Tournament.Teams[i].Team.TeamName;
+                    <tr>
+                        <td class="related-item__selected__section"><div class="related-item__animate">@displayName</div></td>
+                        <td class="related-item__selected__section"><div class="related-item__animate">@(Model.Tournament.Teams[i].Team.TeamType == Stoolball.Teams.TeamType.Transient ? "Yes" : "No")</div></td>
+                        <td class="related-item__delete related-item__selected__section">
+                            <div class="related-item__animate">
+                                @Html.Hidden($"Tournament.Teams[{i}].Team.TeamId", Model.Tournament.Teams[i].Team.TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Tournament.Teams[i].Team.TeamId })
+                                @Html.Hidden($"Tournament.Teams[{i}].Team.TeamName", displayName, new { @class = "related-item__data", data_item = Model.Tournament.Teams[i].Team.TeamId })
+                                <button class="text-danger">@Html.Partial("_DeleteIcon", (Model.Tournament.Teams[i].Team.TeamId.ToString(), $"Remove {Model.Tournament.Teams[i].Team.TeamName} from this tournament"))</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="3">
+                        @Html.Label("team-autocomplete", "Add a team", new { @class = "sr-only" })
+                        @Html.TextBox("team-autocomplete", string.Empty, new
+                        {
+                            @class = "form-control related-item__search",
+                            placeholder = "Add a team",
+                            autocomplete = "off",
+                            type = "search",
+                            data_url = "/api/teams/autocomplete",
+                            data_template = "team-template",
+                            aria_label = "Type a team name and press down arrow to select the team"
+                        })
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <script type="text/x-template" id="team-template">
+            <table>
+                <tr>
+                    <td class="related-item__selected__section"><div class="related-item__animate">{{value}}</div></td>
+                    <td class="related-item__selected__section"><div class="related-item__animate">No</div></td>
+                    <td class="related-item__delete related-item__selected__section">
+                        <div class="related-item__animate">
+                            <input name="Tournament.Teams[0].Team.TeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
+                            <input name="Tournament.Teams[0].Team.TeamName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
+                            <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this tournament"))</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </script>
+
+        <button class="btn btn-primary">Save tournament</button>
+    }
+}
+else
+{
+    @Html.Partial("_Login")
+}

@@ -79,6 +79,9 @@ namespace Stoolball.Matches
 
         [Display(Name = "Overs per innings")]
         public int? OversPerInningsDefault { get; set; }
+
+        [Display(Name = "How many teams do you have room for?")]
+        [Range(3, 10000, ErrorMessage = "Tournaments must have at least 3 teams")] // Minimum 3, no real maximum
         public int? MaximumTeamsInTournament { get; set; }
         public int? SpacesInTournament { get; set; }
 

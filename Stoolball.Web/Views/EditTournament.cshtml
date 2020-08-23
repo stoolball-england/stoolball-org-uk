@@ -20,7 +20,16 @@
     Html.RequiresJs("/js/tinymce.js");
 }
 
-<h1>Edit @Model.Tournament.TournamentName, @Model.DateFormatter.FormatDate(Model.Tournament.StartTime.LocalDateTime, false, false, false)</h1>
+<h1>Edit @Model.Tournament.TournamentFullName(x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="@Model.Tournament.TournamentRoute">Summary</a>
+    </li>
+    <li class="nav-item">
+        <em class="nav-link active">Edit</em>
+    </li>
+</ul>
 
 @if (Model.IsAuthorized)
 {
