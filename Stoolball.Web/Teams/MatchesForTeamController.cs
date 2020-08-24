@@ -59,7 +59,7 @@ namespace Stoolball.Web.Teams
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var team = await _teamDataSource.ReadTeamByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false);
+            var team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false);
 
             if (team == null)
             {

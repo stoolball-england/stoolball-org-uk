@@ -40,7 +40,7 @@ namespace Stoolball.Web.Competitions
 
             var model = new CompetitionViewModel(contentModel.Content)
             {
-                Competition = await _competitionDataSource.ReadCompetitionByRoute(Request.Url.AbsolutePath).ConfigureAwait(false),
+                Competition = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false),
                 UrlReferrer = Request.UrlReferrer
             };
 

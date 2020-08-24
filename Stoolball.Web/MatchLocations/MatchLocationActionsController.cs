@@ -40,7 +40,7 @@ namespace Stoolball.Web.MatchLocations
 
             var model = new MatchLocationViewModel(contentModel.Content)
             {
-                MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.Url.AbsolutePath).ConfigureAwait(false)
+                MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl).ConfigureAwait(false)
             };
 
             if (model.MatchLocation == null)

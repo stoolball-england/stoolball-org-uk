@@ -38,7 +38,7 @@ namespace Stoolball.Web.Matches
         }
 
         [HttpGet]
-        [ContentSecurityPolicy(Forms = true, TinyMCE = true)]
+        [ContentSecurityPolicy(Forms = true)]
         public async override Task<ActionResult> Index(ContentModel contentModel)
         {
             if (contentModel is null)
@@ -48,7 +48,7 @@ namespace Stoolball.Web.Matches
 
             var model = new EditTournamentViewModel(contentModel.Content)
             {
-                Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.Url.AbsolutePath).ConfigureAwait(false),
+                Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.RawUrl).ConfigureAwait(false),
                 DateFormatter = _dateFormatter
             };
 

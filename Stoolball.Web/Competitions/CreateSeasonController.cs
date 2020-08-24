@@ -41,7 +41,7 @@ namespace Stoolball.Web.Competitions
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            var competition = await _competitionDataSource.ReadCompetitionByRoute(Request.Url.AbsolutePath).ConfigureAwait(false);
+            var competition = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false);
 
             if (competition == null)
             {

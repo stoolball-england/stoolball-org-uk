@@ -51,7 +51,7 @@ namespace Stoolball.Web.Matches
 
             var model = new DeleteMatchViewModel(contentModel.Content)
             {
-                Match = await _matchDataSource.ReadMatchByRoute(Request.Url.AbsolutePath).ConfigureAwait(false),
+                Match = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false),
                 DateTimeFormatter = _dateFormatter
             };
 

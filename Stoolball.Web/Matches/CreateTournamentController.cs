@@ -57,9 +57,9 @@ namespace Stoolball.Web.Matches
                     TournamentLocation = new MatchLocation()
                 }
             };
-            if (Request.Url.AbsolutePath.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
+            if (Request.RawUrl.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
-                model.Team = await _teamDataSource.ReadTeamByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false);
+                model.Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false);
                 if (model.Team == null)
                 {
                     return new HttpNotFoundResult();
@@ -78,9 +78,9 @@ namespace Stoolball.Web.Matches
 
                 model.Metadata.PageTitle = $"Add a tournament for {model.Team.TeamName}";
             }
-            else if (Request.Url.AbsolutePath.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
+            else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
-                model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.Url.AbsolutePath, false).ConfigureAwait(false);
+                model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, false).ConfigureAwait(false);
                 if (model.Season == null || !model.Season.EnableTournaments)
                 {
                     return new HttpNotFoundResult();

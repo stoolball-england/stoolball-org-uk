@@ -40,7 +40,7 @@ namespace Stoolball.Web.Clubs
 
             var model = new ClubViewModel(contentModel.Content)
             {
-                Club = await _clubDataSource.ReadClubByRoute(Request.Url.AbsolutePath).ConfigureAwait(false)
+                Club = await _clubDataSource.ReadClubByRoute(Request.RawUrl).ConfigureAwait(false)
             };
 
             if (model.Club == null)

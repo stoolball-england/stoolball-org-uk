@@ -53,7 +53,7 @@ namespace Stoolball.Web.Clubs
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var club = await _clubDataSource.ReadClubByRoute(Request.Url.AbsolutePath).ConfigureAwait(false);
+            var club = await _clubDataSource.ReadClubByRoute(Request.RawUrl).ConfigureAwait(false);
 
             if (club == null)
             {

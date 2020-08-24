@@ -35,7 +35,7 @@ namespace Stoolball.Web.Matches
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
-        [ContentSecurityPolicy(Forms = true, TinyMCE = true)]
+        [ContentSecurityPolicy(Forms = true)]
         public async Task<ActionResult> UpdateTeams([Bind(Prefix = "Tournament", Include = "TournamentName,QualificationType,MaximumTeamsInTournament,Teams")] Tournament postedTournament)
         {
             if (postedTournament is null)

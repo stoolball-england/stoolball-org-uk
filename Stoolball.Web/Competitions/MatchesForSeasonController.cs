@@ -50,7 +50,7 @@ namespace Stoolball.Web.Competitions
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var season = await _seasonDataSource.ReadSeasonByRoute(Request.Url.AbsolutePath, false).ConfigureAwait(false);
+            var season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, false).ConfigureAwait(false);
 
             if (season == null)
             {

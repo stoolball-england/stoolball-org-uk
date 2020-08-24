@@ -50,7 +50,7 @@ namespace Stoolball.Web.Teams
 
             var model = new DeleteTeamViewModel(contentModel.Content)
             {
-                Team = await _teamDataSource.ReadTeamByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false)
+                Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false)
             };
 
             if (model.Team == null)

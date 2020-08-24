@@ -46,7 +46,7 @@ namespace Stoolball.Web.Competitions
 
             var model = new DeleteSeasonViewModel(contentModel.Content)
             {
-                Season = await _seasonDataSource.ReadSeasonByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false)
+                Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false)
             };
 
             if (model.Season == null)

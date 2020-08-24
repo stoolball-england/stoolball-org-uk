@@ -60,9 +60,9 @@ namespace Stoolball.Web.Matches
                     MatchLocation = new MatchLocation()
                 }
             };
-            if (Request.Url.AbsolutePath.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
+            if (Request.RawUrl.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
-                model.Team = await _teamDataSource.ReadTeamByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false);
+                model.Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false);
                 if (model.Team == null) return new HttpNotFoundResult();
 
                 var possibleSeasons = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, model.Match.MatchType);
@@ -73,9 +73,9 @@ namespace Stoolball.Web.Matches
                 model.MatchLocationId = model.Team.MatchLocations.FirstOrDefault()?.MatchLocationId;
                 model.MatchLocationName = model.Team.MatchLocations.FirstOrDefault()?.NameAndLocalityOrTownIfDifferent();
             }
-            else if (Request.Url.AbsolutePath.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
+            else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
-                model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false);
+                model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false);
                 if (model.Season == null || !model.Season.MatchTypes.Contains(MatchType.FriendlyMatch))
                 {
                     return new HttpNotFoundResult();

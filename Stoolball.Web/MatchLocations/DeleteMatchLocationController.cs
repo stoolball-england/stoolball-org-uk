@@ -46,7 +46,7 @@ namespace Stoolball.Web.MatchLocations
 
             var model = new DeleteMatchLocationViewModel(contentModel.Content)
             {
-                MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false),
+                MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl, true).ConfigureAwait(false),
             };
 
             if (model.MatchLocation == null)

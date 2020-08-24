@@ -44,7 +44,7 @@ namespace Stoolball.Web.MatchLocations
 
             var model = new MatchLocationViewModel(contentModel.Content)
             {
-                MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.Url.AbsolutePath, false).ConfigureAwait(false),
+                MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl, false).ConfigureAwait(false),
                 GoogleMapsApiKey = _apiKeyProvider.GetApiKey("GoogleMaps")
             };
 

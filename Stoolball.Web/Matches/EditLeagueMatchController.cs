@@ -56,7 +56,7 @@ namespace Stoolball.Web.Matches
 
             var model = new EditLeagueMatchViewModel(contentModel.Content)
             {
-                Match = await _matchDataSource.ReadMatchByRoute(Request.Url.AbsolutePath).ConfigureAwait(false),
+                Match = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false),
                 DateFormatter = _dateFormatter
             };
 

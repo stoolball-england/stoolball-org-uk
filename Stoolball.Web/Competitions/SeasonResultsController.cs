@@ -57,7 +57,7 @@ namespace Stoolball.Web.Competitions
 
             var model = new SeasonViewModel(contentModel.Content)
             {
-                Season = await _seasonDataSource.ReadSeasonByRoute(Request.Url.AbsolutePath, true).ConfigureAwait(false)
+                Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false)
             };
 
             if (model.Season == null || (!model.Season.MatchTypes.Contains(MatchType.LeagueMatch) &&

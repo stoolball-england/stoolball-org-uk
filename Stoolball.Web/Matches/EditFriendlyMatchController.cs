@@ -53,7 +53,7 @@ namespace Stoolball.Web.Matches
 
             var model = new EditFriendlyMatchViewModel(contentModel.Content)
             {
-                Match = await _matchDataSource.ReadMatchByRoute(Request.Url.AbsolutePath).ConfigureAwait(false),
+                Match = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false),
                 DateFormatter = _dateFormatter
             };
 
