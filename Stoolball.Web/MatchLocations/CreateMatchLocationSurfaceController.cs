@@ -89,7 +89,7 @@ namespace Stoolball.Web.MatchLocations
                 MatchLocation = location,
                 IsAuthorized = isAuthorized
             };
-            viewModel.Metadata.PageTitle = $"Add a ground or sports hall";
+            viewModel.Metadata.PageTitle = $"Add a ground or sports centre";
             return View("CreateMatchLocation", viewModel);
         }
     }

@@ -6,7 +6,7 @@ Stoolball data is represented by the following entities:
 
 A `Team` is the central entity used to represent what is generally thought of as a club or team. However a stoolball club isn't the only kind of `Team`. A `Team` can also be a school team, a county team, the England team or some friends or colleagues who just played a one-off match.
 
-A team is based at one or more `MatchLocations` (its home ground or sports hall), and has many `Players`. It can be involved in one or more `Seasons` and `Matches`.
+A team is based at one or more `MatchLocations` (its home ground or sports centre), and has many `Players`. It can be involved in one or more `Seasons` and `Matches`.
 
 One special type of `Team` is a `TransientTeam`, which exists only for one `Match`. For example, a group of friends who enter a `Tournament` but never play again.
 
@@ -22,7 +22,7 @@ Similar to a `Club`, a `School` is a group of `Teams`. The teams belonging to a 
 
 ## MatchLocations
 
-A `MatchLocation` is anywhere where a stoolball match is played, which typically means a playing field or sports hall. A team is based at one or more `MatchLocations`, and a `Match` or `Tournament` takes place at a location.
+A `MatchLocation` is anywhere where a stoolball match is played, which typically means a playing field or sports centre. A team is based at one or more `MatchLocations`, and a `Match` or `Tournament` takes place at a location.
 
 ## Matches
 

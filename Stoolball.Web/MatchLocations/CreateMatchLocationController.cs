@@ -47,7 +47,7 @@ namespace Stoolball.Web.MatchLocations
 
             model.IsAuthorized = IsAuthorized();
 
-            model.Metadata.PageTitle = "Add a ground or sports hall";
+            model.Metadata.PageTitle = "Add a ground or sports centre";
 
             return Task.FromResult(CurrentTemplate(model));
         }

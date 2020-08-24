@@ -115,7 +115,7 @@
 {
     <table class="table table-hover related-items">
         <thead class="thead-dark">
-            <tr><th scope="col" colspan="2">Home grounds and sports halls</th></tr>
+            <tr><th scope="col" colspan="2">Home grounds and sports centres</th></tr>
         </thead>
         <tbody>
             @for (var i = 0; i < Model.Team.MatchLocations.Count; i++)
@@ -142,16 +142,16 @@
             }
             <tr>
                 <td colspan="2">
-                    @Html.Label("location-autocomplete", "Add a home ground or sports hall", new { @class = "sr-only" })
+                    @Html.Label("location-autocomplete", "Add a home ground or sports centre", new { @class = "sr-only" })
                     @Html.TextBox("location-autocomplete", string.Empty, new
                {
                    @class = "form-control related-item__search",
-                   placeholder = "Add a home ground or sports hall",
+                   placeholder = "Add a home ground or sports centre",
                    autocomplete = "off",
                    type = "search",
                    data_url = "/api/locations/autocomplete",
                    data_template = "location-template",
-                   aria_label = "Type a ground or sports hall name add and press down arrow to select from the matching choices"
+                   aria_label = "Type a ground or sports centre name add and press down arrow to select from the matching choices"
                })
                 </td>
             </tr>

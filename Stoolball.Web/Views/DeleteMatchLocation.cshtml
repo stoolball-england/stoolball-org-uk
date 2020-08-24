@@ -47,7 +47,7 @@
             }
             @if (Model.MatchLocation.Teams.Count > 0)
             {
-                <li>leave @Model.MatchLocation.Teams.Humanize(x => x.TeamName) without their home ground or sports hall</li>
+                <li>leave @Model.MatchLocation.Teams.Humanize(x => x.TeamName) without their home ground or sports centre</li>
             }
             else
             {
@@ -74,7 +74,7 @@
     else
     {
         <p>@Model.MatchLocation.Name() has been deleted.</p>
-        <a class="btn btn-primary" href="/locations">Back to grounds and sports halls</a>
+        <a class="btn btn-primary" href="/locations">Back to grounds and sports centres</a>
     }
 }
 else
