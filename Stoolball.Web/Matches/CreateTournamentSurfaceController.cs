@@ -83,7 +83,7 @@ namespace Stoolball.Web.Matches
             }
             else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
-                model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false);
+                model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, false).ConfigureAwait(false);
                 model.Tournament.Seasons.Add(model.Season);
                 model.Metadata.PageTitle = $"Add a tournament in the {model.Season.SeasonFullName()}";
             }
