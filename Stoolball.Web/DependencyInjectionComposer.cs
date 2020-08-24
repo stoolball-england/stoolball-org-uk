@@ -13,6 +13,7 @@ using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Umbraco.Data.Redirects;
+using Stoolball.Umbraco.Data.Security;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Stoolball.Web.Clubs;
@@ -48,6 +49,7 @@ namespace Stoolball.Web
             composition.Register<IMatchNameBuilder, MatchNameBuilder>(Lifetime.Singleton);
             composition.Register<IPlayerTypeSelector, PlayerTypeSelector>(Lifetime.Singleton);
             composition.Register<IEditMatchHelper, EditMatchHelper>(Lifetime.Singleton);
+            composition.Register<IMemberGroupHelper, MemberGroupHelper>(Lifetime.Singleton);
 
             // Data migration from the old Stoolball England website
             composition.Register<IAuditHistoryBuilder, AuditHistoryBuilder>(Lifetime.Singleton);

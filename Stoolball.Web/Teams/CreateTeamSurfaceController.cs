@@ -1,12 +1,10 @@
-﻿using Stoolball.Routing;
-using Stoolball.Teams;
+﻿using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Security;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
-using Umbraco.Core.Models;
 using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
@@ -18,14 +16,12 @@ namespace Stoolball.Web.Teams
     public class CreateTeamSurfaceController : SurfaceController
     {
         private readonly ITeamRepository _teamRepository;
-        private readonly IRouteGenerator _routeGenerator;
 
         public CreateTeamSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITeamRepository teamRepository, IRouteGenerator routeGenerator)
+            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITeamRepository teamRepository)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _teamRepository = teamRepository ?? throw new System.ArgumentNullException(nameof(teamRepository));
-            _routeGenerator = routeGenerator ?? throw new System.ArgumentNullException(nameof(routeGenerator));
         }
 
         [HttpPost]
@@ -50,39 +46,9 @@ namespace Stoolball.Web.Teams
 
             if (isAuthorized && ModelState.IsValid)
             {
-                // Create an owner group
-                var groupName = _routeGenerator.GenerateRoute("team", team.TeamName, NoiseWords.TeamRoute);
-                IMemberGroup group;
-                do
-                {
-                    group = Services.MemberGroupService.GetByName(groupName);
-                    if (group == null)
-                    {
-                        group = new MemberGroup
-                        {
-                            Name = groupName
-                        };
-                        Services.MemberGroupService.Save(group);
-                        team.MemberGroupId = group.Id;
-                        team.MemberGroupName = group.Name;
-                        break;
-                    }
-                    else
-                    {
-                        groupName = _routeGenerator.IncrementRoute(groupName);
-                    }
-                }
-                while (group != null);
-
-                // Assign the current member to the group unless they're already admin
-                var currentMember = Members.GetCurrentMember();
-                if (!Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null))
-                {
-                    Services.MemberService.AssignRole(currentMember.Id, group.Name);
-                }
-
                 // Create the team
-                await _teamRepository.CreateTeam(team, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                var currentMember = Members.GetCurrentMember();
+                await _teamRepository.CreateTeam(team, currentMember.Key, Members.CurrentUserName, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the team
                 return Redirect(team.TeamRoute);

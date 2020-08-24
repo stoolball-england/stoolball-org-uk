@@ -61,7 +61,7 @@ namespace Stoolball.Umbraco.Data
             public static IEnumerable<string> ClubRoute { get; } = new ReadOnlyCollection<string>(new[] { "stoolball", "club", "sports" });
             public static IEnumerable<string> SchoolRoute { get; } = new ReadOnlyCollection<string>(new[] { "stoolball" });
             public static IEnumerable<string> MatchLocationRoute { get; } = new ReadOnlyCollection<string>(new[] { "stoolball" });
-            public static IEnumerable<string> TeamRoute { get; } = new ReadOnlyCollection<string>(new[] { "stoolball", "club", "team" });
+            public static IEnumerable<string> TeamRoute { get; } = new ReadOnlyCollection<string>(new[] { "stoolball", "club" });
             public static IEnumerable<string> CompetitionRoute { get; } = Array.Empty<string>();
             public static IEnumerable<string> TournamentRoute { get; } = Array.Empty<string>();
             public static IEnumerable<string> MatchRoute { get; } = Array.Empty<string>();

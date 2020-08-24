@@ -6,12 +6,15 @@ using Stoolball.Routing;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
+using Stoolball.Umbraco.Data.Security;
 using System;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
+using Umbraco.Core.Services;
 using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Umbraco.Data.Teams
@@ -26,16 +29,20 @@ namespace Stoolball.Umbraco.Data.Teams
         private readonly ILogger _logger;
         private readonly IRouteGenerator _routeGenerator;
         private readonly IRedirectsRepository _redirectsRepository;
+        private readonly IMemberService _memberService;
+        private readonly IMemberGroupHelper _memberGroupHelper;
         private readonly IHtmlSanitizer _htmlSanitiser;
 
         public SqlServerTeamRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
-            IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser)
+            IRedirectsRepository redirectsRepository, IMemberService memberService, IMemberGroupHelper memberGroupHelper, IHtmlSanitizer htmlSanitiser)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
+            _memberService = memberService ?? throw new ArgumentNullException(nameof(memberService));
+            _memberGroupHelper = memberGroupHelper ?? throw new ArgumentNullException(nameof(memberGroupHelper));
             _htmlSanitiser = htmlSanitiser ?? throw new ArgumentNullException(nameof(htmlSanitiser));
 
             _htmlSanitiser.AllowedTags.Clear();
@@ -58,7 +65,7 @@ namespace Stoolball.Umbraco.Data.Teams
         /// Creates a stoolball team and populates the <see cref="Team.TeamId"/>
         /// </summary>
         /// <returns>The created team</returns>
-        public async Task<Team> CreateTeam(Team team, Guid memberKey, string memberName)
+        public async Task<Team> CreateTeam(Team team, Guid memberKey, string memberUsername, string memberName)
         {
             if (team is null)
             {
@@ -72,145 +79,13 @@ namespace Stoolball.Umbraco.Data.Teams
 
             try
             {
-                team.TeamId = Guid.NewGuid();
-                team.Introduction = _htmlSanitiser.Sanitize(team.Introduction);
-                team.PlayingTimes = _htmlSanitiser.Sanitize(team.PlayingTimes);
-                team.Cost = _htmlSanitiser.Sanitize(team.Cost);
-                team.PublicContactDetails = _htmlSanitiser.Sanitize(team.PublicContactDetails);
-                team.PrivateContactDetails = _htmlSanitiser.Sanitize(team.PrivateContactDetails);
-                team.Facebook = PrefixUrlProtocol(team.Facebook);
-                team.Twitter = PrefixAtSign(team.Twitter);
-                team.Instagram = PrefixAtSign(team.Instagram);
-                team.YouTube = PrefixUrlProtocol(team.YouTube);
-                team.Website = PrefixUrlProtocol(team.Website);
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     connection.Open();
                     using (var transaction = connection.BeginTransaction())
                     {
-                        team.TeamRoute = _routeGenerator.GenerateRoute("/teams", team.TeamName, NoiseWords.TeamRoute);
-                        int count;
-                        do
-                        {
-                            count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { team.TeamRoute }, transaction).ConfigureAwait(false);
-                            if (count > 0)
-                            {
-                                team.TeamRoute = _routeGenerator.IncrementRoute(team.TeamRoute);
-                            }
-                        }
-                        while (count > 0);
-
-                        await connection.ExecuteAsync(
-                            $@"INSERT INTO {Tables.Team} (TeamId, TeamType, AgeRangeLower, AgeRangeUpper, FromYear, UntilYear, PlayerType, Introduction, 
-                                PlayingTimes, Cost, PublicContactDetails, PrivateContactDetails, Facebook, Twitter, Instagram, YouTube, Website, TeamRoute, MemberGroupId, MemberGroupName) 
-                                VALUES (@TeamId, @TeamType, @AgeRangeLower, @AgeRangeUpper, @FromYear, @UntilYear, @PlayerType, @Introduction, @PlayingTimes, @Cost, 
-                                @PublicContactDetails, @PrivateContactDetails, @Facebook, @Twitter, @Instagram, @YouTube, @Website, @TeamRoute, @MemberGroupId, @MemberGroupName)",
-                            new
-                            {
-                                team.TeamId,
-                                TeamType = team.TeamType.ToString(),
-                                team.AgeRangeLower,
-                                team.AgeRangeUpper,
-                                team.FromYear,
-                                team.UntilYear,
-                                team.PlayerType,
-                                team.Introduction,
-                                team.PlayingTimes,
-                                team.Cost,
-                                team.PublicContactDetails,
-                                team.PrivateContactDetails,
-                                team.Facebook,
-                                team.Twitter,
-                                team.Instagram,
-                                team.YouTube,
-                                team.Website,
-                                team.TeamRoute,
-                                team.MemberGroupId,
-                                team.MemberGroupName
-                            }, transaction).ConfigureAwait(false);
-
-                        await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamName} 
-                                (TeamNameId, TeamId, TeamName, TeamComparableName, FromDate) VALUES (@TeamNameId, @TeamId, @TeamName, @TeamComparableName, GETUTCDATE())",
-                            new
-                            {
-                                TeamNameId = Guid.NewGuid(),
-                                team.TeamId,
-                                team.TeamName,
-                                TeamComparableName = team.ComparableName()
-                            }, transaction).ConfigureAwait(false);
-
-                        foreach (var location in team.MatchLocations)
-                        {
-                            await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} (TeamMatchLocationId, TeamId, MatchLocationId)
-                                VALUES (@TeamMatchLocationId, @TeamId, @MatchLocationId)",
-                                new
-                                {
-                                    TeamMatchLocationId = Guid.NewGuid(),
-                                    team.TeamId,
-                                    location.MatchLocationId
-                                }, transaction).ConfigureAwait(false);
-                        }
-
-                        team.PlayerIdentities.Add(new PlayerIdentity
-                        {
-                            PlayerIdentityId = Guid.NewGuid(),
-                            PlayerId = Guid.NewGuid(),
-                            PlayerIdentityRoute = team.TeamRoute + "/players/no-balls",
-                            PlayerRole = PlayerRole.NoBalls,
-                            PlayerIdentityName = "No balls",
-                            TotalMatches = 0
-                        });
-
-                        team.PlayerIdentities.Add(new PlayerIdentity
-                        {
-                            PlayerIdentityId = Guid.NewGuid(),
-                            PlayerId = Guid.NewGuid(),
-                            PlayerIdentityRoute = team.TeamRoute + "/players/wides",
-                            PlayerRole = PlayerRole.Wides,
-                            PlayerIdentityName = "Wides",
-                            TotalMatches = 0
-                        });
-
-                        team.PlayerIdentities.Add(new PlayerIdentity
-                        {
-                            PlayerIdentityId = Guid.NewGuid(),
-                            PlayerId = Guid.NewGuid(),
-                            PlayerIdentityRoute = team.TeamRoute + "/players/byes",
-                            PlayerRole = PlayerRole.Byes,
-                            PlayerIdentityName = "Byes",
-                            TotalMatches = 0
-                        });
-
-                        team.PlayerIdentities.Add(new PlayerIdentity
-                        {
-                            PlayerIdentityId = Guid.NewGuid(),
-                            PlayerId = Guid.NewGuid(),
-                            PlayerIdentityRoute = team.TeamRoute + "/players/bonus-runs",
-                            PlayerRole = PlayerRole.BonusRuns,
-                            PlayerIdentityName = "Bonus runs",
-                            TotalMatches = 0
-                        });
-
-                        foreach (var extrasIdentity in team.PlayerIdentities)
-                        {
-                            await transaction.Connection.ExecuteAsync(
-                                $@"INSERT INTO {Tables.PlayerIdentity} 
-                                (PlayerIdentityId, PlayerId, PlayerRole, PlayerIdentityName, PlayerIdentityComparableName, TeamId, TotalMatches, PlayerIdentityRoute) 
-                                VALUES (@PlayerIdentityId, @PlayerId, @PlayerRole, @PlayerIdentityName, @PlayerIdentityComparableName, @TeamId, @TotalMatches, @PlayerIdentityRoute)",
-                                new
-                                {
-                                    extrasIdentity.PlayerIdentityId,
-                                    extrasIdentity.PlayerId,
-                                    PlayerRole = extrasIdentity.PlayerRole.ToString(),
-                                    extrasIdentity.PlayerIdentityName,
-                                    PlayerIdentityComparableName = extrasIdentity.ComparableName(),
-                                    team.TeamId,
-                                    extrasIdentity.TotalMatches,
-                                    extrasIdentity.PlayerIdentityRoute
-                                }, transaction).ConfigureAwait(false);
-                        }
-
+                        await CreateTeam(team, transaction, memberUsername).ConfigureAwait(false);
                         transaction.Commit();
                     }
                 }
@@ -228,6 +103,175 @@ namespace Stoolball.Umbraco.Data.Teams
             catch (SqlException ex)
             {
                 _logger.Error(typeof(SqlServerTeamRepository), ex);
+            }
+
+            return team;
+        }
+
+        /// <summary>
+        /// Creates a team using an existing transaction
+        /// </summary>
+        public async Task<Team> CreateTeam(Team team, IDbTransaction transaction, string memberUsername)
+        {
+            if (team is null)
+            {
+                throw new ArgumentNullException(nameof(team));
+            }
+
+            if (transaction is null)
+            {
+                throw new ArgumentNullException(nameof(transaction));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberUsername))
+            {
+                throw new ArgumentException($"'{nameof(memberUsername)}' cannot be null or whitespace", nameof(memberUsername));
+            }
+
+            team.TeamId = Guid.NewGuid();
+            team.Introduction = _htmlSanitiser.Sanitize(team.Introduction);
+            team.PlayingTimes = _htmlSanitiser.Sanitize(team.PlayingTimes);
+            team.Cost = _htmlSanitiser.Sanitize(team.Cost);
+            team.PublicContactDetails = _htmlSanitiser.Sanitize(team.PublicContactDetails);
+            team.PrivateContactDetails = _htmlSanitiser.Sanitize(team.PrivateContactDetails);
+            team.Facebook = PrefixUrlProtocol(team.Facebook);
+            team.Twitter = PrefixAtSign(team.Twitter);
+            team.Instagram = PrefixAtSign(team.Instagram);
+            team.YouTube = PrefixUrlProtocol(team.YouTube);
+            team.Website = PrefixUrlProtocol(team.Website);
+
+            // Create a route. Generally {team.teamRoute} will be blank, but allowing a pre-populated prefix is useful for transient teams
+            team.TeamRoute = _routeGenerator.GenerateRoute($"{team.TeamRoute}/teams", team.TeamName, NoiseWords.TeamRoute);
+            int count;
+            do
+            {
+                count = await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { team.TeamRoute }, transaction).ConfigureAwait(false);
+                if (count > 0)
+                {
+                    team.TeamRoute = _routeGenerator.IncrementRoute(team.TeamRoute);
+                }
+            }
+            while (count > 0);
+
+            // Create an owner group
+            var group = _memberGroupHelper.CreateOrFindGroup("team", team.TeamName, NoiseWords.TeamRoute);
+            team.MemberGroupId = group.Id;
+            team.MemberGroupName = group.Name;
+
+            // Assign the member to the group unless they're already admin
+            if (!_memberGroupHelper.MemberIsAdministrator(memberUsername))
+            {
+                _memberService.AssignRole(memberUsername, group.Name);
+            }
+
+            await transaction.Connection.ExecuteAsync(
+                $@"INSERT INTO {Tables.Team} (TeamId, TeamType, AgeRangeLower, AgeRangeUpper, FromYear, UntilYear, PlayerType, Introduction, 
+                                PlayingTimes, Cost, PublicContactDetails, PrivateContactDetails, Facebook, Twitter, Instagram, YouTube, Website, TeamRoute, MemberGroupId, MemberGroupName) 
+                                VALUES (@TeamId, @TeamType, @AgeRangeLower, @AgeRangeUpper, @FromYear, @UntilYear, @PlayerType, @Introduction, @PlayingTimes, @Cost, 
+                                @PublicContactDetails, @PrivateContactDetails, @Facebook, @Twitter, @Instagram, @YouTube, @Website, @TeamRoute, @MemberGroupId, @MemberGroupName)",
+                new
+                {
+                    team.TeamId,
+                    TeamType = team.TeamType.ToString(),
+                    team.AgeRangeLower,
+                    team.AgeRangeUpper,
+                    team.FromYear,
+                    team.UntilYear,
+                    team.PlayerType,
+                    team.Introduction,
+                    team.PlayingTimes,
+                    team.Cost,
+                    team.PublicContactDetails,
+                    team.PrivateContactDetails,
+                    team.Facebook,
+                    team.Twitter,
+                    team.Instagram,
+                    team.YouTube,
+                    team.Website,
+                    team.TeamRoute,
+                    team.MemberGroupId,
+                    team.MemberGroupName
+                }, transaction).ConfigureAwait(false);
+
+            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.TeamName} 
+                                (TeamNameId, TeamId, TeamName, TeamComparableName, FromDate) VALUES (@TeamNameId, @TeamId, @TeamName, @TeamComparableName, GETUTCDATE())",
+                new
+                {
+                    TeamNameId = Guid.NewGuid(),
+                    team.TeamId,
+                    team.TeamName,
+                    TeamComparableName = team.ComparableName()
+                }, transaction).ConfigureAwait(false);
+
+            foreach (var location in team.MatchLocations)
+            {
+                await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} (TeamMatchLocationId, TeamId, MatchLocationId)
+                                VALUES (@TeamMatchLocationId, @TeamId, @MatchLocationId)",
+                    new
+                    {
+                        TeamMatchLocationId = Guid.NewGuid(),
+                        team.TeamId,
+                        location.MatchLocationId
+                    }, transaction).ConfigureAwait(false);
+            }
+
+            team.PlayerIdentities.Add(new PlayerIdentity
+            {
+                PlayerIdentityId = Guid.NewGuid(),
+                PlayerId = Guid.NewGuid(),
+                PlayerIdentityRoute = team.TeamRoute + "/players/no-balls",
+                PlayerRole = PlayerRole.NoBalls,
+                PlayerIdentityName = "No balls",
+                TotalMatches = 0
+            });
+
+            team.PlayerIdentities.Add(new PlayerIdentity
+            {
+                PlayerIdentityId = Guid.NewGuid(),
+                PlayerId = Guid.NewGuid(),
+                PlayerIdentityRoute = team.TeamRoute + "/players/wides",
+                PlayerRole = PlayerRole.Wides,
+                PlayerIdentityName = "Wides",
+                TotalMatches = 0
+            });
+
+            team.PlayerIdentities.Add(new PlayerIdentity
+            {
+                PlayerIdentityId = Guid.NewGuid(),
+                PlayerId = Guid.NewGuid(),
+                PlayerIdentityRoute = team.TeamRoute + "/players/byes",
+                PlayerRole = PlayerRole.Byes,
+                PlayerIdentityName = "Byes",
+                TotalMatches = 0
+            });
+
+            team.PlayerIdentities.Add(new PlayerIdentity
+            {
+                PlayerIdentityId = Guid.NewGuid(),
+                PlayerId = Guid.NewGuid(),
+                PlayerIdentityRoute = team.TeamRoute + "/players/bonus-runs",
+                PlayerRole = PlayerRole.BonusRuns,
+                PlayerIdentityName = "Bonus runs",
+                TotalMatches = 0
+            });
+
+            foreach (var extrasIdentity in team.PlayerIdentities)
+            {
+                await transaction.Connection.ExecuteAsync(
+                    $@"INSERT INTO {Tables.PlayerIdentity} 
+                                (PlayerIdentityId, PlayerId, PlayerRole, PlayerIdentityName, PlayerIdentityComparableName, TeamId, TotalMatches, PlayerIdentityRoute) 
+                                VALUES (@PlayerIdentityId, @PlayerId, @PlayerRole, @PlayerIdentityName, @PlayerIdentityComparableName, @TeamId, @TotalMatches, @PlayerIdentityRoute)",
+                    new
+                    {
+                        extrasIdentity.PlayerIdentityId,
+                        extrasIdentity.PlayerId,
+                        PlayerRole = extrasIdentity.PlayerRole.ToString(),
+                        extrasIdentity.PlayerIdentityName,
+                        PlayerIdentityComparableName = extrasIdentity.ComparableName(),
+                        team.TeamId,
+                        extrasIdentity.TotalMatches,
+                        extrasIdentity.PlayerIdentityRoute
+                    }, transaction).ConfigureAwait(false);
             }
 
             return team;
@@ -563,7 +607,7 @@ namespace Stoolball.Umbraco.Data.Teams
             }
         }
 
-        private string PrefixUrlProtocol(string url)
+        private static string PrefixUrlProtocol(string url)
         {
             url = url?.Trim();
             if (!string.IsNullOrEmpty(url) && !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
@@ -573,7 +617,7 @@ namespace Stoolball.Umbraco.Data.Teams
             return url;
         }
 
-        private string PrefixAtSign(string account)
+        private static string PrefixAtSign(string account)
         {
             account = account?.Trim();
             if (!string.IsNullOrEmpty(account) && !account.StartsWith("@", StringComparison.OrdinalIgnoreCase))

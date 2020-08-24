@@ -91,6 +91,13 @@
     display: none;
 }
 
+.autocomplete-group {
+    font-weight: bold;
+    color: $table-dark-color;
+    background-color: $table-dark-bg;
+    border-color: $table-dark-border-color;
+}
+
 
 
 /* For reduced motion, instead of animating the row strike out the text and remove the delete button */

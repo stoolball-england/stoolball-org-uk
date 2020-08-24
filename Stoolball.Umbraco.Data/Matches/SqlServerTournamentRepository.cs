@@ -7,7 +7,9 @@ using Stoolball.Routing;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
+using Stoolball.Umbraco.Data.Teams;
 using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
@@ -27,16 +29,18 @@ namespace Stoolball.Umbraco.Data.Matches
         private readonly ILogger _logger;
         private readonly IRouteGenerator _routeGenerator;
         private readonly IRedirectsRepository _redirectsRepository;
+        private readonly ITeamRepository _teamRepository;
         private readonly IHtmlSanitizer _htmlSanitiser;
 
         public SqlServerTournamentRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
-            IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser)
+            IRedirectsRepository redirectsRepository, ITeamRepository teamRepository, IHtmlSanitizer htmlSanitiser)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
+            _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
             _htmlSanitiser = htmlSanitiser ?? throw new ArgumentNullException(nameof(htmlSanitiser));
 
             _htmlSanitiser.AllowedTags.Clear();
@@ -259,13 +263,45 @@ namespace Stoolball.Umbraco.Data.Matches
                             },
                             transaction).ConfigureAwait(false);
 
-                        if (routeBeforeUpdate != tournament.TournamentRoute)
+
+                        // Update any transient teams with the amended tournament details
+                        var transientTeamIds = await connection.QueryAsync<Guid>($@"SELECT t.TeamId FROM {Tables.TournamentTeam} tt
+                                INNER JOIN {Tables.Team} t ON tt.TeamId = t.TeamId                               
+                                WHERE tt.TournamentId = @TournamentId AND t.TeamType = '{TeamType.Transient.ToString()}'",
+                                new { tournament.TournamentId }, transaction).ConfigureAwait(false);
+
+                        if (transientTeamIds.Any())
                         {
-                            // Update the transient team routes to match the amended tournament route
-                            await connection.ExecuteAsync($@"UPDATE {Tables.Team} 
-                                SET TeamRoute = CONCAT(@TournamentRoute, SUBSTRING(TeamRoute, {routeBeforeUpdate.Length + 1}, LEN(TeamRoute)-{routeBeforeUpdate.Length})) 
-                                WHERE TeamRoute LIKE CONCAT(@routeBeforeUpdate, '/teams/%')",
-                                new { tournament.TournamentRoute, routeBeforeUpdate }, transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync($@"UPDATE {Tables.Team} SET
+                                PlayerType = @PlayerType,
+                                FromYear = @Year,
+                                UntilYear = @Year,
+                                TeamRoute = CONCAT(@TournamentRoute, SUBSTRING(TeamRoute, {routeBeforeUpdate.Length + 1}, LEN(TeamRoute)-{routeBeforeUpdate.Length})) 
+                                WHERE TeamId IN @transientTeamIds",
+                                new
+                                {
+                                    tournament.PlayerType,
+                                    tournament.StartTime.Year,
+                                    tournament.TournamentRoute,
+                                    transientTeamIds
+                                }, transaction).ConfigureAwait(false);
+
+                            await connection.ExecuteAsync($"DELETE FROM {Tables.TeamMatchLocation} WHERE TeamId IN @transientTeamIds", new { transientTeamIds }, transaction).ConfigureAwait(false);
+                            if (tournament.TournamentLocation != null)
+                            {
+                                foreach (var transientTeam in transientTeamIds)
+                                {
+                                    await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} 
+                                        (TeamMatchLocationId, TeamId, MatchLocationId) 
+                                        VALUES (@TeamMatchLocationId, @TeamId, @MatchLocationId)",
+                                        new
+                                        {
+                                            TeamMatchLocationId = Guid.NewGuid(),
+                                            TeamId = transientTeam,
+                                            tournament.TournamentLocation.MatchLocationId
+                                        }, transaction).ConfigureAwait(false);
+                                }
+                            }
                         }
 
                         transaction.Commit();
@@ -305,11 +341,16 @@ namespace Stoolball.Umbraco.Data.Matches
         /// <summary>
         /// Updates teams in a stoolball tournament
         /// </summary>
-        public async Task<Tournament> UpdateTeams(Tournament tournament, Guid memberKey, string memberName)
+        public async Task<Tournament> UpdateTeams(Tournament tournament, Guid memberKey, string memberUsername, string memberName)
         {
             if (tournament is null)
             {
                 throw new ArgumentNullException(nameof(tournament));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberUsername))
+            {
+                throw new ArgumentException($"'{nameof(memberUsername)}' cannot be null or whitespace", nameof(memberUsername));
             }
 
             if (string.IsNullOrWhiteSpace(memberName))
@@ -323,6 +364,8 @@ namespace Stoolball.Umbraco.Data.Matches
                 {
                     tournament.SpacesInTournament = (tournament.MaximumTeamsInTournament - tournament.Teams.Count) >= 0 ? (tournament.MaximumTeamsInTournament - tournament.Teams.Count) : 0;
                 }
+
+                var audits = new List<AuditRecord>();
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
@@ -353,17 +396,41 @@ namespace Stoolball.Umbraco.Data.Matches
                             // Team added
                             if (currentTeam == null)
                             {
+                                var existingTeamId = await connection.ExecuteScalarAsync<Guid?>($"SELECT TeamId FROM {Tables.Team} WHERE TeamId = @TeamId", new { team.Team.TeamId }, transaction).ConfigureAwait(false);
+
+                                if (existingTeamId == null)
+                                {
+                                    team.Team.TeamType = TeamType.Transient;
+                                    team.Team.TeamRoute = tournament.TournamentRoute;
+                                    team.Team.PlayerType = tournament.PlayerType;
+                                    team.Team.FromYear = tournament.StartTime.Year;
+                                    team.Team.UntilYear = tournament.StartTime.Year;
+                                    if (tournament.TournamentLocation != null) { team.Team.MatchLocations.Add(tournament.TournamentLocation); }
+
+                                    team.Team = await _teamRepository.CreateTeam(team.Team, transaction, memberUsername).ConfigureAwait(false);
+
+                                    audits.Add(new AuditRecord
+                                    {
+                                        Action = AuditAction.Create,
+                                        MemberKey = memberKey,
+                                        ActorName = memberName,
+                                        EntityUri = team.Team.EntityUri,
+                                        State = JsonConvert.SerializeObject(team),
+                                        AuditDate = DateTime.UtcNow
+                                    });
+                                }
+
                                 await connection.ExecuteAsync($@"INSERT INTO {Tables.TournamentTeam} 
                                     (TournamentTeamId, TournamentId, TeamId, TeamRole) 
                                     VALUES (@TournamentTeamId, @TournamentId, @TeamId, @TeamRole)",
-                                    new
-                                    {
-                                        TournamentTeamId = Guid.NewGuid(),
-                                        tournament.TournamentId,
-                                        team.Team.TeamId,
-                                        TeamRole = TournamentTeamRole.Confirmed.ToString()
-                                    },
-                                    transaction).ConfigureAwait(false);
+                                        new
+                                        {
+                                            TournamentTeamId = Guid.NewGuid(),
+                                            tournament.TournamentId,
+                                            team.Team.TeamId,
+                                            TeamRole = TournamentTeamRole.Confirmed.ToString()
+                                        },
+                                        transaction).ConfigureAwait(false);
                             }
                         }
 
@@ -409,6 +476,11 @@ namespace Stoolball.Umbraco.Data.Matches
                     State = JsonConvert.SerializeObject(tournament),
                     AuditDate = DateTime.UtcNow
                 }).ConfigureAwait(false);
+
+                foreach (var audit in audits)
+                {
+                    await _auditRepository.CreateAudit(audit).ConfigureAwait(false);
+                }
 
             }
             catch (SqlException ex)

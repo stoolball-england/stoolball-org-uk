@@ -271,7 +271,7 @@ namespace Stoolball.Umbraco.Data.Competitions
             return competition;
         }
 
-        private string PrefixUrlProtocol(string url)
+        private static string PrefixUrlProtocol(string url)
         {
             url = url?.Trim();
             if (!string.IsNullOrEmpty(url) && !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
@@ -281,7 +281,7 @@ namespace Stoolball.Umbraco.Data.Competitions
             return url;
         }
 
-        private string PrefixAtSign(string account)
+        private static string PrefixAtSign(string account)
         {
             account = account?.Trim();
             if (!string.IsNullOrEmpty(account) && !account.StartsWith("@", StringComparison.OrdinalIgnoreCase))

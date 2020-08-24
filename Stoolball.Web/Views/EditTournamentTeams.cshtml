@@ -1,6 +1,5 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<EditTournamentViewModel>
 @using ClientDependency.Core.Mvc
-@using Humanizer
 @using Stoolball.Web.Matches
 @section head {
     <meta name="robots" content="noindex,follow" />
@@ -49,7 +48,7 @@
             @Html.ValidationMessageFor(m => Model.Tournament.MaximumTeamsInTournament, null, new { id = "maximum-teams" })
         </div>
 
-        <table class="table table-hover related-items">
+        <table class="table table-hover related-items related-items__create" data-related-item="team">
             <thead class="thead-dark">
                 <tr><th scope="col">Confirmed teams</th><th scope="col">Team created for this tournament</th><th scope="col"></th></tr>
             </thead>
@@ -90,7 +89,7 @@
             <table>
                 <tr>
                     <td class="related-item__selected__section"><div class="related-item__animate">{{value}}</div></td>
-                    <td class="related-item__selected__section"><div class="related-item__animate">No</div></td>
+                    <td class="related-item__selected__section"><div class="related-item__animate">{{create}}</div></td>
                     <td class="related-item__delete related-item__selected__section">
                         <div class="related-item__animate">
                             <input name="Tournament.Teams[0].Team.TeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />

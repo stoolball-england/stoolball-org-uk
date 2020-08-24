@@ -12,7 +12,7 @@ namespace Stoolball.Umbraco.Data.Matches
         public List<Guid> SeasonIds { get; internal set; } = new List<Guid>();
         public List<MatchType> MatchTypes { get; internal set; } = new List<MatchType>();
         public bool IncludeMatches { get; internal set; } = true;
-        public bool IncludeTournamentMatches { get; set; } = false;
+        public bool IncludeTournamentMatches { get; set; }
         public bool IncludeTournaments { get; set; } = true;
         public DateTimeOffset? FromDate { get; set; }
         public Guid? TournamentId { get; set; }

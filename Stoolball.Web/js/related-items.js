@@ -36,7 +36,8 @@
   window.addEventListener("DOMContentLoaded", function () {
     const relatedItems = document.querySelectorAll(".related-items");
     for (let i = 0; i < relatedItems.length; i++) {
-      relatedItems[i].addEventListener("click", function (e) {
+      let thisEditor = relatedItems[i];
+      thisEditor.addEventListener("click", function (e) {
         /* Get a consistent target of the selected item container element, or null if it wasn't the delete button clicked */
         const className = "related-item__delete";
         const selectedItem = e.target.parentNode.parentNode.classList.contains(
@@ -87,9 +88,7 @@
         }
       });
 
-      const searchField = relatedItems[i].querySelector(
-        ".related-item__search"
-      );
+      const searchField = thisEditor.querySelector(".related-item__search");
 
       searchField.addEventListener("keypress", function (e) {
         // Prevent enter submitting the form within this editor
@@ -105,24 +104,61 @@
       const selectedItem = searchField.parentNode.parentNode;
       const params = resetAutocompleteParams(selectedItem);
 
+      /* Creates a new GUID https://stackoverflow.com/questions/105034/how-to-create-guid-uuid */
+      function uuidv4() {
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+          /[xy]/g,
+          function (c) {
+            var r = (Math.random() * 16) | 0,
+              v = c == "x" ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+          }
+        );
+      }
+
       $(searchField).autocomplete({
         serviceUrl: url,
         params: params,
+        triggerSelectOnValidInput: false,
         onSelect: function (suggestion) {
           selectedItem.insertAdjacentHTML(
             "beforebegin",
             template
               .replace(/{{value}}/g, suggestion.value)
-              .replace(/{{data}}/g, suggestion.data)
+              .replace(
+                /{{data}}/g,
+                suggestion.data.hasOwnProperty("data")
+                  ? suggestion.data.data
+                  : suggestion.data
+              )
+              .replace(
+                /{{create}}/g,
+                suggestion.data.hasOwnProperty("create")
+                  ? suggestion.data.create
+                    ? "Yes"
+                    : "No"
+                  : ""
+              )
           );
 
           /* Create an alert for assistive technology */
+          const itemType = thisEditor.getAttribute("data-related-item")
+            ? thisEditor.getAttribute("data-related-item")
+            : "item";
+
           var alert = document.createElement("div");
           alert.setAttribute("role", "alert");
           alert.setAttribute("class", "sr-only");
           alert.appendChild(
             document.createTextNode("Added " + suggestion.value)
           );
+          if (suggestion.data && suggestion.data.create) {
+            alert.appendChild(
+              document.createTextNode(
+                "This new " + itemType + " will be created."
+              )
+            );
+          }
           document.body.appendChild(alert);
 
           resetIndexes(selectedItem);
@@ -134,6 +170,37 @@
 
           /* Clear the search field */
           this.value = "";
+        },
+        groupBy: thisEditor.classList.contains("related-items__create")
+          ? "category"
+          : null,
+        transformResult: function (response, originalQuery) {
+          response = JSON.parse(response);
+          if (thisEditor.classList.contains("related-items__create")) {
+            const itemType = thisEditor.getAttribute("data-related-item")
+              ? thisEditor.getAttribute("data-related-item")
+              : "item";
+            response.suggestions = response.suggestions.map(function (x) {
+              return {
+                value: x.value,
+                data: {
+                  create: false,
+                  category: "Pick a current " + itemType,
+                  data: x.data,
+                },
+              };
+            });
+            console.log(response);
+            response.suggestions.push({
+              value: originalQuery,
+              data: {
+                create: true,
+                category: "Add a new " + itemType,
+                data: uuidv4(),
+              },
+            });
+          }
+          return response;
         },
       });
     }

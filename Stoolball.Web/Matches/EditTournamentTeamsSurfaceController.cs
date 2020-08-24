@@ -55,12 +55,16 @@ namespace Stoolball.Web.Matches
             model.Tournament.TournamentName = beforeUpdate.TournamentName;
             model.Tournament.StartTime = beforeUpdate.StartTime;
 
+            // Populate properties that will be inherited by any new transient teams
+            model.Tournament.TournamentLocation = beforeUpdate.TournamentLocation;
+            model.Tournament.PlayerType = beforeUpdate.PlayerType;
+
             model.IsAuthorized = IsAuthorized(beforeUpdate);
 
             if (model.IsAuthorized && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
-                await _tournamentRepository.UpdateTeams(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _tournamentRepository.UpdateTeams(model.Tournament, currentMember.Key, Members.CurrentUserName, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the tournament
                 return Redirect(model.Tournament.TournamentRoute);
