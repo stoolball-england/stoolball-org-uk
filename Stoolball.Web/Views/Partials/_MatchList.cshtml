@@ -19,7 +19,7 @@
                 }
 
                 var fullstop = false;
-                var tournamentDetail = new StringBuilder(Model.DateTimeFormatter.FormatDateTime(match.StartTime.LocalDateTime));
+                var tournamentDetail = new StringBuilder(match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(match.StartTime.LocalDateTime) : Model.DateTimeFormatter.FormatDate(match.StartTime.LocalDateTime));
                 if (match.TournamentQualificationType == TournamentQualificationType.OpenTournament)
                 {
                     tournamentDetail.Append(". ");
