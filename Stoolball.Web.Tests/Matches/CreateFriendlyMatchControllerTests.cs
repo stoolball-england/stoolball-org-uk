@@ -39,7 +39,7 @@ namespace Stoolball.Web.Tests.Matches
                 Mock.Of<IEditMatchHelper>())
             {
                 var request = new Mock<HttpRequestBase>();
-                request.SetupGet(x => x.Url).Returns(requestUrl);
+                request.SetupGet(x => x.RawUrl).Returns(requestUrl.AbsolutePath);
 
                 var context = new Mock<HttpContextBase>();
                 context.SetupGet(x => x.Request).Returns(request.Object);
