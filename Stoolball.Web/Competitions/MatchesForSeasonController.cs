@@ -1,4 +1,5 @@
-﻿using Stoolball.Dates;
+﻿using Stoolball.Competitions;
+using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
@@ -15,7 +16,6 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
@@ -23,6 +23,7 @@ namespace Stoolball.Web.Competitions
     {
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
+        private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
 
         public MatchesForSeasonController(IGlobalSettings globalSettings,
@@ -33,11 +34,13 @@ namespace Stoolball.Web.Competitions
            UmbracoHelper umbracoHelper,
            ISeasonDataSource seasonDataSource,
            IMatchListingDataSource matchDataSource,
+           IAuthorizationPolicy<Competition> authorizationPolicy,
            IDateTimeFormatter dateFormatter)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
         }
 
@@ -75,21 +78,12 @@ namespace Stoolball.Web.Competitions
                     model.Matches.MatchTypesToLabel.Add(MatchType.FriendlyMatch);
                 }
 
-                model.IsAuthorized = IsAuthorized(model);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Season.Competition, Members);
 
                 model.Metadata.PageTitle = $"Matches for {model.Season.SeasonFullNameAndPlayerType()}";
 
                 return CurrentTemplate(model);
             }
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this competition
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(SeasonViewModel model)
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, model?.Season.Competition.MemberGroupName }, null);
         }
     }
 }

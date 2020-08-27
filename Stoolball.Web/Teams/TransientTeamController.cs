@@ -1,5 +1,6 @@
 ﻿using Stoolball.Dates;
 using Stoolball.Email;
+using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Matches;
@@ -16,7 +17,6 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Teams
 {
@@ -24,6 +24,7 @@ namespace Stoolball.Web.Teams
     {
         private readonly ITeamDataSource _teamDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
+        private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly IEmailProtector _emailProtector;
 
@@ -35,14 +36,16 @@ namespace Stoolball.Web.Teams
            UmbracoHelper umbracoHelper,
            ITeamDataSource teamDataSource,
            IMatchListingDataSource matchDataSource,
+           IAuthorizationPolicy<Team> authorizationPolicy,
            IDateTimeFormatter dateFormatter,
            IEmailProtector emailProtector)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _teamDataSource = teamDataSource ?? throw new System.ArgumentNullException(nameof(teamDataSource));
-            _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
-            _dateFormatter = dateFormatter ?? throw new System.ArgumentNullException(nameof(dateFormatter));
-            _emailProtector = emailProtector ?? throw new System.ArgumentNullException(nameof(emailProtector));
+            _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
+            _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
+            _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
+            _emailProtector = emailProtector ?? throw new ArgumentNullException(nameof(emailProtector));
         }
 
         [HttpGet]
@@ -51,7 +54,7 @@ namespace Stoolball.Web.Teams
         {
             if (contentModel is null)
             {
-                throw new System.ArgumentNullException(nameof(contentModel));
+                throw new ArgumentNullException(nameof(contentModel));
             }
 
             var model = new TeamViewModel(contentModel.Content)
@@ -65,7 +68,7 @@ namespace Stoolball.Web.Teams
             }
             else
             {
-                model.IsAuthorized = IsAuthorized(model);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team, Members);
 
                 model.Matches = new MatchListingViewModel
                 {
@@ -85,15 +88,6 @@ namespace Stoolball.Web.Teams
             model.Team.PublicContactDetails = _emailProtector.ProtectEmailAddresses(model.Team.PublicContactDetails, User.Identity.IsAuthenticated);
 
             return CurrentTemplate(model);
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this team
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(TeamViewModel model)
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, model?.Team.MemberGroupName }, null);
         }
     }
 }

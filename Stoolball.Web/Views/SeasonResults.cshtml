@@ -4,6 +4,7 @@
 @using Stoolball.Competitions
 @using Stoolball.Matches
 @using Stoolball.Web.Matches
+@using Stoolball.Web.Security 
 @{
     var the = Model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase);
     var h1 = $"Results for {(the ? string.Empty : "the ")}{Model.Season.SeasonFullNameAndPlayerType()}";
@@ -27,7 +28,7 @@
     <li class="nav-item">
         <em class="nav-link active">Results</em>
     </li>
-    @if (Model.IsAuthorized)
+    @if (Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
     {
         <li class="nav-item">
             <a class="nav-link" href="@Model.Season.SeasonRoute/edit">Edit</a>

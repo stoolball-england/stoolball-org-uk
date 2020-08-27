@@ -1,4 +1,5 @@
-﻿using Stoolball.Umbraco.Data.Clubs;
+﻿using Stoolball.Clubs;
+using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using System.Threading.Tasks;
@@ -9,13 +10,13 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Clubs
 {
     public class ClubActionsController : RenderMvcControllerAsync
     {
         private readonly IClubDataSource _clubDataSource;
+        private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
 
         public ClubActionsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -23,10 +24,12 @@ namespace Stoolball.Web.Clubs
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           IClubDataSource clubDataSource)
+           IClubDataSource clubDataSource,
+           IAuthorizationPolicy<Club> authorizationPolicy)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _clubDataSource = clubDataSource ?? throw new System.ArgumentNullException(nameof(clubDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpGet]
@@ -49,23 +52,12 @@ namespace Stoolball.Web.Clubs
             }
             else
             {
-                model.IsAuthorized = IsAuthorized(model);
-                model.IsAdministrator = IsAdministrator();
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Club, Members);
 
                 model.Metadata.PageTitle = "Edit " + model.Club.ClubName;
 
                 return CurrentTemplate(model);
             }
-        }
-
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this club
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(ClubViewModel model)
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, model?.Club.MemberGroupName }, null);
         }
     }
 }

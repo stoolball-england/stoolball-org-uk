@@ -1,4 +1,5 @@
-﻿using Stoolball.Security;
+﻿using Stoolball.MatchLocations;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Security;
@@ -12,7 +13,6 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.MatchLocations
 {
@@ -21,15 +21,18 @@ namespace Stoolball.Web.MatchLocations
         private readonly IMatchLocationDataSource _matchLocationDataSource;
         private readonly IMatchLocationRepository _matchLocationRepository;
         private readonly IMatchListingDataSource _matchDataSource;
+        private readonly IAuthorizationPolicy<MatchLocation> _authorizationPolicy;
 
         public DeleteMatchLocationSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory,
             ServiceContext serviceContext, AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper,
-            IMatchLocationDataSource matchLocationDataSource, IMatchLocationRepository matchLocationRepository, IMatchListingDataSource matchDataSource)
+            IMatchLocationDataSource matchLocationDataSource, IMatchLocationRepository matchLocationRepository, IMatchListingDataSource matchDataSource,
+           IAuthorizationPolicy<MatchLocation> authorizationPolicy)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _matchLocationDataSource = matchLocationDataSource ?? throw new System.ArgumentNullException(nameof(matchLocationDataSource));
             _matchLocationRepository = matchLocationRepository ?? throw new System.ArgumentNullException(nameof(matchLocationRepository));
             _matchDataSource = matchDataSource;
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpPost]
@@ -46,11 +49,10 @@ namespace Stoolball.Web.MatchLocations
             var viewModel = new DeleteMatchLocationViewModel(CurrentPage)
             {
                 MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl, true).ConfigureAwait(false),
-                IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null)
             };
+            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.MatchLocation, Members);
 
-
-            if (viewModel.IsAuthorized && ModelState.IsValid)
+            if (viewModel.IsAuthorized[AuthorizedAction.DeleteMatchLocation] && ModelState.IsValid)
             {
                 Services.MemberGroupService.Delete(Services.MemberGroupService.GetById(viewModel.MatchLocation.MemberGroupId));
 

@@ -10,7 +10,6 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
@@ -18,14 +17,16 @@ namespace Stoolball.Web.Competitions
     {
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly ISeasonRepository _seasonRepository;
+        private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
 
         public EditSeasonTeamsSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ISeasonDataSource seasonDataSource,
-            ISeasonRepository seasonRepository)
+            ISeasonRepository seasonRepository, IAuthorizationPolicy<Competition> authorizationPolicy)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
-            _seasonRepository = seasonRepository ?? throw new System.ArgumentNullException(nameof(seasonRepository));
+            _seasonRepository = seasonRepository ?? throw new ArgumentNullException(nameof(seasonRepository));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpPost]
@@ -42,9 +43,9 @@ namespace Stoolball.Web.Competitions
             var beforeUpdate = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl).ConfigureAwait(false);
             season.SeasonId = beforeUpdate.SeasonId;
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, beforeUpdate.Competition.MemberGroupName }, null);
+            var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate.Competition, Members);
 
-            if (isAuthorized && ModelState.IsValid)
+            if (isAuthorized[AuthorizedAction.EditCompetition] && ModelState.IsValid)
             {
                 // Update the season
                 var currentMember = Members.GetCurrentMember();
@@ -57,8 +58,8 @@ namespace Stoolball.Web.Competitions
             var viewModel = new SeasonViewModel(CurrentPage)
             {
                 Season = season,
-                IsAuthorized = isAuthorized
             };
+            viewModel.IsAuthorized = isAuthorized;
             season.Competition = beforeUpdate.Competition;
             season.FromYear = beforeUpdate.FromYear;
             season.UntilYear = beforeUpdate.UntilYear;

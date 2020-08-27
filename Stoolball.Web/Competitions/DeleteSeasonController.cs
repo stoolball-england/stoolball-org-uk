@@ -1,4 +1,5 @@
-﻿using Stoolball.Umbraco.Data.Competitions;
+﻿using Stoolball.Competitions;
+using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -12,7 +13,6 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
@@ -20,6 +20,7 @@ namespace Stoolball.Web.Competitions
     {
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
+        private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
 
         public DeleteSeasonController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -28,11 +29,13 @@ namespace Stoolball.Web.Competitions
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            ISeasonDataSource seasonDataSource,
-           IMatchListingDataSource matchDataSource)
+           IMatchListingDataSource matchDataSource,
+           IAuthorizationPolicy<Competition> authorizationPolicy)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _seasonDataSource = seasonDataSource ?? throw new System.ArgumentNullException(nameof(seasonDataSource));
-            _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
+            _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
+            _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpGet]
@@ -41,7 +44,7 @@ namespace Stoolball.Web.Competitions
         {
             if (contentModel is null)
             {
-                throw new System.ArgumentNullException(nameof(contentModel));
+                throw new ArgumentNullException(nameof(contentModel));
             }
 
             var model = new DeleteSeasonViewModel(contentModel.Content)
@@ -63,21 +66,12 @@ namespace Stoolball.Web.Competitions
 
                 model.ConfirmDeleteRequest.RequiredText = model.Season.SeasonFullName();
 
-                model.IsAuthorized = IsAuthorized(model);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Season.Competition, Members);
 
                 model.Metadata.PageTitle = "Delete " + model.Season.SeasonFullNameAndPlayerType();
 
                 return CurrentTemplate(model);
             }
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to delete this competition
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(DeleteSeasonViewModel model)
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null);
         }
     }
 }

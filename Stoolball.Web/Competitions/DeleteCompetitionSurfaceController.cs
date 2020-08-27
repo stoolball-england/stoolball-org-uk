@@ -1,4 +1,5 @@
-﻿using Stoolball.Security;
+﻿using Stoolball.Competitions;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
@@ -13,7 +14,6 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
@@ -23,16 +23,18 @@ namespace Stoolball.Web.Competitions
         private readonly ICompetitionRepository _competitionRepository;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly ITeamDataSource _teamDataSource;
+        private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
 
         public DeleteCompetitionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ICompetitionDataSource competitionDataSource, ICompetitionRepository competitionRepository,
-            IMatchListingDataSource matchDataSource, ITeamDataSource teamDataSource)
+            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ICompetitionDataSource competitionDataSource,
+            ICompetitionRepository competitionRepository, IMatchListingDataSource matchDataSource, ITeamDataSource teamDataSource, IAuthorizationPolicy<Competition> authorizationPolicy)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
-            _competitionDataSource = competitionDataSource;
-            _competitionRepository = competitionRepository ?? throw new System.ArgumentNullException(nameof(competitionRepository));
+            _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
+            _competitionRepository = competitionRepository ?? throw new ArgumentNullException(nameof(competitionRepository));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpPost]
@@ -49,11 +51,10 @@ namespace Stoolball.Web.Competitions
             var viewModel = new DeleteCompetitionViewModel(CurrentPage)
             {
                 Competition = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false),
-                IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null)
             };
+            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Competition, Members);
 
-
-            if (viewModel.IsAuthorized && ModelState.IsValid)
+            if (viewModel.IsAuthorized[AuthorizedAction.DeleteCompetition] && ModelState.IsValid)
             {
                 Services.MemberGroupService.Delete(Services.MemberGroupService.GetById(viewModel.Competition.MemberGroupId));
 

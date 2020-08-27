@@ -1,4 +1,5 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Clubs.ClubViewModel>
+@using Stoolball.Web.Security
 
 <h1>@Model.Club.ClubName</h1>
 
@@ -9,7 +10,7 @@
     <li class="nav-item">
         <a class="nav-link" href="@Model.Club.ClubRoute/matches">Matches</a>
     </li>
-    @if (Model.IsAuthorized)
+    @if (Model.IsAuthorized[AuthorizedAction.EditClub] || Model.IsAuthorized[AuthorizedAction.DeleteClub])
     {
     <li class="nav-item">
         <a class="nav-link" href="@Model.Club.ClubRoute/edit">Edit</a>

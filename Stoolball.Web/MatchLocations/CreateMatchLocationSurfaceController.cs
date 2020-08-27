@@ -18,13 +18,16 @@ namespace Stoolball.Web.MatchLocations
     public class CreateMatchLocationSurfaceController : SurfaceController
     {
         private readonly IMatchLocationRepository _matchLocationRepository;
+        private readonly IAuthorizationPolicy<MatchLocation> _authorizationPolicy;
         private readonly IRouteGenerator _routeGenerator;
 
         public CreateMatchLocationSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchLocationRepository matchLocationRepository, IRouteGenerator routeGenerator)
+            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchLocationRepository matchLocationRepository,
+           IAuthorizationPolicy<MatchLocation> authorizationPolicy, IRouteGenerator routeGenerator)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _matchLocationRepository = matchLocationRepository ?? throw new System.ArgumentNullException(nameof(matchLocationRepository));
+            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
             _routeGenerator = routeGenerator ?? throw new System.ArgumentNullException(nameof(routeGenerator));
         }
 
@@ -42,9 +45,9 @@ namespace Stoolball.Web.MatchLocations
             // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
             location.MatchLocationNotes = Request.Unvalidated.Form["MatchLocation.MatchLocationNotes"];
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.AllMembers }, null);
+            var isAuthorized = _authorizationPolicy.IsAuthorized(location, Members);
 
-            if (isAuthorized && ModelState.IsValid)
+            if (isAuthorized[AuthorizedAction.CreateMatchLocation] && ModelState.IsValid)
             {
                 // Create an owner group
                 var groupName = _routeGenerator.GenerateRoute("location", location.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute);
@@ -87,8 +90,8 @@ namespace Stoolball.Web.MatchLocations
             var viewModel = new MatchLocationViewModel(CurrentPage)
             {
                 MatchLocation = location,
-                IsAuthorized = isAuthorized
             };
+            viewModel.IsAuthorized = isAuthorized;
             viewModel.Metadata.PageTitle = $"Add a ground or sports centre";
             return View("CreateMatchLocation", viewModel);
         }

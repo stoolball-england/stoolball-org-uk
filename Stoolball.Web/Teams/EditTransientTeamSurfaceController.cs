@@ -15,7 +15,6 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Teams
 {
@@ -24,17 +23,19 @@ namespace Stoolball.Web.Teams
         private readonly ITeamDataSource _teamDataSource;
         private readonly ITeamRepository _teamRepository;
         private readonly IMatchListingDataSource _matchDataSource;
+        private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
 
         public EditTransientTeamSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITeamDataSource teamDataSource, ITeamRepository teamRepository,
-            IMatchListingDataSource matchDataSource, IDateTimeFormatter dateFormatter)
+            IMatchListingDataSource matchDataSource, IAuthorizationPolicy<Team> authorizationPolicy, IDateTimeFormatter dateFormatter)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource;
-            _teamRepository = teamRepository ?? throw new System.ArgumentNullException(nameof(teamRepository));
-            _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
-            _dateFormatter = dateFormatter ?? throw new System.ArgumentNullException(nameof(dateFormatter));
+            _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
+            _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
+            _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
         }
 
         [HttpPost]
@@ -45,7 +46,7 @@ namespace Stoolball.Web.Teams
         {
             if (team is null)
             {
-                throw new System.ArgumentNullException(nameof(team));
+                throw new ArgumentNullException(nameof(team));
             }
 
             var beforeUpdate = await _teamDataSource.ReadTeamByRoute(Request.RawUrl).ConfigureAwait(false);
@@ -58,9 +59,9 @@ namespace Stoolball.Web.Teams
             team.PublicContactDetails = Request.Unvalidated.Form["Team.PublicContactDetails"];
             team.PrivateContactDetails = Request.Unvalidated.Form["Team.PrivateContactDetails"];
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, beforeUpdate.MemberGroupName }, null);
+            var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate, Members);
 
-            if (isAuthorized && ModelState.IsValid)
+            if (isAuthorized[AuthorizedAction.EditTeam] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
                 await _teamRepository.UpdateTransientTeam(team, currentMember.Key, currentMember.Name).ConfigureAwait(false);
@@ -72,8 +73,8 @@ namespace Stoolball.Web.Teams
             var viewModel = new TeamViewModel(CurrentPage)
             {
                 Team = team,
-                IsAuthorized = isAuthorized
             };
+            viewModel.IsAuthorized = isAuthorized;
 
             viewModel.Matches = new MatchListingViewModel
             {

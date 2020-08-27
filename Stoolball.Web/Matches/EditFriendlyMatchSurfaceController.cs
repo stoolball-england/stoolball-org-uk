@@ -67,9 +67,9 @@ namespace Stoolball.Web.Matches
 
             _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form);
 
-            model.IsAuthorized = IsAuthorized(beforeUpdate);
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate, Members);
 
-            if (model.IsAuthorized && ModelState.IsValid)
+            if (model.IsAuthorized[AuthorizedAction.EditMatch] && ModelState.IsValid)
             {
                 if ((int)model.Match.MatchResultType == -1) { model.Match.MatchResultType = null; }
 
@@ -84,11 +84,6 @@ namespace Stoolball.Web.Matches
             model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
             return View("EditFriendlyMatch", model);
-        }
-
-        protected virtual bool IsAuthorized(Match match)
-        {
-            return _authorizationPolicy.CanEdit(match, Members);
         }
     }
 }

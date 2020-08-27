@@ -2,6 +2,7 @@
 @using ClientDependency.Core.Mvc
 @using Stoolball.Matches
 @using Stoolball.Web.Competitions
+@using Stoolball.Web.Security
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -38,7 +39,7 @@
     </li>
 </ul>
 
-@if (Model.IsAuthorized)
+@if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
 {
     using (Html.BeginUmbracoForm<EditSeasonSurfaceController>
         ("UpdateSeason"))

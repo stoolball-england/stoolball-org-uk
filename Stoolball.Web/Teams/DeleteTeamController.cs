@@ -13,7 +13,6 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Teams
 {
@@ -22,6 +21,7 @@ namespace Stoolball.Web.Teams
         private readonly ITeamDataSource _teamDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IPlayerDataSource _playerDataSource;
+        private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
 
         public DeleteTeamController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -31,12 +31,14 @@ namespace Stoolball.Web.Teams
            UmbracoHelper umbracoHelper,
            ITeamDataSource teamDataSource,
            IMatchListingDataSource matchDataSource,
-           IPlayerDataSource playerDataSource)
+           IPlayerDataSource playerDataSource,
+           IAuthorizationPolicy<Team> authorizationPolicy)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _teamDataSource = teamDataSource ?? throw new System.ArgumentNullException(nameof(teamDataSource));
-            _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
+            _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
+            _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpGet]
@@ -45,7 +47,7 @@ namespace Stoolball.Web.Teams
         {
             if (contentModel is null)
             {
-                throw new System.ArgumentNullException(nameof(contentModel));
+                throw new ArgumentNullException(nameof(contentModel));
             }
 
             var model = new DeleteTeamViewModel(contentModel.Content)
@@ -73,21 +75,12 @@ namespace Stoolball.Web.Teams
 
                 model.ConfirmDeleteRequest.RequiredText = model.Team.TeamName;
 
-                model.IsAuthorized = IsAuthorized(model);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team, Members);
 
                 model.Metadata.PageTitle = "Delete " + model.Team.TeamName;
 
                 return CurrentTemplate(model);
             }
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to delete this team
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(DeleteTeamViewModel model)
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Stoolball.Metadata;
 using Stoolball.Web.Metadata;
+using Stoolball.Web.Security;
 using System;
 using System.Collections.Generic;
 using Umbraco.Core.Models.PublishedContent;
@@ -32,8 +33,7 @@ namespace Stoolball.Web.Routing
         public ViewMetadata Metadata { get; } = new ViewMetadata();
         public IPublishedContent HeaderPhoto => _contentModel.Value<IPublishedContent>("headerPhoto");
 
-        public bool IsAuthorized { get; set; }
-        public bool IsAdministrator { get; set; }
+        public Dictionary<AuthorizedAction, bool> IsAuthorized { get; internal set; } = new Dictionary<AuthorizedAction, bool>();
 
         #region Implement IPublishedContent
         public int Id => _contentModel.Id;

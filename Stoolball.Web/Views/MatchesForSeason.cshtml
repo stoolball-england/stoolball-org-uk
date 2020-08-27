@@ -1,5 +1,6 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.SeasonViewModel>
 @using Stoolball.Matches
+@using Stoolball.Web.Security
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -22,7 +23,7 @@
             <a class="nav-link" href="@Model.Season.SeasonRoute/results">Results</a>
         </li>
     }
-    @if (Model.IsAuthorized)
+    @if (Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
     {
         <li class="nav-item">
             <a class="nav-link" href="@Model.Season.SeasonRoute/edit">Edit</a>

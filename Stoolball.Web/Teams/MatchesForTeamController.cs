@@ -18,7 +18,6 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Teams
 {
@@ -29,6 +28,7 @@ namespace Stoolball.Web.Teams
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly ISeasonEstimator _seasonEstimator;
         private readonly ICreateMatchSeasonSelector _createMatchSeasonSelector;
+        private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
 
         public MatchesForTeamController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -40,7 +40,8 @@ namespace Stoolball.Web.Teams
            IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
            ISeasonEstimator seasonEstimator,
-           ICreateMatchSeasonSelector createMatchSeasonSelector)
+           ICreateMatchSeasonSelector createMatchSeasonSelector,
+           IAuthorizationPolicy<Team> authorizationPolicy)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
@@ -48,6 +49,7 @@ namespace Stoolball.Web.Teams
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
             _seasonEstimator = seasonEstimator ?? throw new ArgumentNullException(nameof(seasonEstimator));
             _createMatchSeasonSelector = createMatchSeasonSelector ?? throw new ArgumentNullException(nameof(createMatchSeasonSelector));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpGet]
@@ -81,7 +83,7 @@ namespace Stoolball.Web.Teams
                     },
                 };
 
-                model.IsAuthorized = IsAuthorized(model);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team, Members);
                 model.IsInACurrentLeague = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, MatchType.LeagueMatch).Any();
                 model.IsInACurrentKnockoutCompetition = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, MatchType.KnockoutMatch).Any();
 
@@ -89,15 +91,6 @@ namespace Stoolball.Web.Teams
 
                 return CurrentTemplate(model);
             }
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this team
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(TeamViewModel model)
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, model?.Team.MemberGroupName }, null);
         }
     }
 }

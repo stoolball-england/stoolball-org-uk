@@ -19,13 +19,16 @@ namespace Stoolball.Web.Clubs
     {
         private readonly IClubRepository _clubRepository;
         private readonly IRouteGenerator _routeGenerator;
+        private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
 
         public CreateClubSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IClubRepository clubRepository, IRouteGenerator routeGenerator)
+            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IClubRepository clubRepository, IRouteGenerator routeGenerator,
+            IAuthorizationPolicy<Club> authorizationPolicy)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _clubRepository = clubRepository ?? throw new System.ArgumentNullException(nameof(clubRepository));
             _routeGenerator = routeGenerator ?? throw new System.ArgumentNullException(nameof(routeGenerator));
+            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpPost]
@@ -39,9 +42,9 @@ namespace Stoolball.Web.Clubs
                 throw new System.ArgumentNullException(nameof(club));
             }
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.AllMembers }, null);
+            var isAuthorized = _authorizationPolicy.IsAuthorized(club, Members);
 
-            if (isAuthorized && ModelState.IsValid)
+            if (isAuthorized[AuthorizedAction.CreateClub] && ModelState.IsValid)
             {
                 // Create an owner group
                 var groupName = _routeGenerator.GenerateRoute("club", club.ClubName, NoiseWords.ClubRoute);
@@ -84,8 +87,8 @@ namespace Stoolball.Web.Clubs
             var viewModel = new ClubViewModel(CurrentPage)
             {
                 Club = club,
-                IsAuthorized = isAuthorized
             };
+            viewModel.IsAuthorized = isAuthorized;
             viewModel.Metadata.PageTitle = $"Add a club";
             return View("CreateClub", viewModel);
         }

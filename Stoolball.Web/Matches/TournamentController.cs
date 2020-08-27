@@ -64,7 +64,7 @@ namespace Stoolball.Web.Matches
             }
             else
             {
-                model.IsAuthorized = IsAuthorized(model.Tournament);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament, Members);
 
                 model.Matches = new MatchListingViewModel
                 {
@@ -85,15 +85,6 @@ namespace Stoolball.Web.Matches
 
                 return CurrentTemplate(model);
             }
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to delete this tournament
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(Tournament tournament)
-        {
-            return _authorizationPolicy.CanDelete(tournament, Members);
         }
     }
 }

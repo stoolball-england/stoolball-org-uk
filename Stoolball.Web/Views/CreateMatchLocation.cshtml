@@ -1,6 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<MatchLocationViewModel>
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.MatchLocations
+@using Stoolball.Web.Security
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -29,7 +30,7 @@
     </li>
 </ul>
 
-@if (Model.IsAuthorized)
+@if (Model.IsAuthorized[AuthorizedAction.CreateMatchLocation])
 {
     using (Html.BeginUmbracoForm<CreateMatchLocationSurfaceController>
         ("CreateMatchLocation"))

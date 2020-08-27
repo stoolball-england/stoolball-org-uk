@@ -21,16 +21,21 @@ namespace Stoolball.Web.Tests.Matches
 {
     public class EditTournamentTeamsControllerTests : UmbracoBaseTest
     {
+        public EditTournamentTeamsControllerTests()
+        {
+            Setup();
+        }
+
         private class TestController : EditTournamentTeamsController
         {
-            public TestController(ITournamentDataSource tournamentDataSource, Uri requestUrl)
+            public TestController(ITournamentDataSource tournamentDataSource, Uri requestUrl, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null,
+                umbracoHelper,
                 tournamentDataSource,
                 Mock.Of<IAuthorizationPolicy<Tournament>>(),
                 Mock.Of<IDateTimeFormatter>())
@@ -47,11 +52,6 @@ namespace Stoolball.Web.Tests.Matches
                 ControllerContext = controllerContext.Object;
             }
 
-            protected override bool IsAuthorized(Tournament tournament)
-            {
-                return true;
-            }
-
             protected override ActionResult CurrentTemplate<T>(T model)
             {
                 return View("EditTournament", model);
@@ -64,7 +64,7 @@ namespace Stoolball.Web.Tests.Matches
             var tournamentDataSource = new Mock<ITournamentDataSource>();
             tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).Returns(Task.FromResult<Tournament>(null));
 
-            using (var controller = new TestController(tournamentDataSource.Object, new Uri("https://example.org/not-a-match")))
+            using (var controller = new TestController(tournamentDataSource.Object, new Uri("https://example.org/not-a-match"), UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -79,7 +79,7 @@ namespace Stoolball.Web.Tests.Matches
             var tournamentDataSource = new Mock<ITournamentDataSource>();
             tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentName = "Example tournament" });
 
-            using (var controller = new TestController(tournamentDataSource.Object, new Uri("https://example.org/tournaments/example-tournament")))
+            using (var controller = new TestController(tournamentDataSource.Object, new Uri("https://example.org/tournaments/example-tournament"), UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

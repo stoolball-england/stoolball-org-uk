@@ -1,6 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<SeasonViewModel>
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Competitions
+@using Stoolball.Web.Security
 @{
     var the = Model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";
 }
@@ -28,7 +29,7 @@
     </li>
 </ul>
 
-@if (Model.IsAuthorized)
+@if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
 {
     using (Html.BeginUmbracoForm<CreateSeasonSurfaceController>
             ("CreateSeason"))

@@ -21,15 +21,16 @@ namespace Stoolball.Web.MatchLocations
         private readonly IMatchLocationDataSource _locationDataSource;
 
         public MatchLocationsApiController(IGlobalSettings globalSettings, IUmbracoContextAccessor umbracoContextAccessor, ISqlContext sqlContext, ServiceContext serviceContext,
-            AppCaches appCaches, IProfilingLogger profilingLogger, IRuntimeState runtimeState, UmbracoHelper umbracoHelper, UmbracoMapper umbracoMapper, IMatchLocationDataSource locationDataSource) :
+            AppCaches appCaches, IProfilingLogger profilingLogger, IRuntimeState runtimeState, UmbracoHelper umbracoHelper, UmbracoMapper umbracoMapper,
+            IMatchLocationDataSource locationDataSource) :
             base(globalSettings, umbracoContextAccessor, sqlContext, serviceContext, appCaches, profilingLogger, runtimeState, umbracoHelper, umbracoMapper)
         {
-            _locationDataSource = locationDataSource;
+            _locationDataSource = locationDataSource ?? throw new ArgumentNullException(nameof(locationDataSource));
         }
 
         [HttpGet]
         [Route("api/locations/autocomplete")]
-        public async Task<AutocompleteResultSet> Autocomplete([FromUri]string query, [FromUri]string[] not)
+        public async Task<AutocompleteResultSet> Autocomplete([FromUri] string query, [FromUri] string[] not)
         {
             if (not is null)
             {

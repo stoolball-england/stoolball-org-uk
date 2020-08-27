@@ -2,6 +2,7 @@
 @using Stoolball.Matches
 @using Humanizer
 @using Innovative.SolarCalculator
+@using Stoolball.Web.Security
 @functions{
     private string ResultDescription()
     {
@@ -31,7 +32,7 @@
     <li class="nav-item">
         <em class="nav-link active">Summary</em>
     </li>
-    @if (Model.IsAuthorized)
+    @if (Model.IsAuthorized[AuthorizedAction.EditMatch] || Model.IsAuthorized[AuthorizedAction.EditMatchResult] || Model.IsAuthorized[AuthorizedAction.DeleteMatch])
     {
         <li class="nav-item">
             <a class="nav-link" href="@Model.Match.MatchRoute/edit">Edit</a>

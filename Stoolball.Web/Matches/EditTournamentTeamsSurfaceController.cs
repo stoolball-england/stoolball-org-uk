@@ -59,9 +59,9 @@ namespace Stoolball.Web.Matches
             model.Tournament.TournamentLocation = beforeUpdate.TournamentLocation;
             model.Tournament.PlayerType = beforeUpdate.PlayerType;
 
-            model.IsAuthorized = IsAuthorized(beforeUpdate);
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate, Members);
 
-            if (model.IsAuthorized && ModelState.IsValid)
+            if (model.IsAuthorized[AuthorizedAction.EditTournament] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
                 await _tournamentRepository.UpdateTeams(model.Tournament, currentMember.Key, Members.CurrentUserName, currentMember.Name).ConfigureAwait(false);
@@ -73,11 +73,6 @@ namespace Stoolball.Web.Matches
             model.Metadata.PageTitle = "Teams in the " + model.Tournament.TournamentFullName(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
             return View("EditTournamentTeams", model);
-        }
-
-        protected virtual bool IsAuthorized(Tournament tournament)
-        {
-            return _authorizationPolicy.CanEdit(tournament, Members);
         }
     }
 }

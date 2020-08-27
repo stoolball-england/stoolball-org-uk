@@ -1,5 +1,6 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ClubViewModel>
 @using Stoolball.Web.Clubs
+@using Stoolball.Web.Security
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -17,17 +18,20 @@
     </li>
 </ul>
 
-@if (Model.IsAuthorized)
+@if (Model.IsAuthorized[AuthorizedAction.EditClub] || Model.IsAuthorized[AuthorizedAction.DeleteClub])
 {
 <dl>
-    <dt><a href="@Model.Club.ClubRoute/edit/club">Edit @Model.Club.ClubName</a></dt>
-    <dd>Add or remove teams in the club and set the ClubMark status.</dd>
-    @if (Model.IsAdministrator)
+    @if (Model.IsAuthorized[AuthorizedAction.EditClub])
+    {
+        <dt><a href="@Model.Club.ClubRoute/edit/club">Edit @Model.Club.ClubName</a></dt>
+        <dd>Add or remove teams in the club and set the ClubMark status.</dd>
+    }
+    @if (Model.IsAuthorized[AuthorizedAction.DeleteClub])
     {
         <dt><a href="@Model.Club.ClubRoute/delete">Delete @Model.Club.ClubName</a> @Html.Partial("_AdminOnly")</dt>
         <dd>Teams in the club will no longer be connected. Combined match lists and statistics will not be available.</dd>
     }
-    </dl>
+</dl>
 }
 else
 {

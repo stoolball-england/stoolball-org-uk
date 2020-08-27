@@ -972,6 +972,7 @@
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerMatchLocationDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerSchoolDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerClubDataMigrator.cs" />
+    <Compile Include="Clubs\ClubAuthorizationPolicy.cs" />
     <Compile Include="Clubs\DeleteClubViewModel.cs" />
     <Compile Include="Clubs\DeleteClubController.cs" />
     <Compile Include="Clubs\CreateClubController.cs" />
@@ -982,6 +983,7 @@
     <Compile Include="Clubs\MatchesForClubController.cs" />
     <Compile Include="Clubs\ClubActionsController.cs" />
     <Compile Include="Competitions\CompetitionActionsController.cs" />
+    <Compile Include="Competitions\CompetitionAuthorizationPolicy.cs" />
     <Compile Include="Competitions\DeleteCompetitionViewModel.cs" />
     <Compile Include="Competitions\DeleteCompetitionController.cs" />
     <Compile Include="Competitions\CompetitionController.cs" />
@@ -1048,7 +1050,9 @@
     <Compile Include="Matches\IEditMatchViewModel.cs" />
     <Compile Include="Matches\TeamComparer.cs" />
     <Compile Include="Matches\TournamentAuthorizationPolicy.cs" />
+    <Compile Include="MatchLocations\MatchLocationAuthorizationPolicy.cs" />
     <Compile Include="Metadata\IHasViewMetadata.cs" />
+    <Compile Include="Security\AuthorizedAction.cs" />
     <Compile Include="Security\IAuthorizationPolicy.cs" />
     <Compile Include="Matches\MatchActionsController.cs" />
     <Compile Include="Matches\MatchAuthorizationPolicy.cs" />
@@ -1077,6 +1081,7 @@
     <Compile Include="Teams\TeamActionsController.cs" />
     <Compile Include="Teams\DeleteTeamController.cs" />
     <Compile Include="Teams\DeleteTeamViewModel.cs" />
+    <Compile Include="Teams\TeamAuthorizationPolicy.cs" />
     <Compile Include="WebApi\AutocompleteResult.cs" />
     <Compile Include="WebApi\AutocompleteResultSet.cs" />
     <Compile Include="WebApi\WebApiComposer.cs" />

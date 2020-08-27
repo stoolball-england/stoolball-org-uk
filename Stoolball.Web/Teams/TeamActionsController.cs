@@ -1,4 +1,5 @@
-﻿using Stoolball.Umbraco.Data.Teams;
+﻿using Stoolball.Teams;
+using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using System.Threading.Tasks;
@@ -9,13 +10,13 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Teams
 {
     public class TeamActionsController : RenderMvcControllerAsync
     {
         private readonly ITeamDataSource _teamDataSource;
+        private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
 
         public TeamActionsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -23,10 +24,12 @@ namespace Stoolball.Web.Teams
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           ITeamDataSource teamDataSource)
+           ITeamDataSource teamDataSource,
+           IAuthorizationPolicy<Team> authorizationPolicy)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource ?? throw new System.ArgumentNullException(nameof(teamDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpGet]
@@ -49,22 +52,12 @@ namespace Stoolball.Web.Teams
             }
             else
             {
-                model.IsAuthorized = IsAuthorized(model);
-                model.IsAdministrator = IsAdministrator();
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team, Members);
 
                 model.Metadata.PageTitle = "Edit " + model.Team.TeamName;
 
                 return CurrentTemplate(model);
             }
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this team
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(TeamViewModel model)
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, model?.Team.MemberGroupName }, null);
         }
     }
 }

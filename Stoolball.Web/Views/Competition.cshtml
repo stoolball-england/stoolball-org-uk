@@ -1,5 +1,5 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.CompetitionViewModel>
-
+@using Stoolball.Web.Security
 <h1>@Model.Competition.CompetitionNameAndPlayerType()</h1>
 
 @if (Model.Competition.UntilYear.HasValue)
@@ -13,7 +13,7 @@
 <li class="nav-item">
     <em class="nav-link active">Summary</em>
 </li>
-@if (Model.IsAuthorized)
+@if (Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
 {
     <li class="nav-item">
         <a class="nav-link" href="@Model.Competition.CompetitionRoute/edit">Edit</a>

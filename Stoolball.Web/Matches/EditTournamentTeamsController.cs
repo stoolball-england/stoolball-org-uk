@@ -58,18 +58,13 @@ namespace Stoolball.Web.Matches
             }
             else
             {
-                model.IsAuthorized = IsAuthorized(model.Tournament);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament, Members);
 
                 model.TournamentDate = model.Tournament.StartTime;
                 model.Metadata.PageTitle = "Edit " + model.Tournament.TournamentFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
                 return CurrentTemplate(model);
             }
-        }
-
-        protected virtual bool IsAuthorized(Tournament tournament)
-        {
-            return _authorizationPolicy.CanEdit(tournament, Members);
         }
     }
 }

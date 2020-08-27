@@ -85,9 +85,9 @@ namespace Stoolball.Web.Matches
                 };
             }
 
-            model.IsAuthorized = IsAuthorized(beforeUpdate);
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate, Members);
 
-            if (model.IsAuthorized && ModelState.IsValid)
+            if (model.IsAuthorized[AuthorizedAction.EditTournament] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
                 await _tournamentRepository.UpdateTournament(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
@@ -99,11 +99,6 @@ namespace Stoolball.Web.Matches
             model.Metadata.PageTitle = "Edit " + model.Tournament.TournamentFullName(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
             return View("EditTournament", model);
-        }
-
-        protected virtual bool IsAuthorized(Tournament tournament)
-        {
-            return _authorizationPolicy.CanEdit(tournament, Members);
         }
     }
 }

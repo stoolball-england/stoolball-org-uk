@@ -1,4 +1,5 @@
-﻿using Stoolball.Security;
+﻿using Stoolball.Clubs;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Web.Security;
 using System.Threading.Tasks;
@@ -9,7 +10,6 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Clubs
 {
@@ -17,13 +17,16 @@ namespace Stoolball.Web.Clubs
     {
         private readonly IClubDataSource _clubDataSource;
         private readonly IClubRepository _clubRepository;
+        private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
 
         public DeleteClubSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IClubDataSource clubDataSource, IClubRepository clubRepository)
+            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IClubDataSource clubDataSource, IClubRepository clubRepository,
+            IAuthorizationPolicy<Club> authorizationPolicy)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
-            _clubDataSource = clubDataSource;
+            _clubDataSource = clubDataSource ?? throw new System.ArgumentNullException(nameof(clubDataSource));
             _clubRepository = clubRepository ?? throw new System.ArgumentNullException(nameof(clubRepository));
+            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpPost]
@@ -40,10 +43,10 @@ namespace Stoolball.Web.Clubs
             var viewModel = new DeleteClubViewModel(CurrentPage)
             {
                 Club = await _clubDataSource.ReadClubByRoute(Request.RawUrl).ConfigureAwait(false),
-                IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null)
             };
+            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Club, Members);
 
-            if (viewModel.IsAuthorized && ModelState.IsValid)
+            if (viewModel.IsAuthorized[AuthorizedAction.DeleteClub] && ModelState.IsValid)
             {
                 Services.MemberGroupService.Delete(Services.MemberGroupService.GetById(viewModel.Club.MemberGroupId));
 

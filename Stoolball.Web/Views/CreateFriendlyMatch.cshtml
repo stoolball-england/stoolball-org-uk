@@ -1,6 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<EditFriendlyMatchViewModel>
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Matches
+@using Stoolball.Web.Security
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -32,7 +33,7 @@
 
 <h1>@h1</h1>
 
-@if (Model.IsAuthorized)
+@if (Model.IsAuthorized[AuthorizedAction.CreateMatch])
 {
     using (Html.BeginUmbracoForm<CreateFriendlyMatchSurfaceController>
         ("CreateMatch"))

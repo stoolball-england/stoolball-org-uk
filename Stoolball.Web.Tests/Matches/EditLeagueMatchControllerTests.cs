@@ -24,16 +24,21 @@ namespace Stoolball.Web.Tests.Matches
 {
     public class EditLeagueMatchControllerTests : UmbracoBaseTest
     {
+        public EditLeagueMatchControllerTests()
+        {
+            Setup();
+        }
+
         private class TestController : EditLeagueMatchController
         {
-            public TestController(IMatchDataSource matchDataSource, ISeasonDataSource seasonDataSource, IEditMatchHelper editMatchHelper, Uri requestUrl)
+            public TestController(IMatchDataSource matchDataSource, ISeasonDataSource seasonDataSource, IEditMatchHelper editMatchHelper, Uri requestUrl, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null,
+                umbracoHelper,
                 matchDataSource,
                 Mock.Of<IAuthorizationPolicy<Stoolball.Matches.Match>>(),
                 Mock.Of<IDateTimeFormatter>(),
@@ -52,11 +57,6 @@ namespace Stoolball.Web.Tests.Matches
                 ControllerContext = controllerContext.Object;
             }
 
-            protected override bool IsAuthorized(Stoolball.Matches.Match match)
-            {
-                return true;
-            }
-
             protected override ActionResult CurrentTemplate<T>(T model)
             {
                 return View("EditLeagueMatch", model);
@@ -73,7 +73,7 @@ namespace Stoolball.Web.Tests.Matches
 
             var helper = new Mock<IEditMatchHelper>();
 
-            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/not-a-match")))
+            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/not-a-match"), UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -92,7 +92,7 @@ namespace Stoolball.Web.Tests.Matches
 
             var helper = new Mock<IEditMatchHelper>();
 
-            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match")))
+            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -111,7 +111,7 @@ namespace Stoolball.Web.Tests.Matches
 
             var helper = new Mock<IEditMatchHelper>();
 
-            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match")))
+            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -131,7 +131,7 @@ namespace Stoolball.Web.Tests.Matches
 
             var helper = new Mock<IEditMatchHelper>();
 
-            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match")))
+            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -151,7 +151,7 @@ namespace Stoolball.Web.Tests.Matches
 
             var helper = new Mock<IEditMatchHelper>();
 
-            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match")))
+            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -172,7 +172,7 @@ namespace Stoolball.Web.Tests.Matches
             var helper = new Mock<IEditMatchHelper>();
             helper.Setup(x => x.PossibleSeasonsAsListItems(It.IsAny<IEnumerable<Season>>())).Returns((IEnumerable<Season> x) => new List<SelectListItem> { new SelectListItem { Value = season.SeasonId.ToString() } });
 
-            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match")))
+            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

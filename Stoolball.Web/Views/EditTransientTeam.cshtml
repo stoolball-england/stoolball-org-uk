@@ -1,6 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<TeamViewModel>
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Teams
+@using Stoolball.Web.Security
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -27,7 +28,7 @@
     </li>
 </ul>
 
-@if (Model.IsAuthorized)
+@if (Model.IsAuthorized[AuthorizedAction.EditTeam])
 {
     using (Html.BeginUmbracoForm<EditTransientTeamSurfaceController>
         ("UpdateTransientTeam"))

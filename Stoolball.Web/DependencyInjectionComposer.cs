@@ -1,8 +1,10 @@
 ﻿using Ganss.XSS;
+using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Matches;
+using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Security;
 using Stoolball.Teams;
@@ -149,8 +151,12 @@ namespace Stoolball.Web
             composition.Register<ITournamentRepository, SqlServerTournamentRepository>(Lifetime.Singleton);
 
             // Security checks
+            composition.Register<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>(Lifetime.Singleton);
+            composition.Register<IAuthorizationPolicy<Competition>, CompetitionAuthorizationPolicy>(Lifetime.Singleton);
+            composition.Register<IAuthorizationPolicy<MatchLocation>, MatchLocationAuthorizationPolicy>(Lifetime.Singleton);
             composition.Register<IAuthorizationPolicy<Match>, MatchAuthorizationPolicy>(Lifetime.Singleton);
             composition.Register<IAuthorizationPolicy<Tournament>, TournamentAuthorizationPolicy>(Lifetime.Singleton);
+            composition.Register<IAuthorizationPolicy<Team>, TeamAuthorizationPolicy>(Lifetime.Singleton);
         }
     }
 }

@@ -6,6 +6,7 @@ using Stoolball.MatchLocations;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.MatchLocations;
+using Stoolball.Web.Security;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,16 +25,25 @@ namespace Stoolball.Web.Tests.MatchLocations
 {
     public class MatchesForMatchLocationControllerTests : UmbracoBaseTest
     {
+        public MatchesForMatchLocationControllerTests()
+        {
+            Setup();
+        }
+
         private class TestController : MatchesForMatchLocationController
         {
-            public TestController(IMatchLocationDataSource matchLocationDataSource, IMatchListingDataSource matchDataSource)
+            public TestController(IMatchLocationDataSource matchLocationDataSource, IMatchListingDataSource matchDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, matchLocationDataSource, matchDataSource, Mock.Of<IDateTimeFormatter>(), Mock.Of<ISeasonEstimator>())
+                umbracoHelper,
+                matchLocationDataSource,
+                matchDataSource,
+                Mock.Of<IAuthorizationPolicy<MatchLocation>>(),
+                Mock.Of<IDateTimeFormatter>(), Mock.Of<ISeasonEstimator>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -42,11 +52,6 @@ namespace Stoolball.Web.Tests.MatchLocations
                 context.SetupGet(x => x.Request).Returns(request.Object);
 
                 ControllerContext = new ControllerContext(context.Object, new RouteData(), this);
-            }
-
-            protected override bool IsAuthorized(MatchLocationViewModel model)
-            {
-                return true;
             }
 
             protected override ActionResult CurrentTemplate<T>(T model)
@@ -64,7 +69,7 @@ namespace Stoolball.Web.Tests.MatchLocations
             var matchesDataSource = new Mock<IMatchListingDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
 
-            using (var controller = new TestController(locationDataSource.Object, matchesDataSource.Object))
+            using (var controller = new TestController(locationDataSource.Object, matchesDataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -81,7 +86,7 @@ namespace Stoolball.Web.Tests.MatchLocations
             var matchesDataSource = new Mock<IMatchListingDataSource>();
             matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
 
-            using (var controller = new TestController(locationDataSource.Object, matchesDataSource.Object))
+            using (var controller = new TestController(locationDataSource.Object, matchesDataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

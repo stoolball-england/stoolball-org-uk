@@ -2,7 +2,7 @@
 @using System.Linq
 @using Stoolball.Matches
 @using Stoolball.Web.Competitions
-
+@using Stoolball.Web.Security
 <h1>@Model.Season.SeasonFullNameAndPlayerType()</h1>
 
 @if (Model.Season.Competition.UntilYear.HasValue)
@@ -28,7 +28,7 @@
             <a class="nav-link" href="@Model.Season.SeasonRoute/results">Results</a>
         </li>
     }
-    @if (Model.IsAuthorized)
+    @if (Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
     {
         <li class="nav-item">
             <a class="nav-link" href="@Model.Season.SeasonRoute/edit">Edit</a>

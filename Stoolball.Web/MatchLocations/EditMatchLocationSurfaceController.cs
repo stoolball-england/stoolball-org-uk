@@ -9,7 +9,6 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.MatchLocations
 {
@@ -17,13 +16,16 @@ namespace Stoolball.Web.MatchLocations
     {
         private readonly IMatchLocationDataSource _matchLocationDataSource;
         private readonly IMatchLocationRepository _matchLocationRepository;
+        private readonly IAuthorizationPolicy<MatchLocation> _authorizationPolicy;
 
         public EditMatchLocationSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchLocationDataSource matchLocationDataSource, IMatchLocationRepository matchLocationRepository)
+            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchLocationDataSource matchLocationDataSource,
+            IMatchLocationRepository matchLocationRepository, IAuthorizationPolicy<MatchLocation> authorizationPolicy)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
-            _matchLocationDataSource = matchLocationDataSource;
+            _matchLocationDataSource = matchLocationDataSource ?? throw new System.ArgumentNullException(nameof(matchLocationDataSource));
             _matchLocationRepository = matchLocationRepository ?? throw new System.ArgumentNullException(nameof(matchLocationRepository));
+            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpPost]
@@ -44,9 +46,9 @@ namespace Stoolball.Web.MatchLocations
             // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
             location.MatchLocationNotes = Request.Unvalidated.Form["MatchLocation.MatchLocationNotes"];
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, beforeUpdate.MemberGroupName }, null);
+            var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate, Members);
 
-            if (isAuthorized && ModelState.IsValid)
+            if (isAuthorized[AuthorizedAction.EditMatchLocation] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
                 await _matchLocationRepository.UpdateMatchLocation(location, currentMember.Key, currentMember.Name).ConfigureAwait(false);
@@ -59,8 +61,8 @@ namespace Stoolball.Web.MatchLocations
                 MatchLocationViewModel(CurrentPage)
             {
                 MatchLocation = location,
-                IsAuthorized = isAuthorized
             };
+            viewModel.IsAuthorized = isAuthorized;
             viewModel.Metadata.PageTitle = $"Edit {location.NameAndLocalityOrTown()}";
             return View("EditMatchLocation", viewModel);
         }

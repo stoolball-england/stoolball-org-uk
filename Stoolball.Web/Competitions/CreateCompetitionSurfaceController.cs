@@ -18,13 +18,16 @@ namespace Stoolball.Web.Competitions
     public class CreateCompetitionSurfaceController : SurfaceController
     {
         private readonly ICompetitionRepository _competitionRepository;
+        private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
         private readonly IRouteGenerator _routeGenerator;
 
         public CreateCompetitionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ICompetitionRepository seasonRepository, IRouteGenerator routeGenerator)
+            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ICompetitionRepository seasonRepository,
+            IAuthorizationPolicy<Competition> authorizationPolicy, IRouteGenerator routeGenerator)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _competitionRepository = seasonRepository ?? throw new System.ArgumentNullException(nameof(seasonRepository));
+            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
             _routeGenerator = routeGenerator ?? throw new System.ArgumentNullException(nameof(routeGenerator));
         }
 
@@ -44,9 +47,9 @@ namespace Stoolball.Web.Competitions
             competition.PublicContactDetails = Request.Unvalidated.Form["Competition.PublicContactDetails"];
             competition.PrivateContactDetails = Request.Unvalidated.Form["Competition.PrivateContactDetails"];
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.AllMembers }, null);
+            var isAuthorized = _authorizationPolicy.IsAuthorized(competition, Members);
 
-            if (isAuthorized && ModelState.IsValid)
+            if (isAuthorized[AuthorizedAction.CreateCompetition] && ModelState.IsValid)
             {
                 // Create an owner group
                 var groupName = _routeGenerator.GenerateRoute("competition", competition.CompetitionName, NoiseWords.CompetitionRoute);
@@ -89,8 +92,8 @@ namespace Stoolball.Web.Competitions
             var viewModel = new CompetitionViewModel(CurrentPage)
             {
                 Competition = competition,
-                IsAuthorized = isAuthorized
             };
+            viewModel.IsAuthorized = isAuthorized;
             viewModel.Metadata.PageTitle = $"Add a competition";
             return View("CreateCompetition", viewModel);
         }

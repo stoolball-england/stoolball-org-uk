@@ -2,6 +2,7 @@
 @using ClientDependency.Core.Mvc
 @using Stoolball.Matches
 @using Stoolball.Web.Matches
+@using Stoolball.Web.Security
 @using Humanizer
 @section head {
     <meta name="robots" content="noindex,follow" />
@@ -23,7 +24,7 @@
 
 <h1>Edit @Model.Match.MatchFullName(x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
 
-@if (Model.IsAuthorized)
+@if (Model.IsAuthorized[AuthorizedAction.EditMatchResult])
 {
     using (Html.BeginUmbracoForm<EditStartOfPlaySurfaceController>
         ("UpdateMatch"))

@@ -88,9 +88,9 @@ namespace Stoolball.Web.Matches
                 model.Metadata.PageTitle = $"Add a tournament in the {model.Season.SeasonFullName()}";
             }
 
-            model.IsAuthorized = User.Identity.IsAuthenticated;
+            model.IsAuthorized[AuthorizedAction.CreateTournament] = User.Identity.IsAuthenticated;
 
-            if (model.IsAuthorized && ModelState.IsValid &&
+            if (model.IsAuthorized[AuthorizedAction.CreateTournament] && ModelState.IsValid &&
                 (model.Team != null ||
                 (model.Season != null && model.Season.EnableTournaments)))
             {

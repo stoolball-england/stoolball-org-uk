@@ -1,6 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<MatchViewModel>
 @using Stoolball.Matches
 @using Stoolball.Web.Matches
+@using Stoolball.Web.Security
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -15,10 +16,10 @@
     </li>
 </ul>
 
-@if (Model.IsAuthorized)
+@if (Model.IsAuthorized[AuthorizedAction.EditMatch] || Model.IsAuthorized[AuthorizedAction.EditMatchResult] || Model.IsAuthorized[AuthorizedAction.DeleteMatch])
 {
 <dl>
-    @if (Model.Match.StartTime > DateTime.UtcNow)
+    @if (Model.IsAuthorized[AuthorizedAction.EditMatch] && Model.Match.StartTime > DateTime.UtcNow)
     {
         switch (Model.Match.MatchType)
         {
@@ -36,7 +37,7 @@
                 break;
         }
     }
-    else
+    else if (Model.IsAuthorized[AuthorizedAction.EditMatchResult] && Model.Match.StartTime <= DateTime.UtcNow)
     {
         if (Model.Match.MatchType == MatchType.LeagueMatch)
         {
@@ -44,8 +45,11 @@
             <dd>Set who won the toss and their decision, or why the match didn't happen.</dd>
         }
     }
-    <dt><a href="@Model.Match.MatchRoute/delete">Delete @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
-    <dd>Match statistics will be lost. Competition results may be changed. Players that only feature in this match will be deleted.</dd>
+    @if (Model.IsAuthorized[AuthorizedAction.DeleteMatch])
+    { 
+        <dt><a href="@Model.Match.MatchRoute/delete">Delete @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
+        <dd>Match statistics will be lost. Competition results may be changed. Players that only feature in this match will be deleted.</dd>
+    }
 </dl>
 }
 else

@@ -1,4 +1,5 @@
 ﻿using Stoolball.Email;
+using Stoolball.MatchLocations;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.Routing;
@@ -11,13 +12,13 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.MatchLocations
 {
     public class MatchLocationController : RenderMvcControllerAsync
     {
         private readonly IMatchLocationDataSource _matchLocationDataSource;
+        private readonly IAuthorizationPolicy<MatchLocation> _authorizationPolicy;
         private readonly IApiKeyProvider _apiKeyProvider;
         private readonly IEmailProtector _emailProtector;
 
@@ -28,11 +29,13 @@ namespace Stoolball.Web.MatchLocations
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IMatchLocationDataSource matchLocationDataSource,
+           IAuthorizationPolicy<MatchLocation> authorizationPolicy,
            IApiKeyProvider apiKeyProvider,
            IEmailProtector emailProtector)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchLocationDataSource = matchLocationDataSource ?? throw new System.ArgumentNullException(nameof(matchLocationDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
             _apiKeyProvider = apiKeyProvider ?? throw new System.ArgumentNullException(nameof(apiKeyProvider));
             _emailProtector = emailProtector ?? throw new System.ArgumentNullException(nameof(emailProtector));
         }
@@ -58,7 +61,7 @@ namespace Stoolball.Web.MatchLocations
             }
             else
             {
-                model.IsAuthorized = IsAuthorized(model);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation, Members);
 
                 model.Metadata.PageTitle = model.MatchLocation.NameAndLocalityOrTown();
                 model.Metadata.Description = model.MatchLocation.Description();
@@ -67,16 +70,6 @@ namespace Stoolball.Web.MatchLocations
 
                 return CurrentTemplate(model);
             }
-        }
-
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this club
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(MatchLocationViewModel model)
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, model?.MatchLocation.MemberGroupName }, null);
         }
     }
 }

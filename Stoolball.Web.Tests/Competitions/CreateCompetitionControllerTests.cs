@@ -1,5 +1,7 @@
 ﻿using Moq;
+using Stoolball.Competitions;
 using Stoolball.Web.Competitions;
+using Stoolball.Web.Security;
 using System;
 using System.Threading.Tasks;
 using System.Web;
@@ -17,16 +19,22 @@ namespace Stoolball.Web.Tests.Competitions
 {
     public class CreateCompetitionControllerTests : UmbracoBaseTest
     {
+        public CreateCompetitionControllerTests()
+        {
+            Setup();
+        }
+
         private class TestController : CreateCompetitionController
         {
-            public TestController()
+            public TestController(UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null)
+                umbracoHelper,
+                Mock.Of<IAuthorizationPolicy<Competition>>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -35,11 +43,6 @@ namespace Stoolball.Web.Tests.Competitions
                 context.SetupGet(x => x.Request).Returns(request.Object);
 
                 ControllerContext = new ControllerContext(context.Object, new RouteData(), this);
-            }
-
-            protected override bool IsAuthorized()
-            {
-                return true;
             }
 
             protected override ActionResult CurrentTemplate<T>(T model)
@@ -51,7 +54,7 @@ namespace Stoolball.Web.Tests.Competitions
         [Fact]
         public async Task Returns_CompetitionViewModel()
         {
-            using (var controller = new TestController())
+            using (var controller = new TestController(UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -62,7 +65,7 @@ namespace Stoolball.Web.Tests.Competitions
         [Fact]
         public async Task PlayersPerTeam_defaults_to_11()
         {
-            using (var controller = new TestController())
+            using (var controller = new TestController(UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

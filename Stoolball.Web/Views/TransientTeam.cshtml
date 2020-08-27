@@ -1,4 +1,5 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamViewModel>
+@using Stoolball.Web.Security
 @{ 
     var firstAndOnlyMatch = Model.Matches.Matches.FirstOrDefault();
 }
@@ -19,7 +20,7 @@
     <li class="nav-item">
         <em class="nav-link active">Summary</em>
     </li>
-    @if (Model.IsAuthorized)
+    @if (Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam])
     {
         <li class="nav-item">
             <a class="nav-link" href="@Model.Team.TeamRoute/edit">Edit</a>

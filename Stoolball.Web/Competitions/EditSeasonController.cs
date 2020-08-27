@@ -1,4 +1,5 @@
-﻿using Stoolball.Umbraco.Data.Competitions;
+﻿using Stoolball.Competitions;
+using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using System.Threading.Tasks;
@@ -9,13 +10,13 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
     public class EditSeasonController : RenderMvcControllerAsync
     {
         private readonly ISeasonDataSource _seasonDataSource;
+        private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
 
         public EditSeasonController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -23,10 +24,12 @@ namespace Stoolball.Web.Competitions
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           ISeasonDataSource seasonDataSource)
+           ISeasonDataSource seasonDataSource,
+           IAuthorizationPolicy<Competition> authorizationPolicy)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _seasonDataSource = seasonDataSource ?? throw new System.ArgumentNullException(nameof(seasonDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpGet]
@@ -50,21 +53,12 @@ namespace Stoolball.Web.Competitions
             }
             else
             {
-                model.IsAuthorized = IsAuthorized(model);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Season.Competition, Members);
 
                 model.Metadata.PageTitle = "Edit " + model.Season.SeasonFullNameAndPlayerType();
 
                 return CurrentTemplate(model);
             }
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this competition
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(SeasonViewModel model)
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, model?.Season.Competition.MemberGroupName }, null);
         }
     }
 }

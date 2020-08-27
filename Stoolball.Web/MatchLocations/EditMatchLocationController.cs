@@ -1,4 +1,5 @@
-﻿using Stoolball.Umbraco.Data.MatchLocations;
+﻿using Stoolball.MatchLocations;
+using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -10,13 +11,13 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.MatchLocations
 {
     public class EditMatchLocationController : RenderMvcControllerAsync
     {
         private readonly IMatchLocationDataSource _matchLocationDataSource;
+        private readonly IAuthorizationPolicy<MatchLocation> _authorizationPolicy;
         private readonly IApiKeyProvider _apiKeyProvider;
 
         public EditMatchLocationController(IGlobalSettings globalSettings,
@@ -26,10 +27,12 @@ namespace Stoolball.Web.MatchLocations
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IMatchLocationDataSource matchLocationDataSource,
+           IAuthorizationPolicy<MatchLocation> authorizationPolicy,
            IApiKeyProvider apiKeyProvider)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchLocationDataSource = matchLocationDataSource ?? throw new System.ArgumentNullException(nameof(matchLocationDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
             _apiKeyProvider = apiKeyProvider ?? throw new System.ArgumentNullException(nameof(apiKeyProvider));
         }
 
@@ -55,22 +58,12 @@ namespace Stoolball.Web.MatchLocations
             }
             else
             {
-                model.IsAuthorized = IsAuthorized(model);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation, Members);
 
                 model.Metadata.PageTitle = "Edit " + model.MatchLocation.NameAndLocalityOrTown();
 
                 return CurrentTemplate(model);
             }
-        }
-
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this match location
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(MatchLocationViewModel model)
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, model?.MatchLocation.MemberGroupName }, null);
         }
     }
 }

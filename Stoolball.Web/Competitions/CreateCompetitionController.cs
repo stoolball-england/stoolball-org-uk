@@ -9,20 +9,23 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
     public class CreateCompetitionController : RenderMvcControllerAsync
     {
+        private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
+
         public CreateCompetitionController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper)
+           UmbracoHelper umbracoHelper,
+           IAuthorizationPolicy<Competition> authorizationPolicy)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
+            _authorizationPolicy = authorizationPolicy;
         }
 
         [HttpGet]
@@ -42,20 +45,11 @@ namespace Stoolball.Web.Competitions
                 }
             };
 
-            model.IsAuthorized = IsAuthorized();
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Competition, Members);
 
             model.Metadata.PageTitle = "Add a competition";
 
             return Task.FromResult(CurrentTemplate(model));
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to add a competition
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized()
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.AllMembers }, null);
         }
     }
 }

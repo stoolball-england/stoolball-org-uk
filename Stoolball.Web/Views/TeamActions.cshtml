@@ -1,5 +1,6 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<TeamViewModel>
 @using Stoolball.Web.Teams
+@using Stoolball.Web.Security
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -18,12 +19,15 @@
     </li>
 </ul>
 
-@if (Model.IsAuthorized)
+@if (Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam])
 {
     <dl>
-        <dt><a href="@Model.Team.TeamRoute/edit/team">Edit @Model.Team.TeamName</a></dt>
-        <dd>Set the introduction, type of team, home grounds and sports halls, cost to play, contact details and more.</dd>
-        @if (Model.IsAdministrator)
+        @if (Model.IsAuthorized[AuthorizedAction.EditTeam])
+        {
+            <dt><a href="@Model.Team.TeamRoute/edit/team">Edit @Model.Team.TeamName</a></dt>
+            <dd>Set the introduction, type of team, home grounds and sports halls, cost to play, contact details and more.</dd>
+        }
+        @if (Model.IsAuthorized[AuthorizedAction.DeleteTeam])
         {
             <dt><a href="@Model.Team.TeamRoute/delete">Delete @Model.Team.TeamName</a> @Html.Partial("_AdminOnly")</dt>
             <dd>Remove the team out of all competitions. Delete players and statistics, including for opposition teams.</dd>

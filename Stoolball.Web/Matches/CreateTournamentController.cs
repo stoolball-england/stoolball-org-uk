@@ -97,7 +97,7 @@ namespace Stoolball.Web.Matches
                 model.Metadata.PageTitle = $"Add a tournament in the {model.Season.SeasonFullName()}";
             }
 
-            model.IsAuthorized = User.Identity.IsAuthenticated;
+            model.IsAuthorized[AuthorizedAction.CreateTournament] = User.Identity.IsAuthenticated;
 
             return CurrentTemplate(model);
         }

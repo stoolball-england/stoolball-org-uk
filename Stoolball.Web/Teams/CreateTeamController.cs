@@ -10,20 +10,23 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Teams
 {
     public class CreateTeamController : RenderMvcControllerAsync
     {
+        private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
+
         public CreateTeamController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper)
+           UmbracoHelper umbracoHelper,
+           IAuthorizationPolicy<Team> authorizationPolicy)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpGet]
@@ -46,20 +49,11 @@ namespace Stoolball.Web.Teams
                 }
             };
 
-            model.IsAuthorized = IsAuthorized();
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team, Members);
 
             model.Metadata.PageTitle = "Add a team";
 
             return Task.FromResult(CurrentTemplate(model));
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to add a team
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized()
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.AllMembers }, null);
         }
     }
 }

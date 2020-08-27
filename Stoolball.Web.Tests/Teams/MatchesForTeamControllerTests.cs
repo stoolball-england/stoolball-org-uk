@@ -5,6 +5,7 @@ using Stoolball.Matches;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
+using Stoolball.Web.Security;
 using Stoolball.Web.Teams;
 using System;
 using System.Collections.Generic;
@@ -24,19 +25,26 @@ namespace Stoolball.Web.Tests.Teams
 {
     public class MatchesForTeamControllerTests : UmbracoBaseTest
     {
+        public MatchesForTeamControllerTests()
+        {
+            Setup();
+        }
+
         private class TestController : MatchesForTeamController
         {
-            public TestController(ITeamDataSource teamDataSource, IMatchListingDataSource matchDataSource, ICreateMatchSeasonSelector createMatchSeasonSelector)
+            public TestController(ITeamDataSource teamDataSource, IMatchListingDataSource matchDataSource, ICreateMatchSeasonSelector createMatchSeasonSelector, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, teamDataSource, matchDataSource,
+                umbracoHelper,
+                teamDataSource, matchDataSource,
                 Mock.Of<IDateTimeFormatter>(),
                 Mock.Of<ISeasonEstimator>(),
-                createMatchSeasonSelector)
+                createMatchSeasonSelector,
+                Mock.Of<IAuthorizationPolicy<Team>>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -46,10 +54,7 @@ namespace Stoolball.Web.Tests.Teams
 
                 ControllerContext = new ControllerContext(context.Object, new RouteData(), this);
             }
-            protected override bool IsAuthorized(TeamViewModel model)
-            {
-                return true;
-            }
+
             protected override ActionResult CurrentTemplate<T>(T model)
             {
                 return View("MatchesForTeam", model);
@@ -67,7 +72,7 @@ namespace Stoolball.Web.Tests.Teams
 
             var seasonSelector = new Mock<ICreateMatchSeasonSelector>();
 
-            using (var controller = new TestController(teamDataSource.Object, matchesDataSource.Object, seasonSelector.Object))
+            using (var controller = new TestController(teamDataSource.Object, matchesDataSource.Object, seasonSelector.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -87,7 +92,7 @@ namespace Stoolball.Web.Tests.Teams
             var seasonSelector = new Mock<ICreateMatchSeasonSelector>();
             seasonSelector.Setup(x => x.SelectPossibleSeasons(It.IsAny<IEnumerable<TeamInSeason>>(), It.IsAny<MatchType>())).Returns(new List<Season>());
 
-            using (var controller = new TestController(teamDataSource.Object, matchesDataSource.Object, seasonSelector.Object))
+            using (var controller = new TestController(teamDataSource.Object, matchesDataSource.Object, seasonSelector.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

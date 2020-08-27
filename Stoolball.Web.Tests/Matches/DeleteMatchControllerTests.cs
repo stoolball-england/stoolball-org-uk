@@ -20,16 +20,21 @@ namespace Stoolball.Web.Tests.Matches
 {
     public class DeleteMatchControllerTests : UmbracoBaseTest
     {
+        public DeleteMatchControllerTests()
+        {
+            Setup();
+        }
+
         private class TestController : DeleteMatchController
         {
-            public TestController(IMatchDataSource matchDataSource)
+            public TestController(IMatchDataSource matchDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, matchDataSource, Mock.Of<ICommentsDataSource<Stoolball.Matches.Match>>(),
+                umbracoHelper, matchDataSource, Mock.Of<ICommentsDataSource<Stoolball.Matches.Match>>(),
                 Mock.Of<IAuthorizationPolicy<Stoolball.Matches.Match>>(),
                 Mock.Of<IDateTimeFormatter>())
             {
@@ -45,11 +50,6 @@ namespace Stoolball.Web.Tests.Matches
                 ControllerContext = controllerContext.Object;
             }
 
-            protected override bool IsAuthorized(Stoolball.Matches.Match match)
-            {
-                return true;
-            }
-
             protected override ActionResult CurrentTemplate<T>(T model)
             {
                 return View("DeleteMatch", model);
@@ -62,7 +62,7 @@ namespace Stoolball.Web.Tests.Matches
             var dataSource = new Mock<IMatchDataSource>();
             dataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).Returns(Task.FromResult<Stoolball.Matches.Match>(null));
 
-            using (var controller = new TestController(dataSource.Object))
+            using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -76,7 +76,7 @@ namespace Stoolball.Web.Tests.Matches
             var dataSource = new Mock<IMatchDataSource>();
             dataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { MatchId = Guid.NewGuid() });
 
-            using (var controller = new TestController(dataSource.Object))
+            using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

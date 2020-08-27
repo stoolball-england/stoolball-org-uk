@@ -12,13 +12,13 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
     public class CreateSeasonController : RenderMvcControllerAsync
     {
         private readonly ICompetitionDataSource _competitionDataSource;
+        private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
 
         public CreateSeasonController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -26,10 +26,12 @@ namespace Stoolball.Web.Competitions
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           ICompetitionDataSource competitionDataSource)
+           ICompetitionDataSource competitionDataSource,
+           IAuthorizationPolicy<Competition> authorizationPolicy)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpGet]
@@ -38,7 +40,7 @@ namespace Stoolball.Web.Competitions
         {
             if (contentModel is null)
             {
-                throw new System.ArgumentNullException(nameof(contentModel));
+                throw new ArgumentNullException(nameof(contentModel));
             }
 
             var competition = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false);
@@ -58,22 +60,13 @@ namespace Stoolball.Web.Competitions
                 model.Season.FromYear = model.Season.FromYear == default ? DateTime.Today.Year : model.Season.FromYear + 1;
                 model.Season.UntilYear = summerSeason ? 0 : 1;
 
-                model.IsAuthorized = IsAuthorized(model);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Season.Competition, Members);
 
                 var the = model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";
                 model.Metadata.PageTitle = $"Add a season in {the}{model.Season.Competition.CompetitionName}";
 
                 return CurrentTemplate(model);
             }
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this competition
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(SeasonViewModel model)
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, model?.Season.Competition.MemberGroupName }, null);
         }
     }
 }

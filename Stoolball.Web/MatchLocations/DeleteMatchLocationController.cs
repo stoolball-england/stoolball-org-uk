@@ -1,4 +1,5 @@
-﻿using Stoolball.Umbraco.Data.Matches;
+﻿using Stoolball.MatchLocations;
+using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -12,7 +13,6 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.MatchLocations
 {
@@ -20,6 +20,7 @@ namespace Stoolball.Web.MatchLocations
     {
         private readonly IMatchLocationDataSource _matchLocationDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
+        private readonly IAuthorizationPolicy<MatchLocation> _authorizationPolicy;
 
         public DeleteMatchLocationController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -28,11 +29,13 @@ namespace Stoolball.Web.MatchLocations
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IMatchLocationDataSource matchLocationDataSource,
-           IMatchListingDataSource matchDataSource)
+           IMatchListingDataSource matchDataSource,
+           IAuthorizationPolicy<MatchLocation> authorizationPolicy)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchLocationDataSource = matchLocationDataSource ?? throw new System.ArgumentNullException(nameof(matchLocationDataSource));
             _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpGet]
@@ -62,22 +65,12 @@ namespace Stoolball.Web.MatchLocations
                 }).ConfigureAwait(false);
                 model.ConfirmDeleteRequest.RequiredText = model.MatchLocation.Name();
 
-                model.IsAuthorized = IsAuthorized(model);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation, Members);
 
                 model.Metadata.PageTitle = "Delete " + model.MatchLocation.NameAndLocalityOrTown();
 
                 return CurrentTemplate(model);
             }
-        }
-
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to delete this match location
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(DeleteMatchLocationViewModel model)
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null);
         }
     }
 }

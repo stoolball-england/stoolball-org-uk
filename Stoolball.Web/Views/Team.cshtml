@@ -1,6 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamViewModel>
 @using Stoolball.Teams
 @using Stoolball.Web.Competitions
+@using Stoolball.Web.Security
 @using Humanizer
 
 <h1>@Model.Team.TeamNameLocationAndPlayerType()</h1>
@@ -19,7 +20,7 @@
     <li class="nav-item">
         <a class="nav-link" href="@Model.Team.TeamRoute/matches">Matches</a>
     </li>
-    @if (Model.IsAuthorized)
+    @if (Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam])
     {
         <li class="nav-item">
             <a class="nav-link" href="@Model.Team.TeamRoute/edit">Edit</a>

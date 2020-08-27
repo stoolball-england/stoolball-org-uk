@@ -4,13 +4,14 @@
 @using Stoolball.Matches
 @using Stoolball.Web.Competitions
 @using Stoolball.Web.Matches
+@using Stoolball.Web.Security
 <h1>@Model.Tournament.TournamentFullNameAndPlayerType(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
 
 <ul class="nav nav-tabs">
     <li class="nav-item">
         <em class="nav-link active">Summary</em>
     </li>
-    @if (Model.IsAuthorized)
+    @if (Model.IsAuthorized[AuthorizedAction.EditTournament] || Model.IsAuthorized[AuthorizedAction.DeleteTournament])
     {
         <li class="nav-item">
             <a class="nav-link" href="@Model.Tournament.TournamentRoute/edit">Edit</a>

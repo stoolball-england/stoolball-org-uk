@@ -56,9 +56,9 @@ namespace Stoolball.Web.Matches
             }
             _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form);
 
-            model.IsAuthorized = User.Identity.IsAuthenticated;
+            model.IsAuthorized[AuthorizedAction.CreateMatch] = User.Identity.IsAuthenticated;
 
-            if (model.IsAuthorized && ModelState.IsValid &&
+            if (model.IsAuthorized[AuthorizedAction.CreateMatch] && ModelState.IsValid &&
                 (model.Season == null || model.Season.MatchTypes.Contains(MatchType.FriendlyMatch)))
             {
                 var currentMember = Members.GetCurrentMember();

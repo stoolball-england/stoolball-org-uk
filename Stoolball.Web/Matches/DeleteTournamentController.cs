@@ -78,21 +78,12 @@ namespace Stoolball.Web.Matches
 
                 model.ConfirmDeleteRequest.RequiredText = model.Tournament.TournamentName;
 
-                model.IsAuthorized = IsAuthorized(model.Tournament);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament, Members);
 
                 model.Metadata.PageTitle = "Delete " + model.Tournament.TournamentFullNameAndPlayerType(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
                 return CurrentTemplate(model);
             }
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to delete this tournament
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(Tournament tournament)
-        {
-            return _authorizationPolicy.CanDelete(tournament, Members);
         }
     }
 }

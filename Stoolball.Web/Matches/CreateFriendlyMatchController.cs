@@ -82,7 +82,7 @@ namespace Stoolball.Web.Matches
                 }
             }
 
-            model.IsAuthorized = User.Identity.IsAuthenticated;
+            model.IsAuthorized[AuthorizedAction.CreateMatch] = User.Identity.IsAuthenticated;
 
             _editMatchHelper.ConfigureAddMatchModelMetadata(model);
 

@@ -4,6 +4,7 @@ using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Competitions;
+using Stoolball.Web.Security;
 using System;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -21,16 +22,25 @@ namespace Stoolball.Web.Tests.Competitions
 {
     public class DeleteCompetitionControllerTests : UmbracoBaseTest
     {
+        public DeleteCompetitionControllerTests()
+        {
+            Setup();
+        }
+
         private class TestController : DeleteCompetitionController
         {
-            public TestController(ICompetitionDataSource competitionDataSource)
+            public TestController(ICompetitionDataSource competitionDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, competitionDataSource, Mock.Of<IMatchListingDataSource>(), Mock.Of<ITeamDataSource>())
+                umbracoHelper,
+                competitionDataSource,
+                Mock.Of<IMatchListingDataSource>(),
+                Mock.Of<ITeamDataSource>(),
+                Mock.Of<IAuthorizationPolicy<Competition>>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -42,11 +52,6 @@ namespace Stoolball.Web.Tests.Competitions
                 controllerContext.Setup(p => p.HttpContext).Returns(context.Object);
                 controllerContext.Setup(p => p.HttpContext.User).Returns(new GenericPrincipal(new GenericIdentity("test"), null));
                 ControllerContext = controllerContext.Object;
-            }
-
-            protected override bool IsAuthorized(DeleteCompetitionViewModel model)
-            {
-                return true;
             }
 
             protected override ActionResult CurrentTemplate<T>(T model)
@@ -61,7 +66,7 @@ namespace Stoolball.Web.Tests.Competitions
             var dataSource = new Mock<ICompetitionDataSource>();
             dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).Returns(Task.FromResult<Competition>(null));
 
-            using (var controller = new TestController(dataSource.Object))
+            using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -75,7 +80,7 @@ namespace Stoolball.Web.Tests.Competitions
             var dataSource = new Mock<ICompetitionDataSource>();
             dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionId = Guid.NewGuid() });
 
-            using (var controller = new TestController(dataSource.Object))
+            using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

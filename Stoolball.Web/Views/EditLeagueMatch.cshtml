@@ -1,6 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<EditLeagueMatchViewModel>
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Matches
+@using Stoolball.Web.Security
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -22,7 +23,7 @@
 
 <h1>Edit @Model.Match.MatchFullName(x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
 
-@if (Model.IsAuthorized)
+@if (Model.IsAuthorized[AuthorizedAction.EditMatch])
 {
     using (Html.BeginUmbracoForm<EditLeagueMatchSurfaceController>
         ("UpdateMatch"))

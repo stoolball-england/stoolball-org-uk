@@ -3,6 +3,7 @@
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Matches
 @using Stoolball.Teams
+@using Stoolball.Web.Security
 @{
     Html.EnableClientValidation();
     Html.EnableUnobtrusiveJavaScript();
@@ -27,7 +28,7 @@
     </ul>
 }
 
-@if (Model.IsAuthorized)
+@if (Model.IsAuthorized[AuthorizedAction.DeleteMatch])
 {
     if (!Model.Deleted)
     {

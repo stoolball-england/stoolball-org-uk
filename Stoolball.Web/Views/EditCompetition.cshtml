@@ -1,6 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<CompetitionViewModel>
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Competitions
+@using Stoolball.Web.Security
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -25,7 +26,7 @@
     </li>
 </ul>
 
-@if (Model.IsAuthorized)
+@if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
 {
     using (Html.BeginUmbracoForm<EditCompetitionSurfaceController>
         ("UpdateCompetition"))

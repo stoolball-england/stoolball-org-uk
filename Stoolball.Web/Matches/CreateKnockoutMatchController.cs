@@ -105,7 +105,7 @@ namespace Stoolball.Web.Matches
                 model.PossibleAwayTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season.Teams);
             }
 
-            model.IsAuthorized = User.Identity.IsAuthenticated;
+            model.IsAuthorized[AuthorizedAction.CreateMatch] = User.Identity.IsAuthenticated;
 
             _editMatchHelper.ConfigureAddMatchModelMetadata(model);
 

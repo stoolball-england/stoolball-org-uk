@@ -72,7 +72,7 @@ namespace Stoolball.Web.Matches
                     return new HttpNotFoundResult();
                 }
 
-                model.IsAuthorized = IsAuthorized(model.Match);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match, Members);
 
                 model.MatchName = model.Match.UpdateMatchNameAutomatically ? string.Empty : model.Match.MatchName;
                 model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(model.Match.Season.SeasonRoute, true).ConfigureAwait(false);
@@ -94,11 +94,6 @@ namespace Stoolball.Web.Matches
 
                 return CurrentTemplate(model);
             }
-        }
-
-        protected virtual bool IsAuthorized(Match match)
-        {
-            return _authorizationPolicy.CanEdit(match, Members);
         }
     }
 }

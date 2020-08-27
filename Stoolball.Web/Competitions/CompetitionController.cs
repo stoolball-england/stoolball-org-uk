@@ -1,4 +1,5 @@
-﻿using Stoolball.Email;
+﻿using Stoolball.Competitions;
+using Stoolball.Email;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -11,13 +12,13 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
     public class CompetitionController : RenderMvcControllerAsync
     {
         private readonly ICompetitionDataSource _competitionDataSource;
+        private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
         private readonly IEmailProtector _emailProtector;
 
         public CompetitionController(IGlobalSettings globalSettings,
@@ -27,11 +28,13 @@ namespace Stoolball.Web.Competitions
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            ICompetitionDataSource competitionDataSource,
+           IAuthorizationPolicy<Competition> authorizationPolicy,
            IEmailProtector emailProtector)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _competitionDataSource = competitionDataSource ?? throw new System.ArgumentNullException(nameof(competitionDataSource));
-            _emailProtector = emailProtector ?? throw new System.ArgumentNullException(nameof(emailProtector));
+            _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
+            _emailProtector = emailProtector ?? throw new ArgumentNullException(nameof(emailProtector));
         }
 
         [HttpGet]
@@ -40,7 +43,7 @@ namespace Stoolball.Web.Competitions
         {
             if (contentModel is null)
             {
-                throw new System.ArgumentNullException(nameof(contentModel));
+                throw new ArgumentNullException(nameof(contentModel));
             }
 
             var model = new CompetitionViewModel(contentModel.Content)
@@ -59,7 +62,7 @@ namespace Stoolball.Web.Competitions
             }
             else
             {
-                model.IsAuthorized = IsAuthorized(model);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Competition, Members);
 
                 model.Metadata.PageTitle = model.Competition.CompetitionName;
                 model.Metadata.Description = model.Competition.Description();
@@ -69,15 +72,6 @@ namespace Stoolball.Web.Competitions
 
                 return CurrentTemplate(model);
             }
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this competition
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(CompetitionViewModel model)
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, model?.Competition.MemberGroupName }, null);
         }
     }
 }

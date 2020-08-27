@@ -10,13 +10,13 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.MatchLocations
 {
     public class CreateMatchLocationController : RenderMvcControllerAsync
     {
         private readonly IApiKeyProvider _apiKeyProvider;
+        private readonly IAuthorizationPolicy<MatchLocation> _authorizationPolicy;
 
         public CreateMatchLocationController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -24,10 +24,12 @@ namespace Stoolball.Web.MatchLocations
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           IApiKeyProvider apiKeyProvider)
+           IApiKeyProvider apiKeyProvider,
+           IAuthorizationPolicy<MatchLocation> authorizationPolicy)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _apiKeyProvider = apiKeyProvider ?? throw new System.ArgumentNullException(nameof(apiKeyProvider));
+            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpGet]
@@ -45,20 +47,11 @@ namespace Stoolball.Web.MatchLocations
                 GoogleMapsApiKey = _apiKeyProvider.GetApiKey("GoogleMaps")
             };
 
-            model.IsAuthorized = IsAuthorized();
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation, Members);
 
             model.Metadata.PageTitle = "Add a ground or sports centre";
 
             return Task.FromResult(CurrentTemplate(model));
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to add a match location
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized()
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.AllMembers }, null);
         }
     }
 }

@@ -24,12 +24,12 @@ namespace Stoolball.Web.Teams
             AppCaches appCaches, IProfilingLogger profilingLogger, IRuntimeState runtimeState, UmbracoHelper umbracoHelper, UmbracoMapper umbracoMapper, ITeamDataSource teamDataSource) :
             base(globalSettings, umbracoContextAccessor, sqlContext, serviceContext, appCaches, profilingLogger, runtimeState, umbracoHelper, umbracoMapper)
         {
-            _teamDataSource = teamDataSource;
+            _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
         }
 
         [HttpGet]
         [Route("api/teams/autocomplete")]
-        public async Task<AutocompleteResultSet> Autocomplete([FromUri]string query, [FromUri]string[] not)
+        public async Task<AutocompleteResultSet> Autocomplete([FromUri] string query, [FromUri] string[] not)
         {
             if (not is null)
             {

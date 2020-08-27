@@ -1,6 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ClubViewModel>
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Clubs
+@using Stoolball.Web.Security
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -31,7 +32,7 @@
     </li>
 </ul>
 
-@if (Model.IsAuthorized)
+@if (Model.IsAuthorized[AuthorizedAction.CreateClub])
 {
     using (Html.BeginUmbracoForm<CreateClubSurfaceController>
         ("CreateClub"))

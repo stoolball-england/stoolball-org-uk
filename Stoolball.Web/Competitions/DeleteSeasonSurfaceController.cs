@@ -14,7 +14,6 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
@@ -23,15 +22,17 @@ namespace Stoolball.Web.Competitions
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly ISeasonRepository _seasonRepository;
         private readonly IMatchListingDataSource _matchDataSource;
+        private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
 
         public DeleteSeasonSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ISeasonDataSource seasonDataSource, ISeasonRepository seasonRepository,
-            IMatchListingDataSource matchDataSource)
+            IMatchListingDataSource matchDataSource, IAuthorizationPolicy<Competition> authorizationPolicy)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
-            _seasonDataSource = seasonDataSource;
-            _seasonRepository = seasonRepository ?? throw new System.ArgumentNullException(nameof(seasonRepository));
+            _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
+            _seasonRepository = seasonRepository ?? throw new ArgumentNullException(nameof(seasonRepository));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpPost]
@@ -48,13 +49,13 @@ namespace Stoolball.Web.Competitions
             var viewModel = new DeleteSeasonViewModel(CurrentPage)
             {
                 Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false),
-                IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null)
             };
+            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Season.Competition, Members);
 
             // Create a version without circular references before it gets serialised for audit
             viewModel.Season.Teams = viewModel.Season.Teams.Select(x => new TeamInSeason { Team = x.Team, WithdrawnDate = x.WithdrawnDate }).ToList();
 
-            if (viewModel.IsAuthorized && ModelState.IsValid)
+            if (viewModel.IsAuthorized[AuthorizedAction.DeleteCompetition] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
                 await _seasonRepository.DeleteSeason(viewModel.Season, currentMember.Key, currentMember.Name).ConfigureAwait(false);

@@ -1,5 +1,6 @@
 ﻿using Stoolball.Competitions;
 using Stoolball.Dates;
+using Stoolball.MatchLocations;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Matches;
@@ -15,7 +16,6 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.MatchLocations
 {
@@ -23,6 +23,7 @@ namespace Stoolball.Web.MatchLocations
     {
         private readonly IMatchLocationDataSource _matchLocationDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
+        private readonly IAuthorizationPolicy<MatchLocation> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly ISeasonEstimator _seasonEstimator;
 
@@ -34,12 +35,14 @@ namespace Stoolball.Web.MatchLocations
            UmbracoHelper umbracoHelper,
            IMatchLocationDataSource matchLocationDataSource,
            IMatchListingDataSource matchDataSource,
+           IAuthorizationPolicy<MatchLocation> authorizationPolicy,
            IDateTimeFormatter dateFormatter,
            ISeasonEstimator seasonEstimator)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchLocationDataSource = matchLocationDataSource ?? throw new ArgumentNullException(nameof(matchLocationDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
             _seasonEstimator = seasonEstimator ?? throw new ArgumentNullException(nameof(seasonEstimator));
         }
@@ -75,21 +78,12 @@ namespace Stoolball.Web.MatchLocations
                     },
                 };
 
-                model.IsAuthorized = IsAuthorized(model);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation, Members);
 
                 model.Metadata.PageTitle = $"Matches for {model.MatchLocation}";
 
                 return CurrentTemplate(model);
             }
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this match location
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(MatchLocationViewModel model)
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, model?.MatchLocation.MemberGroupName }, null);
         }
     }
 }

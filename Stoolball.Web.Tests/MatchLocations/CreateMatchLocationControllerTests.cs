@@ -1,6 +1,8 @@
 ﻿using Moq;
+using Stoolball.MatchLocations;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.MatchLocations;
+using Stoolball.Web.Security;
 using System;
 using System.Threading.Tasks;
 using System.Web;
@@ -18,17 +20,23 @@ namespace Stoolball.Web.Tests.MatchLocations
 {
     public class CreateMatchLocationControllerTests : UmbracoBaseTest
     {
+        public CreateMatchLocationControllerTests()
+        {
+            Setup();
+        }
+
         private class TestController : CreateMatchLocationController
         {
-            public TestController()
+            public TestController(UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null,
-                Mock.Of<IApiKeyProvider>())
+                umbracoHelper,
+                Mock.Of<IApiKeyProvider>(),
+                Mock.Of<IAuthorizationPolicy<MatchLocation>>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -37,11 +45,6 @@ namespace Stoolball.Web.Tests.MatchLocations
                 context.SetupGet(x => x.Request).Returns(request.Object);
 
                 ControllerContext = new ControllerContext(context.Object, new RouteData(), this);
-            }
-
-            protected override bool IsAuthorized()
-            {
-                return true;
             }
 
             protected override ActionResult CurrentTemplate<T>(T model)
@@ -53,7 +56,7 @@ namespace Stoolball.Web.Tests.MatchLocations
         [Fact]
         public async Task Returns_MatchLocationViewModel()
         {
-            using (var controller = new TestController())
+            using (var controller = new TestController(UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

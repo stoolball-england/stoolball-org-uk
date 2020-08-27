@@ -58,7 +58,7 @@ namespace Stoolball.Web.Matches
             }
             else
             {
-                model.IsAuthorized = IsAuthorized(model.Tournament);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament, Members);
 
                 model.TournamentDate = model.Tournament.StartTime;
                 if (model.Tournament.StartTimeIsKnown)
@@ -72,11 +72,6 @@ namespace Stoolball.Web.Matches
 
                 return CurrentTemplate(model);
             }
-        }
-
-        protected virtual bool IsAuthorized(Tournament tournament)
-        {
-            return _authorizationPolicy.CanEdit(tournament, Members);
         }
     }
 }

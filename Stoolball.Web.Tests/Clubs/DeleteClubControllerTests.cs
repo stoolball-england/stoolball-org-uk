@@ -2,6 +2,7 @@
 using Stoolball.Clubs;
 using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Web.Clubs;
+using Stoolball.Web.Security;
 using System;
 using System.Threading.Tasks;
 using System.Web;
@@ -19,16 +20,23 @@ namespace Stoolball.Web.Tests.Clubs
 {
     public class DeleteClubControllerTests : UmbracoBaseTest
     {
+        public DeleteClubControllerTests()
+        {
+            Setup();
+        }
+
         private class TestController : DeleteClubController
         {
-            public TestController(IClubDataSource clubDataSource)
+            public TestController(IClubDataSource clubDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, clubDataSource)
+                umbracoHelper,
+                clubDataSource,
+                Mock.Of<IAuthorizationPolicy<Club>>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -37,11 +45,6 @@ namespace Stoolball.Web.Tests.Clubs
                 context.SetupGet(x => x.Request).Returns(request.Object);
 
                 ControllerContext = new ControllerContext(context.Object, new RouteData(), this);
-            }
-
-            protected override bool IsAuthorized(DeleteClubViewModel model)
-            {
-                return true;
             }
 
             protected override ActionResult CurrentTemplate<T>(T model)
@@ -56,7 +59,7 @@ namespace Stoolball.Web.Tests.Clubs
             var dataSource = new Mock<IClubDataSource>();
             dataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).Returns(Task.FromResult<Club>(null));
 
-            using (var controller = new TestController(dataSource.Object))
+            using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -70,7 +73,7 @@ namespace Stoolball.Web.Tests.Clubs
             var dataSource = new Mock<IClubDataSource>();
             dataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).ReturnsAsync(new Club());
 
-            using (var controller = new TestController(dataSource.Object))
+            using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

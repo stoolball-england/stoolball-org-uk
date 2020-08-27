@@ -2,6 +2,7 @@
 @using ClientDependency.Core.Mvc
 @using System.Globalization
 @using Stoolball.MatchLocations
+@using Stoolball.Web.Security
 @{
 Html.RequiresJs("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey, 50);
 Html.RequiresJs("/js/maps.js", 90);
@@ -17,7 +18,7 @@ Html.RequiresJs("/matchlocations/match-location.js");
     <li class="nav-item">
         <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute/matches">Matches</a>
     </li>
-    @if (Model.IsAuthorized)
+    @if (Model.IsAuthorized[AuthorizedAction.EditMatchLocation] || Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation])
     {
         <li class="nav-item">
             <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute/edit">Edit</a>

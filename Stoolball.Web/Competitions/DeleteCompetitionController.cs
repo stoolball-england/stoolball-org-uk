@@ -1,4 +1,5 @@
-﻿using Stoolball.Umbraco.Data.Competitions;
+﻿using Stoolball.Competitions;
+using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Routing;
@@ -13,7 +14,6 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
@@ -22,6 +22,7 @@ namespace Stoolball.Web.Competitions
         private readonly ICompetitionDataSource _competitionDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly ITeamDataSource _teamDataSource;
+        private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
 
         public DeleteCompetitionController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -31,12 +32,14 @@ namespace Stoolball.Web.Competitions
            UmbracoHelper umbracoHelper,
            ICompetitionDataSource competitionDataSource,
            IMatchListingDataSource matchDataSource,
-           ITeamDataSource teamDataSource)
+           ITeamDataSource teamDataSource,
+           IAuthorizationPolicy<Competition> authorizationPolicy)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _competitionDataSource = competitionDataSource ?? throw new System.ArgumentNullException(nameof(competitionDataSource));
+            _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpGet]
@@ -45,7 +48,7 @@ namespace Stoolball.Web.Competitions
         {
             if (contentModel is null)
             {
-                throw new System.ArgumentNullException(nameof(contentModel));
+                throw new ArgumentNullException(nameof(contentModel));
             }
 
             var model = new DeleteCompetitionViewModel(contentModel.Content)
@@ -73,21 +76,12 @@ namespace Stoolball.Web.Competitions
 
                 model.ConfirmDeleteRequest.RequiredText = model.Competition.CompetitionName;
 
-                model.IsAuthorized = IsAuthorized(model);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Competition, Members);
 
                 model.Metadata.PageTitle = "Delete " + model.Competition.CompetitionName;
 
                 return CurrentTemplate(model);
             }
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to delete this competition
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(DeleteCompetitionViewModel model)
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null);
         }
     }
 }

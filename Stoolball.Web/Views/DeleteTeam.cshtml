@@ -2,6 +2,7 @@
 @using Humanizer
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Teams
+@using Stoolball.Web.Security
 @{
     Html.EnableClientValidation();
     Html.EnableUnobtrusiveJavaScript();
@@ -29,7 +30,7 @@
     </ul>
 }
 
-@if (Model.IsAuthorized)
+@if (Model.IsAuthorized[AuthorizedAction.DeleteTeam])
 {
     if (!Model.Deleted)
     {

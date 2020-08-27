@@ -9,7 +9,6 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Clubs
 {
@@ -17,13 +16,16 @@ namespace Stoolball.Web.Clubs
     {
         private readonly IClubDataSource _clubDataSource;
         private readonly IClubRepository _clubRepository;
+        private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
 
         public EditClubSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IClubDataSource clubDataSource, IClubRepository clubRepository)
+            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IClubDataSource clubDataSource, IClubRepository clubRepository,
+            IAuthorizationPolicy<Club> authorizationPolicy)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
-            _clubDataSource = clubDataSource;
+            _clubDataSource = clubDataSource ?? throw new System.ArgumentNullException(nameof(clubDataSource));
             _clubRepository = clubRepository ?? throw new System.ArgumentNullException(nameof(clubRepository));
+            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpPost]
@@ -41,9 +43,9 @@ namespace Stoolball.Web.Clubs
             club.ClubId = beforeUpdate.ClubId;
             club.ClubRoute = beforeUpdate.ClubRoute;
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, beforeUpdate.MemberGroupName }, null);
+            var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate, Members);
 
-            if (isAuthorized && ModelState.IsValid)
+            if (isAuthorized[AuthorizedAction.EditClub] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
                 await _clubRepository.UpdateClub(club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
@@ -55,8 +57,8 @@ namespace Stoolball.Web.Clubs
             var viewModel = new ClubViewModel(CurrentPage)
             {
                 Club = club,
-                IsAuthorized = isAuthorized
             };
+            viewModel.IsAuthorized = isAuthorized;
             viewModel.Metadata.PageTitle = $"Edit {club.ClubName}";
             return View("EditClub", viewModel);
         }

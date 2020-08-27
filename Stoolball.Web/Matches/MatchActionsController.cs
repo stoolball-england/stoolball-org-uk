@@ -57,17 +57,12 @@ namespace Stoolball.Web.Matches
             }
             else
             {
-                model.IsAuthorized = IsAuthorized(model.Match);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match, Members);
 
                 model.Metadata.PageTitle = model.Match.MatchFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false)) + " - stoolball match";
 
                 return CurrentTemplate(model);
             }
-        }
-
-        protected virtual bool IsAuthorized(Match match)
-        {
-            return _authorizationPolicy.CanDelete(match, Members);
         }
     }
 }

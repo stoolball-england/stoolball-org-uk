@@ -13,7 +13,7 @@ namespace Stoolball.Web.Matches
         /// Gets whether the current member can edit the given <see cref="Match"/>
         /// </summary>
         /// <remarks>It's recommended to inject MembershipHelper but GetCurrentMember() returns null (https://github.com/umbraco/Umbraco-CMS/blob/2f10051ee9780cd22d4d1313e5e7c6b0bc4661b1/src/Umbraco.Web/UmbracoHelper.cs#L98)</remarks>
-        public bool CanEdit(Match match, MembershipHelper membershipHelper)
+        public Dictionary<AuthorizedAction, bool> IsAuthorized(Match match, MembershipHelper membershipHelper)
         {
             if (match is null)
             {
@@ -25,6 +25,15 @@ namespace Stoolball.Web.Matches
                 throw new System.ArgumentNullException(nameof(membershipHelper));
             }
 
+            var authorizations = new Dictionary<AuthorizedAction, bool>();
+            authorizations[AuthorizedAction.EditMatchResult] = membershipHelper.IsLoggedIn();
+            authorizations[AuthorizedAction.EditMatch] = CanEditMatch(match, membershipHelper);
+            authorizations[AuthorizedAction.DeleteMatch] = authorizations[AuthorizedAction.EditMatch];
+            return authorizations;
+        }
+
+        private static bool CanEditMatch(Match match, MembershipHelper membershipHelper)
+        {
             var currentMember = membershipHelper.GetCurrentMember();
             if (currentMember == null) return false;
 
@@ -34,15 +43,6 @@ namespace Stoolball.Web.Matches
             allowedGroups.AddRange(new[] { Groups.Administrators });
 
             return membershipHelper.IsMemberAuthorized(null, allowedGroups, null);
-        }
-
-        /// <summary>
-        /// Gets whether the current member can delete the given <see cref="Match"/>
-        /// </summary>
-        /// <remarks>It's recommended to inject MembershipHelper but GetCurrentMember() returns null (https://github.com/umbraco/Umbraco-CMS/blob/2f10051ee9780cd22d4d1313e5e7c6b0bc4661b1/src/Umbraco.Web/UmbracoHelper.cs#L98)</remarks>
-        public bool CanDelete(Match match, MembershipHelper membershipHelper)
-        {
-            return CanEdit(match, membershipHelper);
         }
     }
 }

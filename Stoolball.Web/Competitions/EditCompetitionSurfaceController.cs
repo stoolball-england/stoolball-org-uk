@@ -10,7 +10,6 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
@@ -18,13 +17,16 @@ namespace Stoolball.Web.Competitions
     {
         private readonly ICompetitionDataSource _competitionDataSource;
         private readonly ICompetitionRepository _competitionRepository;
+        private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
 
         public EditCompetitionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ICompetitionDataSource competitionDataSource, ICompetitionRepository competitionRepository)
+            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ICompetitionDataSource competitionDataSource,
+            ICompetitionRepository competitionRepository, IAuthorizationPolicy<Competition> authorizationPolicy)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
-            _competitionDataSource = competitionDataSource;
-            _competitionRepository = competitionRepository ?? throw new System.ArgumentNullException(nameof(competitionRepository));
+            _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
+            _competitionRepository = competitionRepository ?? throw new ArgumentNullException(nameof(competitionRepository));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpPost]
@@ -35,7 +37,7 @@ namespace Stoolball.Web.Competitions
         {
             if (competition is null)
             {
-                throw new System.ArgumentNullException(nameof(competition));
+                throw new ArgumentNullException(nameof(competition));
             }
 
             var beforeUpdate = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false);
@@ -47,9 +49,9 @@ namespace Stoolball.Web.Competitions
             competition.PublicContactDetails = Request.Unvalidated.Form["Competition.PublicContactDetails"];
             competition.PrivateContactDetails = Request.Unvalidated.Form["Competition.PrivateContactDetails"];
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, beforeUpdate.MemberGroupName }, null);
+            var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate, Members);
 
-            if (isAuthorized && ModelState.IsValid)
+            if (isAuthorized[AuthorizedAction.EditCompetition] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
                 await _competitionRepository.UpdateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
@@ -67,9 +69,9 @@ namespace Stoolball.Web.Competitions
             var viewModel = new CompetitionViewModel(CurrentPage)
             {
                 Competition = competition,
-                IsAuthorized = isAuthorized,
                 UrlReferrer = string.IsNullOrEmpty(Request.Form["UrlReferrer"]) ? null : new Uri(Request.Form["UrlReferrer"])
             };
+            viewModel.IsAuthorized = isAuthorized;
             viewModel.Metadata.PageTitle = $"Edit {competition.CompetitionName}";
             return View("EditCompetition", viewModel);
         }

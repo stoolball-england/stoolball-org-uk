@@ -65,7 +65,7 @@ namespace Stoolball.Web.Matches
                     return new HttpNotFoundResult();
                 }
 
-                model.IsAuthorized = IsAuthorized(model.Match);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match, Members);
 
                 model.MatchLocationId = model.Match.MatchLocation?.MatchLocationId;
                 model.MatchLocationName = model.Match.MatchLocation?.NameAndLocalityOrTownIfDifferent();
@@ -76,11 +76,6 @@ namespace Stoolball.Web.Matches
 
                 return CurrentTemplate(model);
             }
-        }
-
-        protected virtual bool IsAuthorized(Match match)
-        {
-            return _authorizationPolicy.CanEdit(match, Members);
         }
     }
 }

@@ -9,19 +9,21 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Teams
 {
     public class CreateTeamSurfaceController : SurfaceController
     {
         private readonly ITeamRepository _teamRepository;
+        private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
 
         public CreateTeamSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
-            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITeamRepository teamRepository)
+            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITeamRepository teamRepository,
+            IAuthorizationPolicy<Team> authorizationPolicy)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _teamRepository = teamRepository ?? throw new System.ArgumentNullException(nameof(teamRepository));
+            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpPost]
@@ -42,9 +44,9 @@ namespace Stoolball.Web.Teams
             team.PublicContactDetails = Request.Unvalidated.Form["Team.PublicContactDetails"];
             team.PrivateContactDetails = Request.Unvalidated.Form["Team.PrivateContactDetails"];
 
-            var isAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.AllMembers }, null);
+            var isAuthorized = _authorizationPolicy.IsAuthorized(team, Members);
 
-            if (isAuthorized && ModelState.IsValid)
+            if (isAuthorized[AuthorizedAction.CreateTeam] && ModelState.IsValid)
             {
                 // Create the team
                 var currentMember = Members.GetCurrentMember();
@@ -57,8 +59,8 @@ namespace Stoolball.Web.Teams
             var viewModel = new TeamViewModel(CurrentPage)
             {
                 Team = team,
-                IsAuthorized = isAuthorized
             };
+            viewModel.IsAuthorized = isAuthorized;
             viewModel.Metadata.PageTitle = $"Add a team";
             return View("CreateTeam", viewModel);
         }

@@ -1,4 +1,5 @@
-﻿using Stoolball.Competitions;
+﻿using Stoolball.Clubs;
+using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Umbraco.Data.Matches;
@@ -15,7 +16,6 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Clubs
 {
@@ -25,6 +25,7 @@ namespace Stoolball.Web.Clubs
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly ISeasonEstimator _seasonEstimator;
+        private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
 
         public MatchesForClubController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -35,13 +36,15 @@ namespace Stoolball.Web.Clubs
            IClubDataSource clubDataSource,
            IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
-           ISeasonEstimator seasonEstimator)
+           ISeasonEstimator seasonEstimator,
+           IAuthorizationPolicy<Club> authorizationPolicy)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
             _seasonEstimator = seasonEstimator ?? throw new ArgumentNullException(nameof(seasonEstimator));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpGet]
@@ -75,22 +78,12 @@ namespace Stoolball.Web.Clubs
                     },
                 };
 
-                model.IsAuthorized = IsAuthorized(model);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Club, Members);
 
                 model.Metadata.PageTitle = $"Matches for {model.Club.ClubName}";
 
                 return CurrentTemplate(model);
             }
-        }
-
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this club
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(ClubViewModel model)
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, model?.Club.MemberGroupName }, null);
         }
     }
 }

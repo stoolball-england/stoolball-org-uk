@@ -9,20 +9,23 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Clubs
 {
     public class CreateClubController : RenderMvcControllerAsync
     {
+        private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
+
         public CreateClubController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper)
+           UmbracoHelper umbracoHelper,
+           IAuthorizationPolicy<Club> authorizationPolicy)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
+            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpGet]
@@ -39,20 +42,11 @@ namespace Stoolball.Web.Clubs
                 Club = new Club()
             };
 
-            model.IsAuthorized = IsAuthorized();
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Club, Members);
 
             model.Metadata.PageTitle = "Add a club";
 
             return Task.FromResult(CurrentTemplate(model));
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to add a club
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized()
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.AllMembers }, null);
         }
     }
 }

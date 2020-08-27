@@ -1,4 +1,5 @@
-﻿using Stoolball.Dates;
+﻿using Stoolball.Competitions;
+using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Competitions;
@@ -16,7 +17,6 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Competitions
 {
@@ -24,6 +24,7 @@ namespace Stoolball.Web.Competitions
     {
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
+        private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
         private readonly IEmailProtector _emailProtector;
         private readonly IDateTimeFormatter _dateTimeFormatter;
 
@@ -35,13 +36,15 @@ namespace Stoolball.Web.Competitions
            UmbracoHelper umbracoHelper,
            ISeasonDataSource seasonDataSource,
            IMatchListingDataSource matchDataSource,
+           IAuthorizationPolicy<Competition> authorizationPolicy,
            IEmailProtector emailProtector,
            IDateTimeFormatter dateTimeFormatter
            )
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _seasonDataSource = seasonDataSource ?? throw new System.ArgumentNullException(nameof(seasonDataSource));
+            _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _emailProtector = emailProtector ?? throw new ArgumentNullException(nameof(emailProtector));
             _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
         }
@@ -52,7 +55,7 @@ namespace Stoolball.Web.Competitions
         {
             if (contentModel is null)
             {
-                throw new System.ArgumentNullException(nameof(contentModel));
+                throw new ArgumentNullException(nameof(contentModel));
             }
 
             var model = new SeasonViewModel(contentModel.Content)
@@ -83,7 +86,7 @@ namespace Stoolball.Web.Competitions
 
                 model.Season.Results = _emailProtector.ProtectEmailAddresses(model.Season.Results, User.Identity.IsAuthenticated);
 
-                model.IsAuthorized = IsAuthorized(model);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Season.Competition, Members);
 
                 var the = model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase);
                 model.Metadata.PageTitle = $"Results for {(the ? string.Empty : "the ")}{model.Season.SeasonFullNameAndPlayerType()}";
@@ -91,15 +94,6 @@ namespace Stoolball.Web.Competitions
 
                 return CurrentTemplate(model);
             }
-        }
-
-        /// <summary>
-        /// Checks whether the currently signed-in member is authorized to edit this competition
-        /// </summary>
-        /// <returns></returns>
-        protected virtual bool IsAuthorized(SeasonViewModel model)
-        {
-            return Members.IsMemberAuthorized(null, new[] { Groups.Administrators, model?.Season.Competition.MemberGroupName }, null);
         }
     }
 }

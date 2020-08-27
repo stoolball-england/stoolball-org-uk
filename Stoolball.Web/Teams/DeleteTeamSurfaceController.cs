@@ -13,7 +13,6 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
-using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Web.Teams
 {
@@ -23,16 +22,18 @@ namespace Stoolball.Web.Teams
         private readonly ITeamRepository _teamRepository;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IPlayerDataSource _playerDataSource;
+        private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
 
         public DeleteTeamSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITeamDataSource teamDataSource, ITeamRepository teamRepository,
-            IMatchListingDataSource matchDataSource, IPlayerDataSource playerDataSource)
+            IMatchListingDataSource matchDataSource, IPlayerDataSource playerDataSource, IAuthorizationPolicy<Team> authorizationPolicy)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource;
-            _teamRepository = teamRepository ?? throw new System.ArgumentNullException(nameof(teamRepository));
+            _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
         }
 
         [HttpPost]
@@ -43,16 +44,16 @@ namespace Stoolball.Web.Teams
         {
             if (model is null)
             {
-                throw new System.ArgumentNullException(nameof(model));
+                throw new ArgumentNullException(nameof(model));
             }
 
             var viewModel = new DeleteTeamViewModel(CurrentPage)
             {
                 Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false),
-                IsAuthorized = Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null)
             };
+            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Team, Members);
 
-            if (viewModel.IsAuthorized && ModelState.IsValid)
+            if (viewModel.IsAuthorized[AuthorizedAction.DeleteTeam] && ModelState.IsValid)
             {
                 Services.MemberGroupService.Delete(Services.MemberGroupService.GetById(viewModel.Team.MemberGroupId));
 
