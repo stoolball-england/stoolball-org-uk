@@ -366,6 +366,118 @@ namespace Stoolball.Umbraco.Data.Matches
             }
         }
 
+        /// <summary>
+        /// Updates details known at the start of play - the location, who won the toss, who is batting, or why cancellation occurred
+        /// </summary>
+        public async Task<Match> UpdateStartOfPlay(Match match, Guid memberKey, string memberName)
+        {
+            if (match is null)
+            {
+                throw new ArgumentNullException(nameof(match));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        var beforeUpdate = await connection.QuerySingleAsync<Match>($"SELECT MatchResultType, UpdateMatchNameAutomatically FROM {Tables.Match} WHERE MatchId = @MatchId", new { match.MatchId }, transaction).ConfigureAwait(false);
+                        if (!match.MatchResultType.HasValue && beforeUpdate.MatchResultType.HasValue &&
+                            new List<MatchResultType> { MatchResultType.HomeWin, MatchResultType.AwayWin, MatchResultType.Tie }.Contains(beforeUpdate.MatchResultType.Value))
+                        {
+                            // don't update result type because we've only submitted "match went ahead" and the result is already recorded, 
+                            // therefore also don't update match name
+                            await connection.ExecuteAsync($@"UPDATE {Tables.Match} SET
+                                MatchLocationId = @MatchLocationId, 
+                                InningsOrderIsKnown = @InningsOrderIsKnown
+                                WHERE MatchId = @MatchId",
+                            new
+                            {
+                                match.MatchLocation?.MatchLocationId,
+                                match.InningsOrderIsKnown,
+                                match.MatchId
+                            }, transaction).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            // safe to update result type and name
+                            if (match.UpdateMatchNameAutomatically)
+                            {
+                                match.MatchName = _matchNameBuilder.BuildMatchName(match);
+                            }
+                            else
+                            {
+                                match.MatchName = beforeUpdate.MatchName;
+                            }
+
+                            await connection.ExecuteAsync($@"UPDATE {Tables.Match} SET
+                                MatchName = @MatchName,                                
+                                MatchLocationId = @MatchLocationId, 
+                                InningsOrderIsKnown = @InningsOrderIsKnown, 
+                                MatchResultType = @MatchResultType
+                                WHERE MatchId = @MatchId",
+                            new
+                            {
+                                match.MatchName,
+                                match.MatchLocation?.MatchLocationId,
+                                match.InningsOrderIsKnown,
+                                MatchResultType = match.MatchResultType?.ToString(),
+                                match.MatchId
+                            }, transaction).ConfigureAwait(false);
+                        }
+
+                        foreach (var team in match.Teams)
+                        {
+                            await connection.ExecuteAsync($"UPDATE {Tables.MatchTeam} SET WonToss = @WonToss WHERE MatchTeamId = @MatchTeamId",
+                            new { team.WonToss, team.MatchTeamId },
+                            transaction).ConfigureAwait(false);
+                        }
+
+                        if (match.InningsOrderIsKnown)
+                        {
+                            foreach (var innings in match.MatchInnings)
+                            {
+                                await connection.ExecuteAsync($@"UPDATE { Tables.MatchInnings } SET
+                                InningsOrderInMatch = @InningsOrderInMatch
+                                WHERE MatchInningsId = @MatchInningsId",
+                                    new
+                                    {
+                                        innings.InningsOrderInMatch,
+                                        innings.MatchInningsId
+                                    },
+                                    transaction).ConfigureAwait(false);
+                            }
+                        }
+
+                        transaction.Commit();
+                    }
+                }
+
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Update,
+                    MemberKey = memberKey,
+                    ActorName = memberName,
+                    EntityUri = match.EntityUri,
+                    State = JsonConvert.SerializeObject(match),
+                    AuditDate = DateTime.UtcNow
+                }).ConfigureAwait(false);
+            }
+            catch (SqlException ex)
+            {
+                _logger.Error(typeof(SqlServerMatchRepository), ex);
+            }
+
+            return match;
+        }
+
         private async Task UpdateMatchRoute(Match match, string routeBeforeUpdate, System.Data.IDbTransaction transaction)
         {
             string baseRoute = string.Empty;

@@ -712,6 +712,13 @@
     <Content Include="Content\bootstrap\bootstrap.scss" />
     <Content Include="Content\bootstrap\bootstrap-reboot.scss" />
     <Content Include="Content\bootstrap\bootstrap-grid.scss" />
+    <Content Include="css\steps.css">
+      <DependentUpon>steps.scss</DependentUpon>
+    </Content>
+    <Content Include="css\steps.min.css">
+      <DependentUpon>steps.css</DependentUpon>
+    </Content>
+    <Content Include="css\steps.scss" />
     <None Include="css\tinymce.scss" />
     <Content Include="css\tinymce.css">
       <DependentUpon>tinymce.scss</DependentUpon>
@@ -1010,6 +1017,9 @@
     <Compile Include="Matches\CreateKnockoutMatchSurfaceController.cs" />
     <Compile Include="Matches\CreateTournamentSurfaceController.cs" />
     <Compile Include="Matches\CreateTournamentController.cs" />
+    <Compile Include="Matches\EditStartOfPlayViewModel.cs" />
+    <Compile Include="Matches\EditStartOfPlayController.cs" />
+    <Compile Include="Matches\EditStartOfPlaySurfaceController.cs" />
     <Compile Include="Matches\EditTournamentTeamsSurfaceController.cs" />
     <Compile Include="Matches\EditTournamentTeamsController.cs" />
     <Compile Include="Matches\EditTournamentSurfaceController.cs" />
@@ -1262,6 +1272,7 @@
     <Content Include="Views\CreateTournament.cshtml" />
     <Content Include="Views\EditTournament.cshtml" />
     <Content Include="Views\EditTournamentTeams.cshtml" />
+    <Content Include="Views\EditStartOfPlay.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

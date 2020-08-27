@@ -22,5 +22,9 @@
   {
     "outputFile": "css/_footer.css",
     "inputFile": "css/_footer.scss"
+  },
+  {
+    "outputFile": "css/steps.css",
+    "inputFile": "css/steps.scss"
   }
 ]

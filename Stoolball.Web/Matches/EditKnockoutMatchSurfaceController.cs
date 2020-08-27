@@ -50,6 +50,12 @@ namespace Stoolball.Web.Matches
 
             var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false);
 
+            // This controller is only for matches in the future
+            if (beforeUpdate.StartTime <= DateTime.UtcNow)
+            {
+                return new HttpNotFoundResult();
+            }
+
             var model = new EditKnockoutMatchViewModel(CurrentPage)
             {
                 Match = postedMatch,

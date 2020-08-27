@@ -50,6 +50,7 @@
         EditFriendlyMatch,
         EditLeagueMatch,
         EditKnockoutMatch,
+        EditStartOfPlay,
         DeleteMatch,
         Tournament,
         TournamentActions,

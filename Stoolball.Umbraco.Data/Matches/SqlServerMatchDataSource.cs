@@ -112,6 +112,7 @@ namespace Stoolball.Umbraco.Data.Matches
                                 if (matchTeamIds != null && matchTeamIds.BattingMatchTeamId.HasValue)
                                 {
                                     innings.BattingTeam = matchToReturn.Teams.Single(x => x.MatchTeamId == matchTeamIds.BattingMatchTeamId);
+                                    innings.BattingMatchTeamId = matchTeamIds.BattingMatchTeamId;
                                 }
                                 if (matchTeamIds != null && matchTeamIds.BowlingMatchTeamId.HasValue)
                                 {

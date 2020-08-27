@@ -66,6 +66,12 @@ namespace Stoolball.Web.Matches
             }
             else
             {
+                // This page is only for matches in the future
+                if (model.Match.StartTime <= DateTime.UtcNow)
+                {
+                    return new HttpNotFoundResult();
+                }
+
                 model.IsAuthorized = IsAuthorized(model.Match);
 
                 model.MatchName = model.Match.UpdateMatchNameAutomatically ? string.Empty : model.Match.MatchName;

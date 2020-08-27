@@ -63,6 +63,12 @@ namespace Stoolball.Web.Matches
             }
             else
             {
+                // This page is only for matches in the future
+                if (model.Match.StartTime <= DateTime.UtcNow)
+                {
+                    return new HttpNotFoundResult();
+                }
+
                 model.IsAuthorized = IsAuthorized(model.Match);
 
                 model.Match.Season = await _seasonDataSource.ReadSeasonByRoute(model.Match.Season.SeasonRoute, true).ConfigureAwait(false);

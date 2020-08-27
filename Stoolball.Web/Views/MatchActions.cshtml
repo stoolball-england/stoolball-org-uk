@@ -36,6 +36,14 @@
                 break;
         }
     }
+    else
+    {
+        if (Model.Match.MatchType == MatchType.LeagueMatch)
+        {
+            <dt><a href="@Model.Match.MatchRoute/edit/start-of-play">Edit the result of @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
+            <dd>Set who won the toss and their decision, or why the match didn't happen.</dd>
+        }
+    }
     <dt><a href="@Model.Match.MatchRoute/delete">Delete @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
     <dd>Match statistics will be lost. Competition results may be changed. Players that only feature in this match will be deleted.</dd>
 </dl>

@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/editStartOfPlay.cshtml",
+  "Master": null,
+  "Udi": "umb://template/0f52b305ec8140ccac40056ef18b76a9",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/editStartOfPlay.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Edit Start of Play",
+  "Alias": "editStartOfPlay",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.4.4"
+}

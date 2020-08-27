@@ -75,7 +75,7 @@
     </div>
 </script>
 
-<fieldset class="form-group" id="team-type">
+<fieldset class="form-group">
     <legend>Who can play?</legend>
     <div class="custom-control custom-radio">
         @Html.RadioButtonFor(m => Model.Tournament.QualificationType, TournamentQualificationType.OpenTournament, new { @class = "custom-control-input", @id = TournamentQualificationType.OpenTournament.ToString() })
@@ -88,7 +88,7 @@
     @Html.ValidationMessageFor(m => Model.Tournament.QualificationType)
 </fieldset>
 
-<fieldset class="form-group" id="team-type">
+<fieldset class="form-group">
     <legend>Player type</legend>
     <div class="custom-control custom-radio">
         @Html.RadioButtonFor(m => Model.Tournament.PlayerType, PlayerType.Mixed, new { @class = "custom-control-input", @id = "player-type-1" })
