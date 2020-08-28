@@ -2,7 +2,7 @@
 
 Permissions to modify entities in the [stoolball data model](DataModel.md) are managed using Umbraco's membership feature set.
 
-Each `Club`, `Team`, `School`, `MatchLocation` and `Competition` has a Umbraco Member Group, which is identified by its name and numeric in the tables for those entities. The group GUID/UDI is not used because the membership APIs do not support lookups using that yet. Each `Match` and `Tournament` records the GUID/UDI of the individual Umbraco Member that created it. There is no group for these, only because it would generate thousands more groups and the Umbraco Back Office UI would be too slow.
+Each `Club`, `Team`, `School`, `MatchLocation` and `Competition` has a Umbraco Member Group, which is identified by its name and numeric id in the tables for those entities. The group GUID/UDI is not used because the membership APIs do not support lookups using that yet. Each `Match` and `Tournament` records the GUID/UDI of the individual Umbraco Member that created it. There is no group for these, only because it would generate thousands more groups and the Umbraco Back Office UI would be too slow.
 
 Other entities get their permissions from these ones. For example, a `PlayerIdentity` is considered part of its `Team` and a `Season` is considered part of its `Competition`.
 
