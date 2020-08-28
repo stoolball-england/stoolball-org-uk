@@ -20,6 +20,8 @@
 
     Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
     Html.RequiresJs("/js/tinymce.js");
+
+    Html.RequiresCss("~/css/steps.min.css");
 }
 <h1>@Model.Name</h1>
 <h2>Tabs</h2>
@@ -150,6 +152,15 @@
     <dt><a href="https://example.org">Definition list title</a> @Html.Partial("_AdminOnly")</dt>
     <dd>Definition list detail.</dd>
 </dl>
+<h2>Steps in a process</h2>
+<ol class="steps">
+    <li class="steps__completed"><span class="sr-only">First step</span></li>
+    <li aria-current="step"><em class="sr-only">Second step</em></li>
+    <li><span class="sr-only">Third step</span></li>
+    <li><span class="sr-only">Fourth step</span></li>
+    <li><span class="sr-only">Fifth step</span></li>
+    <li><span class="sr-only">Sixth step</span></li>
+</ol>
 <h2>Forms</h2>
 <form>
     <div class="validation-summary-errors">
@@ -232,6 +243,36 @@
     <table class="table table-hover related-items">
         <thead class="thead-dark">
             <tr><th scope="col" colspan="2">Multiple related items</th></tr>
+        </thead>
+        <tbody>
+            <tr class="related-item__selected">
+                <td class="related-item__selected__section"><div class="related-item__animate">Selected item</div></td>
+                <td class="related-item__delete related-item__selected__section">
+                    <div class="related-item__animate">
+                        <button class="text-danger">@Html.Partial("_DeleteIcon", (string.Empty, "Remove item"))</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    @Html.Label("team-autocomplete", "Add a team", new { @class = "sr-only" })
+                    @Html.TextBox("team-autocomplete", string.Empty, new
+                    {
+                        @class = "form-control related-item__search",
+                        placeholder = "Add a team",
+                        autocomplete = "off",
+                        type = "search",
+                        data_url = "/api/teams/autocomplete",
+                        data_template = "team-template",
+                        aria_label = "Type a team name and press down arrow to select the team"
+                    })
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-hover related-items related-items__create" data-related-item="team">
+        <thead class="thead-dark">
+            <tr><th scope="col" colspan="2">Multiple related items, with add option</th></tr>
         </thead>
         <tbody>
             <tr class="related-item__selected">
