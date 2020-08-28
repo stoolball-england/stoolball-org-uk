@@ -10,6 +10,7 @@ using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
@@ -388,7 +389,12 @@ namespace Stoolball.Umbraco.Data.Matches
                     connection.Open();
                     using (var transaction = connection.BeginTransaction())
                     {
-                        var beforeUpdate = await connection.QuerySingleAsync<Match>($"SELECT MatchResultType, UpdateMatchNameAutomatically FROM {Tables.Match} WHERE MatchId = @MatchId", new { match.MatchId }, transaction).ConfigureAwait(false);
+                        var beforeUpdate = await connection.QuerySingleAsync<Match>(
+                            $@"SELECT MatchResultType, UpdateMatchNameAutomatically, MatchName 
+                            FROM {Tables.Match} 
+                            WHERE MatchId = @MatchId",
+                            new { match.MatchId },
+                            transaction).ConfigureAwait(false);
                         if (!match.MatchResultType.HasValue && beforeUpdate.MatchResultType.HasValue &&
                             new List<MatchResultType> { MatchResultType.HomeWin, MatchResultType.AwayWin, MatchResultType.Tie }.Contains(beforeUpdate.MatchResultType.Value))
                         {
@@ -435,13 +441,66 @@ namespace Stoolball.Umbraco.Data.Matches
 
                         foreach (var team in match.Teams)
                         {
-                            await connection.ExecuteAsync($"UPDATE {Tables.MatchTeam} SET WonToss = @WonToss WHERE MatchTeamId = @MatchTeamId",
-                            new { team.WonToss, team.MatchTeamId },
-                            transaction).ConfigureAwait(false);
+                            if (team.MatchTeamId.HasValue)
+                            {
+                                await connection.ExecuteAsync($"UPDATE {Tables.MatchTeam} SET WonToss = @WonToss WHERE MatchTeamId = @MatchTeamId",
+                                new { team.WonToss, team.MatchTeamId },
+                                transaction).ConfigureAwait(false);
+                            }
+                            else
+                            {
+                                team.MatchTeamId = Guid.NewGuid();
+                                await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
+                                    (MatchTeamId, MatchId, TeamId, TeamRole, WonToss)
+                                     VALUES (@MatchTeamId, @MatchId, @TeamId, @TeamRole, @WonToss)",
+                                     new
+                                     {
+                                         team.MatchTeamId,
+                                         match.MatchId,
+                                         team.Team.TeamId,
+                                         team.TeamRole,
+                                         team.WonToss
+                                     },
+                                     transaction).ConfigureAwait(false);
+
+                                // You cannot set the order of innings in a match until both teams are fixed, so this is the last point where 
+                                // we know that, in the database, match.InningsOrderIsKnown is false and the assumption is that the home team 
+                                // batted first. Update the MatchInnings accordingly so that the MatchTeamIds are in there, knowing that the 
+                                // innings order may be changed a few lines later.
+                                var oddInnings = match.MatchInnings.Where(x => x.InningsOrderInMatch % 2 == 1);
+                                var evenInnings = match.MatchInnings.Where(x => x.InningsOrderInMatch % 2 == 0);
+                                if (team.TeamRole == TeamRole.Home)
+                                {
+                                    await InsertMatchTeamIdIntoMatchInnings(transaction, team.MatchTeamId.Value, oddInnings.Select(x => x.MatchInningsId), evenInnings.Select(x => x.MatchInningsId)).ConfigureAwait(false);
+                                    foreach (var innings in oddInnings) { innings.BattingMatchTeamId = team.MatchTeamId; }
+                                    foreach (var innings in evenInnings) { innings.BowlingMatchTeamId = team.MatchTeamId; }
+                                }
+                                else if (team.TeamRole == TeamRole.Away)
+                                {
+                                    await InsertMatchTeamIdIntoMatchInnings(transaction, team.MatchTeamId.Value, evenInnings.Select(x => x.MatchInningsId), oddInnings.Select(x => x.MatchInningsId)).ConfigureAwait(false);
+                                    foreach (var innings in evenInnings) { innings.BattingMatchTeamId = team.MatchTeamId; }
+                                    foreach (var innings in oddInnings) { innings.BowlingMatchTeamId = team.MatchTeamId; }
+                                }
+                            }
                         }
 
                         if (match.InningsOrderIsKnown)
                         {
+                            // All teams and innings should now have match team ids to work with
+                            var battedFirst = match.Teams.Single(x => x.BattedFirst == true).MatchTeamId;
+                            var shouldBeOddInnings = match.MatchInnings.Where(x => x.BattingMatchTeamId == battedFirst);
+                            var shouldBeEvenInnings = match.MatchInnings.Where(x => x.BattingMatchTeamId != battedFirst);
+                            foreach (var innings in shouldBeOddInnings)
+                            {
+                                var alreadyOdd = ((innings.InningsOrderInMatch % 2) == 1);
+                                innings.InningsOrderInMatch = alreadyOdd ? innings.InningsOrderInMatch : innings.InningsOrderInMatch - 1;
+                            }
+                            foreach (var innings in shouldBeEvenInnings)
+                            {
+                                var alreadyEven = ((innings.InningsOrderInMatch % 2) == 0);
+                                innings.InningsOrderInMatch = alreadyEven ? innings.InningsOrderInMatch : innings.InningsOrderInMatch + 1;
+                            }
+
                             foreach (var innings in match.MatchInnings)
                             {
                                 await connection.ExecuteAsync($@"UPDATE { Tables.MatchInnings } SET
@@ -476,6 +535,27 @@ namespace Stoolball.Umbraco.Data.Matches
             }
 
             return match;
+        }
+
+        private static async Task InsertMatchTeamIdIntoMatchInnings(IDbTransaction transaction, Guid matchTeamId, IEnumerable<Guid?> battingInnings, IEnumerable<Guid?> bowlingInnings)
+        {
+            await transaction.Connection.ExecuteAsync(
+                $"UPDATE {Tables.MatchInnings} SET BattingMatchTeamId = @MatchTeamId WHERE MatchInningsId IN @MatchInningsIds",
+                new
+                {
+                    MatchTeamId = matchTeamId,
+                    MatchInningsIds = battingInnings
+                },
+                transaction).ConfigureAwait(false);
+
+            await transaction.Connection.ExecuteAsync(
+                $"UPDATE {Tables.MatchInnings} SET BowlingMatchTeamId = @MatchTeamId WHERE MatchInningsId IN @MatchInningsIds",
+                new
+                {
+                    MatchTeamId = matchTeamId,
+                    MatchInningsIds = bowlingInnings
+                },
+                transaction).ConfigureAwait(false);
         }
 
         private async Task UpdateMatchRoute(Match match, string routeBeforeUpdate, System.Data.IDbTransaction transaction)

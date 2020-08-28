@@ -9,6 +9,7 @@ namespace Stoolball.Matches
         public int InningsOrderInMatch { get; set; }
 
         public Guid? BattingMatchTeamId { get; set; }
+        public Guid? BowlingMatchTeamId { get; set; }
         public TeamInMatch BattingTeam { get; set; }
         public TeamInMatch BowlingTeam { get; set; }
 

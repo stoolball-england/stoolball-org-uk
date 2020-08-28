@@ -1,5 +1,6 @@
 ﻿using Stoolball.Dates;
 using Stoolball.Matches;
+using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -19,8 +20,10 @@ namespace Stoolball.Web.Matches
     public class EditStartOfPlayController : RenderMvcControllerAsync
     {
         private readonly IMatchDataSource _matchDataSource;
+        private readonly ISeasonDataSource _seasonDataSource;
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
+        private readonly IEditMatchHelper _editMatchHelper;
 
         public EditStartOfPlayController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -29,13 +32,17 @@ namespace Stoolball.Web.Matches
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IMatchDataSource matchDataSource,
+           ISeasonDataSource seasonDataSource,
            IAuthorizationPolicy<Match> authorizationPolicy,
-           IDateTimeFormatter dateFormatter)
+           IDateTimeFormatter dateFormatter,
+           IEditMatchHelper editMatchHelper)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
+            _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
+            _editMatchHelper = editMatchHelper ?? throw new ArgumentNullException(nameof(editMatchHelper));
         }
 
         [HttpGet]
@@ -67,10 +74,19 @@ namespace Stoolball.Web.Matches
 
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match, Members);
 
+                if (model.Match.MatchType == MatchType.KnockoutMatch)
+                {
+                    model.Match.Season = await _seasonDataSource.ReadSeasonByRoute(model.Match.Season.SeasonRoute, true).ConfigureAwait(false);
+                    model.PossibleHomeTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Match.Season?.Teams);
+                    model.PossibleAwayTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Match.Season?.Teams);
+                }
+
+                model.HomeTeamId = model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.Team.TeamId;
+                model.AwayTeamId = model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.Team.TeamId;
                 model.MatchLocationId = model.Match.MatchLocation?.MatchLocationId;
                 model.MatchLocationName = model.Match.MatchLocation?.NameAndLocalityOrTownIfDifferent();
-                model.TossWonBy = model.Match.Teams.FirstOrDefault(x => x.WonToss.HasValue && x.WonToss.Value)?.MatchTeamId;
-                model.BattedFirst = model.Match.InningsOrderIsKnown ? model.Match.MatchInnings.First().BattingTeam.MatchTeamId : null;
+                model.TossWonBy = model.Match.Teams.FirstOrDefault(x => x.WonToss.HasValue && x.WonToss.Value)?.MatchTeamId.ToString();
+                model.BattedFirst = model.Match.InningsOrderIsKnown ? model.Match.MatchInnings.First().BattingTeam.MatchTeamId.ToString() : null;
 
                 model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
 

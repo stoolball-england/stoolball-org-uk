@@ -122,7 +122,7 @@
             <p>@ResultDescription().</p>
         }
 
-        if (Model.Match.InningsOrderIsKnown)
+        if (Model.Match.InningsOrderIsKnown && tossWinners == null)
         {
             var firstToBat = Model.Match.Teams.FirstOrDefault(x => x.MatchTeamId == Model.Match.MatchInnings.First().BattingTeam?.MatchTeamId);
             if (firstToBat != null)

@@ -1,6 +1,8 @@
-﻿using Stoolball.Dates;
+﻿using Stoolball.Competitions;
+using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
+using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Security;
 using System;
@@ -21,18 +23,23 @@ namespace Stoolball.Web.Matches
     {
         private readonly IMatchDataSource _matchDataSource;
         private readonly IMatchRepository _matchRepository;
+        private readonly ISeasonDataSource _seasonDataSource;
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateTimeFormatter;
+        private readonly IEditMatchHelper _editMatchHelper;
 
         public EditStartOfPlaySurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchDataSource matchDataSource,
-            IMatchRepository matchRepository, IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter)
+            IMatchRepository matchRepository, ISeasonDataSource seasonDataSource, IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter,
+            IEditMatchHelper editMatchHelper)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
+            _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
+            _editMatchHelper = editMatchHelper ?? throw new ArgumentNullException(nameof(editMatchHelper));
         }
 
         [HttpPost]
@@ -53,7 +60,7 @@ namespace Stoolball.Web.Matches
                 return new HttpNotFoundResult();
             }
 
-            var model = new EditLeagueMatchViewModel(CurrentPage)
+            var model = new EditStartOfPlayViewModel(CurrentPage)
             {
                 Match = postedMatch,
                 DateFormatter = _dateTimeFormatter
@@ -63,6 +70,21 @@ namespace Stoolball.Web.Matches
             model.Match.UpdateMatchNameAutomatically = beforeUpdate.UpdateMatchNameAutomatically;
             model.Match.Teams = beforeUpdate.Teams;
             model.Match.MatchInnings = beforeUpdate.MatchInnings;
+
+            if (beforeUpdate.MatchType == MatchType.KnockoutMatch)
+            {
+                var season = await _seasonDataSource.ReadSeasonByRoute(beforeUpdate.Season.SeasonRoute, true).ConfigureAwait(false);
+                if (season != null)
+                {
+                    model.PossibleHomeTeams = _editMatchHelper.PossibleTeamsAsListItems(season.Teams);
+                    model.PossibleAwayTeams = _editMatchHelper.PossibleTeamsAsListItems(season.Teams);
+
+                    // Add teams to model.Teams only if they're missing and if the posted team is from the same season.
+                    // By getting it from the season this also adds the team name, which is used to build the match name.
+                    model.HomeTeamId = AddTeamIfMissing(model.Match.Teams, season.Teams, TeamRole.Home);
+                    model.AwayTeamId = AddTeamIfMissing(model.Match.Teams, season.Teams, TeamRole.Away);
+                }
+            }
 
             if (!string.IsNullOrEmpty(Request.Form["MatchLocationId"]))
             {
@@ -76,10 +98,20 @@ namespace Stoolball.Web.Matches
 
             if (!string.IsNullOrEmpty(Request.Form["TossWonBy"]))
             {
-                var tossWonBy = Guid.Parse(Request.Form["TossWonBy"]);
-                foreach (var team in model.Match.Teams)
+                if (Enum.TryParse<TeamRole>(Request.Form["TossWonBy"], out var tossWonByRole))
                 {
-                    team.WonToss = (team.MatchTeamId == tossWonBy);
+                    foreach (var team in model.Match.Teams)
+                    {
+                        team.WonToss = (team.TeamRole == tossWonByRole);
+                    }
+                }
+                else
+                {
+                    var tossWonByTeam = Guid.Parse(Request.Form["TossWonBy"]);
+                    foreach (var team in model.Match.Teams)
+                    {
+                        team.WonToss = (team.MatchTeamId == tossWonByTeam);
+                    }
                 }
             }
             else
@@ -94,18 +126,28 @@ namespace Stoolball.Web.Matches
             if (!string.IsNullOrEmpty(Request.Form["BattedFirst"]))
             {
                 model.Match.InningsOrderIsKnown = true;
-                var battedFirst = Guid.Parse(Request.Form["BattedFirst"]);
-                var shouldBeOddInnings = model.Match.MatchInnings.Where(x => x.BattingMatchTeamId == battedFirst);
-                var shouldBeEvenInnings = model.Match.MatchInnings.Where(x => x.BattingMatchTeamId != battedFirst);
-                foreach (var innings in shouldBeOddInnings)
+
+                if (Enum.TryParse<TeamRole>(Request.Form["BattedFirst"], out var roleBattedFirst))
                 {
-                    var alreadyOdd = ((innings.InningsOrderInMatch % 2) == 1);
-                    innings.InningsOrderInMatch = alreadyOdd ? innings.InningsOrderInMatch : innings.InningsOrderInMatch - 1;
+                    foreach (var team in model.Match.Teams)
+                    {
+                        team.BattedFirst = (team.TeamRole == roleBattedFirst);
+                    }
                 }
-                foreach (var innings in shouldBeEvenInnings)
+                else
                 {
-                    var alreadyEven = ((innings.InningsOrderInMatch % 2) == 0);
-                    innings.InningsOrderInMatch = alreadyEven ? innings.InningsOrderInMatch : innings.InningsOrderInMatch + 1;
+                    var battedFirst = Guid.Parse(Request.Form["BattedFirst"]);
+                    foreach (var team in model.Match.Teams)
+                    {
+                        team.BattedFirst = (team.MatchTeamId == battedFirst);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var team in model.Match.Teams)
+                {
+                    team.BattedFirst = null;
                 }
             }
 
@@ -133,11 +175,30 @@ namespace Stoolball.Web.Matches
                     return Redirect(model.Match.MatchRoute);
                 }
             }
-
             model.Match.MatchName = beforeUpdate.MatchName;
             model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
-            return View("EditMatchResult", model);
+            return View("EditStartOfPlay", model);
+        }
+
+        private Guid? AddTeamIfMissing(List<TeamInMatch> teamsInTheMatch, List<TeamInSeason> teamsInTheSeason, TeamRole teamRole)
+        {
+            Guid? postedTeamId = null;
+            var hasTeamInRole = teamsInTheMatch.Any(x => x.TeamRole == teamRole);
+            if (!hasTeamInRole && !string.IsNullOrEmpty(Request.Form[teamRole.ToString() + "TeamId"]))
+            {
+                postedTeamId = new Guid(Request.Form[teamRole.ToString() + "TeamId"]);
+                var team = teamsInTheSeason.SingleOrDefault(x => x.Team.TeamId == postedTeamId)?.Team;
+                if (team != null)
+                {
+                    teamsInTheMatch.Add(new TeamInMatch
+                    {
+                        Team = team,
+                        TeamRole = teamRole
+                    });
+                }
+            }
+            return postedTeamId;
         }
     }
 }
