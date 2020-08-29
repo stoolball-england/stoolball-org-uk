@@ -1,7 +1,6 @@
 ﻿using Moq;
 using Stoolball.Competitions;
 using Stoolball.Dates;
-using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Security;
@@ -20,14 +19,14 @@ using Xunit;
 
 namespace Stoolball.Web.Tests.Matches
 {
-    public class EditStartOfPlayControllerTests : UmbracoBaseTest
+    public class EditCloseOfPlayControllerTests : UmbracoBaseTest
     {
-        public EditStartOfPlayControllerTests()
+        public EditCloseOfPlayControllerTests()
         {
             Setup();
         }
 
-        private class TestController : EditStartOfPlayController
+        private class TestController : EditCloseOfPlayController
         {
             public TestController(IMatchDataSource matchDataSource, Uri requestUrl, UmbracoHelper umbracoHelper)
            : base(
@@ -38,10 +37,8 @@ namespace Stoolball.Web.Tests.Matches
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
                 matchDataSource,
-                Mock.Of<ISeasonDataSource>(),
                 Mock.Of<IAuthorizationPolicy<Stoolball.Matches.Match>>(),
-                Mock.Of<IDateTimeFormatter>(),
-                Mock.Of<IEditMatchHelper>())
+                Mock.Of<IDateTimeFormatter>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(requestUrl);
@@ -57,7 +54,7 @@ namespace Stoolball.Web.Tests.Matches
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("EditStartOfPlay", model);
+                return View("EditCloseOfPlay", model);
             }
         }
 
@@ -91,7 +88,7 @@ namespace Stoolball.Web.Tests.Matches
         }
 
         [Fact]
-        public async Task Route_matching_match_in_the_past_returns_EditStartOfPlayViewModel()
+        public async Task Route_matching_match_in_the_past_returns_EditCloseOfPlayViewModel()
         {
             var matchDataSource = new Mock<IMatchDataSource>();
             matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { StartTime = DateTime.UtcNow.AddHours(-1), Season = new Season() });
@@ -100,7 +97,7 @@ namespace Stoolball.Web.Tests.Matches
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<EditStartOfPlayViewModel>(((ViewResult)result).Model);
+                Assert.IsType<EditCloseOfPlayViewModel>(((ViewResult)result).Model);
             }
         }
     }

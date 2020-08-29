@@ -52,6 +52,7 @@ namespace Stoolball.Web
             composition.Register<IPlayerTypeSelector, PlayerTypeSelector>(Lifetime.Singleton);
             composition.Register<IEditMatchHelper, EditMatchHelper>(Lifetime.Singleton);
             composition.Register<IMemberGroupHelper, MemberGroupHelper>(Lifetime.Singleton);
+            composition.Register<IMatchResultEvaluator, MatchResultEvaluator>(Lifetime.Singleton);
 
             // Data migration from the old Stoolball England website
             composition.Register<IAuditHistoryBuilder, AuditHistoryBuilder>(Lifetime.Singleton);
@@ -105,6 +106,7 @@ namespace Stoolball.Web
             composition.Register<EditLeagueMatchController>(Lifetime.Request);
             composition.Register<EditKnockoutMatchController>(Lifetime.Request);
             composition.Register<EditStartOfPlayController>(Lifetime.Request);
+            composition.Register<EditCloseOfPlayController>(Lifetime.Request);
             composition.Register<DeleteMatchController>(Lifetime.Request);
             composition.Register<TournamentController>(Lifetime.Request);
             composition.Register<TournamentActionsController>(Lifetime.Request);

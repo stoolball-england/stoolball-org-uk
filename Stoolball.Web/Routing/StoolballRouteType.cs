@@ -51,6 +51,7 @@
         EditLeagueMatch,
         EditKnockoutMatch,
         EditStartOfPlay,
+        EditCloseOfPlay,
         DeleteMatch,
         Tournament,
         TournamentActions,

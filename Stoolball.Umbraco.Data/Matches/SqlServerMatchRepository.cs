@@ -558,6 +558,79 @@ namespace Stoolball.Umbraco.Data.Matches
             return match;
         }
 
+        /// <summary>
+        /// Updates details known at the close of play - the winning team and any awards
+        /// </summary>
+        public async Task<Match> UpdateCloseOfPlay(Match match, Guid memberKey, string memberName)
+        {
+            if (match is null)
+            {
+                throw new ArgumentNullException(nameof(match));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        var beforeUpdate = await connection.QuerySingleAsync<Match>(
+                            $@"SELECT UpdateMatchNameAutomatically, MatchName
+                            FROM {Tables.Match} 
+                            WHERE MatchId = @MatchId",
+                            new { match.MatchId },
+                            transaction).ConfigureAwait(false);
+
+                        if (match.UpdateMatchNameAutomatically)
+                        {
+                            match.MatchName = _matchNameBuilder.BuildMatchName(match);
+                        }
+                        else
+                        {
+                            match.MatchName = beforeUpdate.MatchName;
+                        }
+
+                        await connection.ExecuteAsync($@"UPDATE {Tables.Match} SET
+                            MatchName = @MatchName,                                
+                            MatchResultType = @MatchResultType
+                            WHERE MatchId = @MatchId",
+                            new
+                            {
+                                match.MatchName,
+                                MatchResultType = match.MatchResultType?.ToString(),
+                                match.MatchId
+                            },
+                            transaction).ConfigureAwait(false);
+
+                        transaction.Commit();
+                    }
+
+                }
+
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Update,
+                    MemberKey = memberKey,
+                    ActorName = memberName,
+                    EntityUri = match.EntityUri,
+                    State = JsonConvert.SerializeObject(match),
+                    AuditDate = DateTime.UtcNow
+                }).ConfigureAwait(false);
+            }
+            catch (SqlException ex)
+            {
+                _logger.Error(typeof(SqlServerMatchRepository), ex);
+            }
+
+            return match;
+        }
+
         private static async Task InsertMatchTeamIdIntoMatchInnings(IDbTransaction transaction, Guid matchTeamId, IEnumerable<Guid?> battingInnings, IEnumerable<Guid?> bowlingInnings)
         {
             await transaction.Connection.ExecuteAsync(

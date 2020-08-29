@@ -42,6 +42,8 @@
             <li><span class="sr-only">Result</span></li>
         </ol>
 
+        <button class="btn btn-primary sr-only">Save and continue &gt;</button>
+
         var hasHomeTeam = Model.Match.Teams.Any(x => x.TeamRole == TeamRole.Home);
         var hasAwayTeam = Model.Match.Teams.Any(x => x.TeamRole == TeamRole.Away);
         if (!hasHomeTeam || !hasAwayTeam)
@@ -338,7 +340,7 @@
             @Html.ValidationMessageFor(m => Model.Match.MatchResultType, null, new { id = "result-type-validation" })
         </fieldset>
 
-        <button class="btn btn-primary">Save match</button>
+        <button class="btn btn-primary">Save and continue &gt;</button>
     }
 }
 else

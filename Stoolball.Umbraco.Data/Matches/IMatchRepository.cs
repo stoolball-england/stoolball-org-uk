@@ -25,5 +25,10 @@ namespace Stoolball.Umbraco.Data.Matches
         /// Updates details known at the start of play - the location, who won the toss, who is batting, or why cancellation occurred
         /// </summary>
         Task<Match> UpdateStartOfPlay(Match match, Guid memberKey, string memberName);
+
+        /// <summary>
+        /// Updates details known at the close of play - the winning team and any awards
+        /// </summary>
+        Task<Match> UpdateCloseOfPlay(Match match, Guid memberKey, string memberName);
     }
 }
