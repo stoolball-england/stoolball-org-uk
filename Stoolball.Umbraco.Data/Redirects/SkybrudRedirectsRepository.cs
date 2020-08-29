@@ -1,18 +1,19 @@
-﻿using System;
+﻿using Dapper;
+using System;
+using System.Data;
 using System.Threading.Tasks;
 using Umbraco.Core.Logging;
-using Umbraco.Core.Scoping;
 
 namespace Stoolball.Umbraco.Data.Redirects
 {
     public class SkybrudRedirectsRepository : IRedirectsRepository
     {
-        private readonly IScopeProvider _scopeProvider;
+        private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly ILogger _logger;
 
-        public SkybrudRedirectsRepository(IScopeProvider scopeProvider, ILogger logger)
+        public SkybrudRedirectsRepository(IDatabaseConnectionFactory databaseConnectionFactory, ILogger logger)
         {
-            _scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
+            _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -20,13 +21,16 @@ namespace Stoolball.Umbraco.Data.Redirects
         {
             try
             {
-                using (var scope = _scopeProvider.CreateScope())
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var database = scope.Database;
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
 
-                    await database.ExecuteAsync($@"DELETE FROM SkybrudRedirects WHERE DestinationUrl LIKE '{destinationPrefix}%'").ConfigureAwait(false);
+                        await transaction.Connection.ExecuteAsync($@"DELETE FROM SkybrudRedirects WHERE DestinationUrl LIKE '{destinationPrefix}%'", null, transaction).ConfigureAwait(false);
 
-                    scope.Complete();
+                        transaction.Commit();
+                    }
                 }
             }
             catch (Exception e)
@@ -38,33 +42,77 @@ namespace Stoolball.Umbraco.Data.Redirects
 
         public async Task InsertRedirect(string originalRoute, string revisedRoute, string routeSuffix)
         {
+            if (string.IsNullOrEmpty(originalRoute))
+            {
+                throw new ArgumentException($"'{nameof(originalRoute)}' cannot be null or empty", nameof(originalRoute));
+            }
+
+            if (string.IsNullOrEmpty(revisedRoute))
+            {
+                throw new ArgumentException($"'{nameof(revisedRoute)}' cannot be null or empty", nameof(revisedRoute));
+            }
+
             try
             {
-                using (var scope = _scopeProvider.CreateScope())
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var database = scope.Database;
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        await InsertRedirect(originalRoute, revisedRoute, routeSuffix, transaction).ConfigureAwait(false);
+                        transaction.Commit();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Error<SkybrudRedirectsRepository>(e);
+                throw;
+            }
+        }
 
-                    await database.ExecuteAsync($@"INSERT INTO SkybrudRedirects 
+        public async Task InsertRedirect(string originalRoute, string revisedRoute, string routeSuffix, IDbTransaction transaction)
+        {
+            if (string.IsNullOrEmpty(originalRoute))
+            {
+                throw new ArgumentException($"'{nameof(originalRoute)}' cannot be null or empty", nameof(originalRoute));
+            }
+
+            if (string.IsNullOrEmpty(revisedRoute))
+            {
+                throw new ArgumentException($"'{nameof(revisedRoute)}' cannot be null or empty", nameof(revisedRoute));
+            }
+
+            if (transaction is null)
+            {
+                throw new ArgumentNullException(nameof(transaction));
+            }
+
+            try
+            {
+                await transaction.Connection.ExecuteAsync($@"INSERT INTO SkybrudRedirects 
 							([Key], [RootId], [RootKey], [Url], [QueryString], [DestinationType], [DestinationId], [DestinationKey], 
 							 [DestinationUrl], [Created], [Updated], [IsPermanent], [IsRegex], [ForwardQueryString])
-							 VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13)",
-                                 Guid.NewGuid().ToString(),
-                                 0,
-                                 "00000000-0000-0000-0000-000000000000",
-                                 "/" + originalRoute?.TrimStart('/') + routeSuffix,
-                                 string.Empty,
-                                 "url",
-                                 0,
-                                 "00000000-0000-0000-0000-000000000000",
-                                 "/" + revisedRoute?.TrimStart('/') + routeSuffix,
-                                 DateTime.UtcNow,
-                                 DateTime.UtcNow,
-                                 true,
-                                 false,
-                                 false
-                                 ).ConfigureAwait(false);
-                    scope.Complete();
-                }
+							 VALUES (@Key, @RootId, @RootKey, @Url, @QueryString, @DestinationType, @DestinationId, @DestinationKey, @DestinationUrl, 
+                             @Created, @Updated, @IsPermanent, @IsRegex, @ForwardQueryString)",
+                                             new
+                                             {
+                                                 Key = Guid.NewGuid().ToString(),
+                                                 RootId = 0,
+                                                 RootKey = "00000000-0000-0000-0000-000000000000",
+                                                 Url = "/" + originalRoute?.TrimStart('/') + routeSuffix,
+                                                 QueryString = string.Empty,
+                                                 DestinationType = "url",
+                                                 DestinationId = 0,
+                                                 DestinationKey = "00000000-0000-0000-0000-000000000000",
+                                                 DestinationUrl = "/" + revisedRoute?.TrimStart('/') + routeSuffix,
+                                                 Created = DateTime.UtcNow,
+                                                 Updated = DateTime.UtcNow,
+                                                 IsPermanent = true,
+                                                 IsRegex = false,
+                                                 ForwardQueryString = false
+                                             },
+                                            transaction).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -82,29 +130,37 @@ namespace Stoolball.Umbraco.Data.Redirects
 
             try
             {
-                using (var scope = _scopeProvider.CreateScope())
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var database = scope.Database;
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
 
-                    await database.ExecuteAsync($@"INSERT INTO SkybrudRedirects 
+                        await transaction.Connection.ExecuteAsync($@"INSERT INTO SkybrudRedirects 
 							([Key], [RootId], [RootKey], [Url], [QueryString], [DestinationType], [DestinationId], [DestinationKey], 
 							 [DestinationUrl], [Created], [Updated], [IsPermanent], [IsRegex], [ForwardQueryString])
-							 VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13)",
-                                     Guid.NewGuid().ToString(),
-                                     0,
-                                     "00000000-0000-0000-0000-000000000000",
-                                     "/" + originalRoute?.TrimStart('/'),
-                                     string.Empty,
-                                     "url",
-                                     umbracoContentNodeId,
-                                     umbracoContentNodeKey,
-                                     umbracoContentNodeUrl.ToString(),
-                                     DateTime.UtcNow,
-                                     DateTime.UtcNow,
-                                     true,
-                                     false,
-                                     false).ConfigureAwait(false);
-                    scope.Complete();
+							 VALUES (@Key, @RootId, @RootKey, @Url, @QueryString, @DestinationType, @DestinationId, @DestinationKey, @DestinationUrl, 
+                             @Created, @Updated, @IsPermanent, @IsRegex, @ForwardQueryString)",
+                             new
+                             {
+                                 Key = Guid.NewGuid().ToString(),
+                                 RootId = 0,
+                                 RootKey = "00000000-0000-0000-0000-000000000000",
+                                 Url = "/" + originalRoute?.TrimStart('/'),
+                                 QueryString = string.Empty,
+                                 DestinationType = "url",
+                                 DestinationId = umbracoContentNodeId,
+                                 DestinationKey = umbracoContentNodeKey,
+                                 DestinationUrl = umbracoContentNodeUrl.ToString(),
+                                 Created = DateTime.UtcNow,
+                                 Updated = DateTime.UtcNow,
+                                 IsPermanent = true,
+                                 IsRegex = false,
+                                 ForwardQueryString = false
+                             },
+                             transaction).ConfigureAwait(false);
+                        transaction.Commit();
+                    }
                 }
             }
             catch (Exception e)

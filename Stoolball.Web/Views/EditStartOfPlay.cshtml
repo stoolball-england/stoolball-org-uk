@@ -42,31 +42,143 @@
             <li><span class="sr-only">Result</span></li>
         </ol>
 
-        if (Model.Match.MatchType == MatchType.KnockoutMatch)
+        var hasHomeTeam = Model.Match.Teams.Any(x => x.TeamRole == TeamRole.Home);
+        var hasAwayTeam = Model.Match.Teams.Any(x => x.TeamRole == TeamRole.Away);
+        if (!hasHomeTeam || !hasAwayTeam)
         {
-            var hasHomeTeam = Model.Match.Teams.Any(x => x.TeamRole == TeamRole.Home);
-            var hasAwayTeam = Model.Match.Teams.Any(x => x.TeamRole == TeamRole.Away);
-            if (!hasHomeTeam || !hasAwayTeam)
-            {
-                <h2>Confirm the teams that aren't yet known</h2>
-            }
-            if (!hasHomeTeam)
-            {
-                <div class="form-group">
-                    @Html.LabelFor(m => Model.HomeTeamId)
-                    @Html.DropDownListFor(m => Model.HomeTeamId, Model.PossibleHomeTeams, "To be confirmed", new { @class = "form-control", required="required", aria_describedby = "home-team" })
-                    @Html.ValidationMessageFor(m => Model.HomeTeamId, null, new { id = "home-team" })
-                </div>
-            }
+            <h2>Confirm the teams that aren't yet known</h2>
+        }
 
-            if (!hasAwayTeam)
-{
-                <div class="form-group">
-                    @Html.LabelFor(m => Model.AwayTeamId)
-                    @Html.DropDownListFor(m => Model.AwayTeamId, Model.PossibleAwayTeams, "To be confirmed", new { @class = "form-control", required="required", aria_describedby = "away-team" })
-                    @Html.ValidationMessageFor(m => Model.AwayTeamId, null, new { id = "away-team" })
+        if (!hasHomeTeam && Model.PossibleHomeTeams.Count > 0)
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => Model.HomeTeamId)
+                @Html.DropDownListFor(m => Model.HomeTeamId, Model.PossibleHomeTeams, "To be confirmed", new { @class = "form-control", required = "required", aria_describedby = "home-team" })
+                @Html.ValidationMessageFor(m => Model.HomeTeamId, null, new { id = "home-team" })
+            </div>
+        }
+
+        if (!hasAwayTeam && Model.PossibleAwayTeams.Count > 0)
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => Model.AwayTeamId)
+                @Html.DropDownListFor(m => Model.AwayTeamId, Model.PossibleAwayTeams, "To be confirmed", new { @class = "form-control", required = "required", aria_describedby = "away-team" })
+                @Html.ValidationMessageFor(m => Model.AwayTeamId, null, new { id = "away-team" })
+            </div>
+        }
+
+        if (!hasHomeTeam && Model.PossibleHomeTeams.Count == 0)
+        {
+            <div class="form-group related-item">
+                @Html.LabelFor(m => Model.HomeTeamId)
+                @if (Model.HomeTeamId.HasValue)
+                {
+                    <div class="related-item__selected">
+                        <div class="related-item__selected__section">
+                            @Html.TextBoxFor(m => Model.HomeTeamName, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                        <div class="related-item__delete related-item__selected__section">
+                            @Html.HiddenFor(m => Model.HomeTeamId, new { @class = "related-item__data related-item__id" })
+                            <button class="text-danger">@Html.Partial("_DeleteIcon", (Model.HomeTeamId.Value.ToString(), $"Remove {Model.HomeTeamName} from this match"))</button>
+                        </div>
+                    </div>
+                    Model.HomeTeamName = string.Empty;
+                    @Html.TextBoxFor(m => Model.HomeTeamName, new
+                    {
+                        @class = "form-control related-item__search",
+                        placeholder = "Type the home team name",
+                        autocomplete = "off",
+                        required = "required",
+                        type = "search",
+                        data_url = "/api/teams/autocomplete",
+                        data_template = "home-team-template",
+                        aria_label = "Type a team name and press down arrow to select from the matching choices",
+                        disabled = "disabled"
+                    })
+                }
+                else
+                {
+                    @Html.TextBoxFor(m => Model.HomeTeamName, new
+                    {
+                        @class = "form-control related-item__search",
+                        placeholder = "Type the home team name",
+                        autocomplete = "off",
+                        required = "required",
+                        type = "search",
+                        data_url = "/api/teams/autocomplete",
+                        data_template = "home-team-template",
+                        aria_label = "Type a team name and press down arrow to select from the matching choices"
+                    })
+                }
+            </div>
+            <script type="text/x-template" id="home-team-template">
+                <div class="related-item__selected">
+                    <div class="related-item__selected__section">
+                        <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="HomeTeamName" name="HomeTeamName" />
+                    </div>
+                    <div class="related-item__delete related-item__selected__section">
+                        <input name="HomeTeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
+                        <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this match"))</button>
+                    </div>
                 </div>
-            }
+            </script>
+        }
+
+        if (!hasAwayTeam && Model.PossibleAwayTeams.Count == 0)
+        {
+            <div class="form-group related-item">
+                @Html.LabelFor(m => Model.AwayTeamId)
+                @if (Model.AwayTeamId.HasValue)
+                {
+                    <div class="related-item__selected">
+                        <div class="related-item__selected__section">
+                            @Html.TextBoxFor(m => Model.AwayTeamName, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                        <div class="related-item__delete related-item__selected__section">
+                            @Html.HiddenFor(m => Model.AwayTeamId, new { @class = "related-item__data related-item__id" })
+                            <button class="text-danger">@Html.Partial("_DeleteIcon", (Model.AwayTeamId.Value.ToString(), $"Remove {Model.AwayTeamName} from this match"))</button>
+                        </div>
+                    </div>
+                    Model.AwayTeamName = string.Empty;
+                    @Html.TextBoxFor(m => Model.AwayTeamName, new
+                    {
+                        @class = "form-control related-item__search",
+                        placeholder = "Type the away team name",
+                        autocomplete = "off",
+                        required = "required",
+                        type = "search",
+                        data_url = "/api/teams/autocomplete",
+                        data_template = "away-team-template",
+                        aria_label = "Type a team name and press down arrow to select from the matching choices",
+                        disabled = "disabled"
+                    })
+                }
+                else
+                {
+                    @Html.TextBoxFor(m => Model.AwayTeamName, new
+                    {
+                        @class = "form-control related-item__search",
+                        placeholder = "Type the away team name",
+                        autocomplete = "off",
+                        required = "required",
+                        type = "search",
+                        data_url = "/api/teams/autocomplete",
+                        data_template = "away-team-template",
+                        aria_label = "Type a team name and press down arrow to select from the matching choices"
+                    })
+                }
+            </div>
+            <script type="text/x-template" id="away-team-template">
+                <div class="related-item__selected">
+                    <div class="related-item__selected__section">
+                        <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="AwayTeamName" name="AwayTeamName" />
+                    </div>
+                    <div class="related-item__delete related-item__selected__section">
+                        <input name="AwayTeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
+                        <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this match"))</button>
+                    </div>
+                </div>
+            </script>
         }
 
         <h2>If the match went ahead</h2>

@@ -2,6 +2,7 @@
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
+using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Security;
@@ -66,90 +67,20 @@ namespace Stoolball.Web.Matches
                 DateFormatter = _dateTimeFormatter
             };
             model.Match.MatchId = beforeUpdate.MatchId;
+            model.Match.MatchType = beforeUpdate.MatchType;
+            model.Match.StartTime = beforeUpdate.StartTime;
             model.Match.MatchRoute = beforeUpdate.MatchRoute;
             model.Match.UpdateMatchNameAutomatically = beforeUpdate.UpdateMatchNameAutomatically;
             model.Match.Teams = beforeUpdate.Teams;
             model.Match.MatchInnings = beforeUpdate.MatchInnings;
 
-            if (beforeUpdate.MatchType == MatchType.KnockoutMatch)
-            {
-                var season = await _seasonDataSource.ReadSeasonByRoute(beforeUpdate.Season.SeasonRoute, true).ConfigureAwait(false);
-                if (season != null)
-                {
-                    model.PossibleHomeTeams = _editMatchHelper.PossibleTeamsAsListItems(season.Teams);
-                    model.PossibleAwayTeams = _editMatchHelper.PossibleTeamsAsListItems(season.Teams);
+            await AddMissingTeamsFromRequest(beforeUpdate.Season.SeasonRoute, model).ConfigureAwait(false);
 
-                    // Add teams to model.Teams only if they're missing and if the posted team is from the same season.
-                    // By getting it from the season this also adds the team name, which is used to build the match name.
-                    model.HomeTeamId = AddTeamIfMissing(model.Match.Teams, season.Teams, TeamRole.Home);
-                    model.AwayTeamId = AddTeamIfMissing(model.Match.Teams, season.Teams, TeamRole.Away);
-                }
-            }
+            ReadMatchLocationFromRequest(model);
 
-            if (!string.IsNullOrEmpty(Request.Form["MatchLocationId"]))
-            {
-                model.MatchLocationId = new Guid(Request.Form["MatchLocationId"]);
-                model.MatchLocationName = Request.Form["MatchLocationName"];
-                model.Match.MatchLocation = new MatchLocation
-                {
-                    MatchLocationId = model.MatchLocationId
-                };
-            }
+            ReadTossWonByFromRequest(model);
 
-            if (!string.IsNullOrEmpty(Request.Form["TossWonBy"]))
-            {
-                if (Enum.TryParse<TeamRole>(Request.Form["TossWonBy"], out var tossWonByRole))
-                {
-                    foreach (var team in model.Match.Teams)
-                    {
-                        team.WonToss = (team.TeamRole == tossWonByRole);
-                    }
-                }
-                else
-                {
-                    var tossWonByTeam = Guid.Parse(Request.Form["TossWonBy"]);
-                    foreach (var team in model.Match.Teams)
-                    {
-                        team.WonToss = (team.MatchTeamId == tossWonByTeam);
-                    }
-                }
-            }
-            else
-            {
-                foreach (var team in model.Match.Teams)
-                {
-                    team.WonToss = null;
-                }
-            }
-
-            model.Match.InningsOrderIsKnown = false;
-            if (!string.IsNullOrEmpty(Request.Form["BattedFirst"]))
-            {
-                model.Match.InningsOrderIsKnown = true;
-
-                if (Enum.TryParse<TeamRole>(Request.Form["BattedFirst"], out var roleBattedFirst))
-                {
-                    foreach (var team in model.Match.Teams)
-                    {
-                        team.BattedFirst = (team.TeamRole == roleBattedFirst);
-                    }
-                }
-                else
-                {
-                    var battedFirst = Guid.Parse(Request.Form["BattedFirst"]);
-                    foreach (var team in model.Match.Teams)
-                    {
-                        team.BattedFirst = (team.MatchTeamId == battedFirst);
-                    }
-                }
-            }
-            else
-            {
-                foreach (var team in model.Match.Teams)
-                {
-                    team.BattedFirst = null;
-                }
-            }
+            ReadBattedFirstFromRequest(model);
 
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate, Members);
 
@@ -175,19 +106,154 @@ namespace Stoolball.Web.Matches
                     return Redirect(model.Match.MatchRoute);
                 }
             }
+
+            // Reset model.Match.Teams to trigger reappearance of fields, but preserve the values selected in model.*TeamId and model.*TeamName
+            var selectedHomeTeam = model.Match.Teams.SingleOrDefault(x => !x.MatchTeamId.HasValue && x.TeamRole == TeamRole.Home);
+            if (selectedHomeTeam != null)
+            {
+                model.HomeTeamId = selectedHomeTeam.Team.TeamId;
+                model.HomeTeamName = selectedHomeTeam.Team.TeamName;
+                model.Match.Teams.Remove(selectedHomeTeam);
+            }
+
+            var selectedAwayTeam = model.Match.Teams.SingleOrDefault(x => !x.MatchTeamId.HasValue && x.TeamRole == TeamRole.Away);
+            if (selectedAwayTeam != null)
+            {
+                model.AwayTeamId = selectedAwayTeam.Team.TeamId;
+                model.AwayTeamName = selectedAwayTeam.Team.TeamName;
+                model.Match.Teams.Remove(selectedAwayTeam);
+            }
+
             model.Match.MatchName = beforeUpdate.MatchName;
             model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
             return View("EditStartOfPlay", model);
         }
 
-        private Guid? AddTeamIfMissing(List<TeamInMatch> teamsInTheMatch, List<TeamInSeason> teamsInTheSeason, TeamRole teamRole)
+        private async Task AddMissingTeamsFromRequest(string seasonRoute, EditStartOfPlayViewModel model)
         {
-            Guid? postedTeamId = null;
+            if (model.Match.MatchType == MatchType.KnockoutMatch)
+            {
+                var season = await _seasonDataSource.ReadSeasonByRoute(seasonRoute, true).ConfigureAwait(false);
+                if (season != null)
+                {
+                    model.PossibleHomeTeams = _editMatchHelper.PossibleTeamsAsListItems(season.Teams);
+                    model.PossibleAwayTeams = _editMatchHelper.PossibleTeamsAsListItems(season.Teams);
+
+                    // Add teams to model.Teams only if they're missing and if the posted team is from the same season.
+                    // By getting it from the season this also adds the team name, which is used to build the match name.
+                    AddTeamIfMissing(model.Match.Teams, season.Teams, TeamRole.Home);
+                    AddTeamIfMissing(model.Match.Teams, season.Teams, TeamRole.Away);
+                }
+            }
+
+            if (model.Match.MatchType == MatchType.FriendlyMatch)
+            {
+                // Add teams to model.Teams only if they're missing, 
+                AddTeamIfMissing(model.Match.Teams, TeamRole.Home);
+                AddTeamIfMissing(model.Match.Teams, TeamRole.Away);
+            }
+        }
+
+        private void ReadMatchLocationFromRequest(EditStartOfPlayViewModel model)
+        {
+            if (!string.IsNullOrEmpty(Request.Form["MatchLocationId"]))
+            {
+                model.MatchLocationId = new Guid(Request.Form["MatchLocationId"]);
+                model.MatchLocationName = Request.Form["MatchLocationName"];
+                model.Match.MatchLocation = new MatchLocation
+                {
+                    MatchLocationId = model.MatchLocationId
+                };
+            }
+        }
+
+        private void ReadTossWonByFromRequest(EditStartOfPlayViewModel model)
+        {
+            model.TossWonBy = Request.Form["TossWonBy"];
+            if (!string.IsNullOrEmpty(model.TossWonBy))
+            {
+                if (Enum.TryParse<TeamRole>(model.TossWonBy, out var tossWonByRole))
+                {
+                    foreach (var team in model.Match.Teams)
+                    {
+                        team.WonToss = (team.TeamRole == tossWonByRole);
+                    }
+                }
+                else
+                {
+                    var tossWonByTeam = Guid.Parse(model.TossWonBy);
+                    foreach (var team in model.Match.Teams)
+                    {
+                        team.WonToss = (team.MatchTeamId == tossWonByTeam);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var team in model.Match.Teams)
+                {
+                    team.WonToss = null;
+                }
+            }
+        }
+
+        private void ReadBattedFirstFromRequest(EditStartOfPlayViewModel model)
+        {
+            model.Match.InningsOrderIsKnown = false;
+            model.BattedFirst = Request.Form["BattedFirst"];
+            if (!string.IsNullOrEmpty(model.BattedFirst))
+            {
+                model.Match.InningsOrderIsKnown = true;
+
+                if (Enum.TryParse<TeamRole>(model.BattedFirst, out var roleBattedFirst))
+                {
+                    foreach (var team in model.Match.Teams)
+                    {
+                        team.BattedFirst = (team.TeamRole == roleBattedFirst);
+                    }
+                }
+                else
+                {
+                    var battedFirst = Guid.Parse(model.BattedFirst);
+                    foreach (var team in model.Match.Teams)
+                    {
+                        team.BattedFirst = (team.MatchTeamId == battedFirst);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var team in model.Match.Teams)
+                {
+                    team.BattedFirst = null;
+                }
+            }
+        }
+
+        private void AddTeamIfMissing(List<TeamInMatch> teamsInTheMatch, TeamRole teamRole)
+        {
             var hasTeamInRole = teamsInTheMatch.Any(x => x.TeamRole == teamRole);
             if (!hasTeamInRole && !string.IsNullOrEmpty(Request.Form[teamRole.ToString() + "TeamId"]))
             {
-                postedTeamId = new Guid(Request.Form[teamRole.ToString() + "TeamId"]);
+                teamsInTheMatch.Add(new TeamInMatch
+                {
+                    Team = new Team
+                    {
+                        TeamId = new Guid(Request.Form[teamRole.ToString() + "TeamId"]),
+                        TeamName = Request.Form[teamRole.ToString() + "TeamName"]
+                    },
+                    TeamRole = teamRole
+                });
+            }
+        }
+
+        private void AddTeamIfMissing(List<TeamInMatch> teamsInTheMatch, List<TeamInSeason> teamsInTheSeason, TeamRole teamRole)
+        {
+            var hasTeamInRole = teamsInTheMatch.Any(x => x.TeamRole == teamRole);
+            if (!hasTeamInRole && !string.IsNullOrEmpty(Request.Form[teamRole.ToString() + "TeamId"]))
+            {
+                Guid? postedTeamId = new Guid(Request.Form[teamRole.ToString() + "TeamId"]);
                 var team = teamsInTheSeason.SingleOrDefault(x => x.Team.TeamId == postedTeamId)?.Team;
                 if (team != null)
                 {
@@ -198,7 +264,6 @@ namespace Stoolball.Web.Matches
                     });
                 }
             }
-            return postedTeamId;
         }
     }
 }

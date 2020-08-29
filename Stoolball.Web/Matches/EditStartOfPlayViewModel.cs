@@ -23,9 +23,12 @@ namespace Stoolball.Web.Matches
         [Required]
         public Guid? HomeTeamId { get; set; }
 
+        public string HomeTeamName { get; set; }
+
         [Display(Name = "Away team")]
         [Required]
         public Guid? AwayTeamId { get; set; }
+        public string AwayTeamName { get; set; }
 
         [Display(Name = "Ground or sports centre name")]
         public string MatchLocationName { get; set; }

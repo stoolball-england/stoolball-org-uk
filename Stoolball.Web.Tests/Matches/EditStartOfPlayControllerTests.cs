@@ -1,6 +1,7 @@
 ﻿using Moq;
 using Stoolball.Competitions;
 using Stoolball.Dates;
+using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Security;
@@ -37,8 +38,10 @@ namespace Stoolball.Web.Tests.Matches
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
                 matchDataSource,
+                Mock.Of<ISeasonDataSource>(),
                 Mock.Of<IAuthorizationPolicy<Stoolball.Matches.Match>>(),
-                Mock.Of<IDateTimeFormatter>())
+                Mock.Of<IDateTimeFormatter>(),
+                Mock.Of<IEditMatchHelper>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(requestUrl);

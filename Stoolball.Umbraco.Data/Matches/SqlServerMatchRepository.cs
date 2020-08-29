@@ -333,8 +333,14 @@ namespace Stoolball.Umbraco.Data.Matches
                             },
                             transaction).ConfigureAwait(false);
 
+                        if (routeBeforeUpdate != match.MatchRoute)
+                        {
+                            await _redirectsRepository.InsertRedirect(routeBeforeUpdate, match.MatchRoute, null, transaction).ConfigureAwait(false);
+                        }
+
                         transaction.Commit();
                     }
+
                 }
 
                 await _auditRepository.CreateAudit(new AuditRecord
@@ -390,11 +396,16 @@ namespace Stoolball.Umbraco.Data.Matches
                     using (var transaction = connection.BeginTransaction())
                     {
                         var beforeUpdate = await connection.QuerySingleAsync<Match>(
-                            $@"SELECT MatchResultType, UpdateMatchNameAutomatically, MatchName 
+                            $@"SELECT MatchResultType, UpdateMatchNameAutomatically, MatchName, MatchRoute, StartTime
                             FROM {Tables.Match} 
                             WHERE MatchId = @MatchId",
                             new { match.MatchId },
                             transaction).ConfigureAwait(false);
+
+                        // the route might change if teams were missing and are only now being added
+                        match.StartTime = beforeUpdate.StartTime;
+                        await UpdateMatchRoute(match, beforeUpdate.MatchRoute, transaction).ConfigureAwait(false);
+
                         if (!match.MatchResultType.HasValue && beforeUpdate.MatchResultType.HasValue &&
                             new List<MatchResultType> { MatchResultType.HomeWin, MatchResultType.AwayWin, MatchResultType.Tie }.Contains(beforeUpdate.MatchResultType.Value))
                         {
@@ -402,12 +413,14 @@ namespace Stoolball.Umbraco.Data.Matches
                             // therefore also don't update match name
                             await connection.ExecuteAsync($@"UPDATE {Tables.Match} SET
                                 MatchLocationId = @MatchLocationId, 
-                                InningsOrderIsKnown = @InningsOrderIsKnown
+                                InningsOrderIsKnown = @InningsOrderIsKnown,
+                                MatchRoute = @MatchRoute
                                 WHERE MatchId = @MatchId",
                             new
                             {
                                 match.MatchLocation?.MatchLocationId,
                                 match.InningsOrderIsKnown,
+                                match.MatchRoute,
                                 match.MatchId
                             }, transaction).ConfigureAwait(false);
                         }
@@ -427,7 +440,8 @@ namespace Stoolball.Umbraco.Data.Matches
                                 MatchName = @MatchName,                                
                                 MatchLocationId = @MatchLocationId, 
                                 InningsOrderIsKnown = @InningsOrderIsKnown, 
-                                MatchResultType = @MatchResultType
+                                MatchResultType = @MatchResultType,
+                                MatchRoute = @MatchRoute
                                 WHERE MatchId = @MatchId",
                             new
                             {
@@ -435,6 +449,7 @@ namespace Stoolball.Umbraco.Data.Matches
                                 match.MatchLocation?.MatchLocationId,
                                 match.InningsOrderIsKnown,
                                 MatchResultType = match.MatchResultType?.ToString(),
+                                match.MatchRoute,
                                 match.MatchId
                             }, transaction).ConfigureAwait(false);
                         }
@@ -515,8 +530,14 @@ namespace Stoolball.Umbraco.Data.Matches
                             }
                         }
 
+                        if (beforeUpdate.MatchRoute != match.MatchRoute)
+                        {
+                            await _redirectsRepository.InsertRedirect(beforeUpdate.MatchRoute, match.MatchRoute, null, transaction).ConfigureAwait(false);
+                        }
+
                         transaction.Commit();
                     }
+
                 }
 
                 await _auditRepository.CreateAudit(new AuditRecord
@@ -558,7 +579,7 @@ namespace Stoolball.Umbraco.Data.Matches
                 transaction).ConfigureAwait(false);
         }
 
-        private async Task UpdateMatchRoute(Match match, string routeBeforeUpdate, System.Data.IDbTransaction transaction)
+        private async Task UpdateMatchRoute(Match match, string routeBeforeUpdate, IDbTransaction transaction)
         {
             string baseRoute = string.Empty;
             if (!match.UpdateMatchNameAutomatically)
@@ -579,7 +600,7 @@ namespace Stoolball.Umbraco.Data.Matches
             }
 
 
-            match.MatchRoute = _routeGenerator.GenerateRoute("/matches", baseRoute + " " + match.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.MatchRoute);
+            match.MatchRoute = _routeGenerator.GenerateRoute("/matches", baseRoute + " " + match.StartTime.LocalDateTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.MatchRoute);
             if (match.MatchRoute != routeBeforeUpdate)
             {
                 int count;
@@ -595,7 +616,7 @@ namespace Stoolball.Umbraco.Data.Matches
             }
         }
 
-        private static async Task PopulateTeamNames(Match match, System.Data.IDbTransaction transaction)
+        private static async Task PopulateTeamNames(Match match, IDbTransaction transaction)
         {
             if (match.Teams.Count > 0)
             {
