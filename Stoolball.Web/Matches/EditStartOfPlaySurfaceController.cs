@@ -102,8 +102,8 @@ namespace Stoolball.Web.Matches
                 }
                 else
                 {
-                    // Redirect to close of play for now, but this will go to the scorecard
-                    return Redirect(model.Match.MatchRoute + "/edit/close-of-play");
+                    // Redirect to bowling scorecard for now, but this will go to the batting scorecard
+                    return Redirect(model.Match.MatchRoute + "/edit/innings/1/bowling");
                 }
             }
 
