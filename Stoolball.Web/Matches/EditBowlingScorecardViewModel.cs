@@ -13,5 +13,7 @@ namespace Stoolball.Web.Matches
         public Match Match { get; set; }
 
         public IDateTimeFormatter DateFormatter { get; set; }
+        public int? InningsOrderInMatch { get; set; }
+        public MatchInnings CurrentInnings { get; internal set; }
     }
 }

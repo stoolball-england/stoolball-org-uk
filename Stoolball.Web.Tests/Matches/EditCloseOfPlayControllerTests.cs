@@ -74,7 +74,6 @@ namespace Stoolball.Web.Tests.Matches
             }
         }
 
-
         [Fact]
         public async Task Route_matching_match_in_the_future_returns_404()
         {
@@ -89,11 +88,45 @@ namespace Stoolball.Web.Tests.Matches
             }
         }
 
-        [Fact]
-        public async Task Route_matching_match_in_the_past_returns_EditCloseOfPlayViewModel()
+        [Theory]
+        [InlineData(MatchResultType.HomeWinByForfeit)]
+        [InlineData(MatchResultType.AwayWinByForfeit)]
+        [InlineData(MatchResultType.Postponed)]
+        [InlineData(MatchResultType.Cancelled)]
+        public async Task Route_matching_match_with_not_played_result_returns_404(MatchResultType matchResultType)
         {
             var matchDataSource = new Mock<IMatchDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { StartTime = DateTime.UtcNow.AddHours(-1), Season = new Season() });
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
+            {
+                StartTime = DateTime.UtcNow.AddHours(1),
+                MatchResultType = matchResultType,
+                Season = new Season()
+            });
+
+            using (var controller = new TestController(matchDataSource.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                Assert.IsType<HttpNotFoundResult>(result);
+            }
+        }
+
+        [Theory]
+        [InlineData(MatchResultType.HomeWin)]
+        [InlineData(MatchResultType.AwayWin)]
+        [InlineData(MatchResultType.Tie)]
+        [InlineData(MatchResultType.AbandonedDuringPlayAndPostponed)]
+        [InlineData(MatchResultType.AbandonedDuringPlayAndCancelled)]
+        [InlineData(null)]
+        public async Task Route_matching_match_played_in_the_past_returns_EditCloseOfPlayViewModel(MatchResultType? matchResultType)
+        {
+            var matchDataSource = new Mock<IMatchDataSource>();
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
+            {
+                StartTime = DateTime.UtcNow.AddHours(-1),
+                Season = new Season(),
+                MatchResultType = matchResultType
+            });
 
             using (var controller = new TestController(matchDataSource.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper))
             {

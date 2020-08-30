@@ -53,6 +53,7 @@ namespace Stoolball.Web
             composition.Register<IEditMatchHelper, EditMatchHelper>(Lifetime.Singleton);
             composition.Register<IMemberGroupHelper, MemberGroupHelper>(Lifetime.Singleton);
             composition.Register<IMatchResultEvaluator, MatchResultEvaluator>(Lifetime.Singleton);
+            composition.Register<IMatchInningsUrlParser, MatchInningsUrlParser>(Lifetime.Singleton);
 
             // Data migration from the old Stoolball England website
             composition.Register<IAuditHistoryBuilder, AuditHistoryBuilder>(Lifetime.Singleton);

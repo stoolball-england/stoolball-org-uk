@@ -4,6 +4,7 @@ using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -63,6 +64,14 @@ namespace Stoolball.Web.Matches
             {
                 // This page is only for matches in the past
                 if (model.Match.StartTime > DateTime.UtcNow)
+                {
+                    return new HttpNotFoundResult();
+                }
+
+                // This page is not for matches not played
+                if (model.Match.MatchResultType.HasValue && new List<MatchResultType> {
+                    MatchResultType.HomeWinByForfeit, MatchResultType.AwayWinByForfeit, MatchResultType.Postponed, MatchResultType.Cancelled
+                }.Contains(model.Match.MatchResultType.Value))
                 {
                     return new HttpNotFoundResult();
                 }

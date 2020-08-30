@@ -1,10 +1,12 @@
 ﻿using Moq;
 using Stoolball.Competitions;
 using Stoolball.Dates;
+using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Security;
 using System;
+using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -28,7 +30,7 @@ namespace Stoolball.Web.Tests.Matches
 
         private class TestController : EditBowlingScorecardController
         {
-            public TestController(IMatchDataSource matchDataSource, Uri requestUrl, UmbracoHelper umbracoHelper)
+            public TestController(IMatchDataSource matchDataSource, Uri requestUrl, IMatchInningsUrlParser urlParser, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -38,10 +40,11 @@ namespace Stoolball.Web.Tests.Matches
                 umbracoHelper,
                 matchDataSource,
                 Mock.Of<IAuthorizationPolicy<Stoolball.Matches.Match>>(),
-                Mock.Of<IDateTimeFormatter>())
+                Mock.Of<IDateTimeFormatter>(),
+                urlParser)
             {
                 var request = new Mock<HttpRequestBase>();
-                request.SetupGet(x => x.Url).Returns(requestUrl);
+                request.SetupGet(x => x.RawUrl).Returns(requestUrl.AbsolutePath);
 
                 var context = new Mock<HttpContextBase>();
                 context.SetupGet(x => x.Request).Returns(request.Object);
@@ -64,7 +67,10 @@ namespace Stoolball.Web.Tests.Matches
             var matchDataSource = new Mock<IMatchDataSource>();
             matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).Returns(Task.FromResult<Stoolball.Matches.Match>(null));
 
-            using (var controller = new TestController(matchDataSource.Object, new Uri("https://example.org/not-a-match"), UmbracoHelper))
+            var urlParser = new Mock<IMatchInningsUrlParser>();
+            urlParser.Setup(x => x.ParseInningsOrderInMatchFromUrl(It.IsAny<Uri>())).Returns(1);
+
+            using (var controller = new TestController(matchDataSource.Object, new Uri("https://example.org/not-a-match"), urlParser.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -79,7 +85,36 @@ namespace Stoolball.Web.Tests.Matches
             var matchDataSource = new Mock<IMatchDataSource>();
             matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { StartTime = DateTime.UtcNow.AddHours(1), Season = new Season() });
 
-            using (var controller = new TestController(matchDataSource.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper))
+            var urlParser = new Mock<IMatchInningsUrlParser>();
+            urlParser.Setup(x => x.ParseInningsOrderInMatchFromUrl(It.IsAny<Uri>())).Returns(1);
+
+            using (var controller = new TestController(matchDataSource.Object, new Uri("https://example.org/matches/example-match"), urlParser.Object, UmbracoHelper))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                Assert.IsType<HttpNotFoundResult>(result);
+            }
+        }
+
+        [Theory]
+        [InlineData(MatchResultType.HomeWinByForfeit)]
+        [InlineData(MatchResultType.AwayWinByForfeit)]
+        [InlineData(MatchResultType.Postponed)]
+        [InlineData(MatchResultType.Cancelled)]
+        public async Task Route_matching_match_with_not_played_result_returns_404(MatchResultType matchResultType)
+        {
+            var matchDataSource = new Mock<IMatchDataSource>();
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
+            {
+                StartTime = DateTime.UtcNow.AddHours(1),
+                MatchResultType = matchResultType,
+                Season = new Season()
+            });
+
+            var urlParser = new Mock<IMatchInningsUrlParser>();
+            urlParser.Setup(x => x.ParseInningsOrderInMatchFromUrl(It.IsAny<Uri>())).Returns(1);
+
+            using (var controller = new TestController(matchDataSource.Object, new Uri("https://example.org/matches/example-match"), urlParser.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -88,16 +123,131 @@ namespace Stoolball.Web.Tests.Matches
         }
 
         [Fact]
-        public async Task Route_matching_match_in_the_past_returns_EditBowlingScorecardViewModel()
+        public async Task Route_not_matching_innings_returns_404()
         {
             var matchDataSource = new Mock<IMatchDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { StartTime = DateTime.UtcNow.AddHours(-1), Season = new Season() });
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
+            {
+                StartTime = DateTime.UtcNow.AddHours(1),
+                MatchResultType = MatchResultType.HomeWin,
+                Season = new Season()
+            });
 
-            using (var controller = new TestController(matchDataSource.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper))
+            var urlParser = new Mock<IMatchInningsUrlParser>();
+            urlParser.Setup(x => x.ParseInningsOrderInMatchFromUrl(It.IsAny<Uri>())).Returns<int?>(null);
+
+            using (var controller = new TestController(matchDataSource.Object, new Uri("https://example.org/matches/example-match"), urlParser.Object, UmbracoHelper))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                Assert.IsType<HttpNotFoundResult>(result);
+            }
+        }
+
+        [Theory]
+        [InlineData(MatchResultType.HomeWin)]
+        [InlineData(MatchResultType.AwayWin)]
+        [InlineData(MatchResultType.Tie)]
+        [InlineData(MatchResultType.AbandonedDuringPlayAndPostponed)]
+        [InlineData(MatchResultType.AbandonedDuringPlayAndCancelled)]
+        [InlineData(null)]
+        public async Task Route_matching_match_played_in_the_past_returns_EditBowlingScorecardViewModel(MatchResultType? matchResultType)
+        {
+            var matchDataSource = new Mock<IMatchDataSource>();
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
+            {
+                StartTime = DateTime.UtcNow.AddHours(-1),
+                Season = new Season(),
+                MatchResultType = matchResultType,
+                MatchInnings = new List<MatchInnings> {
+                    new MatchInnings{ InningsOrderInMatch = 1 }
+                }
+            });
+
+            var urlParser = new Mock<IMatchInningsUrlParser>();
+            urlParser.Setup(x => x.ParseInningsOrderInMatchFromUrl(It.IsAny<Uri>())).Returns(1);
+
+            using (var controller = new TestController(matchDataSource.Object, new Uri("https://example.org/matches/example-match"), urlParser.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
                 Assert.IsType<EditBowlingScorecardViewModel>(((ViewResult)result).Model);
+            }
+        }
+
+        [Fact]
+        public async Task ModelU002ECurrentInningsU002EOvers_defaults_to_12()
+        {
+            var matchDataSource = new Mock<IMatchDataSource>();
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
+            {
+                StartTime = DateTime.UtcNow.AddHours(-1),
+                Season = new Season(),
+                MatchResultType = MatchResultType.HomeWin,
+                MatchInnings = new List<MatchInnings> {
+                    new MatchInnings{ InningsOrderInMatch = 1 }
+                }
+            });
+
+            var urlParser = new Mock<IMatchInningsUrlParser>();
+            urlParser.Setup(x => x.ParseInningsOrderInMatchFromUrl(It.IsAny<Uri>())).Returns(1);
+
+            using (var controller = new TestController(matchDataSource.Object, new Uri("https://example.org/matches/example-match"), urlParser.Object, UmbracoHelper))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                Assert.Equal(12, ((EditBowlingScorecardViewModel)((ViewResult)result).Model).CurrentInnings.Overs);
+            }
+        }
+
+        [Fact]
+        public async Task ModelU002ECurrentInningsU002EOvers_defaults_to_6_for_tournaments()
+        {
+            var matchDataSource = new Mock<IMatchDataSource>();
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
+            {
+                StartTime = DateTime.UtcNow.AddHours(-1),
+                Season = new Season(),
+                MatchResultType = MatchResultType.HomeWin,
+                MatchInnings = new List<MatchInnings> {
+                    new MatchInnings{ InningsOrderInMatch = 1 }
+                },
+                Tournament = new Tournament { TournamentName = "Example tournament" }
+            });
+
+            var urlParser = new Mock<IMatchInningsUrlParser>();
+            urlParser.Setup(x => x.ParseInningsOrderInMatchFromUrl(It.IsAny<Uri>())).Returns(1);
+
+            using (var controller = new TestController(matchDataSource.Object, new Uri("https://example.org/matches/example-match"), urlParser.Object, UmbracoHelper))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                Assert.Equal(6, ((EditBowlingScorecardViewModel)((ViewResult)result).Model).CurrentInnings.Overs);
+            }
+        }
+
+        [Fact]
+        public async Task ModelU002ECurrentInningsU002EOversBowled_is_padded_with_empty_overs()
+        {
+            var matchDataSource = new Mock<IMatchDataSource>();
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
+            {
+                StartTime = DateTime.UtcNow.AddHours(-1),
+                Season = new Season(),
+                MatchResultType = MatchResultType.HomeWin,
+                MatchInnings = new List<MatchInnings> {
+                    new MatchInnings{ InningsOrderInMatch = 1, Overs = 9, OversBowled = new List<Over>() }
+                },
+            });
+
+            var urlParser = new Mock<IMatchInningsUrlParser>();
+            urlParser.Setup(x => x.ParseInningsOrderInMatchFromUrl(It.IsAny<Uri>())).Returns(1);
+
+            using (var controller = new TestController(matchDataSource.Object, new Uri("https://example.org/matches/example-match"), urlParser.Object, UmbracoHelper))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                Assert.Equal(9, ((EditBowlingScorecardViewModel)((ViewResult)result).Model).CurrentInnings.OversBowled.Count);
             }
         }
     }

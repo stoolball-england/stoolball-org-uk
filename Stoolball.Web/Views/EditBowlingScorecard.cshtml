@@ -1,6 +1,5 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<EditBowlingScorecardViewModel>
 @using ClientDependency.Core.Mvc
-@using Stoolball.Matches
 @using Stoolball.Web.Matches
 @using Stoolball.Web.Security
 @using Humanizer
@@ -35,20 +34,19 @@
         <ol class="steps">
             <li class="steps__completed"><em class="sr-only">Start of play</em></li>
             @{
-                var currentInnings = Request.RawUrl.Contains("/1/") ? 1 : 2;
                 for (var i = 0; i < Model.Match.MatchInnings.Count; i++)
                 {
-                    if (currentInnings < (i + 1))
+                    if (Model.InningsOrderInMatch < (i + 1))
                     {
                     <li><span class="sr-only">@((i + 1).Ordinalize()) innings batting</span></li>
                     <li><span class="sr-only">@((i + 1).Ordinalize()) innings bowling</span></li>
                     }
-                    else if (currentInnings == (i + 1))
+                    else if (Model.InningsOrderInMatch == (i + 1))
                     {
                     <li class="steps__completed"><span class="sr-only">@((i + 1).Ordinalize()) innings batting</span></li>
                     <li aria-current="step"><span class="sr-only">@((i + 1).Ordinalize()) innings bowling</span></li>
                     }
-                    else if (currentInnings > (i + 1))
+                    else if (Model.InningsOrderInMatch > (i + 1))
                     {
                     <li class="steps__completed"><span class="sr-only">@((i + 1).Ordinalize()) innings batting</span></li>
                     <li class="steps__completed"><span class="sr-only">@((i + 1).Ordinalize()) innings bowling</span></li>
@@ -63,6 +61,31 @@
         @* Just to avoid an error for now... *@
         @Html.HiddenFor(m => Model.Match.MatchId);
 
+        <table class="table">
+            <caption>@Model.CurrentInnings.BowlingTeam.Team.TeamName's bowling, over-by-over</caption>
+            <thead>
+                <tr>
+                <th scope="col">Bowler</th>
+                <th scope="col" class="numeric">Balls bowled <small>(excluding extras)</small></th>
+                <th scope="col" class="numeric">Wides</th>
+                <th scope="col" class="numeric">No balls</th>
+                <th scope="col" class="numeric">Over total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (var i = 0; i < (Model.CurrentInnings.Overs); i++)
+                {
+                <tr>
+                    <th scope="row">@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].PlayerIdentity.PlayerIdentityName, new { maxlength = "100", autocomplete = "off", @class = "scorecard__player-name", data_team = Model.CurrentInnings.BowlingTeam.Team.TeamId.ToString() })</th>
+                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].BallsBowled, new { autocomplete = "off", type = "number", min = "0", max = "12", @class = "numeric" })</td>
+                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].Wides, new { autocomplete = "off", type = "number", min = "0", @class = "numeric" })</td>
+                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].NoBalls, new { autocomplete = "off", type = "number", min = "0", @class = "numeric" })</td>
+                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].RunsConceded, new { autocomplete = "off", type = "number", min = "0", @class = "numeric" })</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+        
         <button class="btn btn-primary">Save and continue &gt;</button>
     }
 }

@@ -4,6 +4,8 @@ using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Umbraco.Core.Cache;
@@ -20,6 +22,7 @@ namespace Stoolball.Web.Matches
         private readonly IMatchDataSource _matchDataSource;
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
+        private readonly IMatchInningsUrlParser _matchInningsUrlParser;
 
         public EditBowlingScorecardController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -29,12 +32,14 @@ namespace Stoolball.Web.Matches
            UmbracoHelper umbracoHelper,
            IMatchDataSource matchDataSource,
            IAuthorizationPolicy<Match> authorizationPolicy,
-           IDateTimeFormatter dateFormatter)
+           IDateTimeFormatter dateFormatter,
+           IMatchInningsUrlParser matchInningsUrlParser)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
+            _matchInningsUrlParser = matchInningsUrlParser ?? throw new ArgumentNullException(nameof(matchInningsUrlParser));
         }
 
         [HttpGet]
@@ -49,10 +54,11 @@ namespace Stoolball.Web.Matches
             var model = new EditBowlingScorecardViewModel(contentModel.Content)
             {
                 Match = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false),
-                DateFormatter = _dateFormatter
+                DateFormatter = _dateFormatter,
+                InningsOrderInMatch = _matchInningsUrlParser.ParseInningsOrderInMatchFromUrl(new Uri(Request.RawUrl, UriKind.Relative))
             };
 
-            if (model.Match == null)
+            if (model.Match == null || !model.InningsOrderInMatch.HasValue)
             {
                 return new HttpNotFoundResult();
             }
@@ -64,7 +70,25 @@ namespace Stoolball.Web.Matches
                     return new HttpNotFoundResult();
                 }
 
+                // This page is not for matches not played
+                if (model.Match.MatchResultType.HasValue && new List<MatchResultType> {
+                    MatchResultType.HomeWinByForfeit, MatchResultType.AwayWinByForfeit, MatchResultType.Postponed, MatchResultType.Cancelled
+                }.Contains(model.Match.MatchResultType.Value))
+                {
+                    return new HttpNotFoundResult();
+                }
+
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match, Members);
+
+                model.CurrentInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
+                if (!model.CurrentInnings.Overs.HasValue)
+                {
+                    model.CurrentInnings.Overs = model.Match.Tournament != null ? 6 : 12;
+                }
+                while (model.CurrentInnings.OversBowled.Count < model.CurrentInnings.Overs)
+                {
+                    model.CurrentInnings.OversBowled.Add(new Over());
+                }
 
                 model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
