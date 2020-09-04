@@ -1,0 +1,58 @@
+﻿{
+  "short_name": "Stoolball England",
+  "name": "Stoolball England",
+  "description": "The National Governing Body of Stoolball: a fast, fun, exciting sport. We promote stoolball, set rules, train coaches, facilitate matches & supply equipment.",
+  "icons": [
+    {
+      "src": "/images/logos/stoolball-england-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/images/logos/stoolball-england-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/images/logos/stoolball-england-icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "513x513"
+    }
+  ],
+  "start_url": "/?source=pwa",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#008000",
+  "orientation": "any",
+  "dir": "ltr",
+  "lang": "en",
+  "shortcuts": [
+    {
+      "name": "Teams",
+      "short_name": "Teams",
+      "description": "Search for stoolball teams",
+      "url": "/teams?source=pwa",
+      "icons": [
+        {
+          "src": "/images/logos/stoolball-england-192.png",
+          "type": "image/png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Competitions",
+      "short_name": "Competitions",
+      "description": "Leagues and other groups",
+      "url": "/competitions?source=pwa",
+      "icons": [
+        {
+          "src": "/images/logos/stoolball-england-192.png",
+          "type": "image/png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
