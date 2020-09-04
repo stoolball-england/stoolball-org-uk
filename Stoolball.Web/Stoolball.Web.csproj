@@ -734,6 +734,7 @@
     </Content>
     <Content Include="Global.asax" />
     <Content Include="HttpStatus\410.html" />
+    <Content Include="HttpStatus\offline.html" />
     <Content Include="HttpStatus\500.html" />
     <Content Include="HttpStatus\400.html" />
     <Content Include="HttpStatus\404.html" />
@@ -747,6 +748,7 @@
     <Content Include="js\libs\purify.js" />
     <Content Include="js\libs\purify.min.js" />
     <Content Include="js\maps.js" />
+    <Content Include="js\register-service-worker.js" />
     <Content Include="js\related-item.js" />
     <Content Include="js\related-items.js" />
     <Content Include="js\tinymce.js" />
@@ -877,6 +879,7 @@
     <Content Include="Scripts\umd\popper-utils.min.js" />
     <Content Include="Scripts\umd\popper.js" />
     <Content Include="Scripts\umd\popper.min.js" />
+    <Content Include="service-worker.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
