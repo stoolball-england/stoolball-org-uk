@@ -1,13 +1,33 @@
-﻿addEventListener('install', function (event) {
-	event.waitUntil(caches.open('core').then(function (cache) {
+﻿const version = '1.0.0';
+const coreCache = version + "_core";
+const cacheIDs = [coreCache];
+
+// Cache a branded offline page
+self.addEventListener('install', function (event) {
+	event.waitUntil(caches.open(coreCache).then(function (cache) {
 		cache.add(new Request('/httpstatus/offline.html'));
 		cache.add(new Request('/css/base.min.css'));
+		cache.add(new Request('/favicon.ico'));
 		cache.add(new Request('/images/logos/stoolball-england.svg'));
 		return;
 	}));
 });
 
-addEventListener('fetch', function (event) {
+// On version update, remove old cached files
+self.addEventListener('activate', function (event) {
+	event.waitUntil(caches.keys().then(function (keys) {
+		return Promise.all(keys.filter(function (key) {
+			return !cacheIDs.includes(key);
+		}).map(function (key) {
+			return caches.delete(key);
+		}));
+	}).then(function () {
+		return self.clients.claim();
+	}))
+});
+
+// Handle requests - return the offline page if they fail
+self.addEventListener('fetch', function (event) {
 	var request = event.request;
 
 	// Bug fix https://stackoverflow.com/a/49719964
