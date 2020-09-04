@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Web.Mvc;
 
 namespace Stoolball.Web.Security
@@ -14,6 +15,7 @@ namespace Stoolball.Web.Security
         private const string FONT_SRC = "font-src";
         private const string CONNECT_SRC = "connect-src";
         private const string TRUSTED_TYPES = "require-trusted-types-for";
+        private const string MANIFEST_SRC = "manifest-src";
         private const string SOURCE_SEPARATOR = " ";
         private const string DIRECTIVE_SEPARATOR = ";";
 
@@ -59,8 +61,8 @@ namespace Stoolball.Web.Security
                 SetupTrustedTypes();
             }
 
-            filterContext.HttpContext.Response.Headers.Add("Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, CONNECT_SRC, TRUSTED_TYPES));
-            filterContext.HttpContext.Response.Headers.Add("X-Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, CONNECT_SRC));
+            filterContext.HttpContext.Response.Headers.Add("Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, CONNECT_SRC, MANIFEST_SRC, TRUSTED_TYPES));
+            filterContext.HttpContext.Response.Headers.Add("X-Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, MANIFEST_SRC, CONNECT_SRC));
         }
 
         private void SetupTinyMCE()
@@ -128,6 +130,7 @@ namespace Stoolball.Web.Security
             AddSource(IMG_SRC, "'self'");
             AddSource(IMG_SRC, "https://s.gravatar.com/avatar/");
             AddSource(CONNECT_SRC, "'self'");
+            AddSource(MANIFEST_SRC, "'self'");
         }
 
         private void SetupDirectives()
@@ -140,6 +143,7 @@ namespace Stoolball.Web.Security
             _directives.Add(FONT_SRC, new List<string>());
             _directives.Add(CONNECT_SRC, new List<string>());
             _directives.Add(TRUSTED_TYPES, new List<string>());
+            _directives.Add(MANIFEST_SRC, new List<string>());
         }
     }
 }
