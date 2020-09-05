@@ -1098,6 +1098,7 @@
     <Compile Include="Teams\DeleteTeamController.cs" />
     <Compile Include="Teams\DeleteTeamViewModel.cs" />
     <Compile Include="Teams\TeamAuthorizationPolicy.cs" />
+    <Compile Include="Teams\PlayersApiController.cs" />
     <Compile Include="WebApi\AutocompleteResult.cs" />
     <Compile Include="WebApi\AutocompleteResultSet.cs" />
     <Compile Include="WebApi\WebApiComposer.cs" />

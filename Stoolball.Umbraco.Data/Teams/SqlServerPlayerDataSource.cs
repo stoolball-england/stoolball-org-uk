@@ -33,12 +33,22 @@ namespace Stoolball.Umbraco.Data.Teams
             {
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
-                    var sql = $@"SELECT p.PlayerIdentityId
+                    var sql = $@"SELECT p.PlayerIdentityId, p.PlayerIdentityName, p.TotalMatches, p.FirstPlayed, p.LastPlayed,
+                            t.TeamId, tn.TeamName
                             FROM {Tables.PlayerIdentity} AS p 
-                            <<WHERE>>";
+                            INNER JOIN {Tables.Team} AS t ON p.TeamId = t.TeamId
+                            INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
+                            <<WHERE>>
+                            ORDER BY t.TeamId ASC, p.Probability DESC, p.PlayerIdentityName ASC";
 
                     var where = new List<string>();
                     var parameters = new Dictionary<string, object>();
+
+                    if (!string.IsNullOrEmpty(playerQuery?.Query))
+                    {
+                        where.Add("p.PlayerIdentityName LIKE @Query");
+                        parameters.Add("@Query", $"%{playerQuery.Query.Replace(" ", "%")}%");
+                    }
 
                     if (playerQuery?.TeamIds?.Count > 0)
                     {
@@ -54,7 +64,13 @@ namespace Stoolball.Umbraco.Data.Teams
 
                     sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
 
-                    return (await connection.QueryAsync<PlayerIdentity>(sql, new DynamicParameters(parameters)).ConfigureAwait(false)).ToList();
+                    return (await connection.QueryAsync<PlayerIdentity, Team, PlayerIdentity>(sql, 
+                        (player, team) => {
+                            player.Team = team;
+                            return player;
+                        },
+                        new DynamicParameters(parameters),
+                        splitOn: "TeamId").ConfigureAwait(false)).ToList();
                 }
             }
             catch (Exception ex)
