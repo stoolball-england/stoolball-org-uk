@@ -73,10 +73,10 @@
                 {
                     <tr>
                         <th scope="row">@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].PlayerIdentity.PlayerIdentityName, new { maxlength = "100", autocomplete = "off", @class = "scorecard__player-name", data_team = Model.CurrentInnings.BowlingTeam.Team.TeamId.ToString() })</th>
-                        <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].BallsBowled, new { autocomplete = "off", type = "number", min = "0", max = "12", @class = "numeric" })</td>
-                        <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].Wides, new { autocomplete = "off", type = "number", min = "0", @class = "numeric" })</td>
-                        <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].NoBalls, new { autocomplete = "off", type = "number", min = "0", @class = "numeric" })</td>
-                        <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].RunsConceded, new { autocomplete = "off", type = "number", min = "0", @class = "numeric" })</td>
+                        <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].BallsBowled, new { autocomplete = "off", type = "number", min = "0", max = "12", @class = "scorecard__balls numeric" })</td>
+                        <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].Wides, new { autocomplete = "off", type = "number", min = "0", @class = "scorecard__wides numeric" })</td>
+                        <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].NoBalls, new { autocomplete = "off", type = "number", min = "0", @class = "scorecard__no-balls numeric" })</td>
+                        <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].RunsConceded, new { autocomplete = "off", type = "number", min = "0", @class = "scorecard__runs numeric" })</td>
                     </tr>
                 }
             </tbody>
@@ -85,10 +85,10 @@
             <table>
                 <tr>
                     <th scope="row"><input autocomplete="off" class="scorecard__player-name" data-team="@Model.CurrentInnings.BowlingTeam.Team.TeamId.ToString()" maxlength="100" name="CurrentInnings.OversBowled[0].PlayerIdentity.PlayerIdentityName" type="text" value="" /></th>
-                    <td><input autocomplete="off" class="numeric" data-val="true" data-val-number="The field BallsBowled must be a number." max="12" min="0" name="CurrentInnings.OversBowled[0].BallsBowled" type="number" value="" /></td>
-                    <td><input autocomplete="off" class="numeric" data-val="true" data-val-number="The field Wides must be a number." min="0" name="CurrentInnings.OversBowled[0].Wides" type="number" value="" /></td>
-                    <td><input autocomplete="off" class="numeric" data-val="true" data-val-number="The field NoBalls must be a number." min="0" name="CurrentInnings.OversBowled[0].NoBalls" type="number" value="" /></td>
-                    <td><input autocomplete="off" class="numeric" data-val="true" data-val-number="The field RunsConceded must be a number." min="0" name="CurrentInnings.OversBowled[0].RunsConceded" type="number" value="" /></td>
+                    <td><input autocomplete="off" class="scorecard__balls numeric" data-val="true" data-val-number="The field BallsBowled must be a number." max="12" min="0" name="CurrentInnings.OversBowled[0].BallsBowled" type="number" value="" /></td>
+                    <td><input autocomplete="off" class="scorecard__wides numeric" data-val="true" data-val-number="The field Wides must be a number." min="0" name="CurrentInnings.OversBowled[0].Wides" type="number" value="" /></td>
+                    <td><input autocomplete="off" class="scorecard__no-balls numeric" data-val="true" data-val-number="The field NoBalls must be a number." min="0" name="CurrentInnings.OversBowled[0].NoBalls" type="number" value="" /></td>
+                    <td><input autocomplete="off" class="scorecard__runs numeric" data-val="true" data-val-number="The field RunsConceded must be a number." min="0" name="CurrentInnings.OversBowled[0].RunsConceded" type="number" value="" /></td>
                 </tr>
             </table>
         </script>
