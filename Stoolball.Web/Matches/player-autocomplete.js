@@ -1,0 +1,116 @@
+﻿if (typeof stoolball === "undefined") {
+  stoolball = {};
+}
+stoolball.autocompletePlayer = function (input) {
+  const thisMatch = " (this match)";
+
+  // Cache suggestions locally to help recognise any name not already suggested as a new player
+  if (!stoolball.autocompletePlayer.cachedSuggestions) {
+    stoolball.autocompletePlayer.cachedSuggestions = [];
+  }
+
+  function cacheSuggestedPlayer(teamId, suggestion) {
+    if (!stoolball.autocompletePlayer.cachedSuggestions[teamId]) {
+      stoolball.autocompletePlayer.cachedSuggestions[teamId] = [];
+    }
+    if (
+      stoolball.autocompletePlayer.cachedSuggestions[teamId].indexOf(
+        suggestion.value
+      ) === -1
+    ) {
+      stoolball.autocompletePlayer.cachedSuggestions[teamId].push(
+        suggestion.value
+      );
+    }
+  }
+
+  function isSuggestedPlayer(teamId, player) {
+    return (
+      player &&
+      stoolball.autocompletePlayer.cachedSuggestions[teamId] &&
+      stoolball.autocompletePlayer.cachedSuggestions[teamId].indexOf(player) >
+        -1
+    );
+  }
+
+  $(input).autocomplete({
+    serviceUrl: "/api/players/autocomplete",
+    // Disable the built-in cache because the metadata separated in formatResult() can go missing
+    // when you select a suggestion then press backspace and get the suggestions again.
+    noCache: true,
+    params: { teams: input.getAttribute("data-team").split(",") },
+    formatResult: function (suggestion, currentValue) {
+      // As the result is displayed, separate the value to be selected from the metadata informing its selection.
+      // Cache the suggested value so that we can check on blur whether the entered value was one of the suggestions.
+      const targetTeam = input.getAttribute("data-team");
+      const divider = suggestion.value.lastIndexOf("(") - 1;
+      if (divider !== -2) {
+        const playerName = suggestion.value.substring(0, divider);
+        const metadata = suggestion.value.substr(divider);
+        suggestion.value = playerName;
+        if (metadata !== thisMatch) {
+          cacheSuggestedPlayer(targetTeam, suggestion);
+        }
+        return (
+          $.Autocomplete.defaults.formatResult(suggestion, currentValue) +
+          metadata
+        );
+      } else {
+        cacheSuggestedPlayer(targetTeam, suggestion);
+        return $.Autocomplete.defaults.formatResult(suggestion, currentValue);
+      }
+    },
+    transformResult: function (response, originalQuery) {
+      response = JSON.parse(response);
+
+      // querySelectorAll to get new players, and slice to convert that to an array.
+      // map to get the input.value from the input, and filter to get unique values,
+      // then filter again to get values matching the search term.
+      const newPlayerSuggestions = [].slice
+        .call(
+          document.querySelectorAll(
+            ".scorecard__player-name[data-new-player='true']"
+          )
+        )
+        .map(function (x) {
+          return x.value;
+        })
+        .filter(function (value, index, self) {
+          return self.indexOf(value.trim()) === index;
+        })
+        .filter(function (value) {
+          return RegExp(originalQuery.replace(/\s/, ".*"), "gi").test(value);
+        });
+
+      // Add any matching new players to the start of the suggestions list.
+      for (let i = 0; i < newPlayerSuggestions.length; i++) {
+        response.suggestions.unshift({
+          value: newPlayerSuggestions[i] + thisMatch,
+          data: null,
+        });
+      }
+      return response;
+    },
+  });
+
+  // When the field blurs a name has been chosen, so set an attribute to record whether it's a new player
+  input.addEventListener("blur", function (e) {
+    this.value = this.value.trim();
+    this.setAttribute(
+      "data-new-player",
+      !isSuggestedPlayer(e.target.getAttribute("data-team"), this.value)
+    );
+  });
+};
+
+(function () {
+  window.addEventListener("DOMContentLoaded", function () {
+    const targetFields = document.querySelectorAll(".scorecard__player-name");
+
+    for (let i = 0; i < targetFields.length; i++) {
+      stoolball.autocompletePlayer(targetFields[i]);
+    }
+  });
+})();
+
+// TODO: Need to wire this up when a new over is added

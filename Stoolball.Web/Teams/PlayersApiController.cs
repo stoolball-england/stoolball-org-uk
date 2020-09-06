@@ -34,7 +34,7 @@ namespace Stoolball.Web.Teams
 
         [HttpGet]
         [Route("api/players/autocomplete")]
-        public async Task<AutocompleteResultSet> Autocomplete([FromUri] string query, [FromUri] string[] teams, [FromUri] bool showTeam)
+        public async Task<AutocompleteResultSet> Autocomplete([FromUri] string query, [FromUri] string[] teams)
         {
             if (teams is null)
             {
@@ -60,7 +60,7 @@ namespace Stoolball.Web.Teams
             {
                 suggestions = players.Select(x => new AutocompleteResult
                 {
-                    value = BuildReturnValue(x, showTeam),
+                    value = BuildReturnValue(x, playerQuery.TeamIds.Count != 1),
                     data = x.PlayerIdentityId.ToString()
                 })
             };

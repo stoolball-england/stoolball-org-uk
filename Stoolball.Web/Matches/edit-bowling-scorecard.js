@@ -207,12 +207,11 @@
       enableOver(newRow);
 
       // focus the first field
-      newRow.querySelector("input").focus();
+      inputs[0].focus();
 
-      //   if (typeof stoolballAutoSuggest != "undefined")
-      //     $("input.player", newRow).each(
-      //       stoolballAutoSuggest.enablePlayerSuggestions
-      //     );
+      if (typeof stoolball.autocompletePlayer !== "undefined") {
+        stoolball.autocompletePlayer(inputs[0]);
+      }
       //   updateTotalOvers();
     });
 

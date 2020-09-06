@@ -15,9 +15,11 @@
     Html.RequiresJs("~/js/libs/jquery.autocomplete.min.js", 50);
     Html.RequiresCss("~/css/autocomplete.min.css");
 
+    Html.RequiresJs("~/matches/player-autocomplete.js", 70);
     Html.RequiresJs("~/matches/edit-bowling-scorecard.js");
 
     Html.RequiresCss("~/css/steps.min.css");
+    Html.RequiresCss("~/css/scorecards.min.css");
 }
 
 <h1>Edit @Model.Match.MatchFullName(x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>

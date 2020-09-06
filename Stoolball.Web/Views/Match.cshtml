@@ -1,8 +1,12 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Matches.MatchViewModel>
+@using ClientDependency.Core.Mvc
 @using Stoolball.Matches
 @using Humanizer
 @using Innovative.SolarCalculator
 @using Stoolball.Web.Security
+@{ 
+    Html.RequiresCss("~/css/scorecards.min.css");
+}
 @functions{
     private string ResultDescription()
     {

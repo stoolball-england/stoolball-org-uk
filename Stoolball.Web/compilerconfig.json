@@ -26,5 +26,9 @@
   {
     "outputFile": "css/steps.css",
     "inputFile": "css/steps.scss"
+  },
+  {
+    "outputFile": "css/scorecards.css",
+    "inputFile": "css/scorecards.scss"
   }
 ]

@@ -712,6 +712,12 @@
     <Content Include="Content\bootstrap\bootstrap.scss" />
     <Content Include="Content\bootstrap\bootstrap-reboot.scss" />
     <Content Include="Content\bootstrap\bootstrap-grid.scss" />
+    <Content Include="css\scorecards.css">
+      <DependentUpon>scorecards.scss</DependentUpon>
+    </Content>
+    <Content Include="css\scorecards.min.css">
+      <DependentUpon>scorecards.css</DependentUpon>
+    </Content>
     <Content Include="css\steps.css">
       <DependentUpon>steps.scss</DependentUpon>
     </Content>
@@ -719,6 +725,7 @@
       <DependentUpon>steps.css</DependentUpon>
     </Content>
     <Content Include="css\steps.scss" />
+    <Content Include="css\scorecards.scss" />
     <None Include="css\tinymce.scss" />
     <Content Include="css\tinymce.css">
       <DependentUpon>tinymce.scss</DependentUpon>
@@ -735,6 +742,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="images\logos\stoolball-england-icon-maskable.svg" />
+    <Content Include="Matches\player-autocomplete.js" />
     <Content Include="Status\410.html" />
     <Content Include="Status\offline.html" />
     <Content Include="Status\500.html" />

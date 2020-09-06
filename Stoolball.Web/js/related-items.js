@@ -190,7 +190,6 @@
                 },
               };
             });
-            console.log(response);
             response.suggestions.push({
               value: originalQuery,
               data: {
