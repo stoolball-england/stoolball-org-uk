@@ -34,16 +34,20 @@ stoolball.autocompletePlayer = function (input) {
   }
 
   function capitalise(name) {
+    function capitaliseSegment(x) {
+      return x.length > 1 &&
+        ["de", "la", "di", "da", "della", "van", "von"].indexOf(x) == -1
+        ? x.charAt(0).toUpperCase() + x.substr(1)
+        : x;
+    }
     return name
       .replace(/\s/g, " ")
       .split(" ")
-      .map(function (x) {
-        return x.length > 1 &&
-          ["de", "la", "di", "da", "della", "van", "von"].indexOf(x) == -1
-          ? x.charAt(0).toUpperCase() + x.substr(1)
-          : x;
-      })
-      .join(" ");
+      .map(capitaliseSegment)
+      .join(" ")
+      .split("-")
+      .map(capitaliseSegment)
+      .join("-");
   }
 
   $(input).autocomplete({
