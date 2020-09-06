@@ -33,6 +33,19 @@ stoolball.autocompletePlayer = function (input) {
     );
   }
 
+  function capitalise(name) {
+    return name
+      .replace(/\s/g, " ")
+      .split(" ")
+      .map(function (x) {
+        return x.length > 1 &&
+          ["de", "la", "di", "da", "della", "van", "von"].indexOf(x) == -1
+          ? x.charAt(0).toUpperCase() + x.substr(1)
+          : x;
+      })
+      .join(" ");
+  }
+
   $(input).autocomplete({
     serviceUrl: "/api/players/autocomplete",
     // Disable the built-in cache because the metadata separated in formatResult() can go missing
@@ -95,7 +108,7 @@ stoolball.autocompletePlayer = function (input) {
 
   // When the field blurs a name has been chosen, so set an attribute to record whether it's a new player
   input.addEventListener("blur", function (e) {
-    this.value = this.value.trim();
+    this.value = capitalise(this.value.trim());
     this.setAttribute(
       "data-new-player",
       !isSuggestedPlayer(e.target.getAttribute("data-team"), this.value)
@@ -112,5 +125,3 @@ stoolball.autocompletePlayer = function (input) {
     }
   });
 })();
-
-// TODO: Need to wire this up when a new over is added
