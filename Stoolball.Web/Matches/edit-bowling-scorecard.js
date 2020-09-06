@@ -168,6 +168,37 @@
       }
     }
 
+    function showFullNameHint(e) {
+      if (!e.target.classList.contains("scorecard__player-name")) {
+        return;
+      }
+
+      // querySelectorAll to get new players, and slice to convert that to an array.
+      // map to get the input.value from the input, and filter to get unique values,
+      // then filter again to get one-word names
+      const threeOrMoreOneWordNames =
+        [].slice
+          .call(document.querySelectorAll(".scorecard__player-name"))
+          .map(function (x) {
+            return x.value;
+          })
+          .filter(function (value, index, self) {
+            return self.indexOf(value.trim()) === index;
+          })
+          .filter(function (x) {
+            return x && x.indexOf(" ") === -1;
+          }).length >= 3;
+
+      const hint = document.querySelector(".scorecard__full-name-hint");
+      if (threeOrMoreOneWordNames) {
+        hint.classList.remove("d-none");
+        hint.classList.add("d-block");
+      } else {
+        hint.classList.add("d-none");
+        hint.classList.remove("d-block");
+      }
+    }
+
     // Auto enable/disable scorecard fields
     // .change event fires when the field is clicked in Chrome
     editor.addEventListener("keyup", enableOverEvent);
@@ -175,6 +206,7 @@
     editor.addEventListener("change", enableOverEvent);
     editor.addEventListener("focusin", focusEvent);
     editor.addEventListener("keydown", replaceBowlingDefaults);
+    editor.addEventListener("focusout", showFullNameHint);
 
     // Run enableOver for every row to setup the fields on page load
     const overs = editor.querySelectorAll("tbody > tr");
@@ -212,11 +244,6 @@
       if (typeof stoolball.autocompletePlayer !== "undefined") {
         stoolball.autocompletePlayer(inputs[0]);
       }
-      //   updateTotalOvers();
     });
-
-    //   function updateTotalOvers() {
-    //     $("#bowlerRows").val($(".bowling-scorecard input.player").length);
-    //   }
   });
 })();
