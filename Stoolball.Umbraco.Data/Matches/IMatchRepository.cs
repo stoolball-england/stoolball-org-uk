@@ -30,5 +30,10 @@ namespace Stoolball.Umbraco.Data.Matches
         /// Updates details known at the close of play - the winning team and any awards
         /// </summary>
         Task<Match> UpdateCloseOfPlay(Match match, Guid memberKey, string memberName);
+        
+        /// <summary>
+        /// Updates the bowling scorecard for a single innings of a match
+        /// </summary>
+        Task<MatchInnings> UpdateBowlingScorecard(MatchInnings innings, Guid memberKey, string memberName);
     }
 }

@@ -1,4 +1,11 @@
-﻿using Dapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
 using Ganss.XSS;
 using Newtonsoft.Json;
 using Stoolball.Audit;
@@ -8,13 +15,6 @@ using Stoolball.Routing;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
@@ -33,9 +33,10 @@ namespace Stoolball.Umbraco.Data.Matches
         private readonly IHtmlSanitizer _htmlSanitiser;
         private readonly IMatchNameBuilder _matchNameBuilder;
         private readonly IPlayerTypeSelector _playerTypeSelector;
+        private readonly IBowlingScorecardComparer _bowlingScorecardComparer;
 
         public SqlServerMatchRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
-            IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser, IMatchNameBuilder matchNameBuilder, IPlayerTypeSelector playerTypeSelector)
+            IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser, IMatchNameBuilder matchNameBuilder, IPlayerTypeSelector playerTypeSelector, IBowlingScorecardComparer bowlingScorecardComparer)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
@@ -45,6 +46,7 @@ namespace Stoolball.Umbraco.Data.Matches
             _htmlSanitiser = htmlSanitiser ?? throw new ArgumentNullException(nameof(htmlSanitiser));
             _matchNameBuilder = matchNameBuilder ?? throw new ArgumentNullException(nameof(matchNameBuilder));
             _playerTypeSelector = playerTypeSelector ?? throw new ArgumentNullException(nameof(playerTypeSelector));
+            _bowlingScorecardComparer = bowlingScorecardComparer ?? throw new ArgumentNullException(nameof(bowlingScorecardComparer));
             _htmlSanitiser.AllowedTags.Clear();
             _htmlSanitiser.AllowedTags.Add("p");
             _htmlSanitiser.AllowedTags.Add("h2");
@@ -556,6 +558,123 @@ namespace Stoolball.Umbraco.Data.Matches
             }
 
             return match;
+        }
+
+        /// <summary>
+        /// Updates the bowling scorecard for a single innings of a match
+        /// </summary>
+        public async Task<MatchInnings> UpdateBowlingScorecard(MatchInnings innings, Guid memberKey, string memberName)
+        {
+            if (innings is null)
+            {
+                throw new ArgumentNullException(nameof(innings));
+            }
+
+            if (memberName is null)
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        // Select existing overs and work out which ones have changed.
+                        var oversBefore = await connection.QueryAsync<Over, PlayerIdentity, Over>(
+                            $@"SELECT o.OverId, o.BallsBowled, o.NoBalls, o.Wides, o.RunsConceded,
+                               p.PlayerIdentityName
+                               FROM {Tables.Over} o INNER JOIN {Tables.PlayerIdentity} p ON o.PlayerIdentityId = p.PlayerIdentityId
+                               WHERE o.MatchInningsId = @MatchInningsId",
+                            (over, playerIdentity) =>
+                            {
+                                over.PlayerIdentity = playerIdentity;
+                                return over;
+                            },
+                               new { innings.MatchInningsId },
+                               transaction,
+                               splitOn: "PlayerIdentityName").ConfigureAwait(false);
+
+                        var comparison = _bowlingScorecardComparer.CompareScorecards(oversBefore, innings.OversBowled);
+
+                        // Now got lists of:
+                        // - unchanged overs 
+                        // - new overs
+                        // - changed overs
+                        // - deleted overs
+                        // - affected players from the new/changed/deleted lists
+
+                        foreach (var over in comparison.OversAdded)
+                        {
+                            var playerIdentity = new PlayerIdentity(); // TODO: _playerRepository.CreateOrMatchPlayerIdentity(after.PlayerIdentity);
+                            await connection.ExecuteAsync($@"INSERT INTO {Tables.Over} 
+                                (OverId, OverNumber, MatchInningsId, PlayerIdentityId, BallsBowled, NoBalls, Wides, RunsConceded) 
+                                VALUES 
+                                (@OverId, @OverNumber, @MatchInningsId, @PlayerIdentityId, @BallsBowled, @NoBalls, @Wides, @RunsConceded)",
+                                new
+                                {
+                                    OverId = Guid.NewGuid(),
+                                    over.OverNumber,
+                                    innings.MatchInningsId,
+                                    playerIdentity.PlayerIdentityId,
+                                    over.BallsBowled,
+                                    over.NoBalls,
+                                    over.Wides,
+                                    over.RunsConceded,
+                                }, transaction).ConfigureAwait(false);
+
+                        }
+
+                        foreach (var (before, after) in comparison.OversChanged)
+                        {
+                            var playerIdentity = new PlayerIdentity(); // TODO: _playerRepository.CreateOrMatchPlayerIdentity(after.PlayerIdentity);
+                            await connection.ExecuteAsync($@"UPDATE {Tables.Over} SET 
+                                PlayerIdentityId = @PlayerIdentityId,
+                                BallsBowled = @BallsBowled,
+                                NoBalls = @NoBalls,
+                                Wides = @Wides,
+                                RunsConceded = @RunsConceded
+                                WHERE OverId = @OverId",
+                                new
+                                {
+                                    playerIdentity.PlayerIdentityId,
+                                    after.BallsBowled,
+                                    after.NoBalls,
+                                    after.Wides,
+                                    after.RunsConceded,
+                                    before.OverId
+                                }, transaction).ConfigureAwait(false);
+
+                        }
+
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.Over} WHERE OverId IN @OverIds", new { OverIds = comparison.OversRemoved.Select(x => x.OverId) }, transaction).ConfigureAwait(false);
+
+                        // Update the number of overs
+                        await connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET Overs = @Overs WHERE MatchInningsId = @MatchInningsId", new { innings.Overs, innings.MatchInningsId }, transaction).ConfigureAwait(false);
+
+                        transaction.Commit();
+                    }
+
+                }
+
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Update,
+                    MemberKey = memberKey,
+                    ActorName = memberName,
+                    EntityUri = innings.EntityUri,
+                    State = JsonConvert.SerializeObject(innings),
+                    AuditDate = DateTime.UtcNow
+                }).ConfigureAwait(false);
+            }
+            catch (SqlException ex)
+            {
+                _logger.Error(typeof(SqlServerMatchRepository), ex);
+            }
+
+            return innings;
         }
 
         /// <summary>

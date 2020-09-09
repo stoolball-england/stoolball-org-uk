@@ -21,5 +21,8 @@ namespace Stoolball.Matches
         public int? Runs { get; set; }
 
         public int? Wickets { get; set; }
+        public Uri EntityUri {
+            get { return new Uri($"https://www.stoolball.org.uk/id/match-innings/{MatchInningsId}"); }
+        }
     }
 }
