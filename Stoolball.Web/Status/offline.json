@@ -6,17 +6,20 @@
     {
       "src": "/images/logos/stoolball-england-192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "maskable"
     },
     {
       "src": "/images/logos/stoolball-england-512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "maskable"
     },
     {
       "src": "/images/logos/stoolball-england-icon-maskable.svg",
       "type": "image/svg+xml",
-      "sizes": "513x513"
+      "sizes": "513x513",
+      "purpose": "maskable"
     }
   ],
   "start_url": "/?source=pwa",
@@ -37,7 +40,8 @@
         {
           "src": "/images/logos/stoolball-england-192.png",
           "type": "image/png",
-          "sizes": "192x192"
+          "sizes": "192x192",
+          "purpose": "maskable"
         }
       ]
     },
@@ -50,7 +54,8 @@
         {
           "src": "/images/logos/stoolball-england-192.png",
           "type": "image/png",
-          "sizes": "192x192"
+          "sizes": "192x192",
+          "purpose": "maskable"
         }
       ]
     }
