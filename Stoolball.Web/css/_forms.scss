@@ -21,8 +21,13 @@
     color: $red;
 }
 
+/* When validation summary is set to display field errors and there are none, by default it shows the bullet for one list item */
+.validation-summary-valid { display: none; }
+
 /* When a custom error message is set by Html.ValidationMessageFor() in the view, prevent it showing when the field is still valid */
-.field-validation-valid { display: none;}
+.field-validation-valid {
+    display: none;
+}
 
 /* Bootstrap expects .form-text after the element but it's better before, where the user will see it in time */
 .form-text {

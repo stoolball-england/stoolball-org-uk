@@ -1,12 +1,13 @@
-﻿using Stoolball.Dates;
-using Stoolball.Matches;
-using Stoolball.Umbraco.Data.Matches;
-using Stoolball.Web.Security;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Humanizer;
+using Stoolball.Dates;
+using Stoolball.Matches;
+using Stoolball.Umbraco.Data.Matches;
+using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -61,6 +62,21 @@ namespace Stoolball.Web.Matches
                 return new HttpNotFoundResult();
             }
 
+            // The bowler name is required if any other fields are filled in for an over
+            var i = 0;
+            while (Request.Form[$"CurrentInnings.OversBowled[{i}].PlayerIdentity.PlayerIdentityName"] != null)
+            {
+                if (string.IsNullOrWhiteSpace(Request.Form[$"CurrentInnings.OversBowled[{i}].PlayerIdentity.PlayerIdentityName"]) &&
+                    (!string.IsNullOrWhiteSpace(Request.Form[$"CurrentInnings.OversBowled[{i}].BallsBowled"]) ||
+                    !string.IsNullOrWhiteSpace(Request.Form[$"CurrentInnings.OversBowled[{i}].Wides"]) ||
+                    !string.IsNullOrWhiteSpace(Request.Form[$"CurrentInnings.OversBowled[{i}].NoBalls"]) ||
+                    !string.IsNullOrWhiteSpace(Request.Form[$"CurrentInnings.OversBowled[{i}].RunsConceded"])))
+                {
+                    ModelState.AddModelError($"CurrentInnings.OversBowled[{i}].PlayerIdentity.PlayerIdentityName", $"You've added the {(i + 1).Ordinalize()} over. Please name the bowler.");
+                }
+                i++;
+            }
+
             var model = new EditBowlingScorecardViewModel(CurrentPage)
             {
                 Match = beforeUpdate,
@@ -76,7 +92,7 @@ namespace Stoolball.Web.Matches
             if (model.CurrentInnings.Overs.Value < postedInnings.OversBowled.Count)
             {
                 model.CurrentInnings.Overs = postedInnings.OversBowled.Count;
-            } 
+            }
 
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate, Members);
 
@@ -88,7 +104,7 @@ namespace Stoolball.Web.Matches
                 // redirect to the next innings or close of play
                 if (model.InningsOrderInMatch.Value < model.Match.MatchInnings.Count)
                 {
-                    return Redirect($"{model.Match.MatchRoute}/edit/innings/{model.InningsOrderInMatch.Value+1}/bowling");
+                    return Redirect($"{model.Match.MatchRoute}/edit/innings/{model.InningsOrderInMatch.Value + 1}/bowling");
                 }
                 else
                 {

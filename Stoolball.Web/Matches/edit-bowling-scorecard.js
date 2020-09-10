@@ -19,7 +19,7 @@
       if (e.target.classList.contains("scorecard__player-name")) {
         suggestDefaultBowler(e);
       }
-      if (e.target.classList.contains("numeric")) {
+      if (e.target.getAttribute("type") === "number") {
         suggestBowlingDefaults(e);
       }
     }
@@ -89,7 +89,7 @@
     function replaceBowlingDefaults(e) {
       // Best fix for bug which means Mobile Safari doesn't select text.
       // This replaces default value when a number is typed, even if it's not selected.
-      if (!e.target.classList.contains("numeric")) return;
+      if (e.target.getAttribute("type") !== "number") return;
       if (e.keyCode >= 49 && e.keyCode <= 57) {
         if (e.target.value === "0") e.target.value = "";
       }
@@ -229,12 +229,43 @@
       let newRow = rows[rows.length - 1].nextElementSibling;
       const inputs = newRow.querySelectorAll("input");
       for (let i = 0; i < inputs.length; i++) {
+        let ordinal,
+          rowNumber = rows.length + 1;
+        switch (rowNumber % 10) {
+          case 1:
+            ordinal = rowNumber === 11 ? rowNumber + "th" : rowNumber + "st";
+            break;
+          case 2:
+            ordinal = rowNumber === 12 ? rowNumber + "th" : rowNumber + "nd";
+            break;
+          case 3:
+            ordinal = rowNumber === 13 ? rowNumber + "th" : rowNumber + "rd";
+            break;
+          default:
+            ordinal = rowNumber + "th";
+        }
+
         inputs[i].setAttribute(
           "name",
           inputs[i]
             .getAttribute("name")
             .replace(/\[[0-9]+\]/, "[" + rows.length + "]")
         );
+
+        const ordinalAttributes = [
+          "data-msg-number",
+          "data-msg-min",
+          "data-msg-max",
+        ];
+        for (let j = 0; j < ordinalAttributes.length; j++) {
+          let value = inputs[i].getAttribute(ordinalAttributes[j]);
+          if (value) {
+            inputs[i].setAttribute(
+              ordinalAttributes[j],
+              value.replace(/\[[0-9]+th\]/, ordinal)
+            );
+          }
+        }
       }
       enableOver(newRow);
 
