@@ -1,13 +1,13 @@
-﻿using Humanizer;
+﻿using System;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Humanizer;
 using Stoolball.Matches;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Security;
-using System;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -50,7 +50,7 @@ namespace Stoolball.Web.Matches
 
             var model = new EditFriendlyMatchViewModel(CurrentPage) { Match = postedMatch };
             model.Match.MatchType = MatchType.FriendlyMatch;
-            if (!model.Match.Season.SeasonId.HasValue)
+            if (model.Match.Season != null && !model.Match.Season.SeasonId.HasValue)
             {
                 model.Match.Season = null;
             }

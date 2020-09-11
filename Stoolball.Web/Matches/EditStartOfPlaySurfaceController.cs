@@ -1,4 +1,9 @@
-﻿using Stoolball.Competitions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
@@ -6,11 +11,6 @@ using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Security;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -74,7 +74,7 @@ namespace Stoolball.Web.Matches
             model.Match.Teams = beforeUpdate.Teams;
             model.Match.MatchInnings = beforeUpdate.MatchInnings;
 
-            await AddMissingTeamsFromRequest(beforeUpdate.Season.SeasonRoute, model).ConfigureAwait(false);
+            await AddMissingTeamsFromRequest(model, beforeUpdate.Season?.SeasonRoute).ConfigureAwait(false);
 
             ReadMatchLocationFromRequest(model);
 
@@ -130,9 +130,9 @@ namespace Stoolball.Web.Matches
             return View("EditStartOfPlay", model);
         }
 
-        private async Task AddMissingTeamsFromRequest(string seasonRoute, EditStartOfPlayViewModel model)
+        private async Task AddMissingTeamsFromRequest(EditStartOfPlayViewModel model, string seasonRoute)
         {
-            if (model.Match.MatchType == MatchType.KnockoutMatch)
+            if (model.Match.MatchType == MatchType.KnockoutMatch && !string.IsNullOrEmpty(seasonRoute))
             {
                 var season = await _seasonDataSource.ReadSeasonByRoute(seasonRoute, true).ConfigureAwait(false);
                 if (season != null)
