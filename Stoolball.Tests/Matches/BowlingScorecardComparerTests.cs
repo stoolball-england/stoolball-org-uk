@@ -25,6 +25,25 @@ namespace Stoolball.Tests.Matches
         }
 
         [Fact]
+        public void Over_number_zero_in_before_overs_throws_ArgumentException()
+        {
+            var comparer = new BowlingScorecardComparer();
+            var firstOver = new Over { OverNumber = 0, PlayerIdentity = new PlayerIdentity { PlayerIdentityName = "Player one" }, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
+
+            Assert.Throws<ArgumentException>(() => comparer.CompareScorecards(new List<Over> { firstOver }, new List<Over>()));
+        }
+
+
+        [Fact]
+        public void Over_number_zero_in_after_overs_throws_ArgumentException()
+        {
+            var comparer = new BowlingScorecardComparer();
+            var firstOver = new Over { OverNumber = 0, PlayerIdentity = new PlayerIdentity { PlayerIdentityName = "Player one" }, BallsBowled = 8, NoBalls = 0, Wides = 0, RunsConceded = 10 };
+
+            Assert.Throws<ArgumentException>(() => comparer.CompareScorecards(new List<Over>(), new List<Over> { firstOver }));
+        }
+
+        [Fact]
         public void Duplicate_over_number_in_before_overs_throws_ArgumentException()
         {
             var comparer = new BowlingScorecardComparer();

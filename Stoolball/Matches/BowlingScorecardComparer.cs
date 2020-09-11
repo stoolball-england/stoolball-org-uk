@@ -18,6 +18,16 @@ namespace Stoolball.Matches
                 throw new ArgumentNullException(nameof(after));
             }
 
+            if (before.Any(x => x.OverNumber < 1))
+            {
+                throw new ArgumentException("Over numbers must be 1 or greater", nameof(before));
+            }
+
+            if (after.Any(x => x.OverNumber < 1))
+            {
+                throw new ArgumentException("Over numbers must be 1 or greater", nameof(after));
+            }
+
             var comparison = new BowlingScorecardComparison();
 
             var identitiesBefore = before.Select(x => x.PlayerIdentity.PlayerIdentityName).Distinct();
