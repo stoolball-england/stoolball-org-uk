@@ -1,7 +1,7 @@
-﻿using Stoolball.Audit;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Stoolball.Audit;
 
 namespace Stoolball.Teams
 {
@@ -37,9 +37,8 @@ namespace Stoolball.Teams
         public string PlayerIdentityRoute { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 
-        public Uri EntityUri
-        {
-            get { return new Uri($"https://www.stoolball.org.uk/id/player/{PlayerIdentityId}"); }
+        public Uri EntityUri {
+            get { return new Uri($"https://www.stoolball.org.uk/id/player-identity/{PlayerIdentityId}"); }
         }
     }
 }

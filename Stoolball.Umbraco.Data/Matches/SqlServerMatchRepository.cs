@@ -15,6 +15,7 @@ using Stoolball.Routing;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
+using Stoolball.Umbraco.Data.Teams;
 using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
@@ -34,9 +35,11 @@ namespace Stoolball.Umbraco.Data.Matches
         private readonly IMatchNameBuilder _matchNameBuilder;
         private readonly IPlayerTypeSelector _playerTypeSelector;
         private readonly IBowlingScorecardComparer _bowlingScorecardComparer;
+        private readonly IPlayerRepository _playerRepository;
 
         public SqlServerMatchRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
-            IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser, IMatchNameBuilder matchNameBuilder, IPlayerTypeSelector playerTypeSelector, IBowlingScorecardComparer bowlingScorecardComparer)
+            IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser, IMatchNameBuilder matchNameBuilder, IPlayerTypeSelector playerTypeSelector,
+            IBowlingScorecardComparer bowlingScorecardComparer, IPlayerRepository playerRepository)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
@@ -47,6 +50,7 @@ namespace Stoolball.Umbraco.Data.Matches
             _matchNameBuilder = matchNameBuilder ?? throw new ArgumentNullException(nameof(matchNameBuilder));
             _playerTypeSelector = playerTypeSelector ?? throw new ArgumentNullException(nameof(playerTypeSelector));
             _bowlingScorecardComparer = bowlingScorecardComparer ?? throw new ArgumentNullException(nameof(bowlingScorecardComparer));
+            _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
             _htmlSanitiser.AllowedTags.Clear();
             _htmlSanitiser.AllowedTags.Add("p");
             _htmlSanitiser.AllowedTags.Add("h2");
@@ -584,7 +588,7 @@ namespace Stoolball.Umbraco.Data.Matches
                     {
                         // Select existing overs and work out which ones have changed.
                         var oversBefore = await connection.QueryAsync<Over, PlayerIdentity, Over>(
-                            $@"SELECT o.OverId, o.BallsBowled, o.NoBalls, o.Wides, o.RunsConceded,
+                            $@"SELECT o.OverId, o.OverNumber, o.BallsBowled, o.NoBalls, o.Wides, o.RunsConceded,
                                p.PlayerIdentityName
                                FROM {Tables.Over} o INNER JOIN {Tables.PlayerIdentity} p ON o.PlayerIdentityId = p.PlayerIdentityId
                                WHERE o.MatchInningsId = @MatchInningsId",
@@ -597,6 +601,11 @@ namespace Stoolball.Umbraco.Data.Matches
                                transaction,
                                splitOn: "PlayerIdentityName").ConfigureAwait(false);
 
+                        for (var i = 0; i < innings.OversBowled.Count; i++)
+                        {
+                            innings.OversBowled[i].OverNumber = i + 1;
+                        }
+
                         var comparison = _bowlingScorecardComparer.CompareScorecards(oversBefore, innings.OversBowled);
 
                         // Now got lists of:
@@ -608,7 +617,8 @@ namespace Stoolball.Umbraco.Data.Matches
 
                         foreach (var over in comparison.OversAdded)
                         {
-                            var playerIdentity = new PlayerIdentity(); // TODO: _playerRepository.CreateOrMatchPlayerIdentity(after.PlayerIdentity);
+                            over.PlayerIdentity.Team = innings.BowlingTeam.Team;
+                            var playerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(over.PlayerIdentity, memberKey, memberName).ConfigureAwait(false);
                             await connection.ExecuteAsync($@"INSERT INTO {Tables.Over} 
                                 (OverId, OverNumber, MatchInningsId, PlayerIdentityId, BallsBowled, NoBalls, Wides, RunsConceded) 
                                 VALUES 
@@ -618,7 +628,7 @@ namespace Stoolball.Umbraco.Data.Matches
                                     OverId = Guid.NewGuid(),
                                     over.OverNumber,
                                     innings.MatchInningsId,
-                                    playerIdentity.PlayerIdentityId,
+                                    PlayerIdentityId = playerIdentityId,
                                     over.BallsBowled,
                                     over.NoBalls,
                                     over.Wides,
@@ -629,7 +639,8 @@ namespace Stoolball.Umbraco.Data.Matches
 
                         foreach (var (before, after) in comparison.OversChanged)
                         {
-                            var playerIdentity = new PlayerIdentity(); // TODO: _playerRepository.CreateOrMatchPlayerIdentity(after.PlayerIdentity);
+                            after.PlayerIdentity.Team = innings.BowlingTeam.Team;
+                            var playerIdentityId = _playerRepository.CreateOrMatchPlayerIdentity(after.PlayerIdentity, memberKey, memberName);
                             await connection.ExecuteAsync($@"UPDATE {Tables.Over} SET 
                                 PlayerIdentityId = @PlayerIdentityId,
                                 BallsBowled = @BallsBowled,
@@ -639,7 +650,7 @@ namespace Stoolball.Umbraco.Data.Matches
                                 WHERE OverId = @OverId",
                                 new
                                 {
-                                    playerIdentity.PlayerIdentityId,
+                                    PlayerIdentityId = playerIdentityId,
                                     after.BallsBowled,
                                     after.NoBalls,
                                     after.Wides,

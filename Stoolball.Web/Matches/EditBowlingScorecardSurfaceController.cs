@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Humanizer;
@@ -21,13 +22,13 @@ namespace Stoolball.Web.Matches
     {
         private readonly IMatchDataSource _matchDataSource;
         private readonly IMatchRepository _matchRepository;
-        private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
+        private readonly IAuthorizationPolicy<Stoolball.Matches.Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateTimeFormatter;
         private readonly IMatchInningsUrlParser _matchInningsUrlParser;
 
         public EditBowlingScorecardSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchDataSource matchDataSource,
-            IMatchRepository matchRepository, IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IMatchInningsUrlParser matchInningsUrlParser)
+            IMatchRepository matchRepository, IAuthorizationPolicy<Stoolball.Matches.Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IMatchInningsUrlParser matchInningsUrlParser)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
@@ -62,10 +63,16 @@ namespace Stoolball.Web.Matches
                 return new HttpNotFoundResult();
             }
 
-            // The bowler name is required if any other fields are filled in for an over
+            // The bowler name is required if any other fields are filled in for an over, and some player identity names are not allowed
             var i = 0;
+            var reservedNames = new[] { "WIDES", "NOBALLS", "BYES", "BONUSRUNS" };
             while (Request.Form[$"CurrentInnings.OversBowled[{i}].PlayerIdentity.PlayerIdentityName"] != null)
             {
+                if (reservedNames.Contains(Regex.Replace(Request.Form[$"CurrentInnings.OversBowled[{i}].PlayerIdentity.PlayerIdentityName"].ToUpperInvariant(), "[^A-Z]", string.Empty)))
+                {
+                    ModelState.AddModelError($"CurrentInnings.OversBowled[{i}].PlayerIdentity.PlayerIdentityName", $"{Request.Form[$"CurrentInnings.OversBowled[{i}].PlayerIdentity.PlayerIdentityName"]} is a reserved name. Please use a different name.");
+                }
+
                 if (string.IsNullOrWhiteSpace(Request.Form[$"CurrentInnings.OversBowled[{i}].PlayerIdentity.PlayerIdentityName"]) &&
                     (!string.IsNullOrWhiteSpace(Request.Form[$"CurrentInnings.OversBowled[{i}].BallsBowled"]) ||
                     !string.IsNullOrWhiteSpace(Request.Form[$"CurrentInnings.OversBowled[{i}].Wides"]) ||

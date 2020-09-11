@@ -103,9 +103,11 @@
     <Compile Include="Security\MemberGroupHelper.cs" />
     <Compile Include="Teams\IPlayerDataSource.cs" />
     <Compile Include="Teams\ITeamListingDataSource.cs" />
+    <Compile Include="Teams\IPlayerRepository.cs" />
     <Compile Include="Teams\ITeamRepository.cs" />
     <Compile Include="Teams\SqlServerPlayerDataSource.cs" />
     <Compile Include="Teams\SqlServerTeamListingDataSource.cs" />
+    <Compile Include="Teams\SqlServerPlayerRepository.cs" />
     <Compile Include="Teams\SqlServerTeamRepository.cs" />
     <Compile Include="Teams\PlayerIdentityQuery.cs" />
     <Compile Include="Teams\TeamQuery.cs" />
