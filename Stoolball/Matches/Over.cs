@@ -16,7 +16,7 @@ namespace Stoolball.Matches
 
         public int OverNumber { get; set; }
 
-        [Range(0, 12)]
+        [Range(1, 12)]
         [Display(Name = "balls bowled")]
         public int? BallsBowled { get; set; }
 
