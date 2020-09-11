@@ -19,6 +19,7 @@ namespace Stoolball.Umbraco.Data
 
             public const string PlayerInnings = _tablePrefix + "PlayerInnings";
             public const string Over = _tablePrefix + "Over";
+            public const string Bowling = _tablePrefix + "Bowling";
             public const string Club = _tablePrefix + "Club";
             public const string ClubName = _tablePrefix + "ClubName";
             public const string Competition = _tablePrefix + "Competition";
@@ -33,6 +34,7 @@ namespace Stoolball.Umbraco.Data
             public const string TournamentTeam = _tablePrefix + "TournamentTeam";
             public const string TournamentSeason = _tablePrefix + "TournamentSeason";
             public const string TournamentComment = _tablePrefix + "TournamentComment";
+            public const string Player = _tablePrefix + "Player";
             public const string PlayerIdentity = _tablePrefix + "PlayerIdentity";
             public const string School = _tablePrefix + "School";
             public const string SchoolName = _tablePrefix + "SchoolName";
@@ -45,7 +47,8 @@ namespace Stoolball.Umbraco.Data
             public const string TeamName = _tablePrefix + "TeamName";
             public const string TeamMatchLocation = _tablePrefix + "TeamMatchLocation";
             public const string NotificationSubscription = _tablePrefix + "NotificationSubscription";
-            public const string PlayerMatchStatistics = _tablePrefix + _statisticsPrefix + "PlayerMatch";
+            public const string StatisticsPlayerMatch = _tablePrefix + _statisticsPrefix + "PlayerMatch";
+
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Not a typical class. This is creating a set of constants accessible with IntelliSense.")]

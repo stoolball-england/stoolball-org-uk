@@ -1,5 +1,5 @@
-﻿using NPoco;
-using System;
+﻿using System;
+using NPoco;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Umbraco.Data.Migrations
@@ -14,7 +14,7 @@ namespace Stoolball.Umbraco.Data.Migrations
         public Guid PlayerIdentityId { get; set; }
 
         [Column(nameof(PlayerId))]
-        [Index(IndexTypes.Clustered)]
+        [ForeignKey(typeof(PlayerTableInitialSchema), Column = nameof(PlayerTableInitialSchema.PlayerId))]
         public Guid PlayerId { get; set; }
 
         [Column(nameof(MigratedPlayerIdentityId))]
@@ -55,9 +55,5 @@ namespace Stoolball.Umbraco.Data.Migrations
 
         [Column(nameof(PlayerRole))]
         public string PlayerRole { get; set; }
-
-        [Column(nameof(PlayerIdentityRoute))]
-        [Index(IndexTypes.UniqueNonClustered)]
-        public string PlayerIdentityRoute { get; set; }
     }
 }

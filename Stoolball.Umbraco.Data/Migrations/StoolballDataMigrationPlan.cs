@@ -25,6 +25,7 @@ namespace Stoolball.Umbraco.Data.Migrations
                 .To<TeamMatchLocationAddTable>(typeof(TeamMatchLocationAddTable).ToString())
                 .To<SeasonTeamAddTable>(typeof(SeasonTeamAddTable).ToString())
                 .To<SeasonPointsAdjustmentAddTable>(typeof(SeasonPointsAdjustmentAddTable).ToString())
+                .To<PlayerAddTable>(typeof(PlayerAddTable).ToString())
                 .To<PlayerIdentityAddTable>(typeof(PlayerIdentityAddTable).ToString())
                 .To<TournamentAddTable>(typeof(TournamentAddTable).ToString())
                 .To<TournamentTeamAddTable>(typeof(TournamentTeamAddTable).ToString())
@@ -37,8 +38,9 @@ namespace Stoolball.Umbraco.Data.Migrations
                 .To<MatchAwardAddTable>(typeof(MatchAwardAddTable).ToString())
                 .To<PlayerInningsAddTable>(typeof(PlayerInningsAddTable).ToString())
                 .To<OverAddTable>(typeof(OverAddTable).ToString())
+                .To<BowlingAddTable>(typeof(BowlingAddTable).ToString())
                 .To<MatchCommentAddTable>(typeof(MatchCommentAddTable).ToString())
-                .To<PlayerMatchStatisticsAddTable>(typeof(PlayerMatchStatisticsAddTable).ToString())
+                .To<StatisticsPlayerMatchAddTable>(typeof(StatisticsPlayerMatchAddTable).ToString())
                 .To<AuditAddTable>(typeof(AuditAddTable).ToString())
                 .To<NotificationSubscriptionAddTable>(typeof(NotificationSubscriptionAddTable).ToString());
         }

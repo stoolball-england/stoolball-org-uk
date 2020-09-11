@@ -855,7 +855,7 @@ namespace Stoolball.Umbraco.Data.Matches
                     connection.Open();
                     using (var transaction = connection.BeginTransaction())
                     {
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerMatchStatistics} WHERE MatchId = @MatchId", new { match.MatchId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.StatisticsPlayerMatch} WHERE MatchId = @MatchId", new { match.MatchId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"DELETE FROM {Tables.Over} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { match.MatchId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { match.MatchId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"DELETE FROM {Tables.MatchInnings} WHERE MatchId = @MatchId", new { match.MatchId }, transaction).ConfigureAwait(false);
