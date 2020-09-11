@@ -1,15 +1,15 @@
-﻿using Humanizer;
-using Stoolball.Audit;
-using Stoolball.Clubs;
-using Stoolball.Competitions;
-using Stoolball.MatchLocations;
-using Stoolball.Schools;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Humanizer;
+using Stoolball.Audit;
+using Stoolball.Clubs;
+using Stoolball.Competitions;
+using Stoolball.MatchLocations;
+using Stoolball.Schools;
 
 namespace Stoolball.Teams
 {
@@ -95,7 +95,7 @@ namespace Stoolball.Teams
         [Display(Name = "Player type")]
         public PlayerType PlayerType { get; set; }
 
-        public List<PlayerIdentity> PlayerIdentities { get; internal set; } = new List<PlayerIdentity>();
+        public List<Player> Players { get; internal set; } = new List<Player>();
 
         public string Introduction { get; set; }
 
@@ -144,8 +144,7 @@ namespace Stoolball.Teams
         public string TeamRoute { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 
-        public Uri EntityUri
-        {
+        public Uri EntityUri {
             get { return new Uri($"https://www.stoolball.org.uk/id/team/{TeamId}"); }
         }
 

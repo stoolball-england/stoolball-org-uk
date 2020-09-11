@@ -1,12 +1,12 @@
-﻿using Dapper;
-using Stoolball.Matches;
-using Stoolball.Teams;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
+using Dapper;
+using Stoolball.Matches;
+using Stoolball.Teams;
 using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
@@ -54,6 +54,7 @@ namespace Stoolball.Umbraco.Data.Matches
                         var (matchSql, matchParameters) = BuildMatchQuery(matchQuery,
                             $@"SELECT 1 AS GroupByThis, COUNT(*) AS Total
                                 FROM {Tables.Match} AS m
+                                LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
                                 <<JOIN>>
                                 <<WHERE>>");
                         sql.Append(matchSql);

@@ -36,9 +36,9 @@
     {
         <p>If you delete @Model.Team.TeamName you will:</p>
         <ul>
-            @if (Model.Team.PlayerIdentities.Count > 0)
+            @if (Model.Team.Players.Count > 0)
             {
-                <li>delete @("player".ToQuantity(Model.Team.PlayerIdentities.Count)) and all their statistics and awards</li>
+                <li>delete @("player".ToQuantity(Model.Team.Players.Count)) and all their statistics and awards</li>
             }
             else
             {

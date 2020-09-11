@@ -1,4 +1,11 @@
-﻿using Dapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Dapper;
 using Ganss.XSS;
 using Newtonsoft.Json;
 using Stoolball.Audit;
@@ -7,12 +14,6 @@ using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
 using Stoolball.Umbraco.Data.Security;
-using System;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Services;
 using static Stoolball.Umbraco.Data.Constants;
@@ -215,62 +216,93 @@ namespace Stoolball.Umbraco.Data.Teams
                     }, transaction).ConfigureAwait(false);
             }
 
-            team.PlayerIdentities.Add(new PlayerIdentity
+            team.Players.Add(new Player
             {
-                PlayerIdentityId = Guid.NewGuid(),
                 PlayerId = Guid.NewGuid(),
-                PlayerIdentityRoute = team.TeamRoute + "/players/no-balls",
-                PlayerRole = PlayerRole.NoBalls,
-                PlayerIdentityName = "No balls",
-                TotalMatches = 0
+                PlayerIdentities = new List<PlayerIdentity>
+                {
+                    new PlayerIdentity
+                    {
+                        PlayerIdentityId = Guid.NewGuid(),
+                        PlayerIdentityName = "No balls",
+                        PlayerRole = PlayerRole.NoBalls,
+                        TotalMatches = 0
+                    }
+                }
             });
 
-            team.PlayerIdentities.Add(new PlayerIdentity
+            team.Players.Add(new Player
             {
-                PlayerIdentityId = Guid.NewGuid(),
                 PlayerId = Guid.NewGuid(),
-                PlayerIdentityRoute = team.TeamRoute + "/players/wides",
-                PlayerRole = PlayerRole.Wides,
-                PlayerIdentityName = "Wides",
-                TotalMatches = 0
+                PlayerIdentities = new List<PlayerIdentity>
+                {
+                    new PlayerIdentity
+                    {
+                        PlayerRole = PlayerRole.Wides,
+                        PlayerIdentityName = "Wides",
+                        PlayerIdentityId = Guid.NewGuid(),
+                        TotalMatches = 0
+                    }
+                }
             });
 
-            team.PlayerIdentities.Add(new PlayerIdentity
+            team.Players.Add(new Player
             {
-                PlayerIdentityId = Guid.NewGuid(),
                 PlayerId = Guid.NewGuid(),
-                PlayerIdentityRoute = team.TeamRoute + "/players/byes",
-                PlayerRole = PlayerRole.Byes,
-                PlayerIdentityName = "Byes",
-                TotalMatches = 0
+                PlayerIdentities = new List<PlayerIdentity>
+                {
+                    new PlayerIdentity
+                    {
+                        PlayerIdentityId = Guid.NewGuid(),
+                        PlayerIdentityName = "Byes",
+                        PlayerRole = PlayerRole.Byes,
+                        TotalMatches = 0
+                    }
+                }
             });
 
-            team.PlayerIdentities.Add(new PlayerIdentity
+            team.Players.Add(new Player
             {
-                PlayerIdentityId = Guid.NewGuid(),
                 PlayerId = Guid.NewGuid(),
-                PlayerIdentityRoute = team.TeamRoute + "/players/bonus-runs",
-                PlayerRole = PlayerRole.BonusRuns,
-                PlayerIdentityName = "Bonus runs",
-                TotalMatches = 0
+                PlayerIdentities = new List<PlayerIdentity>
+                {
+                    new PlayerIdentity
+                    {
+                        PlayerIdentityId = Guid.NewGuid(),
+                        PlayerIdentityName = "Bonus runs",
+                        PlayerRole = PlayerRole.BonusRuns,
+                        TotalMatches = 0
+                    }
+                }
             });
 
-            foreach (var extrasIdentity in team.PlayerIdentities)
+            foreach (var extrasIdentity in team.Players)
             {
                 await transaction.Connection.ExecuteAsync(
-                    $@"INSERT INTO {Tables.PlayerIdentity} 
-                                (PlayerIdentityId, PlayerId, PlayerRole, PlayerIdentityName, PlayerIdentityComparableName, TeamId, TotalMatches, PlayerIdentityRoute) 
-                                VALUES (@PlayerIdentityId, @PlayerId, @PlayerRole, @PlayerIdentityName, @PlayerIdentityComparableName, @TeamId, @TotalMatches, @PlayerIdentityRoute)",
+                    $@"INSERT INTO {Tables.Player} 
+                       (PlayerId, PlayerName) 
+                       VALUES 
+                       (@PlayerId, @PlayerName)",
                     new
                     {
-                        extrasIdentity.PlayerIdentityId,
                         extrasIdentity.PlayerId,
-                        PlayerRole = extrasIdentity.PlayerRole.ToString(),
-                        extrasIdentity.PlayerIdentityName,
-                        PlayerIdentityComparableName = extrasIdentity.ComparableName(),
+                        PlayerName = extrasIdentity.PlayerIdentities[0].PlayerIdentityName,
+                        extrasIdentity.PlayerRoute
+                    }, transaction).ConfigureAwait(false);
+
+                await transaction.Connection.ExecuteAsync(
+                    $@"INSERT INTO {Tables.PlayerIdentity} 
+                                (PlayerIdentityId, PlayerId, PlayerRole, PlayerIdentityName, PlayerIdentityComparableName, TeamId, TotalMatches) 
+                                VALUES (@PlayerIdentityId, @PlayerId, @PlayerRole, @PlayerIdentityName, @PlayerIdentityComparableName, @TeamId, @TotalMatches)",
+                    new
+                    {
+                        extrasIdentity.PlayerIdentities[0].PlayerIdentityId,
+                        extrasIdentity.PlayerId,
+                        PlayerRole = extrasIdentity.PlayerIdentities[0].PlayerRole.ToString(),
+                        extrasIdentity.PlayerIdentities[0].PlayerIdentityName,
+                        PlayerIdentityComparableName = extrasIdentity.PlayerIdentities[0].ComparableName(),
                         team.TeamId,
-                        extrasIdentity.TotalMatches,
-                        extrasIdentity.PlayerIdentityRoute
+                        extrasIdentity.PlayerIdentities[0].TotalMatches
                     }, transaction).ConfigureAwait(false);
             }
 
@@ -573,8 +605,11 @@ namespace Stoolball.Umbraco.Data.Teams
                         await connection.ExecuteAsync($"UPDATE {Tables.PlayerInnings} SET BowlerId = NULL WHERE BowlerId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"DELETE FROM {Tables.Over} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.Bowling} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"DELETE FROM {Tables.MatchAward} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        var playerIds = await connection.QueryAsync<Guid>($"SELECT PlayerId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.Player} WHERE PlayerId IN @playerIds AND NOT IN (SELECT PlayerId FROM {Tables.PlayerIdentity} WHERE PlayerId IN @playerIds)", new { playerIds }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"UPDATE {Tables.MatchInnings} SET BattingMatchTeamId = NULL WHERE BattingMatchTeamId IN (SELECT MatchTeamId FROM {Tables.MatchTeam} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"UPDATE {Tables.MatchInnings} SET BowlingMatchTeamId = NULL WHERE BowlingMatchTeamId IN (SELECT MatchTeamId FROM {Tables.MatchTeam} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);

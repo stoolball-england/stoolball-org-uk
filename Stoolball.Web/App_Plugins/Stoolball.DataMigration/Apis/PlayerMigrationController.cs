@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Newtonsoft.Json;
+using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -43,7 +43,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
             }
 
             var migrated = await _playerDataMigrator.MigratePlayer(player).ConfigureAwait(false);
-            return Created(new Uri(Request.RequestUri, new Uri(migrated.PlayerIdentityRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
+            return Created(new Uri(Request.RequestUri, new Uri(migrated.PlayerRoute ?? "/extras-player-without-route", UriKind.Relative)), JsonConvert.SerializeObject(migrated));
         }
 
         [HttpDelete]

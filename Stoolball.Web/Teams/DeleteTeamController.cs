@@ -1,12 +1,13 @@
-﻿using Stoolball.Teams;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -67,11 +68,11 @@ namespace Stoolball.Web.Teams
                     TeamIds = teamIds,
                     IncludeTournamentMatches = true
                 }).ConfigureAwait(false);
-                model.Team.PlayerIdentities = await _playerDataSource.ReadPlayerIdentities(new PlayerIdentityQuery
+                model.Team.Players = (await _playerDataSource.ReadPlayerIdentities(new PlayerIdentityQuery
                 {
                     TeamIds = teamIds,
                     PlayerRoles = new List<PlayerRole> { PlayerRole.Player }
-                }).ConfigureAwait(false);
+                }).ConfigureAwait(false))?.Select(x => new Player { PlayerIdentities = new List<PlayerIdentity> { x } }).ToList();
 
                 model.ConfirmDeleteRequest.RequiredText = model.Team.TeamName;
 

@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Stoolball.Audit;
 
 namespace Stoolball.Teams
 {
-    public class PlayerIdentity : IAuditable
+    public class PlayerIdentity
     {
         public Guid? PlayerIdentityId { get; set; }
-        public Guid? PlayerId { get; set; }
 
         public Team Team { get; set; }
         public string PlayerIdentityName { get; set; }
@@ -33,12 +30,5 @@ namespace Stoolball.Teams
         public int? Probability { get; set; }
 
         public PlayerRole PlayerRole { get; set; }
-
-        public string PlayerIdentityRoute { get; set; }
-        public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
-
-        public Uri EntityUri {
-            get { return new Uri($"https://www.stoolball.org.uk/id/player-identity/{PlayerIdentityId}"); }
-        }
     }
 }

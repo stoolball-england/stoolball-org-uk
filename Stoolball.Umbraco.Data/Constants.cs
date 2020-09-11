@@ -68,7 +68,7 @@ namespace Stoolball.Umbraco.Data
             public static IEnumerable<string> CompetitionRoute { get; } = Array.Empty<string>();
             public static IEnumerable<string> TournamentRoute { get; } = Array.Empty<string>();
             public static IEnumerable<string> MatchRoute { get; } = Array.Empty<string>();
-            public static IEnumerable<string> PlayerIdentityRoute { get; } = Array.Empty<string>();
+            public static IEnumerable<string> PlayerRoute { get; } = Array.Empty<string>();
         }
     }
 }
