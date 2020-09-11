@@ -346,8 +346,12 @@
         <textarea aria-describedby="rich-text-with-help-validation rich-text-help" class="form-control" cols="20" id="rich-text-with-help" name="rich-text-with-help" rows="2"></textarea>
         <span class="field-validation-valid" data-valmsg-for="rich-text-with-help" data-valmsg-replace="true" id="rich-text-with-help-validation"></span>
     </div>
-    <button class="btn btn-primary">Button text</button>
+    <button class="btn btn-primary">Primary button</button>
+    <button class="btn btn-primary" disabled="disabled">Primary button (disabled)</button>
+    <button class="btn btn-secondary">Secondary button</button>
+    <button class="btn btn-secondary" disabled="disabled">Secondary button (disabled)</button>
     <button class="btn btn-danger">@Html.Partial("_DeleteIcon", (string.Empty, string.Empty)) Delete button</button>
+    <button class="btn btn-danger" disabled="disabled">@Html.Partial("_DeleteIcon", (string.Empty, string.Empty)) Delete button (disabled)</button>
 </form>
 <p>Paragraph below a button (outside the form) and above an informational alert.</p>
 <div class="alert alert-info">
