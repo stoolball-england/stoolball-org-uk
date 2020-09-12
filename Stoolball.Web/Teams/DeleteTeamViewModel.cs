@@ -2,12 +2,13 @@
 using Stoolball.Teams;
 using Stoolball.Web.Routing;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Core.Services;
 
 namespace Stoolball.Web.Teams
 {
     public class DeleteTeamViewModel : BaseViewModel
     {
-        public DeleteTeamViewModel(IPublishedContent contentModel) : base(contentModel)
+        public DeleteTeamViewModel(IPublishedContent contentModel, IUserService userService) : base(contentModel, userService)
         {
         }
         public Team Team { get; set; }

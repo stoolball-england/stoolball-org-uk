@@ -1,14 +1,14 @@
-﻿using Stoolball.Dates;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Dates;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Security;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -70,7 +70,7 @@ namespace Stoolball.Web.Teams
                 return Redirect(team.TeamRoute);
             }
 
-            var viewModel = new TeamViewModel(CurrentPage)
+            var viewModel = new TeamViewModel(CurrentPage, Services.UserService)
             {
                 Team = team,
             };

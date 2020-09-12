@@ -48,7 +48,7 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(postedMatch));
             }
 
-            var model = new EditFriendlyMatchViewModel(CurrentPage) { Match = postedMatch };
+            var model = new EditFriendlyMatchViewModel(CurrentPage, Services.UserService) { Match = postedMatch };
             model.Match.MatchType = MatchType.FriendlyMatch;
             if (model.Match.Season != null && !model.Match.Season.SeasonId.HasValue)
             {

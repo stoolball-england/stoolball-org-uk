@@ -1,4 +1,8 @@
-﻿using Stoolball.Clubs;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Umbraco.Data.Clubs;
@@ -6,10 +10,6 @@ using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -64,7 +64,7 @@ namespace Stoolball.Web.Clubs
             }
             else
             {
-                var model = new ClubViewModel(contentModel.Content)
+                var model = new ClubViewModel(contentModel.Content, Services?.UserService)
                 {
                     Club = club,
                     Matches = new MatchListingViewModel

@@ -1,31 +1,34 @@
-﻿using Stoolball.Security;
-using Stoolball.Web.Email;
-using Stoolball.Web.Security;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using Stoolball.Security;
+using Stoolball.Web.Email;
+using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
-
+using Umbraco.Web.Security;
 
 namespace Stoolball.Web.Account
 {
     public class ResetPasswordSurfaceController : SurfaceController
     {
+        private readonly MembershipHelper _membershipHelper;
         private readonly IEmailFormatter _emailFormatter;
         private readonly IEmailSender _emailSender;
         private readonly IVerificationToken _verificationToken;
 
-        public ResetPasswordSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services, AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IEmailFormatter emailFormatter, IEmailSender emailSender, IVerificationToken verificationToken)
+        public ResetPasswordSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services,
+            AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, MembershipHelper membershipHelper, IEmailFormatter emailFormatter, IEmailSender emailSender, IVerificationToken verificationToken)
             : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper)
         {
-            _emailFormatter = emailFormatter;
-            _emailSender = emailSender;
-            _verificationToken = verificationToken;
+            _membershipHelper = membershipHelper ?? throw new ArgumentNullException(nameof(membershipHelper));
+            _emailFormatter = emailFormatter ?? throw new ArgumentNullException(nameof(emailFormatter));
+            _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
+            _verificationToken = verificationToken ?? throw new ArgumentNullException(nameof(verificationToken));
         }
 
         [HttpPost]
@@ -150,7 +153,7 @@ namespace Stoolball.Web.Account
                         // They obviously wanted to login, so be helpful and do it, unless they're blocked
                         if (!member.GetValue<bool>("blockLogin"))
                         {
-                            Umbraco.MembershipHelper.Login(member.Username, model.NewPassword);
+                            _membershipHelper.Login(member.Username, model.NewPassword);
                         }
 
                         // Redirect because the login doesn't update the thread identity

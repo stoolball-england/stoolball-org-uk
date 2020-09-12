@@ -1,4 +1,8 @@
-﻿using Stoolball.Competitions;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Matches;
@@ -7,10 +11,6 @@ using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -58,7 +58,7 @@ namespace Stoolball.Web.Competitions
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new SeasonViewModel(contentModel.Content)
+            var model = new SeasonViewModel(contentModel.Content, Services?.UserService)
             {
                 Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false)
             };

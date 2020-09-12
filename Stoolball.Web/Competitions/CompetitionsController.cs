@@ -1,8 +1,8 @@
-﻿using Stoolball.Umbraco.Data.Competitions;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -38,7 +38,7 @@ namespace Stoolball.Web.Competitions
             }
 
             _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
-            var model = new CompetitionsViewModel(contentModel.Content)
+            var model = new CompetitionsViewModel(contentModel.Content, Services?.UserService)
             {
                 CompetitionQuery = new CompetitionQuery
                 {

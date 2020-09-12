@@ -1,10 +1,10 @@
-﻿using Stoolball.Dates;
+﻿using System;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Security;
-using System;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -45,7 +45,7 @@ namespace Stoolball.Web.Matches
 
             var beforeUpdate = await _tournamentDataSource.ReadTournamentByRoute(Request.RawUrl).ConfigureAwait(false);
 
-            var model = new EditTournamentViewModel(CurrentPage)
+            var model = new EditTournamentViewModel(CurrentPage, Services.UserService)
             {
                 Tournament = postedTournament,
                 DateFormatter = _dateTimeFormatter

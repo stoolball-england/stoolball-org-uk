@@ -368,6 +368,7 @@ splashes
 !**/App_Plugins/Stoolball.DataMigration
 **/Views/Partials/Forms
 **/Views/Partials/Grid
+**/Views/Partials/BlockList
 **/Views/MacroPartials
 .UmbracoCloud
 **/data/deploy*

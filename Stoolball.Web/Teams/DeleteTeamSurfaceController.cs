@@ -48,7 +48,7 @@ namespace Stoolball.Web.Teams
                 throw new ArgumentNullException(nameof(model));
             }
 
-            var viewModel = new DeleteTeamViewModel(CurrentPage)
+            var viewModel = new DeleteTeamViewModel(CurrentPage, Services.UserService)
             {
                 Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false),
             };

@@ -1,19 +1,20 @@
-﻿using Stoolball.Competitions;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
+using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Teams;
 using Stoolball.Web.Routing;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Core.Services;
 
 namespace Stoolball.Web.Matches
 {
     public class EditFriendlyMatchViewModel : BaseViewModel, IEditMatchViewModel
     {
-        public EditFriendlyMatchViewModel(IPublishedContent contentModel) : base(contentModel)
+        public EditFriendlyMatchViewModel(IPublishedContent contentModel, IUserService userService) : base(contentModel, userService)
         {
         }
 

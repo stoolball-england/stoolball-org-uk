@@ -1,12 +1,12 @@
-﻿using Stoolball.MatchLocations;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.MatchLocations;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -47,7 +47,7 @@ namespace Stoolball.Web.MatchLocations
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new DeleteMatchLocationViewModel(contentModel.Content)
+            var model = new DeleteMatchLocationViewModel(contentModel.Content, Services?.UserService)
             {
                 MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl, true).ConfigureAwait(false),
             };

@@ -3,12 +3,13 @@ using Stoolball.Matches;
 using Stoolball.Security;
 using Stoolball.Web.Routing;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Core.Services;
 
 namespace Stoolball.Web.Matches
 {
     public class DeleteTournamentViewModel : BaseViewModel
     {
-        public DeleteTournamentViewModel(IPublishedContent contentModel) : base(contentModel)
+        public DeleteTournamentViewModel(IPublishedContent contentModel, IUserService userService) : base(contentModel, userService)
         {
         }
         public Tournament Tournament { get; set; }

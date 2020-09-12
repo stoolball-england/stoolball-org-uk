@@ -2,12 +2,13 @@
 using Stoolball.Security;
 using Stoolball.Web.Routing;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Core.Services;
 
 namespace Stoolball.Web.Competitions
 {
     public class DeleteCompetitionViewModel : BaseViewModel
     {
-        public DeleteCompetitionViewModel(IPublishedContent contentModel) : base(contentModel)
+        public DeleteCompetitionViewModel(IPublishedContent contentModel, IUserService userService) : base(contentModel, userService)
         {
         }
         public Competition Competition { get; set; }

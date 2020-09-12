@@ -1,8 +1,8 @@
-﻿using Stoolball.Clubs;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Clubs;
 using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Web.Security;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -54,7 +54,7 @@ namespace Stoolball.Web.Clubs
                 return Redirect(club.ClubRoute + "/edit");
             }
 
-            var viewModel = new ClubViewModel(CurrentPage)
+            var viewModel = new ClubViewModel(CurrentPage, Services.UserService)
             {
                 Club = club,
             };

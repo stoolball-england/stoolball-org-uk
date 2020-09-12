@@ -1,8 +1,8 @@
-﻿using Stoolball.Competitions;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Competitions;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -37,7 +37,7 @@ namespace Stoolball.Web.Competitions
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new CompetitionViewModel(contentModel.Content)
+            var model = new CompetitionViewModel(contentModel.Content, Services?.UserService)
             {
                 Competition = new Competition
                 {

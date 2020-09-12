@@ -1,9 +1,9 @@
-﻿using Stoolball.Competitions;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Competitions;
 using Stoolball.Routing;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Security;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
@@ -89,7 +89,7 @@ namespace Stoolball.Web.Competitions
                 return Redirect(competition.CompetitionRoute);
             }
 
-            var viewModel = new CompetitionViewModel(CurrentPage)
+            var viewModel = new CompetitionViewModel(CurrentPage, Services.UserService)
             {
                 Competition = competition,
             };

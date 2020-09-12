@@ -1,17 +1,18 @@
-﻿using Stoolball.Dates;
-using Stoolball.Matches;
-using Stoolball.Web.Routing;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using Stoolball.Dates;
+using Stoolball.Matches;
+using Stoolball.Web.Routing;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Core.Services;
 
 namespace Stoolball.Web.Matches
 {
     public class EditStartOfPlayViewModel : BaseViewModel
     {
-        public EditStartOfPlayViewModel(IPublishedContent contentModel) : base(contentModel)
+        public EditStartOfPlayViewModel(IPublishedContent contentModel, IUserService userService) : base(contentModel, userService)
         {
         }
         public Match Match { get; set; }

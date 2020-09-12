@@ -1,14 +1,14 @@
-﻿using Humanizer;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Humanizer;
 using Stoolball.Matches;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Security;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -49,7 +49,7 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(postedMatch));
             }
 
-            var model = new EditLeagueMatchViewModel(CurrentPage) { Match = postedMatch };
+            var model = new EditLeagueMatchViewModel(CurrentPage, Services.UserService) { Match = postedMatch };
             model.Match.MatchType = MatchType.LeagueMatch;
             _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form);
 

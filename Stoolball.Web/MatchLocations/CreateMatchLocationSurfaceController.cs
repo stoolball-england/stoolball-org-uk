@@ -1,9 +1,9 @@
-﻿using Stoolball.MatchLocations;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Security;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
@@ -87,7 +87,7 @@ namespace Stoolball.Web.MatchLocations
                 return Redirect(location.MatchLocationRoute);
             }
 
-            var viewModel = new MatchLocationViewModel(CurrentPage)
+            var viewModel = new MatchLocationViewModel(CurrentPage, Services.UserService)
             {
                 MatchLocation = location,
             };

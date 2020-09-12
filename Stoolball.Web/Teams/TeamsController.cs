@@ -1,8 +1,8 @@
-﻿using Stoolball.Umbraco.Data.Teams;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -38,7 +38,7 @@ namespace Stoolball.Web.Teams
             }
 
             _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
-            var model = new TeamsViewModel(contentModel.Content)
+            var model = new TeamsViewModel(contentModel.Content, Services?.UserService)
             {
                 TeamQuery = new TeamQuery
                 {

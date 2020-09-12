@@ -1,11 +1,11 @@
-﻿using Stoolball.Email;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Email;
 using Stoolball.MatchLocations;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -49,7 +49,7 @@ namespace Stoolball.Web.MatchLocations
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new MatchLocationViewModel(contentModel.Content)
+            var model = new MatchLocationViewModel(contentModel.Content, Services?.UserService)
             {
                 MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl, true).ConfigureAwait(false),
                 GoogleMapsApiKey = _apiKeyProvider.GetApiKey("GoogleMaps")

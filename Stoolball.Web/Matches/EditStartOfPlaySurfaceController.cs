@@ -61,7 +61,7 @@ namespace Stoolball.Web.Matches
                 return new HttpNotFoundResult();
             }
 
-            var model = new EditStartOfPlayViewModel(CurrentPage)
+            var model = new EditStartOfPlayViewModel(CurrentPage, Services.UserService)
             {
                 Match = postedMatch,
                 DateFormatter = _dateTimeFormatter

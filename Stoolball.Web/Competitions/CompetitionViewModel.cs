@@ -1,13 +1,14 @@
-﻿using Stoolball.Competitions;
+﻿using System;
+using Stoolball.Competitions;
 using Stoolball.Web.Routing;
-using System;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Core.Services;
 
 namespace Stoolball.Web.Competitions
 {
     public class CompetitionViewModel : BaseViewModel
     {
-        public CompetitionViewModel(IPublishedContent contentModel) : base(contentModel)
+        public CompetitionViewModel(IPublishedContent contentModel, IUserService userService) : base(contentModel, userService)
         {
         }
         public Competition Competition { get; set; }

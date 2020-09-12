@@ -1,8 +1,8 @@
-﻿using Stoolball.Umbraco.Data.MatchLocations;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -38,7 +38,7 @@ namespace Stoolball.Web.MatchLocations
             }
 
             _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
-            var model = new MatchLocationsViewModel(contentModel.Content)
+            var model = new MatchLocationsViewModel(contentModel.Content, Services?.UserService)
             {
                 MatchLocationQuery = new MatchLocationQuery
                 {

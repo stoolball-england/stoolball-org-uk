@@ -1,13 +1,13 @@
-﻿using Stoolball.Dates;
-using Stoolball.Matches;
-using Stoolball.Umbraco.Data.Matches;
-using Stoolball.Web.Routing;
-using Stoolball.Web.Security;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Dates;
+using Stoolball.Matches;
+using Stoolball.Umbraco.Data.Matches;
+using Stoolball.Web.Routing;
+using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -51,7 +51,7 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new EditBowlingScorecardViewModel(contentModel.Content)
+            var model = new EditBowlingScorecardViewModel(contentModel.Content, Services?.UserService)
             {
                 Match = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false),
                 DateFormatter = _dateFormatter,

@@ -1,9 +1,9 @@
-﻿using Stoolball.Teams;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -41,7 +41,7 @@ namespace Stoolball.Web.Teams
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new TeamViewModel(contentModel.Content)
+            var model = new TeamViewModel(contentModel.Content, Services?.UserService)
             {
                 Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false)
             };

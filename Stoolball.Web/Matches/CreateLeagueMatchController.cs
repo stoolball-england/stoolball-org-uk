@@ -1,14 +1,14 @@
-﻿using Stoolball.Matches;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -52,7 +52,7 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new EditLeagueMatchViewModel(contentModel.Content)
+            var model = new EditLeagueMatchViewModel(contentModel.Content, Services?.UserService)
             {
                 Match = new Match
                 {

@@ -1,9 +1,10 @@
-﻿using Stoolball.Metadata;
+﻿using System;
+using System.Collections.Generic;
+using Stoolball.Metadata;
 using Stoolball.Web.Metadata;
 using Stoolball.Web.Security;
-using System;
-using System.Collections.Generic;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.PublishedModels;
 
@@ -21,10 +22,12 @@ namespace Stoolball.Web.Routing
     public abstract partial class BaseViewModel : IPublishedContent, IHasViewMetadata
     {
         private readonly IPublishedContent _contentModel;
+        private readonly IUserService _userService;
 
-        public BaseViewModel(IPublishedContent contentModel)
+        public BaseViewModel(IPublishedContent contentModel, IUserService userService)
         {
             _contentModel = contentModel;
+            _userService = userService;
         }
 
         /// <summary>
@@ -53,18 +56,18 @@ namespace Stoolball.Web.Routing
 
         public int CreatorId => _contentModel.CreatorId;
 
-        public string CreatorName => _contentModel.CreatorName;
+        public string CreatorName => _contentModel.CreatorName(_userService);
 
         public DateTime CreateDate => _contentModel.CreateDate;
 
         public int WriterId => _contentModel.WriterId;
 
-        public string WriterName => _contentModel.WriterName;
+        public string WriterName => _contentModel.WriterName(_userService);
 
         public DateTime UpdateDate => _contentModel.UpdateDate;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1056:Uri properties should not be strings", Justification = "Implementing the IPublishedContent interface")]
-        public string Url => _contentModel.Url;
+        public string Url => _contentModel.Url();
 
         public IReadOnlyDictionary<string, PublishedCultureInfo> Cultures => _contentModel.Cultures;
 

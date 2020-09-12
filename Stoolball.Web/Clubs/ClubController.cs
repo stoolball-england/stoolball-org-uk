@@ -1,9 +1,9 @@
-﻿using Stoolball.Clubs;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Clubs;
 using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -41,7 +41,7 @@ namespace Stoolball.Web.Clubs
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new ClubViewModel(contentModel.Content)
+            var model = new ClubViewModel(contentModel.Content, Services?.UserService)
             {
                 Club = await _clubDataSource.ReadClubByRoute(Request.RawUrl).ConfigureAwait(false)
             };

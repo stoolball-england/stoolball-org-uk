@@ -2,12 +2,13 @@
 using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Core.Services;
 
 namespace Stoolball.Web.Competitions
 {
     public class SeasonViewModel : BaseViewModel
     {
-        public SeasonViewModel(IPublishedContent contentModel) : base(contentModel)
+        public SeasonViewModel(IPublishedContent contentModel, IUserService userService) : base(contentModel, userService)
         {
         }
         public Season Season { get; set; }

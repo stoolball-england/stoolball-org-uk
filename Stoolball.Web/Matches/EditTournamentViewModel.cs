@@ -1,17 +1,18 @@
-﻿using Stoolball.Competitions;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Teams;
 using Stoolball.Web.Routing;
-using System;
-using System.ComponentModel.DataAnnotations;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Core.Services;
 
 namespace Stoolball.Web.Matches
 {
     public class EditTournamentViewModel : BaseViewModel
     {
-        public EditTournamentViewModel(IPublishedContent contentModel) : base(contentModel)
+        public EditTournamentViewModel(IPublishedContent contentModel, IUserService userService) : base(contentModel, userService)
         {
         }
         public Tournament Tournament { get; set; }

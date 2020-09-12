@@ -1,13 +1,13 @@
-﻿using Stoolball.Matches;
+﻿using System;
+using System.Globalization;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Security;
-using System;
-using System.Globalization;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -44,7 +44,7 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(postedTournament));
             }
 
-            var model = new EditTournamentViewModel(CurrentPage) { Tournament = postedTournament };
+            var model = new EditTournamentViewModel(CurrentPage, Services.UserService) { Tournament = postedTournament };
             // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
             model.Tournament.TournamentNotes = Request.Unvalidated.Form["Tournament.TournamentNotes"];
 

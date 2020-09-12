@@ -1,8 +1,8 @@
-﻿using Stoolball.Teams;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Security;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -61,7 +61,7 @@ namespace Stoolball.Web.Teams
                 return Redirect(team.TeamRoute);
             }
 
-            var viewModel = new TeamViewModel(CurrentPage)
+            var viewModel = new TeamViewModel(CurrentPage, Services.UserService)
             {
                 Team = team,
             };

@@ -1,6 +1,6 @@
-﻿using Stoolball.Umbraco.Data.Redirects;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Stoolball.Umbraco.Data.Redirects;
 using Umbraco.Core.Logging;
 using Umbraco.Web;
 
@@ -33,26 +33,26 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 var accountPage = publishedContentQuery.ContentSingleAtXPath("//myAccount");
                 if (accountPage != null)
                 {
-                    await _redirectsRepository.InsertRedirect("/you/settings.php", accountPage.Id, accountPage.Key, new Uri(accountPage.Url, UriKind.Relative)).ConfigureAwait(false);
-                    await _redirectsRepository.InsertRedirect("/you/essential.php", accountPage.Id, accountPage.Key, new Uri(accountPage.Url, UriKind.Relative)).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/you/settings.php", accountPage.Id, accountPage.Key, new Uri(accountPage.Url(), UriKind.Relative)).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/you/essential.php", accountPage.Id, accountPage.Key, new Uri(accountPage.Url(), UriKind.Relative)).ConfigureAwait(false);
                 }
 
                 var loginPage = publishedContentQuery.ContentSingleAtXPath("//loginMember");
                 if (loginPage != null)
                 {
-                    await _redirectsRepository.InsertRedirect("/you", loginPage.Id, loginPage.Key, new Uri(loginPage.Url, UriKind.Relative)).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/you", loginPage.Id, loginPage.Key, new Uri(loginPage.Url(), UriKind.Relative)).ConfigureAwait(false);
                 }
 
                 var passwordResetPage = publishedContentQuery.ContentSingleAtXPath("//resetPassword");
                 if (passwordResetPage != null)
                 {
-                    await _redirectsRepository.InsertRedirect("/you/request-password-reset", passwordResetPage.Id, passwordResetPage.Key, new Uri(passwordResetPage.Url, UriKind.Relative)).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/you/request-password-reset", passwordResetPage.Id, passwordResetPage.Key, new Uri(passwordResetPage.Url(), UriKind.Relative)).ConfigureAwait(false);
                 }
 
                 var createMemberPage = publishedContentQuery.ContentSingleAtXPath("//createMember");
                 if (createMemberPage != null)
                 {
-                    await _redirectsRepository.InsertRedirect("/you/signup.php", createMemberPage.Id, createMemberPage.Key, new Uri(createMemberPage.Url, UriKind.Relative)).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/you/signup.php", createMemberPage.Id, createMemberPage.Key, new Uri(createMemberPage.Url(), UriKind.Relative)).ConfigureAwait(false);
                 }
 
                 await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/play/manage/insurance").ConfigureAwait(false);

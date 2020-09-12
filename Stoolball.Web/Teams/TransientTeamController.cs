@@ -1,4 +1,9 @@
-﻿using Stoolball.Dates;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Matches;
@@ -6,11 +11,6 @@ using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -57,7 +57,7 @@ namespace Stoolball.Web.Teams
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new TeamViewModel(contentModel.Content)
+            var model = new TeamViewModel(contentModel.Content, Services?.UserService)
             {
                 Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false)
             };

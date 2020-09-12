@@ -2,12 +2,13 @@
 using Stoolball.Matches;
 using Stoolball.Web.Routing;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Core.Services;
 
 namespace Stoolball.Web.Matches
 {
     public class EditBowlingScorecardViewModel : BaseViewModel
     {
-        public EditBowlingScorecardViewModel(IPublishedContent contentModel) : base(contentModel)
+        public EditBowlingScorecardViewModel(IPublishedContent contentModel, IUserService userService) : base(contentModel, userService)
         {
         }
         public Match Match { get; set; }

@@ -1,14 +1,15 @@
-﻿using Stoolball.MatchLocations;
+﻿using System.Collections.Generic;
+using Stoolball.MatchLocations;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Routing;
-using System.Collections.Generic;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Core.Services;
 
 namespace Stoolball.Web.MatchLocations
 {
     public class MatchLocationsViewModel : BaseViewModel
     {
-        public MatchLocationsViewModel(IPublishedContent contentModel) : base(contentModel)
+        public MatchLocationsViewModel(IPublishedContent contentModel, IUserService userService) : base(contentModel, userService)
         {
         }
 

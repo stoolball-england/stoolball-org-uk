@@ -1,12 +1,12 @@
-﻿using Stoolball.Competitions;
-using Stoolball.Matches;
-using Stoolball.Umbraco.Data.Competitions;
-using Stoolball.Web.Security;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Competitions;
+using Stoolball.Matches;
+using Stoolball.Umbraco.Data.Competitions;
+using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -82,7 +82,7 @@ namespace Stoolball.Web.Competitions
                 return Redirect(season.SeasonRoute);
             }
 
-            var viewModel = new SeasonViewModel(CurrentPage)
+            var viewModel = new SeasonViewModel(CurrentPage, Services.UserService)
             {
                 Season = season,
             };

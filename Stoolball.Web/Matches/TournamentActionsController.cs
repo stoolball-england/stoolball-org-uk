@@ -1,10 +1,10 @@
-﻿using Stoolball.Dates;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -48,7 +48,7 @@ namespace Stoolball.Web.Matches
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new TournamentViewModel(contentModel.Content)
+            var model = new TournamentViewModel(contentModel.Content, Services?.UserService)
             {
                 Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.RawUrl).ConfigureAwait(false),
                 DateTimeFormatter = _dateFormatter

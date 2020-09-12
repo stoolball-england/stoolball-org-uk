@@ -84,7 +84,7 @@ namespace Stoolball.Web.Matches
                 i++;
             }
 
-            var model = new EditBowlingScorecardViewModel(CurrentPage)
+            var model = new EditBowlingScorecardViewModel(CurrentPage, Services.UserService)
             {
                 Match = beforeUpdate,
                 DateFormatter = _dateTimeFormatter,

@@ -1,11 +1,11 @@
-﻿using Stoolball.Competitions;
-using Stoolball.Umbraco.Data.Competitions;
-using Stoolball.Web.Routing;
-using Stoolball.Web.Security;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Competitions;
+using Stoolball.Umbraco.Data.Competitions;
+using Stoolball.Web.Routing;
+using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -51,7 +51,7 @@ namespace Stoolball.Web.Competitions
             }
             else
             {
-                var model = new SeasonViewModel(contentModel.Content)
+                var model = new SeasonViewModel(contentModel.Content, Services?.UserService)
                 {
                     Season = competition.Seasons.FirstOrDefault() ?? new Season()
                 };

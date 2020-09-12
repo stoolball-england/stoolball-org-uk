@@ -2,12 +2,13 @@
 using Stoolball.Security;
 using Stoolball.Web.Routing;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Core.Services;
 
 namespace Stoolball.Web.MatchLocations
 {
     public class DeleteMatchLocationViewModel : BaseViewModel
     {
-        public DeleteMatchLocationViewModel(IPublishedContent contentModel) : base(contentModel)
+        public DeleteMatchLocationViewModel(IPublishedContent contentModel, IUserService userService) : base(contentModel, userService)
         {
         }
 
