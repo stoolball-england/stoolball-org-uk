@@ -50,7 +50,7 @@ namespace Stoolball.Web.MatchLocations
             {
                 MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl, true).ConfigureAwait(false),
             };
-            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.MatchLocation, Members);
+            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.MatchLocation);
 
             if (viewModel.IsAuthorized[AuthorizedAction.DeleteMatchLocation] && ModelState.IsValid)
             {

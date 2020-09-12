@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -55,7 +56,7 @@ namespace Stoolball.Web.Competitions
             {
                 model.Season.PointsRules.AddRange(await _seasonDataSource.ReadPointsRules(model.Season.SeasonId.Value).ConfigureAwait(false));
 
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Season.Competition, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Season.Competition);
 
                 model.Metadata.PageTitle = "Points for " + model.Season.SeasonFullNameAndPlayerType();
 

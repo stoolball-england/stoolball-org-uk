@@ -1,6 +1,6 @@
 ﻿using Moq;
+using Stoolball.Security;
 using Stoolball.Teams;
-using Stoolball.Web.Security;
 using Stoolball.Web.Teams;
 using System;
 using System.Threading.Tasks;

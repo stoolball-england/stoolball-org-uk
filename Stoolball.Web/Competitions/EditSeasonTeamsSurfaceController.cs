@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -43,7 +44,7 @@ namespace Stoolball.Web.Competitions
             var beforeUpdate = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl).ConfigureAwait(false);
             season.SeasonId = beforeUpdate.SeasonId;
 
-            var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate.Competition, Members);
+            var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate.Competition);
 
             if (isAuthorized[AuthorizedAction.EditCompetition] && ModelState.IsValid)
             {

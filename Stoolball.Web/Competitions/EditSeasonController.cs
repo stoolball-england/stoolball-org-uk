@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -53,7 +54,7 @@ namespace Stoolball.Web.Competitions
             }
             else
             {
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Season.Competition, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Season.Competition);
 
                 model.Metadata.PageTitle = "Edit " + model.Season.SeasonFullNameAndPlayerType();
 

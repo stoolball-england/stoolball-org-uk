@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Matches;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -70,7 +71,7 @@ namespace Stoolball.Web.Competitions
                 ModelState.AddModelError(string.Empty, $"There is already a {season.SeasonName()}");
             }
 
-            var isAuthorized = _authorizationPolicy.IsAuthorized(season.Competition, Members);
+            var isAuthorized = _authorizationPolicy.IsAuthorized(season.Competition);
 
             if (isAuthorized[AuthorizedAction.EditCompetition] && ModelState.IsValid)
             {

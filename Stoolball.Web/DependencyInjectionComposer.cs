@@ -24,7 +24,6 @@ using Stoolball.Web.Configuration;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Routing;
-using Stoolball.Web.Security;
 using Stoolball.Web.Teams;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
@@ -157,12 +156,12 @@ namespace Stoolball.Web
             composition.Register<ITournamentRepository, SqlServerTournamentRepository>(Lifetime.Singleton);
 
             // Security checks
-            composition.Register<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>(Lifetime.Singleton);
-            composition.Register<IAuthorizationPolicy<Competition>, CompetitionAuthorizationPolicy>(Lifetime.Singleton);
-            composition.Register<IAuthorizationPolicy<MatchLocation>, MatchLocationAuthorizationPolicy>(Lifetime.Singleton);
-            composition.Register<IAuthorizationPolicy<Match>, MatchAuthorizationPolicy>(Lifetime.Singleton);
-            composition.Register<IAuthorizationPolicy<Tournament>, TournamentAuthorizationPolicy>(Lifetime.Singleton);
-            composition.Register<IAuthorizationPolicy<Team>, TeamAuthorizationPolicy>(Lifetime.Singleton);
+            composition.Register<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>(Lifetime.Request);
+            composition.Register<IAuthorizationPolicy<Competition>, CompetitionAuthorizationPolicy>(Lifetime.Request);
+            composition.Register<IAuthorizationPolicy<MatchLocation>, MatchLocationAuthorizationPolicy>(Lifetime.Request);
+            composition.Register<IAuthorizationPolicy<Match>, MatchAuthorizationPolicy>(Lifetime.Request);
+            composition.Register<IAuthorizationPolicy<Tournament>, TournamentAuthorizationPolicy>(Lifetime.Request);
+            composition.Register<IAuthorizationPolicy<Team>, TeamAuthorizationPolicy>(Lifetime.Request);
         }
     }
 }

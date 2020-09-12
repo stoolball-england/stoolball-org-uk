@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -45,7 +46,7 @@ namespace Stoolball.Web.MatchLocations
             // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
             location.MatchLocationNotes = Request.Unvalidated.Form["MatchLocation.MatchLocationNotes"];
 
-            var isAuthorized = _authorizationPolicy.IsAuthorized(location, Members);
+            var isAuthorized = _authorizationPolicy.IsAuthorized(location);
 
             if (isAuthorized[AuthorizedAction.CreateMatchLocation] && ModelState.IsValid)
             {

@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.MatchLocations;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Matches;
@@ -78,7 +79,7 @@ namespace Stoolball.Web.MatchLocations
                     },
                 };
 
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation);
 
                 model.Metadata.PageTitle = $"Matches for {model.MatchLocation}";
 

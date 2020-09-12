@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.MatchLocations;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Routing;
@@ -65,7 +66,7 @@ namespace Stoolball.Web.MatchLocations
                 }).ConfigureAwait(false);
                 model.ConfirmDeleteRequest.RequiredText = model.MatchLocation.Name();
 
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation);
 
                 model.Metadata.PageTitle = "Delete " + model.MatchLocation.NameAndLocalityOrTown();
 

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Security;
@@ -44,7 +45,7 @@ namespace Stoolball.Web.Teams
             team.PublicContactDetails = Request.Unvalidated.Form["Team.PublicContactDetails"];
             team.PrivateContactDetails = Request.Unvalidated.Form["Team.PrivateContactDetails"];
 
-            var isAuthorized = _authorizationPolicy.IsAuthorized(team, Members);
+            var isAuthorized = _authorizationPolicy.IsAuthorized(team);
 
             if (isAuthorized[AuthorizedAction.CreateTeam] && ModelState.IsValid)
             {

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Clubs;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -43,7 +44,7 @@ namespace Stoolball.Web.Clubs
             club.ClubId = beforeUpdate.ClubId;
             club.ClubRoute = beforeUpdate.ClubRoute;
 
-            var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate, Members);
+            var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
             if (isAuthorized[AuthorizedAction.EditClub] && ModelState.IsValid)
             {

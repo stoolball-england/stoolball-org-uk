@@ -51,7 +51,7 @@ namespace Stoolball.Web.Matches
                 Match = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false),
                 DateTimeFormatter = _dateTimeFormatter
             };
-            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Match, Members);
+            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Match);
 
             if (viewModel.IsAuthorized[AuthorizedAction.DeleteMatch] && ModelState.IsValid)
             {

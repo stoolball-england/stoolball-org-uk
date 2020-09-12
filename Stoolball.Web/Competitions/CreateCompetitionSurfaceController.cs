@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Routing;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -47,7 +48,7 @@ namespace Stoolball.Web.Competitions
             competition.PublicContactDetails = Request.Unvalidated.Form["Competition.PublicContactDetails"];
             competition.PrivateContactDetails = Request.Unvalidated.Form["Competition.PrivateContactDetails"];
 
-            var isAuthorized = _authorizationPolicy.IsAuthorized(competition, Members);
+            var isAuthorized = _authorizationPolicy.IsAuthorized(competition);
 
             if (isAuthorized[AuthorizedAction.CreateCompetition] && ModelState.IsValid)
             {

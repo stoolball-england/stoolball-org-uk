@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.MatchLocations;
+using Stoolball.Security;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -47,7 +48,7 @@ namespace Stoolball.Web.MatchLocations
                 GoogleMapsApiKey = _apiKeyProvider.GetApiKey("GoogleMaps")
             };
 
-            model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation, Members);
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation);
 
             model.Metadata.PageTitle = "Add a ground or sports centre";
 

@@ -1,9 +1,9 @@
 ﻿using Moq;
 using Stoolball.MatchLocations;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.MatchLocations;
-using Stoolball.Web.Security;
 using System;
 using System.Threading.Tasks;
 using System.Web;

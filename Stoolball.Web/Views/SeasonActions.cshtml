@@ -1,7 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<SeasonViewModel>
 @using Stoolball.Matches
 @using Stoolball.Web.Competitions
-@using Stoolball.Web.Security
+@using Stoolball.Security
 @{
     var the = Model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";
 }

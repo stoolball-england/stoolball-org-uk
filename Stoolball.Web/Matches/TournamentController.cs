@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Matches;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -64,7 +65,7 @@ namespace Stoolball.Web.Matches
             }
             else
             {
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament);
 
                 model.Matches = new MatchListingViewModel
                 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -49,7 +50,7 @@ namespace Stoolball.Web.Teams
                 }
             };
 
-            model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team, Members);
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team);
 
             model.Metadata.PageTitle = "Add a team";
 

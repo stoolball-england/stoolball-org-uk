@@ -6,6 +6,7 @@ using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Matches;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
@@ -86,7 +87,7 @@ namespace Stoolball.Web.Competitions
 
                 model.Season.Results = _emailProtector.ProtectEmailAddresses(model.Season.Results, User.Identity.IsAuthenticated);
 
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Season.Competition, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Season.Competition);
 
                 var the = model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase);
                 model.Metadata.PageTitle = $"Results for {(the ? string.Empty : "the ")}{model.Season.SeasonFullNameAndPlayerType()}";

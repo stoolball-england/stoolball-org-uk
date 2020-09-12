@@ -1,7 +1,7 @@
-﻿using Stoolball.Matches;
-using Stoolball.Web.Security;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Stoolball.Matches;
+using Stoolball.Security;
 using Umbraco.Web.Security;
 using static Stoolball.Umbraco.Data.Constants;
 
@@ -9,25 +9,26 @@ namespace Stoolball.Web.Matches
 {
     public class MatchAuthorizationPolicy : IAuthorizationPolicy<Match>
     {
+        private readonly MembershipHelper _membershipHelper;
+
+        public MatchAuthorizationPolicy(MembershipHelper membershipHelper)
+        {
+            _membershipHelper = membershipHelper;
+        }
+
         /// <summary>
         /// Gets whether the current member can edit the given <see cref="Match"/>
         /// </summary>
-        /// <remarks>It's recommended to inject MembershipHelper but GetCurrentMember() returns null (https://github.com/umbraco/Umbraco-CMS/blob/2f10051ee9780cd22d4d1313e5e7c6b0bc4661b1/src/Umbraco.Web/UmbracoHelper.cs#L98)</remarks>
-        public Dictionary<AuthorizedAction, bool> IsAuthorized(Match match, MembershipHelper membershipHelper)
+        public Dictionary<AuthorizedAction, bool> IsAuthorized(Match match)
         {
             if (match is null)
             {
                 throw new System.ArgumentNullException(nameof(match));
             }
 
-            if (membershipHelper is null)
-            {
-                throw new System.ArgumentNullException(nameof(membershipHelper));
-            }
-
             var authorizations = new Dictionary<AuthorizedAction, bool>();
-            authorizations[AuthorizedAction.EditMatchResult] = membershipHelper.IsLoggedIn();
-            authorizations[AuthorizedAction.EditMatch] = CanEditMatch(match, membershipHelper);
+            authorizations[AuthorizedAction.EditMatchResult] = _membershipHelper.IsLoggedIn();
+            authorizations[AuthorizedAction.EditMatch] = CanEditMatch(match, _membershipHelper);
             authorizations[AuthorizedAction.DeleteMatch] = authorizations[AuthorizedAction.EditMatch];
             return authorizations;
         }

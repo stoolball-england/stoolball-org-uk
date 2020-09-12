@@ -52,7 +52,7 @@ namespace Stoolball.Web.Teams
             {
                 Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false),
             };
-            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Team, Members);
+            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Team);
 
             if (viewModel.IsAuthorized[AuthorizedAction.DeleteTeam] && ModelState.IsValid)
             {

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Email;
+using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Routing;
@@ -56,7 +57,7 @@ namespace Stoolball.Web.Teams
             }
             else
             {
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team);
 
                 model.Metadata.PageTitle = model.Team.TeamName + " stoolball team";
                 model.Metadata.Description = model.Team.Description();

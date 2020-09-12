@@ -1,7 +1,7 @@
 ﻿using Moq;
 using Stoolball.Competitions;
+using Stoolball.Security;
 using Stoolball.Web.Competitions;
-using Stoolball.Web.Security;
 using System;
 using System.Threading.Tasks;
 using System.Web;

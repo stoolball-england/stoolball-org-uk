@@ -1076,8 +1076,6 @@
     <Compile Include="Matches\TournamentAuthorizationPolicy.cs" />
     <Compile Include="MatchLocations\MatchLocationAuthorizationPolicy.cs" />
     <Compile Include="Metadata\IHasViewMetadata.cs" />
-    <Compile Include="Security\AuthorizedAction.cs" />
-    <Compile Include="Security\IAuthorizationPolicy.cs" />
     <Compile Include="Matches\MatchActionsController.cs" />
     <Compile Include="Matches\MatchAuthorizationPolicy.cs" />
     <Compile Include="Matches\TournamentActionsController.cs" />

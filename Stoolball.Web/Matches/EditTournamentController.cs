@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -58,7 +59,7 @@ namespace Stoolball.Web.Matches
             }
             else
             {
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament);
 
                 model.TournamentDate = model.Tournament.StartTime;
                 if (model.Tournament.StartTimeIsKnown)

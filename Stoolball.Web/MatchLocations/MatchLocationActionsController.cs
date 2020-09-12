@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.MatchLocations;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -52,7 +53,7 @@ namespace Stoolball.Web.MatchLocations
             }
             else
             {
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation);
 
                 model.Metadata.PageTitle = "Edit " + model.MatchLocation.NameAndLocalityOrTown();
 

@@ -1,7 +1,7 @@
 ﻿using Moq;
 using Stoolball.Clubs;
+using Stoolball.Security;
 using Stoolball.Web.Clubs;
-using Stoolball.Web.Security;
 using System;
 using System.Threading.Tasks;
 using System.Web;

@@ -52,7 +52,7 @@ namespace Stoolball.Web.Competitions
             {
                 Competition = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false),
             };
-            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Competition, Members);
+            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Competition);
 
             if (viewModel.IsAuthorized[AuthorizedAction.DeleteCompetition] && ModelState.IsValid)
             {

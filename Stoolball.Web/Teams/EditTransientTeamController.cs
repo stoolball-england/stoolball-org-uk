@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Dates;
+using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
@@ -65,7 +66,7 @@ namespace Stoolball.Web.Teams
             }
             else
             {
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team);
 
                 model.Matches = new MatchListingViewModel
                 {

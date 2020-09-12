@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Dates;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
@@ -78,7 +79,7 @@ namespace Stoolball.Web.Clubs
                     },
                 };
 
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Club, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Club);
 
                 model.Metadata.PageTitle = $"Matches for {model.Club.ClubName}";
 

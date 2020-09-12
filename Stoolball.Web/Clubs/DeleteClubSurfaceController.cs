@@ -44,7 +44,7 @@ namespace Stoolball.Web.Clubs
             {
                 Club = await _clubDataSource.ReadClubByRoute(Request.RawUrl).ConfigureAwait(false),
             };
-            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Club, Members);
+            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Club);
 
             if (viewModel.IsAuthorized[AuthorizedAction.DeleteClub] && ModelState.IsValid)
             {

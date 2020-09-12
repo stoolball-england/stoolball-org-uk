@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
@@ -76,7 +77,7 @@ namespace Stoolball.Web.Teams
 
                 model.ConfirmDeleteRequest.RequiredText = model.Team.TeamName;
 
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team);
 
                 model.Metadata.PageTitle = "Delete " + model.Team.TeamName;
 

@@ -4,7 +4,7 @@
 @using Stoolball.Competitions
 @using Stoolball.Matches
 @using Stoolball.Web.Matches
-@using Stoolball.Web.Security 
+@using Stoolball.Security 
 @{
     var the = Model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase);
     var h1 = $"Results for {(the ? string.Empty : "the ")}{Model.Season.SeasonFullNameAndPlayerType()}";

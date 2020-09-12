@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Stoolball.Metadata;
+using Stoolball.Security;
 using Stoolball.Web.Metadata;
-using Stoolball.Web.Security;
 using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Core.Services;
 using Umbraco.Web;

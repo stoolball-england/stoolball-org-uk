@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -78,7 +79,7 @@ namespace Stoolball.Web.Matches
                     return new HttpNotFoundResult();
                 }
 
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
 
                 model.CurrentInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
                 if (!model.CurrentInnings.Overs.HasValue)

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Clubs;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -54,7 +55,7 @@ namespace Stoolball.Web.Clubs
             {
                 model.ConfirmDeleteRequest.RequiredText = model.Club.ClubName;
 
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Club, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Club);
 
                 model.Metadata.PageTitle = "Delete " + model.Club.ClubName;
 

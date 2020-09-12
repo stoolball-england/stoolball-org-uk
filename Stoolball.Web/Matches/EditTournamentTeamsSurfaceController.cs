@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -59,7 +60,7 @@ namespace Stoolball.Web.Matches
             model.Tournament.TournamentLocation = beforeUpdate.TournamentLocation;
             model.Tournament.PlayerType = beforeUpdate.PlayerType;
 
-            model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate, Members);
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
             if (model.IsAuthorized[AuthorizedAction.EditTournament] && ModelState.IsValid)
             {

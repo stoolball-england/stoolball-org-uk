@@ -1,8 +1,8 @@
 ﻿using Moq;
 using Stoolball.Dates;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
-using Stoolball.Web.Security;
 using System;
 using System.Security.Principal;
 using System.Threading.Tasks;

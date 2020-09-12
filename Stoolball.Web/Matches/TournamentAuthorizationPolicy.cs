@@ -1,6 +1,6 @@
-﻿using Stoolball.Matches;
-using Stoolball.Web.Security;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Stoolball.Matches;
+using Stoolball.Security;
 using Umbraco.Web.Security;
 using static Stoolball.Umbraco.Data.Constants;
 
@@ -8,24 +8,25 @@ namespace Stoolball.Web.Matches
 {
     public class TournamentAuthorizationPolicy : IAuthorizationPolicy<Tournament>
     {
+        private readonly MembershipHelper _membershipHelper;
+
+        public TournamentAuthorizationPolicy(MembershipHelper membershipHelper)
+        {
+            _membershipHelper = membershipHelper;
+        }
+
         /// <summary>
         /// Gets whether the current member can delete the given <see cref="Tournament"/>
         /// </summary>
-        /// <remarks>It's recommended to inject MembershipHelper but GetCurrentMember() returns null (https://github.com/umbraco/Umbraco-CMS/blob/2f10051ee9780cd22d4d1313e5e7c6b0bc4661b1/src/Umbraco.Web/UmbracoHelper.cs#L98)</remarks>
-        public Dictionary<AuthorizedAction, bool> IsAuthorized(Tournament tournament, MembershipHelper membershipHelper)
+        public Dictionary<AuthorizedAction, bool> IsAuthorized(Tournament tournament)
         {
             if (tournament is null)
             {
                 throw new System.ArgumentNullException(nameof(tournament));
             }
 
-            if (membershipHelper is null)
-            {
-                throw new System.ArgumentNullException(nameof(membershipHelper));
-            }
-
             var authorizations = new Dictionary<AuthorizedAction, bool>();
-            authorizations[AuthorizedAction.EditTournament] = CanEditTournament(tournament, membershipHelper);
+            authorizations[AuthorizedAction.EditTournament] = CanEditTournament(tournament, _membershipHelper);
             authorizations[AuthorizedAction.DeleteTournament] = authorizations[AuthorizedAction.EditTournament];
 
             return authorizations;

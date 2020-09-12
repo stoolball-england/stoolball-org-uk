@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using Stoolball.Clubs;
 using Stoolball.Routing;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -42,7 +43,7 @@ namespace Stoolball.Web.Clubs
                 throw new System.ArgumentNullException(nameof(club));
             }
 
-            var isAuthorized = _authorizationPolicy.IsAuthorized(club, Members);
+            var isAuthorized = _authorizationPolicy.IsAuthorized(club);
 
             if (isAuthorized[AuthorizedAction.CreateClub] && ModelState.IsValid)
             {

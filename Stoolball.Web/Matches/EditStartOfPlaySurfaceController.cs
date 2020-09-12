@@ -7,6 +7,7 @@ using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
+using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
@@ -82,7 +83,7 @@ namespace Stoolball.Web.Matches
 
             ReadBattedFirstFromRequest(model);
 
-            model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate, Members);
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
             if (model.IsAuthorized[AuthorizedAction.EditMatchResult] && ModelState.IsValid)
             {

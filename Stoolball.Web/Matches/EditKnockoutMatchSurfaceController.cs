@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Security;
@@ -68,7 +69,7 @@ namespace Stoolball.Web.Matches
 
             _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form);
 
-            model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate, Members);
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
             if (model.IsAuthorized[AuthorizedAction.EditMatch] && ModelState.IsValid)
             {

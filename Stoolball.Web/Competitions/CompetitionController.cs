@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Email;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -62,7 +63,7 @@ namespace Stoolball.Web.Competitions
             }
             else
             {
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Competition, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Competition);
 
                 model.Metadata.PageTitle = model.Competition.CompetitionName;
                 model.Metadata.Description = model.Competition.Description();

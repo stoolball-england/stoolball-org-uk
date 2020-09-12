@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
@@ -69,7 +70,7 @@ namespace Stoolball.Web.Matches
                     return new HttpNotFoundResult();
                 }
 
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
 
                 model.Match.Season = await _seasonDataSource.ReadSeasonByRoute(model.Match.Season.SeasonRoute, true).ConfigureAwait(false);
                 model.SeasonFullName = model.Match.Season?.SeasonFullName();

@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
+using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Umbraco.Data.Teams;
@@ -83,7 +84,7 @@ namespace Stoolball.Web.Teams
                     },
                 };
 
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team);
                 model.IsInACurrentLeague = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, MatchType.LeagueMatch).Any();
                 model.IsInACurrentKnockoutCompetition = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, MatchType.KnockoutMatch).Any();
 

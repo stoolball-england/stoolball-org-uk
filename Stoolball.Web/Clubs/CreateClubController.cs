@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Clubs;
+using Stoolball.Security;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -42,7 +43,7 @@ namespace Stoolball.Web.Clubs
                 Club = new Club()
             };
 
-            model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Club, Members);
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Club);
 
             model.Metadata.PageTitle = "Add a club";
 

@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
@@ -78,7 +79,7 @@ namespace Stoolball.Web.Competitions
                     model.Matches.MatchTypesToLabel.Add(MatchType.FriendlyMatch);
                 }
 
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Season.Competition, Members);
+                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Season.Competition);
 
                 model.Metadata.PageTitle = $"Matches for {model.Season.SeasonFullNameAndPlayerType()}";
 

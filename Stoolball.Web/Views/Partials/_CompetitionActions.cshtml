@@ -1,5 +1,5 @@
 ﻿@model Stoolball.Web.Competitions.CompetitionViewModel
-@using Stoolball.Web.Security
+@using Stoolball.Security
 @{
     var the = Model.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";
 }

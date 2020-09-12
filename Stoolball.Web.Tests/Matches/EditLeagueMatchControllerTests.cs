@@ -1,10 +1,10 @@
 ﻿using Moq;
 using Stoolball.Competitions;
 using Stoolball.Dates;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
-using Stoolball.Web.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;

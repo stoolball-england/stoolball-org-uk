@@ -54,7 +54,7 @@ namespace Stoolball.Web.Matches
                 Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.RawUrl).ConfigureAwait(false),
                 DateTimeFormatter = _dateTimeFormatter
             };
-            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Tournament, Members);
+            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Tournament);
 
             if (viewModel.IsAuthorized[AuthorizedAction.DeleteTournament] && ModelState.IsValid)
             {

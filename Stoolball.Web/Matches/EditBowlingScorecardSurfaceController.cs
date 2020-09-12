@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using Humanizer;
 using Stoolball.Dates;
 using Stoolball.Matches;
+using Stoolball.Security;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -101,7 +102,7 @@ namespace Stoolball.Web.Matches
                 model.CurrentInnings.Overs = postedInnings.OversBowled.Count;
             }
 
-            model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate, Members);
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
             if (model.IsAuthorized[AuthorizedAction.EditMatchResult] && ModelState.IsValid)
             {
