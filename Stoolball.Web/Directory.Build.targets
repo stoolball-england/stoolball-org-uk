@@ -34,7 +34,7 @@
   <Target Name="StoolballCopyFilesFromNuGetPackages" BeforeTargets="WebCompile">
     <PropertyGroup>
       <UmbracoVersion>8.7.0</UmbracoVersion>
-      <UmbracoFormsVersion>8.4.1</UmbracoFormsVersion>
+      <UmbracoFormsVersion>8.5.3</UmbracoFormsVersion>
       <USyncVersion>8.7.0</USyncVersion>
       <BootstrapVersion>4.5.2</BootstrapVersion>
       <JQueryVersion>3.5.1</JQueryVersion>
@@ -163,6 +163,18 @@
     <Copy SourceFiles="$(OriginaluSyncConfig)" DestinationFiles="$(TempuSyncConfig)" />
     <TransformXml Source="$(TempuSyncConfig)" Transform="$(ProjectDir)\config\uSync8.local.xdt.config" Destination="$(OriginaluSyncConfig)" StackTrace="true" />
     <Delete Files="$(TempuSyncConfig)" />
+  </Target>
+
+  <Target Name="StoolballUmbracoFormsConfig" AfterTargets="StoolballCopyFilesFromUmbracoCloud">
+    <!-- Applies changes to UmbracoForms.config on build from XDT transforms so that the unaltered UmbracoForms.config 
+         can always be copied from the UmbracoForms package. -->
+    <PropertyGroup>
+      <OriginalUmbracoFormsConfig>$(ProjectDir)\App_Plugins\UmbracoForms\UmbracoForms.config</OriginalUmbracoFormsConfig>
+      <TempUmbracoFormsConfig>$(ProjectDir)\App_Plugins\UmbracoForms\UmbracoForms.temp.config</TempUmbracoFormsConfig>
+    </PropertyGroup>
+    <Copy SourceFiles="$(OriginalUmbracoFormsConfig)" DestinationFiles="$(TempUmbracoFormsConfig)" />
+    <TransformXml Source="$(TempUmbracoFormsConfig)" Transform="$(ProjectDir)\Forms\UmbracoForms.local.xdt.config" Destination="$(OriginalUmbracoFormsConfig)" StackTrace="true" />
+    <Delete Files="$(TempUmbracoFormsConfig)" />
   </Target>
 
   <Target Name="StoolballTransformWebConfig" AfterTargets="StoolballCopyFilesFromUmbracoCloud">
