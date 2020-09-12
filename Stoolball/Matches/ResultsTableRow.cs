@@ -5,13 +5,13 @@ namespace Stoolball.Matches
     public class ResultsTableRow
     {
         public Team Team { get; set; }
-        public int Played { get; set; } = 0;
-        public int Won { get; set; } = 0;
-        public int Lost { get; set; } = 0;
-        public int Tied { get; set; } = 0;
-        public int NoResult { get; set; } = 0;
-        public int RunsScored { get; set; } = 0;
-        public int RunsConceded { get; set; } = 0;
-        public int Points { get; set; } = 0;
+        public int Played { get; set; }
+        public int Won { get; set; }
+        public int Lost { get; set; }
+        public int Tied { get; set; }
+        public int NoResult { get; set; }
+        public int RunsScored { get; set; }
+        public int RunsConceded { get; set; }
+        public int Points { get; set; }
     }
 }

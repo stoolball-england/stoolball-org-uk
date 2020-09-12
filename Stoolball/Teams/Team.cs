@@ -210,7 +210,7 @@ namespace Stoolball.Teams
             {
                 description.Append(" playing friendlies or tournaments");
             }
-            description.Append(".");
+            description.Append('.');
             return description.ToString();
         }
     }

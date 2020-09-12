@@ -1,13 +1,13 @@
-﻿using Humanizer;
-using Stoolball.Audit;
-using Stoolball.Competitions;
-using Stoolball.MatchLocations;
-using Stoolball.Teams;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using Humanizer;
+using Stoolball.Audit;
+using Stoolball.Competitions;
+using Stoolball.MatchLocations;
+using Stoolball.Teams;
 
 namespace Stoolball.Matches
 {
@@ -70,8 +70,7 @@ namespace Stoolball.Matches
         public string MatchRoute { get; set; }
         public Season Season { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
-        public Uri EntityUri
-        {
+        public Uri EntityUri {
             get { return new Uri($"https://www.stoolball.org.uk/id/match/{MatchId}"); }
         }
 
@@ -89,7 +88,7 @@ namespace Stoolball.Matches
                 var the = (Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? string.Empty : "the ";
                 description.Append("Match in ").Append(the).Append(Tournament.TournamentName);
                 if (MatchLocation != null) description.Append(" at ").Append(MatchLocation.NameAndLocalityOrTown());
-                description.Append(".");
+                description.Append('.');
             }
             else
             {

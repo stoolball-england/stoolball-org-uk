@@ -1,6 +1,6 @@
-﻿using Stoolball.Teams;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Stoolball.Teams;
 
 namespace Stoolball.Matches
 {
@@ -36,7 +36,7 @@ namespace Stoolball.Matches
         /// <summary>
         /// Work out the player type of a match from the player types involved.
         /// </summary>
-        private PlayerType SelectPlayerTypeHelper(IList<PlayerType> playerTypes)
+        private static PlayerType SelectPlayerTypeHelper(IList<PlayerType> playerTypes)
         {
             // only one type of player, that's the one to choose
             if (playerTypes.Count == 1) { return playerTypes[0]; }

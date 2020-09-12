@@ -1,12 +1,12 @@
-﻿using HtmlAgilityPack;
-using Humanizer;
-using Stoolball.Audit;
-using Stoolball.Matches;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Text;
+using HtmlAgilityPack;
+using Humanizer;
+using Stoolball.Audit;
+using Stoolball.Matches;
 
 namespace Stoolball.Competitions
 {
@@ -88,8 +88,7 @@ namespace Stoolball.Competitions
         public string SeasonRoute { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 
-        public Uri EntityUri
-        {
+        public Uri EntityUri {
             get { return new Uri($"https://www.stoolball.org.uk/id/season/{SeasonId}"); }
         }
 
@@ -116,7 +115,7 @@ namespace Stoolball.Competitions
                     if (i < (totalTeamsToList - 2)) description.Append(", ");
                     if (i == (totalTeamsToList - 2)) description.Append(" and ");
                 }
-                description.Append(".");
+                description.Append('.');
                 return description.ToString();
             }
             else if (!string.IsNullOrEmpty(Competition?.Introduction))

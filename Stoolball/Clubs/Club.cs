@@ -1,9 +1,9 @@
-﻿using Stoolball.Audit;
-using Stoolball.Teams;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using Stoolball.Audit;
+using Stoolball.Teams;
 
 namespace Stoolball.Clubs
 {
@@ -22,8 +22,7 @@ namespace Stoolball.Clubs
         public string ClubRoute { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 
-        public Uri EntityUri
-        {
+        public Uri EntityUri {
             get { return new Uri($"https://www.stoolball.org.uk/id/club/{ClubId}"); }
         }
 
@@ -42,7 +41,7 @@ namespace Stoolball.Clubs
                     if (i < (Teams.Count - 2)) { description.Append(", "); };
                     if (i == (Teams.Count - 2)) { description.Append(" and "); };
                 }
-                description.Append(".");
+                description.Append('.');
             }
             else
             {
