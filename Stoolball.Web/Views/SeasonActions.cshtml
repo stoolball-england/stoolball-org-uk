@@ -35,7 +35,12 @@
 @if (Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
 {
     <h2>Settings for @the@Model.Season.Competition.CompetitionName</h2>
-    @Html.Partial("_CompetitionActions", new CompetitionViewModel(Model) { Competition = Model.Season.Competition, IsAuthorized = Model.IsAuthorized })
+    var competitionModel = new CompetitionViewModel(Model, Services.UserService) { Competition = Model.Season.Competition };
+    foreach (var permission in Model.IsAuthorized)
+    {
+        competitionModel.IsAuthorized.Add(permission.Key, permission.Value);
+    }
+    @Html.Partial("_CompetitionActions", competitionModel)
 
     <h2>Settings for the @Model.Season.SeasonName()</h2>
     if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
