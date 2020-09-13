@@ -24,6 +24,7 @@ namespace Stoolball.Web.Matches
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly IMatchInningsUrlParser _matchInningsUrlParser;
+        private readonly IPlayerInningsScaffolder _playerInningsScaffolder;
 
         public EditBattingScorecardController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -34,13 +35,15 @@ namespace Stoolball.Web.Matches
            IMatchDataSource matchDataSource,
            IAuthorizationPolicy<Match> authorizationPolicy,
            IDateTimeFormatter dateFormatter,
-           IMatchInningsUrlParser matchInningsUrlParser)
+           IMatchInningsUrlParser matchInningsUrlParser,
+           IPlayerInningsScaffolder playerInningsScaffolder)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
             _matchInningsUrlParser = matchInningsUrlParser ?? throw new ArgumentNullException(nameof(matchInningsUrlParser));
+            _playerInningsScaffolder = playerInningsScaffolder ?? throw new ArgumentNullException(nameof(playerInningsScaffolder));
         }
 
         [HttpGet]
@@ -82,14 +85,11 @@ namespace Stoolball.Web.Matches
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
 
                 model.CurrentInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
-                if (!model.CurrentInnings.Overs.HasValue)
+                if (!model.Match.PlayersPerTeam.HasValue)
                 {
-                    model.CurrentInnings.Overs = model.Match.Tournament != null ? 6 : 12;
+                    model.Match.PlayersPerTeam = model.Match.Tournament != null ? 8 : 11;
                 }
-                while (model.CurrentInnings.OversBowled.Count < model.CurrentInnings.Overs)
-                {
-                    model.CurrentInnings.OversBowled.Add(new Over());
-                }
+                _playerInningsScaffolder.ScaffoldPlayerInnings(model.CurrentInnings.PlayerInnings, model.Match.PlayersPerTeam.Value);
 
                 model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
 

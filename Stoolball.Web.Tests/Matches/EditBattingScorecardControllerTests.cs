@@ -41,7 +41,8 @@ namespace Stoolball.Web.Tests.Matches
                 matchDataSource,
                 Mock.Of<IAuthorizationPolicy<Stoolball.Matches.Match>>(),
                 Mock.Of<IDateTimeFormatter>(),
-                urlParser)
+                urlParser,
+                Mock.Of<IPlayerInningsScaffolder>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.RawUrl).Returns(requestUrl.AbsolutePath);
@@ -172,6 +173,57 @@ namespace Stoolball.Web.Tests.Matches
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
                 Assert.IsType<EditScorecardViewModel>(((ViewResult)result).Model);
+            }
+        }
+
+        [Fact]
+        public async Task ModelU002EMatchU002EPlayersPerTeam_defaults_to_11()
+        {
+            var matchDataSource = new Mock<IMatchDataSource>();
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
+            {
+                StartTime = DateTime.UtcNow.AddHours(-1),
+                Season = new Season(),
+                MatchResultType = MatchResultType.HomeWin,
+                MatchInnings = new List<MatchInnings> {
+                    new MatchInnings{ InningsOrderInMatch = 1 }
+                }
+            });
+
+            var urlParser = new Mock<IMatchInningsUrlParser>();
+            urlParser.Setup(x => x.ParseInningsOrderInMatchFromUrl(It.IsAny<Uri>())).Returns(1);
+
+            using (var controller = new TestController(matchDataSource.Object, new Uri("https://example.org/matches/example-match"), urlParser.Object, UmbracoHelper))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                Assert.Equal(11, ((EditScorecardViewModel)((ViewResult)result).Model).Match.PlayersPerTeam);
+            }
+        }
+
+        [Fact]
+        public async Task ModelU002EMatchU002EPlayersPerTeam_defaults_to_8_for_tournaments()
+        {
+            var matchDataSource = new Mock<IMatchDataSource>();
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
+            {
+                StartTime = DateTime.UtcNow.AddHours(-1),
+                Season = new Season(),
+                MatchResultType = MatchResultType.HomeWin,
+                MatchInnings = new List<MatchInnings> {
+                    new MatchInnings{ InningsOrderInMatch = 1 }
+                },
+                Tournament = new Tournament { TournamentName = "Example tournament" }
+            });
+
+            var urlParser = new Mock<IMatchInningsUrlParser>();
+            urlParser.Setup(x => x.ParseInningsOrderInMatchFromUrl(It.IsAny<Uri>())).Returns(1);
+
+            using (var controller = new TestController(matchDataSource.Object, new Uri("https://example.org/matches/example-match"), urlParser.Object, UmbracoHelper))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                Assert.Equal(8, ((EditScorecardViewModel)((ViewResult)result).Model).Match.PlayersPerTeam);
             }
         }
     }
