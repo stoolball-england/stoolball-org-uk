@@ -20,34 +20,19 @@
             England website into the Umbraco database.
           </p>
 
-          <p>
-            <label for="dataSource">Import from</label>
-            <select
-              ng-init="model.dataSource='stoolball.local'"
-              ng-model="model.dataSource"
-              ng-options="x for x in model.dataSources"
-              id="dataSource"
-            >
-            </select>
-          </p>
-
-          <p>
-            <label for="startFrom">Import 50,000 starting at</label>
-            <input
-              type="number"
-              ng-init="model.startFrom=0"
-              id="startFrom"
-              ng-model="model.startFrom"
-            />
-          </p>
+          <label for="dataSource">Import from</label>
+          <select
+            ng-init="model.dataSource='stoolball.local'"
+            ng-model="model.dataSource"
+            ng-options="x for x in model.dataSources"
+            id="dataSource"
+          ></select>
         </umb-box-content>
       </umb-box>
       <umb-box ng-if="vm.processing">
         <umb-box-content>
           <div class="umb-panel-group__details-check-name">
-            Importing: {{model.startFrom}} to {{vm.imported.length ?
-            model.startFrom+vm.imported.length : '?'}} of {{vm.total}} overs
-            bowled
+            Importing: {{vm.imported.length}} of {{vm.total}} overs bowled
           </div>
           <ul class="data-migration-progress">
             <li ng-repeat="item in vm.failed" class="alert alert-error">

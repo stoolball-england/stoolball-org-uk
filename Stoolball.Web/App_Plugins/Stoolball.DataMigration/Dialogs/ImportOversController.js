@@ -74,10 +74,9 @@
           vm.processing = true;
           try {
             const batchSize = 50;
-            let position = $scope.model.startFrom;
-            let target = position + 50000;
+            let position = 0;
             let first = true;
-            while (first || (position < target && position <= vm.total)) {
+            while (first || position <= vm.total) {
               first = false;
 
               let bowling = await getBowlingToMigrate(
