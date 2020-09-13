@@ -1,13 +1,13 @@
-﻿using Dapper;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.UI.WebControls;
+using Dapper;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web.UI.WebControls;
 using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
@@ -49,7 +49,7 @@ namespace Stoolball.Umbraco.Data.Matches
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var matches = await connection.QueryAsync<Match, Tournament, TeamInMatch, Team, MatchLocation, Season, Competition, Match>(
-                        $@"SELECT m.MatchId, m.MatchName, m.MatchType, m.StartTime, m.StartTimeIsKnown, m.MatchResultType, 
+                        $@"SELECT m.MatchId, m.MatchName, m.MatchType, m.StartTime, m.StartTimeIsKnown, m.MatchResultType, m.PlayersPerTeam,
                             m.InningsOrderIsKnown, m.MatchNotes, m.MatchRoute, m.MemberKey, m.UpdateMatchNameAutomatically,
                             tourney.TournamentRoute, tourney.TournamentName, tourney.MemberKey,
                             mt.MatchTeamId, mt.TeamRole, mt.WonToss,

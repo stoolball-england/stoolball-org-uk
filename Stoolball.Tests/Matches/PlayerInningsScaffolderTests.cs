@@ -65,7 +65,7 @@ namespace Stoolball.Tests.Matches
 
             scaffolder.ScaffoldPlayerInnings(playerInnings, playersPerTeam);
 
-            Assert.Equal(playerInnings.Count - 1, playerInnings.IndexOf(playerInnings.First(x => x.PlayerIdentity.PlayerRole == PlayerRole.BonusRuns)));
+            Assert.Equal(playerInnings.Count - 1, playerInnings.IndexOf(playerInnings.First(x => x.PlayerIdentity.PlayerRole == PlayerRole.BonusOrPenaltyRuns)));
         }
 
         [Fact]
@@ -92,7 +92,7 @@ namespace Stoolball.Tests.Matches
                 new PlayerInnings { PlayerIdentity = new PlayerIdentity { PlayerRole = PlayerRole.Byes } },
                 new PlayerInnings { PlayerIdentity = new PlayerIdentity { PlayerRole = PlayerRole.Wides } },
                 new PlayerInnings { PlayerIdentity = new PlayerIdentity { PlayerRole = PlayerRole.NoBalls } },
-                new PlayerInnings { PlayerIdentity = new PlayerIdentity { PlayerRole = PlayerRole.BonusRuns } }
+                new PlayerInnings { PlayerIdentity = new PlayerIdentity { PlayerRole = PlayerRole.BonusOrPenaltyRuns } }
             };
             var scaffolder = new PlayerInningsScaffolder();
             var playersPerTeam = 11;

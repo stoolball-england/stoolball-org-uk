@@ -35,11 +35,12 @@ namespace Stoolball.Umbraco.Data.Matches
         private readonly IMatchNameBuilder _matchNameBuilder;
         private readonly IPlayerTypeSelector _playerTypeSelector;
         private readonly IBowlingScorecardComparer _bowlingScorecardComparer;
+        private readonly IBattingScorecardComparer _battingScorecardComparer;
         private readonly IPlayerRepository _playerRepository;
 
         public SqlServerMatchRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
             IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser, IMatchNameBuilder matchNameBuilder, IPlayerTypeSelector playerTypeSelector,
-            IBowlingScorecardComparer bowlingScorecardComparer, IPlayerRepository playerRepository)
+            IBowlingScorecardComparer bowlingScorecardComparer, IBattingScorecardComparer battingScorecardComparer, IPlayerRepository playerRepository)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
@@ -50,6 +51,7 @@ namespace Stoolball.Umbraco.Data.Matches
             _matchNameBuilder = matchNameBuilder ?? throw new ArgumentNullException(nameof(matchNameBuilder));
             _playerTypeSelector = playerTypeSelector ?? throw new ArgumentNullException(nameof(playerTypeSelector));
             _bowlingScorecardComparer = bowlingScorecardComparer ?? throw new ArgumentNullException(nameof(bowlingScorecardComparer));
+            _battingScorecardComparer = battingScorecardComparer ?? throw new ArgumentNullException(nameof(battingScorecardComparer));
             _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
             _htmlSanitiser.AllowedTags.Clear();
             _htmlSanitiser.AllowedTags.Add("p");
@@ -565,6 +567,175 @@ namespace Stoolball.Umbraco.Data.Matches
         }
 
         /// <summary>
+        /// Updates the battings scorecard for a single innings of a match
+        /// </summary>
+        public async Task<MatchInnings> UpdateBattingScorecard(MatchInnings innings, Guid memberKey, string memberName)
+        {
+            if (innings is null)
+            {
+                throw new ArgumentNullException(nameof(innings));
+            }
+
+            if (memberName is null)
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            try
+            {
+                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        // Select existing innings and work out which ones have changed.
+                        var inningsBefore = await connection.QueryAsync<PlayerInnings, PlayerIdentity, PlayerIdentity, PlayerIdentity, PlayerInnings>(
+                            $@"SELECT i.PlayerInningsId, i.BattingPosition, i.HowOut, i.RunsScored, i.BallsFaced,
+                               bat.PlayerIdentityName, bat.PlayerRole,
+                               field.PlayerIdentityName,
+                               bowl.PlayerIdentityName
+                               FROM {Tables.PlayerInnings} i 
+                               INNER JOIN {Tables.PlayerIdentity} bat ON i.PlayerIdentityId = bat.PlayerIdentityId
+                               LEFT JOIN {Tables.PlayerIdentity} field ON i.DismissedById = field.PlayerIdentityId
+                               LEFT JOIN {Tables.PlayerIdentity} bowl ON i.BowlerId = bowl.PlayerIdentityId
+                               WHERE i.MatchInningsId = @MatchInningsId",
+                            (playerInnings, batter, fielder, bowler) =>
+                            {
+                                playerInnings.PlayerIdentity = batter;
+                                playerInnings.DismissedBy = fielder;
+                                playerInnings.Bowler = bowler;
+                                return playerInnings;
+                            },
+                               new { innings.MatchInningsId },
+                               transaction,
+                               splitOn: "PlayerIdentityName, PlayerIdentityName, PlayerIdentityName").ConfigureAwait(false);
+
+                        for (var i = 0; i < innings.PlayerInnings.Count; i++)
+                        {
+                            innings.PlayerInnings[i].BattingPosition = i + 1;
+                        }
+
+                        var comparison = _battingScorecardComparer.CompareScorecards(inningsBefore, innings.PlayerInnings);
+
+                        // Now got lists of:
+                        // - unchanged innings 
+                        // - new innings
+                        // - changed innings
+                        // - deleted innings
+                        // - affected players from the new/changed/deleted lists
+
+                        foreach (var playerInnings in comparison.PlayerInningsAdded)
+                        {
+                            playerInnings.PlayerIdentity.Team = innings.BattingTeam.Team;
+                            playerInnings.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.PlayerIdentity, memberKey, memberName).ConfigureAwait(false);
+
+                            if (playerInnings.DismissedBy != null)
+                            {
+                                playerInnings.DismissedBy.Team = innings.BowlingTeam.Team;
+                                playerInnings.DismissedBy.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.DismissedBy, memberKey, memberName).ConfigureAwait(false);
+                            }
+
+                            if (playerInnings.Bowler != null)
+                            {
+                                playerInnings.Bowler.Team = innings.BowlingTeam.Team;
+                                playerInnings.Bowler.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.Bowler, memberKey, memberName).ConfigureAwait(false);
+                            }
+
+                            await connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerInnings} 
+                                (PlayerInningsId, BattingPosition, MatchInningsId, PlayerIdentityId, HowOut, DismissedById, BowlerId, RunsScored, BallsFaced) 
+                                VALUES 
+                                (@PlayerInningsId, @BattingPosition, @MatchInningsId, @PlayerIdentityId, @HowOut, @DismissedById, @BowlerId, @RunsScored, @BallsFaced)",
+                                new
+                                {
+                                    PlayerInningsId = Guid.NewGuid(),
+                                    playerInnings.BattingPosition,
+                                    innings.MatchInningsId,
+                                    playerInnings.PlayerIdentity.PlayerIdentityId,
+                                    playerInnings.HowOut,
+                                    DismissedById = playerInnings.DismissedBy?.PlayerIdentityId,
+                                    BowlerId = playerInnings.Bowler?.PlayerIdentityId,
+                                    playerInnings.RunsScored,
+                                    playerInnings.BallsFaced
+                                }, transaction).ConfigureAwait(false);
+
+                        }
+
+                        foreach (var (before, after) in comparison.PlayerInningsChanged)
+                        {
+                            after.PlayerIdentity.Team = innings.BattingTeam.Team;
+                            after.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.PlayerIdentity, memberKey, memberName).ConfigureAwait(false);
+
+                            if (after.DismissedBy != null)
+                            {
+                                after.DismissedBy.Team = innings.BowlingTeam.Team;
+                                after.DismissedBy.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.DismissedBy, memberKey, memberName).ConfigureAwait(false);
+                            }
+
+                            if (after.Bowler != null)
+                            {
+                                after.Bowler.Team = innings.BowlingTeam.Team;
+                                after.Bowler.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.Bowler, memberKey, memberName).ConfigureAwait(false);
+                            }
+
+                            await connection.ExecuteAsync($@"UPDATE {Tables.PlayerInnings} SET 
+                                PlayerIdentityId = @PlayerIdentityId,
+                                HowOut = @HowOut,
+                                DismissedById = @DismissedById,
+                                BowlerId = @BowlerId,
+                                RunsScored = @RunsScored,
+                                BallsFaced = @BallsFaced
+                                WHERE PlayerInningsId = @PlayerInningsId",
+                                new
+                                {
+                                    after.PlayerIdentity.PlayerIdentityId,
+                                    after.HowOut,
+                                    DismissedById = after.DismissedBy?.PlayerIdentityId,
+                                    BowlerId = after.Bowler?.PlayerIdentityId,
+                                    after.RunsScored,
+                                    after.BallsFaced,
+                                    before.PlayerInningsId
+                                }, transaction).ConfigureAwait(false);
+
+                        }
+
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings} WHERE PlayerInningsId IN @PlayerInningsIds", new { PlayerInningsIds = comparison.PlayerInningsRemoved.Select(x => x.PlayerInningsId) }, transaction).ConfigureAwait(false);
+
+                        // Update the number of players per team
+                        await connection.ExecuteAsync(
+                             $@"UPDATE {Tables.Match} SET 
+                                PlayersPerTeam = @PlayersPerTeam 
+                                WHERE MatchId = (SELECT MatchId FROM {Tables.MatchInnings} WHERE MatchInningsId = @MatchInningsId)",
+                            new
+                            {
+                                PlayersPerTeam = innings.PlayerInnings.Count(x => x.PlayerIdentity.PlayerRole == PlayerRole.Player),
+                                innings.MatchInningsId
+                            },
+                            transaction).ConfigureAwait(false);
+
+                        transaction.Commit();
+                    }
+
+                }
+
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Update,
+                    MemberKey = memberKey,
+                    ActorName = memberName,
+                    EntityUri = innings.EntityUri,
+                    State = JsonConvert.SerializeObject(innings),
+                    AuditDate = DateTime.UtcNow
+                }).ConfigureAwait(false);
+            }
+            catch (SqlException ex)
+            {
+                _logger.Error(typeof(SqlServerMatchRepository), ex);
+            }
+
+            return innings;
+        }
+
+        /// <summary>
         /// Updates the bowling scorecard for a single innings of a match
         /// </summary>
         public async Task<MatchInnings> UpdateBowlingScorecard(MatchInnings innings, Guid memberKey, string memberName)
@@ -618,7 +789,7 @@ namespace Stoolball.Umbraco.Data.Matches
                         foreach (var over in comparison.OversAdded)
                         {
                             over.PlayerIdentity.Team = innings.BowlingTeam.Team;
-                            var playerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(over.PlayerIdentity, memberKey, memberName).ConfigureAwait(false);
+                            over.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(over.PlayerIdentity, memberKey, memberName).ConfigureAwait(false);
                             await connection.ExecuteAsync($@"INSERT INTO {Tables.Over} 
                                 (OverId, OverNumber, MatchInningsId, PlayerIdentityId, BallsBowled, NoBalls, Wides, RunsConceded) 
                                 VALUES 
@@ -628,7 +799,7 @@ namespace Stoolball.Umbraco.Data.Matches
                                     OverId = Guid.NewGuid(),
                                     over.OverNumber,
                                     innings.MatchInningsId,
-                                    PlayerIdentityId = playerIdentityId,
+                                    PlayerIdentityId = over.PlayerIdentity.PlayerIdentityId,
                                     over.BallsBowled,
                                     over.NoBalls,
                                     over.Wides,
@@ -640,7 +811,7 @@ namespace Stoolball.Umbraco.Data.Matches
                         foreach (var (before, after) in comparison.OversChanged)
                         {
                             after.PlayerIdentity.Team = innings.BowlingTeam.Team;
-                            var playerIdentityId = _playerRepository.CreateOrMatchPlayerIdentity(after.PlayerIdentity, memberKey, memberName);
+                            after.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.PlayerIdentity, memberKey, memberName).ConfigureAwait(false);
                             await connection.ExecuteAsync($@"UPDATE {Tables.Over} SET 
                                 PlayerIdentityId = @PlayerIdentityId,
                                 BallsBowled = @BallsBowled,
@@ -650,7 +821,7 @@ namespace Stoolball.Umbraco.Data.Matches
                                 WHERE OverId = @OverId",
                                 new
                                 {
-                                    PlayerIdentityId = playerIdentityId,
+                                    after.PlayerIdentity.PlayerIdentityId,
                                     after.BallsBowled,
                                     after.NoBalls,
                                     after.Wides,

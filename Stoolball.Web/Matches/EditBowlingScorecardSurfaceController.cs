@@ -66,19 +66,19 @@ namespace Stoolball.Web.Matches
 
             // The bowler name is required if any other fields are filled in for an over, and some player identity names are not allowed
             var i = 0;
-            var reservedNames = new[] { "WIDES", "NOBALLS", "BYES", "BONUSRUNS" };
-            while (Request.Form[$"CurrentInnings.OversBowled[{i}].PlayerIdentity.PlayerIdentityName"] != null)
+            var reservedNames = new[] { "WIDES", "NOBALLS", "BYES", "BONUSORPENALTYRUNS" };
+            foreach (var over in postedInnings.OversBowled)
             {
-                if (reservedNames.Contains(Regex.Replace(Request.Form[$"CurrentInnings.OversBowled[{i}].PlayerIdentity.PlayerIdentityName"].ToUpperInvariant(), "[^A-Z]", string.Empty)))
+                if (!string.IsNullOrWhiteSpace(postedInnings.OversBowled[i].PlayerIdentity?.PlayerIdentityName) && reservedNames.Contains(Regex.Replace(postedInnings.OversBowled[i].PlayerIdentity.PlayerIdentityName?.ToUpperInvariant(), "[^A-Z]", string.Empty)))
                 {
-                    ModelState.AddModelError($"CurrentInnings.OversBowled[{i}].PlayerIdentity.PlayerIdentityName", $"{Request.Form[$"CurrentInnings.OversBowled[{i}].PlayerIdentity.PlayerIdentityName"]} is a reserved name. Please use a different name.");
+                    ModelState.AddModelError($"CurrentInnings.OversBowled[{i}].PlayerIdentity.PlayerIdentityName", $"'{postedInnings.OversBowled[i].PlayerIdentity.PlayerIdentityName}' is a reserved name. Please use a different name.");
                 }
 
-                if (string.IsNullOrWhiteSpace(Request.Form[$"CurrentInnings.OversBowled[{i}].PlayerIdentity.PlayerIdentityName"]) &&
-                    (!string.IsNullOrWhiteSpace(Request.Form[$"CurrentInnings.OversBowled[{i}].BallsBowled"]) ||
-                    !string.IsNullOrWhiteSpace(Request.Form[$"CurrentInnings.OversBowled[{i}].Wides"]) ||
-                    !string.IsNullOrWhiteSpace(Request.Form[$"CurrentInnings.OversBowled[{i}].NoBalls"]) ||
-                    !string.IsNullOrWhiteSpace(Request.Form[$"CurrentInnings.OversBowled[{i}].RunsConceded"])))
+                if (string.IsNullOrWhiteSpace(postedInnings.OversBowled[i].PlayerIdentity?.PlayerIdentityName) &&
+                    (postedInnings.OversBowled[i].BallsBowled.HasValue ||
+                     postedInnings.OversBowled[i].Wides.HasValue ||
+                     postedInnings.OversBowled[i].NoBalls.HasValue ||
+                     postedInnings.OversBowled[i].RunsConceded.HasValue))
                 {
                     ModelState.AddModelError($"CurrentInnings.OversBowled[{i}].PlayerIdentity.PlayerIdentityName", $"You've added the {(i + 1).Ordinalize()} over. Please name the bowler.");
                 }

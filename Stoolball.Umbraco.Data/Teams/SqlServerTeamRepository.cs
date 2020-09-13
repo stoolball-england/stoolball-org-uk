@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Dapper;
 using Ganss.XSS;
+using Humanizer;
 using Newtonsoft.Json;
 using Stoolball.Audit;
 using Stoolball.Routing;
@@ -224,7 +225,7 @@ namespace Stoolball.Umbraco.Data.Teams
                     new PlayerIdentity
                     {
                         PlayerIdentityId = Guid.NewGuid(),
-                        PlayerIdentityName = "No balls",
+                        PlayerIdentityName = PlayerRole.NoBalls.Humanize(LetterCasing.Sentence),
                         PlayerRole = PlayerRole.NoBalls,
                         TotalMatches = 0
                     }
@@ -239,7 +240,7 @@ namespace Stoolball.Umbraco.Data.Teams
                     new PlayerIdentity
                     {
                         PlayerRole = PlayerRole.Wides,
-                        PlayerIdentityName = "Wides",
+                        PlayerIdentityName = PlayerRole.Wides.Humanize(LetterCasing.Sentence),
                         PlayerIdentityId = Guid.NewGuid(),
                         TotalMatches = 0
                     }
@@ -254,7 +255,7 @@ namespace Stoolball.Umbraco.Data.Teams
                     new PlayerIdentity
                     {
                         PlayerIdentityId = Guid.NewGuid(),
-                        PlayerIdentityName = "Byes",
+                        PlayerIdentityName = PlayerRole.Byes.Humanize(LetterCasing.Sentence),
                         PlayerRole = PlayerRole.Byes,
                         TotalMatches = 0
                     }
@@ -269,8 +270,8 @@ namespace Stoolball.Umbraco.Data.Teams
                     new PlayerIdentity
                     {
                         PlayerIdentityId = Guid.NewGuid(),
-                        PlayerIdentityName = "Bonus runs",
-                        PlayerRole = PlayerRole.BonusRuns,
+                        PlayerIdentityName = PlayerRole.BonusOrPenaltyRuns.Humanize(LetterCasing.Sentence),
+                        PlayerRole = PlayerRole.BonusOrPenaltyRuns,
                         TotalMatches = 0
                     }
                 }

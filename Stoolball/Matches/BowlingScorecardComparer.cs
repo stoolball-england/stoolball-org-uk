@@ -67,7 +67,7 @@ namespace Stoolball.Matches
                 }
                 else if (overBefore != null && overAfter != null)
                 {
-                    if (overBefore.PlayerIdentity.PlayerIdentityName != overAfter.PlayerIdentity.PlayerIdentityName ||
+                    if (overBefore.PlayerIdentity.ComparableName() != overAfter.PlayerIdentity.ComparableName() ||
                         overBefore.BallsBowled != overAfter.BallsBowled ||
                         overBefore.NoBalls != overAfter.NoBalls ||
                         overBefore.Wides != overAfter.Wides ||

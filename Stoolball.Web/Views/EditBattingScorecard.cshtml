@@ -63,18 +63,18 @@
         @Html.ValidationSummary(false)
                 var howOutItems = new SelectListItem[]
                 {
-            new SelectListItem { Text = DismissalType.DidNotBat.Humanize(), Value = (DismissalType.DidNotBat).ToString() },
-            new SelectListItem { Text = DismissalType.NotOut.Humanize(), Value = (DismissalType.NotOut).ToString() },
-            new SelectListItem { Text = DismissalType.Caught.Humanize(), Value = (DismissalType.Caught).ToString() },
-            new SelectListItem { Text = DismissalType.Bowled.Humanize(), Value = (DismissalType.Bowled).ToString() },
-            new SelectListItem { Text = DismissalType.CaughtAndBowled.Humanize(), Value = (DismissalType.CaughtAndBowled).ToString() },
-            new SelectListItem { Text = DismissalType.RunOut.Humanize(), Value = (DismissalType.RunOut).ToString() },
-            new SelectListItem { Text = DismissalType.BodyBeforeWicket.Humanize(), Value = (DismissalType.BodyBeforeWicket).ToString() },
-            new SelectListItem { Text = DismissalType.HitTheBallTwice.Humanize(), Value = (DismissalType.HitTheBallTwice).ToString() },
-            new SelectListItem { Text = DismissalType.TimedOut.Humanize(), Value = (DismissalType.TimedOut).ToString() },
-            new SelectListItem { Text = DismissalType.RetiredHurt.Humanize(), Value = (DismissalType.RetiredHurt).ToString() },
-            new SelectListItem { Text = DismissalType.Retired.Humanize(), Value = (DismissalType.Retired).ToString() },
-            new SelectListItem { Text = "Not known", Value = string.Empty },
+            new SelectListItem { Text = DismissalType.DidNotBat.Humanize(LetterCasing.LowerCase), Value = (DismissalType.DidNotBat).ToString() },
+            new SelectListItem { Text = DismissalType.NotOut.Humanize(LetterCasing.LowerCase), Value = (DismissalType.NotOut).ToString() },
+            new SelectListItem { Text = DismissalType.Caught.Humanize(LetterCasing.LowerCase), Value = (DismissalType.Caught).ToString() },
+            new SelectListItem { Text = DismissalType.Bowled.Humanize(LetterCasing.LowerCase), Value = (DismissalType.Bowled).ToString() },
+            new SelectListItem { Text = DismissalType.CaughtAndBowled.Humanize(LetterCasing.LowerCase), Value = (DismissalType.CaughtAndBowled).ToString() },
+            new SelectListItem { Text = DismissalType.RunOut.Humanize(LetterCasing.LowerCase).Replace("run out", "run-out"), Value = (DismissalType.RunOut).ToString() },
+            new SelectListItem { Text = DismissalType.BodyBeforeWicket.Humanize(LetterCasing.LowerCase), Value = (DismissalType.BodyBeforeWicket).ToString() },
+            new SelectListItem { Text = DismissalType.HitTheBallTwice.Humanize(LetterCasing.LowerCase), Value = (DismissalType.HitTheBallTwice).ToString() },
+            new SelectListItem { Text = DismissalType.TimedOut.Humanize(LetterCasing.LowerCase), Value = (DismissalType.TimedOut).ToString() },
+            new SelectListItem { Text = DismissalType.RetiredHurt.Humanize(LetterCasing.LowerCase), Value = (DismissalType.RetiredHurt).ToString() },
+            new SelectListItem { Text = DismissalType.Retired.Humanize(LetterCasing.LowerCase), Value = (DismissalType.Retired).ToString() },
+            new SelectListItem { Text = "not known", Value = string.Empty },
                 };
                 var wicketsItems = new List<SelectListItem>();
                 for (var i = 0; i < Model.Match.PlayersPerTeam; i++)
@@ -124,8 +124,8 @@
                     <td></td>
                 </tr>
                 <tr class="extras">
-                    <th colspan="4">@PlayerRole.BonusRuns.Humanize()</th>
-                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[Model.CurrentInnings.PlayerInnings.Count - 1].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"{PlayerRole.BonusRuns.Humanize()} must be a number.", @class = "scorecard__runs" })</td>
+                    <th colspan="4">@PlayerRole.BonusOrPenaltyRuns.Humanize()</th>
+                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[Model.CurrentInnings.PlayerInnings.Count - 1].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"{PlayerRole.BonusOrPenaltyRuns.Humanize()} must be a number.", @class = "scorecard__runs" })</td>
                     <td></td>
                 </tr>
                 <tr class="totals">

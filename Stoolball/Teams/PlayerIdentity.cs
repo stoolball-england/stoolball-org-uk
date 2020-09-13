@@ -16,7 +16,7 @@ namespace Stoolball.Teams
         /// <returns></returns>
         public string ComparableName()
         {
-            return Regex.Replace(PlayerIdentityName, "[^A-Z0-9]", string.Empty, RegexOptions.IgnoreCase).ToUpperInvariant();
+            return string.IsNullOrEmpty(PlayerIdentityName) ? PlayerIdentityName : Regex.Replace(PlayerIdentityName, "[^A-Z0-9]", string.Empty, RegexOptions.IgnoreCase).ToUpperInvariant();
         }
 
         public DateTime? FirstPlayed { get; set; }

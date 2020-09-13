@@ -34,7 +34,7 @@
                             }
                             else
                             {
-                                @(playerInnings.HowOut?.Humanize(LetterCasing.LowerCase).Replace("run out", "run-out"))
+                                @(playerInnings.HowOut?.Humanize(LetterCasing.LowerCase).Replace("run out", "run-out") ?? "not known")
                             }
                             @if ((playerInnings.HowOut == DismissalType.Caught || playerInnings.HowOut == DismissalType.RunOut) && playerInnings.DismissedBy != null)
                             {
@@ -62,7 +62,7 @@
                     var byes = Model.PlayerInnings.SingleOrDefault(x => x.PlayerIdentity.PlayerRole == PlayerRole.Byes)?.RunsScored;
                     var wides = Model.PlayerInnings.SingleOrDefault(x => x.PlayerIdentity.PlayerRole == PlayerRole.Wides)?.RunsScored;
                     var no_balls = Model.PlayerInnings.SingleOrDefault(x => x.PlayerIdentity.PlayerRole == PlayerRole.NoBalls)?.RunsScored;
-                    var bonus = Model.PlayerInnings.SingleOrDefault(x => x.PlayerIdentity.PlayerRole == PlayerRole.BonusRuns)?.RunsScored;
+                    var bonus = Model.PlayerInnings.SingleOrDefault(x => x.PlayerIdentity.PlayerRole == PlayerRole.BonusOrPenaltyRuns)?.RunsScored;
                     if (byes.HasValue || !minimalScorecard)
                     {
                         @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Byes", CssClass = "extras", RowValue = byes?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = false });
