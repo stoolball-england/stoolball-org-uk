@@ -52,9 +52,8 @@ namespace Stoolball.Umbraco.Data.Matches
                     if (matchQuery.IncludeMatches)
                     {
                         var (matchSql, matchParameters) = BuildMatchQuery(matchQuery,
-                            $@"SELECT 1 AS GroupByThis, COUNT(*) AS Total
+                            $@"SELECT 1 AS GroupByThis, COUNT(DISTINCT m.MatchId) AS Total
                                 FROM {Tables.Match} AS m
-                                LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
                                 <<JOIN>>
                                 <<WHERE>>");
                         sql.Append(matchSql);
@@ -69,7 +68,7 @@ namespace Stoolball.Umbraco.Data.Matches
                     if (matchQuery.IncludeTournaments)
                     {
                         var (tournamentSql, tournamentParameters) = BuildTournamentQuery(matchQuery,
-                            $@"SELECT 1 AS GroupByThis, COUNT(*) AS Total
+                            $@"SELECT 1 AS GroupByThis, COUNT(DISTINCT tourney.TournamentId) AS Total
                                 FROM {Tables.Tournament} AS tourney
                                 <<JOIN>>
                                 <<WHERE>>");
@@ -229,6 +228,11 @@ namespace Stoolball.Umbraco.Data.Matches
 
             if (matchQuery.TeamIds?.Count > 0)
             {
+                if (!sql.Contains(Tables.MatchTeam))
+                {
+                    join.Add($"INNER JOIN {Tables.MatchTeam} mt ON m.MatchId = mt.MatchId");
+                }
+
                 where.Add("mt.TeamId IN @TeamIds");
                 parameters.Add("@TeamIds", matchQuery.TeamIds);
             }
