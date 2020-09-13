@@ -1,5 +1,5 @@
-﻿using Stoolball.Web.Routing;
-using System;
+﻿using System;
+using Stoolball.Web.Routing;
 using Xunit;
 
 namespace Stoolball.Web.Tests.Routing
@@ -121,6 +121,8 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/matches/example-MaTcH/Edit/KnockOut/", StoolballRouteType.EditKnockoutMatch)]
         [InlineData("https://example.org/matches/example-match/edit/start-of-play", StoolballRouteType.EditStartOfPlay)]
         [InlineData("https://example.org/matches/example-MaTcH/Edit/Start-Of-Play/", StoolballRouteType.EditStartOfPlay)]
+        [InlineData("https://example.org/matches/example-match/edit/innings/1/BATTING", StoolballRouteType.EditBattingScorecard)]
+        [InlineData("https://example.org/matches/example-MaTcH/Edit/Innings/18/batting/", StoolballRouteType.EditBattingScorecard)]
         [InlineData("https://example.org/matches/example-match/edit/innings/1/bowling", StoolballRouteType.EditBowlingScorecard)]
         [InlineData("https://example.org/matches/example-MaTcH/Edit/Innings/18/Bowling/", StoolballRouteType.EditBowlingScorecard)]
         [InlineData("https://example.org/matches/example-match/edit/close-of-play", StoolballRouteType.EditCloseOfPlay)]

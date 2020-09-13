@@ -904,11 +904,13 @@
     <Compile Include="Matches\CreateKnockoutMatchSurfaceController.cs" />
     <Compile Include="Matches\CreateTournamentSurfaceController.cs" />
     <Compile Include="Matches\CreateTournamentController.cs" />
+    <Compile Include="Matches\EditBattingScorecardController.cs" />
     <Compile Include="Matches\EditBowlingScorecardController.cs" />
+    <Compile Include="Matches\EditBattingScorecardSurfaceController.cs" />
     <Compile Include="Matches\EditCloseOfPlayController.cs" />
     <Compile Include="Matches\EditBowlingScorecardSurfaceController.cs" />
     <Compile Include="Matches\EditCloseOfPlaySurfaceController.cs" />
-    <Compile Include="Matches\EditBowlingScorecardViewModel.cs" />
+    <Compile Include="Matches\EditScorecardViewModel.cs" />
     <Compile Include="Matches\EditCloseOfPlayViewModel.cs" />
     <Compile Include="Matches\EditStartOfPlayViewModel.cs" />
     <Compile Include="Matches\EditStartOfPlayController.cs" />
@@ -1133,6 +1135,7 @@
     <Content Include="Views\EditCloseOfPlay.cshtml" />
     <Content Include="Views\EditBowlingScorecard.cshtml" />
     <Content Include="Views\Partials\BlockList\Default.cshtml" />
+    <Content Include="Views\EditBattingScorecard.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

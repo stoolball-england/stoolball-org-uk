@@ -85,7 +85,7 @@ namespace Stoolball.Web.Matches
                 i++;
             }
 
-            var model = new EditBowlingScorecardViewModel(CurrentPage, Services.UserService)
+            var model = new EditScorecardViewModel(CurrentPage, Services.UserService)
             {
                 Match = beforeUpdate,
                 DateFormatter = _dateTimeFormatter,
@@ -112,7 +112,7 @@ namespace Stoolball.Web.Matches
                 // redirect to the next innings or close of play
                 if (model.InningsOrderInMatch.Value < model.Match.MatchInnings.Count)
                 {
-                    return Redirect($"{model.Match.MatchRoute}/edit/innings/{model.InningsOrderInMatch.Value + 1}/bowling");
+                    return Redirect($"{model.Match.MatchRoute}/edit/innings/{model.InningsOrderInMatch.Value + 1}/batting");
                 }
                 else
                 {

@@ -51,6 +51,7 @@
         EditLeagueMatch,
         EditKnockoutMatch,
         EditStartOfPlay,
+        EditBattingScorecard,
         EditBowlingScorecard,
         EditCloseOfPlay,
         DeleteMatch,

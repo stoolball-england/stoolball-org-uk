@@ -1,10 +1,10 @@
-﻿using Stoolball.Web.Clubs;
+﻿using System;
+using System.Collections.Generic;
+using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Teams;
-using System;
-using System.Collections.Generic;
 
 namespace Stoolball.Web.Routing
 {
@@ -57,6 +57,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.EditLeagueMatch, typeof(EditLeagueMatchController) },
             { StoolballRouteType.EditKnockoutMatch, typeof(EditKnockoutMatchController) },
             { StoolballRouteType.EditStartOfPlay, typeof(EditStartOfPlayController) },
+            { StoolballRouteType.EditBattingScorecard, typeof(EditBattingScorecardController) },
             { StoolballRouteType.EditBowlingScorecard, typeof(EditBowlingScorecardController) },
             { StoolballRouteType.EditCloseOfPlay, typeof(EditCloseOfPlayController) },
             { StoolballRouteType.DeleteMatch, typeof(DeleteMatchController) },

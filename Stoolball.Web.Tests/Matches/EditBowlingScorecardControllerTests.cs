@@ -1,16 +1,16 @@
-﻿using Moq;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Principal;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using Moq;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Security;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
-using System;
-using System.Collections.Generic;
-using System.Security.Principal;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -151,7 +151,7 @@ namespace Stoolball.Web.Tests.Matches
         [InlineData(MatchResultType.AbandonedDuringPlayAndPostponed)]
         [InlineData(MatchResultType.AbandonedDuringPlayAndCancelled)]
         [InlineData(null)]
-        public async Task Route_matching_match_played_in_the_past_returns_EditBowlingScorecardViewModel(MatchResultType? matchResultType)
+        public async Task Route_matching_match_played_in_the_past_returns_EditScorecardViewModel(MatchResultType? matchResultType)
         {
             var matchDataSource = new Mock<IMatchDataSource>();
             matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
@@ -171,7 +171,7 @@ namespace Stoolball.Web.Tests.Matches
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<EditBowlingScorecardViewModel>(((ViewResult)result).Model);
+                Assert.IsType<EditScorecardViewModel>(((ViewResult)result).Model);
             }
         }
 
@@ -196,7 +196,7 @@ namespace Stoolball.Web.Tests.Matches
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Equal(12, ((EditBowlingScorecardViewModel)((ViewResult)result).Model).CurrentInnings.Overs);
+                Assert.Equal(12, ((EditScorecardViewModel)((ViewResult)result).Model).CurrentInnings.Overs);
             }
         }
 
@@ -222,7 +222,7 @@ namespace Stoolball.Web.Tests.Matches
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Equal(6, ((EditBowlingScorecardViewModel)((ViewResult)result).Model).CurrentInnings.Overs);
+                Assert.Equal(6, ((EditScorecardViewModel)((ViewResult)result).Model).CurrentInnings.Overs);
             }
         }
 
@@ -247,7 +247,7 @@ namespace Stoolball.Web.Tests.Matches
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Equal(9, ((EditBowlingScorecardViewModel)((ViewResult)result).Model).CurrentInnings.OversBowled.Count);
+                Assert.Equal(9, ((EditScorecardViewModel)((ViewResult)result).Model).CurrentInnings.OversBowled.Count);
             }
         }
     }

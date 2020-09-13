@@ -52,7 +52,7 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new EditBowlingScorecardViewModel(contentModel.Content, Services?.UserService)
+            var model = new EditScorecardViewModel(contentModel.Content, Services?.UserService)
             {
                 Match = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false),
                 DateFormatter = _dateFormatter,

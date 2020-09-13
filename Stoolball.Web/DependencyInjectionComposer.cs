@@ -108,6 +108,7 @@ namespace Stoolball.Web
             composition.Register<EditKnockoutMatchController>(Lifetime.Request);
             composition.Register<EditStartOfPlayController>(Lifetime.Request);
             composition.Register<EditBowlingScorecardController>(Lifetime.Request);
+            composition.Register<EditBattingScorecardController>(Lifetime.Request);
             composition.Register<EditCloseOfPlayController>(Lifetime.Request);
             composition.Register<DeleteMatchController>(Lifetime.Request);
             composition.Register<TournamentController>(Lifetime.Request);
