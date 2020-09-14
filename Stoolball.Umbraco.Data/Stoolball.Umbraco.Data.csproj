@@ -99,6 +99,8 @@
     <Compile Include="Migrations\PlayerTableInitialSchema.cs" />
     <Compile Include="Migrations\TournamentCommentTableInitialSchema.cs" />
     <Compile Include="Migrations\TournamentCommentAddTable.cs" />
+    <Compile Include="Migrations\FallOfWicketAddTable.cs" />
+    <Compile Include="Migrations\FallOfWicketTableInitialSchema.cs" />
     <Compile Include="Migrations\TournamentTeamTableInitialSchema.cs" />
     <Compile Include="Migrations\TournamentTeamAddTable.cs" />
     <Compile Include="Migrations\TournamentTableInitialSchema.cs" />
