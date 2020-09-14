@@ -52,8 +52,5 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? Probability { get; set; }
-
-        [Column(nameof(PlayerRole))]
-        public string PlayerRole { get; set; }
     }
 }

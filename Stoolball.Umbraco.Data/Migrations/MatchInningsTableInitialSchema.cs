@@ -1,5 +1,5 @@
-﻿using NPoco;
-using System;
+﻿using System;
+using NPoco;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Umbraco.Data.Migrations
@@ -34,6 +34,22 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(Overs))]
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? Overs { get; set; }
+
+        [Column(nameof(Byes))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? Byes { get; set; }
+
+        [Column(nameof(Wides))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? Wides { get; set; }
+
+        [Column(nameof(NoBalls))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? NoBalls { get; set; }
+
+        [Column(nameof(BonusOrPenaltyRuns))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? BonusOrPenaltyRuns { get; set; }
 
         [Column(nameof(Runs))]
         [NullSetting(NullSetting = NullSettings.Null)]
