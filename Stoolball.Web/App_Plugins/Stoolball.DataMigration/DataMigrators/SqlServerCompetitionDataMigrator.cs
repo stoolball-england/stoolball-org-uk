@@ -1,12 +1,12 @@
-﻿using Stoolball.Competitions;
+﻿using System;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
+using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
-using System;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
 using static Stoolball.Umbraco.Data.Constants;
@@ -282,9 +282,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         migratedSeason.MigratedCompetition.CompetitionId = await database.ExecuteScalarAsync<Guid>($"SELECT CompetitionId FROM {Tables.Competition} WHERE MigratedCompetitionId = @0", season.MigratedCompetition.MigratedCompetitionId).ConfigureAwait(false);
 
                         await database.ExecuteAsync($@"INSERT INTO {Tables.Season}
-						(SeasonId, MigratedSeasonId, CompetitionId, FromYear, UntilYear, Introduction, 
-						 Results, EnableTournaments, ResultsTableType, EnableRunsScored, EnableRunsConceded, SeasonRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11)",
+						(SeasonId, MigratedSeasonId, CompetitionId, FromYear, UntilYear, Introduction, Results, 
+                         EnableLastPlayerBatsOn, EnableTournaments, ResultsTableType, EnableRunsScored, EnableRunsConceded, SeasonRoute)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12)",
                             migratedSeason.SeasonId,
                             migratedSeason.MigratedSeasonId,
                             migratedSeason.MigratedCompetition.CompetitionId,
@@ -292,6 +292,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                             migratedSeason.UntilYear,
                             migratedSeason.Introduction,
                             migratedSeason.Results,
+                            (migratedSeason.FromYear != migratedSeason.UntilYear),
                             migratedSeason.EnableTournaments,
                             migratedSeason.ResultsTableType.ToString(),
                             migratedSeason.EnableRunsScored,

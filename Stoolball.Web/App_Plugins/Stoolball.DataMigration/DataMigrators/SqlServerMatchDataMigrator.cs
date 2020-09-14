@@ -25,9 +25,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         private readonly IAuditRepository _auditRepository;
         private readonly ILogger _logger;
         private readonly IRouteGenerator _routeGenerator;
+        private readonly ISeasonEstimator _seasonEstimator;
 
         public SqlServerMatchDataMigrator(IRedirectsRepository redirectsRepository, IDatabaseConnectionFactory databaseConnectionFactory, IAuditHistoryBuilder auditHistoryBuilder,
-            IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator)
+            IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator, ISeasonEstimator seasonEstimator)
         {
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
@@ -35,6 +36,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
+            _seasonEstimator = seasonEstimator ?? throw new ArgumentNullException(nameof(seasonEstimator));
         }
 
         /// <summary>
@@ -164,11 +166,14 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                             };
                         }
 
+                        var seasonDates = _seasonEstimator.EstimateSeasonDates(migratedMatch.StartTime);
+                        var lastPlayerBatsOn = seasonDates.fromDate.Year != seasonDates.untilDate.Year;
+
                         await connection.ExecuteAsync($@"INSERT INTO {Tables.Match}
 						(MatchId, MigratedMatchId, MatchName, UpdateMatchNameAutomatically, MatchLocationId, MatchType, PlayerType, PlayersPerTeam, InningsOrderIsKnown,
-						 TournamentId, OrderInTournament, StartTime, StartTimeIsKnown, MatchResultType, MatchNotes, SeasonId, MatchRoute, MemberKey)
+						 LastPlayerBatsOn, TournamentId, OrderInTournament, StartTime, StartTimeIsKnown, MatchResultType, MatchNotes, SeasonId, MatchRoute, MemberKey)
 						VALUES (@MatchId, @MigratedMatchId, @MatchName, @UpdateMatchNameAutomatically, @MatchLocationId, @MatchType, @PlayerType, @PlayersPerTeam, @InningsOrderIsKnown, 
-                        @TournamentId, @OrderInTournament, @StartTime, @StartTimeIsKnown, @MatchResultType, @MatchNotes, @SeasonId, @MatchRoute, @MemberKey)",
+                        @LastPlayerBatsOn, @TournamentId, @OrderInTournament, @StartTime, @StartTimeIsKnown, @MatchResultType, @MatchNotes, @SeasonId, @MatchRoute, @MemberKey)",
                         new
                         {
                             migratedMatch.MatchId,
@@ -180,6 +185,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                             PlayerType = migratedMatch.PlayerType.ToString(),
                             migratedMatch.PlayersPerTeam,
                             migratedMatch.InningsOrderIsKnown,
+                            LastPlayerBatsOn = lastPlayerBatsOn,
                             migratedMatch.Tournament?.TournamentId,
                             migratedMatch.OrderInTournament,
                             migratedMatch.StartTime,
