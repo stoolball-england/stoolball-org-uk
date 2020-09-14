@@ -1,5 +1,5 @@
-﻿using NPoco;
-using System;
+﻿using System;
+using NPoco;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Umbraco.Data.Migrations
@@ -49,6 +49,9 @@ namespace Stoolball.Umbraco.Data.Migrations
 
         [Column(nameof(EnableRunsConceded))]
         public bool EnableRunsConceded { get; set; }
+
+        [Column(nameof(EnableLastPlayerBatsOn))]
+        public bool EnableLastPlayerBatsOn { get; set; }
 
         [Column(nameof(SeasonRoute))]
         [Index(IndexTypes.UniqueNonClustered)]
