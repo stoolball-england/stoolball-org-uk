@@ -1,5 +1,5 @@
-﻿using NPoco;
-using System;
+﻿using System;
+using NPoco;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Umbraco.Data.Migrations
@@ -25,5 +25,8 @@ namespace Stoolball.Umbraco.Data.Migrations
 
         [Column(nameof(TeamRole))]
         public string TeamRole { get; set; }
+
+        [Column(nameof(PlayingAsTeamName))]
+        public string PlayingAsTeamName { get; set; }
     }
 }

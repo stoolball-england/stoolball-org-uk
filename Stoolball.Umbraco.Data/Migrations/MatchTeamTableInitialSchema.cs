@@ -1,5 +1,5 @@
-﻿using NPoco;
-using System;
+﻿using System;
+using NPoco;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Umbraco.Data.Migrations
@@ -21,6 +21,9 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Index(IndexTypes.Clustered)]
         [Column(nameof(TeamId))]
         public Guid TeamId { get; set; }
+
+        [Column(nameof(PlayingAsTeamName))]
+        public string PlayingAsTeamName { get; set; }
 
         [ForeignKey(typeof(MatchTableInitialSchema), Column = nameof(MatchTableInitialSchema.MatchId))]
         [Index(IndexTypes.NonClustered)]
