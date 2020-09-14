@@ -23,6 +23,7 @@ namespace Stoolball.Umbraco.Data.Migrations
         public Guid TeamId { get; set; }
 
         [Column(nameof(PlayingAsTeamName))]
+        [NullSetting(NullSetting = NullSettings.Null)]
         public string PlayingAsTeamName { get; set; }
 
         [ForeignKey(typeof(MatchTableInitialSchema), Column = nameof(MatchTableInitialSchema.MatchId))]

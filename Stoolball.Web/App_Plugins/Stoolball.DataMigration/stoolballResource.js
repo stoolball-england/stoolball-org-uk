@@ -20,6 +20,24 @@
         await this.postToApi(apiRoute, item, itemReducer, succeeded, failed);
       });
     },
+    async postCollectionToApi(apiRoute, items, itemReducer, succeeded, failed) {
+      if (!items || !items.length) return;
+      const collectionSucceeded = [],
+        collectionFailed = [];
+      await this.postToApi(
+        apiRoute,
+        items.map((x) => itemReducer(x)),
+        null,
+        collectionSucceeded,
+        collectionFailed
+      );
+      if (collectionSucceeded.length) {
+        succeeded.push(...collectionSucceeded[0]);
+      }
+      if (collectionFailed.length) {
+        failed.push(...collectionFailed[0]);
+      }
+    },
     async postToApi(apiRoute, item, itemReducer, succeeded, failed) {
       await fetch("/umbraco/backoffice/Migration/" + apiRoute, {
         method: "POST",
@@ -28,7 +46,9 @@
           "Content-Type": "application/json",
           "X-Umb-XSRF-Token": this.parseXsrfTokenFromCookie(document.cookie),
         },
-        body: itemReducer ? JSON.stringify(itemReducer(item)) : null,
+        body: itemReducer
+          ? JSON.stringify(itemReducer(item))
+          : JSON.stringify(item),
       }).then((response) => {
         if (response.ok && succeeded) {
           succeeded.push(item);

@@ -42,7 +42,7 @@
       }
 
       async function importBowling(performances, imported, failed) {
-        await stoolballResource.postManyToApi(
+        await stoolballResource.postCollectionToApi(
           "PlayerPerformanceMigration/CreateOver",
           performances,
           (bowling) => ({

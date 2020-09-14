@@ -27,6 +27,7 @@ namespace Stoolball.Umbraco.Data.Migrations
         public string TeamRole { get; set; }
 
         [Column(nameof(PlayingAsTeamName))]
+        [NullSetting(NullSetting = NullSettings.Null)]
         public string PlayingAsTeamName { get; set; }
     }
 }

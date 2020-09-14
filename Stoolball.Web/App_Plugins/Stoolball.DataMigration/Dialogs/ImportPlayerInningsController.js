@@ -42,7 +42,7 @@
       }
 
       async function importBatting(performances, imported, failed) {
-        await stoolballResource.postManyToApi(
+        await stoolballResource.postCollectionToApi(
           "PlayerPerformanceMigration/CreatePlayerInnings",
           performances,
           (batting) => ({

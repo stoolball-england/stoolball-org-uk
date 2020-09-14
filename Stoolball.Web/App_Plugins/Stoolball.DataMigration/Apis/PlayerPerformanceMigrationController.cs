@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Newtonsoft.Json;
+using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -35,15 +35,18 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreatePlayerInnings(MigratedPlayerInnings innings)
+        public async Task<IHttpActionResult> CreatePlayerInnings(MigratedPlayerInnings[] multipleInnings)
         {
-            if (innings is null)
+            if (multipleInnings is null)
             {
-                throw new ArgumentNullException(nameof(innings));
+                throw new ArgumentNullException(nameof(multipleInnings));
             }
 
-            var migrated = await _playerPerformanceDataMigrator.MigratePlayerInnings(innings).ConfigureAwait(false);
-            return Created(migrated.EntityUri, JsonConvert.SerializeObject(migrated));
+            foreach (var innings in multipleInnings)
+            {
+                await _playerPerformanceDataMigrator.MigratePlayerInnings(innings).ConfigureAwait(false);
+            }
+            return Created("/matches", JsonConvert.SerializeObject(multipleInnings));
         }
 
         [HttpDelete]
@@ -54,15 +57,18 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateOver(MigratedOver over)
+        public async Task<IHttpActionResult> CreateOver(MigratedOver[] multipleOvers)
         {
-            if (over is null)
+            if (multipleOvers is null)
             {
-                throw new ArgumentNullException(nameof(over));
+                throw new ArgumentNullException(nameof(multipleOvers));
             }
 
-            var migrated = await _playerPerformanceDataMigrator.MigrateOver(over).ConfigureAwait(false);
-            return Created(migrated.EntityUri, JsonConvert.SerializeObject(migrated));
+            foreach (var over in multipleOvers)
+            {
+                await _playerPerformanceDataMigrator.MigrateOver(over).ConfigureAwait(false);
+            }
+            return Created("/matches", JsonConvert.SerializeObject(multipleOvers));
         }
 
         [HttpDelete]
