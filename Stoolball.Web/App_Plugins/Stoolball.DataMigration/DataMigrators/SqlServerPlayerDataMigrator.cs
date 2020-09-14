@@ -83,8 +83,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     LastPlayed = player.LastPlayed,
                     TotalMatches = player.TotalMatches,
                     MissedMatches = player.MissedMatches,
-                    Probability = player.Probability,
-                    PlayerRole = player.PlayerRole
+                    Probability = player.Probability
                 };
 
                 var migratedPlayer = new Player
@@ -102,21 +101,18 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
                         var teamId = await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", migratedPlayerIdentity.MigratedTeamId).ConfigureAwait(false);
 
-                        if (migratedPlayerIdentity.PlayerRole == PlayerRole.Player)
-                        {
-                            migratedPlayer.PlayerRoute = _routeGenerator.GenerateRoute($"/players", migratedPlayer.PlayerName, NoiseWords.PlayerRoute);
+                        migratedPlayer.PlayerRoute = _routeGenerator.GenerateRoute($"/players", migratedPlayer.PlayerName, NoiseWords.PlayerRoute);
 
-                            int count;
-                            do
+                        int count;
+                        do
+                        {
+                            count = await database.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { migratedPlayer.PlayerRoute }).ConfigureAwait(false);
+                            if (count > 0)
                             {
-                                count = await database.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { migratedPlayer.PlayerRoute }).ConfigureAwait(false);
-                                if (count > 0)
-                                {
-                                    migratedPlayer.PlayerRoute = _routeGenerator.IncrementRoute(migratedPlayer.PlayerRoute);
-                                }
+                                migratedPlayer.PlayerRoute = _routeGenerator.IncrementRoute(migratedPlayer.PlayerRoute);
                             }
-                            while (count > 0);
                         }
+                        while (count > 0);
 
                         _auditHistoryBuilder.BuildInitialAuditHistory(player, migratedPlayerIdentity, nameof(SqlServerPlayerDataMigrator));
 
@@ -130,8 +126,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
                             await database.ExecuteAsync($@"INSERT INTO {Tables.PlayerIdentity}
 							(PlayerIdentityId, PlayerId, MigratedPlayerIdentityId, PlayerIdentityName, PlayerIdentityComparableName, TeamId, 
-								FirstPlayed, LastPlayed, TotalMatches, MissedMatches, Probability, PlayerRole)
-							VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11)",
+								FirstPlayed, LastPlayed, TotalMatches, MissedMatches, Probability)
+							VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10)",
                                 migratedPlayerIdentity.PlayerIdentityId,
                                 migratedPlayerIdentity.PlayerId,
                                 migratedPlayerIdentity.MigratedPlayerIdentityId,
@@ -142,8 +138,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                                 migratedPlayerIdentity.LastPlayed,
                                 migratedPlayerIdentity.TotalMatches,
                                 migratedPlayerIdentity.MissedMatches,
-                                migratedPlayerIdentity.Probability,
-                                migratedPlayerIdentity.PlayerRole.ToString()).ConfigureAwait(false);
+                                migratedPlayerIdentity.Probability).ConfigureAwait(false);
 
                             transaction.Complete();
                         }
@@ -157,11 +152,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     scope.Complete();
                 }
 
-                if (player.PlayerRole == PlayerRole.Player)
-                {
-                    await _redirectsRepository.InsertRedirect(player.PlayerIdentityRoute, migratedPlayer.PlayerRoute + "/batting", string.Empty).ConfigureAwait(false);
-                    await _redirectsRepository.InsertRedirect(player.PlayerIdentityRoute, migratedPlayer.PlayerRoute, "/bowling").ConfigureAwait(false);
-                }
+                await _redirectsRepository.InsertRedirect(player.PlayerIdentityRoute, migratedPlayer.PlayerRoute + "/batting", string.Empty).ConfigureAwait(false);
+                await _redirectsRepository.InsertRedirect(player.PlayerIdentityRoute, migratedPlayer.PlayerRoute, "/bowling").ConfigureAwait(false);
 
                 foreach (var audit in migratedPlayerIdentity.History)
                 {

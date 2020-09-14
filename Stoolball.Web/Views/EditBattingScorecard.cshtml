@@ -109,23 +109,23 @@
                     </tr>
                 }
                 <tr class="extras">
-                    <th colspan="4">@PlayerRole.Byes.Humanize()</th>
-                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[Model.CurrentInnings.PlayerInnings.Count - 4].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"{PlayerRole.Byes.Humanize()} must be a number.", min = "0", data_msg_min = $"{PlayerRole.Byes.Humanize()} must be a number, 0 or more", @class = "scorecard__runs" })</td>
+                    <th colspan="4">Byes</th>
+                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[Model.CurrentInnings.PlayerInnings.Count - 4].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"Byes must be a number.", min = "0", data_msg_min = $"Byes must be a number, 0 or more", @class = "scorecard__runs" })</td>
                     <td></td>
                 </tr>
                 <tr class="extras">
-                    <th colspan="4">@PlayerRole.Wides.Humanize()</th>
-                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[Model.CurrentInnings.PlayerInnings.Count - 3].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"{PlayerRole.Wides.Humanize()} must be a number.", min = "0", data_msg_min = $"{PlayerRole.Wides.Humanize()} must be a number, 0 or more", @class = "scorecard__runs" })</td>
+                    <th colspan="4">Wides</th>
+                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[Model.CurrentInnings.PlayerInnings.Count - 3].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"Wides must be a number.", min = "0", data_msg_min = $"Wides must be a number, 0 or more", @class = "scorecard__runs" })</td>
                     <td></td>
                 </tr>
                 <tr class="extras">
-                    <th colspan="4">@PlayerRole.NoBalls.Humanize()</th>
-                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[Model.CurrentInnings.PlayerInnings.Count - 2].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"{PlayerRole.NoBalls.Humanize()} must be a number.", min = "0", data_msg_min = $"{PlayerRole.NoBalls.Humanize()} must be a number, 0 or more", @class = "scorecard__runs" })</td>
+                    <th colspan="4">No balls</th>
+                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[Model.CurrentInnings.PlayerInnings.Count - 2].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"No balls must be a number.", min = "0", data_msg_min = $"No balls must be a number, 0 or more", @class = "scorecard__runs" })</td>
                     <td></td>
                 </tr>
                 <tr class="extras">
-                    <th colspan="4">@PlayerRole.BonusOrPenaltyRuns.Humanize()</th>
-                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[Model.CurrentInnings.PlayerInnings.Count - 1].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"{PlayerRole.BonusOrPenaltyRuns.Humanize()} must be a number.", @class = "scorecard__runs" })</td>
+                    <th colspan="4">Bonus or penalty runs</th>
+                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[Model.CurrentInnings.PlayerInnings.Count - 1].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"Bonus or penalty runs must be a number.", @class = "scorecard__runs" })</td>
                     <td></td>
                 </tr>
                 <tr class="totals">

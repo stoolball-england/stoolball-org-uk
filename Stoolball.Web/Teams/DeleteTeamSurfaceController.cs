@@ -72,8 +72,7 @@ namespace Stoolball.Web.Teams
                 }).ConfigureAwait(false);
                 viewModel.Team.Players = (await _playerDataSource.ReadPlayerIdentities(new PlayerIdentityQuery
                 {
-                    TeamIds = teamIds,
-                    PlayerRoles = new List<PlayerRole> { PlayerRole.Player }
+                    TeamIds = teamIds
                 }).ConfigureAwait(false))?.Select(x => new Player { PlayerIdentities = new List<PlayerIdentity> { x } }).ToList();
             }
 

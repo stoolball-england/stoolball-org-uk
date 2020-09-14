@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Stoolball.Teams;
 
 namespace Stoolball.Matches
 {
@@ -31,10 +30,10 @@ namespace Stoolball.Matches
 
             var comparison = new BattingScorecardComparison();
 
-            var battingIdentitiesBefore = before.Where(x => x.PlayerIdentity.PlayerRole == PlayerRole.Player && !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).Select(x => x.PlayerIdentity.PlayerIdentityName).Distinct();
-            var bowlingIdentitiesBefore = before.Where(x => x.PlayerIdentity.PlayerRole == PlayerRole.Player && !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).SelectMany(x => new[] { x.DismissedBy?.PlayerIdentityName, x.Bowler?.PlayerIdentityName }.Where(name => !string.IsNullOrWhiteSpace(name))).Distinct();
-            var battingIdentitiesAfter = after.Where(x => x.PlayerIdentity.PlayerRole == PlayerRole.Player && !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).Select(x => x.PlayerIdentity.PlayerIdentityName).Distinct();
-            var bowlingIdentitiesAfter = after.Where(x => x.PlayerIdentity.PlayerRole == PlayerRole.Player && !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).SelectMany(x => new[] { x.DismissedBy?.PlayerIdentityName, x.Bowler?.PlayerIdentityName }.Where(name => !string.IsNullOrWhiteSpace(name))).Distinct();
+            var battingIdentitiesBefore = before.Where(x => !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).Select(x => x.PlayerIdentity.PlayerIdentityName).Distinct();
+            var bowlingIdentitiesBefore = before.Where(x => !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).SelectMany(x => new[] { x.DismissedBy?.PlayerIdentityName, x.Bowler?.PlayerIdentityName }.Where(name => !string.IsNullOrWhiteSpace(name))).Distinct();
+            var battingIdentitiesAfter = after.Where(x => !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).Select(x => x.PlayerIdentity.PlayerIdentityName).Distinct();
+            var bowlingIdentitiesAfter = after.Where(x => !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).SelectMany(x => new[] { x.DismissedBy?.PlayerIdentityName, x.Bowler?.PlayerIdentityName }.Where(name => !string.IsNullOrWhiteSpace(name))).Distinct();
             comparison.BattingPlayerIdentitiesAdded.AddRange(battingIdentitiesAfter.Where(x => !battingIdentitiesBefore.Contains(x)));
             comparison.BowlingPlayerIdentitiesAdded.AddRange(bowlingIdentitiesAfter.Where(x => !bowlingIdentitiesBefore.Contains(x)));
             comparison.BattingPlayerIdentitiesRemoved.AddRange(battingIdentitiesBefore.Where(x => !battingIdentitiesAfter.Contains(x)));
@@ -46,7 +45,7 @@ namespace Stoolball.Matches
             {
                 try
                 {
-                    inningsBefore = before.Where(x => x.PlayerIdentity.PlayerRole == PlayerRole.Player && !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).SingleOrDefault(x => x.BattingPosition == battingPosition);
+                    inningsBefore = before.Where(x => !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).SingleOrDefault(x => x.BattingPosition == battingPosition);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -55,7 +54,7 @@ namespace Stoolball.Matches
 
                 try
                 {
-                    inningsAfter = after.Where(x => x.PlayerIdentity.PlayerRole == PlayerRole.Player && !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).SingleOrDefault(x => x.BattingPosition == battingPosition);
+                    inningsAfter = after.Where(x => !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).SingleOrDefault(x => x.BattingPosition == battingPosition);
                 }
                 catch (InvalidOperationException ex)
                 {

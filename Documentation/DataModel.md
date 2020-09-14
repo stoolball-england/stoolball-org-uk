@@ -62,8 +62,6 @@ Each `Team` also has four special `PlayerIdentities` representing no-balls, wide
 
   It might also record that they didn't bat, but this is important as it may be the only record of a player's involvement in a `Match`. There might also be more than one `PlayerInnings` for a `PlayerIdentity` in a single `MatchInnings` - in a friendly match, one person might be given two or more chances to bat.
 
-  The runs attributed to extras are also recorded against a special `PlayerIdentity` for the type of extras.
-
 - An `Over` records the bowling figures for a single over in a `MatchInnings` bowled by a `PlayerIdentity`. Together the `Overs` in a `MatchInnings` make up the bowling scorecard.
 
 - An `MatchAward` is given to a `PlayerIdentity` as part of a `Match`. This is typically, but not always, a form of player of the match award.

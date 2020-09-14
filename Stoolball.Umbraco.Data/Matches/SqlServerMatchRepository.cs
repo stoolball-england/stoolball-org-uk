@@ -591,7 +591,7 @@ namespace Stoolball.Umbraco.Data.Matches
                         // Select existing innings and work out which ones have changed.
                         var inningsBefore = await connection.QueryAsync<PlayerInnings, PlayerIdentity, PlayerIdentity, PlayerIdentity, PlayerInnings>(
                             $@"SELECT i.PlayerInningsId, i.BattingPosition, i.HowOut, i.RunsScored, i.BallsFaced,
-                               bat.PlayerIdentityName, bat.PlayerRole,
+                               bat.PlayerIdentityName,
                                field.PlayerIdentityName,
                                bowl.PlayerIdentityName
                                FROM {Tables.PlayerInnings} i 
@@ -707,7 +707,7 @@ namespace Stoolball.Umbraco.Data.Matches
                                 WHERE MatchId = (SELECT MatchId FROM {Tables.MatchInnings} WHERE MatchInningsId = @MatchInningsId)",
                             new
                             {
-                                PlayersPerTeam = innings.PlayerInnings.Count(x => x.PlayerIdentity.PlayerRole == PlayerRole.Player),
+                                PlayersPerTeam = innings.PlayerInnings.Count,
                                 innings.MatchInningsId
                             },
                             transaction).ConfigureAwait(false);

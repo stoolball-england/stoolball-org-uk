@@ -1,9 +1,9 @@
-﻿using Dapper;
-using Stoolball.Teams;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
+using Stoolball.Teams;
 using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
@@ -56,16 +56,11 @@ namespace Stoolball.Umbraco.Data.Teams
                         parameters.Add("@TeamIds", playerQuery.TeamIds.Select(x => x.ToString()));
                     }
 
-                    if (playerQuery?.PlayerRoles?.Count > 0)
-                    {
-                        where.Add("p.PlayerRole IN @PlayerRoles");
-                        parameters.Add("@PlayerRoles", playerQuery.PlayerRoles.Select(x => x.ToString()));
-                    }
-
                     sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
 
-                    return (await connection.QueryAsync<PlayerIdentity, Team, PlayerIdentity>(sql, 
-                        (player, team) => {
+                    return (await connection.QueryAsync<PlayerIdentity, Team, PlayerIdentity>(sql,
+                        (player, team) =>
+                        {
                             player.Team = team;
                             return player;
                         },

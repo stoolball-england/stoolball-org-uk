@@ -1,14 +1,13 @@
-﻿using Humanizer;
-using Stoolball.Teams;
-using Stoolball.Umbraco.Data.Teams;
-using Stoolball.Web.WebApi;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Humanizer;
+using Stoolball.Teams;
+using Stoolball.Umbraco.Data.Teams;
+using Stoolball.Web.WebApi;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -41,7 +40,7 @@ namespace Stoolball.Web.Teams
                 throw new ArgumentNullException(nameof(teams));
             }
 
-            var playerQuery = new PlayerIdentityQuery { Query = query, PlayerRoles = new List<PlayerRole> { PlayerRole.Player } };
+            var playerQuery = new PlayerIdentityQuery { Query = query };
             foreach (var guid in teams)
             {
                 if (guid == null) continue;
@@ -69,7 +68,8 @@ namespace Stoolball.Web.Teams
         private string BuildReturnValue(PlayerIdentity playerIdentity, bool showTeam)
         {
             var value = new StringBuilder(playerIdentity.PlayerIdentityName).Append(" (").Append("match".ToQuantity(playerIdentity.TotalMatches.Value));
-            if (showTeam) {
+            if (showTeam)
+            {
                 value.Append(" for ").Append(playerIdentity.Team.TeamName);
 
             }

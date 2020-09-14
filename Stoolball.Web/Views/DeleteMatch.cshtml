@@ -35,7 +35,7 @@
         <p>If you delete @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false)) you will:</p>
         <ul>
             @{
-                var batters = Model.Match.MatchInnings.SelectMany(x => x.PlayerInnings.Where(pi => pi.PlayerIdentity.PlayerRole == PlayerRole.Player).Select(pi => pi.PlayerIdentity));
+                var batters = Model.Match.MatchInnings.SelectMany(x => x.PlayerInnings.Select(pi => pi.PlayerIdentity));
                 var fielders = Model.Match.MatchInnings.SelectMany(x => x.PlayerInnings.Select(pi => pi.DismissedBy).OfType<PlayerIdentity>());
                 var wicketTakers = Model.Match.MatchInnings.SelectMany(x => x.PlayerInnings.Select(pi => pi.Bowler).OfType<PlayerIdentity>());
                 var bowlers = Model.Match.MatchInnings.SelectMany(x => x.OversBowled.Select(o => o.PlayerIdentity));

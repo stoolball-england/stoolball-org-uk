@@ -1,4 +1,8 @@
-﻿using Dapper;
+﻿using System;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
@@ -7,10 +11,6 @@ using Stoolball.Teams;
 using Stoolball.Umbraco.Data;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
-using System;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 using Tables = Stoolball.Umbraco.Data.Constants.Tables;
@@ -232,8 +232,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                             var innings = migratedMatch.MigratedMatchInnings[i];
 
                             await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchInnings} 
-								(MatchInningsId, MatchId, BattingMatchTeamId, BowlingMatchTeamId, InningsOrderInMatch, Overs, Runs, Wickets)
-								VALUES (@MatchInningsId, @MatchId, @BattingMatchTeamId, @BowlingMatchTeamId, @InningsOrderInMatch, @Overs, @Runs, @Wickets)",
+								(MatchInningsId, MatchId, BattingMatchTeamId, BowlingMatchTeamId, InningsOrderInMatch, Overs, Byes, Wides, NoBalls, BonusOrPenaltyRuns, Runs, Wickets)
+								VALUES (@MatchInningsId, @MatchId, @BattingMatchTeamId, @BowlingMatchTeamId, @InningsOrderInMatch, @Overs, @Byes, @Wides, @NoBalls, @BonusOrPenaltyRuns, @Runs, @Wickets)",
                                 new
                                 {
                                     MatchInningsId = Guid.NewGuid(),
@@ -242,6 +242,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                                     BowlingMatchTeamId = (i == 0) ? awayMatchTeamId : homeMatchTeamId,
                                     innings.InningsOrderInMatch,
                                     innings.Overs,
+                                    innings.Byes,
+                                    innings.Wides,
+                                    innings.NoBalls,
+                                    innings.BonusOrPenaltyRuns,
                                     innings.Runs,
                                     innings.Wickets
                                 },

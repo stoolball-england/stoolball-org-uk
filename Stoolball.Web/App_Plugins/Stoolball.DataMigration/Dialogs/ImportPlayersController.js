@@ -53,8 +53,7 @@
             LastPlayed: player.lastPlayed,
             TotalMatches: player.totalMatches,
             MissedMatches: player.missedMatches,
-            Probability: player.playerRole === 0 ? player.probability : null,
-            PlayerRole: player.playerRole,
+            Probability: player.probability,
             PlayerIdentityRoute: player.route,
             History: [
               {

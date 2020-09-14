@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -7,7 +6,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Dapper;
 using Ganss.XSS;
-using Humanizer;
 using Newtonsoft.Json;
 using Stoolball.Audit;
 using Stoolball.Routing;
@@ -214,96 +212,6 @@ namespace Stoolball.Umbraco.Data.Teams
                         TeamMatchLocationId = Guid.NewGuid(),
                         team.TeamId,
                         location.MatchLocationId
-                    }, transaction).ConfigureAwait(false);
-            }
-
-            team.Players.Add(new Player
-            {
-                PlayerId = Guid.NewGuid(),
-                PlayerIdentities = new List<PlayerIdentity>
-                {
-                    new PlayerIdentity
-                    {
-                        PlayerIdentityId = Guid.NewGuid(),
-                        PlayerIdentityName = PlayerRole.NoBalls.Humanize(LetterCasing.Sentence),
-                        PlayerRole = PlayerRole.NoBalls,
-                        TotalMatches = 0
-                    }
-                }
-            });
-
-            team.Players.Add(new Player
-            {
-                PlayerId = Guid.NewGuid(),
-                PlayerIdentities = new List<PlayerIdentity>
-                {
-                    new PlayerIdentity
-                    {
-                        PlayerRole = PlayerRole.Wides,
-                        PlayerIdentityName = PlayerRole.Wides.Humanize(LetterCasing.Sentence),
-                        PlayerIdentityId = Guid.NewGuid(),
-                        TotalMatches = 0
-                    }
-                }
-            });
-
-            team.Players.Add(new Player
-            {
-                PlayerId = Guid.NewGuid(),
-                PlayerIdentities = new List<PlayerIdentity>
-                {
-                    new PlayerIdentity
-                    {
-                        PlayerIdentityId = Guid.NewGuid(),
-                        PlayerIdentityName = PlayerRole.Byes.Humanize(LetterCasing.Sentence),
-                        PlayerRole = PlayerRole.Byes,
-                        TotalMatches = 0
-                    }
-                }
-            });
-
-            team.Players.Add(new Player
-            {
-                PlayerId = Guid.NewGuid(),
-                PlayerIdentities = new List<PlayerIdentity>
-                {
-                    new PlayerIdentity
-                    {
-                        PlayerIdentityId = Guid.NewGuid(),
-                        PlayerIdentityName = PlayerRole.BonusOrPenaltyRuns.Humanize(LetterCasing.Sentence),
-                        PlayerRole = PlayerRole.BonusOrPenaltyRuns,
-                        TotalMatches = 0
-                    }
-                }
-            });
-
-            foreach (var extrasIdentity in team.Players)
-            {
-                await transaction.Connection.ExecuteAsync(
-                    $@"INSERT INTO {Tables.Player} 
-                       (PlayerId, PlayerName) 
-                       VALUES 
-                       (@PlayerId, @PlayerName)",
-                    new
-                    {
-                        extrasIdentity.PlayerId,
-                        PlayerName = extrasIdentity.PlayerIdentities[0].PlayerIdentityName,
-                        extrasIdentity.PlayerRoute
-                    }, transaction).ConfigureAwait(false);
-
-                await transaction.Connection.ExecuteAsync(
-                    $@"INSERT INTO {Tables.PlayerIdentity} 
-                                (PlayerIdentityId, PlayerId, PlayerRole, PlayerIdentityName, PlayerIdentityComparableName, TeamId, TotalMatches) 
-                                VALUES (@PlayerIdentityId, @PlayerId, @PlayerRole, @PlayerIdentityName, @PlayerIdentityComparableName, @TeamId, @TotalMatches)",
-                    new
-                    {
-                        extrasIdentity.PlayerIdentities[0].PlayerIdentityId,
-                        extrasIdentity.PlayerId,
-                        PlayerRole = extrasIdentity.PlayerIdentities[0].PlayerRole.ToString(),
-                        extrasIdentity.PlayerIdentities[0].PlayerIdentityName,
-                        PlayerIdentityComparableName = extrasIdentity.PlayerIdentities[0].ComparableName(),
-                        team.TeamId,
-                        extrasIdentity.PlayerIdentities[0].TotalMatches
                     }, transaction).ConfigureAwait(false);
             }
 

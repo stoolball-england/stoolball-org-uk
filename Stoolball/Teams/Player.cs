@@ -10,8 +10,6 @@ namespace Stoolball.Teams
 
         public string PlayerName { get; set; }
 
-        public PlayerRole PlayerRole { get; set; }
-
         public string PlayerRoute { get; set; }
 
         public List<PlayerIdentity> PlayerIdentities { get; internal set; } = new List<PlayerIdentity>();

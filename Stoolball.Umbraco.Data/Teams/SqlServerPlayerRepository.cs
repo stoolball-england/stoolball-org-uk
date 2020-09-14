@@ -67,7 +67,7 @@ namespace Stoolball.Umbraco.Data.Teams
                     connection.Open();
 
                     var matchedPlayer = await connection.ExecuteScalarAsync<Guid?>(
-                            $"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityComparableName = @PlayerIdentityComparableName AND TeamId = @TeamId AND PlayerRole = '{PlayerRole.Player.ToString()}'",
+                            $"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityComparableName = @PlayerIdentityComparableName AND TeamId = @TeamId",
                             new
                             {
                                 PlayerIdentityComparableName = playerIdentity.ComparableName(),
@@ -82,7 +82,6 @@ namespace Stoolball.Umbraco.Data.Teams
                     using (var transaction = connection.BeginTransaction())
                     {
                         playerIdentity.PlayerIdentityId = Guid.NewGuid();
-                        playerIdentity.PlayerRole = PlayerRole.Player;
                         playerIdentity.PlayerIdentityName = CapitaliseName(playerIdentity.PlayerIdentityName);
                         playerIdentity.TotalMatches = 1;
 
@@ -117,13 +116,12 @@ namespace Stoolball.Umbraco.Data.Teams
                               }, transaction).ConfigureAwait(false);
 
                         await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerIdentity} 
-                                (PlayerIdentityId, PlayerId, PlayerRole, PlayerIdentityName, PlayerIdentityComparableName, TeamId, TotalMatches) 
-                                VALUES (@PlayerIdentityId, @PlayerId, @PlayerRole, @PlayerIdentityName, @PlayerIdentityComparableName, @TeamId, @TotalMatches)",
+                                (PlayerIdentityId, PlayerId, PlayerIdentityName, PlayerIdentityComparableName, TeamId, TotalMatches) 
+                                VALUES (@PlayerIdentityId, @PlayerId, @PlayerIdentityName, @PlayerIdentityComparableName, @TeamId, @TotalMatches)",
                                new
                                {
                                    playerIdentity.PlayerIdentityId,
                                    player.PlayerId,
-                                   PlayerRole = playerIdentity.PlayerRole.ToString(),
                                    playerIdentity.PlayerIdentityName,
                                    PlayerIdentityComparableName = playerIdentity.ComparableName(),
                                    playerIdentity.Team.TeamId,

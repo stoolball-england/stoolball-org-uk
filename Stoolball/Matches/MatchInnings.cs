@@ -18,6 +18,11 @@ namespace Stoolball.Matches
         public List<PlayerInnings> PlayerInnings { get; internal set; } = new List<PlayerInnings>();
         public List<Over> OversBowled { get; internal set; } = new List<Over>();
 
+        public int? Byes { get; set; }
+        public int? Wides { get; set; }
+        public int? NoBalls { get; set; }
+        public int? BonusOrPenaltyRuns { get; set; }
+
         public int? Runs { get; set; }
 
         public int? Wickets { get; set; }

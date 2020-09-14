@@ -42,6 +42,10 @@ function matchResource() {
             InningsOrderInMatch:
               match.homeBatFirst !== null ? (match.homeBatFirst ? 1 : 2) : 1,
             Overs: match.overs,
+            Byes: match.homeByes,
+            Wides: match.homeWides,
+            NoBalls: match.homeNoBalls,
+            BonusOrPenaltyRuns: match.homeBonusRuns,
             Runs: match.homeRuns,
             Wickets: match.homeWickets,
           },
@@ -51,6 +55,10 @@ function matchResource() {
             InningsOrderInMatch:
               match.homeBatFirst !== null ? (match.homeBatFirst ? 2 : 1) : 2,
             Overs: match.overs,
+            Byes: match.awayByes,
+            Wides: match.awayWides,
+            NoBalls: match.awayNoBalls,
+            BonusOrPenaltyRuns: match.awayBonusRuns,
             Runs: match.awayRuns,
             Wickets: match.awayWickets,
           },

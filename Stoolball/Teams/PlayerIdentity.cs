@@ -28,7 +28,5 @@ namespace Stoolball.Teams
         public int? MissedMatches { get; set; }
 
         public int? Probability { get; set; }
-
-        public PlayerRole PlayerRole { get; set; }
     }
 }

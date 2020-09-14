@@ -9,6 +9,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
     {
         public Guid PlayerId { get; set; }
         public int MigratedPlayerIdentityId { get; set; }
+
         public int MigratedTeamId { get; set; }
 
         public string PlayerIdentityRoute { get; set; }

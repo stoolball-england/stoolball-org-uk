@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Humanizer;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Security;
-using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -67,37 +65,12 @@ namespace Stoolball.Web.Matches
                 return new HttpNotFoundResult();
             }
 
-            if (postedInnings.PlayerInnings.Count >= 4)
-            {
-                postedInnings.PlayerInnings[postedInnings.PlayerInnings.Count - 4].PlayerIdentity = new PlayerIdentity { PlayerIdentityName = PlayerRole.Byes.Humanize(LetterCasing.Sentence), PlayerRole = PlayerRole.Byes };
-                postedInnings.PlayerInnings[postedInnings.PlayerInnings.Count - 3].PlayerIdentity = new PlayerIdentity { PlayerIdentityName = PlayerRole.Wides.Humanize(LetterCasing.Sentence), PlayerRole = PlayerRole.Wides };
-                postedInnings.PlayerInnings[postedInnings.PlayerInnings.Count - 2].PlayerIdentity = new PlayerIdentity { PlayerIdentityName = PlayerRole.NoBalls.Humanize(LetterCasing.Sentence), PlayerRole = PlayerRole.NoBalls };
-                postedInnings.PlayerInnings[postedInnings.PlayerInnings.Count - 1].PlayerIdentity = new PlayerIdentity { PlayerIdentityName = PlayerRole.BonusOrPenaltyRuns.Humanize(LetterCasing.Sentence), PlayerRole = PlayerRole.BonusOrPenaltyRuns };
-            }
-
             var i = 0;
-            var reservedNames = new[] { "WIDES", "NOBALLS", "BYES", "BONUSORPENALTYRUNS" };
-            foreach (var innings in postedInnings.PlayerInnings.Where(x => x.PlayerIdentity.PlayerRole == PlayerRole.Player))
+            foreach (var innings in postedInnings.PlayerInnings)
             {
                 // Remove bowling team members if an empty name is posted
                 if (string.IsNullOrWhiteSpace(innings.DismissedBy?.PlayerIdentityName)) { innings.DismissedBy = null; }
                 if (string.IsNullOrWhiteSpace(innings.Bowler?.PlayerIdentityName)) { innings.Bowler = null; }
-
-                // Some player identity names are not allowed
-                if (!string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].PlayerIdentity?.PlayerIdentityName) && reservedNames.Contains(Regex.Replace(postedInnings.PlayerInnings[i].PlayerIdentity.PlayerIdentityName.ToUpperInvariant(), "[^A-Z]", string.Empty)))
-                {
-                    ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].PlayerIdentity.PlayerIdentityName", $"'{postedInnings.PlayerInnings[i].PlayerIdentity.PlayerIdentityName}' is a reserved name. Please use a different name.");
-                }
-
-                if (!string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName) && reservedNames.Contains(Regex.Replace(postedInnings.PlayerInnings[i].DismissedBy.PlayerIdentityName.ToUpperInvariant(), "[^A-Z]", string.Empty)))
-                {
-                    ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].DismissedBy.PlayerIdentityName", $"'{postedInnings.PlayerInnings[i].DismissedBy.PlayerIdentityName}' is a reserved name. Please use a different name.");
-                }
-
-                if (!string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].Bowler?.PlayerIdentityName) && reservedNames.Contains(Regex.Replace(postedInnings.PlayerInnings[i].Bowler.PlayerIdentityName.ToUpperInvariant(), "[^A-Z]", string.Empty)))
-                {
-                    ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].Bowler.PlayerIdentityName", $"'{postedInnings.PlayerInnings[i].Bowler.PlayerIdentityName}' is a reserved name. Please use a different name.");
-                }
 
                 // The batter name is required if any other fields are filled in for an over
                 if (string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].PlayerIdentity.PlayerIdentityName) &&
@@ -119,14 +92,14 @@ namespace Stoolball.Web.Matches
                 InningsOrderInMatch = _matchInningsUrlParser.ParseInningsOrderInMatchFromUrl(new Uri(Request.RawUrl, UriKind.Relative))
             };
             model.CurrentInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
-            model.CurrentInnings.PlayerInnings = postedInnings.PlayerInnings.Where(x => x.PlayerIdentity.PlayerIdentityName?.Trim().Length > 0 || x.PlayerIdentity.PlayerRole != PlayerRole.Player).ToList();
+            model.CurrentInnings.PlayerInnings = postedInnings.PlayerInnings.Where(x => x.PlayerIdentity.PlayerIdentityName?.Trim().Length > 0).ToList();
             if (!model.Match.PlayersPerTeam.HasValue)
             {
                 model.Match.PlayersPerTeam = model.Match.Tournament != null ? 8 : 11;
             }
-            if (model.Match.PlayersPerTeam.Value < postedInnings.PlayerInnings.Count(x => x.PlayerIdentity.PlayerRole == PlayerRole.Player))
+            if (model.Match.PlayersPerTeam.Value < postedInnings.PlayerInnings.Count)
             {
-                model.Match.PlayersPerTeam = postedInnings.PlayerInnings.Count(x => x.PlayerIdentity.PlayerRole == PlayerRole.Player);
+                model.Match.PlayersPerTeam = postedInnings.PlayerInnings.Count;
             }
             _playerInningsScaffolder.ScaffoldPlayerInnings(model.CurrentInnings.PlayerInnings, model.Match.PlayersPerTeam.Value);
 
