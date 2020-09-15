@@ -22,7 +22,7 @@
 
           <label for="dataSource">Import from</label>
           <select
-            ng-init="model.dataSource='stoolball.local'"
+            ng-init="model.dataSource=model.defaultDataSource"
             ng-model="model.dataSource"
             ng-options="x for x in model.dataSources"
             id="dataSource"
@@ -40,6 +40,7 @@
               <li>
                 {{vm.importedMembers.length}} of {{vm.totalMembers}} Members
               </li>
+              <li>{{vm.assignedGroups.length}} Members Assigned to Groups</li>
             </ul>
           </div>
         </umb-box-content>

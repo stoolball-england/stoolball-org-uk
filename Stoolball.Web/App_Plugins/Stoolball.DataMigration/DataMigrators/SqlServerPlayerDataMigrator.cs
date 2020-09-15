@@ -46,8 +46,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     using (var transaction = database.GetTransaction())
                     {
                         await database.ExecuteAsync("DELETE FROM SkybrudRedirects WHERE DestinationUrl LIKE '/players/%'").ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.Player}").ConfigureAwait(false);
                         await database.ExecuteAsync($"DELETE FROM {Tables.PlayerIdentity}").ConfigureAwait(false);
+                        await database.ExecuteAsync($"DELETE FROM {Tables.Player}").ConfigureAwait(false);
                         transaction.Complete();
                     }
 

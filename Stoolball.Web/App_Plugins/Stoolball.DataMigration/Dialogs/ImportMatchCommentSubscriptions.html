@@ -22,12 +22,11 @@
 
           <label for="dataSource">Import from</label>
           <select
-            ng-init="model.dataSource='stoolball.local'"
+            ng-init="model.dataSource=model.defaultDataSource"
             ng-model="model.dataSource"
             ng-options="x for x in model.dataSources"
             id="dataSource"
-          >
-          </select>
+          ></select>
         </umb-box-content>
       </umb-box>
       <umb-box ng-if="vm.processing">
