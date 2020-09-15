@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Routing;
-using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Newtonsoft.Json;
+using Stoolball.Routing;
+using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -41,29 +41,32 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateMatchLocation(MigratedMatchLocation matchLocation)
+        public async Task<IHttpActionResult> CreateMatchLocation(MigratedMatchLocation[] matchLocations)
         {
-            if (matchLocation is null)
+            if (matchLocations is null)
             {
-                throw new ArgumentNullException(nameof(matchLocation));
+                throw new ArgumentNullException(nameof(matchLocations));
             }
 
-            // Create an owner group
-            var groupName = _routeGenerator.GenerateRoute("location", matchLocation.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute);
-            var group = Services.MemberGroupService.GetByName(groupName);
-            if (group == null)
+            foreach (var matchLocation in matchLocations)
             {
-                group = new MemberGroup
+                // Create an owner group
+                var groupName = _routeGenerator.GenerateRoute("location", matchLocation.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute);
+                var group = Services.MemberGroupService.GetByName(groupName);
+                if (group == null)
                 {
-                    Name = groupName
-                };
-                Services.MemberGroupService.Save(group);
-            }
-            matchLocation.MemberGroupId = group.Id;
-            matchLocation.MemberGroupName = group.Name;
+                    group = new MemberGroup
+                    {
+                        Name = groupName
+                    };
+                    Services.MemberGroupService.Save(group);
+                }
+                matchLocation.MemberGroupId = group.Id;
+                matchLocation.MemberGroupName = group.Name;
 
-            var migrated = await _matchLocationDataMigrator.MigrateMatchLocation(matchLocation).ConfigureAwait(false);
-            return Created(new Uri(Request.RequestUri, new Uri(migrated.MatchLocationRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
+                await _matchLocationDataMigrator.MigrateMatchLocation(matchLocation).ConfigureAwait(false);
+            }
+            return Created(new Uri(Request.RequestUri, new Uri("/locations", UriKind.Relative)), JsonConvert.SerializeObject(matchLocations));
         }
 
         [HttpDelete]

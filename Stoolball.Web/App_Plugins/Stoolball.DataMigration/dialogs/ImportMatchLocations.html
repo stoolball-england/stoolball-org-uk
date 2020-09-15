@@ -16,8 +16,8 @@
       <umb-box>
         <umb-box-content>
           <p>
-            This will import all stoolball match locations from the old Stoolball England
-            website into the Umbraco database.
+            This will import all stoolball match locations from the old
+            Stoolball England website into the Umbraco database.
           </p>
 
           <label for="dataSource">Import from</label>
@@ -26,8 +26,7 @@
             ng-model="model.dataSource"
             ng-options="x for x in model.dataSources"
             id="dataSource"
-          >
-          </select>
+          ></select>
         </umb-box-content>
       </umb-box>
       <umb-box ng-if="vm.processing">
@@ -37,10 +36,7 @@
           </div>
           <ul class="data-migration-progress">
             <li ng-repeat="item in vm.failed" class="alert alert-error">
-                Failed: {{item.saon ? item.saon : item.paon}}, {{item.town}}
-            </li>
-            <li ng-repeat="item in vm.imported">
-              Imported: {{item.saon ? item.saon : item.paon}}, {{item.town}}
+              Failed: {{item.saon ? item.saon : item.paon}}, {{item.town}}
             </li>
           </ul>
         </umb-box-content>

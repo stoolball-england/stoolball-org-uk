@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
-using Stoolball.Web.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Web.Http;
+using Newtonsoft.Json;
+using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
+using Stoolball.Web.Configuration;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -43,89 +43,98 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         public string ApiKey() => _apiKeyProvider.GetApiKey("DataMigration");
 
         [HttpPost]
-        public IHttpActionResult CreateMember(MigratedMember imported)
+        public IHttpActionResult CreateMember(MigratedMember[] imported)
         {
             if (imported is null)
             {
                 throw new ArgumentNullException(nameof(imported));
             }
 
-            // If there's an existing member update it; don't create a second member with the same email address.
-            var member = Services.MemberService.GetByEmail(imported.Email);
-            var newMember = (member == null);
-            if (newMember)
+            foreach (var importedMember in imported)
             {
-                var memberType = Services.MemberTypeService.Get("Member");
-                member = Services.MemberService.CreateMemberWithIdentity(imported.Email, imported.Email, imported.Name, memberType);
-            }
-            else
-            {
-                member.Name = imported.Name;
-            }
-            member.SetValue("migratedMemberId", imported.UserId);
-            member.SetValue("totalLogins", imported.TotalLogins);
-            member.LastLoginDate = imported.LastLogin;
-            member.CreateDate = imported.DateCreated;
-            member.UpdateDate = imported.DateUpdated;
-            member.IsApproved = true;
-            member.IsLockedOut = false;
-            member.SetValue("blockLogin", false);
-            Services.MemberService.Save(member);
+                // If there's an existing member update it; don't create a second member with the same email address.
+                var member = Services.MemberService.GetByEmail(importedMember.Email);
+                var newMember = (member == null);
+                if (newMember)
+                {
+                    var memberType = Services.MemberTypeService.Get("Member");
+                    member = Services.MemberService.CreateMemberWithIdentity(importedMember.Email, importedMember.Email, importedMember.Name, memberType);
+                }
+                else
+                {
+                    member.Name = importedMember.Name;
+                }
+                member.SetValue("migratedMemberId", importedMember.UserId);
+                member.SetValue("totalLogins", importedMember.TotalLogins);
+                member.LastLoginDate = importedMember.LastLogin;
+                member.CreateDate = importedMember.DateCreated;
+                member.UpdateDate = importedMember.DateUpdated;
+                member.IsApproved = true;
+                member.IsLockedOut = false;
+                member.SetValue("blockLogin", false);
+                Services.MemberService.Save(member);
 
-            // Give them a complex password that nobody will guess. They will need to use password reset.
-            Services.MemberService.SavePassword(member, Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+                // Give them a complex password that nobody will guess. They will need to use password reset.
+                Services.MemberService.SavePassword(member, Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
 
-            if (newMember)
-            {
-                Services.MemberService.AssignRole(member.Id, Groups.AllMembers);
+                if (newMember)
+                {
+                    Services.MemberService.AssignRole(member.Id, Groups.AllMembers);
+                }
             }
-            return Created(new Uri(Request.RequestUri, new Uri($"/umbraco#/member/member/edit/{member.Key}", UriKind.Relative)), JsonConvert.SerializeObject(member));
+            return Created(new Uri(Request.RequestUri, new Uri($"/umbraco", UriKind.Relative)), JsonConvert.SerializeObject(imported));
         }
 
         [HttpGet]
         public IEnumerable<IMemberGroup> MemberGroups() => Services.MemberGroupService.GetAll();
 
         [HttpPost]
-        public IHttpActionResult DeleteMemberGroup(MemberGroup group)
+        public IHttpActionResult DeleteMemberGroup(MemberGroup[] groups)
         {
-            Services.MemberGroupService.Delete(group);
+            foreach (var group in groups) { Services.MemberGroupService.Delete(group); }
             return Ok();
         }
 
         [HttpPost]
-        public IHttpActionResult CreateMemberGroup(MemberGroupSave saveModel)
+        public IHttpActionResult CreateMemberGroup(MemberGroupSave[] saveModel)
         {
             if (saveModel is null)
             {
                 throw new ArgumentNullException(nameof(saveModel));
             }
 
-            // Create the group unless it already exists
-            var group = Services.MemberGroupService.GetByName(saveModel.Name);
-
-            if (group == null)
+            foreach (var memberGroup in saveModel)
             {
-                group = new MemberGroup
+                // Create the group unless it already exists
+                var group = Services.MemberGroupService.GetByName(memberGroup.Name);
+
+                if (group == null)
                 {
-                    Name = saveModel.Name
-                };
-                Services.MemberGroupService.Save(group);
+                    group = new MemberGroup
+                    {
+                        Name = memberGroup.Name
+                    };
+                    Services.MemberGroupService.Save(group);
+                }
             }
-            return Created(new Uri(Request.RequestUri, new Uri($"/umbraco#/member/memberGroups/edit/{group.Id}", UriKind.Relative)), JsonConvert.SerializeObject(group));
+            return Created(new Uri(Request.RequestUri, new Uri($"/umbraco", UriKind.Relative)), JsonConvert.SerializeObject(saveModel));
         }
 
         [HttpPost]
-        public IHttpActionResult AssignMemberGroup(MemberGroupAssignment assignment)
+        public IHttpActionResult AssignMemberGroup(MemberGroupAssignment[] assignments)
         {
-            if (assignment is null)
+            if (assignments is null)
             {
-                throw new ArgumentNullException(nameof(assignment));
+                throw new ArgumentNullException(nameof(assignments));
             }
 
-            var member = Members.GetByEmail(assignment.Email);
-            if (member != null)
+            foreach (var assignment in assignments)
             {
-                Services.MemberService.AssignRole(member.Id, assignment.GroupName);
+                var member = Members.GetByEmail(assignment.Email);
+                if (member != null)
+                {
+                    Services.MemberService.AssignRole(member.Id, assignment.GroupName);
+                }
             }
 
             return Ok();

@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Routing;
-using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Newtonsoft.Json;
+using Stoolball.Routing;
+using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -41,41 +41,44 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateTeam(MigratedTeam team)
+        public async Task<IHttpActionResult> CreateTeam(MigratedTeam[] teams)
         {
-            if (team is null)
+            if (teams is null)
             {
-                throw new ArgumentNullException(nameof(team));
+                throw new ArgumentNullException(nameof(teams));
             }
 
-            // There should already be a migrated group - update the group name
-            var groupName = _routeGenerator.GenerateRoute("team", team.TeamName, NoiseWords.TeamRoute);
-            var group = Services.MemberGroupService.GetByName("team/" + team.TeamRoute);
-            if (group != null)
+            foreach (var team in teams)
             {
-                group.Name = groupName;
-                Services.MemberGroupService.Save(group);
-            }
-            else
-            {
-                // Maybe it's there and already renamed from a previous import
-                group = Services.MemberGroupService.GetByName(groupName);
-
-                // If neither name matched, it needs to be created
-                if (group == null)
+                // There should already be a migrated group - update the group name
+                var groupName = _routeGenerator.GenerateRoute("team", team.TeamName, NoiseWords.TeamRoute);
+                var group = Services.MemberGroupService.GetByName("team/" + team.TeamRoute);
+                if (group != null)
                 {
-                    group = new MemberGroup
-                    {
-                        Name = groupName
-                    };
+                    group.Name = groupName;
                     Services.MemberGroupService.Save(group);
                 }
-            }
-            team.MemberGroupId = group.Id;
-            team.MemberGroupName = group.Name;
+                else
+                {
+                    // Maybe it's there and already renamed from a previous import
+                    group = Services.MemberGroupService.GetByName(groupName);
 
-            var migrated = await _teamDataMigrator.MigrateTeam(team).ConfigureAwait(false);
-            return Created(new Uri(Request.RequestUri, new Uri(migrated.TeamRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
+                    // If neither name matched, it needs to be created
+                    if (group == null)
+                    {
+                        group = new MemberGroup
+                        {
+                            Name = groupName
+                        };
+                        Services.MemberGroupService.Save(group);
+                    }
+                }
+                team.MemberGroupId = group.Id;
+                team.MemberGroupName = group.Name;
+
+                await _teamDataMigrator.MigrateTeam(team).ConfigureAwait(false);
+            }
+            return Created(new Uri(Request.RequestUri, new Uri("/teams", UriKind.Relative)), JsonConvert.SerializeObject(teams));
         }
 
         [HttpDelete]

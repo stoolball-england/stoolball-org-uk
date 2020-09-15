@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Newtonsoft.Json;
+using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -35,15 +35,18 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateTournament(MigratedTournament tournament)
+        public async Task<IHttpActionResult> CreateTournament(MigratedTournament[] tournaments)
         {
-            if (tournament is null)
+            if (tournaments is null)
             {
-                throw new ArgumentNullException(nameof(tournament));
+                throw new ArgumentNullException(nameof(tournaments));
             }
 
-            var migrated = await _tournamentDataMigrator.MigrateTournament(tournament).ConfigureAwait(false);
-            return Created(new Uri(Request.RequestUri, new Uri(migrated.TournamentRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
+            foreach (var tournament in tournaments)
+            {
+                await _tournamentDataMigrator.MigrateTournament(tournament).ConfigureAwait(false);
+            }
+            return Created(new Uri(Request.RequestUri, new Uri("/tournaments", UriKind.Relative)), JsonConvert.SerializeObject(tournaments));
         }
 
         [HttpDelete]

@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Routing;
-using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Newtonsoft.Json;
+using Stoolball.Routing;
+using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -41,29 +41,32 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateCompetition(MigratedCompetition competition)
+        public async Task<IHttpActionResult> CreateCompetition(MigratedCompetition[] competitions)
         {
-            if (competition is null)
+            if (competitions is null)
             {
-                throw new ArgumentNullException(nameof(competition));
+                throw new ArgumentNullException(nameof(competitions));
             }
 
-            // Create an owner group
-            var groupName = _routeGenerator.GenerateRoute("competition", competition.CompetitionName, NoiseWords.CompetitionRoute);
-            var group = Services.MemberGroupService.GetByName(groupName);
-            if (group == null)
+            foreach (var competition in competitions)
             {
-                group = new MemberGroup
+                // Create an owner group
+                var groupName = _routeGenerator.GenerateRoute("competition", competition.CompetitionName, NoiseWords.CompetitionRoute);
+                var group = Services.MemberGroupService.GetByName(groupName);
+                if (group == null)
                 {
-                    Name = groupName
-                };
-                Services.MemberGroupService.Save(group);
-            }
-            competition.MemberGroupId = group.Id;
-            competition.MemberGroupName = group.Name;
+                    group = new MemberGroup
+                    {
+                        Name = groupName
+                    };
+                    Services.MemberGroupService.Save(group);
+                }
+                competition.MemberGroupId = group.Id;
+                competition.MemberGroupName = group.Name;
 
-            var migrated = await _competitionDataMigrator.MigrateCompetition(competition).ConfigureAwait(false);
-            return Created(new Uri(Request.RequestUri, new Uri(migrated.CompetitionRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
+                await _competitionDataMigrator.MigrateCompetition(competition).ConfigureAwait(false);
+            }
+            return Created(new Uri(Request.RequestUri, new Uri("/competitions", UriKind.Relative)), JsonConvert.SerializeObject(competitions));
         }
 
         [HttpDelete]
@@ -75,15 +78,18 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
 
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateSeason(MigratedSeason season)
+        public async Task<IHttpActionResult> CreateSeason(MigratedSeason[] seasons)
         {
-            if (season is null)
+            if (seasons is null)
             {
-                throw new ArgumentNullException(nameof(season));
+                throw new ArgumentNullException(nameof(seasons));
             }
 
-            var migrated = await _competitionDataMigrator.MigrateSeason(season).ConfigureAwait(false);
-            return Created(new Uri(Request.RequestUri, new Uri(migrated.SeasonRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
+            foreach (var season in seasons)
+            {
+                await _competitionDataMigrator.MigrateSeason(season).ConfigureAwait(false);
+            }
+            return Created(new Uri(Request.RequestUri, new Uri("/competitions", UriKind.Relative)), JsonConvert.SerializeObject(seasons));
         }
 
         [HttpDelete]

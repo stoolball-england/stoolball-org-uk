@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Newtonsoft.Json;
+using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -35,15 +35,18 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateMatchComment(MigratedMatchComment comment)
+        public async Task<IHttpActionResult> CreateMatchComment(MigratedMatchComment[] comments)
         {
-            if (comment is null)
+            if (comments is null)
             {
-                throw new ArgumentNullException(nameof(comment));
+                throw new ArgumentNullException(nameof(comments));
             }
 
-            var migrated = await _matchCommentDataMigrator.MigrateMatchComment(comment).ConfigureAwait(false);
-            return Created("/", JsonConvert.SerializeObject(migrated));
+            foreach (var comment in comments)
+            {
+                await _matchCommentDataMigrator.MigrateMatchComment(comment).ConfigureAwait(false);
+            }
+            return Created("/matches", JsonConvert.SerializeObject(comments));
         }
 
         [HttpDelete]

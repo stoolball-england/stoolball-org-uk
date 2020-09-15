@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Newtonsoft.Json;
+using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -35,15 +35,18 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateMatchCommentSubscription(MigratedMatchCommentSubscription subscription)
+        public async Task<IHttpActionResult> CreateMatchCommentSubscription(MigratedMatchCommentSubscription[] subscriptions)
         {
-            if (subscription is null)
+            if (subscriptions is null)
             {
-                throw new ArgumentNullException(nameof(subscription));
+                throw new ArgumentNullException(nameof(subscriptions));
             }
 
-            var migrated = await _matchCommentSubscriptionDataMigrator.MigrateMatchCommentSubscription(subscription).ConfigureAwait(false);
-            return Created("/", JsonConvert.SerializeObject(migrated));
+            foreach (var subscription in subscriptions)
+            {
+                await _matchCommentSubscriptionDataMigrator.MigrateMatchCommentSubscription(subscription).ConfigureAwait(false);
+            }
+            return Created("/", JsonConvert.SerializeObject(subscriptions));
         }
 
         [HttpDelete]

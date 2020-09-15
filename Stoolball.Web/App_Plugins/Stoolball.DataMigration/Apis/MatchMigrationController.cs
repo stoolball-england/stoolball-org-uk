@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Newtonsoft.Json;
+using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -35,15 +35,18 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateMatch(MigratedMatch match)
+        public async Task<IHttpActionResult> CreateMatch(MigratedMatch[] matches)
         {
-            if (match is null)
+            if (matches is null)
             {
-                throw new ArgumentNullException(nameof(match));
+                throw new ArgumentNullException(nameof(matches));
             }
 
-            var migrated = await _matchDataMigrator.MigrateMatch(match).ConfigureAwait(false);
-            return Created(new Uri(Request.RequestUri, new Uri(migrated.MatchRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
+            foreach (var match in matches)
+            {
+                await _matchDataMigrator.MigrateMatch(match).ConfigureAwait(false);
+            }
+            return Created(new Uri(Request.RequestUri, new Uri("/matches", UriKind.Relative)), JsonConvert.SerializeObject(matches));
         }
 
         [HttpDelete]

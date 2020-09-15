@@ -42,7 +42,7 @@
       }
 
       async function importBatting(performances, imported, failed) {
-        await stoolballResource.postCollectionToApi(
+        await stoolballResource.postManyToApi(
           "PlayerPerformanceMigration/CreatePlayerInnings",
           performances,
           (batting) => ({
@@ -74,7 +74,7 @@
         stoolballResource.getApiKey().then(async (apiKey) => {
           vm.processing = true;
           try {
-            const batchSize = 50;
+            const batchSize = 100;
             let position = 0;
             let first = true;
             while (first || position <= vm.total) {

@@ -16,12 +16,6 @@
     },
     async postManyToApi(apiRoute, items, itemReducer, succeeded, failed) {
       if (!items || !items.length) return;
-      await this.asyncForEach(items, async (item) => {
-        await this.postToApi(apiRoute, item, itemReducer, succeeded, failed);
-      });
-    },
-    async postCollectionToApi(apiRoute, items, itemReducer, succeeded, failed) {
-      if (!items || !items.length) return;
       const collectionSucceeded = [],
         collectionFailed = [];
       await this.postToApi(

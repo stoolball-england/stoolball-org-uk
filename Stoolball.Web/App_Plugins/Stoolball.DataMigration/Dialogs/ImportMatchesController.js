@@ -201,7 +201,7 @@ if (typeof angular !== "undefined") {
         stoolballResource.getApiKey().then(async (apiKey) => {
           vm.processing = true;
           try {
-            const batchSize = 50;
+            const batchSize = 100;
             for (let i = 0; i < vm.matchTypes.length; i++) {
               let position = 0;
               let first = true;

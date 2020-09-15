@@ -26,8 +26,7 @@
             ng-model="model.dataSource"
             ng-options="x for x in model.dataSources"
             id="dataSource"
-          >
-          </select>
+          ></select>
         </umb-box-content>
       </umb-box>
       <umb-box ng-if="vm.processing">
@@ -71,21 +70,6 @@
               class="alert alert-error"
             >
               Failed: {{item.title}}
-            </li>
-            <li ng-repeat="item in vm.matchTypes[0].imported">
-              Imported: {{item.title}}
-            </li>
-            <li ng-repeat="item in vm.matchTypes[1].imported">
-              Imported: {{item.title}}
-            </li>
-            <li ng-repeat="item in vm.matchTypes[2].imported">
-              Imported: {{item.title}}
-            </li>
-            <li ng-repeat="item in vm.matchTypes[3].imported">
-              Imported: {{item.title}}
-            </li>
-            <li ng-repeat="item in vm.matchTypes[4].imported">
-              Imported: {{item.title}}
             </li>
           </ul>
         </umb-box-content>

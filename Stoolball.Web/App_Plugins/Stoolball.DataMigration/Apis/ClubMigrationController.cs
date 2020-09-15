@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Routing;
-using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Newtonsoft.Json;
+using Stoolball.Routing;
+using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -41,30 +41,33 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateClub(MigratedClub club)
+        public async Task<IHttpActionResult> CreateClub(MigratedClub[] clubs)
         {
-            if (club is null)
+            if (clubs is null)
             {
-                throw new ArgumentNullException(nameof(club));
+                throw new ArgumentNullException(nameof(clubs));
             }
 
-
-            // Create an owner group
-            var groupName = _routeGenerator.GenerateRoute("club", club.ClubName, NoiseWords.ClubRoute);
-            var group = Services.MemberGroupService.GetByName(groupName);
-            if (group == null)
+            foreach (var club in clubs)
             {
-                group = new MemberGroup
+
+                // Create an owner group
+                var groupName = _routeGenerator.GenerateRoute("club", club.ClubName, NoiseWords.ClubRoute);
+                var group = Services.MemberGroupService.GetByName(groupName);
+                if (group == null)
                 {
-                    Name = groupName
-                };
-                Services.MemberGroupService.Save(group);
-            }
-            club.MemberGroupId = group.Id;
-            club.MemberGroupName = group.Name;
+                    group = new MemberGroup
+                    {
+                        Name = groupName
+                    };
+                    Services.MemberGroupService.Save(group);
+                }
+                club.MemberGroupId = group.Id;
+                club.MemberGroupName = group.Name;
 
-            var migrated = await _clubDataMigrator.MigrateClub(club).ConfigureAwait(false);
-            return Created(new Uri(Request.RequestUri, new Uri(migrated.ClubRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
+                await _clubDataMigrator.MigrateClub(club).ConfigureAwait(false);
+            }
+            return Created(new Uri(Request.RequestUri, new Uri("/clubs", UriKind.Relative)), JsonConvert.SerializeObject(clubs));
         }
 
         [HttpDelete]

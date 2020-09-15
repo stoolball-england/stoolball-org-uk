@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Newtonsoft.Json;
+using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -35,15 +35,18 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateMatchAward(MigratedMatchAward matchAward)
+        public async Task<IHttpActionResult> CreateMatchAward(MigratedMatchAward[] matchAwards)
         {
-            if (matchAward is null)
+            if (matchAwards is null)
             {
-                throw new ArgumentNullException(nameof(matchAward));
+                throw new ArgumentNullException(nameof(matchAwards));
             }
 
-            var migrated = await _matchAwardDataMigrator.MigrateMatchAward(matchAward).ConfigureAwait(false);
-            return Created(migrated.EntityUri, JsonConvert.SerializeObject(migrated));
+            foreach (var matchAward in matchAwards)
+            {
+                await _matchAwardDataMigrator.MigrateMatchAward(matchAward).ConfigureAwait(false);
+            }
+            return Created("/players", JsonConvert.SerializeObject(matchAwards));
         }
 
         [HttpDelete]

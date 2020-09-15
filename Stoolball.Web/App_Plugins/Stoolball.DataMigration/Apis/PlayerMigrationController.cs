@@ -35,15 +35,18 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreatePlayer(MigratedPlayerIdentity player)
+        public async Task<IHttpActionResult> CreatePlayer(MigratedPlayerIdentity[] players)
         {
-            if (player is null)
+            if (players is null)
             {
-                throw new ArgumentNullException(nameof(player));
+                throw new ArgumentNullException(nameof(players));
             }
 
-            var migrated = await _playerDataMigrator.MigratePlayer(player).ConfigureAwait(false);
-            return Created(new Uri(Request.RequestUri, new Uri(migrated.PlayerRoute ?? "/extras-player-without-route", UriKind.Relative)), JsonConvert.SerializeObject(migrated));
+            foreach (var player in players)
+            {
+                await _playerDataMigrator.MigratePlayer(player).ConfigureAwait(false);
+            }
+            return Created(new Uri(Request.RequestUri, new Uri("/players", UriKind.Relative)), JsonConvert.SerializeObject(players));
         }
 
         [HttpDelete]

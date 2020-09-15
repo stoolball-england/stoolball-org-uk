@@ -26,8 +26,7 @@
             ng-model="model.dataSource"
             ng-options="x for x in model.dataSources"
             id="dataSource"
-          >
-          </select>
+          ></select>
         </umb-box-content>
       </umb-box>
       <umb-box ng-if="vm.processing">
@@ -38,9 +37,6 @@
           <ul class="data-migration-progress">
             <li ng-repeat="item in vm.failed" class="alert alert-error">
               Failed: {{item.name}}
-            </li>
-            <li ng-repeat="item in vm.imported">
-              Imported: {{item.name}}
             </li>
           </ul>
         </umb-box-content>

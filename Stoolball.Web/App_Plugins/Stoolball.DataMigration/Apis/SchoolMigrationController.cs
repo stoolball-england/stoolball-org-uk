@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Routing;
-using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Newtonsoft.Json;
+using Stoolball.Routing;
+using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -41,29 +41,32 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CreateSchool(MigratedSchool school)
+        public async Task<IHttpActionResult> CreateSchool(MigratedSchool[] schools)
         {
-            if (school is null)
+            if (schools is null)
             {
-                throw new ArgumentNullException(nameof(school));
+                throw new ArgumentNullException(nameof(schools));
             }
 
-            // Create an owner group
-            var groupName = _routeGenerator.GenerateRoute("school", school.SchoolName, NoiseWords.SchoolRoute);
-            var group = Services.MemberGroupService.GetByName(groupName);
-            if (group == null)
+            foreach (var school in schools)
             {
-                group = new MemberGroup
+                // Create an owner group
+                var groupName = _routeGenerator.GenerateRoute("school", school.SchoolName, NoiseWords.SchoolRoute);
+                var group = Services.MemberGroupService.GetByName(groupName);
+                if (group == null)
                 {
-                    Name = groupName
-                };
-                Services.MemberGroupService.Save(group);
-            }
-            school.MemberGroupId = group.Id;
-            school.MemberGroupName = group.Name;
+                    group = new MemberGroup
+                    {
+                        Name = groupName
+                    };
+                    Services.MemberGroupService.Save(group);
+                }
+                school.MemberGroupId = group.Id;
+                school.MemberGroupName = group.Name;
 
-            var migrated = await _schoolDataMigrator.MigrateSchool(school).ConfigureAwait(false);
-            return Created(new Uri(Request.RequestUri, new Uri(migrated.SchoolRoute, UriKind.Relative)), JsonConvert.SerializeObject(migrated));
+                await _schoolDataMigrator.MigrateSchool(school).ConfigureAwait(false);
+            }
+            return Created(new Uri(Request.RequestUri, new Uri("/schools", UriKind.Relative)), JsonConvert.SerializeObject(schools));
         }
 
         [HttpDelete]
