@@ -109,62 +109,76 @@
     }
 
     // Calculate batting total
-    // var batTotal = $("#batTotal");
-    // if (batTotal.length > 0 && batTotal[0].value.length == 0) {
-    //   batTotal[0].calculateRuns = true;
-    //   batTotal.blur(function () {
-    //     if ($.trim(this.value).length > 0) this.calculateRuns = false;
-    //   });
-    //   calculateRuns({
-    //     target: batTotal[0],
-    //   });
-    //   $("input.runs").blur(calculateRuns);
-    // }
+    const total = editor.querySelector(".scorecard__total");
+    let calculateTotal = false;
+    if (!total.value) {
+      calculateTotal = true;
+      total.addEventListener("blur", function () {
+        if (total.value.trim()) {
+          calculateTotal = false;
+        }
+      });
+      calculateRuns({ target: total });
+    }
 
-    // function calculateRuns(e) {
-    //   // Determine whether we want to calculate runs automatically
-    //   if (
-    //     typeof e.target.calculateRuns != "undefined" ||
-    //     $(e.target).hasClass("runs")
-    //   ) {
-    //     var batTotal = document.getElementById("batTotal");
-    //     if (!batTotal.calculateRuns) return;
+    function calculateRuns(e) {
+      // Determine whether we want to calculate runs automatically
+      if (
+        !(
+          e.target.classList.contains("scorecard__runs") || e.target === total
+        ) ||
+        !calculateTotal
+      ) {
+        return;
+      }
 
-    //     // Add up the runs in all the run boxes, including extras
-    //     var calculatedTotal = 0;
-    //     $(".batting input.runs:not(:disabled)").each(function () {
-    //       var runs = parseInt(this.value);
-    //       if (!isNaN(runs)) calculatedTotal += runs;
-    //     });
+      // Add up the runs in all the run boxes, including extras
+      let calculatedTotal = 0;
+      const inputs = editor.querySelectorAll(".scorecard__runs:not(:disabled)");
+      for (let i = 0; i < inputs.length; i++) {
+        let runs = parseInt(inputs[i].value);
+        if (!isNaN(runs)) {
+          calculatedTotal += runs;
+        }
+      }
 
-    //     // Update the total, with an animation of the calculation
-    //     var currentTotal = parseInt(batTotal.value);
-    //     if (isNaN(currentTotal)) currentTotal = 0;
-    //     if (calculatedTotal == 0) {
-    //       batTotal.value = "";
-    //     } else if (calculatedTotal > currentTotal) {
-    //       var timeOut = 0;
-    //       for (var i = currentTotal + 1; i <= calculatedTotal; i++) {
-    //         currentTotal++;
-    //         setTimeout(
-    //           "document.getElementById('batTotal').value = " + currentTotal,
-    //           timeOut
-    //         );
-    //         timeOut += 15;
-    //       }
-    //     } else if (calculatedTotal < currentTotal) {
-    //       var timeOut = 0;
-    //       for (var i = currentTotal - 1; i >= calculatedTotal; i--) {
-    //         currentTotal--;
-    //         setTimeout(
-    //           "document.getElementById('batTotal').value = " + currentTotal,
-    //           timeOut
-    //         );
-    //         timeOut += 15;
-    //       }
-    //     }
-    //   }
-    // }
+      // Update the total, with an animation of the calculation
+      let currentTotal = parseInt(total.value);
+      if (isNaN(currentTotal)) {
+        currentTotal = 0;
+      }
+      if (calculatedTotal === 0) {
+        total.value = "";
+      } else if (calculatedTotal > currentTotal) {
+        let timeOut = 0;
+        for (let i = currentTotal + 1; i <= calculatedTotal; i++) {
+          currentTotal++;
+          setTimeout(
+            (function (value) {
+              return function () {
+                total.value = value;
+              };
+            })(currentTotal),
+            timeOut
+          );
+          timeOut += 15;
+        }
+      } else if (calculatedTotal < currentTotal) {
+        let timeOut = 0;
+        for (let i = currentTotal - 1; i >= calculatedTotal; i--) {
+          currentTotal--;
+          setTimeout(
+            (function (value) {
+              return function () {
+                total.value = value;
+              };
+            })(currentTotal),
+            timeOut
+          );
+          timeOut += 15;
+        }
+      }
+    }
 
     // Calculate wickets total
     // var batWickets = $("#batWickets");
@@ -223,6 +237,7 @@
     editor.addEventListener("keyup", enableBattingRowEvent);
     editor.addEventListener("click", enableBattingRowEvent);
     editor.addEventListener("change", enableBattingRowEvent);
+    editor.addEventListener("focusout", calculateRuns);
 
     // Add batter button
     const addBatterTr = document.createElement("tr");
