@@ -222,7 +222,7 @@
 
       // insert a new row based on a template
       const rows = editor.querySelectorAll("tbody > tr");
-      let template = document.getElementById("over-template").innerHTML;
+      const template = document.getElementById("over-template").innerHTML;
       rows[rows.length - 1].insertAdjacentHTML("afterend", template);
 
       // update the index of the new row
@@ -269,12 +269,12 @@
       }
       enableOver(newRow);
 
-      // focus the first field
-      inputs[0].focus();
-
       if (typeof stoolball.autocompletePlayer !== "undefined") {
         stoolball.autocompletePlayer(inputs[0]);
       }
+
+      // focus the first field
+      inputs[0].focus();
     });
   });
 })();

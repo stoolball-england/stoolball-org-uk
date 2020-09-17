@@ -1,4 +1,8 @@
-﻿/* View scorecards */
+﻿@import "../Content/bootstrap/_functions.scss";
+@import "../Content/bootstrap/_mixins.scss";
+@import "../Content/bootstrap/_variables.scss";
+
+/* View scorecards */
 .batting-scorecard .runs,
 .batting-scorecard .balls {
   width: 3em;
@@ -50,4 +54,18 @@
 .alert-info > svg {
     vertical-align: text-bottom;
     margin-right: 5px;
+}
+
+.edit-batting-scorecard__add-batter {
+    height: 0;
+    overflow: visible;
+}
+.edit-batting-scorecard__add-batter > td {
+    padding: 0;
+    border: 0;
+}
+.edit-batting-scorecard__add-batter button {
+    position: absolute;
+    margin-left: $spacer/4*3;
+    margin-top: $spacer/2;
 }

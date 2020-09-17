@@ -73,8 +73,9 @@ namespace Stoolball.Web.Matches
                 if (string.IsNullOrWhiteSpace(innings.Bowler?.PlayerIdentityName)) { innings.Bowler = null; }
 
                 // The batter name is required if any other fields are filled in for an over
-                if (string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].PlayerIdentity.PlayerIdentityName) &&
-                    (postedInnings.PlayerInnings[i].HowOut != DismissalType.DidNotBat ||
+                if (string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].PlayerIdentity?.PlayerIdentityName) &&
+                    (postedInnings.PlayerInnings[i].HowOut.HasValue &&
+                    postedInnings.PlayerInnings[i].HowOut != DismissalType.DidNotBat ||
                     !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName) ||
                     !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].Bowler?.PlayerIdentityName) ||
                     postedInnings.PlayerInnings[i].RunsScored != null ||
@@ -92,7 +93,7 @@ namespace Stoolball.Web.Matches
                 InningsOrderInMatch = _matchInningsUrlParser.ParseInningsOrderInMatchFromUrl(new Uri(Request.RawUrl, UriKind.Relative))
             };
             model.CurrentInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
-            model.CurrentInnings.PlayerInnings = postedInnings.PlayerInnings.Where(x => x.PlayerIdentity.PlayerIdentityName?.Trim().Length > 0).ToList();
+            model.CurrentInnings.PlayerInnings = postedInnings.PlayerInnings.Where(x => x.PlayerIdentity?.PlayerIdentityName?.Trim().Length > 0).ToList();
             if (!model.Match.PlayersPerTeam.HasValue)
             {
                 model.Match.PlayersPerTeam = model.Match.Tournament != null ? 8 : 11;

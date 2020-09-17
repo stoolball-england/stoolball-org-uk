@@ -608,6 +608,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="images\logos\stoolball-england-icon-maskable.svg" />
+    <Content Include="Matches\edit-batting-scorecard.js" />
     <Content Include="Matches\player-autocomplete.js" />
     <Content Include="Status\410.html" />
     <Content Include="Status\offline.html" />
