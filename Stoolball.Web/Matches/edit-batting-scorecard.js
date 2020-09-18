@@ -109,29 +109,7 @@
     }
 
     // Calculate batting total
-    const total = editor.querySelector(".scorecard__total");
-    let calculateTotal = false;
-    if (!total.value) {
-      calculateTotal = true;
-      total.addEventListener("blur", function () {
-        if (total.value.trim()) {
-          calculateTotal = false;
-        }
-      });
-      calculateRuns({ target: total });
-    }
-
-    function calculateRuns(e) {
-      // Determine whether we want to calculate runs automatically
-      if (
-        !(
-          e.target.classList.contains("scorecard__runs") || e.target === total
-        ) ||
-        !calculateTotal
-      ) {
-        return;
-      }
-
+    function calculateRuns() {
       // Add up the runs in all the run boxes, including extras
       let calculatedTotal = 0;
       const inputs = editor.querySelectorAll(".scorecard__runs:not(:disabled)");
@@ -180,55 +158,72 @@
       }
     }
 
+    const total = editor.querySelector(".scorecard__total");
+    let calculateInningsRuns = false;
+    if (!total.value) {
+      calculateInningsRuns = true;
+      calculateRuns();
+    }
+
     // Calculate wickets total
-    // var batWickets = $("#batWickets");
-    // if (batWickets.length > 0 && batWickets[0].selectedIndex == 0) {
-    //   batWickets[0].calculateWickets = true;
-    //   batWickets.blur(function () {
-    //     if (this.selectedIndex > 0) this.calculateWickets = false;
-    //   });
-    //   calculateWickets({
-    //     target: batWickets[0],
-    //   });
-    //   $("select.howOut").blur(calculateWickets);
-    // }
+    const wickets = editor.querySelector(".scorecard__wickets");
+    let calculateWickets = false;
 
-    // function calculateWickets(e) {
-    //   // Determine whether we want to calculate wickets automatically
-    //   if (
-    //     typeof e.target.calculateWickets != "undefined" ||
-    //     $(e.target).hasClass("howOut")
-    //   ) {
-    //     var batWickets = document.getElementById("batWickets");
-    //     if (!batWickets.calculateWickets) return;
+    if (wickets.selectedIndex === 0) {
+      calculateWickets = true;
+      calculateInningsWickets();
+    }
 
-    //     // Set wickets taken, but if 0 set to unknown to avoid risk of
-    //     // stating 0 when that's not known
-    //     var wickets = $(
-    //       "select.howOut :selected[value=9],select.howOut :selected[value=10],select.howOut :selected[value=4],select.howOut :selected[value=5],select.howOut :selected[value=6],select.howOut :selected[value=7],select.howOut :selected[value=8]"
-    //     ).length;
-    //     if (wickets > 0) {
-    //       // If wickets == number of batsmen-1, that's all out (in outdoor
-    //       // stoolball)
-    //       var allOut =
-    //         batWickets.parentNode.parentNode.parentNode.childNodes.length - 7;
-    //       if (wickets == allOut) {
-    //         $(batWickets).val(-1);
-    //       } else {
-    //         $(batWickets).val(wickets);
-    //       }
-    //     } else {
-    //       batWickets.selectedIndex = 0;
-    //     }
-    //   }
-    // }
+    function calculateInningsWickets() {
+      // Set wickets taken, but if 0 set to unknown to avoid risk of
+      // stating 0 when that's not known
+      const totalWickets = editor.querySelectorAll(
+        ".scorecard__dismissal :checked[value='Bowled'],.scorecard__dismissal :checked[value='CaughtAndBowled'],.scorecard__dismissal :checked[value='BodyBeforeWicket'],.scorecard__dismissal :checked[value='RunOut'],.scorecard__dismissal :checked[value='HitTheBallTwice'],.scorecard__dismissal :checked[value='TimedOut'],.scorecard__dismissal :checked[value='Caught']"
+      ).length;
+      if (totalWickets > 0) {
+        wickets.querySelector("[value='" + totalWickets + "']").selected = true;
+      } else {
+        wickets.selectedIndex = 0;
+      }
+    }
 
     function enableBattingRowEvent(e) {
       if (e.target && e.target.classList.contains("scorecard__player-name")) {
         enableBattingRow(e.target.parentElement.parentElement);
       }
-      if (e.target.tagName === "SELECT") {
+      if (e.target.classList.contains("scorecard__dismissal")) {
         howOutEnableDetails(e.target.parentElement.parentElement);
+      }
+    }
+
+    function blurEvent(e) {
+      // Determine whether we want to calculate runs and wickets automatically
+
+      if (e.target.classList.contains("scorecard__total")) {
+        if (e.target.value.trim()) {
+          calculateInningsRuns = false;
+        }
+      }
+
+      if (e.target.classList.contains("scorecard__wickets")) {
+        if (e.target.selectedIndex > 0) {
+          calculateWickets = false;
+        }
+      }
+
+      if (
+        (e.target.classList.contains("scorecard__runs") ||
+          e.target === total) &&
+        calculateInningsRuns
+      ) {
+        calculateRuns();
+      }
+
+      if (
+        e.target.classList.contains("scorecard__dismissal") &&
+        calculateWickets
+      ) {
+        calculateInningsWickets();
       }
     }
 
@@ -237,7 +232,7 @@
     editor.addEventListener("keyup", enableBattingRowEvent);
     editor.addEventListener("click", enableBattingRowEvent);
     editor.addEventListener("change", enableBattingRowEvent);
-    editor.addEventListener("focusout", calculateRuns);
+    editor.addEventListener("focusout", blurEvent);
 
     // Add batter button
     const addBatterTr = document.createElement("tr");
@@ -302,6 +297,19 @@
       if (typeof stoolball.autocompletePlayer !== "undefined") {
         stoolball.autocompletePlayer(fields[0]);
       }
+
+      // also need to allow for an extra wicket
+      const lastWicket = wickets.querySelector("option:last-child");
+      const lastWicketValue = parseInt(lastWicket.getAttribute("value"));
+
+      const newWicket = document.createElement("option");
+      newWicket.setAttribute("value", lastWicketValue.toString());
+      newWicket.appendChild(
+        document.createTextNode(lastWicketValue.toString())
+      );
+      lastWicket.parentElement.insertBefore(newWicket, lastWicket);
+
+      lastWicket.setAttribute("value", (lastWicketValue + 1).toString());
 
       // focus the first field
       fields[0].focus();
