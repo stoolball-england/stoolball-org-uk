@@ -83,6 +83,16 @@ namespace Stoolball.Web.Matches
                 {
                     ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].PlayerIdentity.PlayerIdentityName", $"You've added details for the {(i + 1).Ordinalize()} batter. Please name the batter.");
                 }
+
+                // Caught and bowled by the same person is caught and bowled
+                if (postedInnings.PlayerInnings[i].HowOut == DismissalType.Caught &&
+                    !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName) &&
+                    postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName == postedInnings.PlayerInnings[i].Bowler?.PlayerIdentityName)
+                {
+                    postedInnings.PlayerInnings[i].HowOut = DismissalType.CaughtAndBowled;
+                    postedInnings.PlayerInnings[i].DismissedBy = null;
+                }
+
                 i++;
             }
 
