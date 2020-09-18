@@ -173,7 +173,7 @@
         return;
       }
 
-      // querySelectorAll to get new players, and slice to convert that to an array.
+      // querySelectorAll to get players, and slice to convert that to an array.
       // map to get the input.value from the input, and filter to get unique values,
       // then filter again to get one-word names
       const threeOrMoreOneWordNames =
