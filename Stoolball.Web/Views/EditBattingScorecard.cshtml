@@ -109,32 +109,32 @@
                         <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[i].BallsFaced, new { autocomplete = "off", type = "number", data_val_number = $"The balls faced for the {(i + 1).Ordinalize()} batter must be a number.", min = "0", data_msg_min = $"The balls faced for the {(i + 1).Ordinalize()} batter must be a number, 0 or more", @class = "scorecard__balls" })</td>
                     </tr>
                 }
-                <tr class="extras">
+                <tr class="scorecard__extras">
                     <th colspan="4">Byes</th>
-                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[Model.CurrentInnings.PlayerInnings.Count - 4].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"Byes must be a number.", min = "0", data_msg_min = $"Byes must be a number, 0 or more", @class = "scorecard__runs" })</td>
+                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.Byes, new { autocomplete = "off", type = "number", data_val_number = $"Byes must be a number.", min = "0", data_msg_min = $"Byes must be a number, 0 or more", @class = "scorecard__runs" })</td>
                     <td></td>
                 </tr>
-                <tr class="extras">
+                <tr class="scorecard__extras">
                     <th colspan="4">Wides</th>
-                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[Model.CurrentInnings.PlayerInnings.Count - 3].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"Wides must be a number.", min = "0", data_msg_min = $"Wides must be a number, 0 or more", @class = "scorecard__runs" })</td>
+                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.Wides, new { autocomplete = "off", type = "number", data_val_number = $"Wides must be a number.", min = "0", data_msg_min = $"Wides must be a number, 0 or more", @class = "scorecard__runs" })</td>
                     <td></td>
                 </tr>
-                <tr class="extras">
+                <tr class="scorecard__extras">
                     <th colspan="4">No balls</th>
-                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[Model.CurrentInnings.PlayerInnings.Count - 2].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"No balls must be a number.", min = "0", data_msg_min = $"No balls must be a number, 0 or more", @class = "scorecard__runs" })</td>
+                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.NoBalls, new { autocomplete = "off", type = "number", data_val_number = $"No balls must be a number.", min = "0", data_msg_min = $"No balls must be a number, 0 or more", @class = "scorecard__runs" })</td>
                     <td></td>
                 </tr>
-                <tr class="extras">
+                <tr class="scorecard__extras">
                     <th colspan="4">Bonus or penalty runs</th>
-                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[Model.CurrentInnings.PlayerInnings.Count - 1].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"Bonus or penalty runs must be a number.", @class = "scorecard__runs" })</td>
+                    <td>@Html.TextBoxFor(m => Model.CurrentInnings.BonusOrPenaltyRuns, new { autocomplete = "off", type = "number", data_val_number = $"Bonus or penalty runs must be a number.", @class = "scorecard__runs" })</td>
                     <td></td>
                 </tr>
-                <tr class="totals">
+                <tr class="scorecard__totals">
                     <th scope="row" colspan="4">Total</th>
                     <td>@Html.TextBoxFor(m => Model.CurrentInnings.Runs, new { autocomplete = "off", type = "number", data_val_number = $"The total must be a number.", @class = "scorecard__total" })</td>
                     <td></td>
                 </tr>
-                <tr class="totals">
+                <tr class="scorecard__totals">
                     <th scope="row" colspan="4">Wickets</th>
                     <td>@Html.DropDownListFor(m => Model.CurrentInnings.Wickets, new SelectList(wicketsItems, "Value", "Text", Model.CurrentInnings.Wickets), string.Empty, new { @class = "scorecard__wickets" })</td>
                     <td></td>

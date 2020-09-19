@@ -708,6 +708,28 @@ namespace Stoolball.Umbraco.Data.Matches
 
                         await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings} WHERE PlayerInningsId IN @PlayerInningsIds", new { PlayerInningsIds = comparison.PlayerInningsRemoved.Select(x => x.PlayerInningsId) }, transaction).ConfigureAwait(false);
 
+                        // Update the extras and final score
+                        await connection.ExecuteAsync(
+                             $@"UPDATE {Tables.MatchInnings} SET 
+                                Byes = @Byes,
+                                Wides = @Wides,
+                                NoBalls = @NoBalls,
+                                BonusOrPenaltyRuns = @BonusOrPenaltyRuns,
+                                Runs = @Runs,
+                                Wickets = @Wickets
+                                WHERE MatchInningsId = @MatchInningsId",
+                            new
+                            {
+                                innings.Byes,
+                                innings.Wides,
+                                innings.NoBalls,
+                                innings.BonusOrPenaltyRuns,
+                                innings.Runs,
+                                innings.Wickets,
+                                innings.MatchInningsId
+                            },
+                            transaction).ConfigureAwait(false);
+
                         // Update the number of players per team
                         await connection.ExecuteAsync(
                              $@"UPDATE {Tables.Match} SET 

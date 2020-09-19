@@ -56,6 +56,11 @@ legend { font-size: $font-size-base;}
     flex-shrink: 0;
 }
 
+/* Set default width of a numeric field to be wide enough for three digits and a jQuery validation badge */
+input[type='number']
+{
+    width: 6em;
+}
 
 /* Make click events on inline SVG images bubble up to parent elements */
 svg {

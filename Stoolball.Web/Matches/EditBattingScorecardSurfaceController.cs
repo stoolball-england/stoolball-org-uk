@@ -44,7 +44,7 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> UpdateMatch([Bind(Prefix = "CurrentInnings", Include = "PlayerInnings")] MatchInnings postedInnings)
+        public async Task<ActionResult> UpdateMatch([Bind(Prefix = "CurrentInnings", Include = "Byes,Wides,NoBalls,BonusOrPenaltyRuns,Runs,Wickets,PlayerInnings")] MatchInnings postedInnings)
         {
             if (postedInnings is null)
             {
@@ -72,7 +72,7 @@ namespace Stoolball.Web.Matches
                 if (string.IsNullOrWhiteSpace(innings.DismissedBy?.PlayerIdentityName)) { innings.DismissedBy = null; }
                 if (string.IsNullOrWhiteSpace(innings.Bowler?.PlayerIdentityName)) { innings.Bowler = null; }
 
-                // The batter name is required if any other fields are filled in for an over
+                // The batter name is required if any other fields are filled in for an innings
                 if (string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].PlayerIdentity?.PlayerIdentityName) &&
                     (postedInnings.PlayerInnings[i].HowOut.HasValue &&
                     postedInnings.PlayerInnings[i].HowOut != DismissalType.DidNotBat ||
@@ -84,6 +84,25 @@ namespace Stoolball.Web.Matches
                     ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].PlayerIdentity.PlayerIdentityName", $"You've added details for the {(i + 1).Ordinalize()} batter. Please name the batter.");
                 }
 
+                // The batter must have batted if any other fields are filled in for an innings
+                if ((postedInnings.PlayerInnings[i].HowOut == DismissalType.DidNotBat || postedInnings.PlayerInnings[i].HowOut == DismissalType.TimedOut) &&
+                    (!string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName) ||
+                    !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].Bowler?.PlayerIdentityName) ||
+                    postedInnings.PlayerInnings[i].RunsScored != null ||
+                    postedInnings.PlayerInnings[i].BallsFaced != null))
+                {
+                    ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].HowOut", $"You've said the {(i + 1).Ordinalize()} batter did not bat, but you added batting details.");
+                }
+
+                // The batter can't be not out if a a bowler or fielder is named
+                if ((postedInnings.PlayerInnings[i].HowOut == DismissalType.NotOut || postedInnings.PlayerInnings[i].HowOut == DismissalType.Retired || postedInnings.PlayerInnings[i].HowOut == DismissalType.RetiredHurt) &&
+                    (!string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName) ||
+                    !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].Bowler?.PlayerIdentityName)
+                    ))
+                {
+                    ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].HowOut", $"You've said the {(i + 1).Ordinalize()} batter was not out, but you named a fielder and/or bowler.");
+                }
+
                 // Caught and bowled by the same person is caught and bowled
                 if (postedInnings.PlayerInnings[i].HowOut == DismissalType.Caught &&
                     !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName) &&
@@ -91,6 +110,14 @@ namespace Stoolball.Web.Matches
                 {
                     postedInnings.PlayerInnings[i].HowOut = DismissalType.CaughtAndBowled;
                     postedInnings.PlayerInnings[i].DismissedBy = null;
+                }
+
+                // If there's a fielder, the dismissal type should be caught or run-out
+                if (postedInnings.PlayerInnings[i].HowOut != DismissalType.Caught &&
+                    postedInnings.PlayerInnings[i].HowOut != DismissalType.RunOut &&
+                    !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName))
+                {
+                    ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].HowOut", $"You've named the fielder for the {(i + 1).Ordinalize()} batter, but they were not caught or run-out.");
                 }
 
                 i++;
@@ -104,6 +131,13 @@ namespace Stoolball.Web.Matches
             };
             model.CurrentInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
             model.CurrentInnings.PlayerInnings = postedInnings.PlayerInnings.Where(x => x.PlayerIdentity?.PlayerIdentityName?.Trim().Length > 0).ToList();
+            model.CurrentInnings.Byes = postedInnings.Byes;
+            model.CurrentInnings.Wides = postedInnings.Wides;
+            model.CurrentInnings.NoBalls = postedInnings.NoBalls;
+            model.CurrentInnings.BonusOrPenaltyRuns = postedInnings.BonusOrPenaltyRuns;
+            model.CurrentInnings.Runs = postedInnings.Runs;
+            model.CurrentInnings.Wickets = postedInnings.Wickets;
+
             if (!model.Match.PlayersPerTeam.HasValue)
             {
                 model.Match.PlayersPerTeam = model.Match.Tournament != null ? 8 : 11;

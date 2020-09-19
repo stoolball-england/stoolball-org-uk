@@ -277,8 +277,8 @@
     addBatter.appendChild(document.createTextNode("Add a batter"));
     addBatterTd.appendChild(addBatter);
     editor
-      .querySelector(".extras")
-      .parentElement.insertBefore(addBatterTr, editor.querySelector(".extras"));
+      .querySelector(".scorecard__extras")
+      .parentElement.insertBefore(addBatterTr, editor.querySelector(".scorecard__extras"));
     addBatter.addEventListener("click", function (e) {
       e.preventDefault();
       var lastRow = addBatterTr.previousElementSibling;
