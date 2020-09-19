@@ -85,10 +85,10 @@ namespace Stoolball.Umbraco.Data.Competitions
                         }
 
                         await connection.ExecuteAsync(
-                            $@"INSERT INTO {Tables.Season} (SeasonId, CompetitionId, FromYear, UntilYear, Introduction, EnableTournaments, 
+                            $@"INSERT INTO {Tables.Season} (SeasonId, CompetitionId, FromYear, UntilYear, Introduction, EnableTournaments, EnableBonusOrPenaltyRuns,
                                 PlayersPerTeam, Overs, EnableLastPlayerBatsOn, ResultsTableType, EnableRunsScored, EnableRunsConceded, Results, SeasonRoute) 
                                 VALUES 
-                                (@SeasonId, @CompetitionId, @FromYear, @UntilYear, @Introduction, @EnableTournaments, @PlayersPerTeam, @Overs,
+                                (@SeasonId, @CompetitionId, @FromYear, @UntilYear, @Introduction, @EnableTournaments, @EnableBonusOrPenaltyRuns, @PlayersPerTeam, @Overs,
                                  @EnableLastPlayerBatsOn, @ResultsTableType, @EnableRunsScored, @EnableRunsConceded, @Results, @SeasonRoute)",
                             new
                             {
@@ -98,6 +98,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                                 season.UntilYear,
                                 season.Introduction,
                                 season.EnableTournaments,
+                                season.EnableBonusOrPenaltyRuns,
                                 season.PlayersPerTeam,
                                 season.Overs,
                                 season.EnableLastPlayerBatsOn,
@@ -250,6 +251,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                                 PlayersPerTeam = @PlayersPerTeam,
                                 Overs = @Overs,
                                 EnableLastPlayerBatsOn = @EnableLastPlayerBatsOn,
+                                EnableBonusOrPenaltyRuns = @EnableBonusOrPenaltyRuns,
                                 ResultsTableType = @ResultsTableType,
                                 EnableRunsScored = @EnableRunsScored,
                                 EnableRunsConceded = @EnableRunsConceded,
@@ -262,6 +264,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                                 season.PlayersPerTeam,
                                 season.Overs,
                                 season.EnableLastPlayerBatsOn,
+                                season.EnableBonusOrPenaltyRuns,
                                 ResultsTableType = season.ResultsTableType.ToString(),
                                 season.EnableRunsScored,
                                 season.EnableRunsConceded,

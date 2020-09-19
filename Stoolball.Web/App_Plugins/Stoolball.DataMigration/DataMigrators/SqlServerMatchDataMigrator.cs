@@ -89,6 +89,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 MatchType = match.MatchType,
                 PlayerType = match.PlayerType,
                 PlayersPerTeam = match.PlayersPerTeam,
+                EnableBonusOrPenaltyRuns = true,
                 MigratedMatchInnings = match.MigratedMatchInnings,
                 InningsOrderIsKnown = match.InningsOrderIsKnown,
                 MigratedTournamentId = match.MigratedTournamentId,
@@ -171,9 +172,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
                         await connection.ExecuteAsync($@"INSERT INTO {Tables.Match}
 						(MatchId, MigratedMatchId, MatchName, UpdateMatchNameAutomatically, MatchLocationId, MatchType, PlayerType, PlayersPerTeam, InningsOrderIsKnown,
-						 LastPlayerBatsOn, TournamentId, OrderInTournament, StartTime, StartTimeIsKnown, MatchResultType, MatchNotes, SeasonId, MatchRoute, MemberKey)
+						 LastPlayerBatsOn, EnableBonusOrPenaltyRuns, TournamentId, OrderInTournament, StartTime, StartTimeIsKnown, MatchResultType, MatchNotes, SeasonId, MatchRoute, MemberKey)
 						VALUES (@MatchId, @MigratedMatchId, @MatchName, @UpdateMatchNameAutomatically, @MatchLocationId, @MatchType, @PlayerType, @PlayersPerTeam, @InningsOrderIsKnown, 
-                        @LastPlayerBatsOn, @TournamentId, @OrderInTournament, @StartTime, @StartTimeIsKnown, @MatchResultType, @MatchNotes, @SeasonId, @MatchRoute, @MemberKey)",
+                        @LastPlayerBatsOn, @EnableBonusOrPenaltyRuns, @TournamentId, @OrderInTournament, @StartTime, @StartTimeIsKnown, @MatchResultType, @MatchNotes, @SeasonId, @MatchRoute, @MemberKey)",
                         new
                         {
                             migratedMatch.MatchId,
@@ -186,6 +187,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                             migratedMatch.PlayersPerTeam,
                             migratedMatch.InningsOrderIsKnown,
                             LastPlayerBatsOn = lastPlayerBatsOn,
+                            migratedMatch.EnableBonusOrPenaltyRuns,
                             migratedMatch.Tournament?.TournamentId,
                             migratedMatch.OrderInTournament,
                             migratedMatch.StartTime,

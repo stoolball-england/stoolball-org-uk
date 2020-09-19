@@ -124,11 +124,14 @@
                     <td>@Html.TextBoxFor(m => Model.CurrentInnings.NoBalls, new { autocomplete = "off", type = "number", data_val_number = $"No balls must be a number.", min = "0", data_msg_min = $"No balls must be a number, 0 or more", @class = "scorecard__runs" })</td>
                     <td></td>
                 </tr>
+                @if (Model.Match.EnableBonusOrPenaltyRuns)
+                {
                 <tr class="scorecard__extras">
                     <th colspan="4">Bonus or penalty runs</th>
                     <td>@Html.TextBoxFor(m => Model.CurrentInnings.BonusOrPenaltyRuns, new { autocomplete = "off", type = "number", data_val_number = $"Bonus or penalty runs must be a number.", @class = "scorecard__runs" })</td>
                     <td></td>
                 </tr>
+                }
                 <tr class="scorecard__totals">
                     <th scope="row" colspan="4">Total</th>
                     <td>@Html.TextBoxFor(m => Model.CurrentInnings.Runs, new { autocomplete = "off", type = "number", data_val_number = $"The total must be a number.", @class = "scorecard__total" })</td>

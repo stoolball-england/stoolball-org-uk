@@ -49,6 +49,9 @@ namespace Stoolball.Umbraco.Data.Migrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? PlayersPerTeam { get; set; }
 
+        [Column(nameof(EnableBonusOrPenaltyRuns))]
+        public bool EnableBonusOrPenaltyRuns { get; set; }
+
         [Column(nameof(LastPlayerBatsOn))]
         public bool LastPlayerBatsOn { get; set; }
 

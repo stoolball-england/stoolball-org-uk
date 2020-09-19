@@ -222,6 +222,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 MigratedPointsAdjustments = season.MigratedPointsAdjustments,
                 Results = season.Results,
                 EnableTournaments = season.EnableTournaments,
+                EnableBonusOrPenaltyRuns = true,
                 ResultsTableType = season.ResultsTableType,
                 EnableRunsScored = season.EnableRunsScored,
                 EnableRunsConceded = season.EnableRunsConceded
@@ -281,8 +282,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
                         await database.ExecuteAsync($@"INSERT INTO {Tables.Season}
 						(SeasonId, MigratedSeasonId, CompetitionId, FromYear, UntilYear, Introduction, Results, PlayersPerTeam, Overs, 
-                         EnableLastPlayerBatsOn, EnableTournaments, ResultsTableType, EnableRunsScored, EnableRunsConceded, SeasonRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14)",
+                         EnableLastPlayerBatsOn, EnableBonusOrPenaltyRuns, EnableTournaments, ResultsTableType, EnableRunsScored, EnableRunsConceded, SeasonRoute)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15)",
                             migratedSeason.SeasonId,
                             migratedSeason.MigratedSeasonId,
                             migratedSeason.MigratedCompetition.CompetitionId,
@@ -293,6 +294,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                             migratedSeason.PlayersPerTeam,
                             migratedSeason.Overs,
                             (migratedSeason.FromYear != migratedSeason.UntilYear),
+                            migratedSeason.EnableBonusOrPenaltyRuns,
                             migratedSeason.EnableTournaments,
                             migratedSeason.ResultsTableType.ToString(),
                             migratedSeason.EnableRunsScored,

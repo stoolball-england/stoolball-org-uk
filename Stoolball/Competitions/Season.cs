@@ -76,6 +76,7 @@ namespace Stoolball.Competitions
         public int? Overs { get; set; }
 
         public bool EnableLastPlayerBatsOn { get; set; }
+        public bool EnableBonusOrPenaltyRuns { get; set; }
         public bool EnableTournaments { get; set; }
         public List<MatchType> MatchTypes { get; internal set; } = new List<MatchType>();
 

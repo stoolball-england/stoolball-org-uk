@@ -64,6 +64,12 @@
     @Html.ValidationMessageFor(m => Model.Season.EnableLastPlayerBatsOn, null, new { id = "last-player-validation" })
 </fieldset>
 
+<div class="custom-control custom-checkbox">
+    @Html.CheckBoxFor(m => Model.Season.EnableBonusOrPenaltyRuns, new { @class = "custom-control-input" })
+    @Html.LabelFor(m => Model.Season.EnableBonusOrPenaltyRuns, "Bonus or penalty runs may be awarded", new { @class = "custom-control-label" })
+</div>
+
+
 <fieldset class="form-group">
     <legend>Results table</legend>
     <div class="custom-control custom-radio">
