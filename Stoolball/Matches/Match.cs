@@ -47,6 +47,7 @@ namespace Stoolball.Matches
         public PlayerType PlayerType { get; set; }
         public List<TeamInMatch> Teams { get; internal set; } = new List<TeamInMatch>();
         public int? PlayersPerTeam { get; set; }
+        public bool LastPlayerBatsOn { get; set; }
         public Tournament Tournament { get; set; }
         public int? OrderInTournament { get; set; }
         public bool InningsOrderIsKnown { get; set; }

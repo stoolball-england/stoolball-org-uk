@@ -105,21 +105,28 @@ namespace Stoolball.Umbraco.Data.Matches
 
                         if (match.Season != null)
                         {
-                            match.Season.Competition = (await connection.QueryAsync<Competition>($@"SELECT co.PlayerType, co.PlayersPerTeam, co.Overs 
+                            match.Season = (await connection.QueryAsync<Season, Competition, Season>($@"SELECT s.SeasonId, s.PlayersPerTeam, s.Overs, s.EnableLastPlayerBatsOn, co.PlayerType
                                     FROM {Tables.Season} AS s INNER JOIN {Tables.Competition} co ON s.CompetitionId = co.CompetitionId 
                                     WHERE s.SeasonId = @SeasonId",
+                                    (season, competition) =>
+                                    {
+                                        season.Competition = competition;
+                                        return season;
+                                    },
                                     new { match.Season.SeasonId },
-                                    transaction
+                                    transaction,
+                                    splitOn: "PlayerType"
                                 ).ConfigureAwait(false)).First();
-                            match.PlayersPerTeam = match.Season.Competition.PlayersPerTeam;
+                            match.PlayersPerTeam = match.Season.PlayersPerTeam;
+                            match.LastPlayerBatsOn = match.Season.EnableLastPlayerBatsOn;
                         }
                         match.PlayerType = _playerTypeSelector.SelectPlayerType(match);
 
                         await connection.ExecuteAsync($@"INSERT INTO {Tables.Match}
 						(MatchId, MatchName, UpdateMatchNameAutomatically, MatchLocationId, MatchType, PlayerType, PlayersPerTeam, InningsOrderIsKnown,
-						 StartTime, StartTimeIsKnown, MatchNotes, SeasonId, MatchRoute, MemberKey)
+						 StartTime, StartTimeIsKnown, LastPlayerBatsOn, MatchNotes, SeasonId, MatchRoute, MemberKey)
 						VALUES (@MatchId, @MatchName, @UpdateMatchNameAutomatically, @MatchLocationId, @MatchType, @PlayerType, @PlayersPerTeam, @InningsOrderIsKnown, 
-                        @StartTime, @StartTimeIsKnown, @MatchNotes, @SeasonId, @MatchRoute, @MemberKey)",
+                        @StartTime, @StartTimeIsKnown, @LastPlayerBatsOn, @MatchNotes, @SeasonId, @MatchRoute, @MemberKey)",
                         new
                         {
                             match.MatchId,
@@ -132,6 +139,7 @@ namespace Stoolball.Umbraco.Data.Matches
                             match.InningsOrderIsKnown,
                             StartTime = match.StartTime.UtcDateTime,
                             match.StartTimeIsKnown,
+                            match.LastPlayerBatsOn,
                             match.MatchNotes,
                             match.Season?.SeasonId,
                             match.MatchRoute,
@@ -177,7 +185,7 @@ namespace Stoolball.Umbraco.Data.Matches
                                 BattingMatchTeamId = homeMatchTeamId,
                                 BowlingMatchTeamId = awayMatchTeamId,
                                 InningsOrderInMatch = 1,
-                                match.Season?.Competition.Overs
+                                match.Season?.Overs
                             },
                             transaction).ConfigureAwait(false);
 
@@ -191,7 +199,7 @@ namespace Stoolball.Umbraco.Data.Matches
                                 BattingMatchTeamId = awayMatchTeamId,
                                 BowlingMatchTeamId = homeMatchTeamId,
                                 InningsOrderInMatch = 2,
-                                match.Season?.Competition.Overs
+                                match.Season?.Overs
                             },
                             transaction).ConfigureAwait(false);
 

@@ -1,12 +1,12 @@
-﻿using Dapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
@@ -121,7 +121,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var seasons = await connection.QueryAsync<Season, Competition, string, Season>(
-                        $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Results, s.SeasonRoute, s.EnableTournaments,
+                        $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Results, s.SeasonRoute, s.EnableTournaments, s.PlayersPerTeam, s.Overs,
                             co.CompetitionName, co.PlayerType, co.UntilYear, co.CompetitionRoute, co.MemberGroupName,
                             smt.MatchType
                             FROM {Tables.Season} AS s 
@@ -170,7 +170,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var seasons = await connection.QueryAsync<Season, Competition, Season, TeamInSeason, Team, string, Season>(
-                        $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Introduction, s.EnableTournaments, s.ResultsTableType, s.EnableRunsScored, s.EnableRunsConceded, s.Results, s.SeasonRoute,
+                        $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Introduction, s.PlayersPerTeam, s.Overs, s.EnableTournaments, s.ResultsTableType, s.EnableLastPlayerBatsOn, s.EnableRunsScored, s.EnableRunsConceded, s.Results, s.SeasonRoute,
                             co.CompetitionName, co.PlayerType, co.Introduction, co.UntilYear, co.PublicContactDetails, co.Website, co.CompetitionRoute, co.MemberGroupName,
                             s2.SeasonId, s2.FromYear, s2.UntilYear, s2.SeasonRoute,
                             st.WithdrawnDate,

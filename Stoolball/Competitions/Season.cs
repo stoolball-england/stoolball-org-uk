@@ -68,6 +68,14 @@ namespace Stoolball.Competitions
         public int UntilYear { get; set; }
 
         public string Introduction { get; set; }
+
+        [Display(Name = "How many players on a team?")]
+        public int? PlayersPerTeam { get; set; }
+
+        [Display(Name = "How many overs in a match?")]
+        public int? Overs { get; set; }
+
+        public bool EnableLastPlayerBatsOn { get; set; }
         public bool EnableTournaments { get; set; }
         public List<MatchType> MatchTypes { get; internal set; } = new List<MatchType>();
 

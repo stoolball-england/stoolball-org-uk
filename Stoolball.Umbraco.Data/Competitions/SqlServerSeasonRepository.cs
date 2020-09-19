@@ -1,4 +1,9 @@
-﻿using Dapper;
+﻿using System;
+using System.Data.SqlClient;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
 using Ganss.XSS;
 using Newtonsoft.Json;
 using Stoolball.Audit;
@@ -6,11 +11,6 @@ using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
-using System;
-using System.Data.SqlClient;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
@@ -86,10 +86,10 @@ namespace Stoolball.Umbraco.Data.Competitions
 
                         await connection.ExecuteAsync(
                             $@"INSERT INTO {Tables.Season} (SeasonId, CompetitionId, FromYear, UntilYear, Introduction, EnableTournaments, 
-                                ResultsTableType, EnableRunsScored, EnableRunsConceded, Results, SeasonRoute) 
+                                PlayersPerTeam, Overs, EnableLastPlayerBatsOn, ResultsTableType, EnableRunsScored, EnableRunsConceded, Results, SeasonRoute) 
                                 VALUES 
-                                (@SeasonId, @CompetitionId, @FromYear, @UntilYear, @Introduction, @EnableTournaments, 
-                                @ResultsTableType, @EnableRunsScored, @EnableRunsConceded, @Results, @SeasonRoute)",
+                                (@SeasonId, @CompetitionId, @FromYear, @UntilYear, @Introduction, @EnableTournaments, @PlayersPerTeam, @Overs,
+                                 @EnableLastPlayerBatsOn, @ResultsTableType, @EnableRunsScored, @EnableRunsConceded, @Results, @SeasonRoute)",
                             new
                             {
                                 season.SeasonId,
@@ -98,6 +98,9 @@ namespace Stoolball.Umbraco.Data.Competitions
                                 season.UntilYear,
                                 season.Introduction,
                                 season.EnableTournaments,
+                                season.PlayersPerTeam,
+                                season.Overs,
+                                season.EnableLastPlayerBatsOn,
                                 ResultsTableType = season.ResultsTableType.ToString(),
                                 season.EnableRunsScored,
                                 season.EnableRunsConceded,
@@ -244,6 +247,9 @@ namespace Stoolball.Umbraco.Data.Competitions
                             $@"UPDATE {Tables.Season} SET
                                 Introduction = @Introduction,
                                 EnableTournaments = @EnableTournaments,
+                                PlayersPerTeam = @PlayersPerTeam,
+                                Overs = @Overs,
+                                EnableLastPlayerBatsOn = @EnableLastPlayerBatsOn,
                                 ResultsTableType = @ResultsTableType,
                                 EnableRunsScored = @EnableRunsScored,
                                 EnableRunsConceded = @EnableRunsConceded,
@@ -253,6 +259,9 @@ namespace Stoolball.Umbraco.Data.Competitions
                             {
                                 season.Introduction,
                                 season.EnableTournaments,
+                                season.PlayersPerTeam,
+                                season.Overs,
+                                season.EnableLastPlayerBatsOn,
                                 ResultsTableType = season.ResultsTableType.ToString(),
                                 season.EnableRunsScored,
                                 season.EnableRunsConceded,
@@ -449,12 +458,12 @@ namespace Stoolball.Umbraco.Data.Competitions
                     connection.Open();
                     using (var transaction = connection.BeginTransaction())
                     {
-                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonTeam} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonPointsRule} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonPointsAdjustment} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonMatchType} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsRule} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsAdjustment} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonMatchType} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($@"DELETE FROM {Tables.Season} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.Season} WHERE SeasonId = @SeasonId", new { season.SeasonId }, transaction).ConfigureAwait(false);
                         transaction.Commit();
                     }
                 }

@@ -44,8 +44,6 @@
             Facebook: competition.facebookUrl,
             Instagram: competition.instagramAccount,
             PublicContactDetails: competition.publicContactDetails,
-            PlayersPerTeam: competition.playersPerTeam,
-            Overs: competition.overs,
             CompetitionRoute: competition.route,
             History: [
               {

@@ -1,4 +1,7 @@
-﻿using Dapper;
+﻿using System;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
+using Dapper;
 using Ganss.XSS;
 using Newtonsoft.Json;
 using Stoolball.Audit;
@@ -6,9 +9,6 @@ using Stoolball.Competitions;
 using Stoolball.Routing;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
-using System;
-using System.Data.SqlClient;
-using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
@@ -98,10 +98,10 @@ namespace Stoolball.Umbraco.Data.Competitions
                         while (count > 0);
 
                         await connection.ExecuteAsync(
-                            $@"INSERT INTO {Tables.Competition} (CompetitionId, CompetitionName, FromYear, UntilYear, PlayerType, PlayersPerTeam, Overs, 
+                            $@"INSERT INTO {Tables.Competition} (CompetitionId, CompetitionName, FromYear, UntilYear, PlayerType, 
                                 Introduction, PublicContactDetails, PrivateContactDetails, Facebook, Twitter, Instagram, YouTube, Website, CompetitionRoute, 
                                 MemberGroupId, MemberGroupName) 
-                                VALUES (@CompetitionId, @CompetitionName, @FromYear, @UntilYear, @PlayerType, @PlayersPerTeam, @Overs, @Introduction, 
+                                VALUES (@CompetitionId, @CompetitionName, @FromYear, @UntilYear, @PlayerType, @Introduction, 
                                 @PublicContactDetails, @PrivateContactDetails, @Facebook, @Twitter, @Instagram, @YouTube, @Website, @CompetitionRoute, 
                                 @MemberGroupId, @MemberGroupName)",
                             new
@@ -111,8 +111,6 @@ namespace Stoolball.Umbraco.Data.Competitions
                                 competition.FromYear,
                                 competition.UntilYear,
                                 competition.PlayerType,
-                                competition.PlayersPerTeam,
-                                competition.Overs,
                                 competition.Introduction,
                                 competition.PublicContactDetails,
                                 competition.PrivateContactDetails,
@@ -203,8 +201,6 @@ namespace Stoolball.Umbraco.Data.Competitions
                                 FromYear = @FromYear,
                                 UntilYear = @UntilYear,
                                 PlayerType = @PlayerType, 
-                                PlayersPerTeam = @PlayersPerTeam,
-                                Overs = @Overs,
                                 Introduction = @Introduction, 
                                 PublicContactDetails = @PublicContactDetails, 
                                 PrivateContactDetails = @PrivateContactDetails, 
@@ -221,8 +217,6 @@ namespace Stoolball.Umbraco.Data.Competitions
                                 competition.FromYear,
                                 competition.UntilYear,
                                 competition.PlayerType,
-                                competition.PlayersPerTeam,
-                                competition.Overs,
                                 competition.Introduction,
                                 competition.PublicContactDetails,
                                 competition.PrivateContactDetails,

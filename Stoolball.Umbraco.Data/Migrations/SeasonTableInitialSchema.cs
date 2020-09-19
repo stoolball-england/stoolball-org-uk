@@ -38,6 +38,14 @@ namespace Stoolball.Umbraco.Data.Migrations
         [SpecialDbType(SpecialDbTypes.NTEXT)]
         public string Results { get; set; }
 
+        [Column(nameof(PlayersPerTeam))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? PlayersPerTeam { get; set; }
+
+        [Column(nameof(Overs))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? Overs { get; set; }
+
         [Column(nameof(EnableTournaments))]
         public bool EnableTournaments { get; set; }
 

@@ -39,6 +39,31 @@
     </div>
 </fieldset>
 
+<div class="form-group">
+    @Html.LabelFor(m => Model.Season.PlayersPerTeam)
+    @Html.TextBoxFor(m => Model.Season.PlayersPerTeam, new { @class = "form-control", aria_describedby = "players-per-team", type = "number" })
+    @Html.ValidationMessageFor(m => Model.Season.PlayersPerTeam, null, new { id = "players-per-team" })
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.Season.Overs)
+    @Html.TextBoxFor(m => Model.Season.Overs, new { @class = "form-control", aria_describedby = "overs", type = "number" })
+    @Html.ValidationMessageFor(m => Model.Season.Overs, null, new { id = "overs" })
+</div>
+
+<fieldset class="form-group">
+    <legend>What happens when only one batter is left?</legend>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.Season.EnableLastPlayerBatsOn, false, new { @class = "custom-control-input", @id = "last-player-not-out" })
+        <label for="last-player-not-out" class="custom-control-label">the team is out</label>
+    </div>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.Season.EnableLastPlayerBatsOn, true, new { @class = "custom-control-input", @id = "last-player-bats-on" })
+        <label for="last-player-bats-on" class="custom-control-label">the last batter keeps batting, with a runner</label>
+    </div>
+    @Html.ValidationMessageFor(m => Model.Season.EnableLastPlayerBatsOn, null, new { id = "last-player-validation" })
+</fieldset>
+
 <fieldset class="form-group">
     <legend>Results table</legend>
     <div class="custom-control custom-radio">

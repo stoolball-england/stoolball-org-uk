@@ -43,6 +43,8 @@ function seasonResource() {
           };
         }),
         MatchTypes: matchTypes,
+        PlayersPerTeam: season.playersPerTeam,
+        Overs: season.overs,
         EnableTournaments: season.matchTypes.includes(1),
         PointsRules: season.pointsRules.map((x) => ({
           MatchResultType: resultTypes[x.resultType],

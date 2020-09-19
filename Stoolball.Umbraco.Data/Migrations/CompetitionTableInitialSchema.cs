@@ -1,5 +1,5 @@
-﻿using NPoco;
-using System;
+﻿using System;
+using NPoco;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Umbraco.Data.Migrations
@@ -68,14 +68,6 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(PlayerType))]
         [Index(IndexTypes.NonClustered)]
         public string PlayerType { get; set; }
-
-        [Column(nameof(PlayersPerTeam))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public int? PlayersPerTeam { get; set; }
-
-        [Column(nameof(Overs))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public int? Overs { get; set; }
 
         [Column(nameof(MemberGroupId))]
         public int MemberGroupId { get; set; }

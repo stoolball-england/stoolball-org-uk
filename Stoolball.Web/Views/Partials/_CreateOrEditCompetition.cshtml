@@ -55,18 +55,6 @@
 </fieldset>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.Competition.PlayersPerTeam)
-    @Html.TextBoxFor(m => Model.Competition.PlayersPerTeam, new { @class = "form-control", aria_describedby = "players-per-team", type = "number" })
-    @Html.ValidationMessageFor(m => Model.Competition.PlayersPerTeam, null, new { id = "players-per-team" })
-</div>
-
-<div class="form-group">
-    @Html.LabelFor(m => Model.Competition.Overs)
-    @Html.TextBoxFor(m => Model.Competition.Overs, new { @class = "form-control", aria_describedby = "overs", type = "number" })
-    @Html.ValidationMessageFor(m => Model.Competition.Overs, null, new { id = "overs" })
-</div>
-
-<div class="form-group">
     @Html.LabelFor(m => Model.Competition.Introduction)
     @Html.TextAreaFor(m => Model.Competition.Introduction, new { @class = "form-control", aria_describedby = "intro-validation" })
     @Html.ValidationMessageFor(m => Model.Competition.Introduction, null, new { id = "intro-validation" })

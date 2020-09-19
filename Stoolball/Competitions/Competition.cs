@@ -1,10 +1,10 @@
-﻿using HtmlAgilityPack;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using HtmlAgilityPack;
 using Humanizer;
 using Stoolball.Audit;
 using Stoolball.Teams;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Stoolball.Competitions
 {
@@ -69,19 +69,14 @@ namespace Stoolball.Competitions
         [Display(Name = "Player type")]
         public PlayerType PlayerType { get; set; }
 
-        [Display(Name = "How many players on a team?")]
-        public int? PlayersPerTeam { get; set; }
-
-        [Display(Name = "How many overs in a match?")]
-        public int? Overs { get; set; }
         public int MemberGroupId { get; set; }
+
         public string MemberGroupName { get; set; }
 
         public string CompetitionRoute { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 
-        public Uri EntityUri
-        {
+        public Uri EntityUri {
             get { return new Uri($"https://www.stoolball.org.uk/id/competition/{CompetitionId}"); }
         }
 

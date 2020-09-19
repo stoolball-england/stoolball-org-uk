@@ -1,12 +1,12 @@
-﻿using Dapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
@@ -42,10 +42,10 @@ namespace Stoolball.Umbraco.Data.Competitions
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var competitions = await connection.QueryAsync<Competition, Season, string, Competition>(
-                        $@"SELECT co.CompetitionId, co.CompetitionName, co.PlayerType, co.Introduction, co.FromYear, co.UntilYear, co.Overs, co.PlayersPerTeam,
+                        $@"SELECT co.CompetitionId, co.CompetitionName, co.PlayerType, co.Introduction, co.FromYear, co.UntilYear, 
                             co.PublicContactDetails, co.PrivateContactDetails, co.Facebook, co.Twitter, co.Instagram, co.YouTube, co.Website, co.CompetitionRoute, 
                             co.MemberGroupId, co.MemberGroupName,
-                            s.SeasonRoute, s.FromYear, s.UntilYear,
+                            s.SeasonRoute, s.FromYear, s.UntilYear, s.PlayersPerTeam, s.Overs,
                             mt.MatchType
                             FROM {Tables.Competition} AS co
                             LEFT JOIN {Tables.Season} AS s ON co.CompetitionId = s.CompetitionId

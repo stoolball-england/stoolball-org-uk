@@ -87,8 +87,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 Twitter = competition.Twitter,
                 Facebook = competition.Facebook,
                 Instagram = competition.Instagram,
-                PlayersPerTeam = competition.PlayersPerTeam,
-                Overs = competition.Overs,
                 PlayerType = competition.PlayerType,
                 MemberGroupId = competition.MemberGroupId,
                 MemberGroupName = competition.MemberGroupName,
@@ -122,9 +120,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     using (var transaction = database.GetTransaction())
                     {
                         await database.ExecuteAsync($@"INSERT INTO {Tables.Competition}
-						(CompetitionId, MigratedCompetitionId, CompetitionName, Introduction, Twitter, Facebook, Instagram, PublicContactDetails, Website, PlayersPerTeam, 
-						 Overs, PlayerType, FromYear, UntilYear, MemberGroupId, MemberGroupName, CompetitionRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16)",
+						(CompetitionId, MigratedCompetitionId, CompetitionName, Introduction, Twitter, Facebook, Instagram, PublicContactDetails, Website, 
+						 PlayerType, FromYear, UntilYear, MemberGroupId, MemberGroupName, CompetitionRoute)
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14)",
                             migratedCompetition.CompetitionId,
                             migratedCompetition.MigratedCompetitionId,
                             migratedCompetition.CompetitionName,
@@ -134,8 +132,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                             migratedCompetition.Instagram,
                             migratedCompetition.PublicContactDetails,
                             migratedCompetition.Website,
-                            migratedCompetition.PlayersPerTeam,
-                            migratedCompetition.Overs,
                             migratedCompetition.PlayerType.ToString(),
                             migratedCompetition.FromYear,
                             migratedCompetition.UntilYear,
@@ -220,6 +216,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 Introduction = season.Introduction,
                 MigratedTeams = season.MigratedTeams,
                 MatchTypes = season.MatchTypes,
+                PlayersPerTeam = season.PlayersPerTeam,
+                Overs = season.Overs,
                 PointsRules = season.PointsRules,
                 MigratedPointsAdjustments = season.MigratedPointsAdjustments,
                 Results = season.Results,
@@ -282,9 +280,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         migratedSeason.MigratedCompetition.CompetitionId = await database.ExecuteScalarAsync<Guid>($"SELECT CompetitionId FROM {Tables.Competition} WHERE MigratedCompetitionId = @0", season.MigratedCompetition.MigratedCompetitionId).ConfigureAwait(false);
 
                         await database.ExecuteAsync($@"INSERT INTO {Tables.Season}
-						(SeasonId, MigratedSeasonId, CompetitionId, FromYear, UntilYear, Introduction, Results, 
+						(SeasonId, MigratedSeasonId, CompetitionId, FromYear, UntilYear, Introduction, Results, PlayersPerTeam, Overs, 
                          EnableLastPlayerBatsOn, EnableTournaments, ResultsTableType, EnableRunsScored, EnableRunsConceded, SeasonRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12)",
+						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14)",
                             migratedSeason.SeasonId,
                             migratedSeason.MigratedSeasonId,
                             migratedSeason.MigratedCompetition.CompetitionId,
@@ -292,6 +290,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                             migratedSeason.UntilYear,
                             migratedSeason.Introduction,
                             migratedSeason.Results,
+                            migratedSeason.PlayersPerTeam,
+                            migratedSeason.Overs,
                             (migratedSeason.FromYear != migratedSeason.UntilYear),
                             migratedSeason.EnableTournaments,
                             migratedSeason.ResultsTableType.ToString(),
