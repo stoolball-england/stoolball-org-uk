@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Humanizer;
@@ -64,16 +63,10 @@ namespace Stoolball.Web.Matches
                 return new HttpNotFoundResult();
             }
 
-            // The bowler name is required if any other fields are filled in for an over, and some player identity names are not allowed
+            // The bowler name is required if any other fields are filled in for an over
             var i = 0;
-            var reservedNames = new[] { "WIDES", "NOBALLS", "BYES", "BONUSORPENALTYRUNS" };
             foreach (var over in postedInnings.OversBowled)
             {
-                if (!string.IsNullOrWhiteSpace(postedInnings.OversBowled[i].PlayerIdentity?.PlayerIdentityName) && reservedNames.Contains(Regex.Replace(postedInnings.OversBowled[i].PlayerIdentity.PlayerIdentityName?.ToUpperInvariant(), "[^A-Z]", string.Empty)))
-                {
-                    ModelState.AddModelError($"CurrentInnings.OversBowled[{i}].PlayerIdentity.PlayerIdentityName", $"'{postedInnings.OversBowled[i].PlayerIdentity.PlayerIdentityName}' is a reserved name. Please use a different name.");
-                }
-
                 if (string.IsNullOrWhiteSpace(postedInnings.OversBowled[i].PlayerIdentity?.PlayerIdentityName) &&
                     (postedInnings.OversBowled[i].BallsBowled.HasValue ||
                      postedInnings.OversBowled[i].Wides.HasValue ||
