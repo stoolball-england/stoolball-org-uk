@@ -157,10 +157,10 @@ namespace Stoolball.Umbraco.Data.Migrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? BattingPosition { get; set; }
 
-        [Column(nameof(HowOut))]
+        [Column(nameof(DismissalType))]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public string HowOut { get; set; }
+        public string DismissalType { get; set; }
 
         [Column(nameof(PlayerWasDismissed))]
         [Index(IndexTypes.NonClustered)]

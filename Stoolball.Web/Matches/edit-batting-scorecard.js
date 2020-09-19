@@ -4,9 +4,9 @@
 
     function enableBattingRow(tr) {
       const batter = tr.querySelector(".scorecard__player-name");
-      const howOut = tr.querySelector("select");
+      const dismissalType = tr.querySelector(".scorecard__dismissal");
       if (batter.value) {
-        howOut.removeAttribute("disabled");
+        dismissalType.removeAttribute("disabled");
         // If this batting row is used, ensure next one is ready
         if (
           tr.nextElementSibling &&
@@ -22,7 +22,7 @@
             .removeAttribute("disabled");
         }
       } else {
-        howOut.setAttribute("disabled", "disabled");
+        dismissalType.setAttribute("disabled", "disabled");
         // If this batting row not used, disable the following ones to reduce tabbing
         if (
           tr.nextElementSibling &&
@@ -53,12 +53,12 @@
       }
     }
 
-    function howOutEnableDetails(tr) {
+    function dismissalTypeEnableDetails(tr) {
       let enableDismissedBy = true,
         enableBowler = true,
         enableRuns = true;
-      const howOut = tr.querySelector("select");
-      switch (howOut.value) {
+      const dismissalType = tr.querySelector(".scorecard__dismissal");
+      switch (dismissalType.value) {
         case "DidNotBat":
         case "TimedOut":
           enableDismissedBy = false;
@@ -192,7 +192,7 @@
         enableBattingRow(e.target.parentElement.parentElement);
       }
       if (e.target.classList.contains("scorecard__dismissal")) {
-        howOutEnableDetails(e.target.parentElement.parentElement);
+        dismissalTypeEnableDetails(e.target.parentElement.parentElement);
       }
     }
 
@@ -352,7 +352,7 @@
     );
     for (let i = 0; i < battingRows.length; i++) {
       enableBattingRow(battingRows[i]);
-      howOutEnableDetails(battingRows[i]);
+      dismissalTypeEnableDetails(battingRows[i]);
     }
 
     // focus the first field

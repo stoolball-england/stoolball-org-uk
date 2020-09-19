@@ -1,8 +1,8 @@
-﻿using Stoolball.Matches;
+﻿using System;
+using System.Threading.Tasks;
+using Stoolball.Matches;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data.Audit;
-using System;
-using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
 using Tables = Stoolball.Umbraco.Data.Constants.Tables;
@@ -73,7 +73,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     MigratedDismissedById = innings.MigratedDismissedById,
                     MigratedBowlerId = innings.MigratedBowlerId,
                     BattingPosition = innings.BattingPosition,
-                    HowOut = innings.HowOut,
+                    DismissalType = innings.DismissalType,
                     DismissedBy = innings.DismissedBy,
                     Bowler = innings.Bowler,
                     RunsScored = innings.RunsScored,
@@ -126,13 +126,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                                 migratedInnings.MigratedMatchTeamId).ConfigureAwait(false));
 
                             await database.ExecuteAsync($@"INSERT INTO {Tables.PlayerInnings}
-						(PlayerInningsId, MatchInningsId, PlayerIdentityId, BattingPosition, HowOut, DismissedById, BowlerId, RunsScored, BallsFaced)
+						(PlayerInningsId, MatchInningsId, PlayerIdentityId, BattingPosition, DismissalType, DismissedById, BowlerId, RunsScored, BallsFaced)
 						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8)",
                                 migratedInnings.PlayerInningsId,
                                 inningsId,
                                 migratedInnings.PlayerIdentity.PlayerIdentityId,
                                 migratedInnings.BattingPosition,
-                                migratedInnings.HowOut?.ToString(),
+                                migratedInnings.DismissalType?.ToString(),
                                 migratedInnings.DismissedBy?.PlayerIdentityId,
                                 migratedInnings.Bowler?.PlayerIdentityId,
                                 migratedInnings.RunsScored,

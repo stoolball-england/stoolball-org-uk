@@ -598,7 +598,7 @@ namespace Stoolball.Umbraco.Data.Matches
                     {
                         // Select existing innings and work out which ones have changed.
                         var inningsBefore = await connection.QueryAsync<PlayerInnings, PlayerIdentity, PlayerIdentity, PlayerIdentity, PlayerInnings>(
-                            $@"SELECT i.PlayerInningsId, i.BattingPosition, i.HowOut, i.RunsScored, i.BallsFaced,
+                            $@"SELECT i.PlayerInningsId, i.BattingPosition, i.DismissalType, i.RunsScored, i.BallsFaced,
                                bat.PlayerIdentityName,
                                field.PlayerIdentityName,
                                bowl.PlayerIdentityName
@@ -650,16 +650,16 @@ namespace Stoolball.Umbraco.Data.Matches
                             }
 
                             await connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerInnings} 
-                                (PlayerInningsId, BattingPosition, MatchInningsId, PlayerIdentityId, HowOut, DismissedById, BowlerId, RunsScored, BallsFaced) 
+                                (PlayerInningsId, BattingPosition, MatchInningsId, PlayerIdentityId, DismissalType, DismissedById, BowlerId, RunsScored, BallsFaced) 
                                 VALUES 
-                                (@PlayerInningsId, @BattingPosition, @MatchInningsId, @PlayerIdentityId, @HowOut, @DismissedById, @BowlerId, @RunsScored, @BallsFaced)",
+                                (@PlayerInningsId, @BattingPosition, @MatchInningsId, @PlayerIdentityId, @DismissalType, @DismissedById, @BowlerId, @RunsScored, @BallsFaced)",
                                 new
                                 {
                                     PlayerInningsId = Guid.NewGuid(),
                                     playerInnings.BattingPosition,
                                     innings.MatchInningsId,
                                     playerInnings.PlayerIdentity.PlayerIdentityId,
-                                    playerInnings.HowOut,
+                                    DismissalType = playerInnings.DismissalType?.ToString(),
                                     DismissedById = playerInnings.DismissedBy?.PlayerIdentityId,
                                     BowlerId = playerInnings.Bowler?.PlayerIdentityId,
                                     playerInnings.RunsScored,
@@ -687,7 +687,7 @@ namespace Stoolball.Umbraco.Data.Matches
 
                             await connection.ExecuteAsync($@"UPDATE {Tables.PlayerInnings} SET 
                                 PlayerIdentityId = @PlayerIdentityId,
-                                HowOut = @HowOut,
+                                DismissalType = @DismissalType,
                                 DismissedById = @DismissedById,
                                 BowlerId = @BowlerId,
                                 RunsScored = @RunsScored,
@@ -696,7 +696,7 @@ namespace Stoolball.Umbraco.Data.Matches
                                 new
                                 {
                                     after.PlayerIdentity.PlayerIdentityId,
-                                    after.HowOut,
+                                    DismissalType = after.DismissalType?.ToString(),
                                     DismissedById = after.DismissedBy?.PlayerIdentityId,
                                     BowlerId = after.Bowler?.PlayerIdentityId,
                                     after.RunsScored,

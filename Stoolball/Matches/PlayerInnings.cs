@@ -15,7 +15,7 @@ namespace Stoolball.Matches
 
         public int BattingPosition { get; set; }
 
-        public DismissalType? HowOut { get; set; }
+        public DismissalType? DismissalType { get; set; }
 
         public PlayerIdentity DismissedBy { get; set; }
 

@@ -61,7 +61,7 @@
         <button class="btn btn-primary sr-only">Save and continue &gt;</button>
 
         @Html.ValidationSummary(false)
-                var howOutItems = new SelectListItem[]
+                var dismissalTypes = new SelectListItem[]
                 {
             new SelectListItem { Text = DismissalType.DidNotBat.Humanize(LetterCasing.LowerCase), Value = (DismissalType.DidNotBat).ToString() },
             new SelectListItem { Text = DismissalType.NotOut.Humanize(LetterCasing.LowerCase), Value = (DismissalType.NotOut).ToString() },
@@ -102,7 +102,7 @@
                 {
                     <tr class="scorecard__batter">
                         <th scope="row">@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[i].PlayerIdentity.PlayerIdentityName, new { autocomplete = "off", @class = "scorecard__player-name", data_team = Model.CurrentInnings.BattingTeam.Team.TeamId.ToString() })</th>
-                        <td>@Html.DropDownListFor(m => Model.CurrentInnings.PlayerInnings[i].HowOut, new SelectList(howOutItems, "Value", "Text", Model.CurrentInnings.PlayerInnings[i].HowOut.HasValue ? Model.CurrentInnings.PlayerInnings[i].HowOut.ToString() : string.IsNullOrEmpty(Model.CurrentInnings.PlayerInnings[i].PlayerIdentity.PlayerIdentityName) ? DismissalType.DidNotBat.ToString() : string.Empty), new { @class = "scorecard__dismissal" })</td>
+                        <td>@Html.DropDownListFor(m => Model.CurrentInnings.PlayerInnings[i].DismissalType, new SelectList(dismissalTypes, "Value", "Text", Model.CurrentInnings.PlayerInnings[i].DismissalType.HasValue ? Model.CurrentInnings.PlayerInnings[i].DismissalType.ToString() : string.IsNullOrEmpty(Model.CurrentInnings.PlayerInnings[i].PlayerIdentity.PlayerIdentityName) ? DismissalType.DidNotBat.ToString() : string.Empty), new { @class = "scorecard__dismissal" })</td>
                         <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[i].DismissedBy.PlayerIdentityName, new { autocomplete = "off", @class = "scorecard__player-name", data_team = Model.CurrentInnings.BowlingTeam.Team.TeamId.ToString() })</td>
                         <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[i].Bowler.PlayerIdentityName, new { autocomplete = "off", @class = "scorecard__player-name", data_team = Model.CurrentInnings.BowlingTeam.Team.TeamId.ToString() })</td>
                         <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[i].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"The runs for the {(i + 1).Ordinalize()} batter must be a number.", min = "0", data_msg_min = $"The runs for the {(i + 1).Ordinalize()} batter must be a number, 0 or more", @class = "scorecard__runs" })</td>
@@ -146,8 +146,8 @@
                 <tr class="scorecard__batter">
                     <th scope="row"><input autocomplete="off" class="scorecard__player-name" data-team="@Model.CurrentInnings.BattingTeam.Team.TeamId.ToString()" name="CurrentInnings.PlayerInnings[0].PlayerIdentity.PlayerIdentityName" type="text" value="" /></th>
                     <td>
-                        <select name="CurrentInnings.PlayerInnings[0].HowOut" required="required" class="scorecard__dismissal">
-                            @foreach (var listItem in howOutItems)
+                        <select name="CurrentInnings.PlayerInnings[0].DismissalType" required="required" class="scorecard__dismissal">
+                            @foreach (var listItem in dismissalTypes)
                             {
                                 <option value="@listItem.Value">@listItem.Text</option>
 }

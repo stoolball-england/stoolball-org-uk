@@ -51,7 +51,7 @@
             MigratedTeamId: batting.teamId,
             MigratedMatchTeamId: batting.matchTeamId,
             BattingPosition: batting.battingPosition,
-            HowOut: batting.howOut,
+            DismissalType: batting.howOut,
             MigratedDismissedById: batting.dismissedById,
             MigratedBowlerId: batting.bowlerId,
             RunsScored: batting.runsScored,

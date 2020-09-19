@@ -74,8 +74,8 @@ namespace Stoolball.Web.Matches
 
                 // The batter name is required if any other fields are filled in for an innings
                 if (string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].PlayerIdentity?.PlayerIdentityName) &&
-                    (postedInnings.PlayerInnings[i].HowOut.HasValue &&
-                    postedInnings.PlayerInnings[i].HowOut != DismissalType.DidNotBat ||
+                    (postedInnings.PlayerInnings[i].DismissalType.HasValue &&
+                    postedInnings.PlayerInnings[i].DismissalType != DismissalType.DidNotBat ||
                     !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName) ||
                     !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].Bowler?.PlayerIdentityName) ||
                     postedInnings.PlayerInnings[i].RunsScored != null ||
@@ -85,39 +85,39 @@ namespace Stoolball.Web.Matches
                 }
 
                 // The batter must have batted if any other fields are filled in for an innings
-                if ((postedInnings.PlayerInnings[i].HowOut == DismissalType.DidNotBat || postedInnings.PlayerInnings[i].HowOut == DismissalType.TimedOut) &&
+                if ((postedInnings.PlayerInnings[i].DismissalType == DismissalType.DidNotBat || postedInnings.PlayerInnings[i].DismissalType == DismissalType.TimedOut) &&
                     (!string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName) ||
                     !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].Bowler?.PlayerIdentityName) ||
                     postedInnings.PlayerInnings[i].RunsScored != null ||
                     postedInnings.PlayerInnings[i].BallsFaced != null))
                 {
-                    ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].HowOut", $"You've said the {(i + 1).Ordinalize()} batter did not bat, but you added batting details.");
+                    ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].DismissalType", $"You've said the {(i + 1).Ordinalize()} batter did not bat, but you added batting details.");
                 }
 
                 // The batter can't be not out if a a bowler or fielder is named
-                if ((postedInnings.PlayerInnings[i].HowOut == DismissalType.NotOut || postedInnings.PlayerInnings[i].HowOut == DismissalType.Retired || postedInnings.PlayerInnings[i].HowOut == DismissalType.RetiredHurt) &&
+                if ((postedInnings.PlayerInnings[i].DismissalType == DismissalType.NotOut || postedInnings.PlayerInnings[i].DismissalType == DismissalType.Retired || postedInnings.PlayerInnings[i].DismissalType == DismissalType.RetiredHurt) &&
                     (!string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName) ||
                     !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].Bowler?.PlayerIdentityName)
                     ))
                 {
-                    ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].HowOut", $"You've said the {(i + 1).Ordinalize()} batter was not out, but you named a fielder and/or bowler.");
+                    ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].DismissalType", $"You've said the {(i + 1).Ordinalize()} batter was not out, but you named a fielder and/or bowler.");
                 }
 
                 // Caught and bowled by the same person is caught and bowled
-                if (postedInnings.PlayerInnings[i].HowOut == DismissalType.Caught &&
+                if (postedInnings.PlayerInnings[i].DismissalType == DismissalType.Caught &&
                     !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName) &&
                     postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName == postedInnings.PlayerInnings[i].Bowler?.PlayerIdentityName)
                 {
-                    postedInnings.PlayerInnings[i].HowOut = DismissalType.CaughtAndBowled;
+                    postedInnings.PlayerInnings[i].DismissalType = DismissalType.CaughtAndBowled;
                     postedInnings.PlayerInnings[i].DismissedBy = null;
                 }
 
                 // If there's a fielder, the dismissal type should be caught or run-out
-                if (postedInnings.PlayerInnings[i].HowOut != DismissalType.Caught &&
-                    postedInnings.PlayerInnings[i].HowOut != DismissalType.RunOut &&
+                if (postedInnings.PlayerInnings[i].DismissalType != DismissalType.Caught &&
+                    postedInnings.PlayerInnings[i].DismissalType != DismissalType.RunOut &&
                     !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName))
                 {
-                    ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].HowOut", $"You've named the fielder for the {(i + 1).Ordinalize()} batter, but they were not caught or run-out.");
+                    ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].DismissalType", $"You've named the fielder for the {(i + 1).Ordinalize()} batter, but they were not caught or run-out.");
                 }
 
                 i++;

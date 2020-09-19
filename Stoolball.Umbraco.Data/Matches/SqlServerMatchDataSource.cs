@@ -96,7 +96,7 @@ namespace Stoolball.Umbraco.Data.Matches
                         var unprocessedInningsWithBatting = await connection.QueryAsync<MatchInnings, MatchTeamIds, PlayerInnings, PlayerIdentity, PlayerIdentity, PlayerIdentity, MatchInnings>(
                             $@"SELECT i.MatchInningsId, i.Overs, i.Byes, i.Wides, i.NoBalls, i.BonusOrPenaltyRuns, i.Runs, i.Wickets, i.InningsOrderInMatch,
                                i.BattingMatchTeamId, i.BowlingMatchTeamId,
-                               pi.BattingPosition, pi.HowOut, pi.RunsScored, pi.BallsFaced,
+                               pi.BattingPosition, pi.DismissalType, pi.RunsScored, pi.BallsFaced,
                                bat.PlayerIdentityId, bat.PlayerIdentityName, bat.TotalMatches, 
                                field.PlayerIdentityId, field.PlayerIdentityName, field.TotalMatches,
                                bowl.PlayerIdentityId, bowl.PlayerIdentityName, bowl.TotalMatches

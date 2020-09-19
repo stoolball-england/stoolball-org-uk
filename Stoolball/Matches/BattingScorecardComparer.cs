@@ -72,7 +72,7 @@ namespace Stoolball.Matches
                 else if (inningsBefore != null && inningsAfter != null)
                 {
                     if (inningsBefore.PlayerIdentity.ComparableName() != inningsAfter.PlayerIdentity.ComparableName() ||
-                        inningsBefore.HowOut != inningsAfter.HowOut ||
+                        inningsBefore.DismissalType != inningsAfter.DismissalType ||
                         inningsBefore.DismissedBy?.ComparableName() != inningsAfter.DismissedBy?.ComparableName() ||
                         inningsBefore.Bowler?.ComparableName() != inningsAfter.Bowler?.ComparableName() ||
                         inningsBefore.RunsScored != inningsAfter.RunsScored ||

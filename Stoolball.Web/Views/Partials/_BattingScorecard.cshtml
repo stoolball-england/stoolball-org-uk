@@ -27,15 +27,15 @@
                     <tr>
                         <th class="player-name">@playerInnings.PlayerIdentity.PlayerIdentityName</th>
                         <td>
-                            @if (playerInnings.HowOut == DismissalType.NotOut)
+                            @if (playerInnings.DismissalType == DismissalType.NotOut)
                             {
-                                <strong>@(playerInnings.HowOut?.Humanize(LetterCasing.LowerCase))</strong>
+                                <strong>@(playerInnings.DismissalType?.Humanize(LetterCasing.LowerCase))</strong>
                             }
                             else
                             {
-                                @(playerInnings.HowOut?.Humanize(LetterCasing.LowerCase).Replace("run out", "run-out") ?? "not known")
+                                @(playerInnings.DismissalType?.Humanize(LetterCasing.LowerCase).Replace("run out", "run-out") ?? "not known")
                             }
-                            @if ((playerInnings.HowOut == DismissalType.Caught || playerInnings.HowOut == DismissalType.RunOut) && playerInnings.DismissedBy != null)
+                            @if ((playerInnings.DismissalType == DismissalType.Caught || playerInnings.DismissalType == DismissalType.RunOut) && playerInnings.DismissedBy != null)
                             {
                                 <span class="player-name">(@playerInnings.DismissedBy.PlayerIdentityName)</span>
                             }

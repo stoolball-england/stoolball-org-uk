@@ -1,5 +1,5 @@
-﻿using NPoco;
-using System;
+﻿using System;
+using NPoco;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Umbraco.Data.Migrations
@@ -25,9 +25,9 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(BattingPosition))]
         public int BattingPosition { get; set; }
 
-        [Column(nameof(HowOut))]
+        [Column(nameof(DismissalType))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public string HowOut { get; set; }
+        public string DismissalType { get; set; }
 
         [Column(nameof(DismissedById))]
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId), Name = "FK_StoolballBatting_StoolballPlayerIdentity_DismissedById")]
