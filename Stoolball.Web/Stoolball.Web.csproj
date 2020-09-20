@@ -1137,6 +1137,7 @@
     <Content Include="Views\EditBowlingScorecard.cshtml" />
     <Content Include="Views\Partials\BlockList\Default.cshtml" />
     <Content Include="Views\EditBattingScorecard.cshtml" />
+    <Content Include="Views\Partials\_EditBattingScorecard.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

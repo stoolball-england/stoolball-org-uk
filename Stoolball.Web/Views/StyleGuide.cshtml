@@ -21,7 +21,12 @@
     Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
     Html.RequiresJs("/js/tinymce.js");
 
+    Html.RequiresCss("~/css/scorecards.min.css");
     Html.RequiresCss("~/css/steps.min.css");
+
+    Html.RequiresJs("~/matches/player-autocomplete.js", 70);
+    Html.RequiresJs("~/matches/edit-batting-scorecard.js");
+    Html.RequiresJs("~/matches/edit-bowling-scorecard.js");
 }
 <h1>@Model.Name</h1>
 <h2>Tabs</h2>
@@ -202,6 +207,44 @@
         <span class="field-validation-valid" data-valmsg-for="unvalidated-text-field-with-help" data-valmsg-replace="true" id="form-text"></span>
     </div>
     <div class="form-group">
+        <label for="unvalidated-date-field">Unvalidated date field</label>
+        <input aria-describedby="unvalidated-date-field-error" class="form-control" data-val="true" data-val-required="The date field is required." id="unvalidated-date-field" name="unvalidated-date-field" required="required" type="date" value="">
+        <span class="field-validation-valid" data-valmsg-for="unvalidated-date-field" data-valmsg-replace="true" id="unvalidated-date-field-error"></span>
+    </div>
+    <div class="form-group">
+        <label for="valid-date-field">Valid date field</label>
+        <input aria-describedby="valid-date-field-error" class="form-control valid" data-val="true" data-val-required="The Match date field is required." id="valid-date-field" name="valid-date-field" required="required" type="date" value="" aria-invalid="false">
+        <span class="field-validation-valid" data-valmsg-for="valid-date-field" data-valmsg-replace="true" id="valid-date-field-error"></span>
+    </div>
+    <div class="form-group">
+        <label for="unvalidated-time-field">Time field</label>
+        <input aria-describedby="unvalidated-time-field-error" class="form-control" id="unvalidated-time-field" name="unvalidated-time-field" type="time" value="">
+        <span class="field-validation-valid" data-valmsg-for="unvalidated-time-field" data-valmsg-replace="true" id="unvalidated-time-field-error"></span>
+    </div>
+    <div class="form-group">
+        <label for="valid-time-field">Valid time field</label>
+        <input aria-describedby="valid-time-field-error" class="form-control valid" id="valid-time-field" name="valid-time-field" type="time" value="" aria-invalid="false">
+        <span class="field-validation-valid" data-valmsg-for="valid-time-field" data-valmsg-replace="true" id="valid-time-field"></span>
+    </div>
+    <div class="form-group">
+        <label for="unvalidated-dropdown-field">Unvalidated dropdown list</label>
+        <select aria-describedby="unvalidated-dropdown-field-error" class="form-control" data-val="true" data-val-required="The dropdown field is required." id="unvalidated-dropdown-field" name="unvalidated-dropdown-field" required="required">
+            <option selected="selected" value="33a0874e-5ae5-4352-b7b5-5bdb9a2d5358">Team A (selected)</option>
+            <option value="1d963f9f-4e44-4995-af94-e7b916ad4bfe">Team B</option>
+            <option value="a8d7798f-1b88-4a41-a3b5-f3df63662dea">Team C</option>
+        </select>
+        <span class="field-validation-valid" data-valmsg-for="unvalidated-dropdown-field" data-valmsg-replace="true" id="unvalidated-dropdown-field-error"></span>
+    </div>
+    <div class="form-group">
+        <label for="valid-dropdown-field">Valid dropdown list</label>
+        <select aria-describedby="valid-dropdown-field-error" class="form-control valid" data-val="true" data-val-required="The dropdown field is required." id="valid-dropdown-field" name="valid-dropdown-field" required="required" aria-invalid="false">
+            <option selected="selected" value="33a0874e-5ae5-4352-b7b5-5bdb9a2d5358">Team A (selected)</option>
+            <option value="1d963f9f-4e44-4995-af94-e7b916ad4bfe">Team B</option>
+            <option value="a8d7798f-1b88-4a41-a3b5-f3df63662dea">Team C</option>
+        </select>
+        <span class="field-validation-valid" data-valmsg-for="valid-dropdown-field" data-valmsg-replace="true" id="valid-dropdown-field-error"></span>
+    </div>
+    <div class="form-group">
         <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="facebook-square" class="svg-inline--fa fa-facebook-square fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="30" height="30"><path fill="currentColor" d="M400 32H48A48 48 0 0 0 0 80v352a48 48 0 0 0 48 48h137.25V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.27c-30.81 0-40.42 19.12-40.42 38.73V256h68.78l-11 71.69h-57.78V480H400a48 48 0 0 0 48-48V80a48 48 0 0 0-48-48z"></path></svg>
         <label for="unvalidated-email-field">Email field (with icon)</label>
         <input aria-describedby="form-email" autocapitalize="off" autocorrect="off" class="form-control" data-val="true" data-val-regex="Please enter a valid email address" id="unvalidated-email-field" name="unvalidated-email-field" required="required" type="email" value="" />
@@ -355,8 +398,9 @@
 </form>
 <p>Paragraph below a button (outside the form) and above an informational alert.</p>
 <div class="alert alert-info">
-    <p>The text of an informational alert, including a <a href="https://example.org">link</a>.</p>
+    <p>A paragraph within an informational alert, including a <a href="https://example.org">link</a>.</p>
 </div>
+<p class="alert alert-info"><svg aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512" width="15" height="20"><path fill="currentColor" d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"></path></svg> A paragraph as an informational alert, including an icon.</p>
 <h2>Stoolball listings</h2>
 <p>This is a list of teams.</p>
 @Html.Partial("_TeamList", new List<Team> {
@@ -410,3 +454,54 @@
 <div id="location-map" data-latitude="50.995715487915" data-longitude="0.088866949081421" data-precision="exact" data-title="Maresfield Recreation Ground, Maresfield">
     <p><a href="https://maps.google.co.uk/?z=16&amp;q=Maresfield+Recreation+Ground%2c+Maresfield@50.995715487915,0.088866949081421&amp;ll=50.995715487915,0.088866949081421">Map of Maresfield Recreation Ground, Maresfield on Google Maps</a></p>
 </div>
+<h2>Scorecards</h2>
+@{
+    var innings = new EditScorecardViewModel(Model, Services.UserService)
+    {
+        Match = new Match
+        {
+            PlayersPerTeam = 2
+        },
+        CurrentInnings = new MatchInnings
+        {
+            BattingTeam = new TeamInMatch { Team = new Team { TeamName = "The batting team" } },
+            BowlingTeam = new TeamInMatch { Team = new Team { TeamName = "The bowling team" } },
+            Byes = 2,
+            Wides = 4,
+            NoBalls = 6,
+            BonusOrPenaltyRuns = 8,
+            Overs = 1,
+            Runs = 100,
+            Wickets = 1
+        }
+    };
+    innings.CurrentInnings.PlayerInnings.Add(new PlayerInnings
+    {
+        PlayerIdentity = new PlayerIdentity { PlayerIdentityName = "Player One" },
+        DismissalType = DismissalType.Caught,
+        DismissedBy = new PlayerIdentity { PlayerIdentityName = "Player Two" },
+        Bowler = new PlayerIdentity { PlayerIdentityName = "Player Three" },
+        RunsScored = 50,
+        BallsFaced = 60
+    });
+    innings.CurrentInnings.PlayerInnings.Add(new PlayerInnings
+    {
+        PlayerIdentity = new PlayerIdentity { PlayerIdentityName = "Player Four" },
+        DismissalType = DismissalType.BodyBeforeWicket,
+        Bowler = new PlayerIdentity { PlayerIdentityName = "Player Three" },
+        RunsScored = 10,
+        BallsFaced = 10
+    });
+    innings.CurrentInnings.OversBowled.Add(new Over
+    {
+        PlayerIdentity = new PlayerIdentity { PlayerIdentityName = "Player Two" },
+        BallsBowled = 8,
+        Wides = 2,
+        NoBalls = 4,
+        RunsConceded = 8
+    });
+}
+@Html.Partial("_BattingScorecard", innings.CurrentInnings)
+@Html.Partial("_BowlingScorecard", innings.CurrentInnings)
+@Html.Partial("_EditBattingScorecard", innings)
+@Html.Partial("_EditBowlingScorecard", innings)
