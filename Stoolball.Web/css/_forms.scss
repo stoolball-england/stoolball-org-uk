@@ -82,3 +82,13 @@ svg {
 .admin-only > svg {
     margin-top: -4px;
 }
+
+/* Umbraco Forms margin support uses Bootstrap, but does not expect the container margins already to be in place, so offset them */
+.umbraco-forms-page {
+    margin: $spacer (-$grid-gutter-width/2)
+}
+
+/* Umbraco Forms has a field that would normally be a hidden field. Assuming there is a reason for that, hide it with a class rather than the default inline style. */
+.umbraco-forms-formid {
+    display: none;
+}

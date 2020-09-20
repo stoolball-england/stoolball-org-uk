@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/Form.cshtml",
+  "Master": null,
+  "Udi": "umb://template/a21263d5acb3421491813f3777e5e581",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/Form.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Form",
+  "Alias": "Form",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.4.5"
+}

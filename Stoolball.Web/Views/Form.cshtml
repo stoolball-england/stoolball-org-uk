@@ -1,0 +1,10 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Form>
+@using ClientDependency.Core.Mvc
+@{
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+}
+
+<h1>@Model.Name</h1>
+
+@Umbraco.RenderMacro("renderUmbracoForm", new { FormGuid = Model.Value("formPicker"), FormTheme = "stoolball", ExcludeScripts = "1" })

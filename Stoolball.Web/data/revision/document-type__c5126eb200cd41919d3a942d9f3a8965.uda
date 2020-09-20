@@ -1,0 +1,71 @@
+{
+  "DefaultTemplate": "umb://template/a21263d5acb3421491813f3777e5e581",
+  "AllowedTemplates": [
+    "umb://template/a21263d5acb3421491813f3777e5e581"
+  ],
+  "Icon": "icon-edit color-black",
+  "Thumbnail": "folder.png",
+  "Description": "A form created using the Forms section of Umbraco",
+  "IsContainer": false,
+  "Permissions": {
+    "AllowVaryingByCulture": false,
+    "AllowVaryingBySegment": false,
+    "AllowedAtRoot": false,
+    "IsElementType": false,
+    "AllowedChildContentTypes": []
+  },
+  "Parent": null,
+  "CompositionContentTypes": [
+    "umb://document-type/4669a249dba648a4826ac76d2042af4d",
+    "umb://document-type/d9999f5ac07b4f379d013f0316d8678c"
+  ],
+  "PropertyGroups": [
+    {
+      "Key": "9e3ffbae-2e96-4bec-a2fb-ca385698febb",
+      "Name": "Content",
+      "SortOrder": 0,
+      "PropertyTypes": [
+        {
+          "Key": "c4e2e66c-9d3b-44e7-b4a6-3617116d2207",
+          "Alias": "formPicker",
+          "DataType": "umb://data-type/1f3e7a235f364f7e92eee74e428410b5",
+          "Description": null,
+          "Mandatory": true,
+          "Name": "Form",
+          "SortOrder": 0,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        }
+      ]
+    }
+  ],
+  "PropertyTypes": [],
+  "Udi": "umb://document-type/c5126eb200cd41919d3a942d9f3a8965",
+  "Dependencies": [
+    {
+      "Udi": "umb://data-type/1f3e7a235f364f7e92eee74e428410b5",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/4669a249dba648a4826ac76d2042af4d",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/d9999f5ac07b4f379d013f0316d8678c",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/a21263d5acb3421491813f3777e5e581",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Form",
+  "Alias": "form",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
+  "__version": "3.4.5"
+}

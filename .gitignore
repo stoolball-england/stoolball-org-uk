@@ -366,7 +366,10 @@ splashes
 !**/App_Data/Models
 **/App_Plugins/*
 !**/App_Plugins/Stoolball.DataMigration
-**/Views/Partials/Forms
+**/Views/Partials/Forms/*
+!**/Views/Partials/Forms/Themes
+**/Views/Partials/Forms/Themes/*
+!**/Views/Partials/Forms/Themes/stoolball
 **/Views/Partials/Grid
 **/Views/Partials/BlockList
 **/Views/MacroPartials

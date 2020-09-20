@@ -13,7 +13,8 @@
     "AllowedAtRoot": true,
     "IsElementType": false,
     "AllowedChildContentTypes": [
-      "umb://document-type/9d4a4f9e28df449882067990797df794"
+      "umb://document-type/9d4a4f9e28df449882067990797df794",
+      "umb://document-type/c5126eb200cd41919d3a942d9f3a8965"
     ]
   },
   "Parent": null,
@@ -35,6 +36,11 @@
       "Mode": 0
     },
     {
+      "Udi": "umb://document-type/c5126eb200cd41919d3a942d9f3a8965",
+      "Ordering": false,
+      "Mode": 0
+    },
+    {
       "Udi": "umb://template/efeee16ea1be47c891a7501c7f598ade",
       "Ordering": true,
       "Mode": 0
@@ -43,5 +49,5 @@
   "Name": "Home",
   "Alias": "home",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.4"
+  "__version": "3.4.5"
 }

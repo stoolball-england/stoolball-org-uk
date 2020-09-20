@@ -787,6 +787,8 @@
     <Compile Include="Account\ResetPasswordUpdate.cs" />
     <Compile Include="App_Data\Models\CreateMember.generated.cs" />
     <Compile Include="App_Data\Models\Design.generated.cs" />
+    <Compile Include="App_Data\Models\Form.generated.cs" />
+    <Compile Include="App_Data\Models\HeaderPhoto.generated.cs" />
     <Compile Include="App_Data\Models\LoginMember.generated.cs" />
     <Compile Include="App_Data\Models\LogoutMember.generated.cs" />
     <Compile Include="App_Data\Models\ResetPassword.generated.cs" />
@@ -899,6 +901,8 @@
     <Compile Include="Competitions\CompetitionsController.cs" />
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
+    <Compile Include="Forms\Form.cs" />
+    <Compile Include="Forms\FormController.cs" />
     <Compile Include="Matches\CreateFriendlyMatchController.cs" />
     <Compile Include="Matches\CreateKnockoutMatchController.cs" />
     <Compile Include="Matches\CreateFriendlyMatchSurfaceController.cs" />
@@ -1138,6 +1142,15 @@
     <Content Include="Views\Partials\BlockList\Default.cshtml" />
     <Content Include="Views\EditBattingScorecard.cshtml" />
     <Content Include="Views\Partials\_EditBattingScorecard.cshtml" />
+    <Content Include="Views\Partials\_EditBowlingScorecard.cshtml" />
+    <Content Include="Views\Form.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\stoolball\DatePicker.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Form.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Render.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Script.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\stoolball\ScrollToFormScript.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Submitted.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
