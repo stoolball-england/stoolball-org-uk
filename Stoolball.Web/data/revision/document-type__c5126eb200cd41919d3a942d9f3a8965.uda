@@ -26,13 +26,25 @@
       "SortOrder": 0,
       "PropertyTypes": [
         {
+          "Key": "85f65511-d6d6-4701-9137-05470b4f263a",
+          "Alias": "introduction",
+          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+          "Description": null,
+          "Mandatory": false,
+          "Name": "Introduction",
+          "SortOrder": 0,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
           "Key": "c4e2e66c-9d3b-44e7-b4a6-3617116d2207",
           "Alias": "formPicker",
           "DataType": "umb://data-type/1f3e7a235f364f7e92eee74e428410b5",
           "Description": null,
           "Mandatory": true,
           "Name": "Form",
-          "SortOrder": 0,
+          "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -45,6 +57,11 @@
   "Dependencies": [
     {
       "Udi": "umb://data-type/1f3e7a235f364f7e92eee74e428410b5",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
       "Ordering": true,
       "Mode": 0
     },

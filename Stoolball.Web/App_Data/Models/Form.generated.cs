@@ -52,6 +52,13 @@ namespace Umbraco.Web.PublishedModels
 		public object FormPicker => this.Value("formPicker");
 
 		///<summary>
+		/// Introduction
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.7.0")]
+		[ImplementPropertyType("introduction")]
+		public global::System.Web.IHtmlString Introduction => this.Value<global::System.Web.IHtmlString>("introduction");
+
+		///<summary>
 		/// Header photo: The photo which appears across the site header.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.7.0")]

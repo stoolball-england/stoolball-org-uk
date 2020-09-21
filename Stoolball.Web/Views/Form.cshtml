@@ -3,8 +3,12 @@
 @{
     Html.RequiresJs("~/scripts/jquery.validate.min.js");
     Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
-}
+
+    Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
+    Html.RequiresJs("/js/tinymce.js");}
 
 <h1>@Model.Name</h1>
+
+@Model.Introduction
 
 @Umbraco.RenderMacro("renderUmbracoForm", new { FormGuid = Model.Value("formPicker"), FormTheme = "stoolball", ExcludeScripts = "1" })

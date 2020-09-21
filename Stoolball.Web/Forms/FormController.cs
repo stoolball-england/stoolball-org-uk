@@ -10,7 +10,7 @@ namespace Stoolball.Web.HomePage
     public class FormController : RenderMvcController
     {
         [HttpGet]
-        [ContentSecurityPolicy(Forms = true)]
+        [ContentSecurityPolicy(Forms = true, TinyMCE = true)]
         public override ActionResult Index(ContentModel contentModel)
         {
             var model = new Form(contentModel?.Content)

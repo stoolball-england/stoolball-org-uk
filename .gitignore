@@ -366,6 +366,15 @@ splashes
 !**/App_Data/Models
 **/App_Plugins/*
 !**/App_Plugins/Stoolball.DataMigration
+!**/App_Plugins/UmbracoForms
+**/App_Plugins/UmbracoForms/*
+!**/App_Plugins/UmbracoForms/Backoffice
+**/App_Plugins/UmbracoForms/Backoffice/*
+!**/App_Plugins/UmbracoForms/Backoffice/Common
+**/App_Plugins/UmbracoForms/Backoffice/Common/*
+!**/App_Plugins/UmbracoForms/Backoffice/Common/FieldTypes
+**/App_Plugins/UmbracoForms/Backoffice/Common/FieldTypes/*
+!**/App_Plugins/UmbracoForms/Backoffice/Common/FieldTypes/EmailField.html
 **/Views/Partials/Forms/*
 !**/Views/Partials/Forms/Themes
 **/Views/Partials/Forms/Themes/*

@@ -901,6 +901,7 @@
     <Compile Include="Competitions\CompetitionsController.cs" />
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
+    <Compile Include="Forms\EmailField.cs" />
     <Compile Include="Forms\Form.cs" />
     <Compile Include="Forms\FormController.cs" />
     <Compile Include="Matches\CreateFriendlyMatchController.cs" />
@@ -1151,6 +1152,7 @@
     <Content Include="Views\Partials\Forms\Themes\stoolball\ScrollToFormScript.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\stoolball\Submitted.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
