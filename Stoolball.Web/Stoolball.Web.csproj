@@ -606,6 +606,7 @@
       <DependentUpon>_footer.css</DependentUpon>
     </Content>
     <Content Include="favicon.ico" />
+    <Content Include="Forms\scroll-to-form.js" />
     <Content Include="Global.asax" />
     <Content Include="images\logos\stoolball-england-icon-maskable.svg" />
     <Content Include="Matches\edit-batting-scorecard.js" />
@@ -762,6 +763,7 @@
     <Content Include="Scripts\umd\popper.js" />
     <Content Include="Scripts\umd\popper.min.js" />
     <Content Include="service-worker.js" />
+    <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
