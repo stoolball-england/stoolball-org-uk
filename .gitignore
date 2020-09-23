@@ -405,3 +405,4 @@ Secret-*
 
 # Exclude generated files
 Stoolball.Web/Web.live.xdt.config
+umbracoSettings.config
