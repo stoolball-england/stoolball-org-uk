@@ -1,11 +1,11 @@
 {
-  "DefaultTemplate": "umb://template/a21263d5acb3421491813f3777e5e581",
+  "DefaultTemplate": "umb://template/14a24e1e79ac4d579b3632fc5460446e",
   "AllowedTemplates": [
-    "umb://template/a21263d5acb3421491813f3777e5e581"
+    "umb://template/14a24e1e79ac4d579b3632fc5460446e"
   ],
-  "Icon": "icon-edit color-black",
+  "Icon": "icon-umb-content color-black",
   "Thumbnail": "folder.png",
-  "Description": "A form created using the Forms section of Umbraco",
+  "Description": "A normal page with text and images",
   "IsContainer": false,
   "Permissions": {
     "AllowVaryingByCulture": false,
@@ -24,30 +24,18 @@
   ],
   "PropertyGroups": [
     {
-      "Key": "9e3ffbae-2e96-4bec-a2fb-ca385698febb",
+      "Key": "99c24248-702b-4b67-b799-6f904d1bd437",
       "Name": "Content",
       "SortOrder": 0,
       "PropertyTypes": [
         {
-          "Key": "85f65511-d6d6-4701-9137-05470b4f263a",
-          "Alias": "introduction",
-          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+          "Key": "bbb67cfb-591b-4d83-a6bc-2808faded5f6",
+          "Alias": "blockList",
+          "DataType": "umb://data-type/6f3879966c814d0ba9f3cf9f34706df9",
           "Description": null,
           "Mandatory": false,
-          "Name": "Introduction",
+          "Name": "Content",
           "SortOrder": 0,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false
-        },
-        {
-          "Key": "c4e2e66c-9d3b-44e7-b4a6-3617116d2207",
-          "Alias": "formPicker",
-          "DataType": "umb://data-type/1f3e7a235f364f7e92eee74e428410b5",
-          "Description": null,
-          "Mandatory": true,
-          "Name": "Form",
-          "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -56,15 +44,10 @@
     }
   ],
   "PropertyTypes": [],
-  "Udi": "umb://document-type/c5126eb200cd41919d3a942d9f3a8965",
+  "Udi": "umb://document-type/75ff99b6b2d9416ea8c695c0ff36e3d3",
   "Dependencies": [
     {
-      "Udi": "umb://data-type/1f3e7a235f364f7e92eee74e428410b5",
-      "Ordering": true,
-      "Mode": 0
-    },
-    {
-      "Udi": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+      "Udi": "umb://data-type/6f3879966c814d0ba9f3cf9f34706df9",
       "Ordering": true,
       "Mode": 0
     },
@@ -89,13 +72,13 @@
       "Mode": 0
     },
     {
-      "Udi": "umb://template/a21263d5acb3421491813f3777e5e581",
+      "Udi": "umb://template/14a24e1e79ac4d579b3632fc5460446e",
       "Ordering": true,
       "Mode": 0
     }
   ],
-  "Name": "Form",
-  "Alias": "form",
+  "Name": "Content",
+  "Alias": "content",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
   "__version": "3.4.5"
 }

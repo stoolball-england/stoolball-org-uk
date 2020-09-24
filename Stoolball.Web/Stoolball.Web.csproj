@@ -1,5 +1,4 @@
-﻿<Project ToolsVersion="15.0" DefaultTargets="Build"
-  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\uSync.8.7.0\build\uSync.props" Condition="Exists('..\packages\uSync.8.7.0\build\uSync.props')" />
   <Import Project="..\packages\UmbracoCms.8.7.0\build\UmbracoCms.props" Condition="Exists('..\packages\UmbracoCms.8.7.0\build\UmbracoCms.props')" />
   <Import Project="..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.3.3.0\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props" Condition="Exists('..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.3.3.0\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" />
@@ -681,6 +680,7 @@
     <Content Include="Scripts\bootstrap.bundle.js.map" />
     <Content Include="Media\Web.config" />
     <Content Include="Forms\UmbracoForms.local.xdt.config" />
+    <Content Include="css\_block-list-editor.scss" />
     <None Include="Status\offline.json" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
@@ -766,6 +766,9 @@
     <Content Include="Scripts\umd\popper.js" />
     <Content Include="Scripts\umd\popper.min.js" />
     <Content Include="service-worker.js" />
+    <Content Include="Views\Partials\BlockList\Components\FormattedText.cshtml" />
+    <Content Include="Views\Content.cshtml" />
+    <Content Include="ContentPage\FormattedText.html" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -790,9 +793,11 @@
     <Compile Include="Account\ResetPasswordRequest.cs" />
     <Compile Include="Account\ResetPasswordSurfaceController.cs" />
     <Compile Include="Account\ResetPasswordUpdate.cs" />
+    <Compile Include="App_Data\Models\Content.generated.cs" />
     <Compile Include="App_Data\Models\CreateMember.generated.cs" />
     <Compile Include="App_Data\Models\Design.generated.cs" />
     <Compile Include="App_Data\Models\Form.generated.cs" />
+    <Compile Include="App_Data\Models\FormattedText.generated.cs" />
     <Compile Include="App_Data\Models\HeaderPhoto.generated.cs" />
     <Compile Include="App_Data\Models\LoginMember.generated.cs" />
     <Compile Include="App_Data\Models\LogoutMember.generated.cs" />
@@ -906,9 +911,11 @@
     <Compile Include="Competitions\CompetitionsController.cs" />
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
+    <Compile Include="ContentPage\Content.cs" />
     <Compile Include="Forms\EmailField.cs" />
     <Compile Include="Forms\Form.cs" />
     <Compile Include="Forms\FormController.cs" />
+    <Compile Include="ContentPage\ContentController.cs" />
     <Compile Include="Matches\CreateFriendlyMatchController.cs" />
     <Compile Include="Matches\CreateKnockoutMatchController.cs" />
     <Compile Include="Matches\CreateFriendlyMatchSurfaceController.cs" />

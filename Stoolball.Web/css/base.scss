@@ -51,3 +51,6 @@ img { max-width: 100%; }
 @import "../Content/bootstrap/_forms.scss";
 @import "../Content/bootstrap/_buttons.scss";
 @import "_forms.scss";
+
+/* For Umbraco editing */
+@import "_block-list-editor.scss";
