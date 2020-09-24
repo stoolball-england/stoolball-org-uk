@@ -997,7 +997,7 @@ namespace Stoolball.Umbraco.Data.Matches
             }
             else if (match.Teams.Count > 0)
             {
-                baseRoute = string.Join(" ", match.Teams.Select(x => x.Team.TeamName));
+                baseRoute = string.Join(" ", match.Teams.OrderBy(x => x.TeamRole).Select(x => x.Team.TeamName));
             }
             else if (!string.IsNullOrEmpty(match.MatchName))
             {

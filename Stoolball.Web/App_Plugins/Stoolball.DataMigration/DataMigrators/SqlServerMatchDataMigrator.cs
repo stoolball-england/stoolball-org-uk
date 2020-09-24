@@ -109,12 +109,25 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 string baseRoute = string.Empty;
                 if (migratedMatch.MigratedTeams.Count > 0)
                 {
-                    var teamNames = await connection.QueryAsync<string>($@"SELECT tn.TeamName FROM {Tables.Team} t
+                    var teamsWithNames = await connection.QueryAsync<MigratedTeamInMatch, Team, MigratedTeamInMatch>(
+                                                                     $@"SELECT t.MigratedTeamId, t.TeamId, tn.TeamName FROM {Tables.Team} t
                                                                         INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL 
                                                                         WHERE t.MigratedTeamId IN @MigratedTeamIds",
-                                                                        new { MigratedTeamIds = match.MigratedTeams.Select(x => x.MigratedTeamId).ToList() }
+                                                                     (migratedTeam, team) =>
+                                                                     {
+                                                                         migratedTeam.Team = team;
+                                                                         return migratedTeam;
+                                                                     },
+                                                                     new { MigratedTeamIds = match.MigratedTeams.Select(x => x.MigratedTeamId).ToList() },
+                                                                     splitOn: "TeamId"
                                                                     ).ConfigureAwait(false);
-                    baseRoute = string.Join(" ", teamNames);
+
+                    foreach (var teamInMatch in migratedMatch.MigratedTeams)
+                    {
+                        teamInMatch.Team = teamsWithNames.Where(x => x.MigratedTeamId == teamInMatch.MigratedTeamId).Select(x => x.Team).Single();
+                    }
+
+                    baseRoute = string.Join(" ", migratedMatch.MigratedTeams.OrderBy(x => x.TeamRole).Select(x => x.Team.TeamName));
                 }
                 else
                 {
@@ -204,11 +217,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
                         foreach (var team in migratedMatch.MigratedTeams)
                         {
-                            team.Team = new Team
-                            {
-                                TeamId = await connection.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @MigratedTeamId", new { team.MigratedTeamId }, transaction).ConfigureAwait(false)
-                            };
-
                             Guid matchTeamId;
                             if (team.TeamRole == TeamRole.Home)
                             {
