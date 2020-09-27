@@ -365,7 +365,7 @@ splashes
 !**/App_Data/packages
 !**/App_Data/Models
 **/App_Plugins/*
-!**/App_Plugins/Stoolball.DataMigration
+!**/App_Plugins/Stoolball.*
 !**/App_Plugins/UmbracoForms
 **/App_Plugins/UmbracoForms/*
 !**/App_Plugins/UmbracoForms/Backoffice
@@ -380,7 +380,8 @@ splashes
 **/Views/Partials/Forms/Themes/*
 !**/Views/Partials/Forms/Themes/stoolball
 **/Views/Partials/Grid
-**/Views/Partials/BlockList
+**/Views/Partials/BlockList/*
+!**/Views/Partials/BlockList/Components
 **/Views/MacroPartials
 .UmbracoCloud
 **/data/deploy*

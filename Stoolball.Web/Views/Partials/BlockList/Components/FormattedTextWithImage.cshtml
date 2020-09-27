@@ -1,0 +1,22 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Umbraco.Core.Models.Blocks.BlockListItem>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    var content = (ContentModels.FormattedTextWithImage)Model.Content;
+    var imagePosition = content.ImagePosition?.ToLowerInvariant() ?? "left";
+}
+@if (content != null && ((content.Text != null && !string.IsNullOrEmpty(content.Text.ToHtmlString())) || content.Image != null))
+{
+<div class="block__text-with-image block__text-with-image__@imagePosition">
+    <div class="block__text">@content.Text</div> 
+    <div class="block__image">
+    @if (content.Image != null)
+    {
+        <img srcset="@content.Image.MediaUrl()?width=150&height=150&mode=max 576w,
+                     @content.Image.MediaUrl()?width=300&height=300&mode=max 768w,
+                     @content.Image.MediaUrl()?width=400&height=400&mode=max 992w,
+                     @content.Image.MediaUrl()?width=500&height=500&mode=max 1200w"
+             sizes="100vw" src="@content.Image.MediaUrl()?width=500&height=500&mode=max" alt="@content.Image.Name" />
+    }
+   </div>
+</div>
+}

@@ -1,0 +1,90 @@
+{
+  "DefaultTemplate": null,
+  "AllowedTemplates": [],
+  "Icon": "icon-article color-black",
+  "Thumbnail": "folder.png",
+  "Description": null,
+  "IsContainer": false,
+  "Permissions": {
+    "AllowVaryingByCulture": false,
+    "AllowVaryingBySegment": false,
+    "AllowedAtRoot": false,
+    "IsElementType": true,
+    "AllowedChildContentTypes": []
+  },
+  "Parent": "umb://document-type-container/5be42d3707a847e7b9b7d51af38bdac2",
+  "CompositionContentTypes": [],
+  "PropertyGroups": [
+    {
+      "Key": "e4f01b4b-83e6-4b7d-a4b1-e8d3fda2482d",
+      "Name": "Content",
+      "SortOrder": 0,
+      "PropertyTypes": [
+        {
+          "Key": "0bb66bf1-f7cd-4cfb-bd3c-926cfe79903b",
+          "Alias": "imagePosition",
+          "DataType": "umb://data-type/ec5d8595aa1741369007b14788bab6d3",
+          "Description": null,
+          "Mandatory": false,
+          "Name": "Image position",
+          "SortOrder": 2,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
+          "Key": "d16e7e20-ef7b-4e59-97df-fe06af4aab4e",
+          "Alias": "text",
+          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+          "Description": null,
+          "Mandatory": false,
+          "Name": "Text",
+          "SortOrder": 0,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
+          "Key": "f928c25c-a8a0-4655-924d-9cfee41991ab",
+          "Alias": "image",
+          "DataType": "umb://data-type/135d60e064d949edab08893c9ba44ae5",
+          "Description": null,
+          "Mandatory": false,
+          "Name": "Image",
+          "SortOrder": 1,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        }
+      ]
+    }
+  ],
+  "PropertyTypes": [],
+  "Udi": "umb://document-type/1e842305259d4448b804168859f39623",
+  "Dependencies": [
+    {
+      "Udi": "umb://data-type/135d60e064d949edab08893c9ba44ae5",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://data-type/ec5d8595aa1741369007b14788bab6d3",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type-container/5be42d3707a847e7b9b7d51af38bdac2",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Formatted text with image",
+  "Alias": "FormattedTextWithImage",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
+  "__version": "3.4.5"
+}

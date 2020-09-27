@@ -368,6 +368,9 @@
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\Outbound.html" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\RadioGroup.html" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\Site.html" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\BlockListImage.html" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\BlockWithImage.controller.js" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedTextWithImage.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\data-migration.css">
       <DependentUpon>data-migration.scss</DependentUpon>
     </Content>
@@ -376,6 +379,7 @@
     </Content>
     <Content Include="App_Plugins\Stoolball.DataMigration\dataMigrationDashboardController.js" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\package.manifest" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\package.manifest" />
     <None Include="App_Plugins\Stoolball.DataMigration\data-migration.scss" />
     <Content Include="App_Plugins\Stoolball.DataMigration\DataMigrationDashboard.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteCompetitions.html" />
@@ -680,7 +684,7 @@
     <Content Include="Scripts\bootstrap.bundle.js.map" />
     <Content Include="Media\Web.config" />
     <Content Include="Forms\UmbracoForms.local.xdt.config" />
-    <Content Include="css\_block-list-editor.scss" />
+    <Content Include="css\_blocks.scss" />
     <None Include="Status\offline.json" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
@@ -768,7 +772,9 @@
     <Content Include="service-worker.js" />
     <Content Include="Views\Partials\BlockList\Components\FormattedText.cshtml" />
     <Content Include="Views\Content.cshtml" />
-    <Content Include="ContentPage\FormattedText.html" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedText.html" />
+    <Content Include="Views\Partials\BlockList\Components\FormattedTextWithImage.cshtml" />
+    <Content Include="Views\Partials\BlockList\Components\BlockListImage.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -793,11 +799,13 @@
     <Compile Include="Account\ResetPasswordRequest.cs" />
     <Compile Include="Account\ResetPasswordSurfaceController.cs" />
     <Compile Include="Account\ResetPasswordUpdate.cs" />
+    <Compile Include="App_Data\Models\BlockListImage.generated.cs" />
     <Compile Include="App_Data\Models\Content.generated.cs" />
     <Compile Include="App_Data\Models\CreateMember.generated.cs" />
     <Compile Include="App_Data\Models\Design.generated.cs" />
     <Compile Include="App_Data\Models\Form.generated.cs" />
     <Compile Include="App_Data\Models\FormattedText.generated.cs" />
+    <Compile Include="App_Data\Models\FormattedTextWithImage.generated.cs" />
     <Compile Include="App_Data\Models\HeaderPhoto.generated.cs" />
     <Compile Include="App_Data\Models\LoginMember.generated.cs" />
     <Compile Include="App_Data\Models\LogoutMember.generated.cs" />

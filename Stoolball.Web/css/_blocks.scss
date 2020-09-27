@@ -1,0 +1,63 @@
+﻿@import "../Content/bootstrap/_functions.scss";
+@import "../Content/bootstrap/_mixins.scss";
+@import "../Content/bootstrap/_variables.scss";
+
+/* Reset button styles for the button that surrounds the edit view of a block in the Block List Editor */
+.block-list-editor__button {
+    background: none;
+    border: none;
+    margin: 0;
+    text-align: left;
+    width: calc(100%-110px);
+    display: block;
+    padding: 10px 100px 10px 10px;
+    min-height: 50px;
+}
+
+.block-list-editor__button:hover {
+    background: #eee;
+}
+
+/* Formatted text with image block */
+.block__text-with-image {
+    display: flex;
+    margin-bottom: $spacer;
+}
+
+.block__text-with-image__left .block__image {
+    margin-right: $spacer;
+    order: 1;
+}
+
+.block__text-with-image__left .block__text {
+    order: 2;
+}
+
+.block__text-with-image__right .block__right-image {
+    margin-left: $spacer;
+}
+
+.block__text-with-image img[src] {
+    border: 2px solid black;
+    border-radius: 5px;
+}
+
+@include media-breakpoint-up(md) {
+    .block__image {
+        flex-basis: 33.3%;
+    }
+
+    .block__text {
+        flex-basis: 66.6%;
+    }
+}
+
+/* Images block */
+.block__images { 
+    text-align: center;
+}
+.block__images img[src] {
+    border: 2px solid black;
+    border-radius: 5px;
+    margin-bottom: $spacer;
+}

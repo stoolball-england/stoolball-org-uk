@@ -1,0 +1,12 @@
+{
+  "EditorAlias": "Umbraco.RadioButtonList",
+  "DatabaseType": 1,
+  "Configuration": {"items":[{"id":1,"value":"Left"},{"id":2,"value":"Right"}]},
+  "Parent": null,
+  "Udi": "umb://data-type/ec5d8595aa1741369007b14788bab6d3",
+  "Dependencies": [],
+  "Name": "Formatted text with image - Image position",
+  "Alias": null,
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.DataTypeArtifact",
+  "__version": "3.4.5"
+}

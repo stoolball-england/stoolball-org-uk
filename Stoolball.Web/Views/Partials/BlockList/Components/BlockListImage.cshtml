@@ -1,0 +1,15 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Umbraco.Core.Models.Blocks.BlockListItem>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    var content = (ContentModels.BlockListImage)Model.Content;
+}
+@if (content != null && content.Image != null)
+{
+    <div class="block__images">
+    <img srcset="@content.Image.MediaUrl()?width=150&height=150&mode=max 576w,
+                    @content.Image.MediaUrl()?width=300&height=300&mode=max 768w,
+                    @content.Image.MediaUrl()?width=400&height=400&mode=max 992w,
+                    @content.Image.MediaUrl()?width=500&height=500&mode=max 1200w"
+            sizes="100vw" src="@content.Image.MediaUrl()?width=500&height=500&mode=max" alt="@content.Image.Name" />
+    </div>
+}

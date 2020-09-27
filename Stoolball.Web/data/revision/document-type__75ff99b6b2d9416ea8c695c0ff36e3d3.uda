@@ -24,14 +24,14 @@
   ],
   "PropertyGroups": [
     {
-      "Key": "99c24248-702b-4b67-b799-6f904d1bd437",
+      "Key": "dcbd3ef8-74a9-4e7b-baad-55b6b3b2df81",
       "Name": "Content",
       "SortOrder": 0,
       "PropertyTypes": [
         {
-          "Key": "bbb67cfb-591b-4d83-a6bc-2808faded5f6",
+          "Key": "89ef9c3e-79d3-48eb-85e0-e52718bb7d88",
           "Alias": "blockList",
-          "DataType": "umb://data-type/6f3879966c814d0ba9f3cf9f34706df9",
+          "DataType": "umb://data-type/82d9929f1c7b454f9ccee8d473698e88",
           "Description": null,
           "Mandatory": false,
           "Name": "Content",
@@ -47,7 +47,7 @@
   "Udi": "umb://document-type/75ff99b6b2d9416ea8c695c0ff36e3d3",
   "Dependencies": [
     {
-      "Udi": "umb://data-type/6f3879966c814d0ba9f3cf9f34706df9",
+      "Udi": "umb://data-type/82d9929f1c7b454f9ccee8d473698e88",
       "Ordering": true,
       "Mode": 0
     },
