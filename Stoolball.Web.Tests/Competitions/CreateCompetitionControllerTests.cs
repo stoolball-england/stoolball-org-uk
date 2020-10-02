@@ -1,12 +1,12 @@
-﻿using Moq;
-using Stoolball.Competitions;
-using Stoolball.Security;
-using Stoolball.Web.Competitions;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Moq;
+using Stoolball.Competitions;
+using Stoolball.Security;
+using Stoolball.Web.Competitions;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -59,17 +59,6 @@ namespace Stoolball.Web.Tests.Competitions
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
                 Assert.IsType<CompetitionViewModel>(((ViewResult)result).Model);
-            }
-        }
-
-        [Fact]
-        public async Task PlayersPerTeam_defaults_to_11()
-        {
-            using (var controller = new TestController(UmbracoHelper))
-            {
-                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
-
-                Assert.Equal(11, ((CompetitionViewModel)((ViewResult)result).Model).Competition.PlayersPerTeam);
             }
         }
     }

@@ -1,13 +1,13 @@
-﻿using Moq;
-using Stoolball.Competitions;
-using Stoolball.Security;
-using Stoolball.Umbraco.Data.Competitions;
-using Stoolball.Web.Competitions;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Moq;
+using Stoolball.Competitions;
+using Stoolball.Security;
+using Stoolball.Umbraco.Data.Competitions;
+using Stoolball.Web.Competitions;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -92,6 +92,20 @@ namespace Stoolball.Web.Tests.Competitions
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
                 Assert.Equal(0, ((SeasonViewModel)((ViewResult)result).Model).Season.UntilYear);
+            }
+        }
+
+        [Fact]
+        public async Task PlayersPerTeam_defaults_to_11()
+        {
+            var dataSource = new Mock<ICompetitionDataSource>();
+            dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionName = "Example" });
+
+            using (var controller = new TestController(dataSource.Object, UmbracoHelper))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                Assert.Equal(11, ((SeasonViewModel)((ViewResult)result).Model).Season.PlayersPerTeam);
             }
         }
     }

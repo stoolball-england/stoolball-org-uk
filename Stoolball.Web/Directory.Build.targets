@@ -33,9 +33,9 @@
   <!-- Copy files from NuGet packages that are needed to run -->
   <Target Name="StoolballCopyFilesFromNuGetPackages" BeforeTargets="WebCompile">
     <PropertyGroup>
-      <UmbracoVersion>8.7.0</UmbracoVersion>
+      <UmbracoVersion>8.8.0</UmbracoVersion>
       <UmbracoFormsVersion>8.5.3</UmbracoFormsVersion>
-      <USyncVersion>8.7.0</USyncVersion>
+      <USyncVersion>8.7.0.1</USyncVersion>
       <BootstrapVersion>4.5.2</BootstrapVersion>
       <JQueryVersion>3.5.1</JQueryVersion>
       <JQueryValidationVersion>1.19.2</JQueryValidationVersion>
