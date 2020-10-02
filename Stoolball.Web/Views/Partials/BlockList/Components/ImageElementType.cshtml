@@ -1,7 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Umbraco.Core.Models.Blocks.BlockListItem>
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
-    var content = (ContentModels.BlockListImage)Model.Content;
+    var content = (ContentModels.ImageElementType)Model.Content;
 }
 @if (content != null && content.Image != null)
 {

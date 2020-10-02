@@ -365,8 +365,8 @@
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\Outbound.html" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\RadioGroup.html" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\Site.html" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\BlockListImage.html" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\BlockWithImage.controller.js" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\ImageElementType.html" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\ImageElementType.controller.js" />
     <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedTextWithImage.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\data-migration.css">
       <DependentUpon>data-migration.scss</DependentUpon>
@@ -765,7 +765,8 @@
     <Content Include="Views\Content.cshtml" />
     <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedText.html" />
     <Content Include="Views\Partials\BlockList\Components\FormattedTextWithImage.cshtml" />
-    <Content Include="Views\Partials\BlockList\Components\BlockListImage.cshtml" />
+    <Content Include="Views\Partials\BlockList\Components\ImageElementType.cshtml" />
+    <Content Include="Views\Partials\BlockList\Components\FormElementType.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -790,14 +791,14 @@
     <Compile Include="Account\ResetPasswordRequest.cs" />
     <Compile Include="Account\ResetPasswordSurfaceController.cs" />
     <Compile Include="Account\ResetPasswordUpdate.cs" />
-    <Compile Include="App_Data\Models\BlockListImage.generated.cs" />
     <Compile Include="App_Data\Models\Content.generated.cs" />
     <Compile Include="App_Data\Models\CreateMember.generated.cs" />
     <Compile Include="App_Data\Models\Design.generated.cs" />
-    <Compile Include="App_Data\Models\Form.generated.cs" />
     <Compile Include="App_Data\Models\FormattedText.generated.cs" />
     <Compile Include="App_Data\Models\FormattedTextWithImage.generated.cs" />
+    <Compile Include="App_Data\Models\FormElementType.generated.cs" />
     <Compile Include="App_Data\Models\HeaderPhoto.generated.cs" />
+    <Compile Include="App_Data\Models\ImageElementType.generated.cs" />
     <Compile Include="App_Data\Models\LoginMember.generated.cs" />
     <Compile Include="App_Data\Models\LogoutMember.generated.cs" />
     <Compile Include="App_Data\Models\ResetPassword.generated.cs" />
@@ -912,8 +913,6 @@
     <Compile Include="Competitions\SeasonsApiController.cs" />
     <Compile Include="ContentPage\Content.cs" />
     <Compile Include="Forms\EmailField.cs" />
-    <Compile Include="Forms\Form.cs" />
-    <Compile Include="Forms\FormController.cs" />
     <Compile Include="ContentPage\ContentController.cs" />
     <Compile Include="Matches\CreateFriendlyMatchController.cs" />
     <Compile Include="Matches\CreateKnockoutMatchController.cs" />
@@ -1154,7 +1153,6 @@
     <Content Include="Views\EditBattingScorecard.cshtml" />
     <Content Include="Views\Partials\_EditBattingScorecard.cshtml" />
     <Content Include="Views\Partials\_EditBowlingScorecard.cshtml" />
-    <Content Include="Views\Form.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\stoolball\DatePicker.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\stoolball\Form.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\stoolball\Render.cshtml" />

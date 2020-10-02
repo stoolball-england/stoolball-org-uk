@@ -1,7 +1,7 @@
 {
   "DefaultTemplate": null,
   "AllowedTemplates": [],
-  "Icon": "icon-pictures-alt-2 color-black",
+  "Icon": "icon-edit color-black",
   "Thumbnail": "folder.png",
   "Description": null,
   "IsContainer": false,
@@ -16,17 +16,17 @@
   "CompositionContentTypes": [],
   "PropertyGroups": [
     {
-      "Key": "fe8f509d-1436-466a-b496-919fdbe7e74d",
-      "Name": "Image",
+      "Key": "ed349e2d-46f1-45fc-94eb-188ddafe9933",
+      "Name": "Content",
       "SortOrder": 0,
       "PropertyTypes": [
         {
-          "Key": "afbcee78-d61f-4bd0-a5e2-647847d73d21",
-          "Alias": "image",
-          "DataType": "umb://data-type/135d60e064d949edab08893c9ba44ae5",
+          "Key": "1a5920c4-f382-4d3f-bb90-bf4729af92b1",
+          "Alias": "form",
+          "DataType": "umb://data-type/1f3e7a235f364f7e92eee74e428410b5",
           "Description": null,
-          "Mandatory": false,
-          "Name": "Image",
+          "Mandatory": true,
+          "Name": "Form",
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
@@ -36,10 +36,10 @@
     }
   ],
   "PropertyTypes": [],
-  "Udi": "umb://document-type/b87922c7a6a3460baffb306139789583",
+  "Udi": "umb://document-type/9a571f611f6b46bdba670bf12e1a62e6",
   "Dependencies": [
     {
-      "Udi": "umb://data-type/135d60e064d949edab08893c9ba44ae5",
+      "Udi": "umb://data-type/1f3e7a235f364f7e92eee74e428410b5",
       "Ordering": true,
       "Mode": 0
     },
@@ -49,8 +49,8 @@
       "Mode": 0
     }
   ],
-  "Name": "Image",
-  "Alias": "imageElementType",
+  "Name": "Form",
+  "Alias": "formElementType",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
   "__version": "3.4.5"
 }

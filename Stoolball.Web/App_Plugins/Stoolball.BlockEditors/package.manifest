@@ -1,5 +1,5 @@
 ﻿{
   "javascript": [
-    "~/App_Plugins/Stoolball.BlockEditors/BlockWithImage.controller.js"    
+    "~/App_Plugins/Stoolball.BlockEditors/ImageElementType.controller.js"
   ]  
 }

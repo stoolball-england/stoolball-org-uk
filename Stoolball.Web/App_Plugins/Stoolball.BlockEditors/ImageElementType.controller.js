@@ -1,4 +1,4 @@
-﻿angular.module("umbraco").controller("BlockWithImageController", function ($scope, mediaResource) {
+﻿angular.module("umbraco").controller("ImageElementTypeController", function ($scope, mediaResource) {
 
     const imageUdi = $scope.block.data.image;
     if (imageUdi) {
