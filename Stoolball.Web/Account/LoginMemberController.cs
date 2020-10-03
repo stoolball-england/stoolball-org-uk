@@ -1,6 +1,6 @@
-﻿using Stoolball.Metadata;
+﻿using System.Web.Mvc;
+using Stoolball.Metadata;
 using Stoolball.Web.Security;
-using System.Web.Mvc;
 using Umbraco.Web.Models;
 using Umbraco.Web.Mvc;
 using Umbraco.Web.PublishedModels;
@@ -13,9 +13,11 @@ namespace Stoolball.Web.Account
         [ContentSecurityPolicy(Forms = true)]
         public override ActionResult Index(ContentModel contentModel)
         {
-            var model = new LoginMember(contentModel?.Content)
+            var model = new LoginMember(contentModel?.Content);
+            model.Metadata = new ViewMetadata
             {
-                Metadata = new ViewMetadata { PageTitle = contentModel.Content.Name }
+                PageTitle = model.Name,
+                Description = model.Description
             };
 
             return CurrentTemplate(model);
@@ -30,9 +32,11 @@ namespace Stoolball.Web.Account
         [ValidateAntiForgeryToken]
         public ActionResult LoginMember(ContentModel contentModel)
         {
-            var model = new LoginMember(contentModel?.Content)
+            var model = new LoginMember(contentModel?.Content);
+            model.Metadata = new ViewMetadata
             {
-                Metadata = new ViewMetadata { PageTitle = contentModel.Content.Name }
+                PageTitle = model.Name,
+                Description = model.Description
             };
 
             return CurrentTemplate(model);

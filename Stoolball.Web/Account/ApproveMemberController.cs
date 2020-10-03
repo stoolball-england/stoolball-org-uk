@@ -1,8 +1,8 @@
-﻿using Stoolball.Metadata;
+﻿using System;
+using System.Web.Mvc;
+using Stoolball.Metadata;
 using Stoolball.Security;
 using Stoolball.Web.Security;
-using System;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -29,14 +29,13 @@ namespace Stoolball.Web.Account
 
         [HttpGet]
         [ContentSecurityPolicy]
-        public override ActionResult Index(ContentModel model)
+        public override ActionResult Index(ContentModel contentModel)
         {
-            var contentModel = new ApproveMember(model?.Content)
+            var model = new ApproveMember(contentModel?.Content);
+            model.Metadata = new ViewMetadata
             {
-                Metadata = new ViewMetadata
-                {
-                    PageTitle = model.Content.Name
-                }
+                PageTitle = model.Name,
+                Description = model.Description
             };
 
             try
@@ -54,19 +53,19 @@ namespace Stoolball.Web.Account
                     member.SetValue("approvalTokenExpires", _verificationToken.ResetExpiryTo());
                     memberService.Save(member);
 
-                    contentModel.ApprovalTokenValid = true;
-                    contentModel.MemberName = member.Name;
+                    model.ApprovalTokenValid = true;
+                    model.MemberName = member.Name;
                 }
                 else
                 {
-                    contentModel.ApprovalTokenValid = false;
+                    model.ApprovalTokenValid = false;
                 }
             }
             catch (FormatException)
             {
-                contentModel.ApprovalTokenValid = false;
+                model.ApprovalTokenValid = false;
             }
-            return CurrentTemplate(contentModel);
+            return CurrentTemplate(model);
         }
     }
 }

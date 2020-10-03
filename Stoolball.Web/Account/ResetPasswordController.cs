@@ -1,8 +1,8 @@
-﻿using Stoolball.Metadata;
+﻿using System;
+using System.Web.Mvc;
+using Stoolball.Metadata;
 using Stoolball.Security;
 using Stoolball.Web.Security;
-using System;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -31,57 +31,59 @@ namespace Stoolball.Web.Account
 
         [HttpGet]
         [ContentSecurityPolicy(Forms = true)]
-        public override ActionResult Index(ContentModel model)
+        public override ActionResult Index(ContentModel contentModel)
         {
-            var contentModel = new ResetPassword(model?.Content)
+            var model = new ResetPassword(contentModel?.Content);
+            model.Metadata = new ViewMetadata
             {
-                Metadata = new ViewMetadata { PageTitle = model.Content.Name }
+                PageTitle = model.Name,
+                Description = model.Description
             };
 
             try
             {
-                contentModel.PasswordResetToken = ReadPasswordResetToken();
+                model.PasswordResetToken = ReadPasswordResetToken();
 
                 // Show a message saying the reset was successful
                 if (PasswordResetSuccessful())
                 {
                     TempData["PasswordResetSuccessful"] = true;
-                    return CurrentTemplate(contentModel);
+                    return CurrentTemplate(model);
                 }
 
                 // If there's no token, show the form to request a password reset
-                if (string.IsNullOrEmpty(contentModel.PasswordResetToken))
+                if (string.IsNullOrEmpty(model.PasswordResetToken))
                 {
-                    return CurrentTemplate(contentModel);
+                    return CurrentTemplate(model);
                 }
 
-                var memberId = _verificationToken.ExtractId(contentModel.PasswordResetToken);
+                var memberId = _verificationToken.ExtractId(model.PasswordResetToken);
 
                 var memberService = Services.MemberService;
                 var member = memberService.GetById(memberId);
 
-                if (member.GetValue("passwordResetToken").ToString() == contentModel.PasswordResetToken && !_verificationToken.HasExpired(member.GetValue<DateTime>("passwordResetTokenExpires")))
+                if (member.GetValue("passwordResetToken").ToString() == model.PasswordResetToken && !_verificationToken.HasExpired(member.GetValue<DateTime>("passwordResetTokenExpires")))
                 {
                     // Show the set a new password form
                     memberService.Save(member);
 
-                    contentModel.PasswordResetTokenValid = true;
-                    contentModel.MemberName = member.Name;
+                    model.PasswordResetTokenValid = true;
+                    model.MemberName = member.Name;
                 }
                 else
                 {
                     // Show a message saying the token was not valid
-                    Logger.Info(GetType(), $"Password reset token invalid {contentModel.PasswordResetToken}");
-                    contentModel.PasswordResetTokenValid = false;
+                    Logger.Info(GetType(), $"Password reset token invalid {model.PasswordResetToken}");
+                    model.PasswordResetTokenValid = false;
                 }
             }
             catch (FormatException)
             {
                 // Show a message saying the token was not valid
-                Logger.Info(GetType(), $"Password reset token invalid {contentModel.PasswordResetToken}");
-                contentModel.PasswordResetTokenValid = false;
+                Logger.Info(GetType(), $"Password reset token invalid {model.PasswordResetToken}");
+                model.PasswordResetTokenValid = false;
             }
-            return CurrentTemplate(contentModel);
+            return CurrentTemplate(model);
         }
 
         /// <summary>
@@ -97,9 +99,11 @@ namespace Stoolball.Web.Account
             // the password reset request or password update form was submitted.
             // Assume it's valid and this will be checked later, but this is used in the view when 
             // routing an invalid password update form submission.
-            var model = new ResetPassword(contentModel?.Content)
+            var model = new ResetPassword(contentModel?.Content);
+            model.Metadata = new ViewMetadata
             {
-                Metadata = new ViewMetadata { PageTitle = contentModel.Content.Name }
+                PageTitle = model.Name,
+                Description = model.Description
             };
             model.PasswordResetToken = ReadPasswordResetToken();
             model.PasswordResetTokenValid = true;
