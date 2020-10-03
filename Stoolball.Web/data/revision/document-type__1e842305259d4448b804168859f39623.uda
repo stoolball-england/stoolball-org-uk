@@ -33,6 +33,18 @@
           "VariesBySegment": false
         },
         {
+          "Key": "385e8ada-e212-4b6c-9a3e-5187a1eaf9d4",
+          "Alias": "showCaption",
+          "DataType": "umb://data-type/92897bc6a5f34ffeae27f2e7e33dda49",
+          "Description": "The image name will be used.",
+          "Mandatory": false,
+          "Name": "Show caption",
+          "SortOrder": 3,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
           "Key": "d16e7e20-ef7b-4e59-97df-fe06af4aab4e",
           "Alias": "text",
           "DataType": "umb://data-type/9d05dd71568f45798916f4f25bbf8322",
@@ -64,6 +76,11 @@
   "Dependencies": [
     {
       "Udi": "umb://data-type/135d60e064d949edab08893c9ba44ae5",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://data-type/92897bc6a5f34ffeae27f2e7e33dda49",
       "Ordering": true,
       "Mode": 0
     },

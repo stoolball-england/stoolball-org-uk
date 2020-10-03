@@ -8,7 +8,7 @@
 {
 <div class="block__text-with-image block__text-with-image__@imagePosition">
     <div class="block__text">@content.Text</div> 
-    <div class="block__image">
+    <figure class="block__image">
     @if (content.Image != null)
     {
         <img srcset="@content.Image.MediaUrl()?width=150&height=150&mode=max&upscale=false 576w,
@@ -16,7 +16,11 @@
                      @content.Image.MediaUrl()?width=400&height=400&mode=max&upscale=false 992w,
                      @content.Image.MediaUrl()?width=500&height=500&mode=max&upscale=false 1200w"
              sizes="100vw" src="@content.Image.MediaUrl()?width=500&height=500&mode=max&upscale=false" alt="@content.Image.Name" />
+        if (content.ShowCaption)
+        {
+            <figcaption>@content.Image.Name</figcaption>
+        }
     }
-   </div>
+   </figure>
 </div>
 }

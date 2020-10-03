@@ -5,11 +5,15 @@
 }
 @if (content != null && content.Image != null)
 {
-    <div class="block__images">
+    <figure class="block__images">
     <img srcset="@content.Image.MediaUrl()?width=150&height=150&mode=max&upscale=false 576w,
                     @content.Image.MediaUrl()?width=300&height=300&mode=max&upscale=false 768w,
                     @content.Image.MediaUrl()?width=400&height=400&mode=max&upscale=false 992w,
                     @content.Image.MediaUrl()?width=500&height=500&mode=max&upscale=false 1200w"
             sizes="100vw" src="@content.Image.MediaUrl()?width=500&height=500&mode=max&upscale=false" alt="@content.Image.Name" />
-    </div>
+    @if (content.ShowCaption)
+    {
+        <figcaption>@content.Image.Name</figcaption>
+    }
+    </figure>
 }

@@ -59,6 +59,13 @@ namespace Umbraco.Web.PublishedModels
 		public string ImagePosition => this.Value<string>("imagePosition");
 
 		///<summary>
+		/// Show caption: The image name will be used.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
+		[ImplementPropertyType("showCaption")]
+		public bool ShowCaption => this.Value<bool>("showCaption");
+
+		///<summary>
 		/// Text
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
