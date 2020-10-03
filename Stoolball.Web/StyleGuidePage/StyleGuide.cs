@@ -1,5 +1,6 @@
 ﻿using Stoolball.Metadata;
 using Stoolball.Web.Metadata;
+using Umbraco.Core.Models.PublishedContent;
 
 namespace Umbraco.Web.PublishedModels
 {
@@ -11,5 +12,10 @@ namespace Umbraco.Web.PublishedModels
         public ViewMetadata Metadata { get; set; } = new ViewMetadata();
 
         public string GoogleMapsApiKey { get; set; }
+
+        /// <summary>
+        /// Gets the photo that appears in the header of the site
+        /// </summary>
+        public IPublishedContent HeaderPhotoWithInheritance() => this.Value("headerPhoto", fallback: Fallback.ToAncestors) as IPublishedContent;
     }
 }

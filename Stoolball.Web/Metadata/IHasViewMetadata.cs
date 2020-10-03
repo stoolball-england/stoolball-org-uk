@@ -13,6 +13,6 @@ namespace Stoolball.Web.Metadata
         /// <summary>
         /// Gets the photo that appears in the header of the site
         /// </summary>
-        IPublishedContent HeaderPhoto { get; }
+        IPublishedContent HeaderPhotoWithInheritance();
     }
 }

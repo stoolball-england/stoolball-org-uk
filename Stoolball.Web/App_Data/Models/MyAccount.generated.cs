@@ -66,7 +66,7 @@ namespace Umbraco.Web.PublishedModels
 		public global::System.Web.IHtmlString Saved => this.Value<global::System.Web.IHtmlString>("saved");
 
 		///<summary>
-		/// Header photo: The photo which appears across the site header.
+		/// Header photo: The photo which appears across the site header. Leave blank to use the one from the parent page.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
 		[ImplementPropertyType("headerPhoto")]

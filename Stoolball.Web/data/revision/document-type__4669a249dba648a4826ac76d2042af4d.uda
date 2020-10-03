@@ -24,7 +24,7 @@
           "Key": "ad6eae9f-1634-4678-ac6e-da4f4e31bdfa",
           "Alias": "headerPhoto",
           "DataType": "umb://data-type/cbab061489c04c018a9a227e4015e191",
-          "Description": "The photo which appears across the site header.",
+          "Description": "The photo which appears across the site header. Leave blank to use the one from the parent page.",
           "Mandatory": false,
           "Name": "Header photo",
           "SortOrder": 0,
@@ -52,5 +52,5 @@
   "Name": "_Design",
   "Alias": "design",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.4"
+  "__version": "3.4.5"
 }

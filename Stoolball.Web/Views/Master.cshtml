@@ -113,14 +113,14 @@
                 </div>
             </nav>
         </div>
-    @if (Model.HeaderPhoto != null)
+    @if (Model.HeaderPhotoWithInheritance() != null)
     {
-        <img srcset="@Model.HeaderPhoto.GetCropUrl("extra-small") 576w,
-                     @Model.HeaderPhoto.GetCropUrl("small") 768w,
-                     @Model.HeaderPhoto.GetCropUrl("medium") 992w,
-                     @Model.HeaderPhoto.GetCropUrl("large") 1200w,
-                     @Model.HeaderPhoto.GetCropUrl("extra-large") 2000w"
-             sizes="100vw" src="@Model.HeaderPhoto.GetCropUrl("large")" alt="" class="header-photo" />
+        <img srcset="@Model.HeaderPhotoWithInheritance().GetCropUrl("extra-small") 576w,
+                     @Model.HeaderPhotoWithInheritance().GetCropUrl("small") 768w,
+                     @Model.HeaderPhotoWithInheritance().GetCropUrl("medium") 992w,
+                     @Model.HeaderPhotoWithInheritance().GetCropUrl("large") 1200w,
+                     @Model.HeaderPhotoWithInheritance().GetCropUrl("extra-large") 2000w"
+             sizes="100vw" src="@Model.HeaderPhotoWithInheritance().GetCropUrl("large")" alt="" class="header-photo" />
     }
     </header>
     <main>

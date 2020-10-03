@@ -34,7 +34,11 @@ namespace Stoolball.Web.Routing
         /// Gets the metadata for a view
         /// </summary>
         public ViewMetadata Metadata { get; } = new ViewMetadata();
-        public IPublishedContent HeaderPhoto => _contentModel.Value<IPublishedContent>("headerPhoto");
+
+        /// <summary>
+        /// Gets the photo that appears in the header of the site
+        /// </summary>
+        public IPublishedContent HeaderPhotoWithInheritance() => _contentModel.Value<IPublishedContent>("headerPhoto", fallback: Fallback.ToAncestors) as IPublishedContent;
 
         public Dictionary<AuthorizedAction, bool> IsAuthorized { get; internal set; } = new Dictionary<AuthorizedAction, bool>();
 
