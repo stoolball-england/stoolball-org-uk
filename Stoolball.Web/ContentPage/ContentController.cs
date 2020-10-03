@@ -13,20 +13,25 @@ namespace Stoolball.Web.ContentPage
         [ContentSecurityPolicy(Forms = true, TinyMCE = true)]
         public override ActionResult Index(ContentModel contentModel)
         {
-            var model = new Content(contentModel?.Content)
+            var model = new Content(contentModel?.Content);
+            model.Metadata = new ViewMetadata
             {
-                Metadata = new ViewMetadata { PageTitle = contentModel.Content.Name }
+                PageTitle = model.Name,
+                Description = model.Description
             };
 
             return CurrentTemplate(model);
         }
 
+        /* This action is triggered when an Umbraco Forms form is submitted without a separate 'thank you' page */
         [HttpPost]
         public ActionResult Content(ContentModel contentModel)
         {
-            var model = new Content(contentModel?.Content)
+            var model = new Content(contentModel?.Content);
+            model.Metadata = new ViewMetadata
             {
-                Metadata = new ViewMetadata { PageTitle = contentModel.Content.Name }
+                PageTitle = model.Name,
+                Description = model.Description
             };
 
             return CurrentTemplate(model);

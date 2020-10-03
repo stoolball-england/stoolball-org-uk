@@ -35,7 +35,7 @@
         {
           "Key": "d16e7e20-ef7b-4e59-97df-fe06af4aab4e",
           "Alias": "text",
-          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+          "DataType": "umb://data-type/9d05dd71568f45798916f4f25bbf8322",
           "Description": null,
           "Mandatory": false,
           "Name": "Text",
@@ -68,7 +68,7 @@
       "Mode": 0
     },
     {
-      "Udi": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+      "Udi": "umb://data-type/9d05dd71568f45798916f4f25bbf8322",
       "Ordering": true,
       "Mode": 0
     },

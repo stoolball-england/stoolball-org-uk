@@ -1,14 +1,21 @@
-@import "_theme.scss";
-@import "../Content/bootstrap/_functions.scss";
-@import "../Content/bootstrap/_mixins.scss";
-@import "../Content/bootstrap/_variables.scss";
-
-a:link,
-a:visited {
-    color: theme-color("primary");
-}
+@import "base.scss";
 
 .mce-content-body *[data-mce-selected="inline-boundary"] {
     background: none;
     outline: 1px dashed theme-color("primary");
+}
+
+/* The following styles appear in the style select dropdown when enabled, using the names defined in the `umb_name` comments.
+   position: static is specified only so that the selector is included in the compiled stylesheet along with the comment.
+   Otherwise styles are inherited from base.scss and should appear the same as in the published website.
+*/
+
+/**umb_name:Heading 2*/
+h2 { 
+    position: static;
+}
+
+/**umb_name:Paragraph*/
+p {
+    position: static;
 }

@@ -31,6 +31,18 @@
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
+        },
+        {
+          "Key": "c18311e9-36ac-4490-9bfc-ae90a200fddd",
+          "Alias": "description",
+          "DataType": "umb://data-type/c6bac0dd4ab945b18e30e4b619ee5da3",
+          "Description": "A short summary of this page that may appear in search results",
+          "Mandatory": false,
+          "Name": "Description",
+          "SortOrder": 1,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
         }
       ]
     }
@@ -44,6 +56,11 @@
       "Mode": 0
     },
     {
+      "Udi": "umb://data-type/c6bac0dd4ab945b18e30e4b619ee5da3",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
       "Udi": "umb://document-type-container/adb1648975db4732b1178ed4e821552f",
       "Ordering": true,
       "Mode": 0
@@ -52,5 +69,5 @@
   "Name": "_Metadata",
   "Alias": "metadata",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.4"
+  "__version": "3.4.5"
 }

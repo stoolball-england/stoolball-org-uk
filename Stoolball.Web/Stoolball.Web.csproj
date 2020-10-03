@@ -485,6 +485,8 @@
     <Content Include="config\BackOfficeTours\getting-started.json" />
     <Content Include="App_Plugins\uSync8\package.manifest" />
     <Content Include="App_Plugins\uSync8\addons.json" />
+    <Content Include="config\tinyMceConfig.local.xdt.config" />
+    <Content Include="config\tinyMceConfig.live.xdt.config" />
     <None Include="config\uSync8.local.xdt.config" />
     <Content Include="Content\bootstrap\_variables.scss" />
     <Content Include="Content\bootstrap\_utilities.scss" />

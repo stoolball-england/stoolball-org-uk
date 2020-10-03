@@ -150,6 +150,13 @@ namespace Umbraco.Web.PublishedModels
 		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent HeaderPhoto => global::Umbraco.Web.PublishedModels.Design.GetHeaderPhoto(this);
 
 		///<summary>
+		/// Description: A short summary of this page that may appear in search results
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
+		[ImplementPropertyType("description")]
+		public string Description => global::Umbraco.Web.PublishedModels.Metadata.GetDescription(this);
+
+		///<summary>
 		/// URL segment: Sets the URL for this page. Defaults to the page title.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]

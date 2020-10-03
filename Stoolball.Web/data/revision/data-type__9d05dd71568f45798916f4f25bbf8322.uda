@@ -1,0 +1,18 @@
+{
+  "EditorAlias": "Umbraco.TinyMCE",
+  "DatabaseType": 0,
+  "Configuration": {"editor":{"toolbar":["removeformat","styleselect","bold","italic","bullist","numlist","link","anchor","table","fullscreen"],"stylesheets":["/css/tinymce.css"],"maxImageSize":500,"mode":"classic","dimensions":{"height":500}},"hideLabel":false,"ignoreUserStartNodes":false,"mediaParentId":null},
+  "Parent": null,
+  "Udi": "umb://data-type/9d05dd71568f45798916f4f25bbf8322",
+  "Dependencies": [
+    {
+      "Udi": "umb://stylesheet/tinymce.css",
+      "Ordering": false,
+      "Mode": 1
+    }
+  ],
+  "Name": "Richtext editor - Content Block List",
+  "Alias": null,
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.DataTypeArtifact",
+  "__version": "3.4.5"
+}

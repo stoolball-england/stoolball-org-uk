@@ -183,6 +183,18 @@
     <Delete Files="$(TempUmbracoSettingsConfig)" />
   </Target>
 
+  <Target Name="StoolballTransformTinyMCEConfig" AfterTargets="StoolballCopyFilesFromUmbracoCloud">
+    <!-- Applies changes to tinyMceConfig.config on build from XDT transforms so that the unaltered tinyMceConfig.config 
+         can always be copied from the UmbracoCms package. -->
+    <PropertyGroup>
+      <OriginalTinyMceConfig>$(ProjectDir)\config\tinyMceConfig.config</OriginalTinyMceConfig>
+      <TempTinyMceConfig>$(ProjectDir)\config\tinyMceConfig.temp.config</TempTinyMceConfig>
+    </PropertyGroup>
+    <Copy SourceFiles="$(OriginalTinyMceConfig)" DestinationFiles="$(TempTinyMceConfig)" />
+    <TransformXml Source="$(TempTinyMceConfig)" Transform="$(ProjectDir)\config\tinyMceConfig.local.xdt.config" Destination="$(OriginalTinyMceConfig)" StackTrace="true" />
+    <Delete Files="$(TempTinyMceConfig)" />
+  </Target>
+
   <Target Name="StoolballUmbracoFormsConfig" AfterTargets="StoolballCopyFilesFromUmbracoCloud">
     <!-- Applies changes to UmbracoForms.config on build from XDT transforms so that the unaltered UmbracoForms.config 
          can always be copied from the UmbracoForms package. -->

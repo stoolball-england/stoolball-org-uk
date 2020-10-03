@@ -23,7 +23,7 @@
         {
           "Key": "9f23c736-6325-4474-88f3-960adab84673",
           "Alias": "text",
-          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+          "DataType": "umb://data-type/9d05dd71568f45798916f4f25bbf8322",
           "Description": null,
           "Mandatory": false,
           "Name": "Text",
@@ -39,7 +39,7 @@
   "Udi": "umb://document-type/41914047aec3497fa8bdfd6b8fabb894",
   "Dependencies": [
     {
-      "Udi": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+      "Udi": "umb://data-type/9d05dd71568f45798916f4f25bbf8322",
       "Ordering": true,
       "Mode": 0
     },
