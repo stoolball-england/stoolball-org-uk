@@ -2,11 +2,11 @@
     <div class="block__text-with-image block__text-with-image__{{ imagePosition }}">
         <div class="block__text" ng-bind-html="block.data.text"></div>
         <div class="block__image" ng-show="{{image}}">
-            <img srcset="{{image.mediaLink}}?width=150&height=150&mode=max 576w,
-                     {{image.mediaLink}}?width=300&height=300&mode=max 768w,
-                     {{image.mediaLink}}?width=400&height=400&mode=max 992w,
-                     {{image.mediaLink}}?width=500&height=500&mode=max 1200w"
-                 sizes="100vw" src="{{image.mediaLink}}?width=500&height=500&mode=max" alt="{{image.name}}" />
+            <img srcset="{{image.mediaLink}}?width=150&height=150&mode=max&upscale=false 576w,
+                     {{image.mediaLink}}?width=300&height=300&mode=max&upscale=false 768w,
+                     {{image.mediaLink}}?width=400&height=400&mode=max&upscale=false 992w,
+                     {{image.mediaLink}}?width=500&height=500&mode=max&upscale=false 1200w"
+                 sizes="100vw" src="{{image.mediaLink}}?width=500&height=500&mode=max&upscale=false" alt="{{image.name}}" />
         </div>
     </div>
 </button>
