@@ -1,7 +1,7 @@
 {
   "DefaultTemplate": null,
   "AllowedTemplates": [],
-  "Icon": "icon-pictures-alt-2 color-black",
+  "Icon": "icon-umb-media color-black",
   "Thumbnail": "folder.png",
   "Description": null,
   "IsContainer": false,

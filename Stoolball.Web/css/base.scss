@@ -20,6 +20,8 @@ img { max-width: 100%; }
 @import "../Content/bootstrap/_tables.scss";
 @import "_tables.scss";
 
+blockquote { font-style: italic; }
+
 /* Required to use boxed content using alert styles */
 @import "../Content/bootstrap/_alert.scss";
 

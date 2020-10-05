@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using System.Threading;
 using System.Web.Mvc;
 
 namespace Stoolball.Web.Security
@@ -13,6 +12,7 @@ namespace Stoolball.Web.Security
         private const string SCRIPT_SRC = "script-src";
         private const string IMG_SRC = "img-src";
         private const string FONT_SRC = "font-src";
+        private const string FRAME_SRC = "frame-src";
         private const string CONNECT_SRC = "connect-src";
         private const string TRUSTED_TYPES = "require-trusted-types-for";
         private const string MANIFEST_SRC = "manifest-src";
@@ -26,6 +26,8 @@ namespace Stoolball.Web.Security
         public bool Forms { get; set; }
 
         public bool TinyMCE { get; set; }
+
+        public bool GettyImages { get; set; }
 
         public override void OnResultExecuted(ResultExecutedContext filterContext)
         {
@@ -52,6 +54,11 @@ namespace Stoolball.Web.Security
                 SetupForms();
             }
 
+            if (GettyImages)
+            {
+                SetupGettyImages();
+            }
+
             if (TinyMCE)
             {
                 SetupTinyMCE();
@@ -61,8 +68,13 @@ namespace Stoolball.Web.Security
                 SetupTrustedTypes();
             }
 
-            filterContext.HttpContext.Response.Headers.Add("Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, CONNECT_SRC, MANIFEST_SRC, TRUSTED_TYPES));
-            filterContext.HttpContext.Response.Headers.Add("X-Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, MANIFEST_SRC, CONNECT_SRC));
+            filterContext.HttpContext.Response.Headers.Add("Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, FRAME_SRC, CONNECT_SRC, MANIFEST_SRC, TRUSTED_TYPES));
+            filterContext.HttpContext.Response.Headers.Add("X-Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, FRAME_SRC, MANIFEST_SRC, CONNECT_SRC));
+        }
+
+        private void SetupGettyImages()
+        {
+            AddSource(FRAME_SRC, "https://embed.gettyimages.com");
         }
 
         private void SetupTinyMCE()
@@ -144,6 +156,7 @@ namespace Stoolball.Web.Security
             _directives.Add(CONNECT_SRC, new List<string>());
             _directives.Add(TRUSTED_TYPES, new List<string>());
             _directives.Add(MANIFEST_SRC, new List<string>());
+            _directives.Add(FRAME_SRC, new List<string>());
         }
     }
 }

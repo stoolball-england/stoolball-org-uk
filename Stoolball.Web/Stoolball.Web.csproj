@@ -365,6 +365,8 @@
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\Outbound.html" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\RadioGroup.html" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\Site.html" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\GettyImage.html" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\GettyImage.controller.js" />
     <Content Include="App_Plugins\Stoolball.BlockEditors\ImageElementType.html" />
     <Content Include="App_Plugins\Stoolball.BlockEditors\ImageElementType.controller.js" />
     <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedTextWithImage.html" />
@@ -769,6 +771,7 @@
     <Content Include="Views\Partials\BlockList\Components\FormattedTextWithImage.cshtml" />
     <Content Include="Views\Partials\BlockList\Components\ImageElementType.cshtml" />
     <Content Include="Views\Partials\BlockList\Components\FormElementType.cshtml" />
+    <Content Include="Views\Partials\BlockList\Components\GettyImage.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -799,6 +802,7 @@
     <Compile Include="App_Data\Models\FormattedText.generated.cs" />
     <Compile Include="App_Data\Models\FormattedTextWithImage.generated.cs" />
     <Compile Include="App_Data\Models\FormElementType.generated.cs" />
+    <Compile Include="App_Data\Models\GettyImage.generated.cs" />
     <Compile Include="App_Data\Models\HeaderPhoto.generated.cs" />
     <Compile Include="App_Data\Models\ImageElementType.generated.cs" />
     <Compile Include="App_Data\Models\LoginMember.generated.cs" />

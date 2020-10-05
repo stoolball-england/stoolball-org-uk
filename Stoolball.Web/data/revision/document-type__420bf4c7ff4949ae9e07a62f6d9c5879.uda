@@ -1,0 +1,75 @@
+{
+  "DefaultTemplate": "umb://template/0e9ba50d5ae44bd4b164251440213936",
+  "AllowedTemplates": [
+    "umb://template/0e9ba50d5ae44bd4b164251440213936"
+  ],
+  "Icon": "icon-movie color-black",
+  "Thumbnail": "folder.png",
+  "Description": "An image from the GettyImages collection",
+  "IsContainer": false,
+  "Permissions": {
+    "AllowVaryingByCulture": false,
+    "AllowVaryingBySegment": false,
+    "AllowedAtRoot": false,
+    "IsElementType": true,
+    "AllowedChildContentTypes": []
+  },
+  "Parent": "umb://document-type-container/5be42d3707a847e7b9b7d51af38bdac2",
+  "CompositionContentTypes": [],
+  "PropertyGroups": [
+    {
+      "Key": "a29fc1bf-7c4d-4935-9958-bb1143ab9ac4",
+      "Name": "Content",
+      "SortOrder": 0,
+      "PropertyTypes": [
+        {
+          "Key": "378db78a-3ad2-4536-ac40-53c95734d0bd",
+          "Alias": "caption",
+          "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+          "Description": null,
+          "Mandatory": true,
+          "Name": "Caption",
+          "SortOrder": 1,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
+          "Key": "e06a6fc3-9f98-4fe2-b847-3156a6db9b7e",
+          "Alias": "gettyImageURL",
+          "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+          "Description": "Starts with '//embed.gettyimages.com'. You can find this in the legacy embed option for an image",
+          "Mandatory": true,
+          "Name": "Getty image URL",
+          "SortOrder": 0,
+          "Validation": "//embed.gettyimages.com/embed/.*",
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        }
+      ]
+    }
+  ],
+  "PropertyTypes": [],
+  "Udi": "umb://document-type/420bf4c7ff4949ae9e07a62f6d9c5879",
+  "Dependencies": [
+    {
+      "Udi": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type-container/5be42d3707a847e7b9b7d51af38bdac2",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/0e9ba50d5ae44bd4b164251440213936",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Getty image",
+  "Alias": "gettyImage",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
+  "__version": "3.4.5"
+}

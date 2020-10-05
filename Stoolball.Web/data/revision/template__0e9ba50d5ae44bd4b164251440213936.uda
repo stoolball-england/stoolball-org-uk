@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/GettyImage.cshtml",
+  "Master": null,
+  "Udi": "umb://template/0e9ba50d5ae44bd4b164251440213936",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/GettyImage.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Getty image",
+  "Alias": "GettyImage",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.4.5"
+}

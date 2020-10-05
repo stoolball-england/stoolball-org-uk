@@ -1,0 +1,12 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Umbraco.Core.Models.Blocks.BlockListItem>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    var content = (ContentModels.GettyImage)Model.Content;
+}
+@if (content != null && content.GettyImageUrl != null)
+{
+    @:<figure>
+        <iframe src="@content.GettyImageUrl" width="594" height="459" frameborder="0" scrolling="no"></iframe>
+        <figcaption>@content.Caption</figcaption>
+    @:</figure>
+}
