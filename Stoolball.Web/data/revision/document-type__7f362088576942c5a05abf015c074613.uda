@@ -18,10 +18,35 @@
   "CompositionContentTypes": [
     "umb://document-type/4669a249dba648a4826ac76d2042af4d"
   ],
-  "PropertyGroups": [],
+  "PropertyGroups": [
+    {
+      "Key": "b2f3861d-3a98-491b-8aec-38cc3ee48a5e",
+      "Name": "Content",
+      "SortOrder": 1,
+      "PropertyTypes": [
+        {
+          "Key": "1e7a31b3-6c5a-4c3f-b5c3-b1e8e91d3866",
+          "Alias": "blockList",
+          "DataType": "umb://data-type/82d9929f1c7b454f9ccee8d473698e88",
+          "Description": null,
+          "Mandatory": false,
+          "Name": "Content",
+          "SortOrder": 0,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        }
+      ]
+    }
+  ],
   "PropertyTypes": [],
   "Udi": "umb://document-type/7f362088576942c5a05abf015c074613",
   "Dependencies": [
+    {
+      "Udi": "umb://data-type/82d9929f1c7b454f9ccee8d473698e88",
+      "Ordering": true,
+      "Mode": 0
+    },
     {
       "Udi": "umb://document-type/4669a249dba648a4826ac76d2042af4d",
       "Ordering": true,
@@ -36,5 +61,5 @@
   "Name": "Style guide",
   "Alias": "styleGuide",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.4"
+  "__version": "3.4.5"
 }

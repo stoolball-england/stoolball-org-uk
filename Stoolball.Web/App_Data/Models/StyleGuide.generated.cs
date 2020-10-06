@@ -45,6 +45,13 @@ namespace Umbraco.Web.PublishedModels
 		// properties
 
 		///<summary>
+		/// Content
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
+		[ImplementPropertyType("content")]
+		public global::Umbraco.Core.Models.Blocks.BlockListModel Content => this.Value<global::Umbraco.Core.Models.Blocks.BlockListModel>("content");
+
+		///<summary>
 		/// Header photo: The photo which appears across the site header. Leave blank to use the one from the parent page.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
