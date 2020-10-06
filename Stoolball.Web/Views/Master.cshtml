@@ -82,18 +82,18 @@
                                 var childrenOfHome = Umbraco.Content(Guid.Parse("7ea74fe5-4982-4bcf-bb8a-8e213c32f91c"))
                                 .Children()
                                 .Where(x => x.IsVisible());
-                                foreach (var page in childrenOfHome)
+                                foreach (var child in childrenOfHome)
                                 {
-                                    if (Regex.IsMatch(Request.RawUrl, $"^{page.Url().Replace("/", @"\/")}?$"))
+                                    if (Regex.IsMatch(Request.RawUrl, $"^{child.Url().Replace("/", @"\/")}?$"))
                                     {
                                         <li class="dropdown-item">
-                                            <em>@page.Name</em>
+                                            <em>@child.Name</em>
                                         </li>
                                     }
                                     else
                                     {
                                         <li class="dropdown-item">
-                                            <a href="@page.Url()">@page.Name</a>
+                                            <a href="@child.Url()">@child.Name</a>
                                         </li>
                                     }
                                 }
@@ -146,7 +146,36 @@
     </header>
     <main>
         <div class="container-xl">
-                @RenderBody()
+
+            @{
+                var pages = new List<IPublishedContent>();
+                var page = Umbraco.AssignedContentItem.Parent;
+                while (page != null)
+                {
+                    pages.Insert(0, page);
+                    page = page.Parent;
+                }
+            }
+            @if (pages.Count > 0)
+            {
+            <nav aria-label="Breadcrumb">
+                <ol class="breadcrumb">
+                    @for (var i = 0; i < pages.Count; i++)
+                    {
+                        if (i < pages.Count - 1)
+                        {
+                            <li class="breadcrumb-item"><a href="@pages[i].Url()">@pages[i].Name</a></li>
+                        }
+                        else
+                        {
+                            <li class="breadcrumb-item" aria-current="location"><a href="@pages[i].Url()">@pages[i].Name</a></li>
+                        }
+                    }
+                </ol>
+            </nav>
+            }
+
+            @RenderBody()
         </div>
     </main>
     <footer>

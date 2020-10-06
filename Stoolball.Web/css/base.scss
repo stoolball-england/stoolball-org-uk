@@ -9,6 +9,9 @@
 @import "../Content/bootstrap/_type.scss"; // for .list-unstyled
 @import "_header.scss";
 
+/* Required for nav */
+@import "../Content/bootstrap/_breadcrumb.scss";
+
 /* Makes .sr-only available */
 @import "../Content/bootstrap/utilities/_screenreaders";
 
