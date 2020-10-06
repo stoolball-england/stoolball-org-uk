@@ -14,6 +14,7 @@
     "IsElementType": false,
     "AllowedChildContentTypes": [
       "umb://document-type/75ff99b6b2d9416ea8c695c0ff36e3d3",
+      "umb://document-type/7f362088576942c5a05abf015c074613",
       "umb://document-type/9d4a4f9e28df449882067990797df794"
     ]
   },
@@ -32,6 +33,11 @@
     },
     {
       "Udi": "umb://document-type/75ff99b6b2d9416ea8c695c0ff36e3d3",
+      "Ordering": false,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/7f362088576942c5a05abf015c074613",
       "Ordering": false,
       "Mode": 0
     },

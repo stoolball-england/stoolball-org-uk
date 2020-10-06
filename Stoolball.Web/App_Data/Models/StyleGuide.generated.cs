@@ -52,6 +52,13 @@ namespace Umbraco.Web.PublishedModels
 		public global::Umbraco.Core.Models.Blocks.BlockListModel BlockList => this.Value<global::Umbraco.Core.Models.Blocks.BlockListModel>("blockList");
 
 		///<summary>
+		/// Don't show this in menus
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
+		[ImplementPropertyType("umbracoNaviHide")]
+		public bool UmbracoNaviHide => this.Value<bool>("umbracoNaviHide");
+
+		///<summary>
 		/// Header photo: The photo which appears across the site header. Leave blank to use the one from the parent page.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
