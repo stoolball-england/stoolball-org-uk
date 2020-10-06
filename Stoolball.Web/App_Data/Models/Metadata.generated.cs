@@ -27,6 +27,10 @@ namespace Umbraco.Web.PublishedModels
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
 		string Description { get; }
 
+		/// <summary>Don't show this in menus</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
+		bool UmbracoNaviHide { get; }
+
 		/// <summary>URL segment</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
 		string UmbracoUrlName { get; }
@@ -67,6 +71,17 @@ namespace Umbraco.Web.PublishedModels
 		/// <summary>Static getter for Description</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
 		public static string GetDescription(IMetadata that) => that.Value<string>("description");
+
+		///<summary>
+		/// Don't show this in menus
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
+		[ImplementPropertyType("umbracoNaviHide")]
+		public bool UmbracoNaviHide => GetUmbracoNaviHide(this);
+
+		/// <summary>Static getter for Don't show this in menus</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
+		public static bool GetUmbracoNaviHide(IMetadata that) => that.Value<bool>("umbracoNaviHide");
 
 		///<summary>
 		/// URL segment: Sets the URL for this page. Defaults to the page title.

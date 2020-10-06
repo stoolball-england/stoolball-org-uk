@@ -66,6 +66,13 @@ namespace Umbraco.Web.PublishedModels
 		public string Description => global::Umbraco.Web.PublishedModels.Metadata.GetDescription(this);
 
 		///<summary>
+		/// Don't show this in menus
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
+		[ImplementPropertyType("umbracoNaviHide")]
+		public bool UmbracoNaviHide => global::Umbraco.Web.PublishedModels.Metadata.GetUmbracoNaviHide(this);
+
+		///<summary>
 		/// URL segment: Sets the URL for this page. Defaults to the page title.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]

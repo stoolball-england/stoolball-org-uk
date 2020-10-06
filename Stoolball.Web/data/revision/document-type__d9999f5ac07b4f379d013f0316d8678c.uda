@@ -21,6 +21,18 @@
       "SortOrder": 100,
       "PropertyTypes": [
         {
+          "Key": "8e12b846-881b-444f-830f-ef14ee2483c7",
+          "Alias": "umbracoNaviHide",
+          "DataType": "umb://data-type/92897bc6a5f34ffeae27f2e7e33dda49",
+          "Description": null,
+          "Mandatory": false,
+          "Name": "Don't show this in menus",
+          "SortOrder": 1,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
           "Key": "b61b217d-a2c4-4334-98b0-b61b31be4a55",
           "Alias": "umbracoUrlName",
           "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
@@ -39,7 +51,7 @@
           "Description": "A short summary of this page that may appear in search results",
           "Mandatory": false,
           "Name": "Description",
-          "SortOrder": 1,
+          "SortOrder": 2,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -52,6 +64,11 @@
   "Dependencies": [
     {
       "Udi": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://data-type/92897bc6a5f34ffeae27f2e7e33dda49",
       "Ordering": true,
       "Mode": 0
     },

@@ -77,7 +77,28 @@
                                     <a href="/locations">Grounds and sports centres</a>
                                 </li>
                             }
-                        </ul>
+
+                            @{
+                                var childrenOfHome = Umbraco.Content(Guid.Parse("7ea74fe5-4982-4bcf-bb8a-8e213c32f91c"))
+                                .Children()
+                                .Where(x => x.IsVisible());
+                                foreach (var page in childrenOfHome)
+                                {
+                                    if (Regex.IsMatch(Request.RawUrl, $"^{page.Url().Replace("/", @"\/")}?$"))
+                                    {
+                                        <li class="dropdown-item">
+                                            <em>@page.Name</em>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li class="dropdown-item">
+                                            <a href="@page.Url()">@page.Name</a>
+                                        </li>
+                                    }
+                                }
+                            }
+                            </ul>
                     </div>
                 </div>
 
