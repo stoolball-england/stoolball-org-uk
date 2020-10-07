@@ -29,6 +29,8 @@ namespace Stoolball.Web.Security
 
         public bool GettyImages { get; set; }
 
+        public bool YouTube { get; set; }
+
         public override void OnResultExecuted(ResultExecutedContext filterContext)
         {
             if (filterContext is null)
@@ -59,6 +61,11 @@ namespace Stoolball.Web.Security
                 SetupGettyImages();
             }
 
+            if (YouTube)
+            {
+                SetupYouTube();
+            }
+
             if (TinyMCE)
             {
                 SetupTinyMCE();
@@ -75,6 +82,11 @@ namespace Stoolball.Web.Security
         private void SetupGettyImages()
         {
             AddSource(FRAME_SRC, "https://embed.gettyimages.com");
+        }
+
+        private void SetupYouTube()
+        {
+            AddSource(FRAME_SRC, "https://www.youtube-nocookie.com");
         }
 
         private void SetupTinyMCE()

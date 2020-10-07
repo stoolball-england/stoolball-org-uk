@@ -5,7 +5,7 @@
   ],
   "Icon": "icon-movie color-black",
   "Thumbnail": "folder.png",
-  "Description": "An image from the GettyImages collection",
+  "Description": null,
   "IsContainer": false,
   "Permissions": {
     "AllowVaryingByCulture": false,

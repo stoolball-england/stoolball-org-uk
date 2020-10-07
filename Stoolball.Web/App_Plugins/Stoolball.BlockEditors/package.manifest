@@ -1,6 +1,6 @@
 ﻿{
   "javascript": [
-    "~/App_Plugins/Stoolball.BlockEditors/GettyImage.controller.js",
+    "~/App_Plugins/Stoolball.BlockEditors/IFrameElementType.controller.js",
     "~/App_Plugins/Stoolball.BlockEditors/ImageElementType.controller.js"
   ]  
 }

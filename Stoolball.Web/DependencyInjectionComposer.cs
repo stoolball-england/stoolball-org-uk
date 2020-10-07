@@ -7,6 +7,7 @@ using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Security;
+using Stoolball.SocialMedia;
 using Stoolball.Teams;
 using Stoolball.Umbraco.Data;
 using Stoolball.Umbraco.Data.Audit;
@@ -56,6 +57,7 @@ namespace Stoolball.Web
             composition.Register<IPlayerInningsScaffolder, PlayerInningsScaffolder>(Lifetime.Singleton);
             composition.Register<IBowlingScorecardComparer, BowlingScorecardComparer>(Lifetime.Singleton);
             composition.Register<IBattingScorecardComparer, BattingScorecardComparer>(Lifetime.Singleton);
+            composition.Register<IYouTubeUrlNormaliser, YouTubeUrlNormaliser>(Lifetime.Singleton);
 
             // Data migration from the old Stoolball England website
             composition.Register<IAuditHistoryBuilder, AuditHistoryBuilder>(Lifetime.Singleton);

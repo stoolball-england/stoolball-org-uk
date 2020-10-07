@@ -365,8 +365,9 @@
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\Outbound.html" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\RadioGroup.html" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Views\Editors\Site.html" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\YouTubeVideo.html" />
     <Content Include="App_Plugins\Stoolball.BlockEditors\GettyImage.html" />
-    <Content Include="App_Plugins\Stoolball.BlockEditors\GettyImage.controller.js" />
+    <Content Include="App_Plugins\Stoolball.BlockEditors\IFrameElementType.controller.js" />
     <Content Include="App_Plugins\Stoolball.BlockEditors\ImageElementType.html" />
     <Content Include="App_Plugins\Stoolball.BlockEditors\ImageElementType.controller.js" />
     <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedTextWithImage.html" />
@@ -772,6 +773,7 @@
     <Content Include="Views\Partials\BlockList\Components\ImageElementType.cshtml" />
     <Content Include="Views\Partials\BlockList\Components\FormElementType.cshtml" />
     <Content Include="Views\Partials\BlockList\Components\GettyImage.cshtml" />
+    <Content Include="Views\Partials\BlockList\Components\YouTubeVideo.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -810,6 +812,7 @@
     <Compile Include="App_Data\Models\ResetPassword.generated.cs" />
     <Compile Include="App_Data\Models\StoolballRouter.generated.cs" />
     <Compile Include="App_Data\Models\StyleGuide.generated.cs" />
+    <Compile Include="App_Data\Models\YouTubeVideo.generated.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\CompetitionMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\CompetitionSubscriptionMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\MatchCommentSubscriptionMigrationController.cs" />

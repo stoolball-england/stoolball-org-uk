@@ -24,7 +24,7 @@ namespace Stoolball.Web.StyleGuidePage
         }
 
         [HttpGet]
-        [ContentSecurityPolicy(GoogleMaps = true, TinyMCE = true, Forms = true, GettyImages = true)]
+        [ContentSecurityPolicy(GoogleMaps = true, TinyMCE = true, Forms = true, GettyImages = true, YouTube = true)]
         public override ActionResult Index(ContentModel contentModel)
         {
             var model = new StyleGuide(contentModel?.Content)

@@ -1,0 +1,12 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Umbraco.Core.Models.Blocks.BlockListItem>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using Umbraco.Core.Composing;
+@using Stoolball.SocialMedia;
+@{
+    var content = (ContentModels.YouTubeVideo)Model.Content;
+    var normaliser = (IYouTubeUrlNormaliser)Current.Factory.GetInstance(typeof(IYouTubeUrlNormaliser));
+}
+@if (content != null && normaliser.TryNormaliseUrl(content.VideoUrl, out var normalisedUrl))
+{
+    <iframe width="560" height="315" src="@normalisedUrl" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="allowfullscreen"></iframe>
+}
