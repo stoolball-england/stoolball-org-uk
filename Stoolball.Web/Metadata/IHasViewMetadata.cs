@@ -14,5 +14,10 @@ namespace Stoolball.Web.Metadata
         /// Gets the photo that appears in the header of the site
         /// </summary>
         IPublishedContent HeaderPhotoWithInheritance();
+
+        /// <summary>
+        /// Gets the custom stylesheet that should be applied to the page (minus the .css extension)
+        /// </summary>
+        string Stylesheet { get; }
     }
 }

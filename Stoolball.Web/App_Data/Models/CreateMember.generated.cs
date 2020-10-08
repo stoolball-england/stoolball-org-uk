@@ -108,6 +108,13 @@ namespace Umbraco.Web.PublishedModels
 		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent HeaderPhoto => global::Umbraco.Web.PublishedModels.Design.GetHeaderPhoto(this);
 
 		///<summary>
+		/// Custom stylesheet
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
+		[ImplementPropertyType("stylesheet")]
+		public string Stylesheet => global::Umbraco.Web.PublishedModels.Design.GetStylesheet(this);
+
+		///<summary>
 		/// Description: A short summary of this page that may appear in search results
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]

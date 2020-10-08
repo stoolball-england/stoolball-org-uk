@@ -30,5 +30,9 @@
   {
     "outputFile": "css/scorecards.css",
     "inputFile": "css/scorecards.scss"
+  },
+  {
+    "outputFile": "css/rules.page.css",
+    "inputFile": "css/rules.page.scss"
   }
 ]

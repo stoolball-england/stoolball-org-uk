@@ -42,6 +42,11 @@ namespace Stoolball.Web.Routing
 
         public Dictionary<AuthorizedAction, bool> IsAuthorized { get; internal set; } = new Dictionary<AuthorizedAction, bool>();
 
+        /// <summary>
+        /// Gets the custom stylesheet that should be applied to the page (minus the .css extension)
+        /// </summary>
+        public string Stylesheet { get { return _contentModel.Value<string>("stylesheet"); } }
+
         #region Implement IPublishedContent
         public int Id => _contentModel.Id;
 

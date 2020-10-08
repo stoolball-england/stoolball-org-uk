@@ -26,6 +26,10 @@ namespace Umbraco.Web.PublishedModels
 		/// <summary>Header photo</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
 		global::Umbraco.Core.Models.PublishedContent.IPublishedContent HeaderPhoto { get; }
+
+		/// <summary>Custom stylesheet</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
+		string Stylesheet { get; }
 	}
 
 	/// <summary>_Design</summary>
@@ -63,5 +67,16 @@ namespace Umbraco.Web.PublishedModels
 		/// <summary>Static getter for Header photo</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
 		public static global::Umbraco.Core.Models.PublishedContent.IPublishedContent GetHeaderPhoto(IDesign that) => that.Value<global::Umbraco.Core.Models.PublishedContent.IPublishedContent>("headerPhoto");
+
+		///<summary>
+		/// Custom stylesheet
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
+		[ImplementPropertyType("stylesheet")]
+		public string Stylesheet => GetStylesheet(this);
+
+		/// <summary>Static getter for Custom stylesheet</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.8.0")]
+		public static string GetStylesheet(IDesign that) => that.Value<string>("stylesheet");
 	}
 }

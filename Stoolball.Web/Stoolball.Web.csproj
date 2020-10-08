@@ -425,6 +425,8 @@
     <Content Include="App_Plugins\Stoolball.DataMigration\lang\en-US.xml" />
     <Content Include="App_Plugins\Stoolball.DataMigration\stoolballResource.js" />
     <Content Include="App_Plugins\Stoolball.DataMigration\stoolballResource.test.js" />
+    <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.controller.js" />
+    <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.html" />
     <Content Include="App_Plugins\uSync8\backoffice\uSync8\dashboard.html" />
     <Content Include="App_Plugins\uSync8\backoffice\uSync8\uSyncDashboardController.js" />
     <Content Include="App_Plugins\uSync8\changeDialog.html" />
@@ -490,6 +492,7 @@
     <Content Include="App_Plugins\uSync8\addons.json" />
     <Content Include="config\tinyMceConfig.local.xdt.config" />
     <Content Include="config\tinyMceConfig.live.xdt.config" />
+    <Content Include="App_Plugins\Stoolball.PropertyEditors\package.manifest" />
     <None Include="config\uSync8.local.xdt.config" />
     <Content Include="Content\bootstrap\_variables.scss" />
     <Content Include="Content\bootstrap\_utilities.scss" />
@@ -581,6 +584,12 @@
     <Content Include="Content\bootstrap\bootstrap.scss" />
     <Content Include="Content\bootstrap\bootstrap-reboot.scss" />
     <Content Include="Content\bootstrap\bootstrap-grid.scss" />
+    <Content Include="css\rules.page.css">
+      <DependentUpon>rules.page.scss</DependentUpon>
+    </Content>
+    <Content Include="css\rules.page.min.css">
+      <DependentUpon>rules.page.css</DependentUpon>
+    </Content>
     <Content Include="css\scorecards.css">
       <DependentUpon>scorecards.scss</DependentUpon>
     </Content>
@@ -595,6 +604,7 @@
     </Content>
     <Content Include="css\steps.scss" />
     <Content Include="css\scorecards.scss" />
+    <Content Include="css\rules.page.scss" />
     <None Include="css\tinymce.scss" />
     <Content Include="css\tinymce.css">
       <DependentUpon>tinymce.scss</DependentUpon>
@@ -879,6 +889,7 @@
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerMatchLocationDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerSchoolDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerClubDataMigrator.cs" />
+    <Compile Include="App_Plugins\Stoolball.PropertyEditors\StylesheetPickerPropertyValueConverter.cs" />
     <Compile Include="Clubs\ClubAuthorizationPolicy.cs" />
     <Compile Include="Clubs\DeleteClubViewModel.cs" />
     <Compile Include="Clubs\DeleteClubController.cs" />

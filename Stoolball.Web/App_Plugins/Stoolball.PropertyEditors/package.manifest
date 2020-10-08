@@ -1,0 +1,26 @@
+﻿{
+    propertyEditors: [
+        {
+            alias: "Stoolball.StylesheetPicker",
+            name: "Stylesheet Picker",
+            icon: "icon-paint-roller",
+            group: "Pickers",
+            editor: {
+                view: "~/App_Plugins/Stoolball.PropertyEditors/stylesheet-picker.html"
+            },
+            "prevalues": {
+                "fields": [
+                {
+                    "label": "Filename filter",
+                    "description": "A regular expression which stylesheets must match to be included",
+                    "view": "textstring",
+                    "key": "filter"
+                }
+                ]
+            }
+        }
+    ],
+    javascript: [
+        '~/App_Plugins/Stoolball.PropertyEditors/stylesheet-picker.controller.js'
+    ]
+}
