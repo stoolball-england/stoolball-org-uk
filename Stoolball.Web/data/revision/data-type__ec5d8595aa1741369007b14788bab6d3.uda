@@ -5,7 +5,7 @@
   "Parent": null,
   "Udi": "umb://data-type/ec5d8595aa1741369007b14788bab6d3",
   "Dependencies": [],
-  "Name": "Formatted text with image - Image position",
+  "Name": "Image position - Formatted text with image",
   "Alias": null,
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.DataTypeArtifact",
   "__version": "3.4.5"
