@@ -1,0 +1,18 @@
+{
+  "EditorAlias": "Umbraco.TinyMCE",
+  "DatabaseType": 0,
+  "Configuration": {"editor":{"toolbar":["removeformat","bold","italic","link"],"stylesheets":["/css/tinymce.css"],"maxImageSize":500,"mode":"classic","dimensions":{"height":200}},"hideLabel":true,"ignoreUserStartNodes":false,"mediaParentId":null},
+  "Parent": null,
+  "Udi": "umb://data-type/649baac8ada74747aa8f3a8904a029b4",
+  "Dependencies": [
+    {
+      "Udi": "umb://stylesheet/tinymce.css",
+      "Ordering": false,
+      "Mode": 1
+    }
+  ],
+  "Name": "Richtext editor - Tip",
+  "Alias": null,
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.DataTypeArtifact",
+  "__version": "3.4.5"
+}
