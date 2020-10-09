@@ -46,7 +46,7 @@ namespace Stoolball.Web
             composition.Register<IApiKeyProvider, ConfigApiKeyProvider>(Lifetime.Singleton);
             composition.Register<IDateTimeFormatter, DateTimeFormatter>(Lifetime.Singleton);
             composition.Register<ISeasonEstimator, SeasonEstimator>(Lifetime.Singleton);
-            composition.Register<IHtmlSanitizer, HtmlSanitizer>(Lifetime.Singleton);
+            composition.Register<IHtmlSanitizer, HtmlSanitizer>(Lifetime.Transient);
             composition.Register<ICreateMatchSeasonSelector, CreateMatchSeasonSelector>(Lifetime.Singleton);
             composition.Register<IMatchNameBuilder, MatchNameBuilder>(Lifetime.Singleton);
             composition.Register<IPlayerTypeSelector, PlayerTypeSelector>(Lifetime.Singleton);
