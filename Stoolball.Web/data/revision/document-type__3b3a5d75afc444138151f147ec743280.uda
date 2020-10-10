@@ -14,7 +14,7 @@
     "IsElementType": true,
     "AllowedChildContentTypes": []
   },
-  "Parent": null,
+  "Parent": "umb://document-type-container/5be42d3707a847e7b9b7d51af38bdac2",
   "CompositionContentTypes": [],
   "PropertyGroups": [
     {
@@ -42,6 +42,11 @@
   "Dependencies": [
     {
       "Udi": "umb://data-type/649baac8ada74747aa8f3a8904a029b4",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type-container/5be42d3707a847e7b9b7d51af38bdac2",
       "Ordering": true,
       "Mode": 0
     },
