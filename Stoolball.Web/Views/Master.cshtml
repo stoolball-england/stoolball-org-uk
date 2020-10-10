@@ -45,43 +45,6 @@
                             Menu
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbar__account-menu">
-                            @if (Regex.IsMatch(Request.RawUrl, @"^\/teams\/?$"))
-                            {
-                                <li class="dropdown-item">
-                                    <em>Teams</em>
-                                </li>
-                            }
-                            else
-                            {
-                                <li class="dropdown-item">
-                                    <a href="/teams">Teams</a>
-                                </li>
-                            }
-                            @if (Regex.IsMatch(Request.RawUrl, @"^\/competitions\/?$"))
-                            {
-                                <li class="dropdown-item">
-                                    <em>Competitions</em>
-                                </li>
-                            }
-                            else
-                            {
-                                <li class="dropdown-item">
-                                    <a href="/competitions">Competitions</a>
-                                </li>
-                            }
-                            @if (Regex.IsMatch(Request.RawUrl, @"^\/locations\/?$"))
-                            {
-                                <li class="dropdown-item">
-                                    <em>Grounds and sports centres</em>
-                                </li>
-                            }
-                            else
-                            {
-                                <li class="dropdown-item">
-                                    <a href="/locations">Grounds and sports centres</a>
-                                </li>
-                            }
-
                             @{
                                 var childrenOfHome = Umbraco.Content(Guid.Parse("7ea74fe5-4982-4bcf-bb8a-8e213c32f91c"))
                                 .Children()
