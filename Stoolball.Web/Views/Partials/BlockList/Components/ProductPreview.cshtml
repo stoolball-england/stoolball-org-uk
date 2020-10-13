@@ -1,0 +1,27 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Umbraco.Core.Models.Blocks.BlockListItem>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    var content = (ContentModels.ProductPreview)Model.Content;
+}
+<li>
+    @if (content.ProductPage != null) { 
+        @:<a href="@content.ProductPage">
+    }
+    <figure>
+        <img src="@content.Photo.MediaUrl()?width=180&height=180&mode=max&upscale=false" alt="@content.ProductName" width="180" />
+        <figcaption><p class="product-preview__name">@content.ProductName <span class="product-preview__price">£@content.Price</span></p></figcaption>
+    </figure>
+    
+    @if (!string.IsNullOrWhiteSpace(content.Description))
+    {
+        <p class="product-preview__description">@content.Description
+    @if (!string.IsNullOrWhiteSpace(content.Delivery))
+    {
+        @:£@content.Delivery delivery.
+    }
+        </p>
+    }
+    @if (content.ProductPage != null) {
+        @:</a>
+    }
+</li>

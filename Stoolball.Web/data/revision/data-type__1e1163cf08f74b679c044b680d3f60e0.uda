@@ -1,0 +1,12 @@
+{
+  "EditorAlias": "Umbraco.MediaPicker",
+  "DatabaseType": 0,
+  "Configuration": {"multiPicker":false,"onlyImages":true,"disableFolderSelect":true,"startNodeId":"umb://media/f0cf6bcedfc74926abc93c33119036fc","ignoreUserStartNodes":false},
+  "Parent": null,
+  "Udi": "umb://data-type/1e1163cf08f74b679c044b680d3f60e0",
+  "Dependencies": [],
+  "Name": "Product Picker",
+  "Alias": null,
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.DataTypeArtifact",
+  "__version": "3.4.5"
+}

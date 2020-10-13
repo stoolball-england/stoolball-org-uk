@@ -787,6 +787,7 @@
     <Content Include="Views\Partials\BlockList\Components\GettyImage.cshtml" />
     <Content Include="Views\Partials\BlockList\Components\YouTubeVideo.cshtml" />
     <Content Include="Views\Partials\BlockList\Components\Tip.cshtml" />
+    <Content Include="Views\Partials\BlockList\Components\ProductPreview.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -822,6 +823,8 @@
     <Compile Include="App_Data\Models\ImageElementType.generated.cs" />
     <Compile Include="App_Data\Models\LoginMember.generated.cs" />
     <Compile Include="App_Data\Models\LogoutMember.generated.cs" />
+    <Compile Include="App_Data\Models\ProductList.generated.cs" />
+    <Compile Include="App_Data\Models\ProductPreview.generated.cs" />
     <Compile Include="App_Data\Models\ResetPassword.generated.cs" />
     <Compile Include="App_Data\Models\StoolballRouter.generated.cs" />
     <Compile Include="App_Data\Models\StyleGuide.generated.cs" />
@@ -935,6 +938,8 @@
     <Compile Include="Competitions\CompetitionsController.cs" />
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
+    <Compile Include="Products\ProductList.cs" />
+    <Compile Include="Products\ProductListController.cs" />
     <Compile Include="ContentPage\Content.cs" />
     <Compile Include="Forms\EmailField.cs" />
     <Compile Include="ContentPage\ContentController.cs" />
@@ -1185,6 +1190,7 @@
     <Content Include="Views\Partials\Forms\Themes\stoolball\Submitted.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml" />
+    <Content Include="Views\ProductList.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

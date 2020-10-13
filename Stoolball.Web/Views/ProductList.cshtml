@@ -1,0 +1,12 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.ProductList>
+@using ContentModels = Umbraco.Web.PublishedModels;
+
+<h1>@Model.Name</h1>
+@Model.Introduction
+@if (Model.Products.Any())
+{
+<ul>
+    @Html.GetBlockListHtml(Model, "products")
+</ul>
+}
+@Model.FurtherDetails
