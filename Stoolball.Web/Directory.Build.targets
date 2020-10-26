@@ -128,15 +128,6 @@
     <Copy SourceFiles="@(UmbracoLicences)"
       DestinationFiles="$(ProjectDir)App_Plugins\UmbracoLicenses\%(RecursiveDir)%(Filename)%(Extension)"
       Condition="!Exists('$(ProjectDir)App_Plugins\UmbracoLicenses\%(RecursiveDir)%(Filename)%(Extension)')" />
-    <Copy SourceFiles="@(UmbracoDeploy)"
-      DestinationFiles="$(ProjectDir)App_Plugins\Deploy\%(RecursiveDir)%(Filename)%(Extension)"
-      Condition="!Exists('$(ProjectDir)App_Plugins\Deploy\%(RecursiveDir)%(Filename)%(Extension)')" />
-    <Copy SourceFiles="@(UmbracoDeployDLLs)"
-      DestinationFiles="$(ProjectDir)bin\%(Filename)%(Extension)"
-      Condition="!Exists('$(ProjectDir)bin\%(Filename)%(Extension)')" />
-    <Copy SourceFiles="@(UmbracoDeployConfig)"
-      DestinationFiles="$(ProjectDir)config\%(Filename)%(Extension)"
-      Condition="!Exists('$(ProjectDir)config\%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(UmbracoConfigFolderSecrets)"
       DestinationFiles="$(ProjectDir)config\%(Filename)%(Extension)"
       Condition="!Exists('$(ProjectDir)config\%(Filename)%(Extension)')" />
@@ -145,6 +136,12 @@
       Condition="!Exists('$(ProjectDir)%(Filename)%(Extension)')" />
 
     <!-- Always overwrite these files with the version from Umbraco Cloud -->
+    <Copy SourceFiles="@(UmbracoDeploy)"
+      DestinationFiles="$(ProjectDir)App_Plugins\Deploy\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Copy SourceFiles="@(UmbracoDeployDLLs)"
+      DestinationFiles="$(ProjectDir)bin\%(Filename)%(Extension)" />
+    <Copy SourceFiles="@(UmbracoDeployConfig)"
+      DestinationFiles="$(ProjectDir)config\%(Filename)%(Extension)" />
     <Copy SourceFiles="@(UmbracoCloudWebConfig)"
       DestinationFiles="$(ProjectDir)%(Filename)%(Extension)" />
   </Target>
