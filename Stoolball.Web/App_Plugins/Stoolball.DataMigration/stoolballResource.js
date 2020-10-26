@@ -25,10 +25,10 @@
         collectionSucceeded,
         collectionFailed
       );
-      if (collectionSucceeded.length) {
+      if (collectionSucceeded.length && succeeded) {
         succeeded.push(...collectionSucceeded[0]);
       }
-      if (collectionFailed.length) {
+      if (collectionFailed.length && failed) {
         failed.push(...collectionFailed[0]);
       }
     },
