@@ -1,5 +1,6 @@
 ﻿if (typeof stoolball === "undefined") {
-  stoolball = {};
+  // deliberately global scope
+  var stoolball = {};
 }
 stoolball.maps = {
   /**

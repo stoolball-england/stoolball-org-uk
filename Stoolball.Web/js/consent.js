@@ -1,4 +1,24 @@
-﻿(function () {
+﻿if (typeof stoolball === "undefined") {
+  // deliberately global scope
+  var stoolball = {};
+}
+stoolball.consent = {
+  hasFunctionalConsent: function () {
+    return localStorage.getItem("functional_consent") === "true";
+  },
+  hasImprovementConsent: function () {
+    return localStorage.getItem("improvement_consent") === "true";
+  },
+  hasTrackingConsent: function () {
+    return localStorage.getItem("tracking_consent") === "true";
+  },
+  functionalListeners: [],
+  improvementListeners: [],
+  trackingListeners: [],
+};
+
+(function () {
+  // if consent recorded, true OR false, return without asking again
   if (
     localStorage.getItem("functional_consent") &&
     localStorage.getItem("improvement_consent") &&
@@ -54,6 +74,7 @@
       e.preventDefault();
       saveChoices(true, true, true);
       optIn.classList.add("d-none");
+      runListeners();
     });
 
     acceptSelectedButton.addEventListener("click", function (e) {
@@ -64,6 +85,7 @@
         tracking.querySelector("input").checked
       );
       optIn.classList.add("d-none");
+      runListeners();
     });
 
     choicesButton.addEventListener("click", function (e) {
@@ -122,5 +144,23 @@
     localStorage.setItem("functional_consent", functional);
     localStorage.setItem("improvement_consent", improvement);
     localStorage.setItem("tracking_consent", tracking);
+  }
+
+  function runListeners() {
+    if (localStorage.getItem("functional_consent") === "true") {
+      stoolball.consent.functionalListeners.forEach(function (listener) {
+        listener();
+      });
+    }
+    if (localStorage.getItem("improvement_consent") === "true") {
+      stoolball.consent.improvementListeners.forEach(function (listener) {
+        listener();
+      });
+    }
+    if (localStorage.getItem("tracking_consent") === "true") {
+      stoolball.consent.trackingListeners.forEach(function (listener) {
+        listener();
+      });
+    }
   }
 })();

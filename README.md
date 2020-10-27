@@ -9,4 +9,5 @@ This is a rebuild of the Stoolball England website at www.stoolball.org.uk using
 - [Working with stoolball data](Documentation/Database.md)
 - [Routing for stoolball pages](Documentation/Routing.md)
 - [Permissions](Documentation/Permissions.md)
+- [Requiring consent](Documentation/Consent.md)
 - [Design](Documentation/Design.md)
