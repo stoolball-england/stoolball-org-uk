@@ -17,7 +17,10 @@ stoolball.analytics = {
       dataLayer.push(arguments);
     }
     gtag("js", new Date());
-    gtag("config", document.documentElement.getAttribute("data-analytics"));
+    gtag("config", document.documentElement.getAttribute("data-analytics"), {
+      allow_google_signals: false,
+      allow_ad_personalization_signals: false,
+    });
   },
 };
 if (stoolball.consent.hasImprovementConsent()) {
