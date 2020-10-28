@@ -40,6 +40,7 @@ namespace Stoolball.Web.Security
 
             SetupDirectives();
             SetupDefaultPolicy();
+            SetupGoogleAnalytics();
 
             if (GoogleMaps)
             {
@@ -77,6 +78,13 @@ namespace Stoolball.Web.Security
 
             filterContext.HttpContext.Response.Headers.Add("Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, FRAME_SRC, CONNECT_SRC, MANIFEST_SRC, TRUSTED_TYPES));
             filterContext.HttpContext.Response.Headers.Add("X-Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, FRAME_SRC, MANIFEST_SRC, CONNECT_SRC));
+        }
+
+        private void SetupGoogleAnalytics()
+        {
+            AddSource(SCRIPT_SRC, "https://www.googletagmanager.com");
+            AddSource(IMG_SRC, "https://www.google-analytics.com");
+            AddSource(CONNECT_SRC, "https://www.google-analytics.com");
         }
 
         private void SetupGettyImages()

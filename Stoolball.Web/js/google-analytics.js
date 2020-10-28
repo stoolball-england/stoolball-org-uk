@@ -4,7 +4,20 @@
 }
 stoolball.analytics = {
   load: function () {
-    console.log("load analytics");
+    const gtm = document.createElement("script");
+    gtm.setAttribute("async", "async");
+    gtm.setAttribute(
+      "src",
+      "https://www.googletagmanager.com/gtag/js?id=G-4HCNJHS2HV"
+    );
+    document.head.appendChild(gtm);
+
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+    gtag("config", document.documentElement.getAttribute("data-analytics"));
   },
 };
 if (stoolball.consent.hasImprovementConsent()) {

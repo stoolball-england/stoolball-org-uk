@@ -31,6 +31,6 @@ There are three consent levels:
 
    Use `stoolball.consent.hasImprovementConsent()` and the `stoolball.consent.improvementListeners` array.
 
-3. **Tracking consent**: Personalised tracking for used by services like social media and advertising.
+3. **Tracking consent**: Personalised tracking used by services like social media and advertising.
 
    Use `stoolball.consent.hasTrackingConsent()` and the `stoolball.consent.trackingListeners` array.
