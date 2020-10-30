@@ -481,6 +481,12 @@
     <Content Include="css\base.min.css">
       <DependentUpon>base.css</DependentUpon>
     </Content>
+    <Content Include="css\cookies.page.css">
+      <DependentUpon>cookies.page.scss</DependentUpon>
+    </Content>
+    <Content Include="css\cookies.page.min.css">
+      <DependentUpon>cookies.page.css</DependentUpon>
+    </Content>
     <Content Include="css\related-items.css">
       <DependentUpon>related-items.scss</DependentUpon>
     </Content>
@@ -607,6 +613,7 @@
     <Content Include="css\steps.scss" />
     <Content Include="css\scorecards.scss" />
     <Content Include="css\rules.page.scss" />
+    <Content Include="css\cookies.page.scss" />
     <None Include="css\tinymce.scss" />
     <Content Include="css\tinymce.css">
       <DependentUpon>tinymce.scss</DependentUpon>

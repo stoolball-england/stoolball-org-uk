@@ -1,26 +1,30 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Umbraco.Core.Models.Blocks.BlockListItem>
 @using ContentModels = Umbraco.Web.PublishedModels;
+@using Umbraco.Core.Composing;
+@using Stoolball.Html;
 @{
     var content = (ContentModels.FormattedTextWithImage)Model.Content;
+    var formatter = (IHtmlFormatter)Current.Factory.GetInstance(typeof(IHtmlFormatter));
+    var html = formatter.FormatHtml(content.Text.ToHtmlString());
     var imagePosition = content.ImagePosition?.ToLowerInvariant() ?? "left";
 }
 @if (content != null && ((content.Text != null && !string.IsNullOrEmpty(content.Text.ToHtmlString())) || content.Image != null))
 {
-<div class="block__text-with-image block__text-with-image__@imagePosition">
-    <div class="block__text">@content.Text</div> 
-    <figure class="block__image">
-    @if (content.Image != null)
-    {
-        <img srcset="@content.Image.MediaUrl()?width=150&height=150&mode=max&upscale=false 576w,
+    <div class="block__text-with-image block__text-with-image__@imagePosition">
+        <div class="block__text">@Html.Raw(html)</div>
+        <figure class="block__image">
+            @if (content.Image != null)
+            {
+                <img srcset="@content.Image.MediaUrl()?width=150&height=150&mode=max&upscale=false 576w,
                      @content.Image.MediaUrl()?width=300&height=300&mode=max&upscale=false 768w,
                      @content.Image.MediaUrl()?width=400&height=400&mode=max&upscale=false 992w,
                      @content.Image.MediaUrl()?width=500&height=500&mode=max&upscale=false 1200w"
-             sizes="100vw" src="@content.Image.MediaUrl()?width=500&height=500&mode=max&upscale=false" alt="@content.Image.Name" />
-        if (content.ShowCaption)
-        {
-            <figcaption>@content.Image.Name</figcaption>
-        }
-    }
-   </figure>
-</div>
+                     sizes="100vw" src="@content.Image.MediaUrl()?width=500&height=500&mode=max&upscale=false" alt="@content.Image.Name" />
+                if (content.ShowCaption)
+                {
+                    <figcaption>@content.Image.Name</figcaption>
+                }
+            }
+        </figure>
+    </div>
 }

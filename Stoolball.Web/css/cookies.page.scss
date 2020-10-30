@@ -1,0 +1,9 @@
+﻿main table {
+    width: 100%;
+}
+main table td {
+    width: 50%;
+}
+main table th:first-child, main table td:last-child {
+    width: 25%;
+}

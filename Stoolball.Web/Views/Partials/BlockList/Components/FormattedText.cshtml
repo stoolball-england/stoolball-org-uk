@@ -1,6 +1,10 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Umbraco.Core.Models.Blocks.BlockListItem>
 @using ContentModels = Umbraco.Web.PublishedModels;
+@using Umbraco.Core.Composing;
+@using Stoolball.Html;
 @{
     var content = (ContentModels.FormattedText)Model.Content;
+    var formatter = (IHtmlFormatter)Current.Factory.GetInstance(typeof(IHtmlFormatter));
+    var html = formatter.FormatHtml(content.Text.ToHtmlString());
 }
-@content.Text
+@Html.Raw(html)

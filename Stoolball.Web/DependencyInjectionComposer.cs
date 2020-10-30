@@ -3,6 +3,7 @@ using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Email;
+using Stoolball.Html;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
@@ -47,6 +48,7 @@ namespace Stoolball.Web
             composition.Register<IDateTimeFormatter, DateTimeFormatter>(Lifetime.Singleton);
             composition.Register<ISeasonEstimator, SeasonEstimator>(Lifetime.Singleton);
             composition.Register<IHtmlSanitizer, HtmlSanitizer>(Lifetime.Transient);
+            composition.Register<IHtmlFormatter, Stoolball.Html.HtmlFormatter>(Lifetime.Transient);
             composition.Register<ICreateMatchSeasonSelector, CreateMatchSeasonSelector>(Lifetime.Singleton);
             composition.Register<IMatchNameBuilder, MatchNameBuilder>(Lifetime.Singleton);
             composition.Register<IPlayerTypeSelector, PlayerTypeSelector>(Lifetime.Singleton);

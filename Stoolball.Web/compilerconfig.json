@@ -34,5 +34,9 @@
   {
     "outputFile": "css/rules.page.css",
     "inputFile": "css/rules.page.scss"
+  },
+  {
+    "outputFile": "css/cookies.page.css",
+    "inputFile": "css/cookies.page.scss"
   }
 ]
