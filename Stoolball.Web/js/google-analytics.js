@@ -3,7 +3,10 @@
   var stoolball = {};
 }
 stoolball.analytics = {
-  load: function () {
+  setup: function () {
+    if (typeof window.dataLayer !== "undefined") {
+      return;
+    }
     const gtm = document.createElement("script");
     gtm.setAttribute("async", "async");
     gtm.setAttribute(
@@ -24,7 +27,7 @@ stoolball.analytics = {
   },
 };
 if (stoolball.consent.hasImprovementConsent()) {
-  stoolball.analytics.load();
+  stoolball.analytics.setup();
 } else {
-  stoolball.consent.improvementListeners.push(stoolball.analytics.load);
+  stoolball.consent.improvementListeners.push(stoolball.analytics.setup);
 }

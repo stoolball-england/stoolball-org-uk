@@ -695,6 +695,7 @@
     <Content Include="Forms\UmbracoForms.local.xdt.config" />
     <Content Include="css\_blocks.scss" />
     <Content Include="Media\Web.config" />
+    <Content Include="css\_consent.scss" />
     <None Include="Status\offline.json" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
@@ -790,6 +791,7 @@
     <Content Include="Views\Partials\BlockList\Components\YouTubeVideo.cshtml" />
     <Content Include="Views\Partials\BlockList\Components\Tip.cshtml" />
     <Content Include="Views\Partials\BlockList\Components\ProductPreview.cshtml" />
+    <Content Include="Views\Partials\BlockList\Components\Consent.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -814,7 +816,9 @@
     <Compile Include="Account\ResetPasswordRequest.cs" />
     <Compile Include="Account\ResetPasswordSurfaceController.cs" />
     <Compile Include="Account\ResetPasswordUpdate.cs" />
+    <Compile Include="App_Data\Models\Consent.generated.cs" />
     <Compile Include="App_Data\Models\Content.generated.cs" />
+    <Compile Include="App_Data\Models\Cookies.generated.cs" />
     <Compile Include="App_Data\Models\CreateMember.generated.cs" />
     <Compile Include="App_Data\Models\Design.generated.cs" />
     <Compile Include="App_Data\Models\FormattedText.generated.cs" />
@@ -940,6 +944,7 @@
     <Compile Include="Competitions\CompetitionsController.cs" />
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
+    <Compile Include="ContentPage\CookiesController.cs" />
     <Compile Include="Products\ProductList.cs" />
     <Compile Include="Products\ProductListController.cs" />
     <Compile Include="ContentPage\Content.cs" />

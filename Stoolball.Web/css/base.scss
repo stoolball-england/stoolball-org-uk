@@ -3,6 +3,7 @@
 @import "../Content/bootstrap/bootstrap-grid.scss";
 
 /* Required for header */
+@import "_consent.scss";
 @import "../Content/bootstrap/_navbar";
 @import "../Content/bootstrap/transitions";
 @import "../Content/bootstrap/_dropdown.scss";

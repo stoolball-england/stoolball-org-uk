@@ -70,6 +70,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 await _redirectsRepository.InsertRedirect("/teams/mixed", "/teams?q=mixed", null).ConfigureAwait(false);
                 await _redirectsRepository.InsertRedirect("/teams/junior", "/teams?q=junior", null).ConfigureAwait(false);
                 await _redirectsRepository.InsertRedirect("/teams/past", "/teams", null).ConfigureAwait(false);
+
+                await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/about").ConfigureAwait(false);
+                await _redirectsRepository.InsertRedirect("/about/privacy-notice-match-results-and-comments", "/privacy/privacy-notice-match-results-and-comments", null).ConfigureAwait(false);
+                await _redirectsRepository.InsertRedirect("/about/privacy-notice-registering-with-stoolball-england", "/privacy/privacy-notice-registering-with-stoolball-england", null).ConfigureAwait(false);
             }
             catch (Exception e)
             {

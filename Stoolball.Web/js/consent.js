@@ -18,23 +18,54 @@ stoolball.consent = {
 };
 
 (function () {
-  // if consent recorded, true OR false, return without asking again
+  // always try to set up the consent control page - it could be this one
+  document.addEventListener("DOMContentLoaded", consentControlPage);
+
+  // if consent recorded, true OR false, return without asking again, unless overridden
   if (
     localStorage.getItem("functional_consent") &&
     localStorage.getItem("improvement_consent") &&
-    localStorage.getItem("tracking_consent")
+    localStorage.getItem("tracking_consent") &&
+    !document.querySelector("[data-show-consent]")
   ) {
     return;
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
-    const optIn = document.createElement("form");
-    optIn.setAttribute("class", "opt-in container-xl");
-    optIn.appendChild(
+  document.addEventListener("DOMContentLoaded", createConsentBanner);
+
+  function consentControlPage() {
+    setupConsentOption("functional");
+    setupConsentOption("improvement");
+    setupConsentOption("tracking");
+  }
+
+  function setupConsentOption(id) {
+    id = id + "_consent";
+    const checkbox = document.getElementById(id);
+    if (checkbox) {
+      checkbox.checked = localStorage.getItem(id) === "true";
+      checkbox.addEventListener("change", function () {
+        localStorage.setItem(id, checkbox.checked);
+        if (checkbox.checked) {
+          runListeners();
+        }
+      });
+    }
+  }
+
+  function createConsentBanner() {
+    const consent = document.createElement("form");
+    consent.classList.add("consent");
+    const container = document.createElement("div");
+    container.classList.add("container-xl");
+    const request = document.createElement("p");
+    request.appendChild(
       document.createTextNode(
-        "Some features of this site store information on your computer. Is that OK?"
+        "This website saves information in cookies on your device. Is that OK?"
       )
     );
+    consent.appendChild(container);
+    container.appendChild(request);
 
     const acceptButton = createButton(
       "btn btn-primary",
@@ -52,28 +83,28 @@ stoolball.consent = {
 
     const essential = createCheckbox(
       "essential",
-      "Always on (essential features like signing in)"
+      "Always on – essential features like signing in"
     );
     essential.querySelector("input").setAttribute("checked", "checked");
     essential.querySelector("input").setAttribute("disabled", "disabled");
 
     const functional = createCheckbox(
       "functional",
-      "Optional features (make this site work better, with no tracking)"
+      "Optional features – make this site work better, with no tracking"
     );
     const improvement = createCheckbox(
       "improvement",
-      "Help to improve this site with anonymous statistics (Google Analytics)"
+      "Help to improve this site with anonymous statistics"
     );
     const tracking = createCheckbox(
       "tracking",
-      "Social media (show better links to services like Facebook and Twitter, but they will track you)"
+      "Social media – show better links to services like Facebook and Twitter, but they will track you"
     );
 
     acceptButton.addEventListener("click", function (e) {
       e.preventDefault();
       saveChoices(true, true, true);
-      optIn.classList.add("d-none");
+      consent.classList.add("d-none");
       runListeners();
     });
 
@@ -84,7 +115,7 @@ stoolball.consent = {
         improvement.querySelector("input").checked,
         tracking.querySelector("input").checked
       );
-      optIn.classList.add("d-none");
+      consent.classList.add("d-none");
       runListeners();
     });
 
@@ -94,12 +125,13 @@ stoolball.consent = {
       acceptSelectedButton.classList.remove("d-none");
       acceptSelectedButton.classList.add("d-inline");
       choicesButton.classList.add("d-none");
+      consent.classList.add("consent__choices");
     });
 
     rejectButton.addEventListener("click", function (e) {
       e.preventDefault();
       saveChoices(false, false, false);
-      optIn.classList.add("d-none");
+      consent.classList.add("d-none");
     });
 
     choices.appendChild(essential);
@@ -107,15 +139,18 @@ stoolball.consent = {
     choices.appendChild(improvement);
     choices.appendChild(tracking);
 
-    optIn.appendChild(choices);
+    container.appendChild(choices);
 
-    optIn.appendChild(acceptButton);
-    optIn.appendChild(acceptSelectedButton);
-    optIn.appendChild(rejectButton);
-    optIn.appendChild(choicesButton);
+    const buttons = document.createElement("span");
+    buttons.classList.add("consent__buttons");
+    buttons.appendChild(acceptButton);
+    buttons.appendChild(acceptSelectedButton);
+    buttons.appendChild(rejectButton);
+    buttons.appendChild(choicesButton);
+    container.appendChild(buttons);
 
-    document.body.insertBefore(optIn, document.body.firstChild);
-  });
+    document.body.insertBefore(consent, document.body.firstChild);
+  }
 
   function createButton(className, label) {
     const button = document.createElement("button");

@@ -3,9 +3,9 @@
   "AllowedTemplates": [
     "umb://template/14a24e1e79ac4d579b3632fc5460446e"
   ],
-  "Icon": "icon-umb-content color-black",
+  "Icon": "icon-settings-alt color-blue-grey",
   "Thumbnail": "folder.png",
-  "Description": "A normal page with text and images",
+  "Description": "A cookie policy with options to control cookies by category",
   "IsContainer": false,
   "Permissions": {
     "AllowVaryingByCulture": false,
@@ -14,8 +14,7 @@
     "IsElementType": false,
     "AllowedChildContentTypes": [
       "umb://document-type/0995cb4def7043a89fc628e65d15f5d1",
-      "umb://document-type/75ff99b6b2d9416ea8c695c0ff36e3d3",
-      "umb://document-type/78709437e0c74a2f984811e53bb866df"
+      "umb://document-type/75ff99b6b2d9416ea8c695c0ff36e3d3"
     ]
   },
   "Parent": null,
@@ -25,14 +24,14 @@
   ],
   "PropertyGroups": [
     {
-      "Key": "dcbd3ef8-74a9-4e7b-baad-55b6b3b2df81",
+      "Key": "1e6d774e-a189-499b-827a-160047d72bdf",
       "Name": "Content",
       "SortOrder": 0,
       "PropertyTypes": [
         {
-          "Key": "89ef9c3e-79d3-48eb-85e0-e52718bb7d88",
+          "Key": "9122f5c8-af8d-484c-8560-711a67a1de8f",
           "Alias": "blockList",
-          "DataType": "umb://data-type/82d9929f1c7b454f9ccee8d473698e88",
+          "DataType": "umb://data-type/b9a93649aff4442688e7dd2249b53e7d",
           "Description": null,
           "Mandatory": false,
           "Name": "Content",
@@ -45,10 +44,10 @@
     }
   ],
   "PropertyTypes": [],
-  "Udi": "umb://document-type/75ff99b6b2d9416ea8c695c0ff36e3d3",
+  "Udi": "umb://document-type/78709437e0c74a2f984811e53bb866df",
   "Dependencies": [
     {
-      "Udi": "umb://data-type/82d9929f1c7b454f9ccee8d473698e88",
+      "Udi": "umb://data-type/b9a93649aff4442688e7dd2249b53e7d",
       "Ordering": true,
       "Mode": 0
     },
@@ -68,11 +67,6 @@
       "Mode": 0
     },
     {
-      "Udi": "umb://document-type/78709437e0c74a2f984811e53bb866df",
-      "Ordering": false,
-      "Mode": 0
-    },
-    {
       "Udi": "umb://document-type/d9999f5ac07b4f379d013f0316d8678c",
       "Ordering": true,
       "Mode": 0
@@ -83,8 +77,8 @@
       "Mode": 0
     }
   ],
-  "Name": "Content",
-  "Alias": "content",
+  "Name": "Cookies",
+  "Alias": "cookies",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
   "__version": "3.5.1"
 }

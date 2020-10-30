@@ -1,0 +1,15 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Umbraco.Core.Models.Blocks.BlockListItem>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using Umbraco.Core.Composing
+@{
+    var content = (ContentModels.Consent)Model.Content;
+}
+@if (!string.IsNullOrWhiteSpace(content.ConsentLevel) && !string.IsNullOrWhiteSpace(content.Label))
+{
+<form>
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="@content.ConsentLevel">
+        <label for="@content.ConsentLevel" class="custom-control-label">@content.Label</label>
+    </div>
+</form>
+}
