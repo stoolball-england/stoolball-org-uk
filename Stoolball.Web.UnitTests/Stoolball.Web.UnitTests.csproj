@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{39945245-3B64-4248-9106-12E0007B1B3D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Stoolball.Web.Tests</RootNamespace>
+    <AssemblyName>Stoolball.Web.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.IO" />
+    <Reference Include="System.Linq.Expressions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Threading.Tasks" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Account\CreateMemberSurfaceControllerTests.cs" />
+    <Compile Include="Account\LoginMemberSurfaceControllerTests.cs" />
+    <Compile Include="Clubs\ClubActionsControllerTests.cs" />
+    <Compile Include="Clubs\DeleteClubControllerTests.cs" />
+    <Compile Include="Clubs\CreateClubControllerTests.cs" />
+    <Compile Include="Clubs\EditClubControllerTests.cs" />
+    <Compile Include="Competitions\CompetitionsControllerTests.cs" />
+    <Compile Include="Competitions\DeleteCompetitionControllerTests.cs" />
+    <Compile Include="Competitions\CreateSeasonControllerTests.cs" />
+    <Compile Include="Competitions\CreateCompetitionControllerTests.cs" />
+    <Compile Include="Competitions\EditSeasonTeamsControllerTests.cs" />
+    <Compile Include="Competitions\EditSeasonPointsControllerTests.cs" />
+    <Compile Include="Competitions\EditSeasonControllerTests.cs" />
+    <Compile Include="Competitions\EditCompetitionControllerTests.cs" />
+    <Compile Include="Competitions\MatchesForSeasonControllerTests.cs" />
+    <Compile Include="Competitions\CompetitionActionsControllerTests.cs" />
+    <Compile Include="Competitions\SeasonActionsControllerTests.cs" />
+    <Compile Include="Competitions\DeleteSeasonControllerTests.cs" />
+    <Compile Include="Competitions\SeasonResultsControllerTests.cs" />
+    <Compile Include="Forms\EmailFieldTests.cs" />
+    <Compile Include="Matches\CreateKnockoutMatchControllerTests.cs" />
+    <Compile Include="Matches\CreateFriendlyMatchControllerTests.cs" />
+    <Compile Include="Matches\CreateTournamentControllerTests.cs" />
+    <Compile Include="Matches\EditBattingScorecardControllerTests.cs" />
+    <Compile Include="Matches\EditBowlingScorecardControllerTests.cs" />
+    <Compile Include="Matches\EditFriendlyMatchControllerTests.cs" />
+    <Compile Include="Matches\EditCloseOfPlayControllerTests.cs" />
+    <Compile Include="Matches\EditStartOfPlayControllerTests.cs" />
+    <Compile Include="Matches\EditTournamentTeamsControllerTests.cs" />
+    <Compile Include="Matches\EditTournamentControllerTests.cs" />
+    <Compile Include="Matches\EditKnockoutMatchControllerTests.cs" />
+    <Compile Include="Matches\EditLeagueMatchControllerTests.cs" />
+    <Compile Include="Matches\DeleteTournamentControllerTests.cs" />
+    <Compile Include="Matches\DeleteMatchControllerTests.cs" />
+    <Compile Include="Matches\MatchActionsControllerTests.cs" />
+    <Compile Include="Matches\CreateLeagueMatchControllerTests.cs" />
+    <Compile Include="Matches\TournamentActionsControllerTests.cs" />
+    <Compile Include="Matches\TournamentControllerTests.cs" />
+    <Compile Include="Matches\MatchControllerTests.cs" />
+    <Compile Include="MatchLocations\MatchLocationActionsControllerTests.cs" />
+    <Compile Include="MatchLocations\CreateMatchLocationControllerTests.cs" />
+    <Compile Include="MatchLocations\EditMatchLocationControllerTests.cs" />
+    <Compile Include="MatchLocations\DeleteMatchLocationControllerTests.cs" />
+    <Compile Include="MatchLocations\MatchLocationsControllerTests.cs" />
+    <Compile Include="Teams\CreateTeamControllerTests.cs" />
+    <Compile Include="Teams\EditTransientTeamControllerTests.cs" />
+    <Compile Include="Teams\EditTeamControllerTests.cs" />
+    <Compile Include="Teams\TeamActionsControllerTests.cs" />
+    <Compile Include="Teams\DeleteTeamControllerTests.cs" />
+    <Compile Include="Teams\TeamsControllerTests.cs" />
+    <Compile Include="Teams\MatchesForTeamControllerTests.cs" />
+    <Compile Include="Teams\TransientTeamControllerTests.cs" />
+    <Compile Include="Teams\TeamControllerTests.cs" />
+    <Compile Include="MatchLocations\MatchLocationControllerTests.cs" />
+    <Compile Include="MatchLocations\MatchesForMatchLocationControllerTests.cs" />
+    <Compile Include="Clubs\MatchesForClubControllerTests.cs" />
+    <Compile Include="Clubs\ClubControllerTests.cs" />
+    <Compile Include="Competitions\SeasonControllerTests.cs" />
+    <Compile Include="Competitions\CompetitionControllerTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Routing\StoolballRouteContentFinderTests.cs" />
+    <Compile Include="UmbracoBaseTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
+      <Version>3.3.1</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Moq">
+      <Version>4.14.7</Version>
+    </PackageReference>
+    <PackageReference Include="Our.Umbraco.Community.Tests">
+      <Version>8.8.1</Version>
+    </PackageReference>
+    <PackageReference Include="UmbracoCms.Web">
+      <Version>8.8.1</Version>
+    </PackageReference>
+    <PackageReference Include="UmbracoForms.Core">
+      <Version>8.5.4</Version>
+    </PackageReference>
+    <PackageReference Include="xunit">
+      <Version>2.4.1</Version>
+    </PackageReference>
+    <PackageReference Include="xunit.runner.visualstudio">
+      <Version>2.4.3</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stoolball.Umbraco.Data\Stoolball.Umbraco.Data.csproj">
+      <Project>{B34B6E72-27E7-4440-BE0D-A627ABE6CA17}</Project>
+      <Name>Stoolball.Umbraco.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Stoolball.Web\Stoolball.Web.csproj">
+      <Project>{f66102a7-55a0-423a-aad3-19d89147b5c7}</Project>
+      <Name>Stoolball.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Stoolball\Stoolball.csproj">
+      <Project>{4F0709D1-9E82-4016-8003-0E67D6F8CB60}</Project>
+      <Name>Stoolball</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
