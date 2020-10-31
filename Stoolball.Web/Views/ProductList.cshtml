@@ -1,12 +1,23 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.ProductList>
 @using ContentModels = Umbraco.Web.PublishedModels;
+@using ClientDependency.Core.Mvc;
+@{ 
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
 
+    Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
+    Html.RequiresJs("/js/tinymce.js");
+}
 <h1>@Model.Name</h1>
 @Model.Introduction
 @if (Model.Products.Any())
 {
-<ul>
-    @Html.GetBlockListHtml(Model, "products")
-</ul>
+    <ul>
+        @Html.GetBlockListHtml(Model, "products")
+    </ul>
 }
 @Model.FurtherDetails
+@if (Model.EnquiryForm != null)
+{
+    @Umbraco.RenderMacro("renderUmbracoForm", new { FormGuid = Model.EnquiryForm, FormTheme = "stoolball", ExcludeScripts = "1" })
+}

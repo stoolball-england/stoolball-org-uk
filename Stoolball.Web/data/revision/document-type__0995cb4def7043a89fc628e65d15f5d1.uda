@@ -50,6 +50,18 @@
           "VariesBySegment": false
         },
         {
+          "Key": "2588fcea-6b44-4577-a8ed-26964677a10b",
+          "Alias": "enquiryForm",
+          "DataType": "umb://data-type/1f3e7a235f364f7e92eee74e428410b5",
+          "Description": null,
+          "Mandatory": false,
+          "Name": "Enquiry form",
+          "SortOrder": 3,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
           "Key": "63f0607c-c89e-4d81-80b2-30a95a9969a6",
           "Alias": "furtherDetails",
           "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
@@ -67,6 +79,11 @@
   "PropertyTypes": [],
   "Udi": "umb://document-type/0995cb4def7043a89fc628e65d15f5d1",
   "Dependencies": [
+    {
+      "Udi": "umb://data-type/1f3e7a235f364f7e92eee74e428410b5",
+      "Ordering": true,
+      "Mode": 0
+    },
     {
       "Udi": "umb://data-type/212ad3db330d4c8db1a40131338f479c",
       "Ordering": true,
@@ -96,5 +113,5 @@
   "Name": "Product List",
   "Alias": "productList",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.5"
+  "__version": "3.5.1"
 }
