@@ -7,17 +7,17 @@ namespace Stoolball.Tests.SocialMedia
     public class YouTubeUrlNormaliserTests
     {
         [Theory]
-        [InlineData("https://www.youtube.com/embed/ITqskvM7HAw")]
-        [InlineData("https://www.youtube-nocookie.com/embed/ITqskvM7HAw")]
-        [InlineData("https://www.youtube.com/watch?v=ITqskvM7HAw")]
-        [InlineData("https://youtu.be/ITqskvM7HAw")]
+        [InlineData("https://www.youtube.com/embed/vkuNQ0CE_nY")]
+        [InlineData("https://www.youtube-nocookie.com/embed/vkuNQ0CE_nY")]
+        [InlineData("https://www.youtube.com/watch?v=vkuNQ0CE_nY")]
+        [InlineData("https://youtu.be/vkuNQ0CE_nY")]
         public void Normalise_valid_URL_returns_no_cookie_URL(string originalUrl)
         {
             var normaliser = new YouTubeUrlNormaliser();
             var result = normaliser.TryNormaliseUrl(new Uri(originalUrl), out var normalisedUri);
 
             Assert.True(result);
-            Assert.Equal("https://www.youtube-nocookie.com/embed/ITqskvM7HAw", normalisedUri.ToString());
+            Assert.Equal("https://www.youtube-nocookie.com/embed/vkuNQ0CE_nY", normalisedUri.ToString());
         }
 
         [Theory]

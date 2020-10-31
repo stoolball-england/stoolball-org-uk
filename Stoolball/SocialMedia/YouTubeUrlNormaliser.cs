@@ -24,7 +24,7 @@ namespace Stoolball.SocialMedia
                 return false;
             }
 
-            var match = Regex.Match(urlToParse, @"(\/embed\/|\/watch\?v=|youtu.be\/)(?<VideoId>[A-Z0-9]+)", RegexOptions.IgnoreCase);
+            var match = Regex.Match(urlToParse, @"(\/embed\/|\/watch\?v=|youtu.be\/)(?<VideoId>[A-Z0-9_]+)", RegexOptions.IgnoreCase);
             if (!match.Success)
             {
                 normalisedUrl = null;
