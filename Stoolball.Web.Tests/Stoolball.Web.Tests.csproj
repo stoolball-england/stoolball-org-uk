@@ -130,21 +130,21 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.3.0</Version>
+      <Version>3.3.1</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Moq">
-      <Version>4.14.5</Version>
+      <Version>4.14.7</Version>
     </PackageReference>
     <PackageReference Include="Our.Umbraco.Community.Tests">
-      <Version>8.6.5</Version>
+      <Version>8.8.1</Version>
     </PackageReference>
     <PackageReference Include="UmbracoCms.Web">
-      <Version>8.8.0</Version>
+      <Version>8.8.1</Version>
     </PackageReference>
     <PackageReference Include="UmbracoForms.Core">
-      <Version>8.5.3</Version>
+      <Version>8.5.4</Version>
     </PackageReference>
     <PackageReference Include="xunit">
       <Version>2.4.1</Version>

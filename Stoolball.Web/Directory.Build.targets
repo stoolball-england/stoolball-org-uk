@@ -32,27 +32,55 @@
 
   <!-- Copy files from NuGet packages that are needed to run -->
   <Target Name="StoolballCopyFilesFromNuGetPackages" BeforeTargets="WebCompile">
+    <XmlPeek XmlInputPath="packages.config" Query="packages/package[@id='UmbracoCms']/@version">
+      <Output TaskParameter="Result" ItemName="UmbracoVersion" />
+    </XmlPeek>
+    <XmlPeek XmlInputPath="packages.config" Query="packages/package[@id='UmbracoForms']/@version">
+      <Output TaskParameter="Result" ItemName="UmbracoFormsVersion" />
+    </XmlPeek>
+    <XmlPeek XmlInputPath="packages.config" Query="packages/package[@id='uSync']/@version">
+      <Output TaskParameter="Result" ItemName="USyncVersion" />
+    </XmlPeek>
+    <XmlPeek XmlInputPath="packages.config" Query="packages/package[@id='bootstrap.sass']/@version">
+      <Output TaskParameter="Result" ItemName="BootstrapVersion" />
+    </XmlPeek>
+    <XmlPeek XmlInputPath="packages.config" Query="packages/package[@id='jQuery']/@version">
+      <Output TaskParameter="Result" ItemName="JQueryVersion" />
+    </XmlPeek>
+    <XmlPeek XmlInputPath="packages.config" Query="packages/package[@id='jQuery.Validation']/@version">
+      <Output TaskParameter="Result" ItemName="JQueryValidationVersion" />
+    </XmlPeek>
+    <XmlPeek XmlInputPath="packages.config" Query="packages/package[@id='Microsoft.jQuery.Unobtrusive.Validation']/@version">
+      <Output TaskParameter="Result" ItemName="JQueryUnobtrusiveValidationVersion" />
+    </XmlPeek>
+    <XmlPeek XmlInputPath="packages.config" Query="packages/package[@id='popper.js']/@version">
+      <Output TaskParameter="Result" ItemName="PopperVersion" />
+    </XmlPeek>
+    <XmlPeek XmlInputPath="packages.config" Query="packages/package[@id='Skybrud.Umbraco.Redirects']/@version">
+      <Output TaskParameter="Result" ItemName="SkybrudRedirectsVersion" />
+    </XmlPeek>
+    
     <PropertyGroup>
-      <UmbracoVersion>8.8.0</UmbracoVersion>
-      <UmbracoFormsVersion>8.5.3</UmbracoFormsVersion>
-      <USyncVersion>8.7.0.1</USyncVersion>
-      <BootstrapVersion>4.5.2</BootstrapVersion>
-      <JQueryVersion>3.5.1</JQueryVersion>
-      <JQueryValidationVersion>1.19.2</JQueryValidationVersion>
-      <JQueryUnobtrusiveValidationVersion>3.2.11</JQueryUnobtrusiveValidationVersion>
-      <PopperVersion>1.16.1</PopperVersion>
-      <SkybrudRedirectsVersion>2.0.4</SkybrudRedirectsVersion>
+      <UmbracoVersion>@(UmbracoVersion)</UmbracoVersion>
+      <UmbracoFormsVersion>@(UmbracoFormsVersion)</UmbracoFormsVersion>
+      <USyncVersion>@(USyncVersion)</USyncVersion>
+      <BootstrapVersion>@(BootstrapVersion)</BootstrapVersion>
+      <JQueryVersion>@(JQueryVersion)</JQueryVersion>
+      <JQueryValidationVersion>@(JQueryValidationVersion)</JQueryValidationVersion>
+      <JQueryUnobtrusiveValidationVersion>@(JQueryUnobtrusiveValidationVersion)</JQueryUnobtrusiveValidationVersion>
+      <PopperVersion>@(PopperVersion)</PopperVersion>
+      <SkybrudRedirectsVersion>@(SkybrudRedirectsVersion)</SkybrudRedirectsVersion>
     </PropertyGroup>
 
-    <Error Text="UmbracoCms NuGet package v$(UmbracoVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\UmbracoCms.$(UmbracoVersion)\')" />
-    <Error Text="UmbracoForms NuGet package v$(UmbracoFormsVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\UmbracoForms.$(UmbracoFormsVersion)\')" />
-    <Error Text="uSync NuGet package v$(USyncVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\uSync.$(USyncVersion)\')" />
-    <Error Text="bootstrap.sass NuGet package v$(BootstrapVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\bootstrap.sass.$(BootstrapVersion)\')" />
-    <Error Text="jQuery NuGet package v$(JQueryVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\jQuery.$(JQueryVersion)\')" />
-    <Error Text="jQuery.Validation NuGet package v$(JQueryValidationVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\jQuery.Validation.$(JQueryValidationVersion)\')" />
-    <Error Text="Microsoft.jQuery.Unobtrusive.Validation NuGet package v$(JQueryUnobtrusiveValidationVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\Microsoft.jQuery.Unobtrusive.Validation.$(JQueryUnobtrusiveValidationVersion)\')" />
-    <Error Text="popper.js NuGet package v$(PopperVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\popper.js.$(PopperVersion)\')" />
-    <Error Text="Skybrud.Umbraco.Redirects NuGet package v$(SkybrudRedirectsVersion) not found. You probably upgraded to a later version and forgot to update Stoolball.Web\Directory.Build.targets." Condition="!Exists('$(SolutionDir)packages\Skybrud.Umbraco.Redirects.$(SkybrudRedirectsVersion)\')" />
+    <Error Text="UmbracoCms NuGet package v$(UmbracoVersion) not found." Condition="!Exists('$(SolutionDir)packages\UmbracoCms.$(UmbracoVersion)\')" />
+    <Error Text="UmbracoForms NuGet package v$(UmbracoFormsVersion) not found." Condition="!Exists('$(SolutionDir)packages\UmbracoForms.$(UmbracoFormsVersion)\')" />
+    <Error Text="uSync NuGet package v$(USyncVersion) not found." Condition="!Exists('$(SolutionDir)packages\uSync.$(USyncVersion)\')" />
+    <Error Text="bootstrap.sass NuGet package v$(BootstrapVersion) not found." Condition="!Exists('$(SolutionDir)packages\bootstrap.sass.$(BootstrapVersion)\')" />
+    <Error Text="jQuery NuGet package v$(JQueryVersion) not found." Condition="!Exists('$(SolutionDir)packages\jQuery.$(JQueryVersion)\')" />
+    <Error Text="jQuery.Validation NuGet package v$(JQueryValidationVersion) not found." Condition="!Exists('$(SolutionDir)packages\jQuery.Validation.$(JQueryValidationVersion)\')" />
+    <Error Text="Microsoft.jQuery.Unobtrusive.Validation NuGet package v$(JQueryUnobtrusiveValidationVersion) not found." Condition="!Exists('$(SolutionDir)packages\Microsoft.jQuery.Unobtrusive.Validation.$(JQueryUnobtrusiveValidationVersion)\')" />
+    <Error Text="popper.js NuGet package v$(PopperVersion) not found." Condition="!Exists('$(SolutionDir)packages\popper.js.$(PopperVersion)\')" />
+    <Error Text="Skybrud.Umbraco.Redirects NuGet package v$(SkybrudRedirectsVersion) not found." Condition="!Exists('$(SolutionDir)packages\Skybrud.Umbraco.Redirects.$(SkybrudRedirectsVersion)\')" />
 
     <ItemGroup>
       <FilesFromUmbracoPackage Include="$(SolutionDir)packages\UmbracoCms.$(UmbracoVersion)\Content\Views\Partials\**" />
@@ -146,10 +174,10 @@
       DestinationFiles="$(ProjectDir)%(Filename)%(Extension)" />
   </Target>
 
-  <Target Name="StoolballTriggerUmbracoDeploySync" BeforeTargets="AfterBuild">
+  <Target Name="StoolballTriggerUmbracoDeploySync" BeforeTargets="AfterBuild" Condition="!Exists('$(ProjectDir)data/deploy')">
     <!-- Create a 0-byte file that Umbraco Deploy looks for to trigger a sync of 
          the *.uda files on disk into the Umbraco database -->
-    <Touch Files="$(ProjectDir)data/deploy" AlwaysCreate="true" Condition="!Exists('$(ProjectDir)data/deploy')">
+    <Touch Files="$(ProjectDir)data/deploy" AlwaysCreate="true">
       <Output
           TaskParameter="TouchedFiles"
           ItemName="FilesTouched"/>
