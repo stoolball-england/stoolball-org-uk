@@ -74,6 +74,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/about").ConfigureAwait(false);
                 await _redirectsRepository.InsertRedirect("/about/privacy-notice-match-results-and-comments", "/privacy/privacy-notice-match-results-and-comments", null).ConfigureAwait(false);
                 await _redirectsRepository.InsertRedirect("/about/privacy-notice-registering-with-stoolball-england", "/privacy/privacy-notice-registering-with-stoolball-england", null).ConfigureAwait(false);
+
+                await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/shop").ConfigureAwait(false);
+                await _redirectsRepository.InsertRedirect("/shop", "/play/equipment/buy", null).ConfigureAwait(false);
             }
             catch (Exception e)
             {
