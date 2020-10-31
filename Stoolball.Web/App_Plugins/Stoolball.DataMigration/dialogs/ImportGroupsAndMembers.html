@@ -41,6 +41,15 @@
                 {{vm.importedMembers.length}} of {{vm.totalMembers}} Members
               </li>
               <li>{{vm.assignedGroups.length}} Members Assigned to Groups</li>
+              <li ng-repeat="item in vm.failedGroups" class="alert alert-error">
+                Failed: {{item.name}}
+              </li>
+              <li ng-repeat="item in vm.failedMembers" class="alert alert-error">
+                Failed: {{item.name}}
+              </li>
+              <li ng-repeat="item in vm.failedAssignments" class="alert alert-error">
+                Failed: {{item.name}}
+              </li>
             </ul>
           </div>
         </umb-box-content>

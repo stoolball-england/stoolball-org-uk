@@ -16,8 +16,11 @@
       vm.totalMembers = "?";
       vm.totalGroups = "?";
       vm.importedGroups = [];
+      vm.failedGroups = [];
       vm.importedMembers = [];
+      vm.failedMembers = [];
       vm.assignedGroups = [];
+      vm.failedAssignments = [];
       vm.buttonState = "init";
       vm.processing = false;
       vm.done = false;
@@ -52,16 +55,17 @@
         );
       }
 
-      async function importMembers(members, imported) {
+      async function importMembers(members, imported, failed) {
         await stoolballResource.postManyToApi(
           "MemberMigration/CreateMember",
           members,
           (member) => member,
-          imported
+          imported,
+          failed
         );
       }
 
-      async function assignMembersToGroups(members, groups, imported) {
+      async function assignMembersToGroups(members, groups, imported, failed) {
         await stoolballResource.asyncForEach(members, async (member) => {
           for (let i = 0; i < member.roles.length; i++) {
             let roleId = member.roles[i];
@@ -73,7 +77,8 @@
                 Email: member.email,
                 GroupName: group.name,
               }),
-              imported
+              imported,
+              failed
             );
           }
         });
@@ -123,9 +128,18 @@
             vm.totalGroups = groups.length;
             vm.totalMembers = members.length;
 
-            await importMemberGroups(groups, vm.importedGroups);
-            await importMembers(members, vm.importedMembers);
-            await assignMembersToGroups(members, groups, vm.assignedGroups);
+            await importMemberGroups(
+              groups,
+              vm.importedGroups,
+              vm.failedGroups
+            );
+            await importMembers(members, vm.importedMembers, vm.failedMembers);
+            await assignMembersToGroups(
+              members,
+              groups,
+              vm.assignedGroups,
+              vm.failedAssignments
+            );
 
             vm.done = true;
             vm.buttonState = "success";
