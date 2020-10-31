@@ -139,7 +139,7 @@ namespace Stoolball.Teams
 
         [Display(Name = "Cost to play")]
         public string Cost { get; set; }
-        public int MemberGroupId { get; set; }
+        public Guid? MemberGroupKey { get; set; }
         public string MemberGroupName { get; set; }
         public string TeamRoute { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();

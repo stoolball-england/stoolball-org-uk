@@ -61,7 +61,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
                     };
                     Services.MemberGroupService.Save(group);
                 }
-                school.MemberGroupId = group.Id;
+                school.MemberGroupKey = group.Key;
                 school.MemberGroupName = group.Name;
 
                 await _schoolDataMigrator.MigrateSchool(school).ConfigureAwait(false);

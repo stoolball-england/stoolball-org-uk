@@ -65,7 +65,7 @@ namespace Stoolball.Web.Competitions
                             Name = groupName
                         };
                         Services.MemberGroupService.Save(group);
-                        competition.MemberGroupId = group.Id;
+                        competition.MemberGroupKey = group.Key;
                         competition.MemberGroupName = group.Name;
                         break;
                     }

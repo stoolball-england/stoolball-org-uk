@@ -69,7 +69,7 @@ namespace Stoolball.Competitions
         [Display(Name = "Player type")]
         public PlayerType PlayerType { get; set; }
 
-        public int MemberGroupId { get; set; }
+        public Guid? MemberGroupKey { get; set; }
 
         public string MemberGroupName { get; set; }
 

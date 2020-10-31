@@ -1,14 +1,14 @@
-﻿using Dapper;
+﻿using System;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
 using Newtonsoft.Json;
 using Stoolball.Audit;
 using Stoolball.Clubs;
 using Stoolball.Routing;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
-using System;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
@@ -71,14 +71,14 @@ namespace Stoolball.Umbraco.Data.Clubs
                         while (count > 0);
 
                         await connection.ExecuteAsync(
-                            $@"INSERT INTO {Tables.Club} (ClubId, ClubMark, ClubRoute, MemberGroupId, MemberGroupName) 
-                                VALUES (@ClubId, @ClubMark, @ClubRoute, @MemberGroupId, @MemberGroupName)",
+                            $@"INSERT INTO {Tables.Club} (ClubId, ClubMark, ClubRoute, MemberGroupKey, MemberGroupName) 
+                                VALUES (@ClubId, @ClubMark, @ClubRoute, @MemberGroupKey, @MemberGroupName)",
                             new
                             {
                                 club.ClubId,
                                 club.ClubMark,
                                 club.ClubRoute,
-                                club.MemberGroupId,
+                                club.MemberGroupKey,
                                 club.MemberGroupName
                             }, transaction).ConfigureAwait(false);
 

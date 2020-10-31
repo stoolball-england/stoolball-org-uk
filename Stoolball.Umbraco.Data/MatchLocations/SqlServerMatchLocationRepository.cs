@@ -1,4 +1,7 @@
-﻿using Dapper;
+﻿using System;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
+using Dapper;
 using Ganss.XSS;
 using Newtonsoft.Json;
 using Stoolball.Audit;
@@ -6,9 +9,6 @@ using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Umbraco.Data.Audit;
 using Stoolball.Umbraco.Data.Redirects;
-using System;
-using System.Data.SqlClient;
-using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
@@ -92,9 +92,9 @@ namespace Stoolball.Umbraco.Data.MatchLocations
 
                         await connection.ExecuteAsync(
                             $@"INSERT INTO {Tables.MatchLocation} (MatchLocationId, SecondaryAddressableObjectName, PrimaryAddressableObjectName, StreetDescription, Locality, Town,
-                                AdministrativeArea, Postcode, SortName, GeoPrecision, Latitude, Longitude, MatchLocationNotes, MatchLocationRoute, MemberGroupId, MemberGroupName) 
+                                AdministrativeArea, Postcode, SortName, GeoPrecision, Latitude, Longitude, MatchLocationNotes, MatchLocationRoute, MemberGroupKey, MemberGroupName) 
                                 VALUES (@MatchLocationId, @SecondaryAddressableObjectName, @PrimaryAddressableObjectName, @StreetDescription, @Locality, @Town, @AdministrativeArea, 
-                                @Postcode, @SortName, @GeoPrecision, @Latitude, @Longitude, @MatchLocationNotes, @MatchLocationRoute, @MemberGroupId, @MemberGroupName)",
+                                @Postcode, @SortName, @GeoPrecision, @Latitude, @Longitude, @MatchLocationNotes, @MatchLocationRoute, @MemberGroupKey, @MemberGroupName)",
                             new
                             {
                                 matchLocation.MatchLocationId,
@@ -111,7 +111,7 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                                 matchLocation.Longitude,
                                 matchLocation.MatchLocationNotes,
                                 matchLocation.MatchLocationRoute,
-                                matchLocation.MemberGroupId,
+                                matchLocation.MemberGroupKey,
                                 matchLocation.MemberGroupName
                             }, transaction).ConfigureAwait(false);
 

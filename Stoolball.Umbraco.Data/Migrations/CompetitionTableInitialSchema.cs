@@ -69,8 +69,8 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Index(IndexTypes.NonClustered)]
         public string PlayerType { get; set; }
 
-        [Column(nameof(MemberGroupId))]
-        public int MemberGroupId { get; set; }
+        [Column(nameof(MemberGroupKey))]
+        public Guid MemberGroupKey { get; set; }
 
         [Column(nameof(MemberGroupName))]
         public string MemberGroupName { get; set; }

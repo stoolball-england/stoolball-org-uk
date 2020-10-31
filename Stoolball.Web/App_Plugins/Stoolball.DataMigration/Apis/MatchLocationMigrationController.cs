@@ -61,7 +61,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
                     };
                     Services.MemberGroupService.Save(group);
                 }
-                matchLocation.MemberGroupId = group.Id;
+                matchLocation.MemberGroupKey = group.Key;
                 matchLocation.MemberGroupName = group.Name;
 
                 await _matchLocationDataMigrator.MigrateMatchLocation(matchLocation).ConfigureAwait(false);

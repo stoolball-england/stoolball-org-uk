@@ -100,10 +100,10 @@ namespace Stoolball.Umbraco.Data.Competitions
                         await connection.ExecuteAsync(
                             $@"INSERT INTO {Tables.Competition} (CompetitionId, CompetitionName, FromYear, UntilYear, PlayerType, 
                                 Introduction, PublicContactDetails, PrivateContactDetails, Facebook, Twitter, Instagram, YouTube, Website, CompetitionRoute, 
-                                MemberGroupId, MemberGroupName) 
+                                MemberGroupKey, MemberGroupName) 
                                 VALUES (@CompetitionId, @CompetitionName, @FromYear, @UntilYear, @PlayerType, @Introduction, 
                                 @PublicContactDetails, @PrivateContactDetails, @Facebook, @Twitter, @Instagram, @YouTube, @Website, @CompetitionRoute, 
-                                @MemberGroupId, @MemberGroupName)",
+                                @MemberGroupKey, @MemberGroupName)",
                             new
                             {
                                 competition.CompetitionId,
@@ -120,7 +120,7 @@ namespace Stoolball.Umbraco.Data.Competitions
                                 competition.YouTube,
                                 competition.Website,
                                 competition.CompetitionRoute,
-                                competition.MemberGroupId,
+                                competition.MemberGroupKey,
                                 competition.MemberGroupName
                             }, transaction).ConfigureAwait(false);
 

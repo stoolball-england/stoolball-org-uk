@@ -61,7 +61,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
                     };
                     Services.MemberGroupService.Save(group);
                 }
-                competition.MemberGroupId = group.Id;
+                competition.MemberGroupKey = group.Key;
                 competition.MemberGroupName = group.Name;
 
                 await _competitionDataMigrator.MigrateCompetition(competition).ConfigureAwait(false);

@@ -1,10 +1,10 @@
-﻿using Dapper;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
 using Stoolball.Clubs;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
@@ -40,7 +40,7 @@ namespace Stoolball.Umbraco.Data.Clubs
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var clubs = await connection.QueryAsync<Club, Team, Club>(
-                        $@"SELECT c.ClubId, cn.ClubName, c.ClubMark, c.MemberGroupId, c.MemberGroupName, c.ClubRoute,
+                        $@"SELECT c.ClubId, cn.ClubName, c.ClubMark, c.MemberGroupKey, c.MemberGroupName, c.ClubRoute,
                             t.TeamId, tn.TeamName, t.TeamRoute, t.UntilYear
                             FROM {Tables.Club} AS c 
                             INNER JOIN {Tables.ClubName} AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL

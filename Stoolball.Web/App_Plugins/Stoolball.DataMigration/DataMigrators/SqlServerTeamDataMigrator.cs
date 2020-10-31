@@ -101,7 +101,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 PrivateContactDetails = team.PrivateContactDetails,
                 PlayingTimes = team.PlayingTimes,
                 Cost = team.Cost,
-                MemberGroupId = team.MemberGroupId,
+                MemberGroupKey = team.MemberGroupKey,
                 MemberGroupName = team.MemberGroupName
             };
 
@@ -152,7 +152,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         await database.ExecuteAsync($@"INSERT INTO {Tables.Team}
 						(TeamId, MigratedTeamId, ClubId, SchoolId, TeamType, PlayerType, Introduction, AgeRangeLower, AgeRangeUpper, 
 						 UntilYear, Twitter, Facebook, Instagram, Website, PublicContactDetails, PrivateContactDetails, PlayingTimes, Cost,
-						 MemberGroupId, MemberGroupName, TeamRoute)
+						 MemberGroupKey, MemberGroupName, TeamRoute)
 						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16, @17, @18, @19, @20)",
                             migratedTeam.TeamId,
                             migratedTeam.MigratedTeamId,
@@ -172,7 +172,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                             migratedTeam.PrivateContactDetails,
                             migratedTeam.PlayingTimes,
                             migratedTeam.Cost,
-                            migratedTeam.MemberGroupId,
+                            migratedTeam.MemberGroupKey,
                             migratedTeam.MemberGroupName,
                             migratedTeam.TeamRoute).ConfigureAwait(false);
                         await database.ExecuteAsync($@"INSERT INTO {Tables.TeamName} 

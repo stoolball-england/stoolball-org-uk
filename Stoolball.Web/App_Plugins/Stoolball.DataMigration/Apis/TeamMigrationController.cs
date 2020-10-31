@@ -73,7 +73,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
                         Services.MemberGroupService.Save(group);
                     }
                 }
-                team.MemberGroupId = group.Id;
+                team.MemberGroupKey = group.Key;
                 team.MemberGroupName = group.Name;
 
                 await _teamDataMigrator.MigrateTeam(team).ConfigureAwait(false);

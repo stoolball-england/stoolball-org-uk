@@ -155,7 +155,7 @@ namespace Stoolball.Umbraco.Data.Teams
 
             // Create an owner group
             var group = _memberGroupHelper.CreateOrFindGroup("team", team.TeamName, NoiseWords.TeamRoute);
-            team.MemberGroupId = group.Id;
+            team.MemberGroupKey = group.Key;
             team.MemberGroupName = group.Name;
 
             // Assign the member to the group unless they're already admin
@@ -166,9 +166,9 @@ namespace Stoolball.Umbraco.Data.Teams
 
             await transaction.Connection.ExecuteAsync(
                 $@"INSERT INTO {Tables.Team} (TeamId, TeamType, AgeRangeLower, AgeRangeUpper, FromYear, UntilYear, PlayerType, Introduction, 
-                                PlayingTimes, Cost, PublicContactDetails, PrivateContactDetails, Facebook, Twitter, Instagram, YouTube, Website, TeamRoute, MemberGroupId, MemberGroupName) 
+                                PlayingTimes, Cost, PublicContactDetails, PrivateContactDetails, Facebook, Twitter, Instagram, YouTube, Website, TeamRoute, MemberGroupKey, MemberGroupName) 
                                 VALUES (@TeamId, @TeamType, @AgeRangeLower, @AgeRangeUpper, @FromYear, @UntilYear, @PlayerType, @Introduction, @PlayingTimes, @Cost, 
-                                @PublicContactDetails, @PrivateContactDetails, @Facebook, @Twitter, @Instagram, @YouTube, @Website, @TeamRoute, @MemberGroupId, @MemberGroupName)",
+                                @PublicContactDetails, @PrivateContactDetails, @Facebook, @Twitter, @Instagram, @YouTube, @Website, @TeamRoute, @MemberGroupKey, @MemberGroupName)",
                 new
                 {
                     team.TeamId,
@@ -189,7 +189,7 @@ namespace Stoolball.Umbraco.Data.Teams
                     team.YouTube,
                     team.Website,
                     team.TeamRoute,
-                    team.MemberGroupId,
+                    team.MemberGroupKey,
                     team.MemberGroupName
                 }, transaction).ConfigureAwait(false);
 

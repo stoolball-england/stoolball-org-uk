@@ -63,7 +63,7 @@ namespace Stoolball.Web.MatchLocations
                             Name = groupName
                         };
                         Services.MemberGroupService.Save(group);
-                        location.MemberGroupId = group.Id;
+                        location.MemberGroupKey = group.Key;
                         location.MemberGroupName = group.Name;
                         break;
                     }

@@ -1,6 +1,6 @@
 ﻿
-using NPoco;
 using System;
+using NPoco;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Umbraco.Data.Migrations
@@ -21,8 +21,8 @@ namespace Stoolball.Umbraco.Data.Migrations
         [Column(nameof(ClubMark))]
         public bool ClubMark { get; set; }
 
-        [Column(nameof(MemberGroupId))]
-        public int MemberGroupId { get; set; }
+        [Column(nameof(MemberGroupKey))]
+        public Guid MemberGroupKey { get; set; }
 
         [Column(nameof(MemberGroupName))]
         public string MemberGroupName { get; set; }

@@ -1,11 +1,11 @@
-﻿using Dapper;
-using Stoolball.MatchLocations;
-using Stoolball.Routing;
-using Stoolball.Teams;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
+using Stoolball.MatchLocations;
+using Stoolball.Routing;
+using Stoolball.Teams;
 using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
@@ -72,7 +72,7 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var locations = await connection.QueryAsync<MatchLocation, Team, MatchLocation>(
-                        $@"SELECT ml.MatchLocationId, ml.MatchLocationNotes, ml.MatchLocationRoute, ml.MemberGroupId, ml.MemberGroupName,
+                        $@"SELECT ml.MatchLocationId, ml.MatchLocationNotes, ml.MatchLocationRoute, ml.MemberGroupKey, ml.MemberGroupName,
                             ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.StreetDescription, ml.Locality, ml.Town, ml.AdministrativeArea, ml.Postcode, 
                             ml.Latitude, ml.Longitude, ml.GeoPrecision,
                             t.TeamId, tn.TeamName, t.TeamRoute

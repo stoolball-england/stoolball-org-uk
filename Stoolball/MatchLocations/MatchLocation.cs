@@ -61,7 +61,7 @@ namespace Stoolball.MatchLocations
 
         public string MatchLocationRoute { get; set; }
 
-        public int MemberGroupId { get; set; }
+        public Guid? MemberGroupKey { get; set; }
         public string MemberGroupName { get; set; }
 
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();

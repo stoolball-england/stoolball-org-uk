@@ -60,7 +60,7 @@ namespace Stoolball.Web.Clubs
                             Name = groupName
                         };
                         Services.MemberGroupService.Save(group);
-                        club.MemberGroupId = group.Id;
+                        club.MemberGroupKey = group.Key;
                         club.MemberGroupName = group.Name;
                         break;
                     }

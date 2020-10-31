@@ -1,6 +1,6 @@
-﻿using Stoolball.Audit;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Stoolball.Audit;
 
 namespace Stoolball.Schools
 {
@@ -13,13 +13,12 @@ namespace Stoolball.Schools
         public string Facebook { get; set; }
         public string Instagram { get; set; }
         public string YouTube { get; set; }
-        public int MemberGroupId { get; set; }
+        public Guid? MemberGroupKey { get; set; }
         public string MemberGroupName { get; set; }
         public string SchoolRoute { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 
-        public Uri EntityUri
-        {
+        public Uri EntityUri {
             get { return new Uri($"https://www.stoolball.org.uk/id/school/{SchoolId}"); }
         }
     }
