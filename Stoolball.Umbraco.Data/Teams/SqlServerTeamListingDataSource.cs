@@ -1,11 +1,10 @@
-﻿using Dapper;
-using Stoolball.MatchLocations;
-using Stoolball.Teams;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Umbraco.Core.Logging;
+using Dapper;
+using Stoolball.MatchLocations;
+using Stoolball.Teams;
 using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Umbraco.Data.Teams
@@ -16,12 +15,10 @@ namespace Stoolball.Umbraco.Data.Teams
     public class SqlServerTeamListingDataSource : ITeamListingDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
-        private readonly ILogger _logger;
 
-        public SqlServerTeamListingDataSource(IDatabaseConnectionFactory databaseConnectionFactory, ILogger logger)
+        public SqlServerTeamListingDataSource(IDatabaseConnectionFactory databaseConnectionFactory)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -30,23 +27,21 @@ namespace Stoolball.Umbraco.Data.Teams
         /// <returns></returns>
         public async Task<int> ReadTotalTeams(TeamQuery teamQuery)
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                var (teamWhere, teamParameters) = BuildTeamWhereClause(teamQuery);
+                var (clubWhere, clubParameters) = BuildClubWhereQuery(teamQuery);
+
+                var parameters = teamParameters;
+                foreach (var key in clubParameters.Keys)
                 {
-                    var (teamWhere, teamParameters) = BuildTeamWhereClause(teamQuery);
-                    var (clubWhere, clubParameters) = BuildClubWhereQuery(teamQuery);
-
-                    var parameters = teamParameters;
-                    foreach (var key in clubParameters.Keys)
+                    if (!parameters.ContainsKey(key))
                     {
-                        if (!parameters.ContainsKey(key))
-                        {
-                            parameters.Add(key, clubParameters[key]);
-                        }
+                        parameters.Add(key, clubParameters[key]);
                     }
+                }
 
-                    return await connection.ExecuteScalarAsync<int>($@"SELECT COUNT(TeamListingId) FROM (           
+                return await connection.ExecuteScalarAsync<int>($@"SELECT COUNT(TeamListingId) FROM (           
                                     SELECT t.TeamId AS TeamListingId
                                     FROM { Tables.Team } AS t
                                     INNER JOIN { Tables.TeamName } AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
@@ -62,12 +57,6 @@ namespace Stoolball.Umbraco.Data.Teams
                                     LEFT JOIN { Tables.MatchLocation } AS ml ON ml.MatchLocationId = tml.MatchLocationId
                                     {clubWhere}
                                 ) as Total", new DynamicParameters(parameters)).ConfigureAwait(false);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerTeamListingDataSource), ex);
-                throw;
             }
         }
 
@@ -82,31 +71,29 @@ namespace Stoolball.Umbraco.Data.Teams
                 throw new ArgumentNullException(nameof(teamQuery));
             }
 
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                var (teamWhere, teamParameters) = BuildTeamWhereClause(teamQuery);
+                var (clubWhere, clubParameters) = BuildClubWhereQuery(teamQuery);
+
+                var parameters = teamParameters;
+                foreach (var key in clubParameters.Keys)
                 {
-                    var (teamWhere, teamParameters) = BuildTeamWhereClause(teamQuery);
-                    var (clubWhere, clubParameters) = BuildClubWhereQuery(teamQuery);
-
-                    var parameters = teamParameters;
-                    foreach (var key in clubParameters.Keys)
+                    if (!parameters.ContainsKey(key))
                     {
-                        if (!parameters.ContainsKey(key))
-                        {
-                            parameters.Add(key, clubParameters[key]);
-                        }
+                        parameters.Add(key, clubParameters[key]);
                     }
+                }
 
-                    // Each result might return multiple rows, therefore to get the correct number of paged results we need a version of the query that returns one row per result.
-                    // Because it's a UNION query this inner query will end up getting used twice, hence building it as a separate variable.
-                    //
-                    // The inner query has three levels:
-                    // 1. outer level selects only the id, so that it can be used in a WHERE... IN( ) clause
-                    // 2. mid level runs the sort and selects the paged result - even though this selects the same fields as the inner level, 
-                    //    putting this paging on the inner level doesn't work
-                    // 3. inner level selects fields which are later used for sorting by the outer query
-                    var innerQuery = $@"SELECT TeamListingId FROM 
+                // Each result might return multiple rows, therefore to get the correct number of paged results we need a version of the query that returns one row per result.
+                // Because it's a UNION query this inner query will end up getting used twice, hence building it as a separate variable.
+                //
+                // The inner query has three levels:
+                // 1. outer level selects only the id, so that it can be used in a WHERE... IN( ) clause
+                // 2. mid level runs the sort and selects the paged result - even though this selects the same fields as the inner level, 
+                //    putting this paging on the inner level doesn't work
+                // 3. inner level selects fields which are later used for sorting by the outer query
+                var innerQuery = $@"SELECT TeamListingId FROM 
                                             (SELECT TeamListingId, ClubOrTeamName, Active FROM (
                                                 SELECT t.TeamId AS TeamListingId, tn.TeamName AS ClubOrTeamName, CASE WHEN UntilYear IS NULL THEN 1 ELSE 0 END AS Active
                                                 FROM { Tables.Team } AS t
@@ -127,9 +114,9 @@ namespace Stoolball.Umbraco.Data.Teams
                                         ORDER BY Active DESC, ClubOrTeamName
                                         OFFSET {(teamQuery.PageNumber - 1) * teamQuery.PageSize} ROWS FETCH NEXT {teamQuery.PageSize} ROWS ONLY) AS MatchingIds";
 
-                    // Now that the inner query can select just the paged ids we need, the outer query can use them to select complete data sets including multiple rows
-                    // based on the matching ids rather than directly on the paging criteria
-                    var outerQuery = $@"SELECT t.TeamId AS TeamListingId, tn.TeamName AS ClubOrTeamName, t.TeamRoute AS ClubOrTeamRoute, CASE WHEN UntilYear IS NULL THEN 1 ELSE 0 END AS Active,
+                // Now that the inner query can select just the paged ids we need, the outer query can use them to select complete data sets including multiple rows
+                // based on the matching ids rather than directly on the paging criteria
+                var outerQuery = $@"SELECT t.TeamId AS TeamListingId, tn.TeamName AS ClubOrTeamName, t.TeamRoute AS ClubOrTeamRoute, CASE WHEN UntilYear IS NULL THEN 1 ELSE 0 END AS Active,
                                 t.PlayerType, 
                                 ml.Locality, ml.Town, ml.MatchLocationRoute
                                 FROM { Tables.Team } AS t 
@@ -150,37 +137,31 @@ namespace Stoolball.Umbraco.Data.Teams
                                 WHERE c.ClubId IN ({innerQuery})
                                 ORDER BY Active DESC, ClubOrTeamName";
 
-                    var teamListings = await connection.QueryAsync<TeamListing, string, MatchLocation, TeamListing>(outerQuery,
-                        (teamListing, playerType, matchLocation) =>
-                        {
-                            if (!string.IsNullOrEmpty(playerType))
-                            {
-                                teamListing.PlayerTypes.Add((PlayerType)Enum.Parse(typeof(PlayerType), playerType));
-                            }
-                            if (matchLocation != null)
-                            {
-                                teamListing.MatchLocations.Add(matchLocation);
-                            }
-                            return teamListing;
-                        },
-                        new DynamicParameters(parameters),
-                        splitOn: "PlayerType, Locality").ConfigureAwait(false);
-
-                    var resolvedListings = teamListings.GroupBy(team => team.TeamListingId).Select(copiesOfTeam =>
+                var teamListings = await connection.QueryAsync<TeamListing, string, MatchLocation, TeamListing>(outerQuery,
+                    (teamListing, playerType, matchLocation) =>
                     {
-                        var resolvedTeam = copiesOfTeam.First();
-                        resolvedTeam.PlayerTypes = copiesOfTeam.Select(listing => listing.PlayerTypes.SingleOrDefault()).OfType<PlayerType>().Distinct().ToList();
-                        resolvedTeam.MatchLocations = copiesOfTeam.Select(listing => listing.MatchLocations.SingleOrDefault()).OfType<MatchLocation>().Distinct(new MatchLocationEqualityComparer()).ToList();
-                        return resolvedTeam;
-                    }).ToList();
+                        if (!string.IsNullOrEmpty(playerType))
+                        {
+                            teamListing.PlayerTypes.Add((PlayerType)Enum.Parse(typeof(PlayerType), playerType));
+                        }
+                        if (matchLocation != null)
+                        {
+                            teamListing.MatchLocations.Add(matchLocation);
+                        }
+                        return teamListing;
+                    },
+                    new DynamicParameters(parameters),
+                    splitOn: "PlayerType, Locality").ConfigureAwait(false);
 
-                    return resolvedListings;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerTeamDataSource), ex);
-                throw;
+                var resolvedListings = teamListings.GroupBy(team => team.TeamListingId).Select(copiesOfTeam =>
+                {
+                    var resolvedTeam = copiesOfTeam.First();
+                    resolvedTeam.PlayerTypes = copiesOfTeam.Select(listing => listing.PlayerTypes.SingleOrDefault()).OfType<PlayerType>().Distinct().ToList();
+                    resolvedTeam.MatchLocations = copiesOfTeam.Select(listing => listing.MatchLocations.SingleOrDefault()).OfType<MatchLocation>().Distinct(new MatchLocationEqualityComparer()).ToList();
+                    return resolvedTeam;
+                }).ToList();
+
+                return resolvedListings;
             }
         }
 

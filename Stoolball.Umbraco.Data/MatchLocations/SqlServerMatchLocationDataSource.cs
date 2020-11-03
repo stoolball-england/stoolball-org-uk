@@ -6,7 +6,6 @@ using Dapper;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Umbraco.Data.MatchLocations
@@ -17,13 +16,11 @@ namespace Stoolball.Umbraco.Data.MatchLocations
     public class SqlServerMatchLocationDataSource : IMatchLocationDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
-        private readonly ILogger _logger;
         private readonly IRouteNormaliser _routeNormaliser;
 
-        public SqlServerMatchLocationDataSource(IDatabaseConnectionFactory databaseConnectionFactory, ILogger logger, IRouteNormaliser routeNormaliser)
+        public SqlServerMatchLocationDataSource(IDatabaseConnectionFactory databaseConnectionFactory, IRouteNormaliser routeNormaliser)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _routeNormaliser = routeNormaliser ?? throw new ArgumentNullException(nameof(routeNormaliser));
         }
 
@@ -40,39 +37,29 @@ namespace Stoolball.Umbraco.Data.MatchLocations
 
         private async Task<MatchLocation> ReadMatchLocationByRoute(string route)
         {
-            try
-            {
-                string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "locations");
+            string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "locations");
 
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var locations = await connection.QueryAsync<MatchLocation>(
-                        $@"SELECT ml.MatchLocationId, ml.MatchLocationRoute, ml.Latitude, ml.Longitude, ml.GeoPrecision, ml.MatchLocationNotes, ml.MemberGroupName,
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                var locations = await connection.QueryAsync<MatchLocation>(
+                    $@"SELECT ml.MatchLocationId, ml.MatchLocationRoute, ml.Latitude, ml.Longitude, ml.GeoPrecision, ml.MatchLocationNotes, ml.MemberGroupName,
                             ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.StreetDescription, ml.Locality, ml.Town, ml.AdministrativeArea, ml.Postcode
                             FROM {Tables.MatchLocation} AS ml
                             WHERE LOWER(ml.MatchLocationRoute) = @Route",
-                        new { Route = normalisedRoute }).ConfigureAwait(false);
+                    new { Route = normalisedRoute }).ConfigureAwait(false);
 
-                    return locations.FirstOrDefault();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerMatchLocationDataSource), ex);
-                throw;
+                return locations.FirstOrDefault();
             }
         }
 
         private async Task<MatchLocation> ReadMatchLocationWithRelatedDataByRoute(string route)
         {
-            try
-            {
-                string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "locations");
+            string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "locations");
 
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var locations = await connection.QueryAsync<MatchLocation, Team, MatchLocation>(
-                        $@"SELECT ml.MatchLocationId, ml.MatchLocationNotes, ml.MatchLocationRoute, ml.MemberGroupKey, ml.MemberGroupName,
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                var locations = await connection.QueryAsync<MatchLocation, Team, MatchLocation>(
+                    $@"SELECT ml.MatchLocationId, ml.MatchLocationNotes, ml.MatchLocationRoute, ml.MemberGroupKey, ml.MemberGroupName,
                             ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.StreetDescription, ml.Locality, ml.Town, ml.AdministrativeArea, ml.Postcode, 
                             ml.Latitude, ml.Longitude, ml.GeoPrecision,
                             t.TeamId, tn.TeamName, t.TeamRoute
@@ -82,27 +69,21 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                             LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             WHERE LOWER(ml.MatchLocationRoute) = @Route
                             ORDER BY tn.TeamName",
-                        (matchLocation, team) =>
-                        {
-                            matchLocation.Teams.Add(team);
-                            return matchLocation;
-                        },
-                        new { Route = normalisedRoute },
-                        splitOn: "TeamId").ConfigureAwait(false);
-
-                    var locationToReturn = locations.FirstOrDefault(); // get an example with the properties that are the same for every row
-                    if (locationToReturn != null)
+                    (matchLocation, team) =>
                     {
-                        locationToReturn.Teams = locations.Select(location => location.Teams.Single()).OfType<Team>().ToList();
-                    }
+                        matchLocation.Teams.Add(team);
+                        return matchLocation;
+                    },
+                    new { Route = normalisedRoute },
+                    splitOn: "TeamId").ConfigureAwait(false);
 
-                    return locationToReturn;
+                var locationToReturn = locations.FirstOrDefault(); // get an example with the properties that are the same for every row
+                if (locationToReturn != null)
+                {
+                    locationToReturn.Teams = locations.Select(location => location.Teams.Single()).OfType<Team>().ToList();
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerMatchLocationDataSource), ex);
-                throw;
+
+                return locationToReturn;
             }
         }
 
@@ -112,20 +93,12 @@ namespace Stoolball.Umbraco.Data.MatchLocations
         /// <returns></returns>
         public async Task<int> ReadTotalMatchLocations(MatchLocationQuery matchLocationQuery)
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var (where, parameters) = BuildWhereClause(matchLocationQuery);
-                    return await connection.ExecuteScalarAsync<int>($@"SELECT COUNT(MatchLocationId)
+                var (where, parameters) = BuildWhereClause(matchLocationQuery);
+                return await connection.ExecuteScalarAsync<int>($@"SELECT COUNT(MatchLocationId)
                             FROM {Tables.MatchLocation} AS ml
                             {where}", new DynamicParameters(parameters)).ConfigureAwait(false);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerMatchLocationDataSource), ex);
-                throw;
             }
         }
 
@@ -135,15 +108,13 @@ namespace Stoolball.Umbraco.Data.MatchLocations
         /// <returns>A list of <see cref="MatchLocation"/> objects. An empty list if no match locations are found.</returns>
         public async Task<List<MatchLocation>> ReadMatchLocations(MatchLocationQuery matchLocationQuery)
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    // order by clause places locations with active teams above those which have none
+                // order by clause places locations with active teams above those which have none
 
-                    var (where, parameters) = BuildWhereClause(matchLocationQuery);
+                var (where, parameters) = BuildWhereClause(matchLocationQuery);
 
-                    var sql = $@"SELECT ml2.MatchLocationId, ml2.MatchLocationRoute,
+                var sql = $@"SELECT ml2.MatchLocationId, ml2.MatchLocationRoute,
                             ml2.SecondaryAddressableObjectName, ml2.PrimaryAddressableObjectName, ml2.Locality, ml2.Town,
                             t2.PlayerType
                             FROM {Tables.MatchLocation} AS ml2
@@ -169,32 +140,26 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                                 ) > 0 THEN 0 ELSE 1 END,
                             ml2.SortName";
 
-                    var locations = await connection.QueryAsync<MatchLocation, Team, MatchLocation>(sql,
-                        (location, team) =>
-                        {
-                            if (team != null)
-                            {
-                                location.Teams.Add(team);
-                            }
-                            return location;
-                        },
-                        new DynamicParameters(parameters),
-                        splitOn: "PlayerType").ConfigureAwait(false);
-
-                    var resolvedLocations = locations.GroupBy(location => location.MatchLocationId).Select(copiesOfLocation =>
+                var locations = await connection.QueryAsync<MatchLocation, Team, MatchLocation>(sql,
+                    (location, team) =>
                     {
-                        var resolvedLocation = copiesOfLocation.First();
-                        resolvedLocation.Teams = copiesOfLocation.Select(location => location.Teams.SingleOrDefault()).OfType<Team>().ToList();
-                        return resolvedLocation;
-                    }).ToList();
+                        if (team != null)
+                        {
+                            location.Teams.Add(team);
+                        }
+                        return location;
+                    },
+                    new DynamicParameters(parameters),
+                    splitOn: "PlayerType").ConfigureAwait(false);
 
-                    return resolvedLocations;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerMatchLocationDataSource), ex);
-                throw;
+                var resolvedLocations = locations.GroupBy(location => location.MatchLocationId).Select(copiesOfLocation =>
+                {
+                    var resolvedLocation = copiesOfLocation.First();
+                    resolvedLocation.Teams = copiesOfLocation.Select(location => location.Teams.SingleOrDefault()).OfType<Team>().ToList();
+                    return resolvedLocation;
+                }).ToList();
+
+                return resolvedLocations;
             }
         }
 

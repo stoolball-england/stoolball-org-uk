@@ -5,7 +5,6 @@ using Dapper;
 using Stoolball.Clubs;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Umbraco.Data.Clubs
@@ -16,13 +15,11 @@ namespace Stoolball.Umbraco.Data.Clubs
     public class SqlServerClubDataSource : IClubDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
-        private readonly ILogger _logger;
         private readonly IRouteNormaliser _routeNormaliser;
 
-        public SqlServerClubDataSource(IDatabaseConnectionFactory databaseConnectionFactory, ILogger logger, IRouteNormaliser routeNormaliser)
+        public SqlServerClubDataSource(IDatabaseConnectionFactory databaseConnectionFactory, IRouteNormaliser routeNormaliser)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _routeNormaliser = routeNormaliser ?? throw new ArgumentNullException(nameof(routeNormaliser));
         }
 
@@ -33,14 +30,12 @@ namespace Stoolball.Umbraco.Data.Clubs
         /// <returns>A matching <see cref="Club"/> or <c>null</c> if not found</returns>
         public async Task<Club> ReadClubByRoute(string route)
         {
-            try
-            {
-                string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "clubs");
+            string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "clubs");
 
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var clubs = await connection.QueryAsync<Club, Team, Club>(
-                        $@"SELECT c.ClubId, cn.ClubName, c.ClubMark, c.MemberGroupKey, c.MemberGroupName, c.ClubRoute,
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                var clubs = await connection.QueryAsync<Club, Team, Club>(
+                    $@"SELECT c.ClubId, cn.ClubName, c.ClubMark, c.MemberGroupKey, c.MemberGroupName, c.ClubRoute,
                             t.TeamId, tn.TeamName, t.TeamRoute, t.UntilYear
                             FROM {Tables.Club} AS c 
                             INNER JOIN {Tables.ClubName} AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
@@ -48,28 +43,22 @@ namespace Stoolball.Umbraco.Data.Clubs
                             LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             WHERE LOWER(c.ClubRoute) = @Route
                             ORDER BY tn.TeamName",
-                        (club, team) =>
-                        {
-                            club.Teams.Add(team);
-                            return club;
-                        },
-                        new { Route = normalisedRoute },
-                        splitOn: "TeamId").ConfigureAwait(false);
-
-                    var resolvedClub = clubs.GroupBy(club => club.ClubId).Select(group =>
+                    (club, team) =>
                     {
-                        var groupedClub = group.First();
-                        groupedClub.Teams = group.Select(club => club.Teams.Single()).OfType<Team>().ToList();
-                        return groupedClub;
-                    }).FirstOrDefault();
+                        club.Teams.Add(team);
+                        return club;
+                    },
+                    new { Route = normalisedRoute },
+                    splitOn: "TeamId").ConfigureAwait(false);
 
-                    return resolvedClub;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerClubDataSource), ex);
-                throw;
+                var resolvedClub = clubs.GroupBy(club => club.ClubId).Select(group =>
+                {
+                    var groupedClub = group.First();
+                    groupedClub.Teams = group.Select(club => club.Teams.Single()).OfType<Team>().ToList();
+                    return groupedClub;
+                }).FirstOrDefault();
+
+                return resolvedClub;
             }
         }
     }

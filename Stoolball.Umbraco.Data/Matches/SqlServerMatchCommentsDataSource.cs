@@ -1,8 +1,7 @@
-﻿using Dapper;
-using Stoolball.Matches;
-using System;
+﻿using System;
 using System.Threading.Tasks;
-using Umbraco.Core.Logging;
+using Dapper;
+using Stoolball.Matches;
 using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Umbraco.Data.Matches
@@ -13,12 +12,10 @@ namespace Stoolball.Umbraco.Data.Matches
     public class SqlServerMatchCommentsDataSource : ICommentsDataSource<Match>
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
-        private readonly ILogger _logger;
 
-        public SqlServerMatchCommentsDataSource(IDatabaseConnectionFactory databaseConnectionFactory, ILogger logger)
+        public SqlServerMatchCommentsDataSource(IDatabaseConnectionFactory databaseConnectionFactory)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -27,17 +24,9 @@ namespace Stoolball.Umbraco.Data.Matches
         /// <returns></returns>
         public async Task<int> ReadTotalComments(Guid matchId)
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    return await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.MatchComment} WHERE MatchId = @MatchId", new { MatchId = matchId }).ConfigureAwait(false);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerMatchDataSource), ex);
-                throw;
+                return await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.MatchComment} WHERE MatchId = @MatchId", new { MatchId = matchId }).ConfigureAwait(false);
             }
         }
     }

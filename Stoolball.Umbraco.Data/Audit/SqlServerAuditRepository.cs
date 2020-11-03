@@ -1,6 +1,6 @@
-﻿using Stoolball.Audit;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Stoolball.Audit;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
 
@@ -30,29 +30,21 @@ namespace Stoolball.Umbraco.Data.Audit
             {
                 throw new System.ArgumentNullException(nameof(audit));
             }
-            try
+            using (var scope = _scopeProvider.CreateScope())
             {
-                using (var scope = _scopeProvider.CreateScope())
-                {
-                    await scope.Database.ExecuteAsync($@"INSERT INTO {Constants.Tables.Audit} 
+                await scope.Database.ExecuteAsync($@"INSERT INTO {Constants.Tables.Audit} 
                 ([AuditId], [MemberKey], [ActorName], [Action], [EntityUri], [State], [AuditDate]) 
                 VALUES (@0, @1, @2, @3, @4, @5, @6)",
-                    Guid.NewGuid(),
-                    audit.MemberKey,
-                    audit.ActorName,
-                    audit.Action.ToString(),
-                    audit.EntityUri.ToString(),
-                    audit.State,
-                    audit.AuditDate.UtcDateTime
-                    ).ConfigureAwait(false);
+                Guid.NewGuid(),
+                audit.MemberKey,
+                audit.ActorName,
+                audit.Action.ToString(),
+                audit.EntityUri.ToString(),
+                audit.State,
+                audit.AuditDate.UtcDateTime
+                ).ConfigureAwait(false);
 
-                    scope.Complete();
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.Error<SqlServerAuditRepository>(e);
-                throw;
+                scope.Complete();
             }
         }
     }

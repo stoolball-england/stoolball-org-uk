@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
 using Ganss.XSS;
@@ -68,71 +67,64 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            try
+            matchLocation.MatchLocationId = Guid.NewGuid();
+            matchLocation.MatchLocationNotes = _htmlSanitiser.Sanitize(matchLocation.MatchLocationNotes);
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                matchLocation.MatchLocationId = Guid.NewGuid();
-                matchLocation.MatchLocationNotes = _htmlSanitiser.Sanitize(matchLocation.MatchLocationNotes);
-
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    connection.Open();
-                    using (var transaction = connection.BeginTransaction())
+                    matchLocation.MatchLocationRoute = _routeGenerator.GenerateRoute("/locations", matchLocation.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute);
+                    int count;
+                    do
                     {
-                        matchLocation.MatchLocationRoute = _routeGenerator.GenerateRoute("/locations", matchLocation.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute);
-                        int count;
-                        do
+                        count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.MatchLocation} WHERE MatchLocationRoute = @MatchLocationRoute", new { matchLocation.MatchLocationRoute }, transaction).ConfigureAwait(false);
+                        if (count > 0)
                         {
-                            count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.MatchLocation} WHERE MatchLocationRoute = @MatchLocationRoute", new { matchLocation.MatchLocationRoute }, transaction).ConfigureAwait(false);
-                            if (count > 0)
-                            {
-                                matchLocation.MatchLocationRoute = _routeGenerator.IncrementRoute(matchLocation.MatchLocationRoute);
-                            }
+                            matchLocation.MatchLocationRoute = _routeGenerator.IncrementRoute(matchLocation.MatchLocationRoute);
                         }
-                        while (count > 0);
+                    }
+                    while (count > 0);
 
-                        await connection.ExecuteAsync(
-                            $@"INSERT INTO {Tables.MatchLocation} (MatchLocationId, SecondaryAddressableObjectName, PrimaryAddressableObjectName, StreetDescription, Locality, Town,
+                    await connection.ExecuteAsync(
+                        $@"INSERT INTO {Tables.MatchLocation} (MatchLocationId, SecondaryAddressableObjectName, PrimaryAddressableObjectName, StreetDescription, Locality, Town,
                                 AdministrativeArea, Postcode, SortName, GeoPrecision, Latitude, Longitude, MatchLocationNotes, MatchLocationRoute, MemberGroupKey, MemberGroupName) 
                                 VALUES (@MatchLocationId, @SecondaryAddressableObjectName, @PrimaryAddressableObjectName, @StreetDescription, @Locality, @Town, @AdministrativeArea, 
                                 @Postcode, @SortName, @GeoPrecision, @Latitude, @Longitude, @MatchLocationNotes, @MatchLocationRoute, @MemberGroupKey, @MemberGroupName)",
-                            new
-                            {
-                                matchLocation.MatchLocationId,
-                                matchLocation.SecondaryAddressableObjectName,
-                                matchLocation.PrimaryAddressableObjectName,
-                                matchLocation.StreetDescription,
-                                matchLocation.Locality,
-                                matchLocation.Town,
-                                matchLocation.AdministrativeArea,
-                                matchLocation.Postcode,
-                                SortName = matchLocation.SortName(),
-                                GeoPrecision = matchLocation.GeoPrecision?.ToString(),
-                                matchLocation.Latitude,
-                                matchLocation.Longitude,
-                                matchLocation.MatchLocationNotes,
-                                matchLocation.MatchLocationRoute,
-                                matchLocation.MemberGroupKey,
-                                matchLocation.MemberGroupName
-                            }, transaction).ConfigureAwait(false);
+                        new
+                        {
+                            matchLocation.MatchLocationId,
+                            matchLocation.SecondaryAddressableObjectName,
+                            matchLocation.PrimaryAddressableObjectName,
+                            matchLocation.StreetDescription,
+                            matchLocation.Locality,
+                            matchLocation.Town,
+                            matchLocation.AdministrativeArea,
+                            matchLocation.Postcode,
+                            SortName = matchLocation.SortName(),
+                            GeoPrecision = matchLocation.GeoPrecision?.ToString(),
+                            matchLocation.Latitude,
+                            matchLocation.Longitude,
+                            matchLocation.MatchLocationNotes,
+                            matchLocation.MatchLocationRoute,
+                            matchLocation.MemberGroupKey,
+                            matchLocation.MemberGroupName
+                        }, transaction).ConfigureAwait(false);
 
-                        transaction.Commit();
-                    }
+                    transaction.Commit();
                 }
+            }
 
-                await _auditRepository.CreateAudit(new AuditRecord
-                {
-                    Action = AuditAction.Create,
-                    MemberKey = memberKey,
-                    ActorName = memberName,
-                    EntityUri = matchLocation.EntityUri,
-                    State = JsonConvert.SerializeObject(matchLocation),
-                    AuditDate = DateTime.UtcNow
-                }).ConfigureAwait(false);
-            }
-            catch (SqlException ex)
+            await _auditRepository.CreateAudit(new AuditRecord
             {
-                _logger.Error(typeof(SqlServerMatchLocationRepository), ex);
-            }
+                Action = AuditAction.Create,
+                MemberKey = memberKey,
+                ActorName = memberName,
+                EntityUri = matchLocation.EntityUri,
+                State = JsonConvert.SerializeObject(matchLocation),
+                AuditDate = DateTime.UtcNow
+            }).ConfigureAwait(false);
 
             return matchLocation;
         }
@@ -153,35 +145,33 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            try
+            matchLocation.MatchLocationNotes = _htmlSanitiser.Sanitize(matchLocation.MatchLocationNotes);
+
+            string routeBeforeUpdate = matchLocation.MatchLocationRoute;
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                matchLocation.MatchLocationNotes = _htmlSanitiser.Sanitize(matchLocation.MatchLocationNotes);
-
-                string routeBeforeUpdate = matchLocation.MatchLocationRoute;
-
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    connection.Open();
-                    using (var transaction = connection.BeginTransaction())
+
+                    matchLocation.MatchLocationRoute = _routeGenerator.GenerateRoute("/locations", matchLocation.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute);
+                    if (matchLocation.MatchLocationRoute != routeBeforeUpdate)
                     {
-
-                        matchLocation.MatchLocationRoute = _routeGenerator.GenerateRoute("/locations", matchLocation.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute);
-                        if (matchLocation.MatchLocationRoute != routeBeforeUpdate)
+                        int count;
+                        do
                         {
-                            int count;
-                            do
+                            count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.MatchLocation} WHERE MatchLocationRoute = @MatchLocationRoute", new { matchLocation.MatchLocationRoute }, transaction).ConfigureAwait(false);
+                            if (count > 0)
                             {
-                                count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.MatchLocation} WHERE MatchLocationRoute = @MatchLocationRoute", new { matchLocation.MatchLocationRoute }, transaction).ConfigureAwait(false);
-                                if (count > 0)
-                                {
-                                    matchLocation.MatchLocationRoute = _routeGenerator.IncrementRoute(matchLocation.MatchLocationRoute);
-                                }
+                                matchLocation.MatchLocationRoute = _routeGenerator.IncrementRoute(matchLocation.MatchLocationRoute);
                             }
-                            while (count > 0);
                         }
+                        while (count > 0);
+                    }
 
-                        await connection.ExecuteAsync(
-                            $@"UPDATE {Tables.MatchLocation} SET
+                    await connection.ExecuteAsync(
+                        $@"UPDATE {Tables.MatchLocation} SET
                                 SecondaryAddressableObjectName = @SecondaryAddressableObjectName, 
                                 PrimaryAddressableObjectName = @PrimaryAddressableObjectName, 
                                 StreetDescription = @StreetDescription, 
@@ -195,47 +185,41 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                                 MatchLocationNotes = @MatchLocationNotes, 
                                 MatchLocationRoute = @MatchLocationRoute
 						        WHERE MatchLocationId = @MatchLocationId",
-                            new
-                            {
-                                matchLocation.SecondaryAddressableObjectName,
-                                matchLocation.PrimaryAddressableObjectName,
-                                matchLocation.StreetDescription,
-                                matchLocation.Locality,
-                                matchLocation.Town,
-                                matchLocation.AdministrativeArea,
-                                matchLocation.Postcode,
-                                GeoPrecision = matchLocation.GeoPrecision?.ToString(),
-                                matchLocation.Latitude,
-                                matchLocation.Longitude,
-                                matchLocation.MatchLocationNotes,
-                                matchLocation.MatchLocationRoute,
-                                matchLocation.MatchLocationId
-                            }, transaction).ConfigureAwait(false);
+                        new
+                        {
+                            matchLocation.SecondaryAddressableObjectName,
+                            matchLocation.PrimaryAddressableObjectName,
+                            matchLocation.StreetDescription,
+                            matchLocation.Locality,
+                            matchLocation.Town,
+                            matchLocation.AdministrativeArea,
+                            matchLocation.Postcode,
+                            GeoPrecision = matchLocation.GeoPrecision?.ToString(),
+                            matchLocation.Latitude,
+                            matchLocation.Longitude,
+                            matchLocation.MatchLocationNotes,
+                            matchLocation.MatchLocationRoute,
+                            matchLocation.MatchLocationId
+                        }, transaction).ConfigureAwait(false);
 
-                        transaction.Commit();
-                    }
-
-                    if (routeBeforeUpdate != matchLocation.MatchLocationRoute)
-                    {
-                        await _redirectsRepository.InsertRedirect(routeBeforeUpdate, matchLocation.MatchLocationRoute, null).ConfigureAwait(false);
-                    }
+                    transaction.Commit();
                 }
 
-                await _auditRepository.CreateAudit(new AuditRecord
+                if (routeBeforeUpdate != matchLocation.MatchLocationRoute)
                 {
-                    Action = AuditAction.Update,
-                    MemberKey = memberKey,
-                    ActorName = memberName,
-                    EntityUri = matchLocation.EntityUri,
-                    State = JsonConvert.SerializeObject(matchLocation),
-                    AuditDate = DateTime.UtcNow
-                }).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(routeBeforeUpdate, matchLocation.MatchLocationRoute, null).ConfigureAwait(false);
+                }
+            }
 
-            }
-            catch (SqlException ex)
+            await _auditRepository.CreateAudit(new AuditRecord
             {
-                _logger.Error(typeof(SqlServerMatchLocationRepository), ex);
-            }
+                Action = AuditAction.Update,
+                MemberKey = memberKey,
+                ActorName = memberName,
+                EntityUri = matchLocation.EntityUri,
+                State = JsonConvert.SerializeObject(matchLocation),
+                AuditDate = DateTime.UtcNow
+            }).ConfigureAwait(false);
 
             return matchLocation;
         }
@@ -250,37 +234,29 @@ namespace Stoolball.Umbraco.Data.MatchLocations
                 throw new ArgumentNullException(nameof(matchLocation));
             }
 
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    connection.Open();
-                    using (var transaction = connection.BeginTransaction())
-                    {
-                        await connection.ExecuteAsync($@"UPDATE {Tables.Match} SET MatchLocationId = NULL WHERE MatchLocationId = @MatchLocationId", new { matchLocation.MatchLocationId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($@"DELETE FROM {Tables.TeamMatchLocation} WHERE MatchLocationId = @MatchLocationId", new { matchLocation.MatchLocationId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($@"DELETE FROM {Tables.MatchLocation} WHERE MatchLocationId = @MatchLocationId", new { matchLocation.MatchLocationId }, transaction).ConfigureAwait(false);
-                        transaction.Commit();
-                    }
+                    await connection.ExecuteAsync($@"UPDATE {Tables.Match} SET MatchLocationId = NULL WHERE MatchLocationId = @MatchLocationId", new { matchLocation.MatchLocationId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($@"DELETE FROM {Tables.TeamMatchLocation} WHERE MatchLocationId = @MatchLocationId", new { matchLocation.MatchLocationId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($@"DELETE FROM {Tables.MatchLocation} WHERE MatchLocationId = @MatchLocationId", new { matchLocation.MatchLocationId }, transaction).ConfigureAwait(false);
+                    transaction.Commit();
                 }
-
-                await _redirectsRepository.DeleteRedirectsByDestinationPrefix(matchLocation.MatchLocationRoute).ConfigureAwait(false);
-
-                await _auditRepository.CreateAudit(new AuditRecord
-                {
-                    Action = AuditAction.Delete,
-                    MemberKey = memberKey,
-                    ActorName = memberName,
-                    EntityUri = matchLocation.EntityUri,
-                    State = JsonConvert.SerializeObject(matchLocation),
-                    AuditDate = DateTime.UtcNow
-                }).ConfigureAwait(false);
             }
-            catch (Exception e)
+
+            await _redirectsRepository.DeleteRedirectsByDestinationPrefix(matchLocation.MatchLocationRoute).ConfigureAwait(false);
+
+            await _auditRepository.CreateAudit(new AuditRecord
             {
-                _logger.Error<SqlServerMatchLocationRepository>(e);
-                throw;
-            }
+                Action = AuditAction.Delete,
+                MemberKey = memberKey,
+                ActorName = memberName,
+                EntityUri = matchLocation.EntityUri,
+                State = JsonConvert.SerializeObject(matchLocation),
+                AuditDate = DateTime.UtcNow
+            }).ConfigureAwait(false);
         }
     }
 }

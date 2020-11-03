@@ -7,7 +7,6 @@ using System.Web.UI.WebControls;
 using Dapper;
 using Stoolball.Matches;
 using Stoolball.Teams;
-using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Umbraco.Data.Matches
@@ -18,12 +17,10 @@ namespace Stoolball.Umbraco.Data.Matches
     public class SqlServerMatchListingDataSource : IMatchListingDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
-        private readonly ILogger _logger;
 
-        public SqlServerMatchListingDataSource(IDatabaseConnectionFactory databaseConnectionFactory, ILogger logger)
+        public SqlServerMatchListingDataSource(IDatabaseConnectionFactory databaseConnectionFactory)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -42,54 +39,46 @@ namespace Stoolball.Umbraco.Data.Matches
                 return 0;
             }
 
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var sql = new StringBuilder("SELECT SUM(Total) FROM (");
-                    var parameters = new Dictionary<string, object>();
+                var sql = new StringBuilder("SELECT SUM(Total) FROM (");
+                var parameters = new Dictionary<string, object>();
 
-                    if (matchQuery.IncludeMatches)
-                    {
-                        var (matchSql, matchParameters) = BuildMatchQuery(matchQuery,
-                            $@"SELECT 1 AS GroupByThis, COUNT(DISTINCT m.MatchId) AS Total
+                if (matchQuery.IncludeMatches)
+                {
+                    var (matchSql, matchParameters) = BuildMatchQuery(matchQuery,
+                        $@"SELECT 1 AS GroupByThis, COUNT(DISTINCT m.MatchId) AS Total
                                 FROM {Tables.Match} AS m
                                 <<JOIN>>
                                 <<WHERE>>");
-                        sql.Append(matchSql);
-                        parameters = matchParameters;
-                    }
+                    sql.Append(matchSql);
+                    parameters = matchParameters;
+                }
 
-                    if (matchQuery.IncludeMatches && matchQuery.IncludeTournaments)
-                    {
-                        sql.Append(" UNION ");
-                    }
+                if (matchQuery.IncludeMatches && matchQuery.IncludeTournaments)
+                {
+                    sql.Append(" UNION ");
+                }
 
-                    if (matchQuery.IncludeTournaments)
-                    {
-                        var (tournamentSql, tournamentParameters) = BuildTournamentQuery(matchQuery,
-                            $@"SELECT 1 AS GroupByThis, COUNT(DISTINCT tourney.TournamentId) AS Total
+                if (matchQuery.IncludeTournaments)
+                {
+                    var (tournamentSql, tournamentParameters) = BuildTournamentQuery(matchQuery,
+                        $@"SELECT 1 AS GroupByThis, COUNT(DISTINCT tourney.TournamentId) AS Total
                                 FROM {Tables.Tournament} AS tourney
                                 <<JOIN>>
                                 <<WHERE>>");
-                        sql.Append(tournamentSql);
-                        foreach (var key in tournamentParameters.Keys)
+                    sql.Append(tournamentSql);
+                    foreach (var key in tournamentParameters.Keys)
+                    {
+                        if (!parameters.ContainsKey(key))
                         {
-                            if (!parameters.ContainsKey(key))
-                            {
-                                parameters.Add(key, tournamentParameters[key]);
-                            }
+                            parameters.Add(key, tournamentParameters[key]);
                         }
                     }
-                    sql.Append(") AS x GROUP BY GroupByThis");
-
-                    return await connection.ExecuteScalarAsync<int>(sql.ToString(), new DynamicParameters(parameters)).ConfigureAwait(false);
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerMatchDataSource), ex);
-                throw;
+                sql.Append(") AS x GROUP BY GroupByThis");
+
+                return await connection.ExecuteScalarAsync<int>(sql.ToString(), new DynamicParameters(parameters)).ConfigureAwait(false);
             }
         }
 
@@ -110,18 +99,16 @@ namespace Stoolball.Umbraco.Data.Matches
                 return new List<MatchListing>();
             }
 
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var sql = new StringBuilder();
-                    var parameters = new Dictionary<string, object>();
-                    var orderBy = new List<string>();
+                var sql = new StringBuilder();
+                var parameters = new Dictionary<string, object>();
+                var orderBy = new List<string>();
 
-                    if (matchQuery.IncludeMatches)
-                    {
-                        var (matchSql, matchParameters) = BuildMatchQuery(matchQuery,
-                            $@"SELECT m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, m.MatchResultType,
+                if (matchQuery.IncludeMatches)
+                {
+                    var (matchSql, matchParameters) = BuildMatchQuery(matchQuery,
+                        $@"SELECT m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, m.MatchResultType,
                                 NULL AS TournamentQualificationType, NULL AS SpacesInTournament, m.OrderInTournament,
                                 mt.TeamRole, mt.MatchTeamId,
                                 mt.TeamId,
@@ -131,24 +118,24 @@ namespace Stoolball.Umbraco.Data.Matches
                                 LEFT JOIN {Tables.MatchInnings} AS i ON m.MatchId = i.MatchId AND i.BattingMatchTeamId = mt.MatchTeamId
                                 <<JOIN>>
                                 <<WHERE>> ");
-                        sql.Append(matchSql);
-                        parameters = matchParameters;
+                    sql.Append(matchSql);
+                    parameters = matchParameters;
 
-                        if (matchQuery.TournamentId != null)
-                        {
-                            orderBy.Add("OrderInTournament");
-                        }
-                    }
-
-                    if (matchQuery.IncludeMatches && matchQuery.IncludeTournaments)
+                    if (matchQuery.TournamentId != null)
                     {
-                        sql.Append(" UNION ");
+                        orderBy.Add("OrderInTournament");
                     }
+                }
 
-                    if (matchQuery.IncludeTournaments)
-                    {
-                        var (tournamentSql, tournamentParameters) = BuildTournamentQuery(matchQuery,
-                            $@"SELECT tourney.TournamentName AS MatchName, tourney.TournamentRoute AS MatchRoute, tourney.StartTime, tourney.StartTimeIsKnown, 
+                if (matchQuery.IncludeMatches && matchQuery.IncludeTournaments)
+                {
+                    sql.Append(" UNION ");
+                }
+
+                if (matchQuery.IncludeTournaments)
+                {
+                    var (tournamentSql, tournamentParameters) = BuildTournamentQuery(matchQuery,
+                        $@"SELECT tourney.TournamentName AS MatchName, tourney.TournamentRoute AS MatchRoute, tourney.StartTime, tourney.StartTimeIsKnown, 
                                 NULL AS MatchType, tourney.PlayerType, NULL AS MatchResultType,
                                 tourney.QualificationType AS TournamentQualificationType, tourney.SpacesInTournament, NULL AS OrderInTournament,
                                 NULL AS TeamRole, NULL AS MatchTeamId,
@@ -157,55 +144,49 @@ namespace Stoolball.Umbraco.Data.Matches
                                 FROM { Tables.Tournament} AS tourney
                                 <<JOIN>>
                                 <<WHERE>> ");
-                        sql.Append(tournamentSql);
-                        foreach (var key in tournamentParameters.Keys)
+                    sql.Append(tournamentSql);
+                    foreach (var key in tournamentParameters.Keys)
+                    {
+                        if (!parameters.ContainsKey(key))
                         {
-                            if (!parameters.ContainsKey(key))
-                            {
-                                parameters.Add(key, tournamentParameters[key]);
-                            }
+                            parameters.Add(key, tournamentParameters[key]);
                         }
                     }
-
-                    orderBy.Add("StartTime");
-                    sql.Append("ORDER BY ").Append(string.Join(", ", orderBy.ToArray()));
-
-                    var matches = await connection.QueryAsync<MatchListing, TeamInMatch, Team, MatchInnings, MatchListing>(sql.ToString(),
-                    (matchListing, teamInMatch, team, matchInnings) =>
-                    {
-                        if (teamInMatch != null)
-                        {
-                            teamInMatch.Team = team;
-                            matchListing.Teams.Add(teamInMatch);
-
-                            matchListing.MatchInnings.Add(new MatchInnings
-                            {
-                                BattingMatchTeamId = teamInMatch.MatchTeamId,
-                                BattingTeam = teamInMatch,
-                                Runs = matchInnings?.Runs,
-                                Wickets = matchInnings?.Wickets
-                            });
-                        }
-                        return matchListing;
-                    },
-                    new DynamicParameters(parameters),
-                    splitOn: "TeamRole, TeamId, Runs").ConfigureAwait(false);
-
-                    var listingsToReturn = matches.GroupBy(match => match.MatchRoute).Select(copiesOfMatch =>
-                    {
-                        var matchToReturn = copiesOfMatch.First();
-                        matchToReturn.MatchInnings = copiesOfMatch.Select(match => match.MatchInnings.SingleOrDefault()).OfType<MatchInnings>().ToList();
-                        matchToReturn.Teams = copiesOfMatch.Select(match => match.Teams.SingleOrDefault()).OfType<TeamInMatch>().ToList();
-                        return matchToReturn;
-                    }).ToList();
-
-                    return listingsToReturn;
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerMatchDataSource), ex);
-                throw;
+
+                orderBy.Add("StartTime");
+                sql.Append("ORDER BY ").Append(string.Join(", ", orderBy.ToArray()));
+
+                var matches = await connection.QueryAsync<MatchListing, TeamInMatch, Team, MatchInnings, MatchListing>(sql.ToString(),
+                (matchListing, teamInMatch, team, matchInnings) =>
+                {
+                    if (teamInMatch != null)
+                    {
+                        teamInMatch.Team = team;
+                        matchListing.Teams.Add(teamInMatch);
+
+                        matchListing.MatchInnings.Add(new MatchInnings
+                        {
+                            BattingMatchTeamId = teamInMatch.MatchTeamId,
+                            BattingTeam = teamInMatch,
+                            Runs = matchInnings?.Runs,
+                            Wickets = matchInnings?.Wickets
+                        });
+                    }
+                    return matchListing;
+                },
+                new DynamicParameters(parameters),
+                splitOn: "TeamRole, TeamId, Runs").ConfigureAwait(false);
+
+                var listingsToReturn = matches.GroupBy(match => match.MatchRoute).Select(copiesOfMatch =>
+                {
+                    var matchToReturn = copiesOfMatch.First();
+                    matchToReturn.MatchInnings = copiesOfMatch.Select(match => match.MatchInnings.SingleOrDefault()).OfType<MatchInnings>().ToList();
+                    matchToReturn.Teams = copiesOfMatch.Select(match => match.Teams.SingleOrDefault()).OfType<TeamInMatch>().ToList();
+                    return matchToReturn;
+                }).ToList();
+
+                return listingsToReturn;
             }
         }
 

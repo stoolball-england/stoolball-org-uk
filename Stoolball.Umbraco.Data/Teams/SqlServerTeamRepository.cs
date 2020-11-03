@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -77,33 +76,25 @@ namespace Stoolball.Umbraco.Data.Teams
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    connection.Open();
-                    using (var transaction = connection.BeginTransaction())
-                    {
-                        await CreateTeam(team, transaction, memberUsername).ConfigureAwait(false);
-                        transaction.Commit();
-                    }
+                    await CreateTeam(team, transaction, memberUsername).ConfigureAwait(false);
+                    transaction.Commit();
                 }
+            }
 
-                await _auditRepository.CreateAudit(new AuditRecord
-                {
-                    Action = AuditAction.Create,
-                    MemberKey = memberKey,
-                    ActorName = memberName,
-                    EntityUri = team.EntityUri,
-                    State = JsonConvert.SerializeObject(team),
-                    AuditDate = DateTime.UtcNow
-                }).ConfigureAwait(false);
-            }
-            catch (SqlException ex)
+            await _auditRepository.CreateAudit(new AuditRecord
             {
-                _logger.Error(typeof(SqlServerTeamRepository), ex);
-            }
+                Action = AuditAction.Create,
+                MemberKey = memberKey,
+                ActorName = memberName,
+                EntityUri = team.EntityUri,
+                State = JsonConvert.SerializeObject(team),
+                AuditDate = DateTime.UtcNow
+            }).ConfigureAwait(false);
 
             return team;
         }
@@ -234,43 +225,41 @@ namespace Stoolball.Umbraco.Data.Teams
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            try
+            string routeBeforeUpdate = team.TeamRoute;
+            team.Introduction = _htmlSanitiser.Sanitize(team.Introduction);
+            team.PlayingTimes = _htmlSanitiser.Sanitize(team.PlayingTimes);
+            team.Cost = _htmlSanitiser.Sanitize(team.Cost);
+            team.PublicContactDetails = _htmlSanitiser.Sanitize(team.PublicContactDetails);
+            team.PrivateContactDetails = _htmlSanitiser.Sanitize(team.PrivateContactDetails);
+            team.Facebook = PrefixUrlProtocol(team.Facebook);
+            team.Twitter = PrefixAtSign(team.Twitter);
+            team.Instagram = PrefixAtSign(team.Instagram);
+            team.YouTube = PrefixUrlProtocol(team.YouTube);
+            team.Website = PrefixUrlProtocol(team.Website);
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                string routeBeforeUpdate = team.TeamRoute;
-                team.Introduction = _htmlSanitiser.Sanitize(team.Introduction);
-                team.PlayingTimes = _htmlSanitiser.Sanitize(team.PlayingTimes);
-                team.Cost = _htmlSanitiser.Sanitize(team.Cost);
-                team.PublicContactDetails = _htmlSanitiser.Sanitize(team.PublicContactDetails);
-                team.PrivateContactDetails = _htmlSanitiser.Sanitize(team.PrivateContactDetails);
-                team.Facebook = PrefixUrlProtocol(team.Facebook);
-                team.Twitter = PrefixAtSign(team.Twitter);
-                team.Instagram = PrefixAtSign(team.Instagram);
-                team.YouTube = PrefixUrlProtocol(team.YouTube);
-                team.Website = PrefixUrlProtocol(team.Website);
-
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    connection.Open();
-                    using (var transaction = connection.BeginTransaction())
+
+                    team.TeamRoute = _routeGenerator.GenerateRoute("/teams", team.TeamName, NoiseWords.TeamRoute);
+                    if (team.TeamRoute != routeBeforeUpdate)
                     {
-
-                        team.TeamRoute = _routeGenerator.GenerateRoute("/teams", team.TeamName, NoiseWords.TeamRoute);
-                        if (team.TeamRoute != routeBeforeUpdate)
+                        int count;
+                        do
                         {
-                            int count;
-                            do
+                            count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { team.TeamRoute }, transaction).ConfigureAwait(false);
+                            if (count > 0)
                             {
-                                count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { team.TeamRoute }, transaction).ConfigureAwait(false);
-                                if (count > 0)
-                                {
-                                    team.TeamRoute = _routeGenerator.IncrementRoute(team.TeamRoute);
-                                }
+                                team.TeamRoute = _routeGenerator.IncrementRoute(team.TeamRoute);
                             }
-                            while (count > 0);
                         }
+                        while (count > 0);
+                    }
 
-                        await connection.ExecuteAsync(
-                            $@"UPDATE {Tables.Team} SET
+                    await connection.ExecuteAsync(
+                        $@"UPDATE {Tables.Team} SET
                                 TeamType = @TeamType, 
                                 AgeRangeLower = @AgeRangeLower, 
                                 AgeRangeUpper = @AgeRangeUpper, 
@@ -289,86 +278,80 @@ namespace Stoolball.Umbraco.Data.Teams
                                 Website = @Website,
                                 TeamRoute = @TeamRoute
 						        WHERE TeamId = @TeamId",
-                            new
-                            {
-                                TeamType = team.TeamType.ToString(),
-                                team.AgeRangeLower,
-                                team.AgeRangeUpper,
-                                team.FromYear,
-                                team.UntilYear,
-                                team.PlayerType,
-                                team.Introduction,
-                                team.PlayingTimes,
-                                team.Cost,
-                                team.PublicContactDetails,
-                                team.PrivateContactDetails,
-                                team.Facebook,
-                                team.Twitter,
-                                team.Instagram,
-                                team.YouTube,
-                                team.Website,
-                                team.TeamRoute,
-                                team.TeamId
-                            }, transaction).ConfigureAwait(false);
-
-                        var currentName = await connection.ExecuteScalarAsync<string>($"SELECT TeamName FROM {Tables.TeamName} WHERE TeamId = @TeamId AND UntilDate IS NULL", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        if (team.TeamName?.Trim() != currentName?.Trim())
+                        new
                         {
-                            await connection.ExecuteAsync($"UPDATE {Tables.TeamName} SET UntilDate = GETUTCDATE() WHERE TeamId = @TeamId AND UntilDate IS NULL", new { team.TeamId }, transaction).ConfigureAwait(false);
-                            await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamName} 
+                            TeamType = team.TeamType.ToString(),
+                            team.AgeRangeLower,
+                            team.AgeRangeUpper,
+                            team.FromYear,
+                            team.UntilYear,
+                            team.PlayerType,
+                            team.Introduction,
+                            team.PlayingTimes,
+                            team.Cost,
+                            team.PublicContactDetails,
+                            team.PrivateContactDetails,
+                            team.Facebook,
+                            team.Twitter,
+                            team.Instagram,
+                            team.YouTube,
+                            team.Website,
+                            team.TeamRoute,
+                            team.TeamId
+                        }, transaction).ConfigureAwait(false);
+
+                    var currentName = await connection.ExecuteScalarAsync<string>($"SELECT TeamName FROM {Tables.TeamName} WHERE TeamId = @TeamId AND UntilDate IS NULL", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    if (team.TeamName?.Trim() != currentName?.Trim())
+                    {
+                        await connection.ExecuteAsync($"UPDATE {Tables.TeamName} SET UntilDate = GETUTCDATE() WHERE TeamId = @TeamId AND UntilDate IS NULL", new { team.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamName} 
                                 (TeamNameId, TeamId, TeamName, FromDate) VALUES (@TeamNameId, @TeamId, @TeamName, GETUTCDATE())",
-                                                            new
-                                                            {
-                                                                TeamNameId = Guid.NewGuid(),
-                                                                team.TeamId,
-                                                                team.TeamName
-                                                            }, transaction).ConfigureAwait(false);
-                        }
+                                                        new
+                                                        {
+                                                            TeamNameId = Guid.NewGuid(),
+                                                            team.TeamId,
+                                                            team.TeamName
+                                                        }, transaction).ConfigureAwait(false);
+                    }
 
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.TeamMatchLocation} WHERE TeamId = @TeamId AND MatchLocationId NOT IN @MatchLocationIds", new { team.TeamId, MatchLocationIds = team.MatchLocations.Select(x => x.MatchLocationId) }, transaction).ConfigureAwait(false);
-                        var currentLocations = (await connection.QueryAsync<Guid>($"SELECT MatchLocationId FROM {Tables.TeamMatchLocation} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false)).ToList();
-                        foreach (var location in team.MatchLocations)
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.TeamMatchLocation} WHERE TeamId = @TeamId AND MatchLocationId NOT IN @MatchLocationIds", new { team.TeamId, MatchLocationIds = team.MatchLocations.Select(x => x.MatchLocationId) }, transaction).ConfigureAwait(false);
+                    var currentLocations = (await connection.QueryAsync<Guid>($"SELECT MatchLocationId FROM {Tables.TeamMatchLocation} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false)).ToList();
+                    foreach (var location in team.MatchLocations)
+                    {
+                        if (!currentLocations.Contains(location.MatchLocationId.Value))
                         {
-                            if (!currentLocations.Contains(location.MatchLocationId.Value))
-                            {
-                                await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} 
+                            await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} 
                                     (TeamMatchLocationId, TeamId, MatchLocationId)
                                     VALUES 
                                     (@TeamMatchLocationId, @TeamId, @MatchLocationId)",
-                                    new
-                                    {
-                                        TeamMatchLocationId = Guid.NewGuid(),
-                                        team.TeamId,
-                                        location.MatchLocationId
-                                    },
-                                    transaction).ConfigureAwait(false);
-                            }
+                                new
+                                {
+                                    TeamMatchLocationId = Guid.NewGuid(),
+                                    team.TeamId,
+                                    location.MatchLocationId
+                                },
+                                transaction).ConfigureAwait(false);
                         }
-
-                        transaction.Commit();
                     }
 
-                    if (routeBeforeUpdate != team.TeamRoute)
-                    {
-                        await _redirectsRepository.InsertRedirect(routeBeforeUpdate, team.TeamRoute, null).ConfigureAwait(false);
-                    }
+                    transaction.Commit();
                 }
 
-                await _auditRepository.CreateAudit(new AuditRecord
+                if (routeBeforeUpdate != team.TeamRoute)
                 {
-                    Action = AuditAction.Update,
-                    MemberKey = memberKey,
-                    ActorName = memberName,
-                    EntityUri = team.EntityUri,
-                    State = JsonConvert.SerializeObject(team),
-                    AuditDate = DateTime.UtcNow
-                }).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(routeBeforeUpdate, team.TeamRoute, null).ConfigureAwait(false);
+                }
+            }
 
-            }
-            catch (SqlException ex)
+            await _auditRepository.CreateAudit(new AuditRecord
             {
-                _logger.Error(typeof(SqlServerTeamRepository), ex);
-            }
+                Action = AuditAction.Update,
+                MemberKey = memberKey,
+                ActorName = memberName,
+                EntityUri = team.EntityUri,
+                State = JsonConvert.SerializeObject(team),
+                AuditDate = DateTime.UtcNow
+            }).ConfigureAwait(false);
 
             return team;
         }
@@ -388,42 +371,40 @@ namespace Stoolball.Umbraco.Data.Teams
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            try
+            string routeBeforeUpdate = team.TeamRoute;
+            team.Introduction = _htmlSanitiser.Sanitize(team.Introduction);
+            team.Cost = _htmlSanitiser.Sanitize(team.Cost);
+            team.PublicContactDetails = _htmlSanitiser.Sanitize(team.PublicContactDetails);
+            team.PrivateContactDetails = _htmlSanitiser.Sanitize(team.PrivateContactDetails);
+            team.Facebook = PrefixUrlProtocol(team.Facebook);
+            team.Twitter = PrefixAtSign(team.Twitter);
+            team.Instagram = PrefixAtSign(team.Instagram);
+            team.YouTube = PrefixUrlProtocol(team.YouTube);
+            team.Website = PrefixUrlProtocol(team.Website);
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                string routeBeforeUpdate = team.TeamRoute;
-                team.Introduction = _htmlSanitiser.Sanitize(team.Introduction);
-                team.Cost = _htmlSanitiser.Sanitize(team.Cost);
-                team.PublicContactDetails = _htmlSanitiser.Sanitize(team.PublicContactDetails);
-                team.PrivateContactDetails = _htmlSanitiser.Sanitize(team.PrivateContactDetails);
-                team.Facebook = PrefixUrlProtocol(team.Facebook);
-                team.Twitter = PrefixAtSign(team.Twitter);
-                team.Instagram = PrefixAtSign(team.Instagram);
-                team.YouTube = PrefixUrlProtocol(team.YouTube);
-                team.Website = PrefixUrlProtocol(team.Website);
-
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    connection.Open();
-                    using (var transaction = connection.BeginTransaction())
+                    var routePrefix = Regex.Match(team.TeamRoute, @"^\/tournaments\/[a-z0-9-]+\/teams").Value;
+                    team.TeamRoute = _routeGenerator.GenerateRoute(routePrefix, team.TeamName, NoiseWords.TeamRoute);
+                    if (team.TeamRoute != routeBeforeUpdate)
                     {
-                        var routePrefix = Regex.Match(team.TeamRoute, @"^\/tournaments\/[a-z0-9-]+\/teams").Value;
-                        team.TeamRoute = _routeGenerator.GenerateRoute(routePrefix, team.TeamName, NoiseWords.TeamRoute);
-                        if (team.TeamRoute != routeBeforeUpdate)
+                        int count;
+                        do
                         {
-                            int count;
-                            do
+                            count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { team.TeamRoute }, transaction).ConfigureAwait(false);
+                            if (count > 0)
                             {
-                                count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { team.TeamRoute }, transaction).ConfigureAwait(false);
-                                if (count > 0)
-                                {
-                                    team.TeamRoute = _routeGenerator.IncrementRoute(team.TeamRoute);
-                                }
+                                team.TeamRoute = _routeGenerator.IncrementRoute(team.TeamRoute);
                             }
-                            while (count > 0);
                         }
+                        while (count > 0);
+                    }
 
-                        await connection.ExecuteAsync(
-                            $@"UPDATE {Tables.Team} SET
+                    await connection.ExecuteAsync(
+                        $@"UPDATE {Tables.Team} SET
                                  AgeRangeLower = @AgeRangeLower, 
                                  AgeRangeUpper = @AgeRangeUpper, 
                                  PlayerType = @PlayerType, 
@@ -438,51 +419,45 @@ namespace Stoolball.Umbraco.Data.Teams
                                  Website = @Website,
                                  TeamRoute = @TeamRoute
                                  WHERE TeamId = @TeamId",
-                            new
-                            {
-                                team.AgeRangeLower,
-                                team.AgeRangeUpper,
-                                team.PlayerType,
-                                team.Introduction,
-                                team.Cost,
-                                team.PublicContactDetails,
-                                team.PrivateContactDetails,
-                                team.Facebook,
-                                team.Twitter,
-                                team.Instagram,
-                                team.YouTube,
-                                team.Website,
-                                team.TeamRoute,
-                                team.TeamId
-                            }, transaction).ConfigureAwait(false);
+                        new
+                        {
+                            team.AgeRangeLower,
+                            team.AgeRangeUpper,
+                            team.PlayerType,
+                            team.Introduction,
+                            team.Cost,
+                            team.PublicContactDetails,
+                            team.PrivateContactDetails,
+                            team.Facebook,
+                            team.Twitter,
+                            team.Instagram,
+                            team.YouTube,
+                            team.Website,
+                            team.TeamRoute,
+                            team.TeamId
+                        }, transaction).ConfigureAwait(false);
 
-                        // No need to support changes of name when the team only lasts for a day
-                        await connection.ExecuteAsync($"UPDATE {Tables.TeamName} SET TeamName = @TeamName WHERE TeamId = @TeamId", new { team.TeamId, team.TeamName }, transaction).ConfigureAwait(false);
+                    // No need to support changes of name when the team only lasts for a day
+                    await connection.ExecuteAsync($"UPDATE {Tables.TeamName} SET TeamName = @TeamName WHERE TeamId = @TeamId", new { team.TeamId, team.TeamName }, transaction).ConfigureAwait(false);
 
-                        transaction.Commit();
-                    }
-
-                    if (routeBeforeUpdate != team.TeamRoute)
-                    {
-                        await _redirectsRepository.InsertRedirect(routeBeforeUpdate, team.TeamRoute, null).ConfigureAwait(false);
-                    }
+                    transaction.Commit();
                 }
 
-                await _auditRepository.CreateAudit(new AuditRecord
+                if (routeBeforeUpdate != team.TeamRoute)
                 {
-                    Action = AuditAction.Update,
-                    MemberKey = memberKey,
-                    ActorName = memberName,
-                    EntityUri = team.EntityUri,
-                    State = JsonConvert.SerializeObject(team),
-                    AuditDate = DateTime.UtcNow
-                }).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(routeBeforeUpdate, team.TeamRoute, null).ConfigureAwait(false);
+                }
+            }
 
-            }
-            catch (SqlException ex)
+            await _auditRepository.CreateAudit(new AuditRecord
             {
-                _logger.Error(typeof(SqlServerTeamRepository), ex);
-            }
+                Action = AuditAction.Update,
+                MemberKey = memberKey,
+                ActorName = memberName,
+                EntityUri = team.EntityUri,
+                State = JsonConvert.SerializeObject(team),
+                AuditDate = DateTime.UtcNow
+            }).ConfigureAwait(false);
 
             return team;
         }
@@ -498,57 +473,49 @@ namespace Stoolball.Umbraco.Data.Teams
                 throw new ArgumentNullException(nameof(team));
             }
 
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    connection.Open();
-                    using (var transaction = connection.BeginTransaction())
-                    {
-                        await connection.ExecuteAsync($"UPDATE {Tables.StatisticsPlayerMatch} SET OppositionTeamId = NULL, OppositionTeamName = NULL WHERE OppositionTeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.StatisticsPlayerMatch} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"UPDATE {Tables.StatisticsPlayerMatch} SET BowledById = NULL WHERE BowledById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"UPDATE {Tables.StatisticsPlayerMatch} SET CaughtById = NULL WHERE CaughtById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"UPDATE {Tables.StatisticsPlayerMatch} SET RunOutById = NULL WHERE RunOutById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerInnings} SET DismissedById = NULL WHERE DismissedById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerInnings} SET BowlerId = NULL WHERE BowlerId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.Over} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.Bowling} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.MatchAward} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        var playerIds = await connection.QueryAsync<Guid>($"SELECT PlayerId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.Player} WHERE PlayerId IN @playerIds AND NOT IN (SELECT PlayerId FROM {Tables.PlayerIdentity} WHERE PlayerId IN @playerIds)", new { playerIds }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"UPDATE {Tables.MatchInnings} SET BattingMatchTeamId = NULL WHERE BattingMatchTeamId IN (SELECT MatchTeamId FROM {Tables.MatchTeam} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"UPDATE {Tables.MatchInnings} SET BowlingMatchTeamId = NULL WHERE BowlingMatchTeamId IN (SELECT MatchTeamId FROM {Tables.MatchTeam} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.TournamentTeam} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsAdjustment} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.TeamMatchLocation} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.TeamName} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.Team} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
-                        transaction.Commit();
-                    }
+                    await connection.ExecuteAsync($"UPDATE {Tables.StatisticsPlayerMatch} SET OppositionTeamId = NULL, OppositionTeamName = NULL WHERE OppositionTeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.StatisticsPlayerMatch} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"UPDATE {Tables.StatisticsPlayerMatch} SET BowledById = NULL WHERE BowledById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"UPDATE {Tables.StatisticsPlayerMatch} SET CaughtById = NULL WHERE CaughtById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"UPDATE {Tables.StatisticsPlayerMatch} SET RunOutById = NULL WHERE RunOutById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"UPDATE {Tables.PlayerInnings} SET DismissedById = NULL WHERE DismissedById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"UPDATE {Tables.PlayerInnings} SET BowlerId = NULL WHERE BowlerId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.Over} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.Bowling} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.MatchAward} WHERE PlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    var playerIds = await connection.QueryAsync<Guid>($"SELECT PlayerId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.Player} WHERE PlayerId IN @playerIds AND NOT IN (SELECT PlayerId FROM {Tables.PlayerIdentity} WHERE PlayerId IN @playerIds)", new { playerIds }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"UPDATE {Tables.MatchInnings} SET BattingMatchTeamId = NULL WHERE BattingMatchTeamId IN (SELECT MatchTeamId FROM {Tables.MatchTeam} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"UPDATE {Tables.MatchInnings} SET BowlingMatchTeamId = NULL WHERE BowlingMatchTeamId IN (SELECT MatchTeamId FROM {Tables.MatchTeam} WHERE TeamId = @TeamId)", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.TournamentTeam} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsAdjustment} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.TeamMatchLocation} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.TeamName} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.Team} WHERE TeamId = @TeamId", new { team.TeamId }, transaction).ConfigureAwait(false);
+                    transaction.Commit();
                 }
-
-                await _redirectsRepository.DeleteRedirectsByDestinationPrefix(team.TeamRoute).ConfigureAwait(false);
-
-                await _auditRepository.CreateAudit(new AuditRecord
-                {
-                    Action = AuditAction.Delete,
-                    MemberKey = memberKey,
-                    ActorName = memberName,
-                    EntityUri = team.EntityUri,
-                    State = JsonConvert.SerializeObject(team),
-                    AuditDate = DateTime.UtcNow
-                }).ConfigureAwait(false);
             }
-            catch (Exception e)
+
+            await _redirectsRepository.DeleteRedirectsByDestinationPrefix(team.TeamRoute).ConfigureAwait(false);
+
+            await _auditRepository.CreateAudit(new AuditRecord
             {
-                _logger.Error<SqlServerTeamRepository>(e);
-                throw;
-            }
+                Action = AuditAction.Delete,
+                MemberKey = memberKey,
+                ActorName = memberName,
+                EntityUri = team.EntityUri,
+                State = JsonConvert.SerializeObject(team),
+                AuditDate = DateTime.UtcNow
+            }).ConfigureAwait(false);
         }
 
         private static string PrefixUrlProtocol(string url)

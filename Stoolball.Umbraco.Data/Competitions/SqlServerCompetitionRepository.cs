@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
 using Ganss.XSS;
@@ -68,80 +67,73 @@ namespace Stoolball.Umbraco.Data.Competitions
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            try
+            competition.CompetitionId = Guid.NewGuid();
+            competition.Introduction = _htmlSanitiser.Sanitize(competition.Introduction);
+            competition.PublicContactDetails = _htmlSanitiser.Sanitize(competition.PublicContactDetails);
+            competition.PrivateContactDetails = _htmlSanitiser.Sanitize(competition.PrivateContactDetails);
+            competition.Facebook = PrefixUrlProtocol(competition.Facebook);
+            competition.Twitter = PrefixAtSign(competition.Twitter);
+            competition.Instagram = PrefixAtSign(competition.Instagram);
+            competition.YouTube = PrefixUrlProtocol(competition.YouTube);
+            competition.Website = PrefixUrlProtocol(competition.Website);
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                competition.CompetitionId = Guid.NewGuid();
-                competition.Introduction = _htmlSanitiser.Sanitize(competition.Introduction);
-                competition.PublicContactDetails = _htmlSanitiser.Sanitize(competition.PublicContactDetails);
-                competition.PrivateContactDetails = _htmlSanitiser.Sanitize(competition.PrivateContactDetails);
-                competition.Facebook = PrefixUrlProtocol(competition.Facebook);
-                competition.Twitter = PrefixAtSign(competition.Twitter);
-                competition.Instagram = PrefixAtSign(competition.Instagram);
-                competition.YouTube = PrefixUrlProtocol(competition.YouTube);
-                competition.Website = PrefixUrlProtocol(competition.Website);
-
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    connection.Open();
-                    using (var transaction = connection.BeginTransaction())
+                    competition.CompetitionRoute = _routeGenerator.GenerateRoute("/competitions", competition.CompetitionName, NoiseWords.CompetitionRoute);
+                    int count;
+                    do
                     {
-                        competition.CompetitionRoute = _routeGenerator.GenerateRoute("/competitions", competition.CompetitionName, NoiseWords.CompetitionRoute);
-                        int count;
-                        do
+                        count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Competition} WHERE CompetitionRoute = @CompetitionRoute", new { competition.CompetitionRoute }, transaction).ConfigureAwait(false);
+                        if (count > 0)
                         {
-                            count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Competition} WHERE CompetitionRoute = @CompetitionRoute", new { competition.CompetitionRoute }, transaction).ConfigureAwait(false);
-                            if (count > 0)
-                            {
-                                competition.CompetitionRoute = _routeGenerator.IncrementRoute(competition.CompetitionRoute);
-                            }
+                            competition.CompetitionRoute = _routeGenerator.IncrementRoute(competition.CompetitionRoute);
                         }
-                        while (count > 0);
+                    }
+                    while (count > 0);
 
-                        await connection.ExecuteAsync(
-                            $@"INSERT INTO {Tables.Competition} (CompetitionId, CompetitionName, FromYear, UntilYear, PlayerType, 
+                    await connection.ExecuteAsync(
+                        $@"INSERT INTO {Tables.Competition} (CompetitionId, CompetitionName, FromYear, UntilYear, PlayerType, 
                                 Introduction, PublicContactDetails, PrivateContactDetails, Facebook, Twitter, Instagram, YouTube, Website, CompetitionRoute, 
                                 MemberGroupKey, MemberGroupName) 
                                 VALUES (@CompetitionId, @CompetitionName, @FromYear, @UntilYear, @PlayerType, @Introduction, 
                                 @PublicContactDetails, @PrivateContactDetails, @Facebook, @Twitter, @Instagram, @YouTube, @Website, @CompetitionRoute, 
                                 @MemberGroupKey, @MemberGroupName)",
-                            new
-                            {
-                                competition.CompetitionId,
-                                competition.CompetitionName,
-                                competition.FromYear,
-                                competition.UntilYear,
-                                competition.PlayerType,
-                                competition.Introduction,
-                                competition.PublicContactDetails,
-                                competition.PrivateContactDetails,
-                                competition.Facebook,
-                                competition.Twitter,
-                                competition.Instagram,
-                                competition.YouTube,
-                                competition.Website,
-                                competition.CompetitionRoute,
-                                competition.MemberGroupKey,
-                                competition.MemberGroupName
-                            }, transaction).ConfigureAwait(false);
+                        new
+                        {
+                            competition.CompetitionId,
+                            competition.CompetitionName,
+                            competition.FromYear,
+                            competition.UntilYear,
+                            competition.PlayerType,
+                            competition.Introduction,
+                            competition.PublicContactDetails,
+                            competition.PrivateContactDetails,
+                            competition.Facebook,
+                            competition.Twitter,
+                            competition.Instagram,
+                            competition.YouTube,
+                            competition.Website,
+                            competition.CompetitionRoute,
+                            competition.MemberGroupKey,
+                            competition.MemberGroupName
+                        }, transaction).ConfigureAwait(false);
 
-                        transaction.Commit();
-                    }
+                    transaction.Commit();
                 }
+            }
 
-                await _auditRepository.CreateAudit(new AuditRecord
-                {
-                    Action = AuditAction.Create,
-                    MemberKey = memberKey,
-                    ActorName = memberName,
-                    EntityUri = competition.EntityUri,
-                    State = JsonConvert.SerializeObject(competition),
-                    AuditDate = DateTime.UtcNow
-                }).ConfigureAwait(false);
-            }
-            catch (SqlException ex)
+            await _auditRepository.CreateAudit(new AuditRecord
             {
-                _logger.Error(typeof(SqlServerCompetitionRepository), ex);
-            }
+                Action = AuditAction.Create,
+                MemberKey = memberKey,
+                ActorName = memberName,
+                EntityUri = competition.EntityUri,
+                State = JsonConvert.SerializeObject(competition),
+                AuditDate = DateTime.UtcNow
+            }).ConfigureAwait(false);
 
             return competition;
         }
@@ -162,41 +154,39 @@ namespace Stoolball.Umbraco.Data.Competitions
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            try
+            string routeBeforeUpdate = competition.CompetitionRoute;
+            competition.Introduction = _htmlSanitiser.Sanitize(competition.Introduction);
+            competition.PublicContactDetails = _htmlSanitiser.Sanitize(competition.PublicContactDetails);
+            competition.PrivateContactDetails = _htmlSanitiser.Sanitize(competition.PrivateContactDetails);
+            competition.Facebook = PrefixUrlProtocol(competition.Facebook);
+            competition.Twitter = PrefixAtSign(competition.Twitter);
+            competition.Instagram = PrefixAtSign(competition.Instagram);
+            competition.YouTube = PrefixUrlProtocol(competition.YouTube);
+            competition.Website = PrefixUrlProtocol(competition.Website);
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                string routeBeforeUpdate = competition.CompetitionRoute;
-                competition.Introduction = _htmlSanitiser.Sanitize(competition.Introduction);
-                competition.PublicContactDetails = _htmlSanitiser.Sanitize(competition.PublicContactDetails);
-                competition.PrivateContactDetails = _htmlSanitiser.Sanitize(competition.PrivateContactDetails);
-                competition.Facebook = PrefixUrlProtocol(competition.Facebook);
-                competition.Twitter = PrefixAtSign(competition.Twitter);
-                competition.Instagram = PrefixAtSign(competition.Instagram);
-                competition.YouTube = PrefixUrlProtocol(competition.YouTube);
-                competition.Website = PrefixUrlProtocol(competition.Website);
-
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    connection.Open();
-                    using (var transaction = connection.BeginTransaction())
+
+                    competition.CompetitionRoute = _routeGenerator.GenerateRoute("/competitions", competition.CompetitionName, NoiseWords.CompetitionRoute);
+                    if (competition.CompetitionRoute != routeBeforeUpdate)
                     {
-
-                        competition.CompetitionRoute = _routeGenerator.GenerateRoute("/competitions", competition.CompetitionName, NoiseWords.CompetitionRoute);
-                        if (competition.CompetitionRoute != routeBeforeUpdate)
+                        int count;
+                        do
                         {
-                            int count;
-                            do
+                            count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Competition} WHERE CompetitionRoute = @CompetitionRoute", new { competition.CompetitionRoute }, transaction).ConfigureAwait(false);
+                            if (count > 0)
                             {
-                                count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Competition} WHERE CompetitionRoute = @CompetitionRoute", new { competition.CompetitionRoute }, transaction).ConfigureAwait(false);
-                                if (count > 0)
-                                {
-                                    competition.CompetitionRoute = _routeGenerator.IncrementRoute(competition.CompetitionRoute);
-                                }
+                                competition.CompetitionRoute = _routeGenerator.IncrementRoute(competition.CompetitionRoute);
                             }
-                            while (count > 0);
                         }
+                        while (count > 0);
+                    }
 
-                        await connection.ExecuteAsync(
-                            $@"UPDATE {Tables.Competition} SET
+                    await connection.ExecuteAsync(
+                        $@"UPDATE {Tables.Competition} SET
                                 CompetitionName = @CompetitionName,
                                 FromYear = @FromYear,
                                 UntilYear = @UntilYear,
@@ -211,56 +201,50 @@ namespace Stoolball.Umbraco.Data.Competitions
                                 Website = @Website,
                                 CompetitionRoute = @CompetitionRoute
 						        WHERE CompetitionId = @CompetitionId",
-                            new
-                            {
-                                competition.CompetitionName,
-                                competition.FromYear,
-                                competition.UntilYear,
-                                competition.PlayerType,
-                                competition.Introduction,
-                                competition.PublicContactDetails,
-                                competition.PrivateContactDetails,
-                                competition.Facebook,
-                                competition.Twitter,
-                                competition.Instagram,
-                                competition.YouTube,
-                                competition.Website,
-                                competition.CompetitionRoute,
-                                competition.CompetitionId
-                            }, transaction).ConfigureAwait(false);
-
-                        if (routeBeforeUpdate != competition.CompetitionRoute)
+                        new
                         {
-                            // Update the season routes to match the amended competition route
-                            await connection.ExecuteAsync($@"UPDATE {Tables.Season} 
-                                SET SeasonRoute = CONCAT(@CompetitionRoute, SUBSTRING(SeasonRoute, {routeBeforeUpdate.Length + 1}, LEN(SeasonRoute)-{routeBeforeUpdate.Length})) 
-                                WHERE CompetitionId = @CompetitionId", new { competition.CompetitionId, competition.CompetitionRoute }, transaction).ConfigureAwait(false);
-                        }
-
-                        transaction.Commit();
-                    }
+                            competition.CompetitionName,
+                            competition.FromYear,
+                            competition.UntilYear,
+                            competition.PlayerType,
+                            competition.Introduction,
+                            competition.PublicContactDetails,
+                            competition.PrivateContactDetails,
+                            competition.Facebook,
+                            competition.Twitter,
+                            competition.Instagram,
+                            competition.YouTube,
+                            competition.Website,
+                            competition.CompetitionRoute,
+                            competition.CompetitionId
+                        }, transaction).ConfigureAwait(false);
 
                     if (routeBeforeUpdate != competition.CompetitionRoute)
                     {
-                        await _redirectsRepository.InsertRedirect(routeBeforeUpdate, competition.CompetitionRoute, null).ConfigureAwait(false);
+                        // Update the season routes to match the amended competition route
+                        await connection.ExecuteAsync($@"UPDATE {Tables.Season} 
+                                SET SeasonRoute = CONCAT(@CompetitionRoute, SUBSTRING(SeasonRoute, {routeBeforeUpdate.Length + 1}, LEN(SeasonRoute)-{routeBeforeUpdate.Length})) 
+                                WHERE CompetitionId = @CompetitionId", new { competition.CompetitionId, competition.CompetitionRoute }, transaction).ConfigureAwait(false);
                     }
+
+                    transaction.Commit();
                 }
 
-                await _auditRepository.CreateAudit(new AuditRecord
+                if (routeBeforeUpdate != competition.CompetitionRoute)
                 {
-                    Action = AuditAction.Update,
-                    MemberKey = memberKey,
-                    ActorName = memberName,
-                    EntityUri = competition.EntityUri,
-                    State = JsonConvert.SerializeObject(competition),
-                    AuditDate = DateTime.UtcNow
-                }).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(routeBeforeUpdate, competition.CompetitionRoute, null).ConfigureAwait(false);
+                }
+            }
 
-            }
-            catch (SqlException ex)
+            await _auditRepository.CreateAudit(new AuditRecord
             {
-                _logger.Error(typeof(SqlServerCompetitionRepository), ex);
-            }
+                Action = AuditAction.Update,
+                MemberKey = memberKey,
+                ActorName = memberName,
+                EntityUri = competition.EntityUri,
+                State = JsonConvert.SerializeObject(competition),
+                AuditDate = DateTime.UtcNow
+            }).ConfigureAwait(false);
 
             return competition;
         }
@@ -295,41 +279,33 @@ namespace Stoolball.Umbraco.Data.Competitions
                 throw new ArgumentNullException(nameof(competition));
             }
 
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    connection.Open();
-                    using (var transaction = connection.BeginTransaction())
-                    {
-                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonTeam} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonPointsRule} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonPointsAdjustment} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonMatchType} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($@"DELETE FROM {Tables.Season} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($@"DELETE FROM {Tables.Competition} WHERE CompetitionId = @CompetitionId", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
-                        transaction.Commit();
-                    }
+                    await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonTeam} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonPointsRule} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonPointsAdjustment} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonMatchType} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($@"DELETE FROM {Tables.Season} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($@"DELETE FROM {Tables.Competition} WHERE CompetitionId = @CompetitionId", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
+                    transaction.Commit();
                 }
-
-                await _redirectsRepository.DeleteRedirectsByDestinationPrefix(competition.CompetitionRoute).ConfigureAwait(false);
-
-                await _auditRepository.CreateAudit(new AuditRecord
-                {
-                    Action = AuditAction.Delete,
-                    MemberKey = memberKey,
-                    ActorName = memberName,
-                    EntityUri = competition.EntityUri,
-                    State = JsonConvert.SerializeObject(competition),
-                    AuditDate = DateTime.UtcNow
-                }).ConfigureAwait(false);
             }
-            catch (Exception e)
+
+            await _redirectsRepository.DeleteRedirectsByDestinationPrefix(competition.CompetitionRoute).ConfigureAwait(false);
+
+            await _auditRepository.CreateAudit(new AuditRecord
             {
-                _logger.Error<SqlServerCompetitionRepository>(e);
-                throw;
-            }
+                Action = AuditAction.Delete,
+                MemberKey = memberKey,
+                ActorName = memberName,
+                EntityUri = competition.EntityUri,
+                State = JsonConvert.SerializeObject(competition),
+                AuditDate = DateTime.UtcNow
+            }).ConfigureAwait(false);
         }
 
     }

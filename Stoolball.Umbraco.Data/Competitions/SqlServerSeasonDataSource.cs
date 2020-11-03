@@ -7,7 +7,6 @@ using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Umbraco.Data.Competitions
@@ -18,13 +17,11 @@ namespace Stoolball.Umbraco.Data.Competitions
     public class SqlServerSeasonDataSource : ISeasonDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
-        private readonly ILogger _logger;
         private readonly IRouteNormaliser _routeNormaliser;
 
-        public SqlServerSeasonDataSource(IDatabaseConnectionFactory databaseConnectionFactory, ILogger logger, IRouteNormaliser routeNormaliser)
+        public SqlServerSeasonDataSource(IDatabaseConnectionFactory databaseConnectionFactory, IRouteNormaliser routeNormaliser)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _routeNormaliser = routeNormaliser ?? throw new ArgumentNullException(nameof(routeNormaliser));
         }
 
@@ -39,14 +36,12 @@ namespace Stoolball.Umbraco.Data.Competitions
                 throw new ArgumentNullException(nameof(competitionQuery));
             }
 
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var (where, parameters) = BuildWhereClause(competitionQuery);
+                var (where, parameters) = BuildWhereClause(competitionQuery);
 
-                    //LEFT JOIN {Tables.SeasonTeam} AS st2 ON s2.SeasonId = st2.SeasonId
-                    var sql = $@"SELECT s2.SeasonId, s2.FromYear, s2.UntilYear,
+                //LEFT JOIN {Tables.SeasonTeam} AS st2 ON s2.SeasonId = st2.SeasonId
+                var sql = $@"SELECT s2.SeasonId, s2.FromYear, s2.UntilYear,
                             co2.CompetitionName
                             FROM {Tables.Season} AS s2 
                             INNER JOIN {Tables.Competition} AS co2 ON co2.CompetitionId = s2.CompetitionId
@@ -62,22 +57,16 @@ namespace Stoolball.Umbraco.Data.Competitions
                             ORDER BY CASE WHEN co2.UntilYear IS NULL THEN 0
                                           WHEN co2.UntilYear IS NOT NULL THEN 1 END, s2.FromYear DESC, s2.UntilYear DESC, co2.CompetitionName";
 
-                    var seasons = await connection.QueryAsync<Season, Competition, Season>(sql,
-                        (season, competition) =>
-                        {
-                            season.Competition = competition;
-                            return season;
-                        },
-                        new DynamicParameters(parameters),
-                        splitOn: "CompetitionName").ConfigureAwait(false);
+                var seasons = await connection.QueryAsync<Season, Competition, Season>(sql,
+                    (season, competition) =>
+                    {
+                        season.Competition = competition;
+                        return season;
+                    },
+                    new DynamicParameters(parameters),
+                    splitOn: "CompetitionName").ConfigureAwait(false);
 
-                    return seasons.ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerSeasonDataSource), ex);
-                throw;
+                return seasons.ToList();
             }
         }
 
@@ -114,63 +103,53 @@ namespace Stoolball.Umbraco.Data.Competitions
 
         private async Task<Season> ReadSeasonByRoute(string route)
         {
-            try
-            {
-                string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "competitions", @"^[a-z0-9-]+\/[0-9]{4}(-[0-9]{2})?$");
+            string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "competitions", @"^[a-z0-9-]+\/[0-9]{4}(-[0-9]{2})?$");
 
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var seasons = await connection.QueryAsync<Season, Competition, string, Season>(
-                        $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Results, s.SeasonRoute, s.EnableTournaments, s.PlayersPerTeam, s.Overs,
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                var seasons = await connection.QueryAsync<Season, Competition, string, Season>(
+                    $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Results, s.SeasonRoute, s.EnableTournaments, s.PlayersPerTeam, s.Overs,
                             co.CompetitionName, co.PlayerType, co.UntilYear, co.CompetitionRoute, co.MemberGroupName,
                             smt.MatchType
                             FROM {Tables.Season} AS s 
                             INNER JOIN {Tables.Competition} AS co ON co.CompetitionId = s.CompetitionId
                             LEFT JOIN {Tables.SeasonMatchType} AS smt ON s.SeasonId = smt.SeasonId
                             WHERE LOWER(s.SeasonRoute) = @Route",
-                        (season, competition, matchType) =>
-                        {
-                            season.Competition = competition;
-                            if (!string.IsNullOrEmpty(matchType))
-                            {
-                                season.MatchTypes.Add((MatchType)Enum.Parse(typeof(MatchType), matchType));
-                            }
-                            return season;
-                        },
-                        new { Route = normalisedRoute },
-                        splitOn: "CompetitionName, MatchType").ConfigureAwait(false);
-
-
-                    var seasonToReturn = seasons.FirstOrDefault(); // get an example with the properties that are the same for every row
-                    if (seasonToReturn != null)
+                    (season, competition, matchType) =>
                     {
-                        seasonToReturn.MatchTypes = seasons
-                            .Select(season => season.MatchTypes.FirstOrDefault())
-                            .OfType<MatchType>()
-                            .Distinct()
-                            .ToList();
-                    }
+                        season.Competition = competition;
+                        if (!string.IsNullOrEmpty(matchType))
+                        {
+                            season.MatchTypes.Add((MatchType)Enum.Parse(typeof(MatchType), matchType));
+                        }
+                        return season;
+                    },
+                    new { Route = normalisedRoute },
+                    splitOn: "CompetitionName, MatchType").ConfigureAwait(false);
 
-                    return seasonToReturn;
+
+                var seasonToReturn = seasons.FirstOrDefault(); // get an example with the properties that are the same for every row
+                if (seasonToReturn != null)
+                {
+                    seasonToReturn.MatchTypes = seasons
+                        .Select(season => season.MatchTypes.FirstOrDefault())
+                        .OfType<MatchType>()
+                        .Distinct()
+                        .ToList();
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerSeasonDataSource), ex);
-                throw;
+
+                return seasonToReturn;
             }
         }
 
         private async Task<Season> ReadSeasonWithRelatedDataByRoute(string route)
         {
-            try
-            {
-                string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "competitions", @"^[a-z0-9-]+\/[0-9]{4}(-[0-9]{2})?$");
+            string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "competitions", @"^[a-z0-9-]+\/[0-9]{4}(-[0-9]{2})?$");
 
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var seasons = await connection.QueryAsync<Season, Competition, Season, TeamInSeason, Team, string, Season>(
-                        $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Introduction, s.PlayersPerTeam, s.Overs, s.EnableTournaments, s.ResultsTableType, 
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                var seasons = await connection.QueryAsync<Season, Competition, Season, TeamInSeason, Team, string, Season>(
+                    $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Introduction, s.PlayersPerTeam, s.Overs, s.EnableTournaments, s.ResultsTableType, 
                             s.EnableLastPlayerBatsOn, s.EnableBonusOrPenaltyRuns, s.EnableRunsScored, s.EnableRunsConceded, s.Results, s.SeasonRoute,
                             co.CompetitionName, co.PlayerType, co.Introduction, co.UntilYear, co.PublicContactDetails, co.Website, co.CompetitionRoute, co.MemberGroupName,
                             s2.SeasonId, s2.FromYear, s2.UntilYear, s2.SeasonRoute,
@@ -186,63 +165,57 @@ namespace Stoolball.Umbraco.Data.Competitions
                             LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
                             WHERE LOWER(s.SeasonRoute) = @Route
                             ORDER BY s2.FromYear DESC, s2.UntilYear ASC",
-                        (season, competition, anotherSeasonInTheCompetition, teamInSeason, team, matchType) =>
-                        {
-                            if (season != null)
-                            {
-                                season.Competition = competition;
-                                if (!string.IsNullOrEmpty(matchType))
-                                {
-                                    season.MatchTypes.Add((MatchType)Enum.Parse(typeof(MatchType), matchType));
-                                }
-                            }
-                            if (anotherSeasonInTheCompetition != null)
-                            {
-                                season.Competition.Seasons.Add(anotherSeasonInTheCompetition);
-                            }
-                            if (team != null)
-                            {
-                                season.Teams.Add(new TeamInSeason
-                                {
-                                    Season = season,
-                                    Team = team,
-                                    WithdrawnDate = teamInSeason?.WithdrawnDate
-                                });
-                            }
-                            return season;
-                        },
-                        new { Route = normalisedRoute },
-                        splitOn: "CompetitionName, SeasonId, WithdrawnDate, TeamId, MatchType").ConfigureAwait(false);
-
-                    var seasonToReturn = seasons.FirstOrDefault(); // get an example with the properties that are the same for every row
-                    if (seasonToReturn != null)
+                    (season, competition, anotherSeasonInTheCompetition, teamInSeason, team, matchType) =>
                     {
-                        seasonToReturn.MatchTypes = seasons
-                            .Select(season => season.MatchTypes.FirstOrDefault())
-                            .OfType<MatchType>()
-                            .Distinct()
-                            .ToList();
-                        seasonToReturn.Competition.Seasons = seasons.Select(season => season.Competition.Seasons.SingleOrDefault())
-                            .GroupBy(season => season?.SeasonId)
-                            .Select(duplicateSeasons => duplicateSeasons.First())
-                            .OfType<Season>()
-                            .ToList();
-                        seasonToReturn.Teams = seasons
-                            .Select(season => season.Teams.SingleOrDefault())
-                            .GroupBy(teamInSeason => teamInSeason?.Team.TeamId)
-                            .Select(duplicateTeamInSeason => duplicateTeamInSeason.First())
-                            .OfType<TeamInSeason>()
-                            .OrderBy(team => team.Team.TeamName)
-                            .ToList();
-                    }
+                        if (season != null)
+                        {
+                            season.Competition = competition;
+                            if (!string.IsNullOrEmpty(matchType))
+                            {
+                                season.MatchTypes.Add((MatchType)Enum.Parse(typeof(MatchType), matchType));
+                            }
+                        }
+                        if (anotherSeasonInTheCompetition != null)
+                        {
+                            season.Competition.Seasons.Add(anotherSeasonInTheCompetition);
+                        }
+                        if (team != null)
+                        {
+                            season.Teams.Add(new TeamInSeason
+                            {
+                                Season = season,
+                                Team = team,
+                                WithdrawnDate = teamInSeason?.WithdrawnDate
+                            });
+                        }
+                        return season;
+                    },
+                    new { Route = normalisedRoute },
+                    splitOn: "CompetitionName, SeasonId, WithdrawnDate, TeamId, MatchType").ConfigureAwait(false);
 
-                    return seasonToReturn;
+                var seasonToReturn = seasons.FirstOrDefault(); // get an example with the properties that are the same for every row
+                if (seasonToReturn != null)
+                {
+                    seasonToReturn.MatchTypes = seasons
+                        .Select(season => season.MatchTypes.FirstOrDefault())
+                        .OfType<MatchType>()
+                        .Distinct()
+                        .ToList();
+                    seasonToReturn.Competition.Seasons = seasons.Select(season => season.Competition.Seasons.SingleOrDefault())
+                        .GroupBy(season => season?.SeasonId)
+                        .Select(duplicateSeasons => duplicateSeasons.First())
+                        .OfType<Season>()
+                        .ToList();
+                    seasonToReturn.Teams = seasons
+                        .Select(season => season.Teams.SingleOrDefault())
+                        .GroupBy(teamInSeason => teamInSeason?.Team.TeamId)
+                        .Select(duplicateTeamInSeason => duplicateTeamInSeason.First())
+                        .OfType<TeamInSeason>()
+                        .OrderBy(team => team.Team.TeamName)
+                        .ToList();
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerSeasonDataSource), ex);
-                throw;
+
+                return seasonToReturn;
             }
         }
 
@@ -251,21 +224,13 @@ namespace Stoolball.Umbraco.Data.Competitions
         /// </summary>
         public async Task<IEnumerable<PointsRule>> ReadPointsRules(Guid seasonId)
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    return await connection.QueryAsync<PointsRule>(
-                        $@"SELECT pr.SeasonPointsRuleId AS PointsRuleId, pr.MatchResultType, pr.HomePoints, pr.AwayPoints
+                return await connection.QueryAsync<PointsRule>(
+                    $@"SELECT pr.SeasonPointsRuleId AS PointsRuleId, pr.MatchResultType, pr.HomePoints, pr.AwayPoints
                             FROM {Tables.SeasonPointsRule} AS pr 
                             WHERE pr.SeasonId = @SeasonId",
-                        new { SeasonId = seasonId }).ConfigureAwait(false);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerSeasonDataSource), ex);
-                throw;
+                    new { SeasonId = seasonId }).ConfigureAwait(false);
             }
         }
 
@@ -275,28 +240,20 @@ namespace Stoolball.Umbraco.Data.Competitions
         /// </summary>
         public async Task<IEnumerable<PointsAdjustment>> ReadPointsAdjustments(Guid seasonId)
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    return await connection.QueryAsync<PointsAdjustment, Team, PointsAdjustment>(
-                        $@"SELECT spa.Points, spa.Reason, tn.TeamId, tn.TeamName
+                return await connection.QueryAsync<PointsAdjustment, Team, PointsAdjustment>(
+                    $@"SELECT spa.Points, spa.Reason, tn.TeamId, tn.TeamName
                             FROM {Tables.SeasonPointsAdjustment} AS spa 
                             INNER JOIN {Tables.TeamName} tn ON spa.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             WHERE spa.SeasonId = @SeasonId",
-                        (pointsAdjustment, team) =>
-                        {
-                            pointsAdjustment.Team = team;
-                            return pointsAdjustment;
-                        },
-                        new { SeasonId = seasonId },
-                        splitOn: "TeamId").ConfigureAwait(false);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerSeasonDataSource), ex);
-                throw;
+                    (pointsAdjustment, team) =>
+                    {
+                        pointsAdjustment.Team = team;
+                        return pointsAdjustment;
+                    },
+                    new { SeasonId = seasonId },
+                    splitOn: "TeamId").ConfigureAwait(false);
             }
         }
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -59,93 +58,86 @@ namespace Stoolball.Umbraco.Data.Teams
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            try
+            Player player;
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                Player player;
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+                connection.Open();
+
+                var matchedPlayer = await connection.ExecuteScalarAsync<Guid?>(
+                        $"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityComparableName = @PlayerIdentityComparableName AND TeamId = @TeamId",
+                        new
+                        {
+                            PlayerIdentityComparableName = playerIdentity.ComparableName(),
+                            playerIdentity.Team.TeamId
+                        }).ConfigureAwait(false);
+
+                if (matchedPlayer.HasValue)
                 {
-                    connection.Open();
+                    return matchedPlayer.Value;
+                }
 
-                    var matchedPlayer = await connection.ExecuteScalarAsync<Guid?>(
-                            $"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityComparableName = @PlayerIdentityComparableName AND TeamId = @TeamId",
-                            new
-                            {
-                                PlayerIdentityComparableName = playerIdentity.ComparableName(),
-                                playerIdentity.Team.TeamId
-                            }).ConfigureAwait(false);
+                using (var transaction = connection.BeginTransaction())
+                {
+                    playerIdentity.PlayerIdentityId = Guid.NewGuid();
+                    playerIdentity.PlayerIdentityName = CapitaliseName(playerIdentity.PlayerIdentityName);
+                    playerIdentity.TotalMatches = 1;
 
-                    if (matchedPlayer.HasValue)
+                    player = new Player
                     {
-                        return matchedPlayer.Value;
-                    }
+                        PlayerId = Guid.NewGuid(),
+                        PlayerName = playerIdentity.PlayerIdentityName,
+                        PlayerRoute = _routeGenerator.GenerateRoute($"/players", playerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute)
+                    };
 
-                    using (var transaction = connection.BeginTransaction())
+                    int count;
+                    do
                     {
-                        playerIdentity.PlayerIdentityId = Guid.NewGuid();
-                        playerIdentity.PlayerIdentityName = CapitaliseName(playerIdentity.PlayerIdentityName);
-                        playerIdentity.TotalMatches = 1;
-
-                        player = new Player
+                        count = await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { player.PlayerRoute }, transaction).ConfigureAwait(false);
+                        if (count > 0)
                         {
-                            PlayerId = Guid.NewGuid(),
-                            PlayerName = playerIdentity.PlayerIdentityName,
-                            PlayerRoute = _routeGenerator.GenerateRoute($"/players", playerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute)
-                        };
-
-                        int count;
-                        do
-                        {
-                            count = await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { player.PlayerRoute }, transaction).ConfigureAwait(false);
-                            if (count > 0)
-                            {
-                                player.PlayerRoute = _routeGenerator.IncrementRoute(player.PlayerRoute);
-                            }
+                            player.PlayerRoute = _routeGenerator.IncrementRoute(player.PlayerRoute);
                         }
-                        while (count > 0);
+                    }
+                    while (count > 0);
 
-                        await transaction.Connection.ExecuteAsync(
-                              $@"INSERT INTO {Tables.Player} 
+                    await transaction.Connection.ExecuteAsync(
+                          $@"INSERT INTO {Tables.Player} 
                                                (PlayerId, PlayerName, PlayerRoute) 
                                                VALUES 
                                                (@PlayerId, @PlayerName, @PlayerRoute)",
-                              new
-                              {
-                                  player.PlayerId,
-                                  player.PlayerName,
-                                  player.PlayerRoute
-                              }, transaction).ConfigureAwait(false);
+                          new
+                          {
+                              player.PlayerId,
+                              player.PlayerName,
+                              player.PlayerRoute
+                          }, transaction).ConfigureAwait(false);
 
-                        await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerIdentity} 
+                    await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerIdentity} 
                                 (PlayerIdentityId, PlayerId, PlayerIdentityName, PlayerIdentityComparableName, TeamId, TotalMatches) 
                                 VALUES (@PlayerIdentityId, @PlayerId, @PlayerIdentityName, @PlayerIdentityComparableName, @TeamId, @TotalMatches)",
-                               new
-                               {
-                                   playerIdentity.PlayerIdentityId,
-                                   player.PlayerId,
-                                   playerIdentity.PlayerIdentityName,
-                                   PlayerIdentityComparableName = playerIdentity.ComparableName(),
-                                   playerIdentity.Team.TeamId,
-                                   playerIdentity.TotalMatches
-                               }, transaction).ConfigureAwait(false);
+                           new
+                           {
+                               playerIdentity.PlayerIdentityId,
+                               player.PlayerId,
+                               playerIdentity.PlayerIdentityName,
+                               PlayerIdentityComparableName = playerIdentity.ComparableName(),
+                               playerIdentity.Team.TeamId,
+                               playerIdentity.TotalMatches
+                           }, transaction).ConfigureAwait(false);
 
-                        transaction.Commit();
-                    }
+                    transaction.Commit();
                 }
+            }
 
-                await _auditRepository.CreateAudit(new AuditRecord
-                {
-                    Action = AuditAction.Create,
-                    MemberKey = memberKey,
-                    ActorName = memberName,
-                    EntityUri = player.EntityUri,
-                    State = JsonConvert.SerializeObject(playerIdentity),
-                    AuditDate = DateTime.UtcNow
-                }).ConfigureAwait(false);
-            }
-            catch (SqlException ex)
+            await _auditRepository.CreateAudit(new AuditRecord
             {
-                _logger.Error(typeof(SqlServerTeamRepository), ex);
-            }
+                Action = AuditAction.Create,
+                MemberKey = memberKey,
+                ActorName = memberName,
+                EntityUri = player.EntityUri,
+                State = JsonConvert.SerializeObject(playerIdentity),
+                AuditDate = DateTime.UtcNow
+            }).ConfigureAwait(false);
 
             return playerIdentity.PlayerIdentityId.Value;
         }

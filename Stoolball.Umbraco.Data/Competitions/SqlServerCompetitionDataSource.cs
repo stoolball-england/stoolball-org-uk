@@ -7,7 +7,6 @@ using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Umbraco.Data.Competitions
@@ -18,13 +17,11 @@ namespace Stoolball.Umbraco.Data.Competitions
     public class SqlServerCompetitionDataSource : ICompetitionDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
-        private readonly ILogger _logger;
         private readonly IRouteNormaliser _routeNormaliser;
 
-        public SqlServerCompetitionDataSource(IDatabaseConnectionFactory databaseConnectionFactory, ILogger logger, IRouteNormaliser routeNormaliser)
+        public SqlServerCompetitionDataSource(IDatabaseConnectionFactory databaseConnectionFactory, IRouteNormaliser routeNormaliser)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _routeNormaliser = routeNormaliser ?? throw new ArgumentNullException(nameof(routeNormaliser));
         }
 
@@ -35,14 +32,12 @@ namespace Stoolball.Umbraco.Data.Competitions
         /// <returns>A matching <see cref="Competition"/> or <c>null</c> if not found</returns>
         public async Task<Competition> ReadCompetitionByRoute(string route)
         {
-            try
-            {
-                string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "competitions");
+            string normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "competitions");
 
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var competitions = await connection.QueryAsync<Competition, Season, string, Competition>(
-                        $@"SELECT co.CompetitionId, co.CompetitionName, co.PlayerType, co.Introduction, co.FromYear, co.UntilYear, 
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                var competitions = await connection.QueryAsync<Competition, Season, string, Competition>(
+                    $@"SELECT co.CompetitionId, co.CompetitionName, co.PlayerType, co.Introduction, co.FromYear, co.UntilYear, 
                             co.PublicContactDetails, co.PrivateContactDetails, co.Facebook, co.Twitter, co.Instagram, co.YouTube, co.Website, co.CompetitionRoute, 
                             co.MemberGroupKey, co.MemberGroupName,
                             s.SeasonRoute, s.FromYear, s.UntilYear, s.PlayersPerTeam, s.Overs,
@@ -53,38 +48,32 @@ namespace Stoolball.Umbraco.Data.Competitions
                             WHERE LOWER(co.CompetitionRoute) = @Route
                             AND (s.FromYear = (SELECT MAX(FromYear) FROM {Tables.Season} WHERE CompetitionId = co.CompetitionId) 
                             OR s.FromYear IS NULL)",
-                        (competition, season, matchType) =>
-                        {
-                            if (season != null)
-                            {
-                                if (!string.IsNullOrEmpty(matchType))
-                                {
-                                    season.MatchTypes.Add((MatchType)Enum.Parse(typeof(MatchType), matchType));
-                                }
-                                competition.Seasons.Add(season);
-                            }
-                            return competition;
-                        },
-                        new { Route = normalisedRoute },
-                        splitOn: "SeasonRoute,MatchType").ConfigureAwait(false);
-
-                    var competitionToReturn = competitions.FirstOrDefault(); // get an example with the properties that are the same for every row
-                    if (competitionToReturn != null && competitionToReturn.Seasons.Count > 0)
+                    (competition, season, matchType) =>
                     {
-                        competitionToReturn.Seasons[0].MatchTypes = competitions
-                            .Select(competition => competition.Seasons.FirstOrDefault()?.MatchTypes.FirstOrDefault())
-                            .OfType<MatchType>()
-                            .Distinct()
-                            .ToList();
-                    }
+                        if (season != null)
+                        {
+                            if (!string.IsNullOrEmpty(matchType))
+                            {
+                                season.MatchTypes.Add((MatchType)Enum.Parse(typeof(MatchType), matchType));
+                            }
+                            competition.Seasons.Add(season);
+                        }
+                        return competition;
+                    },
+                    new { Route = normalisedRoute },
+                    splitOn: "SeasonRoute,MatchType").ConfigureAwait(false);
 
-                    return competitionToReturn;
+                var competitionToReturn = competitions.FirstOrDefault(); // get an example with the properties that are the same for every row
+                if (competitionToReturn != null && competitionToReturn.Seasons.Count > 0)
+                {
+                    competitionToReturn.Seasons[0].MatchTypes = competitions
+                        .Select(competition => competition.Seasons.FirstOrDefault()?.MatchTypes.FirstOrDefault())
+                        .OfType<MatchType>()
+                        .Distinct()
+                        .ToList();
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerCompetitionDataSource), ex);
-                throw;
+
+                return competitionToReturn;
             }
         }
 
@@ -94,20 +83,12 @@ namespace Stoolball.Umbraco.Data.Competitions
         /// <returns></returns>
         public async Task<int> ReadTotalCompetitions(CompetitionQuery competitionQuery)
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var (where, parameters) = BuildWhereClause(competitionQuery);
-                    return await connection.ExecuteScalarAsync<int>($@"SELECT COUNT(CompetitionId)
+                var (where, parameters) = BuildWhereClause(competitionQuery);
+                return await connection.ExecuteScalarAsync<int>($@"SELECT COUNT(CompetitionId)
                             FROM {Tables.Competition} AS co
                             {where}", new DynamicParameters(parameters)).ConfigureAwait(false);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerCompetitionDataSource), ex);
-                throw;
             }
         }
 
@@ -117,13 +98,11 @@ namespace Stoolball.Umbraco.Data.Competitions
         /// <returns>A list of <see cref="Competition"/> objects. An empty list if no competitions are found.</returns>
         public async Task<List<Competition>> ReadCompetitions(CompetitionQuery competitionQuery)
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var (where, parameters) = BuildWhereClause(competitionQuery);
+                var (where, parameters) = BuildWhereClause(competitionQuery);
 
-                    var sql = $@"SELECT co2.CompetitionId, co2.CompetitionName, co2.CompetitionRoute, co2.UntilYear, co2.PlayerType,
+                var sql = $@"SELECT co2.CompetitionId, co2.CompetitionName, co2.CompetitionRoute, co2.UntilYear, co2.PlayerType,
                             s2.SeasonRoute,
                             st2.TeamId
                             FROM {Tables.Competition} AS co2
@@ -141,42 +120,36 @@ namespace Stoolball.Umbraco.Data.Competitions
                             ORDER BY CASE WHEN co2.UntilYear IS NULL THEN 0
                                           WHEN co2.UntilYear IS NOT NULL THEN 1 END, co2.CompetitionName";
 
-                    var competitions = await connection.QueryAsync<Competition, Season, Team, Competition>(sql,
-                        (competition, season, team) =>
-                        {
-                            if (season != null)
-                            {
-                                competition.Seasons.Add(season);
-                            }
-
-                            if (team != null)
-                            {
-                                season.Teams.Add(new TeamInSeason { Team = team });
-                            }
-                            return competition;
-                        },
-                        new DynamicParameters(parameters),
-                        splitOn: "SeasonRoute,TeamId").ConfigureAwait(false);
-
-                    var resolvedCompetitions = competitions.GroupBy(competition => competition.CompetitionId).Select(copiesOfCompetition =>
+                var competitions = await connection.QueryAsync<Competition, Season, Team, Competition>(sql,
+                    (competition, season, team) =>
                     {
-                        var resolvedCompetition = copiesOfCompetition.First();
-                        if (resolvedCompetition.Seasons.Count > 0)
+                        if (season != null)
                         {
-                            resolvedCompetition.Seasons.First().Teams = copiesOfCompetition
-                                        .Select(competition => competition.Seasons.SingleOrDefault()?.Teams.SingleOrDefault())
-                                        .OfType<TeamInSeason>().ToList();
+                            competition.Seasons.Add(season);
                         }
-                        return resolvedCompetition;
-                    }).ToList();
 
-                    return resolvedCompetitions;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerCompetitionDataSource), ex);
-                throw;
+                        if (team != null)
+                        {
+                            season.Teams.Add(new TeamInSeason { Team = team });
+                        }
+                        return competition;
+                    },
+                    new DynamicParameters(parameters),
+                    splitOn: "SeasonRoute,TeamId").ConfigureAwait(false);
+
+                var resolvedCompetitions = competitions.GroupBy(competition => competition.CompetitionId).Select(copiesOfCompetition =>
+                {
+                    var resolvedCompetition = copiesOfCompetition.First();
+                    if (resolvedCompetition.Seasons.Count > 0)
+                    {
+                        resolvedCompetition.Seasons.First().Teams = copiesOfCompetition
+                                    .Select(competition => competition.Seasons.SingleOrDefault()?.Teams.SingleOrDefault())
+                                    .OfType<TeamInSeason>().ToList();
+                    }
+                    return resolvedCompetition;
+                }).ToList();
+
+                return resolvedCompetitions;
             }
         }
 

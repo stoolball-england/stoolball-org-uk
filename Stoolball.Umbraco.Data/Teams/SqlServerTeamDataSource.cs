@@ -9,7 +9,6 @@ using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using Umbraco.Core.Logging;
 using static Stoolball.Umbraco.Data.Constants;
 
 namespace Stoolball.Umbraco.Data.Teams
@@ -20,13 +19,11 @@ namespace Stoolball.Umbraco.Data.Teams
     public class SqlServerTeamDataSource : ITeamDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
-        private readonly ILogger _logger;
         private readonly IRouteNormaliser _routeNormaliser;
 
-        public SqlServerTeamDataSource(IDatabaseConnectionFactory databaseConnectionFactory, ILogger logger, IRouteNormaliser routeNormaliser)
+        public SqlServerTeamDataSource(IDatabaseConnectionFactory databaseConnectionFactory, IRouteNormaliser routeNormaliser)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _routeNormaliser = routeNormaliser ?? throw new ArgumentNullException(nameof(routeNormaliser));
         }
 
@@ -36,24 +33,16 @@ namespace Stoolball.Umbraco.Data.Teams
         /// <returns></returns>
         public async Task<int> ReadTotalTeams(TeamQuery teamQuery)
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var sql = $@"SELECT COUNT(DISTINCT t.TeamId)
+                var sql = $@"SELECT COUNT(DISTINCT t.TeamId)
                         FROM {Tables.Team} AS t
                         <<JOIN>>
                         <<WHERE>>";
 
-                    var (filteredSql, parameters) = ApplyTeamQuery(teamQuery, sql);
+                var (filteredSql, parameters) = ApplyTeamQuery(teamQuery, sql);
 
-                    return await connection.ExecuteScalarAsync<int>(filteredSql, new DynamicParameters(parameters)).ConfigureAwait(false);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerTeamDataSource), ex);
-                throw;
+                return await connection.ExecuteScalarAsync<int>(filteredSql, new DynamicParameters(parameters)).ConfigureAwait(false);
             }
         }
 
@@ -70,26 +59,18 @@ namespace Stoolball.Umbraco.Data.Teams
 
         private async Task<Team> ReadTeamByRoute(string route)
         {
-            try
-            {
-                string normalisedRoute = NormaliseRouteToTeam(route);
+            string normalisedRoute = NormaliseRouteToTeam(route);
 
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var teams = await connection.QueryAsync<Team>(
-                        $@"SELECT t.TeamId, tn.TeamName, t.TeamType, t.TeamRoute, t.UntilYear, t.MemberGroupName
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                var teams = await connection.QueryAsync<Team>(
+                    $@"SELECT t.TeamId, tn.TeamName, t.TeamType, t.TeamRoute, t.UntilYear, t.MemberGroupName
                             FROM {Tables.Team} AS t 
                             INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             WHERE LOWER(t.TeamRoute) = @Route",
-                        new { Route = normalisedRoute }).ConfigureAwait(false);
+                    new { Route = normalisedRoute }).ConfigureAwait(false);
 
-                    return teams.FirstOrDefault();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerTeamDataSource), ex);
-                throw;
+                return teams.FirstOrDefault();
             }
         }
 
@@ -104,14 +85,12 @@ namespace Stoolball.Umbraco.Data.Teams
 
         private async Task<Team> ReadTeamWithRelatedDataByRoute(string route)
         {
-            try
-            {
-                string normalisedRoute = NormaliseRouteToTeam(route);
+            string normalisedRoute = NormaliseRouteToTeam(route);
 
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var teams = await connection.QueryAsync<Team, Club, MatchLocation, Season, Competition, string, Team>(
-                        $@"SELECT t.TeamId, tn.TeamName, t.TeamType, t.PlayerType, t.Introduction, t.AgeRangeLower, t.AgeRangeUpper, 
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                var teams = await connection.QueryAsync<Team, Club, MatchLocation, Season, Competition, string, Team>(
+                    $@"SELECT t.TeamId, tn.TeamName, t.TeamType, t.PlayerType, t.Introduction, t.AgeRangeLower, t.AgeRangeUpper, 
                             t.Facebook, t.Twitter, t.Instagram, t.YouTube, t.Website, t.PublicContactDetails, t.PrivateContactDetails, 
                             t.PlayingTimes, t.Cost, t.TeamRoute, t.FromYear, t.UntilYear, t.MemberGroupKey, t.MemberGroupName,
                             cn.ClubName, c.ClubRoute, c.ClubMark,
@@ -132,59 +111,53 @@ namespace Stoolball.Umbraco.Data.Teams
                             LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
                             WHERE LOWER(t.TeamRoute) = @Route
                             ORDER BY co.CompetitionName, s.FromYear DESC, s.UntilYear ASC",
-                        (team, club, matchLocation, season, competition, matchType) =>
-                        {
-                            team.Club = club;
-                            if (matchLocation != null)
-                            {
-                                team.MatchLocations.Add(matchLocation);
-                            }
-                            if (season != null)
-                            {
-                                season.Competition = competition;
-                                if (!string.IsNullOrEmpty(matchType))
-                                {
-                                    season.MatchTypes.Add((MatchType)Enum.Parse(typeof(MatchType), matchType));
-                                }
-                                team.Seasons.Add(new TeamInSeason { Season = season });
-                            }
-                            return team;
-                        },
-                        new { Route = normalisedRoute },
-                        splitOn: "ClubName, MatchLocationId, SeasonId, CompetitionId, MatchType").ConfigureAwait(false);
-
-                    var teamToReturn = teams.FirstOrDefault(); // get an example with the properties that are the same for every row
-                    if (teamToReturn != null)
+                    (team, club, matchLocation, season, competition, matchType) =>
                     {
-                        teamToReturn.MatchLocations = teams.Select(team => team.MatchLocations.SingleOrDefault())
-                            .OfType<MatchLocation>()
-                            .Distinct(new MatchLocationEqualityComparer())
-                            .OrderBy(x => x.SortName())
-                            .ToList();
-                        teamToReturn.Seasons = teams.Select(team => team.Seasons.SingleOrDefault())
-                            .OfType<TeamInSeason>()
-                            .Distinct(new TeamInSeasonEqualityComparer())
-                            .ToList();
-
-                        var allSeasons = teams.SelectMany(team => team.Seasons);
-                        foreach (var teamInSeason in teamToReturn.Seasons)
+                        team.Club = club;
+                        if (matchLocation != null)
                         {
-                            teamInSeason.Season.MatchTypes = allSeasons
-                                .Where(season => season.Season.SeasonId == teamInSeason.Season.SeasonId)
-                                .Select(season => season.Season.MatchTypes.FirstOrDefault())
-                                .OfType<MatchType>()
-                                .Distinct()
-                                .ToList();
+                            team.MatchLocations.Add(matchLocation);
                         }
-                    }
+                        if (season != null)
+                        {
+                            season.Competition = competition;
+                            if (!string.IsNullOrEmpty(matchType))
+                            {
+                                season.MatchTypes.Add((MatchType)Enum.Parse(typeof(MatchType), matchType));
+                            }
+                            team.Seasons.Add(new TeamInSeason { Season = season });
+                        }
+                        return team;
+                    },
+                    new { Route = normalisedRoute },
+                    splitOn: "ClubName, MatchLocationId, SeasonId, CompetitionId, MatchType").ConfigureAwait(false);
 
-                    return teamToReturn;
+                var teamToReturn = teams.FirstOrDefault(); // get an example with the properties that are the same for every row
+                if (teamToReturn != null)
+                {
+                    teamToReturn.MatchLocations = teams.Select(team => team.MatchLocations.SingleOrDefault())
+                        .OfType<MatchLocation>()
+                        .Distinct(new MatchLocationEqualityComparer())
+                        .OrderBy(x => x.SortName())
+                        .ToList();
+                    teamToReturn.Seasons = teams.Select(team => team.Seasons.SingleOrDefault())
+                        .OfType<TeamInSeason>()
+                        .Distinct(new TeamInSeasonEqualityComparer())
+                        .ToList();
+
+                    var allSeasons = teams.SelectMany(team => team.Seasons);
+                    foreach (var teamInSeason in teamToReturn.Seasons)
+                    {
+                        teamInSeason.Season.MatchTypes = allSeasons
+                            .Where(season => season.Season.SeasonId == teamInSeason.Season.SeasonId)
+                            .Select(season => season.Season.MatchTypes.FirstOrDefault())
+                            .OfType<MatchType>()
+                            .Distinct()
+                            .ToList();
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerTeamDataSource), ex);
-                throw;
+
+                return teamToReturn;
             }
         }
 
@@ -194,11 +167,9 @@ namespace Stoolball.Umbraco.Data.Teams
         /// <returns>A list of <see cref="Team"/> objects. An empty list if no teams are found.</returns>
         public async Task<List<Team>> ReadTeams(TeamQuery teamQuery)
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var sql = $@"SELECT t.TeamId, tn.TeamName, t.TeamRoute, t.PlayerType, t.UntilYear,
+                var sql = $@"SELECT t.TeamId, tn.TeamName, t.TeamRoute, t.PlayerType, t.UntilYear,
                             ml.Locality, ml.Town
                             FROM {Tables.Team} AS t 
                             INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
@@ -209,34 +180,28 @@ namespace Stoolball.Umbraco.Data.Teams
                             ORDER BY CASE WHEN t.UntilYear IS NULL THEN 0 
                                           WHEN t.UntilYear IS NOT NULL THEN 1 END, tn.TeamName";
 
-                    var (filteredSql, parameters) = ApplyTeamQuery(teamQuery, sql);
+                var (filteredSql, parameters) = ApplyTeamQuery(teamQuery, sql);
 
-                    var teams = await connection.QueryAsync<Team, MatchLocation, Team>(filteredSql,
-                        (team, matchLocation) =>
-                        {
-                            if (matchLocation != null)
-                            {
-                                team.MatchLocations.Add(matchLocation);
-                            }
-                            return team;
-                        },
-                        new DynamicParameters(parameters),
-                        splitOn: "Locality").ConfigureAwait(false);
-
-                    var resolvedTeams = teams.GroupBy(team => team.TeamId).Select(copiesOfTeam =>
+                var teams = await connection.QueryAsync<Team, MatchLocation, Team>(filteredSql,
+                    (team, matchLocation) =>
                     {
-                        var resolvedTeam = copiesOfTeam.First();
-                        resolvedTeam.MatchLocations = copiesOfTeam.Select(club => club.MatchLocations.SingleOrDefault()).OfType<MatchLocation>().ToList();
-                        return resolvedTeam;
-                    }).ToList();
+                        if (matchLocation != null)
+                        {
+                            team.MatchLocations.Add(matchLocation);
+                        }
+                        return team;
+                    },
+                    new DynamicParameters(parameters),
+                    splitOn: "Locality").ConfigureAwait(false);
 
-                    return resolvedTeams;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(typeof(SqlServerTeamDataSource), ex);
-                throw;
+                var resolvedTeams = teams.GroupBy(team => team.TeamId).Select(copiesOfTeam =>
+                {
+                    var resolvedTeam = copiesOfTeam.First();
+                    resolvedTeam.MatchLocations = copiesOfTeam.Select(club => club.MatchLocations.SingleOrDefault()).OfType<MatchLocation>().ToList();
+                    return resolvedTeam;
+                }).ToList();
+
+                return resolvedTeams;
             }
         }
 
