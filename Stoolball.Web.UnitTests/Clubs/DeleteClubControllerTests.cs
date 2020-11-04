@@ -1,7 +1,6 @@
 ﻿using Moq;
 using Stoolball.Clubs;
 using Stoolball.Security;
-using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Web.Clubs;
 using System;
 using System.Threading.Tasks;

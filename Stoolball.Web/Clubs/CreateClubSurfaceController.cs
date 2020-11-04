@@ -3,7 +3,6 @@ using System.Web.Mvc;
 using Stoolball.Clubs;
 using Stoolball.Routing;
 using Stoolball.Security;
-using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -12,7 +11,7 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
-using static Stoolball.Umbraco.Data.Constants;
+using static Stoolball.Data.SqlServer.Constants;
 
 namespace Stoolball.Web.Clubs
 {

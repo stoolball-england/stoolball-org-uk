@@ -1,5 +1,5 @@
 ﻿using Moq;
-using Stoolball.Umbraco.Data.Teams;
+using Stoolball.Teams;
 using Stoolball.Web.Teams;
 using System;
 using System.Threading.Tasks;

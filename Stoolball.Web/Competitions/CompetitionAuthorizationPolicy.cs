@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Stoolball.Competitions;
 using Stoolball.Security;
 using Umbraco.Web.Security;
-using static Stoolball.Umbraco.Data.Constants;
+using static Stoolball.Data.SqlServer.Constants;
 
 namespace Stoolball.Web.Competitions
 {

@@ -6,7 +6,6 @@ using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Security;
-using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;

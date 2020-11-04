@@ -3,7 +3,6 @@ using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Email;
 using Stoolball.Security;
-using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;

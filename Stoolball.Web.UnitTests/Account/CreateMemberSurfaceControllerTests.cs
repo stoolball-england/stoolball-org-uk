@@ -1,9 +1,9 @@
-﻿using Moq;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
+using Moq;
 using Stoolball.Security;
 using Stoolball.Web.Account;
 using Stoolball.Web.Email;
-using System.Collections.Generic;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
@@ -14,7 +14,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Umbraco.Web.Mvc;
 using Xunit;
-using static Stoolball.Umbraco.Data.Constants;
+using static Stoolball.Data.SqlServer.Constants;
 
 namespace Stoolball.Web.Tests.Account
 {

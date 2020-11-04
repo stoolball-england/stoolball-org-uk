@@ -4,8 +4,6 @@ using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Security;
-using Stoolball.Umbraco.Data.Clubs;
-using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Clubs;
 using System;
 using System.Collections.Generic;

@@ -1,5 +1,5 @@
-﻿using Stoolball.Matches;
-using Stoolball.Umbraco.Data.Competitions;
+﻿using Stoolball.Competitions;
+using Stoolball.Matches;
 using Stoolball.Web.WebApi;
 using System;
 using System.Linq;

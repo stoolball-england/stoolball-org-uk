@@ -1,4 +1,4 @@
-﻿using Stoolball.Audit;
+﻿using Stoolball.Logging;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {

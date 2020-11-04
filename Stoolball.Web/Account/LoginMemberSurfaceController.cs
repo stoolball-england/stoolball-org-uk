@@ -1,9 +1,9 @@
-﻿using Stoolball.Security;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
+using Stoolball.Security;
 using Stoolball.Web.Email;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
-using System.Collections.Generic;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;

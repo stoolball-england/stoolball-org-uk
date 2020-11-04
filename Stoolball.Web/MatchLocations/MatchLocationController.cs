@@ -3,7 +3,6 @@ using System.Web.Mvc;
 using Stoolball.Email;
 using Stoolball.MatchLocations;
 using Stoolball.Security;
-using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;

@@ -9,8 +9,6 @@ using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Security;
 using Stoolball.Teams;
-using Stoolball.Umbraco.Data.Competitions;
-using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;

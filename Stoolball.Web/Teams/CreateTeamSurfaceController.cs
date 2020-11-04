@@ -2,7 +2,6 @@
 using System.Web.Mvc;
 using Stoolball.Security;
 using Stoolball.Teams;
-using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;

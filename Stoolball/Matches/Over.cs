@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Stoolball.Audit;
+using Stoolball.Logging;
 using Stoolball.Teams;
 
 namespace Stoolball.Matches

@@ -1,12 +1,11 @@
-﻿using Newtonsoft.Json;
-using Stoolball.Audit;
-using Stoolball.Umbraco.Data.Audit;
-using System;
+﻿using System;
 using System.Threading.Tasks;
-using Umbraco.Core.Logging;
+using Newtonsoft.Json;
+using Stoolball.Logging;
 using Umbraco.Core.Scoping;
 using Umbraco.Core.Services;
-using Tables = Stoolball.Umbraco.Data.Constants.Tables;
+using Tables = Stoolball.Data.SqlServer.Constants.Tables;
+using UmbracoLogging = Umbraco.Core.Logging;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
@@ -14,10 +13,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
     {
         private readonly IScopeProvider _scopeProvider;
         private readonly IAuditRepository _auditRepository;
-        private readonly ILogger _logger;
+        private readonly UmbracoLogging.ILogger _logger;
         private readonly ServiceContext _serviceContext;
 
-        public SqlServerMatchCommentDataMigrator(IScopeProvider scopeProvider, IAuditRepository auditRepository, ILogger logger, ServiceContext serviceContext)
+        public SqlServerMatchCommentDataMigrator(IScopeProvider scopeProvider, IAuditRepository auditRepository, UmbracoLogging.ILogger logger, ServiceContext serviceContext)
         {
             _scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
@@ -49,7 +48,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             }
             catch (Exception e)
             {
-                _logger.Error<SqlServerMatchCommentDataMigrator>(e);
+                _logger.Error(typeof(SqlServerMatchCommentDataMigrator), e);
                 throw;
             }
         }
@@ -104,7 +103,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             }
             catch (Exception e)
             {
-                _logger.Error<SqlServerMatchCommentDataMigrator>(e);
+                _logger.Error(typeof(SqlServerMatchCommentDataMigrator), e);
                 throw;
             }
         }
@@ -123,7 +122,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             }
             catch (Exception e)
             {
-                _logger.Error<SqlServerMatchCommentDataMigrator>(e);
+                _logger.Error(typeof(SqlServerMatchCommentDataMigrator), e);
                 throw;
             }
         }
@@ -171,7 +170,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             }
             catch (Exception e)
             {
-                _logger.Error<SqlServerMatchCommentDataMigrator>(e);
+                _logger.Error(typeof(SqlServerMatchCommentDataMigrator), e);
                 throw;
             }
 
@@ -214,7 +213,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             }
             catch (Exception e)
             {
-                _logger.Error<SqlServerMatchCommentDataMigrator>(e);
+                _logger.Error(typeof(SqlServerMatchCommentDataMigrator), e);
                 throw;
             }
 

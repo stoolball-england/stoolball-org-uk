@@ -7,8 +7,6 @@ using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Matches;
 using Stoolball.Security;
-using Stoolball.Umbraco.Data.Competitions;
-using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;

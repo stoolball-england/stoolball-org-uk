@@ -1,8 +1,6 @@
 ﻿using Moq;
 using Stoolball.Competitions;
 using Stoolball.Teams;
-using Stoolball.Umbraco.Data.Competitions;
-using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Matches;
 using System;
 using System.Security.Principal;

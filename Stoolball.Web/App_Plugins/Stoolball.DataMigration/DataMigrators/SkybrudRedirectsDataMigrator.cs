@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Stoolball.Umbraco.Data.Redirects;
+using Stoolball.Routing;
 using Umbraco.Core.Logging;
 using Umbraco.Web;
 

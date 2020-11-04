@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Stoolball.Competitions;
-using Stoolball.Umbraco.Data.Competitions;
 using Stoolball.Web.Routing;
 using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Core.Services;

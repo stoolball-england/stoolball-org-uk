@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using Stoolball.Audit;
+using Stoolball.Logging;
 using System;
 using System.Data.SqlTypes;
 using System.Linq;
@@ -7,7 +7,7 @@ using Umbraco.Core.Services;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
-	public class AuditHistoryBuilder : IAuditHistoryBuilder
+    public class AuditHistoryBuilder : IAuditHistoryBuilder
 	{
 		private readonly ServiceContext _serviceContext;
 

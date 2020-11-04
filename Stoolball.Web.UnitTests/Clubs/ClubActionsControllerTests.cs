@@ -6,7 +6,6 @@ using System.Web.Routing;
 using Moq;
 using Stoolball.Clubs;
 using Stoolball.Security;
-using Stoolball.Umbraco.Data.Clubs;
 using Stoolball.Web.Clubs;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;

@@ -4,8 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using Humanizer;
-using Stoolball.Audit;
 using Stoolball.Competitions;
+using Stoolball.Logging;
 using Stoolball.MatchLocations;
 using Stoolball.Teams;
 

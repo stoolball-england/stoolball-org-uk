@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Security;
-using Stoolball.Umbraco.Data.Matches;
-using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;

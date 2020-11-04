@@ -2,7 +2,6 @@
 using System.Web.Mvc;
 using Stoolball.MatchLocations;
 using Stoolball.Security;
-using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;

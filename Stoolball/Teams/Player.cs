@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Stoolball.Audit;
+using Stoolball.Logging;
 
 namespace Stoolball.Teams
 {

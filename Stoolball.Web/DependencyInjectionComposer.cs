@@ -1,31 +1,26 @@
 ﻿using Ganss.XSS;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
+using Stoolball.Data.SqlServer;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Html;
+using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Security;
 using Stoolball.SocialMedia;
 using Stoolball.Teams;
-using Stoolball.Umbraco.Data;
-using Stoolball.Umbraco.Data.Audit;
-using Stoolball.Umbraco.Data.Clubs;
-using Stoolball.Umbraco.Data.Competitions;
-using Stoolball.Umbraco.Data.Matches;
-using Stoolball.Umbraco.Data.MatchLocations;
-using Stoolball.Umbraco.Data.Redirects;
-using Stoolball.Umbraco.Data.Security;
-using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
 using Stoolball.Web.Configuration;
+using Stoolball.Web.Logging;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Routing;
+using Stoolball.Web.Security;
 using Stoolball.Web.Teams;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
@@ -37,6 +32,7 @@ namespace Stoolball.Web
         public void Compose(Composition composition)
         {
             // Utility classes
+            composition.Register<ILogger, UmbracoLogWrapper>(Lifetime.Singleton);
             composition.Register<Email.IEmailFormatter, Email.EmailFormatter>(Lifetime.Singleton);
             composition.Register<Email.IEmailSender, Email.EmailSender>(Lifetime.Singleton);
             composition.Register<IEmailProtector, EmailProtector>(Lifetime.Singleton);

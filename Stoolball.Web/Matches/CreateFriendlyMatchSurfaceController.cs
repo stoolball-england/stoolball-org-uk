@@ -2,12 +2,10 @@
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Humanizer;
+using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Security;
 using Stoolball.Teams;
-using Stoolball.Umbraco.Data.Competitions;
-using Stoolball.Umbraco.Data.Matches;
-using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;

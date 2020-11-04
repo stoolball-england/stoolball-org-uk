@@ -5,7 +5,6 @@ using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Security;
-using Stoolball.Umbraco.Data.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;

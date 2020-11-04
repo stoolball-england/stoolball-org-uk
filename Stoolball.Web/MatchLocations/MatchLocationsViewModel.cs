@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Stoolball.MatchLocations;
-using Stoolball.Umbraco.Data.MatchLocations;
 using Stoolball.Web.Routing;
 using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Core.Services;

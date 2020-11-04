@@ -1,4 +1,4 @@
-﻿using Stoolball.Umbraco.Data.MatchLocations;
+﻿using Stoolball.MatchLocations;
 using Stoolball.Web.WebApi;
 using System;
 using System.Linq;

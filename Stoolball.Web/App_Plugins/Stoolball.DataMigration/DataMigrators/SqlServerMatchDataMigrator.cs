@@ -4,16 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Stoolball.Competitions;
+using Stoolball.Data.SqlServer;
+using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using Stoolball.Umbraco.Data;
-using Stoolball.Umbraco.Data.Audit;
-using Stoolball.Umbraco.Data.Redirects;
-using Umbraco.Core.Logging;
-using static Stoolball.Umbraco.Data.Constants;
-using Tables = Stoolball.Umbraco.Data.Constants.Tables;
+using static Stoolball.Data.SqlServer.Constants;
+using Tables = Stoolball.Data.SqlServer.Constants.Tables;
+using UmbracoLogging = Umbraco.Core.Logging;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
@@ -23,12 +22,12 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IAuditHistoryBuilder _auditHistoryBuilder;
         private readonly IAuditRepository _auditRepository;
-        private readonly ILogger _logger;
+        private readonly UmbracoLogging.ILogger _logger;
         private readonly IRouteGenerator _routeGenerator;
         private readonly ISeasonEstimator _seasonEstimator;
 
         public SqlServerMatchDataMigrator(IRedirectsRepository redirectsRepository, IDatabaseConnectionFactory databaseConnectionFactory, IAuditHistoryBuilder auditHistoryBuilder,
-            IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator, ISeasonEstimator seasonEstimator)
+            IAuditRepository auditRepository, UmbracoLogging.ILogger logger, IRouteGenerator routeGenerator, ISeasonEstimator seasonEstimator)
         {
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
@@ -62,7 +61,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             }
             catch (Exception e)
             {
-                _logger.Error<SqlServerMatchDataMigrator>(e);
+                _logger.Error(typeof(SqlServerMatchDataMigrator), e);
                 throw;
             }
 
@@ -275,7 +274,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             }
             catch (Exception e)
             {
-                _logger.Error<SqlServerMatchDataMigrator>(e);
+                _logger.Error(typeof(SqlServerMatchDataMigrator), e);
                 throw;
             }
 

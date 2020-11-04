@@ -2,8 +2,6 @@
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Teams;
-using Stoolball.Umbraco.Data.Competitions;
-using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Matches;
 using System;
 using System.Collections.Generic;

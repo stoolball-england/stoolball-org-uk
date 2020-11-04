@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Text;
 using HtmlAgilityPack;
 using Humanizer;
-using Stoolball.Audit;
+using Stoolball.Logging;
 using Stoolball.Matches;
 
 namespace Stoolball.Competitions

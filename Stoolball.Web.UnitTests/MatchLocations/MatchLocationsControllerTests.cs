@@ -1,5 +1,5 @@
 ﻿using Moq;
-using Stoolball.Umbraco.Data.MatchLocations;
+using Stoolball.MatchLocations;
 using Stoolball.Web.MatchLocations;
 using System;
 using System.Threading.Tasks;

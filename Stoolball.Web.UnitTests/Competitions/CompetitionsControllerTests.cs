@@ -1,5 +1,5 @@
 ﻿using Moq;
-using Stoolball.Umbraco.Data.Competitions;
+using Stoolball.Competitions;
 using Stoolball.Web.Competitions;
 using System;
 using System.Threading.Tasks;

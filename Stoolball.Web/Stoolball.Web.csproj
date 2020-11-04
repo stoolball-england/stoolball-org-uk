@@ -1088,6 +1088,8 @@
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
     <Compile Include="ContentPage\CookiesController.cs" />
+    <Compile Include="DapperComposer.cs" />
+    <Compile Include="Logging\UmbracoLogWrapper.cs" />
     <Compile Include="Products\ProductList.cs" />
     <Compile Include="Products\ProductListController.cs" />
     <Compile Include="ContentPage\Content.cs" />
@@ -1157,6 +1159,7 @@
     <Compile Include="Routing\StoolballRouteTypeMapper.cs" />
     <Compile Include="Security\ContentSecurityPolicyAttribute.cs" />
     <Compile Include="Security\DelegatedContentSecurityPolicyAttribute.cs" />
+    <Compile Include="Security\MemberGroupHelper.cs" />
     <Compile Include="Teams\CreateTeamSurfaceController.cs" />
     <Compile Include="Teams\CreateTeamController.cs" />
     <Compile Include="Teams\DeleteTeamSurfaceController.cs" />
@@ -1169,6 +1172,7 @@
     <Compile Include="Teams\DeleteTeamViewModel.cs" />
     <Compile Include="Teams\TeamAuthorizationPolicy.cs" />
     <Compile Include="Teams\PlayersApiController.cs" />
+    <Compile Include="UmbracoDatabaseConnectionFactory.cs" />
     <Compile Include="WebApi\AutocompleteResult.cs" />
     <Compile Include="WebApi\AutocompleteResultSet.cs" />
     <Compile Include="WebApi\WebApiComposer.cs" />
@@ -1351,9 +1355,13 @@
     <None Include="Web.local.xdt.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Stoolball.Umbraco.Data\Stoolball.Umbraco.Data.csproj">
+    <ProjectReference Include="..\Stoolball.Data.SqlServer\Stoolball.Data.SqlServer.csproj">
+      <Project>{99803072-9098-430a-a2f5-20efac92134d}</Project>
+      <Name>Stoolball.Data.SqlServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Stoolball.Data.UmbracoMigrations\Stoolball.Data.UmbracoMigrations.csproj">
       <Project>{b34b6e72-27e7-4440-be0d-a627abe6ca17}</Project>
-      <Name>Stoolball.Umbraco.Data</Name>
+      <Name>Stoolball.Data.UmbracoMigrations</Name>
     </ProjectReference>
     <ProjectReference Include="..\Stoolball\Stoolball.csproj">
       <Project>{4f0709d1-9e82-4016-8003-0e67d6f8cb60}</Project>

@@ -13,13 +13,13 @@ in the root of this repository and run `.\Scripts\Stop-SqlServer.ps1` to kill th
 
 ## Creating and upgrading the database
 
-The schema for the custom tables is set up in the `Stoolball.Umbraco.Data.Migrations` namespace and is based on [Creating a custom database table](https://our.umbraco.com/Documentation/Extending/Database/) in the Umbraco documentation. Classes in this project are re-run each time Umbraco starts and they **must** remain the same as when they first ran.
+The schema for the custom tables is set up in the `Stoolball.Data.UmbracoMigrations` namespace and is based on [Creating a custom database table](https://our.umbraco.com/Documentation/Extending/Database/) in the Umbraco documentation. Classes in this project are re-run each time Umbraco starts and they **must** remain the same as when they first ran.
 
 **Do not change any file in this namespace except as shown below.**
 
 To update the stoolball data schema, such as to add, remove or change tables or columns, add a new migration that runs after those already in this namespace. You can do this in three stages:
 
-1. If you're adding a new table, create a new constant for the table name in `Constants.cs`. Then copy any file called `*TableInitialSchema.cs` and update the copy to your needs, using the new constant you defined to set the table name. If you're updating or removing an existing table you can skip this step.
+1. If you're adding a new table, create a new constant for the table name in `Stoolball.Data.SqlServer.Constants.cs`. Then copy any file called `*TableInitialSchema.cs` and update the copy to your needs, using the new constant you defined to set the table name. If you're updating or removing an existing table you can skip this step.
 2. Copy any file called `*AddTable.cs` and update the copy to your needs. If you're changing a table rather than adding one then other methods are available. For example, to add a column:
 
    ```csharp
@@ -33,62 +33,9 @@ To update the stoolball data schema, such as to add, remove or change tables or 
 
 3. Add your new migration after those already configured in `StoolballMigrations.cs` and restart Umbraco.
 
-## Creating, updating and deleting data
-
-Creating, updating and deleting data uses Umbraco's own method of connecting to its database, which is based on [NPoco](https://discoverdot.net/projects/npoco). Table names are referenced using constants from the `Stoolball.Umbraco.Data.Constants` namespace.
-
-Inject `IScopeProvider` into your class and use it with numbered parameters as follows:
-
-```csharp
-using (var scope = _scopeProvider.CreateScope())
-{
-    var database = scope.Database;
-
-    using (var transaction = database.GetTransaction())
-    {
-        await database.ExecuteAsync(
-            $@"INSERT INTO {Tables.Example}
-               (ExampleId, ExampleField)
-               VALUES
-               (@0, @1)",
-            Guid.NewGuid(),
-            "some value").ConfigureAwait(false);
-        transaction.Complete();
-    }
-
-    scope.Complete();
-}
-```
-
-### Auditing changes
-
-All create, update and delete actions on stoolball data should be audited. This adds a record to a `StoolballAudit` table with details of who did what, when, and the resulting serialised object.
-
-To audit a change inject `IAuditRepository` into your class and call `IAuditRepository.CreateAudit()`:
-
-```csharp
-async Task CreateSomeThing(Thing thingToAudit)
-{
-    // ... create the thing here
-
-    // now audit the creation of the thing
-    var loggedInUmbracoMember = Members.GetCurrentMember();
-
-    await _auditRepository.CreateAudit(new AuditRecord
-    {
-        Action = AuditAction.Create,
-        MemberKey = loggedInUmbracoMember.Key, // or null for an automated process
-        ActorName = loggedInUmbracoMember.Name, // or nameof(SomeClass) for an automated process
-        EntityUri = thingToAudit.EntityUri,
-        State = JsonConvert.SerializeObject(thingToAudit),
-        AuditDate = DateTimeOffset.UtcNow
-    }).ConfigureAwait(false);
-}
-```
-
 ## Selecting data
 
-Selecting data uses [Dapper](https://github.com/StackExchange/Dapper) rather than Umbraco's own method of connecting to its database, because [NPoco](https://discoverdot.net/projects/npoco) has only limited support for complex joins and asynchronous queries and cannot select into a `DateTimeOffset` type, which is used for all date properties.
+Selecting data uses [Dapper](https://github.com/StackExchange/Dapper) rather than Umbraco's own method of connecting to its database, because [NPoco](https://discoverdot.net/projects/npoco) has only limited support for complex joins and asynchronous queries and cannot select into a `DateTimeOffset` type, which is used for all date properties. Table names are referenced using constants from the `Stoolball.Data.SqlServer.Constants` namespace.
 
 Inject `IDatabaseConnectionFactory` into your class and use it as follows. In this example `connection.QueryAsync<Club, Team, Club>` indicates `Club` and `Team` are joined to return a `Club`:
 
@@ -111,3 +58,55 @@ var clubs = await connection.QueryAsync<Club, Team, Club>(
 ```
 
 When Dapper selects into a `DateTimeOffset`, by default it assumes the timezone of the current culture. All dates are stored in the database as UTC, so assuming another timezone causes the time to be incorrect. `DapperComposer` wires up `DapperDateTimeHandler`, which tells Dapper to interpret any dates coming from the database as UTC.
+
+## Creating, updating and deleting data
+
+Creating, updating and deleting data is the same as selecting, except that it uses a transaction.
+
+```csharp
+using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+{
+    connection.Open();
+    using (var transaction = connection.BeginTransaction())
+    {
+        await connection.ExecuteAsync(
+            $@"INSERT INTO {Tables.Example}
+               (ExampleId, ExampleField)
+               VALUES
+               (@ExampleId, @ExampleField)",
+            new {
+                ExampleId = Guid.NewGuid(),
+                ExampleField = "some value"
+            },
+            transaction).ConfigureAwait(false);
+
+        transaction.Commit();
+    }
+}
+```
+
+### Auditing changes
+
+All create, update and delete actions on stoolball data should be audited. This adds a record to a `StoolballAudit` table with details of who did what, when, and the resulting serialised object.
+
+To audit a change inject `IAuditRepository` into your class and call `IAuditRepository.CreateAudit()`:
+
+```csharp
+async Task CreateSomeThing(Thing thingToAudit)
+{
+    // ... create the thing here
+
+    // now audit the creation of the thing (production code would pass in the member name)
+    var loggedInUmbracoMember = Members.GetCurrentMember();
+
+    await _auditRepository.CreateAudit(new AuditRecord
+    {
+        Action = AuditAction.Create,
+        MemberKey = loggedInUmbracoMember.Key, // or null for an automated process
+        ActorName = loggedInUmbracoMember.Name, // or nameof(SomeClass) for an automated process
+        EntityUri = thingToAudit.EntityUri,
+        State = JsonConvert.SerializeObject(thingToAudit),
+        AuditDate = DateTimeOffset.UtcNow
+    }).ConfigureAwait(false);
+}
+```

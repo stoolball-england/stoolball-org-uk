@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Humanizer;
 using Stoolball.Teams;
-using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.WebApi;
 using Umbraco.Core;
 using Umbraco.Core.Cache;

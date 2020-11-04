@@ -1,11 +1,11 @@
-﻿using Stoolball.Security;
-using Stoolball.Web.Email;
-using Stoolball.Web.Security;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
+using Stoolball.Security;
+using Stoolball.Web.Email;
+using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -14,7 +14,7 @@ using Umbraco.Web;
 using Umbraco.Web.Controllers;
 using Umbraco.Web.Models;
 using Umbraco.Web.Mvc;
-using static Stoolball.Umbraco.Data.Constants;
+using static Stoolball.Data.SqlServer.Constants;
 
 namespace Stoolball.Web.Account
 {

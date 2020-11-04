@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Stoolball.Teams;
-using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Routing;
 using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Core.Services;

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Stoolball.Logging;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
-using Stoolball.Umbraco.Data.Audit;
-using Stoolball.Umbraco.Data.Redirects;
-using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
-using static Stoolball.Umbraco.Data.Constants;
-using Tables = Stoolball.Umbraco.Data.Constants.Tables;
+using static Stoolball.Data.SqlServer.Constants;
+using Tables = Stoolball.Data.SqlServer.Constants.Tables;
+using UmbracoLogging = Umbraco.Core.Logging;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
@@ -17,11 +16,11 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         private readonly IScopeProvider _scopeProvider;
         private readonly IAuditHistoryBuilder _auditHistoryBuilder;
         private readonly IAuditRepository _auditRepository;
-        private readonly ILogger _logger;
+        private readonly UmbracoLogging.ILogger _logger;
         private readonly IRouteGenerator _routeGenerator;
 
         public SqlServerMatchLocationDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder,
-            IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator)
+            IAuditRepository auditRepository, UmbracoLogging.ILogger logger, IRouteGenerator routeGenerator)
         {
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
             _scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
@@ -56,7 +55,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             }
             catch (Exception e)
             {
-                _logger.Error<SqlServerMatchLocationDataMigrator>(e);
+                _logger.Error(typeof(SqlServerMatchLocationDataMigrator), e);
                 throw;
             }
         }
@@ -154,7 +153,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             }
             catch (Exception e)
             {
-                _logger.Error<SqlServerMatchLocationDataMigrator>(e);
+                _logger.Error(typeof(SqlServerMatchLocationDataMigrator), e);
                 throw;
             }
 

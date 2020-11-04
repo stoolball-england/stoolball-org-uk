@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Humanizer;
-using Stoolball.Audit;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
+using Stoolball.Logging;
 using Stoolball.MatchLocations;
 using Stoolball.Schools;
 

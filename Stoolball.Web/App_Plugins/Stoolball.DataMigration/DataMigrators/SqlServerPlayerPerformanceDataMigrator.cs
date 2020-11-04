@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.Teams;
-using Stoolball.Umbraco.Data.Audit;
-using Umbraco.Core.Logging;
 using Umbraco.Core.Scoping;
-using Tables = Stoolball.Umbraco.Data.Constants.Tables;
+using Tables = Stoolball.Data.SqlServer.Constants.Tables;
+using UmbracoLogging = Umbraco.Core.Logging;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
@@ -14,9 +14,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         private readonly IScopeProvider _scopeProvider;
         private readonly IAuditHistoryBuilder _auditHistoryBuilder;
         private readonly IAuditRepository _auditRepository;
-        private readonly ILogger _logger;
+        private readonly UmbracoLogging.ILogger _logger;
 
-        public SqlServerPlayerPerformanceDataMigrator(IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, ILogger logger)
+        public SqlServerPlayerPerformanceDataMigrator(IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, UmbracoLogging.ILogger logger)
         {
             _scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
             _auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
@@ -47,7 +47,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             }
             catch (Exception e)
             {
-                _logger.Error<SqlServerPlayerPerformanceDataMigrator>(e);
+                _logger.Error(typeof(SqlServerPlayerPerformanceDataMigrator), e);
                 throw;
             }
         }
@@ -143,7 +143,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     }
                     catch (Exception e)
                     {
-                        _logger.Error<SqlServerPlayerDataMigrator>(e);
+                        _logger.Error(typeof(SqlServerPlayerPerformanceDataMigrator), e);
                         throw;
                     }
                     scope.Complete();
@@ -157,7 +157,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             }
             catch (Exception e)
             {
-                _logger.Error<SqlServerPlayerPerformanceDataMigrator>(e);
+                _logger.Error(typeof(SqlServerPlayerPerformanceDataMigrator), e);
                 throw;
             }
         }
@@ -186,7 +186,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             }
             catch (Exception e)
             {
-                _logger.Error<SqlServerPlayerPerformanceDataMigrator>(e);
+                _logger.Error(typeof(SqlServerPlayerPerformanceDataMigrator), e);
                 throw;
             }
         }
@@ -263,7 +263,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     }
                     catch (Exception e)
                     {
-                        _logger.Error<SqlServerPlayerDataMigrator>(e);
+                        _logger.Error(typeof(SqlServerPlayerPerformanceDataMigrator), e);
                         throw;
                     }
                     scope.Complete();
@@ -277,7 +277,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             }
             catch (Exception e)
             {
-                _logger.Error<SqlServerPlayerPerformanceDataMigrator>(e);
+                _logger.Error(typeof(SqlServerPlayerPerformanceDataMigrator), e);
                 throw;
             }
         }

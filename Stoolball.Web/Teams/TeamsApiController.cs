@@ -1,4 +1,4 @@
-﻿using Stoolball.Umbraco.Data.Teams;
+﻿using Stoolball.Teams;
 using Stoolball.Web.WebApi;
 using System;
 using System.Linq;

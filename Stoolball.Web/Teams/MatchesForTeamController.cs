@@ -8,8 +8,6 @@ using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Security;
 using Stoolball.Teams;
-using Stoolball.Umbraco.Data.Matches;
-using Stoolball.Umbraco.Data.Teams;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
