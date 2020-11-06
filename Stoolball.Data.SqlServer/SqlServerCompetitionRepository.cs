@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Ganss.XSS;
@@ -6,6 +7,7 @@ using Newtonsoft.Json;
 using Stoolball.Competitions;
 using Stoolball.Logging;
 using Stoolball.Routing;
+using Stoolball.Security;
 using static Stoolball.Data.SqlServer.Constants;
 
 namespace Stoolball.Data.SqlServer
@@ -21,9 +23,10 @@ namespace Stoolball.Data.SqlServer
         private readonly IRouteGenerator _routeGenerator;
         private readonly IRedirectsRepository _redirectsRepository;
         private readonly IHtmlSanitizer _htmlSanitiser;
+        private readonly IDataRedactor _dataRedactor;
 
         public SqlServerCompetitionRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
-            IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser)
+            IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser, IDataRedactor dataRedactor)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
@@ -31,7 +34,7 @@ namespace Stoolball.Data.SqlServer
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
             _htmlSanitiser = htmlSanitiser ?? throw new ArgumentNullException(nameof(htmlSanitiser));
-
+            _dataRedactor = dataRedactor ?? throw new ArgumentNullException(nameof(dataRedactor));
             _htmlSanitiser.AllowedTags.Clear();
             _htmlSanitiser.AllowedTags.Add("p");
             _htmlSanitiser.AllowedTags.Add("h2");
@@ -46,6 +49,38 @@ namespace Stoolball.Data.SqlServer
             _htmlSanitiser.AllowedAttributes.Add("href");
             _htmlSanitiser.AllowedCssProperties.Clear();
             _htmlSanitiser.AllowedAtRules.Clear();
+        }
+        private static Competition CreateAuditableCopy(Competition competition)
+        {
+            return new Competition
+            {
+                CompetitionId = competition.CompetitionId,
+                CompetitionName = competition.CompetitionName,
+                FromYear = competition.FromYear,
+                UntilYear = competition.UntilYear,
+                PlayerType = competition.PlayerType,
+                Introduction = competition.Introduction,
+                PublicContactDetails = competition.PublicContactDetails,
+                PrivateContactDetails = competition.PrivateContactDetails,
+                Facebook = competition.Facebook,
+                Twitter = competition.Twitter,
+                Instagram = competition.Instagram,
+                YouTube = competition.YouTube,
+                Website = competition.Website,
+                CompetitionRoute = competition.CompetitionRoute,
+                MemberGroupKey = competition.MemberGroupKey,
+                MemberGroupName = competition.MemberGroupName,
+                Seasons = competition.Seasons.Select(x => new Season { SeasonId = x.SeasonId }).ToList()
+            };
+        }
+
+        private Competition CreateRedactedCopy(Competition competition)
+        {
+            var redacted = CreateAuditableCopy(competition);
+            redacted.Introduction = _dataRedactor.RedactPersonalData(redacted.Introduction);
+            redacted.PrivateContactDetails = _dataRedactor.RedactAll(redacted.PrivateContactDetails);
+            redacted.PublicContactDetails = _dataRedactor.RedactAll(redacted.PublicContactDetails);
+            return redacted;
         }
 
         /// <summary>
@@ -64,29 +99,30 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            competition.CompetitionId = Guid.NewGuid();
-            competition.Introduction = _htmlSanitiser.Sanitize(competition.Introduction);
-            competition.PublicContactDetails = _htmlSanitiser.Sanitize(competition.PublicContactDetails);
-            competition.PrivateContactDetails = _htmlSanitiser.Sanitize(competition.PrivateContactDetails);
-            competition.Facebook = PrefixUrlProtocol(competition.Facebook);
-            competition.Twitter = PrefixAtSign(competition.Twitter);
-            competition.Instagram = PrefixAtSign(competition.Instagram);
-            competition.YouTube = PrefixUrlProtocol(competition.YouTube);
-            competition.Website = PrefixUrlProtocol(competition.Website);
+            var auditableCompetition = CreateAuditableCopy(competition);
+            auditableCompetition.CompetitionId = Guid.NewGuid();
+            auditableCompetition.Introduction = _htmlSanitiser.Sanitize(auditableCompetition.Introduction);
+            auditableCompetition.PublicContactDetails = _htmlSanitiser.Sanitize(auditableCompetition.PublicContactDetails);
+            auditableCompetition.PrivateContactDetails = _htmlSanitiser.Sanitize(auditableCompetition.PrivateContactDetails);
+            auditableCompetition.Facebook = PrefixUrlProtocol(auditableCompetition.Facebook);
+            auditableCompetition.Twitter = PrefixAtSign(auditableCompetition.Twitter);
+            auditableCompetition.Instagram = PrefixAtSign(auditableCompetition.Instagram);
+            auditableCompetition.YouTube = PrefixUrlProtocol(auditableCompetition.YouTube);
+            auditableCompetition.Website = PrefixUrlProtocol(auditableCompetition.Website);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    competition.CompetitionRoute = _routeGenerator.GenerateRoute("/competitions", competition.CompetitionName, NoiseWords.CompetitionRoute);
+                    auditableCompetition.CompetitionRoute = _routeGenerator.GenerateRoute("/competitions", auditableCompetition.CompetitionName, NoiseWords.CompetitionRoute);
                     int count;
                     do
                     {
-                        count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Competition} WHERE CompetitionRoute = @CompetitionRoute", new { competition.CompetitionRoute }, transaction).ConfigureAwait(false);
+                        count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Competition} WHERE CompetitionRoute = @CompetitionRoute", new { auditableCompetition.CompetitionRoute }, transaction).ConfigureAwait(false);
                         if (count > 0)
                         {
-                            competition.CompetitionRoute = _routeGenerator.IncrementRoute(competition.CompetitionRoute);
+                            auditableCompetition.CompetitionRoute = _routeGenerator.IncrementRoute(auditableCompetition.CompetitionRoute);
                         }
                     }
                     while (count > 0);
@@ -100,39 +136,43 @@ namespace Stoolball.Data.SqlServer
                                 @MemberGroupKey, @MemberGroupName)",
                         new
                         {
-                            competition.CompetitionId,
-                            competition.CompetitionName,
-                            competition.FromYear,
-                            competition.UntilYear,
-                            competition.PlayerType,
-                            competition.Introduction,
-                            competition.PublicContactDetails,
-                            competition.PrivateContactDetails,
-                            competition.Facebook,
-                            competition.Twitter,
-                            competition.Instagram,
-                            competition.YouTube,
-                            competition.Website,
-                            competition.CompetitionRoute,
-                            competition.MemberGroupKey,
-                            competition.MemberGroupName
+                            auditableCompetition.CompetitionId,
+                            auditableCompetition.CompetitionName,
+                            auditableCompetition.FromYear,
+                            auditableCompetition.UntilYear,
+                            auditableCompetition.PlayerType,
+                            auditableCompetition.Introduction,
+                            auditableCompetition.PublicContactDetails,
+                            auditableCompetition.PrivateContactDetails,
+                            auditableCompetition.Facebook,
+                            auditableCompetition.Twitter,
+                            auditableCompetition.Instagram,
+                            auditableCompetition.YouTube,
+                            auditableCompetition.Website,
+                            auditableCompetition.CompetitionRoute,
+                            auditableCompetition.MemberGroupKey,
+                            auditableCompetition.MemberGroupName
                         }, transaction).ConfigureAwait(false);
 
+                    var redacted = CreateRedactedCopy(auditableCompetition);
+                    await _auditRepository.CreateAudit(new AuditRecord
+                    {
+                        Action = AuditAction.Create,
+                        MemberKey = memberKey,
+                        ActorName = memberName,
+                        EntityUri = competition.EntityUri,
+                        State = JsonConvert.SerializeObject(auditableCompetition),
+                        RedactedState = JsonConvert.SerializeObject(redacted),
+                        AuditDate = DateTime.UtcNow
+                    }, transaction).ConfigureAwait(false);
+
                     transaction.Commit();
+
+                    _logger.Info(typeof(SqlServerCompetitionRepository), LoggingTemplates.Created, redacted, memberName, memberKey);
                 }
             }
 
-            await _auditRepository.CreateAudit(new AuditRecord
-            {
-                Action = AuditAction.Create,
-                MemberKey = memberKey,
-                ActorName = memberName,
-                EntityUri = competition.EntityUri,
-                State = JsonConvert.SerializeObject(competition),
-                AuditDate = DateTime.UtcNow
-            }).ConfigureAwait(false);
-
-            return competition;
+            return auditableCompetition;
         }
 
 
@@ -151,15 +191,15 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            var routeBeforeUpdate = competition.CompetitionRoute;
-            competition.Introduction = _htmlSanitiser.Sanitize(competition.Introduction);
-            competition.PublicContactDetails = _htmlSanitiser.Sanitize(competition.PublicContactDetails);
-            competition.PrivateContactDetails = _htmlSanitiser.Sanitize(competition.PrivateContactDetails);
-            competition.Facebook = PrefixUrlProtocol(competition.Facebook);
-            competition.Twitter = PrefixAtSign(competition.Twitter);
-            competition.Instagram = PrefixAtSign(competition.Instagram);
-            competition.YouTube = PrefixUrlProtocol(competition.YouTube);
-            competition.Website = PrefixUrlProtocol(competition.Website);
+            var auditableCompetition = CreateAuditableCopy(competition);
+            auditableCompetition.Introduction = _htmlSanitiser.Sanitize(auditableCompetition.Introduction);
+            auditableCompetition.PublicContactDetails = _htmlSanitiser.Sanitize(auditableCompetition.PublicContactDetails);
+            auditableCompetition.PrivateContactDetails = _htmlSanitiser.Sanitize(auditableCompetition.PrivateContactDetails);
+            auditableCompetition.Facebook = PrefixUrlProtocol(auditableCompetition.Facebook);
+            auditableCompetition.Twitter = PrefixAtSign(auditableCompetition.Twitter);
+            auditableCompetition.Instagram = PrefixAtSign(auditableCompetition.Instagram);
+            auditableCompetition.YouTube = PrefixUrlProtocol(auditableCompetition.YouTube);
+            auditableCompetition.Website = PrefixUrlProtocol(auditableCompetition.Website);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -167,16 +207,16 @@ namespace Stoolball.Data.SqlServer
                 using (var transaction = connection.BeginTransaction())
                 {
 
-                    competition.CompetitionRoute = _routeGenerator.GenerateRoute("/competitions", competition.CompetitionName, NoiseWords.CompetitionRoute);
-                    if (competition.CompetitionRoute != routeBeforeUpdate)
+                    auditableCompetition.CompetitionRoute = _routeGenerator.GenerateRoute("/competitions", auditableCompetition.CompetitionName, NoiseWords.CompetitionRoute);
+                    if (auditableCompetition.CompetitionRoute != competition.CompetitionRoute)
                     {
                         int count;
                         do
                         {
-                            count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Competition} WHERE CompetitionRoute = @CompetitionRoute", new { competition.CompetitionRoute }, transaction).ConfigureAwait(false);
+                            count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Competition} WHERE CompetitionRoute = @CompetitionRoute", new { auditableCompetition.CompetitionRoute }, transaction).ConfigureAwait(false);
                             if (count > 0)
                             {
-                                competition.CompetitionRoute = _routeGenerator.IncrementRoute(competition.CompetitionRoute);
+                                auditableCompetition.CompetitionRoute = _routeGenerator.IncrementRoute(auditableCompetition.CompetitionRoute);
                             }
                         }
                         while (count > 0);
@@ -200,48 +240,52 @@ namespace Stoolball.Data.SqlServer
 						        WHERE CompetitionId = @CompetitionId",
                         new
                         {
-                            competition.CompetitionName,
-                            competition.FromYear,
-                            competition.UntilYear,
-                            competition.PlayerType,
-                            competition.Introduction,
-                            competition.PublicContactDetails,
-                            competition.PrivateContactDetails,
-                            competition.Facebook,
-                            competition.Twitter,
-                            competition.Instagram,
-                            competition.YouTube,
-                            competition.Website,
-                            competition.CompetitionRoute,
-                            competition.CompetitionId
+                            auditableCompetition.CompetitionName,
+                            auditableCompetition.FromYear,
+                            auditableCompetition.UntilYear,
+                            auditableCompetition.PlayerType,
+                            auditableCompetition.Introduction,
+                            auditableCompetition.PublicContactDetails,
+                            auditableCompetition.PrivateContactDetails,
+                            auditableCompetition.Facebook,
+                            auditableCompetition.Twitter,
+                            auditableCompetition.Instagram,
+                            auditableCompetition.YouTube,
+                            auditableCompetition.Website,
+                            auditableCompetition.CompetitionRoute,
+                            auditableCompetition.CompetitionId
                         }, transaction).ConfigureAwait(false);
 
-                    if (routeBeforeUpdate != competition.CompetitionRoute)
+                    if (competition.CompetitionRoute != auditableCompetition.CompetitionRoute)
                     {
                         // Update the season routes to match the amended competition route
                         await connection.ExecuteAsync($@"UPDATE {Tables.Season} 
-                                SET SeasonRoute = CONCAT(@CompetitionRoute, SUBSTRING(SeasonRoute, {routeBeforeUpdate.Length + 1}, LEN(SeasonRoute)-{routeBeforeUpdate.Length})) 
-                                WHERE CompetitionId = @CompetitionId", new { competition.CompetitionId, competition.CompetitionRoute }, transaction).ConfigureAwait(false);
+                                SET SeasonRoute = CONCAT(@CompetitionRoute, SUBSTRING(SeasonRoute, {competition.CompetitionRoute.Length + 1}, LEN(SeasonRoute)-{competition.CompetitionRoute.Length})) 
+                                WHERE CompetitionId = @CompetitionId", new { auditableCompetition.CompetitionId, auditableCompetition.CompetitionRoute }, transaction).ConfigureAwait(false);
                     }
 
+                    var redacted = CreateRedactedCopy(auditableCompetition);
+                    await _auditRepository.CreateAudit(new AuditRecord
+                    {
+                        Action = AuditAction.Update,
+                        MemberKey = memberKey,
+                        ActorName = memberName,
+                        EntityUri = competition.EntityUri,
+                        State = JsonConvert.SerializeObject(auditableCompetition),
+                        RedactedState = JsonConvert.SerializeObject(redacted),
+                        AuditDate = DateTime.UtcNow
+                    }, transaction).ConfigureAwait(false);
+
                     transaction.Commit();
+
+                    _logger.Info(typeof(SqlServerCompetitionRepository), LoggingTemplates.Updated, redacted, memberName, memberKey);
                 }
 
-                if (routeBeforeUpdate != competition.CompetitionRoute)
+                if (competition.CompetitionRoute != auditableCompetition.CompetitionRoute)
                 {
-                    await _redirectsRepository.InsertRedirect(routeBeforeUpdate, competition.CompetitionRoute, null).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, auditableCompetition.CompetitionRoute, null).ConfigureAwait(false);
                 }
             }
-
-            await _auditRepository.CreateAudit(new AuditRecord
-            {
-                Action = AuditAction.Update,
-                MemberKey = memberKey,
-                ActorName = memberName,
-                EntityUri = competition.EntityUri,
-                State = JsonConvert.SerializeObject(competition),
-                AuditDate = DateTime.UtcNow
-            }).ConfigureAwait(false);
 
             return competition;
         }
@@ -288,22 +332,27 @@ namespace Stoolball.Data.SqlServer
                     await connection.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.Season} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.Competition} WHERE CompetitionId = @CompetitionId", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
+
+                    var auditableCompetition = CreateAuditableCopy(competition);
+                    var redacted = CreateRedactedCopy(auditableCompetition);
+                    await _auditRepository.CreateAudit(new AuditRecord
+                    {
+                        Action = AuditAction.Delete,
+                        MemberKey = memberKey,
+                        ActorName = memberName,
+                        EntityUri = competition.EntityUri,
+                        State = JsonConvert.SerializeObject(auditableCompetition),
+                        RedactedState = JsonConvert.SerializeObject(redacted),
+                        AuditDate = DateTime.UtcNow
+                    }, transaction).ConfigureAwait(false);
+
                     transaction.Commit();
+
+                    _logger.Info(typeof(SqlServerCompetitionRepository), LoggingTemplates.Deleted, redacted, memberName, memberKey);
                 }
             }
 
             await _redirectsRepository.DeleteRedirectsByDestinationPrefix(competition.CompetitionRoute).ConfigureAwait(false);
-
-            await _auditRepository.CreateAudit(new AuditRecord
-            {
-                Action = AuditAction.Delete,
-                MemberKey = memberKey,
-                ActorName = memberName,
-                EntityUri = competition.EntityUri,
-                State = JsonConvert.SerializeObject(competition),
-                AuditDate = DateTime.UtcNow
-            }).ConfigureAwait(false);
         }
-
     }
 }

@@ -83,10 +83,10 @@ namespace Stoolball.Web.Competitions
                 }
 
                 // Create the competition
-                await _competitionRepository.CreateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                var createdCompetition = await _competitionRepository.CreateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the competition
-                return Redirect(competition.CompetitionRoute);
+                return Redirect(createdCompetition.CompetitionRoute);
             }
 
             var viewModel = new CompetitionViewModel(CurrentPage, Services.UserService)

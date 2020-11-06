@@ -54,7 +54,7 @@ namespace Stoolball.Web.Competitions
             if (isAuthorized[AuthorizedAction.EditCompetition] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
-                await _competitionRepository.UpdateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                var updatedCompetition = await _competitionRepository.UpdateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // redirect back to the season actions page that led here (ensuring we don't allow off-site redirects), 
                 // or the competition actions if that's not available
@@ -63,7 +63,7 @@ namespace Stoolball.Web.Competitions
                     return Redirect(new Uri(Request.Form["UrlReferrer"]).AbsolutePath);
                 }
 
-                return Redirect(competition.CompetitionRoute + "/edit");
+                return Redirect(updatedCompetition.CompetitionRoute + "/edit");
             }
 
             var viewModel = new CompetitionViewModel(CurrentPage, Services.UserService)

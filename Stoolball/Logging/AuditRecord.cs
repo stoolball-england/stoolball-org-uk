@@ -33,6 +33,11 @@ namespace Stoolball.Logging
         public string State { get; set; }
 
         /// <summary>
+        /// The new state of the entity after the <see cref="Action"/> has been taken, with personally-identifiable information redacted
+        /// </summary>
+        public string RedactedState { get; set; }
+
+        /// <summary>
         /// The date the action was taken
         /// </summary>
         public DateTimeOffset AuditDate { get; set; }

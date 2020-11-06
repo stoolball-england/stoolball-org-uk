@@ -39,11 +39,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
             var memberKey = Guid.NewGuid();
             var memberName = "Person 1";
 
-            _ = await repo.CreateClub(club, memberKey, memberName);
+            var createdClub = await repo.CreateClub(club, memberKey, memberName);
 
             using (var connection = _connectionFactory.CreateDatabaseConnection())
             {
-                var result = await connection.QuerySingleOrDefaultAsync<Club>($"SELECT ClubId FROM {Tables.Club} WHERE ClubId = @ClubId", new { club.ClubId }).ConfigureAwait(false);
+                var result = await connection.QuerySingleOrDefaultAsync<Club>($"SELECT ClubId FROM {Tables.Club} WHERE ClubId = @ClubId", new { createdClub.ClubId }).ConfigureAwait(false);
                 Assert.NotNull(result);
             }
         }

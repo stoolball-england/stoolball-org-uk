@@ -38,5 +38,9 @@
   {
     "name": "Find all logs that the message that starts with 'end' in it with SQL like",
     "query": "@Message like 'end%'"
+  },
+  {
+    "name": "Find all logs that are from the namespace 'Stoolball'",
+    "query": "StartsWith(SourceContext, 'Stoolball')"
   }
 ]

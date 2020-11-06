@@ -48,10 +48,10 @@ namespace Stoolball.Web.Clubs
             if (isAuthorized[AuthorizedAction.EditClub] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
-                await _clubRepository.UpdateClub(club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                var updatedClub = await _clubRepository.UpdateClub(club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // redirect back to the club actions page that led here
-                return Redirect(club.ClubRoute + "/edit");
+                return Redirect(updatedClub.ClubRoute + "/edit");
             }
 
             var viewModel = new ClubViewModel(CurrentPage, Services.UserService)

@@ -78,10 +78,10 @@ namespace Stoolball.Web.Clubs
                 }
 
                 // Create the club
-                await _clubRepository.CreateClub(club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                var createdClub = await _clubRepository.CreateClub(club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the club
-                return Redirect(club.ClubRoute);
+                return Redirect(createdClub.ClubRoute);
             }
 
             var viewModel = new ClubViewModel(CurrentPage, Services.UserService)

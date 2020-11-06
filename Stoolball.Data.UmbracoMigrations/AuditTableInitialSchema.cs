@@ -34,6 +34,11 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public string State { get; set; }
 
+        [Column(nameof(RedactedState))]
+        [SpecialDbType(SpecialDbTypes.NTEXT)]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public string RedactedState { get; set; }
+
         [Column(nameof(AuditDate))]
         [Index(IndexTypes.NonClustered)]
         public DateTime AuditDate { get; set; }

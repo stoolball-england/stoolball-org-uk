@@ -71,5 +71,13 @@ namespace Stoolball.Data.SqlServer
             public static IEnumerable<string> MatchRoute { get; } = Array.Empty<string>();
             public static IEnumerable<string> PlayerRoute { get; } = Array.Empty<string>();
         }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Not a typical class. This is creating a set of constants accessible with IntelliSense.")]
+        public static class LoggingTemplates
+        {
+            public const string Created = "Created {@Entity}. Created by {MemberName} {MemberKey}.";
+            public const string Updated = "Updated {@Entity}. Updated by {MemberName} {MemberKey}.";
+            public const string Deleted = "Deleted {@Entity}. Deleted by {MemberName} {MemberKey}.";
+        }
     }
 }
