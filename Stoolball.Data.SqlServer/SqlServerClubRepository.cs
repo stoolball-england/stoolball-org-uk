@@ -193,13 +193,18 @@ namespace Stoolball.Data.SqlServer
                     await connection.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = NULL WHERE ClubId = @ClubId AND TeamId NOT IN @TeamIds", new { auditableClub.ClubId, TeamIds = auditableClub.Teams.Select(x => x.TeamId) }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = @ClubId WHERE TeamId IN @TeamIds", new { auditableClub.ClubId, TeamIds = auditableClub.Teams.Select(x => x.TeamId) }, transaction).ConfigureAwait(false);
 
+                    if (club.ClubRoute != auditableClub.ClubRoute)
+                    {
+                        await _redirectsRepository.InsertRedirect(club.ClubRoute, auditableClub.ClubRoute, null, transaction).ConfigureAwait(false);
+                    }
+
                     var serialisedClub = JsonConvert.SerializeObject(auditableClub);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Update,
                         MemberKey = memberKey,
                         ActorName = memberName,
-                        EntityUri = club.EntityUri,
+                        EntityUri = auditableClub.EntityUri,
                         State = serialisedClub,
                         RedactedState = serialisedClub,
                         AuditDate = DateTime.UtcNow
@@ -208,11 +213,6 @@ namespace Stoolball.Data.SqlServer
                     transaction.Commit();
 
                     _logger.Info(typeof(SqlServerClubRepository), LoggingTemplates.Updated, auditableClub, memberName, memberKey);
-                }
-
-                if (club.ClubRoute != auditableClub.ClubRoute)
-                {
-                    await _redirectsRepository.InsertRedirect(club.ClubRoute, auditableClub.ClubRoute, null).ConfigureAwait(false);
                 }
             }
 
@@ -238,13 +238,16 @@ namespace Stoolball.Data.SqlServer
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.ClubName} WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.Club} WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
 
-                    var serialisedClub = JsonConvert.SerializeObject(CreateAuditableCopy(club));
+                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix(club.ClubRoute, transaction).ConfigureAwait(false);
+
+                    var auditableClub = CreateAuditableCopy(club);
+                    var serialisedClub = JsonConvert.SerializeObject(auditableClub);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Delete,
                         MemberKey = memberKey,
                         ActorName = memberName,
-                        EntityUri = club.EntityUri,
+                        EntityUri = auditableClub.EntityUri,
                         State = serialisedClub,
                         RedactedState = serialisedClub,
                         AuditDate = DateTime.UtcNow
@@ -255,9 +258,6 @@ namespace Stoolball.Data.SqlServer
                     _logger.Info(typeof(SqlServerClubRepository), LoggingTemplates.Deleted, club, memberName, memberKey);
                 }
             }
-
-            await _redirectsRepository.DeleteRedirectsByDestinationPrefix(club.ClubRoute).ConfigureAwait(false);
-
         }
     }
 }

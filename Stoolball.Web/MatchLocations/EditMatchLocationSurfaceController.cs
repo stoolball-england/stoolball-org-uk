@@ -51,10 +51,10 @@ namespace Stoolball.Web.MatchLocations
             if (isAuthorized[AuthorizedAction.EditMatchLocation] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
-                await _matchLocationRepository.UpdateMatchLocation(location, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                var updatedMatchLocation = await _matchLocationRepository.UpdateMatchLocation(location, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // redirect back to the location actions page that led here
-                return Redirect(location.MatchLocationRoute + "/edit");
+                return Redirect(updatedMatchLocation.MatchLocationRoute + "/edit");
             }
 
             var viewModel = new

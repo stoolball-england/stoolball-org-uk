@@ -29,6 +29,16 @@ namespace Stoolball.Data.SqlServer
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
         }
 
+        private static PlayerIdentity CreateAuditableCopy(PlayerIdentity playerIdentity)
+        {
+            return new PlayerIdentity
+            {
+                PlayerIdentityId = playerIdentity.PlayerIdentityId,
+                PlayerIdentityName = playerIdentity.PlayerIdentityName,
+                Team = new Team { TeamId = playerIdentity.Team.TeamId }
+            };
+        }
+
         /// <summary>
         /// Finds an existing player identity or creates it if it is not found
         /// </summary>
@@ -73,18 +83,21 @@ namespace Stoolball.Data.SqlServer
                     return matchedPlayer.Value;
                 }
 
+                var auditablePlayerIdentity = CreateAuditableCopy(playerIdentity);
+
                 using (var transaction = connection.BeginTransaction())
                 {
-                    playerIdentity.PlayerIdentityId = Guid.NewGuid();
-                    playerIdentity.PlayerIdentityName = CapitaliseName(playerIdentity.PlayerIdentityName);
-                    playerIdentity.TotalMatches = 1;
+                    auditablePlayerIdentity.PlayerIdentityId = Guid.NewGuid();
+                    auditablePlayerIdentity.PlayerIdentityName = CapitaliseName(auditablePlayerIdentity.PlayerIdentityName);
+                    auditablePlayerIdentity.TotalMatches = 1;
 
                     player = new Player
                     {
                         PlayerId = Guid.NewGuid(),
-                        PlayerName = playerIdentity.PlayerIdentityName,
-                        PlayerRoute = _routeGenerator.GenerateRoute($"/players", playerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute)
+                        PlayerName = auditablePlayerIdentity.PlayerIdentityName,
+                        PlayerRoute = _routeGenerator.GenerateRoute($"/players", auditablePlayerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute)
                     };
+                    player.PlayerIdentities.Add(auditablePlayerIdentity);
 
                     int count;
                     do
@@ -114,29 +127,33 @@ namespace Stoolball.Data.SqlServer
                                 VALUES (@PlayerIdentityId, @PlayerId, @PlayerIdentityName, @PlayerIdentityComparableName, @TeamId, @TotalMatches)",
                            new
                            {
-                               playerIdentity.PlayerIdentityId,
+                               auditablePlayerIdentity.PlayerIdentityId,
                                player.PlayerId,
-                               playerIdentity.PlayerIdentityName,
-                               PlayerIdentityComparableName = playerIdentity.ComparableName(),
-                               playerIdentity.Team.TeamId,
-                               playerIdentity.TotalMatches
+                               auditablePlayerIdentity.PlayerIdentityName,
+                               PlayerIdentityComparableName = auditablePlayerIdentity.ComparableName(),
+                               auditablePlayerIdentity.Team.TeamId,
+                               auditablePlayerIdentity.TotalMatches
                            }, transaction).ConfigureAwait(false);
 
+                    var serialisedPlayer = JsonConvert.SerializeObject(player);
+                    await _auditRepository.CreateAudit(new AuditRecord
+                    {
+                        Action = AuditAction.Create,
+                        MemberKey = memberKey,
+                        ActorName = memberName,
+                        EntityUri = player.EntityUri,
+                        State = serialisedPlayer,
+                        RedactedState = serialisedPlayer,
+                        AuditDate = DateTime.UtcNow
+                    }, transaction).ConfigureAwait(false);
+
                     transaction.Commit();
+
+                    _logger.Info(typeof(SqlServerMatchRepository), LoggingTemplates.Created, player, memberName, memberKey);
                 }
+
+                return auditablePlayerIdentity.PlayerIdentityId.Value;
             }
-
-            await _auditRepository.CreateAudit(new AuditRecord
-            {
-                Action = AuditAction.Create,
-                MemberKey = memberKey,
-                ActorName = memberName,
-                EntityUri = player.EntityUri,
-                State = JsonConvert.SerializeObject(playerIdentity),
-                AuditDate = DateTime.UtcNow
-            }).ConfigureAwait(false);
-
-            return playerIdentity.PlayerIdentityId.Value;
         }
 
         private static string CapitaliseName(string playerIdentityName)

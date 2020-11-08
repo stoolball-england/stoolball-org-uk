@@ -81,10 +81,10 @@ namespace Stoolball.Web.MatchLocations
                 }
 
                 // Create the location
-                await _matchLocationRepository.CreateMatchLocation(location, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                var createdMatchLocation = await _matchLocationRepository.CreateMatchLocation(location, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the location
-                return Redirect(location.MatchLocationRoute);
+                return Redirect(createdMatchLocation.MatchLocationRoute);
             }
 
             var viewModel = new MatchLocationViewModel(CurrentPage, Services.UserService)

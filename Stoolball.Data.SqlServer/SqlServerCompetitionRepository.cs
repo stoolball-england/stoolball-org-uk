@@ -160,7 +160,7 @@ namespace Stoolball.Data.SqlServer
                         Action = AuditAction.Create,
                         MemberKey = memberKey,
                         ActorName = memberName,
-                        EntityUri = competition.EntityUri,
+                        EntityUri = auditableCompetition.EntityUri,
                         State = JsonConvert.SerializeObject(auditableCompetition),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
@@ -264,13 +264,18 @@ namespace Stoolball.Data.SqlServer
                                 WHERE CompetitionId = @CompetitionId", new { auditableCompetition.CompetitionId, auditableCompetition.CompetitionRoute }, transaction).ConfigureAwait(false);
                     }
 
+                    if (competition.CompetitionRoute != auditableCompetition.CompetitionRoute)
+                    {
+                        await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, auditableCompetition.CompetitionRoute, null, transaction).ConfigureAwait(false);
+                    }
+
                     var redacted = CreateRedactedCopy(auditableCompetition);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Update,
                         MemberKey = memberKey,
                         ActorName = memberName,
-                        EntityUri = competition.EntityUri,
+                        EntityUri = auditableCompetition.EntityUri,
                         State = JsonConvert.SerializeObject(auditableCompetition),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
@@ -279,11 +284,6 @@ namespace Stoolball.Data.SqlServer
                     transaction.Commit();
 
                     _logger.Info(typeof(SqlServerCompetitionRepository), LoggingTemplates.Updated, redacted, memberName, memberKey);
-                }
-
-                if (competition.CompetitionRoute != auditableCompetition.CompetitionRoute)
-                {
-                    await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, auditableCompetition.CompetitionRoute, null).ConfigureAwait(false);
                 }
             }
 
@@ -333,6 +333,8 @@ namespace Stoolball.Data.SqlServer
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.Season} WHERE SeasonId IN (SELECT SeasonId FROM {Tables.Season} WHERE CompetitionId = @CompetitionId)", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.Competition} WHERE CompetitionId = @CompetitionId", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
 
+                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix(competition.CompetitionRoute, transaction).ConfigureAwait(false);
+
                     var auditableCompetition = CreateAuditableCopy(competition);
                     var redacted = CreateRedactedCopy(auditableCompetition);
                     await _auditRepository.CreateAudit(new AuditRecord
@@ -340,7 +342,7 @@ namespace Stoolball.Data.SqlServer
                         Action = AuditAction.Delete,
                         MemberKey = memberKey,
                         ActorName = memberName,
-                        EntityUri = competition.EntityUri,
+                        EntityUri = auditableCompetition.EntityUri,
                         State = JsonConvert.SerializeObject(auditableCompetition),
                         RedactedState = JsonConvert.SerializeObject(redacted),
                         AuditDate = DateTime.UtcNow
@@ -351,8 +353,6 @@ namespace Stoolball.Data.SqlServer
                     _logger.Info(typeof(SqlServerCompetitionRepository), LoggingTemplates.Deleted, redacted, memberName, memberKey);
                 }
             }
-
-            await _redirectsRepository.DeleteRedirectsByDestinationPrefix(competition.CompetitionRoute).ConfigureAwait(false);
         }
     }
 }

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Stoolball.Logging;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
+using Stoolball.Security;
 using static Stoolball.Data.SqlServer.Constants;
 
 namespace Stoolball.Data.SqlServer
@@ -21,9 +22,10 @@ namespace Stoolball.Data.SqlServer
         private readonly IRouteGenerator _routeGenerator;
         private readonly IRedirectsRepository _redirectsRepository;
         private readonly IHtmlSanitizer _htmlSanitiser;
+        private readonly IDataRedactor _dataRedactor;
 
         public SqlServerMatchLocationRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
-            IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser)
+            IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser, IDataRedactor dataRedactor)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
@@ -31,7 +33,7 @@ namespace Stoolball.Data.SqlServer
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
             _htmlSanitiser = htmlSanitiser ?? throw new ArgumentNullException(nameof(htmlSanitiser));
-
+            _dataRedactor = dataRedactor ?? throw new ArgumentNullException(nameof(dataRedactor));
             _htmlSanitiser.AllowedTags.Clear();
             _htmlSanitiser.AllowedTags.Add("p");
             _htmlSanitiser.AllowedTags.Add("h2");
@@ -46,6 +48,34 @@ namespace Stoolball.Data.SqlServer
             _htmlSanitiser.AllowedAttributes.Add("href");
             _htmlSanitiser.AllowedCssProperties.Clear();
             _htmlSanitiser.AllowedAtRules.Clear();
+        }
+
+        private static MatchLocation CreateAuditableCopy(MatchLocation matchLocation)
+        {
+            return new MatchLocation
+            {
+                MatchLocationId = matchLocation.MatchLocationId,
+                SecondaryAddressableObjectName = matchLocation.SecondaryAddressableObjectName,
+                PrimaryAddressableObjectName = matchLocation.PrimaryAddressableObjectName,
+                StreetDescription = matchLocation.StreetDescription,
+                Locality = matchLocation.Locality,
+                Town = matchLocation.Town,
+                AdministrativeArea = matchLocation.AdministrativeArea,
+                Postcode = matchLocation.Postcode,
+                GeoPrecision = matchLocation.GeoPrecision,
+                Latitude = matchLocation.Latitude,
+                Longitude = matchLocation.Longitude,
+                MatchLocationNotes = matchLocation.MatchLocationNotes,
+                MatchLocationRoute = matchLocation.MatchLocationRoute,
+                MemberGroupKey = matchLocation.MemberGroupKey,
+                MemberGroupName = matchLocation.MemberGroupName
+            };
+        }
+        private MatchLocation CreateRedactedCopy(MatchLocation matchLocation)
+        {
+            var redacted = CreateAuditableCopy(matchLocation);
+            redacted.MatchLocationNotes = _dataRedactor.RedactPersonalData(redacted.MatchLocationNotes);
+            return redacted;
         }
 
         /// <summary>
@@ -64,22 +94,23 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            matchLocation.MatchLocationId = Guid.NewGuid();
-            matchLocation.MatchLocationNotes = _htmlSanitiser.Sanitize(matchLocation.MatchLocationNotes);
+            var auditableMatchLocation = CreateAuditableCopy(matchLocation);
+            auditableMatchLocation.MatchLocationId = Guid.NewGuid();
+            auditableMatchLocation.MatchLocationNotes = _htmlSanitiser.Sanitize(auditableMatchLocation.MatchLocationNotes);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    matchLocation.MatchLocationRoute = _routeGenerator.GenerateRoute("/locations", matchLocation.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute);
+                    auditableMatchLocation.MatchLocationRoute = _routeGenerator.GenerateRoute("/locations", auditableMatchLocation.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute);
                     int count;
                     do
                     {
-                        count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.MatchLocation} WHERE MatchLocationRoute = @MatchLocationRoute", new { matchLocation.MatchLocationRoute }, transaction).ConfigureAwait(false);
+                        count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.MatchLocation} WHERE MatchLocationRoute = @MatchLocationRoute", new { auditableMatchLocation.MatchLocationRoute }, transaction).ConfigureAwait(false);
                         if (count > 0)
                         {
-                            matchLocation.MatchLocationRoute = _routeGenerator.IncrementRoute(matchLocation.MatchLocationRoute);
+                            auditableMatchLocation.MatchLocationRoute = _routeGenerator.IncrementRoute(auditableMatchLocation.MatchLocationRoute);
                         }
                     }
                     while (count > 0);
@@ -91,39 +122,43 @@ namespace Stoolball.Data.SqlServer
                                 @Postcode, @SortName, @GeoPrecision, @Latitude, @Longitude, @MatchLocationNotes, @MatchLocationRoute, @MemberGroupKey, @MemberGroupName)",
                         new
                         {
-                            matchLocation.MatchLocationId,
-                            matchLocation.SecondaryAddressableObjectName,
-                            matchLocation.PrimaryAddressableObjectName,
-                            matchLocation.StreetDescription,
-                            matchLocation.Locality,
-                            matchLocation.Town,
-                            matchLocation.AdministrativeArea,
-                            matchLocation.Postcode,
-                            SortName = matchLocation.SortName(),
-                            GeoPrecision = matchLocation.GeoPrecision?.ToString(),
-                            matchLocation.Latitude,
-                            matchLocation.Longitude,
-                            matchLocation.MatchLocationNotes,
-                            matchLocation.MatchLocationRoute,
-                            matchLocation.MemberGroupKey,
-                            matchLocation.MemberGroupName
+                            auditableMatchLocation.MatchLocationId,
+                            auditableMatchLocation.SecondaryAddressableObjectName,
+                            auditableMatchLocation.PrimaryAddressableObjectName,
+                            auditableMatchLocation.StreetDescription,
+                            auditableMatchLocation.Locality,
+                            auditableMatchLocation.Town,
+                            auditableMatchLocation.AdministrativeArea,
+                            auditableMatchLocation.Postcode,
+                            SortName = auditableMatchLocation.SortName(),
+                            GeoPrecision = auditableMatchLocation.GeoPrecision?.ToString(),
+                            auditableMatchLocation.Latitude,
+                            auditableMatchLocation.Longitude,
+                            auditableMatchLocation.MatchLocationNotes,
+                            auditableMatchLocation.MatchLocationRoute,
+                            auditableMatchLocation.MemberGroupKey,
+                            auditableMatchLocation.MemberGroupName
                         }, transaction).ConfigureAwait(false);
 
+                    var redacted = CreateRedactedCopy(auditableMatchLocation);
+                    await _auditRepository.CreateAudit(new AuditRecord
+                    {
+                        Action = AuditAction.Create,
+                        MemberKey = memberKey,
+                        ActorName = memberName,
+                        EntityUri = matchLocation.EntityUri,
+                        State = JsonConvert.SerializeObject(auditableMatchLocation),
+                        RedactedState = JsonConvert.SerializeObject(redacted),
+                        AuditDate = DateTime.UtcNow
+                    }, transaction).ConfigureAwait(false);
+
                     transaction.Commit();
+
+                    _logger.Info(typeof(SqlServerMatchLocationRepository), LoggingTemplates.Created, redacted, memberName, memberKey);
                 }
             }
 
-            await _auditRepository.CreateAudit(new AuditRecord
-            {
-                Action = AuditAction.Create,
-                MemberKey = memberKey,
-                ActorName = memberName,
-                EntityUri = matchLocation.EntityUri,
-                State = JsonConvert.SerializeObject(matchLocation),
-                AuditDate = DateTime.UtcNow
-            }).ConfigureAwait(false);
-
-            return matchLocation;
+            return auditableMatchLocation;
         }
 
 
@@ -142,9 +177,8 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            matchLocation.MatchLocationNotes = _htmlSanitiser.Sanitize(matchLocation.MatchLocationNotes);
-
-            var routeBeforeUpdate = matchLocation.MatchLocationRoute;
+            var auditableMatchLocation = CreateAuditableCopy(matchLocation);
+            auditableMatchLocation.MatchLocationNotes = _htmlSanitiser.Sanitize(auditableMatchLocation.MatchLocationNotes);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -152,16 +186,16 @@ namespace Stoolball.Data.SqlServer
                 using (var transaction = connection.BeginTransaction())
                 {
 
-                    matchLocation.MatchLocationRoute = _routeGenerator.GenerateRoute("/locations", matchLocation.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute);
-                    if (matchLocation.MatchLocationRoute != routeBeforeUpdate)
+                    auditableMatchLocation.MatchLocationRoute = _routeGenerator.GenerateRoute("/locations", auditableMatchLocation.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute);
+                    if (auditableMatchLocation.MatchLocationRoute != matchLocation.MatchLocationRoute)
                     {
                         int count;
                         do
                         {
-                            count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.MatchLocation} WHERE MatchLocationRoute = @MatchLocationRoute", new { matchLocation.MatchLocationRoute }, transaction).ConfigureAwait(false);
+                            count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.MatchLocation} WHERE MatchLocationRoute = @MatchLocationRoute", new { auditableMatchLocation.MatchLocationRoute }, transaction).ConfigureAwait(false);
                             if (count > 0)
                             {
-                                matchLocation.MatchLocationRoute = _routeGenerator.IncrementRoute(matchLocation.MatchLocationRoute);
+                                auditableMatchLocation.MatchLocationRoute = _routeGenerator.IncrementRoute(auditableMatchLocation.MatchLocationRoute);
                             }
                         }
                         while (count > 0);
@@ -184,41 +218,45 @@ namespace Stoolball.Data.SqlServer
 						        WHERE MatchLocationId = @MatchLocationId",
                         new
                         {
-                            matchLocation.SecondaryAddressableObjectName,
-                            matchLocation.PrimaryAddressableObjectName,
-                            matchLocation.StreetDescription,
-                            matchLocation.Locality,
-                            matchLocation.Town,
-                            matchLocation.AdministrativeArea,
-                            matchLocation.Postcode,
-                            GeoPrecision = matchLocation.GeoPrecision?.ToString(),
-                            matchLocation.Latitude,
-                            matchLocation.Longitude,
-                            matchLocation.MatchLocationNotes,
-                            matchLocation.MatchLocationRoute,
-                            matchLocation.MatchLocationId
+                            auditableMatchLocation.SecondaryAddressableObjectName,
+                            auditableMatchLocation.PrimaryAddressableObjectName,
+                            auditableMatchLocation.StreetDescription,
+                            auditableMatchLocation.Locality,
+                            auditableMatchLocation.Town,
+                            auditableMatchLocation.AdministrativeArea,
+                            auditableMatchLocation.Postcode,
+                            GeoPrecision = auditableMatchLocation.GeoPrecision?.ToString(),
+                            auditableMatchLocation.Latitude,
+                            auditableMatchLocation.Longitude,
+                            auditableMatchLocation.MatchLocationNotes,
+                            auditableMatchLocation.MatchLocationRoute,
+                            auditableMatchLocation.MatchLocationId
                         }, transaction).ConfigureAwait(false);
 
+                    var redacted = CreateRedactedCopy(auditableMatchLocation);
+                    await _auditRepository.CreateAudit(new AuditRecord
+                    {
+                        Action = AuditAction.Update,
+                        MemberKey = memberKey,
+                        ActorName = memberName,
+                        EntityUri = matchLocation.EntityUri,
+                        State = JsonConvert.SerializeObject(auditableMatchLocation),
+                        RedactedState = JsonConvert.SerializeObject(redacted),
+                        AuditDate = DateTime.UtcNow
+                    }, transaction).ConfigureAwait(false);
+
                     transaction.Commit();
+
+                    _logger.Info(typeof(SqlServerMatchLocationRepository), LoggingTemplates.Updated, redacted, memberName, memberKey);
                 }
 
-                if (routeBeforeUpdate != matchLocation.MatchLocationRoute)
+                if (matchLocation.MatchLocationRoute != auditableMatchLocation.MatchLocationRoute)
                 {
-                    await _redirectsRepository.InsertRedirect(routeBeforeUpdate, matchLocation.MatchLocationRoute, null).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(matchLocation.MatchLocationRoute, auditableMatchLocation.MatchLocationRoute, null).ConfigureAwait(false);
                 }
             }
 
-            await _auditRepository.CreateAudit(new AuditRecord
-            {
-                Action = AuditAction.Update,
-                MemberKey = memberKey,
-                ActorName = memberName,
-                EntityUri = matchLocation.EntityUri,
-                State = JsonConvert.SerializeObject(matchLocation),
-                AuditDate = DateTime.UtcNow
-            }).ConfigureAwait(false);
-
-            return matchLocation;
+            return auditableMatchLocation;
         }
 
         /// <summary>
@@ -239,21 +277,28 @@ namespace Stoolball.Data.SqlServer
                     await connection.ExecuteAsync($@"UPDATE {Tables.Match} SET MatchLocationId = NULL WHERE MatchLocationId = @MatchLocationId", new { matchLocation.MatchLocationId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.TeamMatchLocation} WHERE MatchLocationId = @MatchLocationId", new { matchLocation.MatchLocationId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.MatchLocation} WHERE MatchLocationId = @MatchLocationId", new { matchLocation.MatchLocationId }, transaction).ConfigureAwait(false);
+
+                    var auditableMatchLocation = CreateAuditableCopy(matchLocation);
+                    var redacted = CreateRedactedCopy(auditableMatchLocation);
+
+                    await _auditRepository.CreateAudit(new AuditRecord
+                    {
+                        Action = AuditAction.Delete,
+                        MemberKey = memberKey,
+                        ActorName = memberName,
+                        EntityUri = matchLocation.EntityUri,
+                        State = JsonConvert.SerializeObject(auditableMatchLocation),
+                        RedactedState = JsonConvert.SerializeObject(redacted),
+                        AuditDate = DateTime.UtcNow
+                    }, transaction).ConfigureAwait(false);
+
                     transaction.Commit();
+
+                    _logger.Info(typeof(SqlServerMatchLocationRepository), LoggingTemplates.Deleted, redacted, memberName, memberKey);
                 }
             }
 
             await _redirectsRepository.DeleteRedirectsByDestinationPrefix(matchLocation.MatchLocationRoute).ConfigureAwait(false);
-
-            await _auditRepository.CreateAudit(new AuditRecord
-            {
-                Action = AuditAction.Delete,
-                MemberKey = memberKey,
-                ActorName = memberName,
-                EntityUri = matchLocation.EntityUri,
-                State = JsonConvert.SerializeObject(matchLocation),
-                AuditDate = DateTime.UtcNow
-            }).ConfigureAwait(false);
         }
     }
 }

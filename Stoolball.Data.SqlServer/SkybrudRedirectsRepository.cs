@@ -22,12 +22,20 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-
-                    await transaction.Connection.ExecuteAsync($@"DELETE FROM SkybrudRedirects WHERE DestinationUrl LIKE '{destinationPrefix}%'", null, transaction).ConfigureAwait(false);
-
+                    await DeleteRedirectsByDestinationPrefix(destinationPrefix, transaction).ConfigureAwait(false);
                     transaction.Commit();
                 }
             }
+        }
+
+        public async Task DeleteRedirectsByDestinationPrefix(string destinationPrefix, IDbTransaction transaction)
+        {
+            if (transaction is null)
+            {
+                throw new ArgumentNullException(nameof(transaction));
+            }
+
+            await transaction.Connection.ExecuteAsync($@"DELETE FROM SkybrudRedirects WHERE DestinationUrl LIKE '{destinationPrefix}%'", null, transaction).ConfigureAwait(false);
         }
 
         public async Task InsertRedirect(string originalRoute, string revisedRoute, string routeSuffix)

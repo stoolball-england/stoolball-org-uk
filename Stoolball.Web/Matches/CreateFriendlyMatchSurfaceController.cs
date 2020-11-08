@@ -61,10 +61,10 @@ namespace Stoolball.Web.Matches
                 (model.Season == null || model.Season.MatchTypes.Contains(MatchType.FriendlyMatch)))
             {
                 var currentMember = Members.GetCurrentMember();
-                await _matchRepository.CreateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                var createdMatch = await _matchRepository.CreateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the match
-                return Redirect(model.Match.MatchRoute);
+                return Redirect(createdMatch.MatchRoute);
             }
 
             if (Request.RawUrl.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
