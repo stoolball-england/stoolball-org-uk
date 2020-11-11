@@ -64,10 +64,10 @@ namespace Stoolball.Web.Teams
             if (isAuthorized[AuthorizedAction.EditTeam] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
-                await _teamRepository.UpdateTransientTeam(team, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                var updatedTeam = await _teamRepository.UpdateTransientTeam(team, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // redirect back to the team
-                return Redirect(team.TeamRoute);
+                return Redirect(updatedTeam.TeamRoute);
             }
 
             var viewModel = new TeamViewModel(CurrentPage, Services.UserService)

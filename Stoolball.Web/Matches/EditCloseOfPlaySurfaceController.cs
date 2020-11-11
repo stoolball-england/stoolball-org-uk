@@ -68,10 +68,10 @@ namespace Stoolball.Web.Matches
                 if ((int)model.Match.MatchResultType == -1) { model.Match.MatchResultType = null; }
 
                 var currentMember = Members.GetCurrentMember();
-                await _matchRepository.UpdateCloseOfPlay(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                var updatedMatch = await _matchRepository.UpdateCloseOfPlay(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // redirect to the match
-                return Redirect(model.Match.MatchRoute);
+                return Redirect(updatedMatch.MatchRoute);
             }
 
             model.Match.MatchName = beforeUpdate.MatchName;

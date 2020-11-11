@@ -95,10 +95,10 @@ namespace Stoolball.Web.Matches
                 (model.Season != null && model.Season.EnableTournaments)))
             {
                 var currentMember = Members.GetCurrentMember();
-                await _tournamentRepository.CreateTournament(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                var createdTournament = await _tournamentRepository.CreateTournament(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the tournament
-                return Redirect(model.Tournament.TournamentRoute);
+                return Redirect(createdTournament.TournamentRoute);
             }
 
             return View("CreateTournament", model);

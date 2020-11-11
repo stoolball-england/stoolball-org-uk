@@ -245,15 +245,16 @@ namespace Stoolball.Data.SqlServer
                         AuditDate = DateTime.UtcNow
                     }, transaction).ConfigureAwait(false);
 
+                    if (matchLocation.MatchLocationRoute != auditableMatchLocation.MatchLocationRoute)
+                    {
+                        await _redirectsRepository.InsertRedirect(matchLocation.MatchLocationRoute, auditableMatchLocation.MatchLocationRoute, null, transaction).ConfigureAwait(false);
+                    }
+
                     transaction.Commit();
 
                     _logger.Info(typeof(SqlServerMatchLocationRepository), LoggingTemplates.Updated, redacted, memberName, memberKey);
                 }
 
-                if (matchLocation.MatchLocationRoute != auditableMatchLocation.MatchLocationRoute)
-                {
-                    await _redirectsRepository.InsertRedirect(matchLocation.MatchLocationRoute, auditableMatchLocation.MatchLocationRoute, null).ConfigureAwait(false);
-                }
             }
 
             return auditableMatchLocation;
@@ -292,13 +293,14 @@ namespace Stoolball.Data.SqlServer
                         AuditDate = DateTime.UtcNow
                     }, transaction).ConfigureAwait(false);
 
+                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableMatchLocation.MatchLocationRoute, transaction).ConfigureAwait(false);
+
                     transaction.Commit();
 
                     _logger.Info(typeof(SqlServerMatchLocationRepository), LoggingTemplates.Deleted, redacted, memberName, memberKey);
                 }
             }
 
-            await _redirectsRepository.DeleteRedirectsByDestinationPrefix(matchLocation.MatchLocationRoute).ConfigureAwait(false);
         }
     }
 }

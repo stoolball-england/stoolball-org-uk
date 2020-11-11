@@ -88,7 +88,7 @@ namespace Stoolball.Web.Matches
                 if ((int)model.Match.MatchResultType == -1) { model.Match.MatchResultType = null; }
 
                 var currentMember = Members.GetCurrentMember();
-                await _matchRepository.UpdateStartOfPlay(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                var updatedMatch = await _matchRepository.UpdateStartOfPlay(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 if (model.Match.MatchResultType.HasValue && new List<MatchResultType> {
                     MatchResultType.HomeWinByForfeit,
@@ -97,12 +97,12 @@ namespace Stoolball.Web.Matches
                     MatchResultType.Cancelled }.Contains(model.Match.MatchResultType.Value))
                 {
                     // There's no scorecard to complete - redirect to the match
-                    return Redirect(model.Match.MatchRoute);
+                    return Redirect(updatedMatch.MatchRoute);
                 }
                 else
                 {
                     // Redirect to batting scorecard
-                    return Redirect(model.Match.MatchRoute + "/edit/innings/1/batting");
+                    return Redirect(updatedMatch.MatchRoute + "/edit/innings/1/batting");
                 }
             }
 

@@ -15,6 +15,7 @@ namespace Stoolball.Data.SqlServer
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
         }
 
+        [Obsolete("Use the overload which requires an IDbTransaction")]
         public async Task DeleteRedirectsByDestinationPrefix(string destinationPrefix)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
@@ -38,6 +39,7 @@ namespace Stoolball.Data.SqlServer
             await transaction.Connection.ExecuteAsync($@"DELETE FROM SkybrudRedirects WHERE DestinationUrl LIKE '{destinationPrefix}%'", null, transaction).ConfigureAwait(false);
         }
 
+        [Obsolete("Use the overload which requires an IDbTransaction")]
         public async Task InsertRedirect(string originalRoute, string revisedRoute, string routeSuffix)
         {
             if (string.IsNullOrEmpty(originalRoute))

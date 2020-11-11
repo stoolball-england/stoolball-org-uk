@@ -50,10 +50,10 @@ namespace Stoolball.Web.Teams
             {
                 // Create the team
                 var currentMember = Members.GetCurrentMember();
-                await _teamRepository.CreateTeam(team, currentMember.Key, Members.CurrentUserName, currentMember.Name).ConfigureAwait(false);
+                var createdTeam = await _teamRepository.CreateTeam(team, currentMember.Key, Members.CurrentUserName, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the team
-                return Redirect(team.TeamRoute);
+                return Redirect(createdTeam.TeamRoute);
             }
 
             var viewModel = new TeamViewModel(CurrentPage, Services.UserService)

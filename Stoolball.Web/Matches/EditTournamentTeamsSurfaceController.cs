@@ -64,10 +64,10 @@ namespace Stoolball.Web.Matches
             if (model.IsAuthorized[AuthorizedAction.EditTournament] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
-                await _tournamentRepository.UpdateTeams(model.Tournament, currentMember.Key, Members.CurrentUserName, currentMember.Name).ConfigureAwait(false);
+                var updatedTournament = await _tournamentRepository.UpdateTeams(model.Tournament, currentMember.Key, Members.CurrentUserName, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the tournament
-                return Redirect(model.Tournament.TournamentRoute);
+                return Redirect(updatedTournament.TournamentRoute);
             }
 
             model.Metadata.PageTitle = "Teams in the " + model.Tournament.TournamentFullName(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false));
