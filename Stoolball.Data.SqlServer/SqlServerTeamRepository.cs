@@ -133,7 +133,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerTeamRepository), LoggingTemplates.Created, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerTeamRepository.CreateTeam));
                 }
             }
 
@@ -397,7 +397,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerTeamRepository), LoggingTemplates.Updated, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerTeamRepository.UpdateTeam));
                 }
             }
 
@@ -507,11 +507,9 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerTeamRepository), LoggingTemplates.Updated, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerTeamRepository.UpdateTransientTeam));
                 }
-
             }
-
 
             return auditableTeam;
         }
@@ -574,7 +572,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerTeamRepository), LoggingTemplates.Deleted, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(SqlServerTeamRepository.DeleteTeam));
                 }
             }
 

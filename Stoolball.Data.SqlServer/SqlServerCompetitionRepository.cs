@@ -168,7 +168,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerCompetitionRepository), LoggingTemplates.Created, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerCompetitionRepository.CreateCompetition));
                 }
             }
 
@@ -283,7 +283,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerCompetitionRepository), LoggingTemplates.Updated, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerCompetitionRepository.UpdateCompetition));
                 }
             }
 
@@ -350,7 +350,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerCompetitionRepository), LoggingTemplates.Deleted, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(SqlServerCompetitionRepository.DeleteCompetition));
                 }
             }
         }

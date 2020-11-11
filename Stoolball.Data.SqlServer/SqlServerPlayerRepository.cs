@@ -149,7 +149,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerMatchRepository), LoggingTemplates.Created, player, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Created, player, memberName, memberKey, GetType(), nameof(SqlServerPlayerRepository.CreateOrMatchPlayerIdentity));
                 }
 
                 return auditablePlayerIdentity.PlayerIdentityId.Value;

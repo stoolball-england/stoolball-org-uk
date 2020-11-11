@@ -154,7 +154,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerMatchLocationRepository), LoggingTemplates.Created, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchLocationRepository.CreateMatchLocation));
                 }
             }
 
@@ -252,7 +252,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerMatchLocationRepository), LoggingTemplates.Updated, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchLocationRepository.UpdateMatchLocation);
                 }
 
             }
@@ -297,7 +297,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerMatchLocationRepository), LoggingTemplates.Deleted, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchLocationRepository.DeleteMatchLocation));
                 }
             }
 

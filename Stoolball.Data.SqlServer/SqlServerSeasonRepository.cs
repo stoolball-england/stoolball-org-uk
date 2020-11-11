@@ -248,7 +248,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerSeasonRepository), LoggingTemplates.Created, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.CreateSeason));
                 }
             }
 
@@ -348,7 +348,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerSeasonRepository), LoggingTemplates.Updated, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.UpdateSeason));
                 }
             }
 
@@ -407,7 +407,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerSeasonRepository), LoggingTemplates.Updated, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.UpdatePoints));
                 }
             }
 
@@ -467,7 +467,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerSeasonRepository), LoggingTemplates.Updated, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.UpdateTeams));
                 }
             }
 
@@ -514,7 +514,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerSeasonRepository), LoggingTemplates.Deleted, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.DeleteSeason));
                 }
             }
         }

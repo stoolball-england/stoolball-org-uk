@@ -118,7 +118,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerClubRepository), LoggingTemplates.Created, auditableClub, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Created, auditableClub, memberName, memberKey, GetType(), nameof(SqlServerClubRepository.CreateClub));
                 }
             }
 
@@ -212,7 +212,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerClubRepository), LoggingTemplates.Updated, auditableClub, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Updated, auditableClub, memberName, memberKey, GetType(), nameof(SqlServerClubRepository.UpdateClub));
                 }
             }
 
@@ -255,7 +255,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerClubRepository), LoggingTemplates.Deleted, club, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Deleted, club, memberName, memberKey, GetType(), nameof(SqlServerClubRepository.DeleteClub));
                 }
             }
         }

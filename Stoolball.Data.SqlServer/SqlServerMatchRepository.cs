@@ -317,7 +317,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerMatchRepository), LoggingTemplates.Created, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.CreateMatch));
                 }
             }
 
@@ -471,7 +471,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerMatchRepository), LoggingTemplates.Updated, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.UpdateMatch));
                 }
             }
 
@@ -670,7 +670,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerMatchRepository), LoggingTemplates.Updated, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.UpdateStartOfPlay));
                 }
 
             }
@@ -862,7 +862,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerMatchRepository), LoggingTemplates.Updated, auditableInnings, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Updated, auditableInnings, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.UpdateBattingScorecard));
                 }
             }
 
@@ -986,7 +986,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerMatchRepository), LoggingTemplates.Updated, auditableInnings, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Updated, auditableInnings, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.UpdateBowlingScorecard));
                 }
 
             }
@@ -1058,7 +1058,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerMatchRepository), LoggingTemplates.Updated, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.UpdateCloseOfPlay));
                 }
             }
 
@@ -1184,7 +1184,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerMatchRepository), LoggingTemplates.Deleted, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.DeleteMatch));
                 }
             }
 

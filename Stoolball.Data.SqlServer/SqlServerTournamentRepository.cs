@@ -186,7 +186,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerTournamentRepository), LoggingTemplates.Created, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.CreateTournament));
                 }
             }
 
@@ -347,7 +347,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerTournamentRepository), LoggingTemplates.Updated, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.UpdateTournament));
                 }
             }
 
@@ -442,7 +442,7 @@ namespace Stoolball.Data.SqlServer
                                     AuditDate = DateTime.UtcNow
                                 }, transaction).ConfigureAwait(false);
 
-                                _logger.Info(_teamRepository.GetType(), LoggingTemplates.Created, team, memberName, memberKey);
+                                _logger.Info(GetType(), LoggingTemplates.Created, team, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.UpdateTeams));
                             }
 
                             await connection.ExecuteAsync($@"INSERT INTO {Tables.TournamentTeam} 
@@ -506,7 +506,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(typeof(SqlServerTournamentRepository), LoggingTemplates.Updated, redacted, memberName, memberKey);
+                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.UpdateTeams));
                 }
             }
 
@@ -584,10 +584,10 @@ namespace Stoolball.Data.SqlServer
                     transaction).ConfigureAwait(false);
 
                     transaction.Commit();
+
+                    _logger.Info(GetType(), LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.DeleteTournament));
                 }
             }
-
         }
-
     }
 }
