@@ -11,6 +11,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Umbraco.Web.Mvc;
 using Umbraco.Web.PublishedModels;
+using static Stoolball.Data.SqlServer.Constants;
 
 namespace Stoolball.Web.Account
 {
@@ -55,6 +56,8 @@ namespace Stoolball.Web.Account
 
                     model.ApprovalTokenValid = true;
                     model.MemberName = member.Name;
+
+                    Logger.Info(typeof(Umbraco.Core.Security.UmbracoMembershipProviderBase), LoggingTemplates.ApproveMember, member.Username, member.Key, GetType(), nameof(Index));
                 }
                 else
                 {

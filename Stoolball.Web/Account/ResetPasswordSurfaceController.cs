@@ -11,6 +11,7 @@ using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
 using Umbraco.Web.Security;
+using static Stoolball.Data.SqlServer.Constants;
 
 namespace Stoolball.Web.Account
 {
@@ -89,6 +90,8 @@ namespace Stoolball.Web.Account
                     });
                 _emailSender.SendEmail(model.Email, sender, body);
 
+                Logger.Info(typeof(Umbraco.Core.Security.UmbracoMembershipProviderBase), LoggingTemplates.MemberPasswordResetRequested, member.Username, member.Key, GetType(), nameof(RequestPasswordReset));
+
                 TempData["PasswordResetRequested"] = true;
                 return CurrentUmbracoPage();
             }
@@ -149,6 +152,8 @@ namespace Stoolball.Web.Account
 
                         // Reset the password
                         memberService.SavePassword(member, model.NewPassword);
+
+                        Logger.Info(typeof(Umbraco.Core.Security.UmbracoMembershipProviderBase), LoggingTemplates.MemberPasswordReset, member.Username, member.Key, GetType(), nameof(UpdatePassword));
 
                         // They obviously wanted to login, so be helpful and do it, unless they're blocked
                         if (!member.GetValue<bool>("blockLogin"))

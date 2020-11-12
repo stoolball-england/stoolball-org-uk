@@ -1,6 +1,7 @@
-﻿using Stoolball.Web.Security;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
+using Stoolball.Web.Security;
 using Umbraco.Web.Mvc;
+using static Stoolball.Data.SqlServer.Constants;
 
 namespace Stoolball.Web.Account
 {
@@ -19,6 +20,8 @@ namespace Stoolball.Web.Account
                 editableMember.Name = model.Name;
 
                 Services.MemberService.Save(editableMember);
+
+                Logger.Info(typeof(Umbraco.Core.Security.UmbracoMembershipProviderBase), LoggingTemplates.MemberAccountUpdated, member.Name, member.Key, GetType(), nameof(UpdateAccount));
 
                 TempData["Success"] = true;
                 return RedirectToCurrentUmbracoPage();

@@ -81,6 +81,8 @@ namespace Stoolball.Web.Account
                     });
                 _emailSender.SendEmail(model.Email, subject, body);
 
+                Logger.Info(typeof(Umbraco.Core.Security.UmbracoMembershipProviderBase), LoggingTemplates.CreateMember, member.Username, member.Key, GetType(), nameof(CreateMember));
+
                 return RedirectToCurrentUmbracoPage();
             }
             else

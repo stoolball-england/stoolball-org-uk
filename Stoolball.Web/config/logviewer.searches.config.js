@@ -1,5 +1,13 @@
 [
   {
+    "name": "Stoolball logs (Changes to clubs, teams, competitions, matches, tournaments, players and schools)",
+    "query": "StartsWith(SourceContext, 'Stoolball')"
+  },
+  {
+    "name": "Member logins, password resets, new and updated accounts",
+    "query": "SourceContext='Umbraco.Core.Security.UmbracoMembershipProviderBase'"
+  },
+  {
     "name": "Find all logs where the Level is NOT Verbose and NOT Debug",
     "query": "Not(@Level='Verbose') and Not(@Level='Debug')"
   },
@@ -38,9 +46,5 @@
   {
     "name": "Find all logs that the message that starts with 'end' in it with SQL like",
     "query": "@Message like 'end%'"
-  },
-  {
-    "name": "Find all logs that are from the namespace 'Stoolball'",
-    "query": "StartsWith(SourceContext, 'Stoolball')"
   }
 ]
