@@ -140,12 +140,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.3.0</Version>
+      <Version>3.3.1</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="UmbracoCms.Core">
-      <Version>8.8.1</Version>
+      <Version>8.9.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />

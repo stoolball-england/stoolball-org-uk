@@ -135,16 +135,16 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Moq">
-      <Version>4.14.7</Version>
+      <Version>4.15.1</Version>
     </PackageReference>
     <PackageReference Include="Our.Umbraco.Community.Tests">
-      <Version>8.8.1</Version>
+      <Version>8.9.1</Version>
     </PackageReference>
     <PackageReference Include="UmbracoCms.Web">
-      <Version>8.8.1</Version>
+      <Version>8.9.1</Version>
     </PackageReference>
     <PackageReference Include="UmbracoForms.Core">
-      <Version>8.5.3</Version>
+      <Version>8.5.5</Version>
     </PackageReference>
     <PackageReference Include="xunit">
       <Version>2.4.1</Version>
