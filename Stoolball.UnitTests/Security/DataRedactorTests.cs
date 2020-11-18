@@ -30,6 +30,18 @@ namespace Stoolball.UnitTests.Security
         }
 
         [Fact]
+        public void RedactAll_handles_no_text_nodes()
+        {
+            var before = $"<p></p>";
+            var after = "<p>";
+            var redactor = new DataRedactor();
+
+            var result = redactor.RedactAll(before);
+
+            Assert.Equal(after, result);
+        }
+
+        [Fact]
         public void RedactPersonalData_does_not_affect_all_alphanumeric()
         {
             var safeData = "This is a 123 test";
@@ -64,6 +76,18 @@ namespace Stoolball.UnitTests.Security
         {
             var before = $"Call {phoneNumber} to test";
             var after = "Call ***** ****** to test";
+            var redactor = new DataRedactor();
+
+            var result = redactor.RedactPersonalData(before);
+
+            Assert.Equal(after, result);
+        }
+
+        [Fact]
+        public void RedactPersonalData_handles_no_text_nodes()
+        {
+            var before = "<p></p>";
+            var after = "<p>";
             var redactor = new DataRedactor();
 
             var result = redactor.RedactPersonalData(before);

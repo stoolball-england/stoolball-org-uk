@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Dapper;
+using Stoolball.Data.SqlServer;
 using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.Teams;
-using Umbraco.Core.Scoping;
+using static Stoolball.Data.SqlServer.Constants;
 using Tables = Stoolball.Data.SqlServer.Constants.Tables;
-using UmbracoLogging = Umbraco.Core.Logging;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
     public class SqlServerPlayerPerformanceDataMigrator : IPlayerPerformanceDataMigrator
     {
-        private readonly IScopeProvider _scopeProvider;
+        private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IAuditHistoryBuilder _auditHistoryBuilder;
         private readonly IAuditRepository _auditRepository;
-        private readonly UmbracoLogging.ILogger _logger;
+        private readonly ILogger _logger;
 
-        public SqlServerPlayerPerformanceDataMigrator(IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, UmbracoLogging.ILogger logger)
+        public SqlServerPlayerPerformanceDataMigrator(IDatabaseConnectionFactory databaseConnectionFactory, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, ILogger logger)
         {
-            _scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
+            _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -30,25 +31,14 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         /// <returns></returns>
         public async Task DeletePlayerInnings()
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var scope = _scopeProvider.CreateScope())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    var database = scope.Database;
-
-                    using (var transaction = database.GetTransaction())
-                    {
-                        await database.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings}").ConfigureAwait(false);
-                        transaction.Complete();
-                    }
-
-                    scope.Complete();
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings}", null, transaction).ConfigureAwait(false);
+                    transaction.Commit();
                 }
-            }
-            catch (Exception e)
-            {
-                _logger.Error(typeof(SqlServerPlayerPerformanceDataMigrator), e);
-                throw;
             }
         }
 
@@ -61,105 +51,101 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             {
                 throw new ArgumentNullException(nameof(innings));
             }
-            try
+
+            var migratedInnings = new MigratedPlayerInnings
             {
-                var migratedInnings = new MigratedPlayerInnings
-                {
-                    PlayerInningsId = Guid.NewGuid(),
-                    MigratedMatchId = innings.MigratedMatchId,
-                    MigratedPlayerIdentityId = innings.MigratedPlayerIdentityId,
-                    MigratedTeamId = innings.MigratedTeamId,
-                    MigratedMatchTeamId = innings.MigratedMatchTeamId,
-                    MigratedDismissedById = innings.MigratedDismissedById,
-                    MigratedBowlerId = innings.MigratedBowlerId,
-                    BattingPosition = innings.BattingPosition,
-                    DismissalType = innings.DismissalType,
-                    DismissedBy = innings.DismissedBy,
-                    Bowler = innings.Bowler,
-                    RunsScored = innings.RunsScored,
-                    BallsFaced = innings.BallsFaced
-                };
+                PlayerInningsId = Guid.NewGuid(),
+                MigratedMatchId = innings.MigratedMatchId,
+                MigratedPlayerIdentityId = innings.MigratedPlayerIdentityId,
+                MigratedTeamId = innings.MigratedTeamId,
+                MigratedMatchTeamId = innings.MigratedMatchTeamId,
+                MigratedDismissedById = innings.MigratedDismissedById,
+                MigratedBowlerId = innings.MigratedBowlerId,
+                BattingPosition = innings.BattingPosition,
+                DismissalType = innings.DismissalType,
+                DismissedBy = innings.DismissedBy,
+                Bowler = innings.Bowler,
+                RunsScored = innings.RunsScored,
+                BallsFaced = innings.BallsFaced
+            };
 
-                using (var scope = _scopeProvider.CreateScope())
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    try
+                    _auditHistoryBuilder.BuildInitialAuditHistory(innings, migratedInnings, nameof(SqlServerPlayerPerformanceDataMigrator), x => x);
+
+                    migratedInnings.Match = new Match
                     {
-                        var database = scope.Database;
-
-
-                        _auditHistoryBuilder.BuildInitialAuditHistory(innings, migratedInnings, nameof(SqlServerPlayerPerformanceDataMigrator));
-
-                        using (var transaction = database.GetTransaction())
+                        MatchId = (await connection.ExecuteScalarAsync<Guid>($"SELECT MatchId FROM {Tables.Match} WHERE MigratedMatchId = @MigratedMatchId", new { migratedInnings.MigratedMatchId }, transaction).ConfigureAwait(false))
+                    };
+                    migratedInnings.PlayerIdentity = new PlayerIdentity
+                    {
+                        PlayerIdentityId = (await connection.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @MigratedPlayerIdentityId", new { migratedInnings.MigratedPlayerIdentityId }, transaction).ConfigureAwait(false)),
+                        Team = new Team
                         {
-                            migratedInnings.Match = new Match
-                            {
-                                MatchId = (await database.ExecuteScalarAsync<Guid>($"SELECT MatchId FROM {Tables.Match} WHERE MigratedMatchId = @0", migratedInnings.MigratedMatchId).ConfigureAwait(false))
-                            };
-                            migratedInnings.PlayerIdentity = new PlayerIdentity
-                            {
-                                PlayerIdentityId = (await database.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @0", migratedInnings.MigratedPlayerIdentityId).ConfigureAwait(false)),
-                                Team = new Team
-                                {
-                                    TeamId = (await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", migratedInnings.MigratedTeamId).ConfigureAwait(false))
-                                }
-                            };
-                            if (migratedInnings.MigratedDismissedById.HasValue)
-                            {
-                                migratedInnings.DismissedBy = new PlayerIdentity
-                                {
-                                    PlayerIdentityId = (await database.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @0", migratedInnings.MigratedDismissedById).ConfigureAwait(false)),
-                                };
-                            }
-                            if (migratedInnings.MigratedBowlerId.HasValue)
-                            {
-                                migratedInnings.Bowler = new PlayerIdentity
-                                {
-                                    PlayerIdentityId = (await database.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @0", migratedInnings.MigratedBowlerId).ConfigureAwait(false)),
-                                };
-                            }
-                            var inningsId = (await database.ExecuteScalarAsync<Guid>(
-                                $@"SELECT MatchInningsId FROM {Tables.MatchInnings} 
-									WHERE MatchId = @0 AND BattingMatchTeamId = (
-										SELECT MatchTeamId FROM {Tables.MatchTeam} WHERE MigratedMatchTeamId = @1
-									)",
-                                migratedInnings.Match.MatchId,
-                                migratedInnings.MigratedMatchTeamId).ConfigureAwait(false));
-
-                            await database.ExecuteAsync($@"INSERT INTO {Tables.PlayerInnings}
-						(PlayerInningsId, MatchInningsId, PlayerIdentityId, BattingPosition, DismissalType, DismissedById, BowlerId, RunsScored, BallsFaced)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8)",
-                                migratedInnings.PlayerInningsId,
-                                inningsId,
-                                migratedInnings.PlayerIdentity.PlayerIdentityId,
-                                migratedInnings.BattingPosition,
-                                migratedInnings.DismissalType?.ToString(),
-                                migratedInnings.DismissedBy?.PlayerIdentityId,
-                                migratedInnings.Bowler?.PlayerIdentityId,
-                                migratedInnings.RunsScored,
-                                migratedInnings.BallsFaced).ConfigureAwait(false);
-                            transaction.Complete();
+                            TeamId = (await connection.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @MigratedTeamId", new { migratedInnings.MigratedTeamId }, transaction).ConfigureAwait(false))
                         }
-
-                    }
-                    catch (Exception e)
+                    };
+                    if (migratedInnings.MigratedDismissedById.HasValue)
                     {
-                        _logger.Error(typeof(SqlServerPlayerPerformanceDataMigrator), e);
-                        throw;
+                        migratedInnings.DismissedBy = new PlayerIdentity
+                        {
+                            PlayerIdentityId = (await connection.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @MigratedDismissedById", new { migratedInnings.MigratedDismissedById }, transaction).ConfigureAwait(false)),
+                        };
                     }
-                    scope.Complete();
+                    if (migratedInnings.MigratedBowlerId.HasValue)
+                    {
+                        migratedInnings.Bowler = new PlayerIdentity
+                        {
+                            PlayerIdentityId = (await connection.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @MigratedBowlerId", new { migratedInnings.MigratedBowlerId }, transaction).ConfigureAwait(false)),
+                        };
+                    }
+                    var inningsId = (await connection.ExecuteScalarAsync<Guid>(
+                        $@"SELECT MatchInningsId FROM {Tables.MatchInnings} 
+									WHERE MatchId = @MatchId AND BattingMatchTeamId = (
+										SELECT MatchTeamId FROM {Tables.MatchTeam} WHERE MigratedMatchTeamId = @MigratedMatchTeamId
+									)",
+                        new
+                        {
+                            migratedInnings.Match.MatchId,
+                            migratedInnings.MigratedMatchTeamId
+                        },
+                        transaction).ConfigureAwait(false));
+
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerInnings}
+						(PlayerInningsId, MatchInningsId, PlayerIdentityId, BattingPosition, DismissalType, DismissedById, BowlerId, RunsScored, BallsFaced)
+						VALUES 
+                        (@PlayerInningsId, @MatchInningsId, @PlayerIdentityId, @BattingPosition, @DismissalType, @DismissedById, @BowlerId, @RunsScored, @BallsFaced)",
+                    new
+                    {
+                        migratedInnings.PlayerInningsId,
+                        MatchInningsId = inningsId,
+                        migratedInnings.PlayerIdentity.PlayerIdentityId,
+                        migratedInnings.BattingPosition,
+                        DismissalType = migratedInnings.DismissalType?.ToString(),
+                        DismissedById = migratedInnings.DismissedBy?.PlayerIdentityId,
+                        BowlerId = migratedInnings.Bowler?.PlayerIdentityId,
+                        migratedInnings.RunsScored,
+                        migratedInnings.BallsFaced
+                    },
+                    transaction).ConfigureAwait(false);
+
+                    foreach (var audit in migratedInnings.History)
+                    {
+                        await _auditRepository.CreateAudit(audit, transaction).ConfigureAwait(false);
+                    }
+
+                    transaction.Commit();
+
+                    migratedInnings.History.Clear();
+                    _logger.Info(GetType(), LoggingTemplates.Migrated, migratedInnings, GetType(), nameof(MigratePlayerInnings));
                 }
 
-                foreach (var audit in migratedInnings.History)
-                {
-                    await _auditRepository.CreateAudit(audit).ConfigureAwait(false);
-                }
-                return migratedInnings;
             }
-            catch (Exception e)
-            {
-                _logger.Error(typeof(SqlServerPlayerPerformanceDataMigrator), e);
-                throw;
-            }
+
+            return migratedInnings;
         }
 
 
@@ -169,25 +155,14 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         /// <returns></returns>
         public async Task DeleteOvers()
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var scope = _scopeProvider.CreateScope())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    var database = scope.Database;
-
-                    using (var transaction = database.GetTransaction())
-                    {
-                        await database.ExecuteAsync($"DELETE FROM {Tables.Over}").ConfigureAwait(false);
-                        transaction.Complete();
-                    }
-
-                    scope.Complete();
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.Over}", null, transaction).ConfigureAwait(false);
+                    transaction.Commit();
                 }
-            }
-            catch (Exception e)
-            {
-                _logger.Error(typeof(SqlServerPlayerPerformanceDataMigrator), e);
-                throw;
             }
         }
 
@@ -200,86 +175,80 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             {
                 throw new ArgumentNullException(nameof(over));
             }
-            try
+
+            var migratedOver = new MigratedOver
             {
-                var migratedOver = new MigratedOver
-                {
-                    OverId = Guid.NewGuid(),
-                    MigratedMatchId = over.MigratedMatchId,
-                    MigratedPlayerIdentityId = over.MigratedPlayerIdentityId,
-                    MigratedTeamId = over.MigratedTeamId,
-                    MigratedMatchTeamId = over.MigratedMatchTeamId,
-                    OverNumber = over.OverNumber,
-                    BallsBowled = over.BallsBowled,
-                    NoBalls = over.NoBalls,
-                    Wides = over.Wides,
-                    RunsConceded = over.RunsConceded
-                };
+                OverId = Guid.NewGuid(),
+                MigratedMatchId = over.MigratedMatchId,
+                MigratedPlayerIdentityId = over.MigratedPlayerIdentityId,
+                MigratedTeamId = over.MigratedTeamId,
+                MigratedMatchTeamId = over.MigratedMatchTeamId,
+                OverNumber = over.OverNumber,
+                BallsBowled = over.BallsBowled,
+                NoBalls = over.NoBalls,
+                Wides = over.Wides,
+                RunsConceded = over.RunsConceded
+            };
 
-                using (var scope = _scopeProvider.CreateScope())
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    try
+                    _auditHistoryBuilder.BuildInitialAuditHistory(over, migratedOver, nameof(SqlServerPlayerPerformanceDataMigrator), x => x);
+
+                    migratedOver.Match = new Match
                     {
-                        var database = scope.Database;
-
-                        _auditHistoryBuilder.BuildInitialAuditHistory(over, migratedOver, nameof(SqlServerPlayerPerformanceDataMigrator));
-
-                        using (var transaction = database.GetTransaction())
+                        MatchId = (await connection.ExecuteScalarAsync<Guid>($"SELECT MatchId FROM {Tables.Match} WHERE MigratedMatchId = @MigratedMatchId", new { migratedOver.MigratedMatchId }, transaction).ConfigureAwait(false))
+                    };
+                    migratedOver.PlayerIdentity = new PlayerIdentity
+                    {
+                        PlayerIdentityId = (await connection.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @MigratedPlayerIdentityId", new { migratedOver.MigratedPlayerIdentityId }, transaction).ConfigureAwait(false)),
+                        Team = new Team
                         {
-                            migratedOver.Match = new Match
-                            {
-                                MatchId = (await database.ExecuteScalarAsync<Guid>($"SELECT MatchId FROM {Tables.Match} WHERE MigratedMatchId = @0", migratedOver.MigratedMatchId).ConfigureAwait(false))
-                            };
-                            migratedOver.PlayerIdentity = new PlayerIdentity
-                            {
-                                PlayerIdentityId = (await database.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @0", migratedOver.MigratedPlayerIdentityId).ConfigureAwait(false)),
-                                Team = new Team
-                                {
-                                    TeamId = (await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", migratedOver.MigratedTeamId).ConfigureAwait(false))
-                                }
-                            };
-                            var inningsId = (await database.ExecuteScalarAsync<Guid>(
-                                $@"SELECT MatchInningsId FROM {Tables.MatchInnings} 
-									WHERE MatchId = @0 AND BowlingMatchTeamId = (
-										SELECT MatchTeamId FROM {Tables.MatchTeam} WHERE MigratedMatchTeamId = @1
-									)",
-                                migratedOver.Match.MatchId,
-                                migratedOver.MigratedMatchTeamId).ConfigureAwait(false));
-
-                            await database.ExecuteAsync($@"INSERT INTO {Tables.Over}
-						(OverId, MatchInningsId, PlayerIdentityId, OverNumber, BallsBowled, NoBalls, Wides, RunsConceded)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7)",
-                                migratedOver.OverId,
-                                inningsId,
-                                migratedOver.PlayerIdentity.PlayerIdentityId,
-                                migratedOver.OverNumber,
-                                migratedOver.BallsBowled,
-                                migratedOver.NoBalls,
-                                migratedOver.Wides,
-                                migratedOver.RunsConceded).ConfigureAwait(false);
-                            transaction.Complete();
+                            TeamId = (await connection.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @MigratedTeamId", new { migratedOver.MigratedTeamId }, transaction).ConfigureAwait(false))
                         }
+                    };
+                    var inningsId = (await connection.ExecuteScalarAsync<Guid>(
+                        $@"SELECT MatchInningsId FROM {Tables.MatchInnings} 
+									WHERE MatchId = @MatchId AND BowlingMatchTeamId = (
+										SELECT MatchTeamId FROM {Tables.MatchTeam} WHERE MigratedMatchTeamId = @MigratedMatchTeamId
+									)",
+                        new
+                        {
+                            migratedOver.Match.MatchId,
+                            migratedOver.MigratedMatchTeamId
+                        },
+                        transaction).ConfigureAwait(false));
 
-                    }
-                    catch (Exception e)
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.Over}
+						(OverId, MatchInningsId, PlayerIdentityId, OverNumber, BallsBowled, NoBalls, Wides, RunsConceded)
+						VALUES (@OverId, @MatchInningsId, @PlayerIdentityId, @OverNumber, @BallsBowled, @NoBalls, @Wides, @RunsConceded)",
+                    new
                     {
-                        _logger.Error(typeof(SqlServerPlayerPerformanceDataMigrator), e);
-                        throw;
-                    }
-                    scope.Complete();
-                }
+                        migratedOver.OverId,
+                        MatchInningsId = inningsId,
+                        migratedOver.PlayerIdentity.PlayerIdentityId,
+                        migratedOver.OverNumber,
+                        migratedOver.BallsBowled,
+                        migratedOver.NoBalls,
+                        migratedOver.Wides,
+                        migratedOver.RunsConceded
+                    },
+                    transaction).ConfigureAwait(false);
 
-                foreach (var audit in migratedOver.History)
-                {
-                    await _auditRepository.CreateAudit(audit).ConfigureAwait(false);
+                    foreach (var audit in migratedOver.History)
+                    {
+                        await _auditRepository.CreateAudit(audit, transaction).ConfigureAwait(false);
+                    }
+
+                    transaction.Commit();
+
+                    migratedOver.History.Clear();
+                    _logger.Info(GetType(), LoggingTemplates.Migrated, migratedOver, GetType(), nameof(MigrateOver));
                 }
-                return migratedOver;
             }
-            catch (Exception e)
-            {
-                _logger.Error(typeof(SqlServerPlayerPerformanceDataMigrator), e);
-                throw;
-            }
+            return migratedOver;
         }
     }
 }

@@ -8,27 +8,6 @@ namespace Stoolball.Data.SqlServer
 {
     public class SkybrudRedirectsRepository : IRedirectsRepository
     {
-        private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
-
-        public SkybrudRedirectsRepository(IDatabaseConnectionFactory databaseConnectionFactory)
-        {
-            _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
-        }
-
-        [Obsolete("Use the overload which requires an IDbTransaction")]
-        public async Task DeleteRedirectsByDestinationPrefix(string destinationPrefix)
-        {
-            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-            {
-                connection.Open();
-                using (var transaction = connection.BeginTransaction())
-                {
-                    await DeleteRedirectsByDestinationPrefix(destinationPrefix, transaction).ConfigureAwait(false);
-                    transaction.Commit();
-                }
-            }
-        }
-
         public async Task DeleteRedirectsByDestinationPrefix(string destinationPrefix, IDbTransaction transaction)
         {
             if (transaction is null)
@@ -37,30 +16,6 @@ namespace Stoolball.Data.SqlServer
             }
 
             await transaction.Connection.ExecuteAsync($@"DELETE FROM SkybrudRedirects WHERE DestinationUrl LIKE '{destinationPrefix}%'", null, transaction).ConfigureAwait(false);
-        }
-
-        [Obsolete("Use the overload which requires an IDbTransaction")]
-        public async Task InsertRedirect(string originalRoute, string revisedRoute, string routeSuffix)
-        {
-            if (string.IsNullOrEmpty(originalRoute))
-            {
-                throw new ArgumentException($"'{nameof(originalRoute)}' cannot be null or empty", nameof(originalRoute));
-            }
-
-            if (string.IsNullOrEmpty(revisedRoute))
-            {
-                throw new ArgumentException($"'{nameof(revisedRoute)}' cannot be null or empty", nameof(revisedRoute));
-            }
-
-            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-            {
-                connection.Open();
-                using (var transaction = connection.BeginTransaction())
-                {
-                    await InsertRedirect(originalRoute, revisedRoute, routeSuffix, transaction).ConfigureAwait(false);
-                    transaction.Commit();
-                }
-            }
         }
 
         public async Task InsertRedirect(string originalRoute, string revisedRoute, string routeSuffix, IDbTransaction transaction)
@@ -105,45 +60,41 @@ namespace Stoolball.Data.SqlServer
                                         transaction).ConfigureAwait(false);
         }
 
-        public async Task InsertRedirect(string originalRoute, int umbracoContentNodeId, Guid umbracoContentNodeKey, Uri umbracoContentNodeUrl)
+        public async Task InsertRedirect(string originalRoute, int umbracoContentNodeId, Guid umbracoContentNodeKey, Uri umbracoContentNodeUrl, IDbTransaction transaction)
         {
             if (umbracoContentNodeUrl is null)
             {
                 throw new ArgumentNullException(nameof(umbracoContentNodeUrl));
             }
 
-            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            if (transaction is null)
             {
-                connection.Open();
-                using (var transaction = connection.BeginTransaction())
-                {
+                throw new ArgumentNullException(nameof(transaction));
+            }
 
-                    await transaction.Connection.ExecuteAsync($@"INSERT INTO SkybrudRedirects 
+            await transaction.Connection.ExecuteAsync($@"INSERT INTO SkybrudRedirects 
 							([Key], [RootId], [RootKey], [Url], [QueryString], [DestinationType], [DestinationId], [DestinationKey], 
 							 [DestinationUrl], [Created], [Updated], [IsPermanent], [IsRegex], [ForwardQueryString])
 							 VALUES (@Key, @RootId, @RootKey, @Url, @QueryString, @DestinationType, @DestinationId, @DestinationKey, @DestinationUrl, 
                              @Created, @Updated, @IsPermanent, @IsRegex, @ForwardQueryString)",
-                         new
-                         {
-                             Key = Guid.NewGuid().ToString(),
-                             RootId = 0,
-                             RootKey = "00000000-0000-0000-0000-000000000000",
-                             Url = "/" + originalRoute?.TrimStart('/'),
-                             QueryString = string.Empty,
-                             DestinationType = "url",
-                             DestinationId = umbracoContentNodeId,
-                             DestinationKey = umbracoContentNodeKey,
-                             DestinationUrl = umbracoContentNodeUrl.ToString(),
-                             Created = DateTime.UtcNow,
-                             Updated = DateTime.UtcNow,
-                             IsPermanent = true,
-                             IsRegex = false,
-                             ForwardQueryString = false
-                         },
-                         transaction).ConfigureAwait(false);
-                    transaction.Commit();
-                }
-            }
+                 new
+                 {
+                     Key = Guid.NewGuid().ToString(),
+                     RootId = 0,
+                     RootKey = "00000000-0000-0000-0000-000000000000",
+                     Url = "/" + originalRoute?.TrimStart('/'),
+                     QueryString = string.Empty,
+                     DestinationType = "url",
+                     DestinationId = umbracoContentNodeId,
+                     DestinationKey = umbracoContentNodeKey,
+                     DestinationUrl = umbracoContentNodeUrl.ToString(),
+                     Created = DateTime.UtcNow,
+                     Updated = DateTime.UtcNow,
+                     IsPermanent = true,
+                     IsRegex = false,
+                     ForwardQueryString = false
+                 },
+                 transaction).ConfigureAwait(false);
         }
     }
 }

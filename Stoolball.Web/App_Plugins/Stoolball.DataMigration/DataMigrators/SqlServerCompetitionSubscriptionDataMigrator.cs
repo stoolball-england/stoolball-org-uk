@@ -1,25 +1,27 @@
 ﻿using System;
+using System.Data;
 using System.Threading.Tasks;
+using Dapper;
 using Newtonsoft.Json;
+using Stoolball.Data.SqlServer;
 using Stoolball.Logging;
 using Stoolball.Notifications;
-using Umbraco.Core.Scoping;
 using Umbraco.Core.Services;
+using static Stoolball.Data.SqlServer.Constants;
 using Tables = Stoolball.Data.SqlServer.Constants.Tables;
-using UmbracoLogging = Umbraco.Core.Logging;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
     public class SqlServerCompetitionSubscriptionDataMigrator : ICompetitionSubscriptionDataMigrator
     {
-        private readonly IScopeProvider _scopeProvider;
+        private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IAuditRepository _auditRepository;
-        private readonly UmbracoLogging.ILogger _logger;
+        private readonly ILogger _logger;
         private readonly ServiceContext _serviceContext;
 
-        public SqlServerCompetitionSubscriptionDataMigrator(IScopeProvider scopeProvider, IAuditRepository auditRepository, UmbracoLogging.ILogger logger, ServiceContext serviceContext)
+        public SqlServerCompetitionSubscriptionDataMigrator(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, ServiceContext serviceContext)
         {
-            _scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
+            _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _serviceContext = serviceContext;
@@ -31,25 +33,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         /// <returns></returns>
         public async Task DeleteCompetitionSubscriptions()
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var scope = _scopeProvider.CreateScope())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    var database = scope.Database;
+                    await connection.ExecuteAsync($@"DELETE FROM {Tables.NotificationSubscription} WHERE NotificationType = '{NotificationType.Matches.ToString()}'", null, transaction).ConfigureAwait(false);
 
-                    using (var transaction = database.GetTransaction())
-                    {
-                        await database.ExecuteAsync($@"DELETE FROM {Tables.NotificationSubscription} WHERE NotificationType = '{NotificationType.Matches.ToString()}'").ConfigureAwait(false);
-                        transaction.Complete();
-                    }
-
-                    scope.Complete();
+                    transaction.Commit();
                 }
-            }
-            catch (Exception e)
-            {
-                _logger.Error(typeof(SqlServerCompetitionSubscriptionDataMigrator), e);
-                throw;
             }
         }
 
@@ -72,30 +64,43 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 SubscriptionDate = subscription.SubscriptionDate,
             };
 
-            migratedSubscription.CompetitionId = await GetCompetitionId(migratedSubscription.MigratedCompetitionId).ConfigureAwait(false);
-            (migratedSubscription.MemberKey, migratedSubscription.MemberName) = GetMember(subscription.MigratedMemberEmail);
-            await CreateSubscription(migratedSubscription, NotificationType.Matches).ConfigureAwait(false);
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    migratedSubscription.CompetitionId = await GetCompetitionId(migratedSubscription.MigratedCompetitionId, transaction).ConfigureAwait(false);
+                    (migratedSubscription.MemberKey, migratedSubscription.MemberName) = GetMember(subscription.MigratedMemberEmail);
+                    await CreateSubscription(migratedSubscription, NotificationType.Matches, transaction).ConfigureAwait(false);
 
+                    await _auditRepository.CreateAudit(new AuditRecord
+                    {
+                        Action = AuditAction.Create,
+                        MemberKey = migratedSubscription.MemberKey,
+                        ActorName = migratedSubscription.MemberName,
+                        AuditDate = migratedSubscription.SubscriptionDate,
+                        EntityUri = new Uri($"https://www.stoolball.org.uk/id/notification-subscription/{migratedSubscription.CompetitionSubscriptionId}"),
+                        State = JsonConvert.SerializeObject(migratedSubscription),
+                        RedactedState = JsonConvert.SerializeObject(migratedSubscription)
+                    }, transaction).ConfigureAwait(false);
+
+                    transaction.Commit();
+
+                    _logger.Info(GetType(), LoggingTemplates.Migrated, migratedSubscription, GetType(), nameof(MigrateCompetitionSubscription));
+                }
+            }
             return migratedSubscription;
         }
 
-        private async Task<Guid?> GetCompetitionId(int migratedCompetitionId)
+        private static async Task<Guid?> GetCompetitionId(int migratedCompetitionId, IDbTransaction transaction)
         {
-            try
+            if (transaction is null)
             {
-                using (var scope = _scopeProvider.CreateScope())
-                {
-                    var database = scope.Database;
-                    var competitionId = await database.ExecuteScalarAsync<Guid?>($@"SELECT CompetitionId FROM {Tables.Competition} WHERE MigratedCompetitionId = @migratedCompetitionId", new { migratedCompetitionId }).ConfigureAwait(false);
-                    scope.Complete();
-                    return competitionId;
-                }
+                throw new ArgumentNullException(nameof(transaction));
             }
-            catch (Exception e)
-            {
-                _logger.Error(typeof(SqlServerCompetitionSubscriptionDataMigrator), e);
-                throw;
-            }
+
+            var competitionId = await transaction.Connection.ExecuteScalarAsync<Guid?>($@"SELECT CompetitionId FROM {Tables.Competition} WHERE MigratedCompetitionId = @migratedCompetitionId", new { migratedCompetitionId }, transaction).ConfigureAwait(false);
+            return competitionId;
         }
 
         private (Guid? memberKey, string memberName) GetMember(string migratedMemberEmail)
@@ -113,47 +118,26 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             return (member.Key, member.Name);
         }
 
-        private async Task CreateSubscription(MigratedCompetitionSubscription migratedSubscription, NotificationType notificationType)
+        private static async Task CreateSubscription(MigratedCompetitionSubscription migratedSubscription, NotificationType notificationType, IDbTransaction transaction)
         {
-            try
+            if (transaction is null)
             {
-                using (var scope = _scopeProvider.CreateScope())
-                {
-                    var database = scope.Database;
-                    using (var transaction = database.GetTransaction())
-                    {
-                        await database.ExecuteAsync($@"INSERT INTO {Tables.NotificationSubscription} 
+                throw new ArgumentNullException(nameof(transaction));
+            }
+
+            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.NotificationSubscription} 
                             (NotificationSubscriptionId, MemberKey, NotificationType, Query, DisplayName, DateSubscribed)
-						    VALUES (@0, @1, @2, @3, @4, @5)",
-                            migratedSubscription.CompetitionSubscriptionId,
+						    VALUES (@NotificationSubscriptionId, @MemberKey, @NotificationType, @Query, @DisplayName, @DateSubscribed)",
+                        new
+                        {
+                            NotificationSubscriptionId = migratedSubscription.CompetitionSubscriptionId,
                             migratedSubscription.MemberKey,
-                            notificationType.ToString(),
-                            "competition=" + migratedSubscription.CompetitionId,
+                            NotificationType = notificationType.ToString(),
+                            Query = "competition=" + migratedSubscription.CompetitionId,
                             migratedSubscription.DisplayName,
-                            migratedSubscription.SubscriptionDate
-                            ).ConfigureAwait(false);
-
-                        transaction.Complete();
-                    }
-
-                    scope.Complete();
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.Error(typeof(SqlServerCompetitionSubscriptionDataMigrator), e);
-                throw;
-            }
-
-            await _auditRepository.CreateAudit(new AuditRecord
-            {
-                Action = AuditAction.Create,
-                MemberKey = migratedSubscription.MemberKey,
-                ActorName = migratedSubscription.MemberName,
-                AuditDate = migratedSubscription.SubscriptionDate,
-                EntityUri = new Uri($"https://www.stoolball.org.uk/id/notification-subscription/{migratedSubscription.CompetitionSubscriptionId}"),
-                State = JsonConvert.SerializeObject(migratedSubscription)
-            }).ConfigureAwait(false);
+                            DateSubscribed = migratedSubscription.SubscriptionDate
+                        },
+                        transaction).ConfigureAwait(false);
         }
     }
 }

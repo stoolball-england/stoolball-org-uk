@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.Threading.Tasks;
 
 namespace Stoolball.Logging
@@ -15,7 +14,5 @@ namespace Stoolball.Logging
         /// <param name="audit">The audit details to record</param>
         /// <param name="transaction">The transaction to audit</param>
         Task CreateAudit(AuditRecord audit, IDbTransaction transaction);
-        [Obsolete]
-        Task CreateAudit(AuditRecord audit);
     }
 }

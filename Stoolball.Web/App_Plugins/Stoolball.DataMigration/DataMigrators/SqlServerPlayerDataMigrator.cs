@@ -1,30 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Dapper;
+using Stoolball.Data.SqlServer;
 using Stoolball.Logging;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using Umbraco.Core.Scoping;
 using static Stoolball.Data.SqlServer.Constants;
 using Tables = Stoolball.Data.SqlServer.Constants.Tables;
-using UmbracoLogging = Umbraco.Core.Logging;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
     public class SqlServerPlayerDataMigrator : IPlayerDataMigrator
     {
+        private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IRedirectsRepository _redirectsRepository;
-        private readonly IScopeProvider _scopeProvider;
         private readonly IAuditHistoryBuilder _auditHistoryBuilder;
         private readonly IAuditRepository _auditRepository;
-        private readonly UmbracoLogging.ILogger _logger;
+        private readonly ILogger _logger;
         private readonly IRouteGenerator _routeGenerator;
 
-        public SqlServerPlayerDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository,
-            UmbracoLogging.ILogger logger, IRouteGenerator routeGenerator)
+        public SqlServerPlayerDataMigrator(IDatabaseConnectionFactory databaseConnectionFactory, IRedirectsRepository redirectsRepository, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository,
+            ILogger logger, IRouteGenerator routeGenerator)
         {
+            _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
-            _scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
             _auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -37,27 +37,16 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         /// <returns></returns>
         public async Task DeletePlayers()
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var scope = _scopeProvider.CreateScope())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    var database = scope.Database;
-
-                    using (var transaction = database.GetTransaction())
-                    {
-                        await database.ExecuteAsync("DELETE FROM SkybrudRedirects WHERE DestinationUrl LIKE '/players/%'").ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.PlayerIdentity}").ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.Player}").ConfigureAwait(false);
-                        transaction.Complete();
-                    }
-
-                    scope.Complete();
+                    await connection.ExecuteAsync("DELETE FROM SkybrudRedirects WHERE DestinationUrl LIKE '/players/%'", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerIdentity}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.Player}", null, transaction).ConfigureAwait(false);
+                    transaction.Commit();
                 }
-            }
-            catch (Exception e)
-            {
-                _logger.Error(typeof(SqlServerPlayerDataMigrator), e);
-                throw;
             }
         }
 
@@ -68,104 +57,101 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         {
             if (player is null)
             {
-                throw new System.ArgumentNullException(nameof(player));
+                throw new ArgumentNullException(nameof(player));
             }
-            try
+
+            var migratedPlayerIdentity = new MigratedPlayerIdentity
             {
-                var migratedPlayerIdentity = new MigratedPlayerIdentity
-                {
-                    PlayerIdentityId = Guid.NewGuid(),
-                    PlayerId = Guid.NewGuid(),
-                    MigratedPlayerIdentityId = player.MigratedPlayerIdentityId,
-                    PlayerIdentityName = player.PlayerIdentityName,
-                    MigratedTeamId = player.MigratedTeamId,
-                    FirstPlayed = player.FirstPlayed,
-                    LastPlayed = player.LastPlayed,
-                    TotalMatches = player.TotalMatches,
-                    MissedMatches = player.MissedMatches,
-                    Probability = player.Probability
-                };
+                PlayerIdentityId = Guid.NewGuid(),
+                MigratedPlayerIdentityId = player.MigratedPlayerIdentityId,
+                PlayerIdentityName = player.PlayerIdentityName,
+                MigratedTeamId = player.MigratedTeamId,
+                FirstPlayed = player.FirstPlayed,
+                LastPlayed = player.LastPlayed,
+                TotalMatches = player.TotalMatches,
+                MissedMatches = player.MissedMatches,
+                Probability = player.Probability
+            };
 
-                var migratedPlayer = new Player
-                {
-                    PlayerId = migratedPlayerIdentity.PlayerId,
-                    PlayerName = player.PlayerIdentityName,
-                    PlayerIdentities = new List<PlayerIdentity> { migratedPlayerIdentity }
-                };
+            var migratedPlayer = new Player
+            {
+                PlayerId = Guid.NewGuid(),
+                PlayerName = player.PlayerIdentityName,
+                PlayerIdentities = new List<PlayerIdentity> { migratedPlayerIdentity }
+            };
 
-                using (var scope = _scopeProvider.CreateScope())
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    try
+                    var teamId = await connection.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @MigratedTeamId", new { migratedPlayerIdentity.MigratedTeamId }, transaction).ConfigureAwait(false);
+
+                    migratedPlayer.PlayerRoute = _routeGenerator.GenerateRoute($"/players", migratedPlayer.PlayerName, NoiseWords.PlayerRoute);
+
+                    int count;
+                    do
                     {
-                        var database = scope.Database;
-
-                        var teamId = await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", migratedPlayerIdentity.MigratedTeamId).ConfigureAwait(false);
-
-                        migratedPlayer.PlayerRoute = _routeGenerator.GenerateRoute($"/players", migratedPlayer.PlayerName, NoiseWords.PlayerRoute);
-
-                        int count;
-                        do
+                        count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { migratedPlayer.PlayerRoute }, transaction).ConfigureAwait(false);
+                        if (count > 0)
                         {
-                            count = await database.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { migratedPlayer.PlayerRoute }).ConfigureAwait(false);
-                            if (count > 0)
-                            {
-                                migratedPlayer.PlayerRoute = _routeGenerator.IncrementRoute(migratedPlayer.PlayerRoute);
-                            }
+                            migratedPlayer.PlayerRoute = _routeGenerator.IncrementRoute(migratedPlayer.PlayerRoute);
                         }
-                        while (count > 0);
+                    }
+                    while (count > 0);
 
-                        _auditHistoryBuilder.BuildInitialAuditHistory(player, migratedPlayerIdentity, nameof(SqlServerPlayerDataMigrator));
+                    _auditHistoryBuilder.BuildInitialAuditHistory(player, migratedPlayerIdentity, nameof(SqlServerPlayerDataMigrator), x => x);
 
-                        using (var transaction = database.GetTransaction())
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.Player} (PlayerId, PlayerName, PlayerRoute) VALUES (@PlayerId, @PlayerName, @PlayerRoute)",
+                        new
                         {
-                            await database.ExecuteAsync($@"INSERT INTO {Tables.Player} (PlayerId, PlayerName, PlayerRoute) VALUES (@0, @1, @2)",
-                                  migratedPlayer.PlayerId,
-                                  migratedPlayer.PlayerName,
-                                  migratedPlayer.PlayerRoute
-                              ).ConfigureAwait(false);
+                            migratedPlayer.PlayerId,
+                            migratedPlayer.PlayerName,
+                            migratedPlayer.PlayerRoute
+                        },
+                      transaction).ConfigureAwait(false);
 
-                            await database.ExecuteAsync($@"INSERT INTO {Tables.PlayerIdentity}
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerIdentity}
 							(PlayerIdentityId, PlayerId, MigratedPlayerIdentityId, PlayerIdentityName, PlayerIdentityComparableName, TeamId, 
-								FirstPlayed, LastPlayed, TotalMatches, MissedMatches, Probability)
-							VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10)",
-                                migratedPlayerIdentity.PlayerIdentityId,
-                                migratedPlayerIdentity.PlayerId,
-                                migratedPlayerIdentity.MigratedPlayerIdentityId,
-                                migratedPlayerIdentity.PlayerIdentityName,
-                                migratedPlayerIdentity.ComparableName(),
-                                teamId,
-                                migratedPlayerIdentity.FirstPlayed,
-                                migratedPlayerIdentity.LastPlayed,
-                                migratedPlayerIdentity.TotalMatches,
-                                migratedPlayerIdentity.MissedMatches,
-                                migratedPlayerIdentity.Probability).ConfigureAwait(false);
+						  	 FirstPlayed, LastPlayed, TotalMatches, MissedMatches, Probability)
+							VALUES 
+                            (@PlayerIdentityId, @PlayerId, @MigratedPlayerIdentityId, @PlayerIdentityName, @PlayerIdentityComparableName, @TeamId, 
+                             @FirstPlayed, @LastPlayed, @TotalMatches, @MissedMatches, @Probability)",
+                     new
+                     {
+                         migratedPlayerIdentity.PlayerIdentityId,
+                         migratedPlayer.PlayerId,
+                         migratedPlayerIdentity.MigratedPlayerIdentityId,
+                         migratedPlayerIdentity.PlayerIdentityName,
+                         PlayerIdentityComparableName = migratedPlayerIdentity.ComparableName(),
+                         TeamId = teamId,
+                         migratedPlayerIdentity.FirstPlayed,
+                         migratedPlayerIdentity.LastPlayed,
+                         migratedPlayerIdentity.TotalMatches,
+                         migratedPlayerIdentity.MissedMatches,
+                         migratedPlayerIdentity.Probability
+                     },
+                     transaction).ConfigureAwait(false);
 
-                            transaction.Complete();
-                        }
+                    await _redirectsRepository.InsertRedirect(player.PlayerIdentityRoute, migratedPlayer.PlayerRoute + "/batting", string.Empty, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(player.PlayerIdentityRoute, migratedPlayer.PlayerRoute, "/bowling", transaction).ConfigureAwait(false);
 
-                    }
-                    catch (Exception e)
+                    foreach (var audit in migratedPlayerIdentity.History)
                     {
-                        _logger.Error(typeof(SqlServerPlayerDataMigrator), e);
-                        throw;
+                        await _auditRepository.CreateAudit(audit, transaction).ConfigureAwait(false);
                     }
-                    scope.Complete();
+
+                    transaction.Commit();
+
+                    migratedPlayer.History.Clear();
+                    migratedPlayerIdentity.History.Clear();
+                    _logger.Info(GetType(), LoggingTemplates.Migrated, migratedPlayer, GetType(), nameof(MigratePlayer));
                 }
 
-                await _redirectsRepository.InsertRedirect(player.PlayerIdentityRoute, migratedPlayer.PlayerRoute + "/batting", string.Empty).ConfigureAwait(false);
-                await _redirectsRepository.InsertRedirect(player.PlayerIdentityRoute, migratedPlayer.PlayerRoute, "/bowling").ConfigureAwait(false);
-
-                foreach (var audit in migratedPlayerIdentity.History)
-                {
-                    await _auditRepository.CreateAudit(audit).ConfigureAwait(false);
-                }
                 return migratedPlayer;
-            }
-            catch (Exception e)
-            {
-                _logger.Error(typeof(SqlServerPlayerDataMigrator), e);
-                throw;
             }
         }
     }
 }
+

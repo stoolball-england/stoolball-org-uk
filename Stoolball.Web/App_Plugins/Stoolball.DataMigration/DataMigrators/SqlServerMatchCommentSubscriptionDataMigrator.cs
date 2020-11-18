@@ -1,25 +1,27 @@
 ﻿using System;
+using System.Data;
 using System.Threading.Tasks;
+using Dapper;
 using Newtonsoft.Json;
+using Stoolball.Data.SqlServer;
 using Stoolball.Logging;
 using Stoolball.Notifications;
-using Umbraco.Core.Scoping;
 using Umbraco.Core.Services;
+using static Stoolball.Data.SqlServer.Constants;
 using Tables = Stoolball.Data.SqlServer.Constants.Tables;
-using UmbracoLogging = Umbraco.Core.Logging;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
     public class SqlServerMatchCommentSubscriptionDataMigrator : IMatchCommentSubscriptionDataMigrator
     {
-        private readonly IScopeProvider _scopeProvider;
+        private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IAuditRepository _auditRepository;
-        private readonly UmbracoLogging.ILogger _logger;
+        private readonly ILogger _logger;
         private readonly ServiceContext _serviceContext;
 
-        public SqlServerMatchCommentSubscriptionDataMigrator(IScopeProvider scopeProvider, IAuditRepository auditRepository, UmbracoLogging.ILogger logger, ServiceContext serviceContext)
+        public SqlServerMatchCommentSubscriptionDataMigrator(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, ServiceContext serviceContext)
         {
-            _scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
+            _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _serviceContext = serviceContext;
@@ -31,26 +33,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         /// <returns></returns>
         public async Task DeleteMatchCommentSubscriptions()
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var scope = _scopeProvider.CreateScope())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    var database = scope.Database;
-
-                    using (var transaction = database.GetTransaction())
-                    {
-                        await database.ExecuteAsync($@"DELETE FROM {Tables.NotificationSubscription} WHERE NotificationType = '{NotificationType.MatchComments.ToString()}'").ConfigureAwait(false);
-                        await database.ExecuteAsync($@"DELETE FROM {Tables.NotificationSubscription} WHERE NotificationType = '{NotificationType.TournamentComments.ToString()}'").ConfigureAwait(false);
-                        transaction.Complete();
-                    }
-
-                    scope.Complete();
+                    await transaction.Connection.ExecuteAsync($@"DELETE FROM {Tables.NotificationSubscription} WHERE NotificationType = '{NotificationType.MatchComments.ToString()}'", null, transaction).ConfigureAwait(false);
+                    await transaction.Connection.ExecuteAsync($@"DELETE FROM {Tables.NotificationSubscription} WHERE NotificationType = '{NotificationType.TournamentComments.ToString()}'", null, transaction).ConfigureAwait(false);
+                    transaction.Commit();
                 }
-            }
-            catch (Exception e)
-            {
-                _logger.Error(typeof(SqlServerMatchCommentSubscriptionDataMigrator), e);
-                throw;
             }
         }
 
@@ -74,58 +65,50 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 SubscriptionDate = subscription.SubscriptionDate,
             };
 
-            migratedMatchCommentSubscription.MatchId = await GetMatchId(migratedMatchCommentSubscription.MigratedMatchId).ConfigureAwait(false);
-            if (migratedMatchCommentSubscription.MatchId.HasValue)
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                (migratedMatchCommentSubscription.MemberKey, migratedMatchCommentSubscription.MemberName) = GetMember(subscription.MigratedMemberEmail);
-                await CreateSubscription(migratedMatchCommentSubscription, NotificationType.MatchComments).ConfigureAwait(false);
-            }
-            else
-            {
-                migratedMatchCommentSubscription.MatchId = await GetTournamentId(migratedMatchCommentSubscription.MigratedMatchId).ConfigureAwait(false);
-                (migratedMatchCommentSubscription.MemberKey, migratedMatchCommentSubscription.MemberName) = GetMember(subscription.MigratedMemberEmail);
-                await CreateSubscription(migratedMatchCommentSubscription, NotificationType.TournamentComments).ConfigureAwait(false);
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    migratedMatchCommentSubscription.MatchId = await GetMatchId(migratedMatchCommentSubscription.MigratedMatchId, transaction).ConfigureAwait(false);
+                    if (migratedMatchCommentSubscription.MatchId.HasValue)
+                    {
+                        (migratedMatchCommentSubscription.MemberKey, migratedMatchCommentSubscription.MemberName) = GetMember(subscription.MigratedMemberEmail);
+                        await CreateSubscription(migratedMatchCommentSubscription, NotificationType.MatchComments, transaction).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        migratedMatchCommentSubscription.MatchId = await GetTournamentId(migratedMatchCommentSubscription.MigratedMatchId, transaction).ConfigureAwait(false);
+                        (migratedMatchCommentSubscription.MemberKey, migratedMatchCommentSubscription.MemberName) = GetMember(subscription.MigratedMemberEmail);
+                        await CreateSubscription(migratedMatchCommentSubscription, NotificationType.TournamentComments, transaction).ConfigureAwait(false);
+                    }
+                    transaction.Commit();
+
+                    _logger.Info(GetType(), LoggingTemplates.Migrated, migratedMatchCommentSubscription, GetType(), nameof(MigrateMatchCommentSubscription));
+                }
             }
 
             return migratedMatchCommentSubscription;
         }
 
-        private async Task<Guid?> GetMatchId(int migratedMatchId)
+        private static async Task<Guid?> GetMatchId(int migratedMatchId, IDbTransaction transaction)
         {
-            try
+            if (transaction is null)
             {
-                using (var scope = _scopeProvider.CreateScope())
-                {
-                    var database = scope.Database;
-                    var matchId = await database.ExecuteScalarAsync<Guid?>($@"SELECT MatchId FROM {Tables.Match} WHERE MigratedMatchId = @migratedMatchId", new { migratedMatchId }).ConfigureAwait(false);
-                    scope.Complete();
-                    return matchId;
-                }
+                throw new ArgumentNullException(nameof(transaction));
             }
-            catch (Exception e)
-            {
-                _logger.Error(typeof(SqlServerMatchCommentSubscriptionDataMigrator), e);
-                throw;
-            }
+
+            return await transaction.Connection.ExecuteScalarAsync<Guid?>($@"SELECT MatchId FROM {Tables.Match} WHERE MigratedMatchId = @migratedMatchId", new { migratedMatchId }, transaction).ConfigureAwait(false);
         }
 
-        private async Task<Guid?> GetTournamentId(int migratedMatchId)
+        private static async Task<Guid?> GetTournamentId(int migratedMatchId, IDbTransaction transaction)
         {
-            try
+            if (transaction is null)
             {
-                using (var scope = _scopeProvider.CreateScope())
-                {
-                    var database = scope.Database;
-                    var tournamentId = await database.ExecuteScalarAsync<Guid?>($@"SELECT TournamentId FROM {Tables.Tournament} WHERE MigratedTournamentId = @migratedMatchId", new { migratedMatchId }).ConfigureAwait(false);
-                    scope.Complete();
-                    return tournamentId;
-                }
+                throw new ArgumentNullException(nameof(transaction));
             }
-            catch (Exception e)
-            {
-                _logger.Error(typeof(SqlServerMatchCommentSubscriptionDataMigrator), e);
-                throw;
-            }
+
+            return await transaction.Connection.ExecuteScalarAsync<Guid?>($@"SELECT TournamentId FROM {Tables.Tournament} WHERE MigratedTournamentId = @migratedMatchId", new { migratedMatchId }, transaction).ConfigureAwait(false);
         }
 
         private (Guid? memberKey, string memberName) GetMember(string migratedMemberEmail)
@@ -143,37 +126,26 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             return (member.Key, member.Name);
         }
 
-        private async Task CreateSubscription(MigratedMatchCommentSubscription migratedSubscription, NotificationType notificationType)
+        private async Task CreateSubscription(MigratedMatchCommentSubscription migratedSubscription, NotificationType notificationType, IDbTransaction transaction)
         {
-            try
+            if (transaction is null)
             {
-                using (var scope = _scopeProvider.CreateScope())
-                {
-                    var database = scope.Database;
-                    using (var transaction = database.GetTransaction())
-                    {
-                        await database.ExecuteAsync($@"INSERT INTO {Tables.NotificationSubscription} 
+                throw new ArgumentNullException(nameof(transaction));
+            }
+
+            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.NotificationSubscription} 
                             (NotificationSubscriptionId, MemberKey, NotificationType, Query, DisplayName, DateSubscribed)
-						    VALUES (@0, @1, @2, @3, @4, @5)",
-                            migratedSubscription.MatchCommentSubscriptionId,
+						    VALUES (@NotificationSubscriptionId, @MemberKey, @NotificationType, @Query, @DisplayName, @DateSubscribed)",
+                        new
+                        {
+                            NotificationSubscriptionId = migratedSubscription.MatchCommentSubscriptionId,
                             migratedSubscription.MemberKey,
-                            notificationType.ToString(),
-                            (notificationType == NotificationType.MatchComments ? "match=" : "tournament=") + migratedSubscription.MatchId,
+                            NotificationType = notificationType.ToString(),
+                            Query = (notificationType == NotificationType.MatchComments ? "match=" : "tournament=") + migratedSubscription.MatchId,
                             migratedSubscription.DisplayName,
-                            migratedSubscription.SubscriptionDate
-                            ).ConfigureAwait(false);
-
-                        transaction.Complete();
-                    }
-
-                    scope.Complete();
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.Error(typeof(SqlServerMatchCommentSubscriptionDataMigrator), e);
-                throw;
-            }
+                            DateSubscribed = migratedSubscription.SubscriptionDate
+                        },
+                        transaction).ConfigureAwait(false);
 
             await _auditRepository.CreateAudit(new AuditRecord
             {
@@ -182,8 +154,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 ActorName = migratedSubscription.MemberName,
                 AuditDate = migratedSubscription.SubscriptionDate,
                 EntityUri = new Uri($"https://www.stoolball.org.uk/id/notification-subscription/{migratedSubscription.MatchCommentSubscriptionId}"),
-                State = JsonConvert.SerializeObject(migratedSubscription)
-            }).ConfigureAwait(false);
+                State = JsonConvert.SerializeObject(migratedSubscription),
+                RedactedState = JsonConvert.SerializeObject(migratedSubscription),
+            }, transaction).ConfigureAwait(false);
         }
     }
 }

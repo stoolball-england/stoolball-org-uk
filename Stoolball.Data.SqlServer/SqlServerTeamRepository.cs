@@ -88,11 +88,11 @@ namespace Stoolball.Data.SqlServer
         private Team CreateRedactedCopy(Team team)
         {
             var redacted = CreateAuditableCopy(team);
-            team.Introduction = _dataRedactor.RedactPersonalData(team.Introduction);
-            team.PlayingTimes = _dataRedactor.RedactPersonalData(team.PlayingTimes);
-            team.Cost = _dataRedactor.RedactPersonalData(team.Cost);
-            team.PublicContactDetails = _dataRedactor.RedactAll(team.PublicContactDetails);
-            team.PrivateContactDetails = _dataRedactor.RedactAll(team.PrivateContactDetails);
+            redacted.Introduction = _dataRedactor.RedactPersonalData(team.Introduction);
+            redacted.PlayingTimes = _dataRedactor.RedactPersonalData(team.PlayingTimes);
+            redacted.Cost = _dataRedactor.RedactPersonalData(team.Cost);
+            redacted.PublicContactDetails = _dataRedactor.RedactAll(team.PublicContactDetails);
+            redacted.PrivateContactDetails = _dataRedactor.RedactAll(team.PrivateContactDetails);
             return redacted;
         }
 

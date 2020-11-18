@@ -1,37 +1,40 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading.Tasks;
+using Dapper;
+using Stoolball.Data.SqlServer;
 using Stoolball.Logging;
 using Stoolball.Routing;
+using Stoolball.Security;
 using Stoolball.Teams;
-using Umbraco.Core.Scoping;
 using Umbraco.Core.Services;
 using static Stoolball.Data.SqlServer.Constants;
 using Tables = Stoolball.Data.SqlServer.Constants.Tables;
-using UmbracoLogging = Umbraco.Core.Logging;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
     public class SqlServerTeamDataMigrator : ITeamDataMigrator
     {
+        private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly ServiceContext _serviceContext;
         private readonly IRedirectsRepository _redirectsRepository;
-        private readonly IScopeProvider _scopeProvider;
         private readonly IAuditHistoryBuilder _auditHistoryBuilder;
         private readonly IAuditRepository _auditRepository;
-        private readonly UmbracoLogging.ILogger _logger;
+        private readonly ILogger _logger;
         private readonly IRouteGenerator _routeGenerator;
+        private readonly IDataRedactor _dataRedactor;
 
-        public SqlServerTeamDataMigrator(ServiceContext serviceContext, IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository,
-            UmbracoLogging.ILogger logger, IRouteGenerator routeGenerator)
+        public SqlServerTeamDataMigrator(IDatabaseConnectionFactory databaseConnectionFactory, ServiceContext serviceContext, IRedirectsRepository redirectsRepository,
+            IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator, IDataRedactor dataRedactor)
         {
+            _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _serviceContext = serviceContext ?? throw new ArgumentNullException(nameof(serviceContext));
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
-            _scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
             _auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
+            _dataRedactor = dataRedactor ?? throw new ArgumentNullException(nameof(dataRedactor));
         }
 
         /// <summary>
@@ -40,32 +43,22 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         /// <returns></returns>
         public async Task DeleteTeams()
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var scope = _scopeProvider.CreateScope())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    var database = scope.Database;
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.Player}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerIdentity}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.TeamMatchLocation}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.TeamName}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($@"DELETE FROM {Tables.Team}", null, transaction).ConfigureAwait(false);
 
-                    using (var transaction = database.GetTransaction())
-                    {
-                        await database.ExecuteAsync($"DELETE FROM {Tables.Player}").ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.PlayerIdentity}").ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.TeamMatchLocation}").ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.TeamName}").ConfigureAwait(false);
-                        await database.ExecuteAsync($@"DELETE FROM {Tables.Team}").ConfigureAwait(false);
-                        transaction.Complete();
-                    }
+                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/teams/", transaction).ConfigureAwait(false);
 
-                    scope.Complete();
+                    transaction.Commit();
                 }
             }
-            catch (Exception e)
-            {
-                _logger.Error(typeof(SqlServerTeamDataMigrator), e);
-                throw;
-            }
-
-            await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/teams/").ConfigureAwait(false);
         }
 
         /// <summary>
@@ -78,9 +71,144 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 throw new ArgumentNullException(nameof(team));
             }
 
-            var migratedTeam = new MigratedTeam
+            var migratedTeam = CreateAuditableCopy(team);
+            migratedTeam.TeamId = Guid.NewGuid();
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                TeamId = Guid.NewGuid(),
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+
+                    migratedTeam.TeamRoute = _routeGenerator.GenerateRoute("/teams", migratedTeam.TeamName, NoiseWords.TeamRoute);
+                    int count;
+                    do
+                    {
+                        count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { migratedTeam.TeamRoute }, transaction).ConfigureAwait(false);
+                        if (count > 0)
+                        {
+                            migratedTeam.TeamRoute = _routeGenerator.IncrementRoute(migratedTeam.TeamRoute);
+                        }
+                    }
+                    while (count > 0);
+
+                    if (migratedTeam.TeamType == TeamType.Transient)
+                    {
+                        // Use a partial route that will be updated when the tournament is imported
+                        migratedTeam.TeamRoute = migratedTeam.MigratedTeamId.ToString("00000", CultureInfo.InvariantCulture) + migratedTeam.TeamRoute;
+                    }
+
+                    _auditHistoryBuilder.BuildInitialAuditHistory(team, migratedTeam, nameof(SqlServerTeamDataMigrator), CreateRedactedCopy);
+
+                    if (migratedTeam.MigratedClubId.HasValue)
+                    {
+                        migratedTeam.ClubId = await connection.ExecuteScalarAsync<Guid>($"SELECT ClubId FROM {Tables.Club} WHERE MigratedClubId = @MigratedClubId", new { migratedTeam.MigratedClubId }, transaction).ConfigureAwait(false);
+                    }
+                    if (migratedTeam.MigratedSchoolId.HasValue)
+                    {
+                        migratedTeam.SchoolId = await connection.ExecuteScalarAsync<Guid>($"SELECT SchoolId FROM {Tables.School} WHERE MigratedSchoolId = @MigratedSchoolId", new { migratedTeam.MigratedSchoolId }, transaction).ConfigureAwait(false);
+                    }
+                    if (migratedTeam.MigratedMatchLocationId.HasValue)
+                    {
+                        migratedTeam.MatchLocationId = await connection.ExecuteScalarAsync<Guid>($"SELECT MatchLocationId FROM {Tables.MatchLocation} WHERE MigratedMatchLocationId = @MigratedMatchLocationId", new { migratedTeam.MigratedMatchLocationId }, transaction).ConfigureAwait(false);
+                    }
+
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.Team}
+						(TeamId, MigratedTeamId, ClubId, SchoolId, TeamType, PlayerType, Introduction, AgeRangeLower, AgeRangeUpper, 
+						 UntilYear, Twitter, Facebook, Instagram, Website, PublicContactDetails, PrivateContactDetails, PlayingTimes, Cost,
+						 MemberGroupKey, MemberGroupName, TeamRoute)
+						VALUES 
+                        (@TeamId, @MigratedTeamId, @ClubId, @SchoolId, @TeamType, @PlayerType, @Introduction, @AgeRangeLower, @AgeRangeUpper, 
+                         @UntilYear, @Twitter, @Facebook, @Instagram, @Website, @PublicContactDetails, @PrivateContactDetails, @PlayingTimes, @Cost, 
+                         @MemberGroupKey, @MemberGroupName, @TeamRoute)",
+                     new
+                     {
+                         migratedTeam.TeamId,
+                         migratedTeam.MigratedTeamId,
+                         migratedTeam.ClubId,
+                         migratedTeam.SchoolId,
+                         TeamType = migratedTeam.TeamType.ToString(),
+                         PlayerType = migratedTeam.PlayerType.ToString(),
+                         migratedTeam.Introduction,
+                         migratedTeam.AgeRangeLower,
+                         migratedTeam.AgeRangeUpper,
+                         migratedTeam.UntilYear,
+                         migratedTeam.Twitter,
+                         migratedTeam.Facebook,
+                         migratedTeam.Instagram,
+                         migratedTeam.Website,
+                         migratedTeam.PublicContactDetails,
+                         migratedTeam.PrivateContactDetails,
+                         migratedTeam.PlayingTimes,
+                         migratedTeam.Cost,
+                         migratedTeam.MemberGroupKey,
+                         migratedTeam.MemberGroupName,
+                         migratedTeam.TeamRoute
+                     },
+                     transaction).ConfigureAwait(false);
+
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamName} 
+							(TeamNameId, TeamId, TeamName, TeamComparableName, FromDate) VALUES (@TeamNameId, @TeamId, @TeamName, @TeamComparableName, @FromDate)",
+                        new
+                        {
+                            TeamNameId = Guid.NewGuid(),
+                            migratedTeam.TeamId,
+                            migratedTeam.TeamName,
+                            TeamComparableName = migratedTeam.ComparableName(),
+                            FromDate = migratedTeam.History[0].AuditDate
+                        },
+                        transaction).ConfigureAwait(false);
+
+                    if (migratedTeam.MatchLocationId.HasValue)
+                    {
+                        await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} 
+							(TeamMatchLocationId, TeamId, MatchLocationId) VALUES (@TeamMatchLocationId, @TeamId, @MatchLocationId)",
+                        new
+                        {
+                            TeamMatchLocationId = Guid.NewGuid(),
+                            migratedTeam.TeamId,
+                            migratedTeam.MatchLocationId
+                        },
+                        transaction).ConfigureAwait(false);
+                    }
+
+                    await _redirectsRepository.InsertRedirect(team.TeamRoute, migratedTeam.TeamRoute, string.Empty, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(team.TeamRoute, migratedTeam.TeamRoute, "/matches.rss", transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(team.TeamRoute, migratedTeam.TeamRoute, "/statistics", transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(team.TeamRoute, migratedTeam.TeamRoute, "/players", transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(team.TeamRoute, migratedTeam.TeamRoute, "/calendar.ics", transaction).ConfigureAwait(false);
+
+                    foreach (var audit in migratedTeam.History)
+                    {
+                        await _auditRepository.CreateAudit(audit, transaction).ConfigureAwait(false);
+                    }
+
+                    transaction.Commit();
+
+                    _logger.Info(GetType(), LoggingTemplates.Migrated, CreateRedactedCopy(migratedTeam), GetType(), nameof(MigrateTeam));
+                }
+            }
+
+            return migratedTeam;
+        }
+
+        private MigratedTeam CreateRedactedCopy(MigratedTeam team)
+        {
+            var redacted = CreateAuditableCopy(team);
+            redacted.Introduction = _dataRedactor.RedactPersonalData(team.Introduction);
+            redacted.PlayingTimes = _dataRedactor.RedactPersonalData(team.PlayingTimes);
+            redacted.Cost = _dataRedactor.RedactPersonalData(team.Cost);
+            redacted.PublicContactDetails = _dataRedactor.RedactAll(team.PublicContactDetails);
+            redacted.PrivateContactDetails = _dataRedactor.RedactAll(team.PrivateContactDetails);
+            redacted.History.Clear();
+            return redacted;
+        }
+
+        private static MigratedTeam CreateAuditableCopy(MigratedTeam team)
+        {
+            return new MigratedTeam
+            {
+                TeamId = team.TeamId,
                 MigratedTeamId = team.MigratedTeamId,
                 TeamName = team.TeamName,
                 MigratedClubId = team.MigratedClubId,
@@ -103,118 +231,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 MemberGroupKey = team.MemberGroupKey,
                 MemberGroupName = team.MemberGroupName
             };
-
-            using (var scope = _scopeProvider.CreateScope())
-            {
-                migratedTeam.TeamRoute = _routeGenerator.GenerateRoute("/teams", migratedTeam.TeamName, NoiseWords.TeamRoute);
-                int count;
-                do
-                {
-                    count = await scope.Database.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { migratedTeam.TeamRoute }).ConfigureAwait(false);
-                    if (count > 0)
-                    {
-                        migratedTeam.TeamRoute = _routeGenerator.IncrementRoute(migratedTeam.TeamRoute);
-                    }
-                }
-                while (count > 0);
-                scope.Complete();
-            }
-
-            if (migratedTeam.TeamType == TeamType.Transient)
-            {
-                // Use a partial route that will be updated when the tournament is imported
-                migratedTeam.TeamRoute = migratedTeam.MigratedTeamId.ToString("00000", CultureInfo.InvariantCulture) + migratedTeam.TeamRoute;
-            }
-
-            _auditHistoryBuilder.BuildInitialAuditHistory(team, migratedTeam, nameof(SqlServerTeamDataMigrator));
-
-            using (var scope = _scopeProvider.CreateScope())
-            {
-                try
-                {
-                    var database = scope.Database;
-                    using (var transaction = database.GetTransaction())
-                    {
-                        if (migratedTeam.MigratedClubId.HasValue)
-                        {
-                            migratedTeam.ClubId = await database.ExecuteScalarAsync<Guid>($"SELECT ClubId FROM {Tables.Club} WHERE MigratedClubId = @0", migratedTeam.MigratedClubId).ConfigureAwait(false);
-                        }
-                        if (migratedTeam.MigratedSchoolId.HasValue)
-                        {
-                            migratedTeam.SchoolId = await database.ExecuteScalarAsync<Guid>($"SELECT SchoolId FROM {Tables.School} WHERE MigratedSchoolId = @0", migratedTeam.MigratedSchoolId).ConfigureAwait(false);
-                        }
-                        if (migratedTeam.MigratedMatchLocationId.HasValue)
-                        {
-                            migratedTeam.MatchLocationId = await database.ExecuteScalarAsync<Guid>($"SELECT MatchLocationId FROM {Tables.MatchLocation} WHERE MigratedMatchLocationId = @0", migratedTeam.MigratedMatchLocationId).ConfigureAwait(false);
-                        }
-
-                        await database.ExecuteAsync($@"INSERT INTO {Tables.Team}
-						(TeamId, MigratedTeamId, ClubId, SchoolId, TeamType, PlayerType, Introduction, AgeRangeLower, AgeRangeUpper, 
-						 UntilYear, Twitter, Facebook, Instagram, Website, PublicContactDetails, PrivateContactDetails, PlayingTimes, Cost,
-						 MemberGroupKey, MemberGroupName, TeamRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16, @17, @18, @19, @20)",
-                            migratedTeam.TeamId,
-                            migratedTeam.MigratedTeamId,
-                            migratedTeam.ClubId,
-                            migratedTeam.SchoolId,
-                            migratedTeam.TeamType.ToString(),
-                            migratedTeam.PlayerType.ToString(),
-                            migratedTeam.Introduction,
-                            migratedTeam.AgeRangeLower,
-                            migratedTeam.AgeRangeUpper,
-                            migratedTeam.UntilYear,
-                            migratedTeam.Twitter,
-                            migratedTeam.Facebook,
-                            migratedTeam.Instagram,
-                            migratedTeam.Website,
-                            migratedTeam.PublicContactDetails,
-                            migratedTeam.PrivateContactDetails,
-                            migratedTeam.PlayingTimes,
-                            migratedTeam.Cost,
-                            migratedTeam.MemberGroupKey,
-                            migratedTeam.MemberGroupName,
-                            migratedTeam.TeamRoute).ConfigureAwait(false);
-                        await database.ExecuteAsync($@"INSERT INTO {Tables.TeamName} 
-							(TeamNameId, TeamId, TeamName, TeamComparableName, FromDate) VALUES (@0, @1, @2, @3, @4)",
-                            Guid.NewGuid(),
-                            migratedTeam.TeamId,
-                            migratedTeam.TeamName,
-                            migratedTeam.ComparableName(),
-                            migratedTeam.History[0].AuditDate
-                            ).ConfigureAwait(false);
-                        if (migratedTeam.MatchLocationId.HasValue)
-                        {
-                            await database.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} 
-							(TeamMatchLocationId, TeamId, MatchLocationId) VALUES (@0, @1, @2)",
-                                Guid.NewGuid(),
-                                migratedTeam.TeamId,
-                                migratedTeam.MatchLocationId
-                                ).ConfigureAwait(false);
-                        }
-                        transaction.Complete();
-                    }
-
-                }
-                catch (Exception e)
-                {
-                    _logger.Error(typeof(SqlServerTeamDataMigrator), e);
-                    throw;
-                }
-                scope.Complete();
-            }
-
-            await _redirectsRepository.InsertRedirect(team.TeamRoute, migratedTeam.TeamRoute, string.Empty).ConfigureAwait(false);
-            await _redirectsRepository.InsertRedirect(team.TeamRoute, migratedTeam.TeamRoute, "/matches.rss").ConfigureAwait(false);
-            await _redirectsRepository.InsertRedirect(team.TeamRoute, migratedTeam.TeamRoute, "/statistics").ConfigureAwait(false);
-            await _redirectsRepository.InsertRedirect(team.TeamRoute, migratedTeam.TeamRoute, "/players").ConfigureAwait(false);
-            await _redirectsRepository.InsertRedirect(team.TeamRoute, migratedTeam.TeamRoute, "/calendar.ics").ConfigureAwait(false);
-
-            foreach (var audit in migratedTeam.History)
-            {
-                await _auditRepository.CreateAudit(audit).ConfigureAwait(false);
-            }
-
-            return migratedTeam;
         }
     }
 }

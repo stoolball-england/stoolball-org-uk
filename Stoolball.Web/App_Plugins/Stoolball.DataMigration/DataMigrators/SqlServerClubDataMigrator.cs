@@ -1,29 +1,29 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Dapper;
 using Stoolball.Clubs;
+using Stoolball.Data.SqlServer;
 using Stoolball.Logging;
 using Stoolball.Routing;
-using Umbraco.Core.Scoping;
 using static Stoolball.Data.SqlServer.Constants;
 using Tables = Stoolball.Data.SqlServer.Constants.Tables;
-using UmbracoLogging = Umbraco.Core.Logging;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
     public class SqlServerClubDataMigrator : IClubDataMigrator
     {
+        private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IRedirectsRepository _redirectsRepository;
-        private readonly IScopeProvider _scopeProvider;
         private readonly IAuditHistoryBuilder _auditHistoryBuilder;
         private readonly IAuditRepository _auditRepository;
-        private readonly UmbracoLogging.ILogger _logger;
+        private readonly ILogger _logger;
         private readonly IRouteGenerator _routeGenerator;
 
-        public SqlServerClubDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder,
-            IAuditRepository auditRepository, UmbracoLogging.ILogger logger, IRouteGenerator routeGenerator)
+        public SqlServerClubDataMigrator(IDatabaseConnectionFactory databaseConnectionFactory, IRedirectsRepository redirectsRepository, IAuditHistoryBuilder auditHistoryBuilder,
+            IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator)
         {
+            _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
-            _scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
             _auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -36,30 +36,20 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         /// <returns></returns>
         public async Task DeleteClubs()
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var scope = _scopeProvider.CreateScope())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    var database = scope.Database;
+                    await connection.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = NULL", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.ClubName}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($@"DELETE FROM {Tables.Club}", null, transaction).ConfigureAwait(false);
 
-                    using (var transaction = database.GetTransaction())
-                    {
-                        await database.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = NULL").ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.ClubName}").ConfigureAwait(false);
-                        await database.ExecuteAsync($@"DELETE FROM {Tables.Club}").ConfigureAwait(false);
-                        transaction.Complete();
-                    }
+                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/clubs/", transaction).ConfigureAwait(false);
 
-                    scope.Complete();
+                    transaction.Commit();
                 }
             }
-            catch (Exception e)
-            {
-                _logger.Error(typeof(SqlServerClubDataMigrator), e);
-                throw;
-            }
-
-            await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/clubs/").ConfigureAwait(false);
         }
 
         /// <summary>
@@ -81,66 +71,64 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 MemberGroupKey = club.MemberGroupKey,
                 MemberGroupName = club.MemberGroupName,
             };
-            using (var scope = _scopeProvider.CreateScope())
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                migratedClub.ClubRoute = _routeGenerator.GenerateRoute("/clubs", club.ClubName, NoiseWords.ClubRoute);
-                int count;
-                do
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    count = await scope.Database.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Club} WHERE ClubRoute = @ClubRoute", new { migratedClub.ClubRoute }).ConfigureAwait(false);
-                    if (count > 0)
+                    migratedClub.ClubRoute = _routeGenerator.GenerateRoute("/clubs", club.ClubName, NoiseWords.ClubRoute);
+                    int count;
+                    do
                     {
-                        migratedClub.ClubRoute = _routeGenerator.IncrementRoute(migratedClub.ClubRoute);
+                        count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Club} WHERE ClubRoute = @ClubRoute", new { migratedClub.ClubRoute }, transaction).ConfigureAwait(false);
+                        if (count > 0)
+                        {
+                            migratedClub.ClubRoute = _routeGenerator.IncrementRoute(migratedClub.ClubRoute);
+                        }
                     }
-                }
-                while (count > 0);
-                scope.Complete();
-            }
+                    while (count > 0);
 
-            _auditHistoryBuilder.BuildInitialAuditHistory(club, migratedClub, nameof(SqlServerClubDataMigrator));
+                    _auditHistoryBuilder.BuildInitialAuditHistory(club, migratedClub, nameof(SqlServerClubDataMigrator), x => x);
 
-            using (var scope = _scopeProvider.CreateScope())
-            {
-                try
-                {
-                    var database = scope.Database;
-                    using (var transaction = database.GetTransaction())
-                    {
-                        await database.ExecuteAsync($@"INSERT INTO {Tables.Club}
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.Club}
 						(ClubId, MigratedClubId, ClubMark, MemberGroupKey, MemberGroupName, ClubRoute)
-						VALUES (@0, @1, @2, @3, @4, @5)",
+						VALUES (@ClubId, @MigratedClubId, @ClubMark, @MemberGroupKey, @MemberGroupName, @ClubRoute)",
+                        new
+                        {
                             migratedClub.ClubId,
                             migratedClub.MigratedClubId,
                             migratedClub.ClubMark,
                             migratedClub.MemberGroupKey,
                             migratedClub.MemberGroupName,
-                            migratedClub.ClubRoute).ConfigureAwait(false);
-                        await database.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
-							(ClubNameId, ClubId, ClubName, FromDate) VALUES (@0, @1, @2, @3)",
-                            Guid.NewGuid(),
+                            migratedClub.ClubRoute
+                        },
+                        transaction).ConfigureAwait(false);
+
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
+						(ClubNameId, ClubId, ClubName, FromDate) VALUES (@ClubNameId, @ClubId, @ClubName, @FromDate)",
+                        new
+                        {
+                            ClubNameId = Guid.NewGuid(),
                             migratedClub.ClubId,
                             migratedClub.ClubName,
-                            migratedClub.History[0].AuditDate
+                            FromDate = migratedClub.History[0].AuditDate
+                        },
+                        transaction).ConfigureAwait(false);
 
-                            ).ConfigureAwait(false);
-                        transaction.Complete();
+                    await _redirectsRepository.InsertRedirect(club.ClubRoute, migratedClub.ClubRoute, string.Empty, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(club.ClubRoute, migratedClub.ClubRoute, "/matches.rss", transaction).ConfigureAwait(false);
+
+                    foreach (var audit in migratedClub.History)
+                    {
+                        await _auditRepository.CreateAudit(audit, transaction).ConfigureAwait(false);
                     }
 
-                }
-                catch (Exception e)
-                {
-                    _logger.Error(typeof(SqlServerClubDataMigrator), e);
-                    throw;
-                }
-                scope.Complete();
-            }
+                    transaction.Commit();
 
-            await _redirectsRepository.InsertRedirect(club.ClubRoute, migratedClub.ClubRoute, string.Empty).ConfigureAwait(false);
-            await _redirectsRepository.InsertRedirect(club.ClubRoute, migratedClub.ClubRoute, "/matches.rss").ConfigureAwait(false);
-
-            foreach (var audit in migratedClub.History)
-            {
-                await _auditRepository.CreateAudit(audit).ConfigureAwait(false);
+                    migratedClub.History.Clear();
+                    _logger.Info(GetType(), LoggingTemplates.Migrated, migratedClub, GetType(), nameof(MigrateClub));
+                }
             }
 
             return migratedClub;

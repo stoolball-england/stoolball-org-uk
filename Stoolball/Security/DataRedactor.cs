@@ -13,11 +13,17 @@ namespace Stoolball.Security
         public string RedactAll(string unredacted)
         {
             if (string.IsNullOrWhiteSpace(unredacted)) { return unredacted; }
+
             var redacted = new HtmlDocument();
             redacted.LoadHtml(unredacted);
-            foreach (HtmlNode node in redacted.DocumentNode.SelectNodes("//text()[normalize-space(.) != '']"))
+
+            var textNodes = redacted.DocumentNode.SelectNodes("//text()[normalize-space(.) != '']");
+            if (textNodes != null)
             {
-                node.ParentNode.ReplaceChild(HtmlNode.CreateNode(Regex.Replace(node.InnerText, "[A-Z0-9]", "*", RegexOptions.IgnoreCase)), node);
+                foreach (HtmlNode node in textNodes)
+                {
+                    node.ParentNode.ReplaceChild(HtmlNode.CreateNode(Regex.Replace(node.InnerText, "[A-Z0-9]", "*", RegexOptions.IgnoreCase)), node);
+                }
             }
             return redacted.DocumentNode.OuterHtml;
         }
@@ -25,13 +31,19 @@ namespace Stoolball.Security
         public string RedactPersonalData(string unredacted)
         {
             if (string.IsNullOrWhiteSpace(unredacted)) { return unredacted; }
+
             var redacted = new HtmlDocument();
             redacted.LoadHtml(unredacted);
-            foreach (HtmlNode node in redacted.DocumentNode.SelectNodes("//text()[normalize-space(.) != '']"))
+
+            var textNodes = redacted.DocumentNode.SelectNodes("//text()[normalize-space(.) != '']");
+            if (textNodes != null)
             {
-                var redactedText = Regex.Replace(node.InnerText, EMAIL_REGEX, "*****@*****.***", RegexOptions.IgnoreCase);
-                redactedText = Regex.Replace(redactedText, UK_PHONE_REGEX, "***** ******", RegexOptions.IgnoreCase);
-                node.ParentNode.ReplaceChild(HtmlNode.CreateNode(redactedText), node);
+                foreach (HtmlNode node in textNodes)
+                {
+                    var redactedText = Regex.Replace(node.InnerText, EMAIL_REGEX, "*****@*****.***", RegexOptions.IgnoreCase);
+                    redactedText = Regex.Replace(redactedText, UK_PHONE_REGEX, "***** ******", RegexOptions.IgnoreCase);
+                    node.ParentNode.ReplaceChild(HtmlNode.CreateNode(redactedText), node);
+                }
             }
             return redacted.DocumentNode.OuterHtml;
         }

@@ -1,36 +1,41 @@
 ﻿using System;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using Stoolball.Competitions;
+using Stoolball.Data.SqlServer;
 using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.Routing;
-using Umbraco.Core.Scoping;
+using Stoolball.Security;
+using Stoolball.Teams;
 using static Stoolball.Data.SqlServer.Constants;
 using Tables = Stoolball.Data.SqlServer.Constants.Tables;
-using UmbracoLogging = Umbraco.Core.Logging;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
     public class SqlServerCompetitionDataMigrator : ICompetitionDataMigrator
     {
+        private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IRedirectsRepository _redirectsRepository;
-        private readonly IScopeProvider _scopeProvider;
         private readonly IAuditHistoryBuilder _auditHistoryBuilder;
         private readonly IAuditRepository _auditRepository;
-        private readonly UmbracoLogging.ILogger _logger;
+        private readonly ILogger _logger;
         private readonly IRouteGenerator _routeGenerator;
+        private readonly IDataRedactor _dataRedactor;
 
-        public SqlServerCompetitionDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository,
-            UmbracoLogging.ILogger logger, IRouteGenerator routeGenerator)
+        public SqlServerCompetitionDataMigrator(IDatabaseConnectionFactory databaseConnectionFactory, IRedirectsRepository redirectsRepository, IAuditHistoryBuilder auditHistoryBuilder, IAuditRepository auditRepository,
+            ILogger logger, IRouteGenerator routeGenerator, IDataRedactor dataRedactor)
         {
+            _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
-            _scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
             _auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
+            _dataRedactor = dataRedactor ?? throw new ArgumentNullException(nameof(dataRedactor));
         }
 
         /// <summary>
@@ -39,30 +44,20 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         /// <returns></returns>
         public async Task DeleteCompetitions()
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                await DeleteSeasons().ConfigureAwait(false);
-
-                using (var scope = _scopeProvider.CreateScope())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    var database = scope.Database;
+                    await DeleteSeasons(transaction).ConfigureAwait(false);
 
-                    using (var transaction = database.GetTransaction())
-                    {
-                        await database.ExecuteAsync($"DELETE FROM {Tables.Competition}").ConfigureAwait(false);
-                        transaction.Complete();
-                    }
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.Competition}", null, transaction).ConfigureAwait(false);
 
-                    scope.Complete();
+                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/competitions/", transaction).ConfigureAwait(false);
+
+                    transaction.Commit();
                 }
             }
-            catch (Exception e)
-            {
-                _logger.Error(typeof(SqlServerCompetitionDataMigrator), e);
-                throw;
-            }
-
-            await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/competitions/").ConfigureAwait(false);
         }
 
         /// <summary>
@@ -75,9 +70,89 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 throw new System.ArgumentNullException(nameof(competition));
             }
 
-            var migratedCompetition = new MigratedCompetition
+            var migratedCompetition = CreateAuditableCopy(competition);
+            migratedCompetition.CompetitionId = Guid.NewGuid();
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                CompetitionId = Guid.NewGuid(),
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    migratedCompetition.CompetitionRoute = _routeGenerator.GenerateRoute("/competitions", migratedCompetition.CompetitionName, NoiseWords.CompetitionRoute);
+                    int count;
+                    do
+                    {
+                        count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Competition} WHERE CompetitionRoute = @CompetitionRoute", new { migratedCompetition.CompetitionRoute }, transaction).ConfigureAwait(false);
+                        if (count > 0)
+                        {
+                            migratedCompetition.CompetitionRoute = _routeGenerator.IncrementRoute(migratedCompetition.CompetitionRoute);
+                        }
+                    }
+                    while (count > 0);
+
+                    _auditHistoryBuilder.BuildInitialAuditHistory(competition, migratedCompetition, nameof(SqlServerCompetitionDataMigrator), CreateRedactedCopyOfCompetition);
+                    migratedCompetition.FromYear = competition.History[0].AuditDate.Year;
+
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.Competition}
+						(CompetitionId, MigratedCompetitionId, CompetitionName, Introduction, Twitter, Facebook, Instagram, PublicContactDetails, Website, 
+						 PlayerType, FromYear, UntilYear, MemberGroupKey, MemberGroupName, CompetitionRoute)
+						VALUES 
+                        (@CompetitionId, @MigratedCompetitionId, @CompetitionName, @Introduction, @Twitter, @Facebook, @Instagram, @PublicContactDetails, 
+                        @Website, @PlayerType, @FromYear, @UntilYear, @MemberGroupKey, @MemberGroupName, @CompetitionRoute)",
+                    new
+                    {
+                        migratedCompetition.CompetitionId,
+                        migratedCompetition.MigratedCompetitionId,
+                        migratedCompetition.CompetitionName,
+                        migratedCompetition.Introduction,
+                        migratedCompetition.Twitter,
+                        migratedCompetition.Facebook,
+                        migratedCompetition.Instagram,
+                        migratedCompetition.PublicContactDetails,
+                        migratedCompetition.Website,
+                        PlayerType = migratedCompetition.PlayerType.ToString(),
+                        migratedCompetition.FromYear,
+                        migratedCompetition.UntilYear,
+                        migratedCompetition.MemberGroupKey,
+                        migratedCompetition.MemberGroupName,
+                        migratedCompetition.CompetitionRoute
+                    },
+                    transaction).ConfigureAwait(false);
+
+                    await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, migratedCompetition.CompetitionRoute, string.Empty, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, migratedCompetition.CompetitionRoute, "/statistics", transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, migratedCompetition.CompetitionRoute, "/map", transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, migratedCompetition.CompetitionRoute, "/matches.rss", transaction).ConfigureAwait(false);
+
+                    foreach (var audit in migratedCompetition.History)
+                    {
+                        await _auditRepository.CreateAudit(audit, transaction).ConfigureAwait(false);
+                    }
+
+                    transaction.Commit();
+
+                    _logger.Info(GetType(), LoggingTemplates.Migrated, CreateRedactedCopyOfCompetition(migratedCompetition), GetType(), nameof(MigrateCompetition));
+                }
+            }
+
+            return migratedCompetition;
+        }
+
+        private MigratedCompetition CreateRedactedCopyOfCompetition(MigratedCompetition competition)
+        {
+            var redacted = CreateAuditableCopy(competition);
+            redacted.Introduction = _dataRedactor.RedactPersonalData(redacted.Introduction);
+            redacted.PrivateContactDetails = _dataRedactor.RedactAll(redacted.PrivateContactDetails);
+            redacted.PublicContactDetails = _dataRedactor.RedactAll(redacted.PublicContactDetails);
+            redacted.History.Clear();
+            return redacted;
+        }
+
+        private static MigratedCompetition CreateAuditableCopy(MigratedCompetition competition)
+        {
+            return new MigratedCompetition
+            {
+                CompetitionId = competition.CompetitionId,
                 MigratedCompetitionId = competition.MigratedCompetitionId,
                 CompetitionName = competition.CompetitionName,
                 Introduction = competition.Introduction,
@@ -91,75 +166,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 MemberGroupName = competition.MemberGroupName,
                 UntilYear = competition.UntilYear
             };
-
-            using (var scope = _scopeProvider.CreateScope())
-            {
-                migratedCompetition.CompetitionRoute = _routeGenerator.GenerateRoute("/competitions", migratedCompetition.CompetitionName, NoiseWords.CompetitionRoute);
-                int count;
-                do
-                {
-                    count = await scope.Database.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Competition} WHERE CompetitionRoute = @CompetitionRoute", new { migratedCompetition.CompetitionRoute }).ConfigureAwait(false);
-                    if (count > 0)
-                    {
-                        migratedCompetition.CompetitionRoute = _routeGenerator.IncrementRoute(migratedCompetition.CompetitionRoute);
-                    }
-                }
-                while (count > 0);
-                scope.Complete();
-            }
-
-            _auditHistoryBuilder.BuildInitialAuditHistory(competition, migratedCompetition, nameof(SqlServerCompetitionDataMigrator));
-            migratedCompetition.FromYear = competition.History[0].AuditDate.Year;
-
-            using (var scope = _scopeProvider.CreateScope())
-            {
-                try
-                {
-                    var database = scope.Database;
-                    using (var transaction = database.GetTransaction())
-                    {
-                        await database.ExecuteAsync($@"INSERT INTO {Tables.Competition}
-						(CompetitionId, MigratedCompetitionId, CompetitionName, Introduction, Twitter, Facebook, Instagram, PublicContactDetails, Website, 
-						 PlayerType, FromYear, UntilYear, MemberGroupKey, MemberGroupName, CompetitionRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14)",
-                            migratedCompetition.CompetitionId,
-                            migratedCompetition.MigratedCompetitionId,
-                            migratedCompetition.CompetitionName,
-                            migratedCompetition.Introduction,
-                            migratedCompetition.Twitter,
-                            migratedCompetition.Facebook,
-                            migratedCompetition.Instagram,
-                            migratedCompetition.PublicContactDetails,
-                            migratedCompetition.Website,
-                            migratedCompetition.PlayerType.ToString(),
-                            migratedCompetition.FromYear,
-                            migratedCompetition.UntilYear,
-                            migratedCompetition.MemberGroupKey,
-                            migratedCompetition.MemberGroupName,
-                            migratedCompetition.CompetitionRoute).ConfigureAwait(false);
-                        transaction.Complete();
-                    }
-
-                }
-                catch (Exception e)
-                {
-                    _logger.Error(typeof(SqlServerCompetitionDataMigrator), e);
-                    throw;
-                }
-                scope.Complete();
-            }
-
-            await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, migratedCompetition.CompetitionRoute, string.Empty).ConfigureAwait(false);
-            await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, migratedCompetition.CompetitionRoute, "/statistics").ConfigureAwait(false);
-            await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, migratedCompetition.CompetitionRoute, "/map").ConfigureAwait(false);
-            await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, migratedCompetition.CompetitionRoute, "/matches.rss").ConfigureAwait(false);
-
-            foreach (var audit in migratedCompetition.History)
-            {
-                await _auditRepository.CreateAudit(audit).ConfigureAwait(false);
-            }
-
-            return migratedCompetition;
         }
 
         /// <summary>
@@ -168,31 +174,34 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         /// <returns></returns>
         public async Task DeleteSeasons()
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var scope = _scopeProvider.CreateScope())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    var database = scope.Database;
-
-                    using (var transaction = database.GetTransaction())
-                    {
-                        await database.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsAdjustment}").ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsRule}").ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.SeasonMatchType}").ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason}").ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam}").ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.Season}").ConfigureAwait(false);
-                        transaction.Complete();
-                    }
-
-                    scope.Complete();
+                    await DeleteSeasons(transaction).ConfigureAwait(false);
+                    transaction.Commit();
                 }
             }
-            catch (Exception e)
+        }
+
+        /// <summary>
+        /// Clear down all the season data ready for a fresh import
+        /// </summary>
+        /// <returns></returns>
+        private static async Task DeleteSeasons(IDbTransaction transaction)
+        {
+            if (transaction is null)
             {
-                _logger.Error(typeof(SqlServerCompetitionDataMigrator), e);
-                throw;
+                throw new ArgumentNullException(nameof(transaction));
             }
+
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsAdjustment}", null, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsRule}", null, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonMatchType}", null, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason}", null, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam}", null, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.Season}", null, transaction).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -202,30 +211,11 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         {
             if (season is null)
             {
-                throw new System.ArgumentNullException(nameof(season));
+                throw new ArgumentNullException(nameof(season));
             }
 
-            var migratedSeason = new MigratedSeason
-            {
-                SeasonId = Guid.NewGuid(),
-                MigratedSeasonId = season.MigratedSeasonId,
-                MigratedCompetition = season.MigratedCompetition,
-                FromYear = season.FromYear,
-                UntilYear = season.UntilYear,
-                Introduction = season.Introduction,
-                MigratedTeams = season.MigratedTeams,
-                MatchTypes = season.MatchTypes,
-                PlayersPerTeam = season.PlayersPerTeam,
-                Overs = season.Overs,
-                PointsRules = season.PointsRules,
-                MigratedPointsAdjustments = season.MigratedPointsAdjustments,
-                Results = season.Results,
-                EnableTournaments = season.EnableTournaments,
-                EnableBonusOrPenaltyRuns = true,
-                ResultsTableType = season.ResultsTableType,
-                EnableRunsScored = season.EnableRunsScored,
-                EnableRunsConceded = season.EnableRunsConceded
-            };
+            var migratedSeason = CreateAuditableCopy(season);
+            migratedSeason.SeasonId = Guid.NewGuid();
 
             // create some default points rules to ensure all seasons have them
             if (migratedSeason.PointsRules.SingleOrDefault(x => x.MatchResultType == MatchResultType.HomeWin) == null)
@@ -257,120 +247,166 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 migratedSeason.PointsRules.Add(new PointsRule { MatchResultType = MatchResultType.AbandonedDuringPlayAndCancelled, HomePoints = 1, AwayPoints = 1 });
             }
 
-            using (var scope = _scopeProvider.CreateScope())
-            {
-                var competitionRoute = await scope.Database.ExecuteScalarAsync<string>($"SELECT CompetitionRoute FROM {Tables.Competition} WHERE MigratedCompetitionId = @MigratedCompetitionId", new { migratedSeason.MigratedCompetition.MigratedCompetitionId }).ConfigureAwait(false);
-                migratedSeason.SeasonRoute = $"{competitionRoute}/{migratedSeason.FromYear}";
-                if (migratedSeason.UntilYear > migratedSeason.FromYear)
-                {
-                    migratedSeason.SeasonRoute = $"{migratedSeason.SeasonRoute}-{migratedSeason.UntilYear.ToString(CultureInfo.InvariantCulture).Substring(2)}";
-                }
-                scope.Complete();
-            }
+            migratedSeason.EnableLastPlayerBatsOn = (migratedSeason.FromYear != migratedSeason.UntilYear);
 
-            _auditHistoryBuilder.BuildInitialAuditHistory(season, migratedSeason, nameof(SqlServerCompetitionDataMigrator));
-
-            using (var scope = _scopeProvider.CreateScope())
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                try
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    var database = scope.Database;
-                    using (var transaction = database.GetTransaction())
+                    var competitionRoute = await connection.ExecuteScalarAsync<string>($"SELECT CompetitionRoute FROM {Tables.Competition} WHERE MigratedCompetitionId = @MigratedCompetitionId", new { migratedSeason.MigratedCompetition.MigratedCompetitionId }, transaction).ConfigureAwait(false);
+                    migratedSeason.SeasonRoute = $"{competitionRoute}/{migratedSeason.FromYear}";
+                    if (migratedSeason.UntilYear > migratedSeason.FromYear)
                     {
-                        migratedSeason.MigratedCompetition.CompetitionId = await database.ExecuteScalarAsync<Guid>($"SELECT CompetitionId FROM {Tables.Competition} WHERE MigratedCompetitionId = @0", season.MigratedCompetition.MigratedCompetitionId).ConfigureAwait(false);
-
-                        await database.ExecuteAsync($@"INSERT INTO {Tables.Season}
-						(SeasonId, MigratedSeasonId, CompetitionId, FromYear, UntilYear, Introduction, Results, PlayersPerTeam, Overs, 
-                         EnableLastPlayerBatsOn, EnableBonusOrPenaltyRuns, EnableTournaments, ResultsTableType, EnableRunsScored, EnableRunsConceded, SeasonRoute)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15)",
-                            migratedSeason.SeasonId,
-                            migratedSeason.MigratedSeasonId,
-                            migratedSeason.MigratedCompetition.CompetitionId,
-                            migratedSeason.FromYear,
-                            migratedSeason.UntilYear,
-                            migratedSeason.Introduction,
-                            migratedSeason.Results,
-                            migratedSeason.PlayersPerTeam,
-                            migratedSeason.Overs,
-                            (migratedSeason.FromYear != migratedSeason.UntilYear),
-                            migratedSeason.EnableBonusOrPenaltyRuns,
-                            migratedSeason.EnableTournaments,
-                            migratedSeason.ResultsTableType.ToString(),
-                            migratedSeason.EnableRunsScored,
-                            migratedSeason.EnableRunsConceded,
-                            migratedSeason.SeasonRoute).ConfigureAwait(false);
-                        foreach (var teamInSeason in migratedSeason.MigratedTeams)
-                        {
-                            var teamId = await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", teamInSeason.MigratedTeamId).ConfigureAwait(false);
-
-                            await database.ExecuteAsync($@"INSERT INTO {Tables.SeasonTeam}
-								(SeasonTeamId, SeasonId, TeamId, WithdrawnDate) VALUES (@0, @1, @2, @3)",
-                                Guid.NewGuid(),
-                                migratedSeason.SeasonId,
-                                teamId,
-                                teamInSeason.WithdrawnDate
-
-                                ).ConfigureAwait(false);
-                        }
-                        foreach (var matchType in migratedSeason.MatchTypes)
-                        {
-                            await database.ExecuteAsync($@"INSERT INTO {Tables.SeasonMatchType}
-								(SeasonMatchTypeId, SeasonId, MatchType) VALUES (@0, @1, @2)",
-                                Guid.NewGuid(),
-                                migratedSeason.SeasonId,
-                                matchType.ToString()
-                                ).ConfigureAwait(false);
-                        }
-                        foreach (var rule in migratedSeason.PointsRules)
-                        {
-                            await database.ExecuteAsync($@"INSERT INTO {Tables.SeasonPointsRule}
-								(SeasonPointsRuleId, SeasonId, MatchResultType, HomePoints, AwayPoints) 
-								 VALUES (@0, @1, @2, @3, @4)",
-                                Guid.NewGuid(),
-                                migratedSeason.SeasonId,
-                                rule.MatchResultType.ToString(),
-                                rule.HomePoints,
-                                rule.AwayPoints
-                                ).ConfigureAwait(false);
-                        }
-                        foreach (var point in migratedSeason.MigratedPointsAdjustments)
-                        {
-                            var teamId = await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", point.MigratedTeamId).ConfigureAwait(false);
-
-                            await database.ExecuteAsync($@"INSERT INTO {Tables.SeasonPointsAdjustment}
-								(SeasonPointsAdjustmentId, SeasonId, TeamId, Points, Reason) 
-								 VALUES (@0, @1, @2, @3, @4)",
-                                Guid.NewGuid(),
-                                migratedSeason.SeasonId,
-                                teamId,
-                                point.Points,
-                                point.Reason
-
-                                ).ConfigureAwait(false);
-                        }
-                        transaction.Complete();
+                        migratedSeason.SeasonRoute = $"{migratedSeason.SeasonRoute}-{migratedSeason.UntilYear.ToString(CultureInfo.InvariantCulture).Substring(2)}";
                     }
 
+                    migratedSeason.MigratedCompetition.CompetitionId = await connection.ExecuteScalarAsync<Guid>($"SELECT CompetitionId FROM {Tables.Competition} WHERE MigratedCompetitionId = @MigratedCompetitionId", new { season.MigratedCompetition.MigratedCompetitionId }, transaction).ConfigureAwait(false);
+
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.Season}
+						(SeasonId, MigratedSeasonId, CompetitionId, FromYear, UntilYear, Introduction, Results, PlayersPerTeam, Overs, 
+                         EnableLastPlayerBatsOn, EnableBonusOrPenaltyRuns, EnableTournaments, ResultsTableType, EnableRunsScored, EnableRunsConceded, SeasonRoute)
+						VALUES 
+                        (@SeasonId, @MigratedSeasonId, @CompetitionId, @FromYear, @UntilYear, @Introduction, @Results, @PlayersPerTeam, @Overs,
+                        @EnableLastPlayerBatsOn, @EnableBonusOrPenaltyRuns, @EnableTournaments, @ResultsTableType, @EnableRunsScored, @EnableRunsConceded, @SeasonRoute)",
+                    new
+                    {
+                        migratedSeason.SeasonId,
+                        migratedSeason.MigratedSeasonId,
+                        migratedSeason.MigratedCompetition.CompetitionId,
+                        migratedSeason.FromYear,
+                        migratedSeason.UntilYear,
+                        migratedSeason.Introduction,
+                        migratedSeason.Results,
+                        migratedSeason.PlayersPerTeam,
+                        migratedSeason.Overs,
+                        migratedSeason.EnableLastPlayerBatsOn,
+                        migratedSeason.EnableBonusOrPenaltyRuns,
+                        migratedSeason.EnableTournaments,
+                        ResultsTableType = migratedSeason.ResultsTableType.ToString(),
+                        migratedSeason.EnableRunsScored,
+                        migratedSeason.EnableRunsConceded,
+                        migratedSeason.SeasonRoute
+                    },
+                    transaction).ConfigureAwait(false);
+
+                    foreach (var teamInSeason in migratedSeason.MigratedTeams)
+                    {
+                        teamInSeason.Team = new Team { TeamId = await connection.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @MigratedTeamId", new { teamInSeason.MigratedTeamId }, transaction).ConfigureAwait(false) };
+
+                        await connection.ExecuteAsync($@"INSERT INTO {Tables.SeasonTeam}
+								(SeasonTeamId, SeasonId, TeamId, WithdrawnDate) VALUES (@SeasonTeamId, @SeasonId, @TeamId, @WithdrawnDate)",
+                            new
+                            {
+                                SeasonTeamId = Guid.NewGuid(),
+                                migratedSeason.SeasonId,
+                                teamInSeason.Team.TeamId,
+                                teamInSeason.WithdrawnDate
+                            },
+                            transaction).ConfigureAwait(false);
+                    }
+
+                    foreach (var matchType in migratedSeason.MatchTypes)
+                    {
+                        await connection.ExecuteAsync($@"INSERT INTO {Tables.SeasonMatchType}
+								(SeasonMatchTypeId, SeasonId, MatchType) VALUES (@SeasonMatchTypeId, @SeasonId, @MatchType)",
+                            new
+                            {
+                                SeasonMatchTypeId = Guid.NewGuid(),
+                                migratedSeason.SeasonId,
+                                MatchType = matchType.ToString()
+                            },
+                            transaction).ConfigureAwait(false);
+                    }
+
+                    foreach (var rule in migratedSeason.PointsRules)
+                    {
+                        rule.PointsRuleId = Guid.NewGuid();
+
+                        await connection.ExecuteAsync($@"INSERT INTO {Tables.SeasonPointsRule}
+								(SeasonPointsRuleId, SeasonId, MatchResultType, HomePoints, AwayPoints) 
+								 VALUES (@SeasonPointsRuleId, @SeasonId, @MatchResultType, @HomePoints, @AwayPoints)",
+                             new
+                             {
+                                 SeasonPointsRuleId = rule.PointsRuleId,
+                                 migratedSeason.SeasonId,
+                                 MatchResultType = rule.MatchResultType.ToString(),
+                                 rule.HomePoints,
+                                 rule.AwayPoints
+                             },
+                            transaction).ConfigureAwait(false);
+                    }
+
+                    foreach (var point in migratedSeason.MigratedPointsAdjustments)
+                    {
+                        point.Team = new Team { TeamId = await connection.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @MigratedTeamId", new { point.MigratedTeamId }, transaction).ConfigureAwait(false) };
+
+                        await connection.ExecuteAsync($@"INSERT INTO {Tables.SeasonPointsAdjustment}
+								(SeasonPointsAdjustmentId, SeasonId, TeamId, Points, Reason) 
+								 VALUES (@SeasonPointsAdjustmentId, @SeasonId, @TeamId, @Points, @Reason)",
+                             new
+                             {
+                                 SeasonPointsAdjustmentId = Guid.NewGuid(),
+                                 migratedSeason.SeasonId,
+                                 point.Team.TeamId,
+                                 point.Points,
+                                 point.Reason
+                             },
+                             transaction).ConfigureAwait(false);
+                    }
+
+                    await _redirectsRepository.InsertRedirect(season.SeasonRoute, migratedSeason.SeasonRoute, string.Empty, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(season.SeasonRoute, migratedSeason.SeasonRoute, "/statistics", transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(season.SeasonRoute, migratedSeason.SeasonRoute, "/table", transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(season.SeasonRoute, migratedSeason.SeasonRoute, "/map", transaction).ConfigureAwait(false);
+
+                    _auditHistoryBuilder.BuildInitialAuditHistory(season, migratedSeason, nameof(SqlServerCompetitionDataMigrator), CreateRedactedCopyOfSeason);
+                    foreach (var audit in migratedSeason.History)
+                    {
+                        await _auditRepository.CreateAudit(audit, transaction).ConfigureAwait(false);
+                    }
+
+                    transaction.Commit();
+
+                    _logger.Info(GetType(), LoggingTemplates.Migrated, CreateRedactedCopyOfSeason(migratedSeason), GetType(), nameof(MigrateSeason));
+
+                    return migratedSeason;
                 }
-                catch (Exception e)
-                {
-                    _logger.Error(typeof(SqlServerCompetitionDataMigrator), e);
-                    throw;
-                }
-                scope.Complete();
             }
+        }
 
-            await _redirectsRepository.InsertRedirect(season.SeasonRoute, migratedSeason.SeasonRoute, string.Empty).ConfigureAwait(false);
-            await _redirectsRepository.InsertRedirect(season.SeasonRoute, migratedSeason.SeasonRoute, "/statistics").ConfigureAwait(false);
-            await _redirectsRepository.InsertRedirect(season.SeasonRoute, migratedSeason.SeasonRoute, "/table").ConfigureAwait(false);
-            await _redirectsRepository.InsertRedirect(season.SeasonRoute, migratedSeason.SeasonRoute, "/map").ConfigureAwait(false);
-
-            foreach (var audit in migratedSeason.History)
+        private static MigratedSeason CreateAuditableCopy(MigratedSeason season)
+        {
+            return new MigratedSeason
             {
-                await _auditRepository.CreateAudit(audit).ConfigureAwait(false);
-            }
+                SeasonId = season.SeasonId,
+                MigratedSeasonId = season.MigratedSeasonId,
+                MigratedCompetition = season.MigratedCompetition,
+                FromYear = season.FromYear,
+                UntilYear = season.UntilYear,
+                Introduction = season.Introduction,
+                MigratedTeams = season.MigratedTeams,
+                MatchTypes = season.MatchTypes,
+                PlayersPerTeam = season.PlayersPerTeam,
+                Overs = season.Overs,
+                PointsRules = season.PointsRules,
+                MigratedPointsAdjustments = season.MigratedPointsAdjustments,
+                Results = season.Results,
+                EnableTournaments = season.EnableTournaments,
+                EnableBonusOrPenaltyRuns = true,
+                ResultsTableType = season.ResultsTableType,
+                EnableRunsScored = season.EnableRunsScored,
+                EnableRunsConceded = season.EnableRunsConceded
+            };
+        }
 
-            return migratedSeason;
+        private MigratedSeason CreateRedactedCopyOfSeason(MigratedSeason season)
+        {
+            var redacted = CreateAuditableCopy(season);
+            redacted.Introduction = _dataRedactor.RedactPersonalData(redacted.Introduction);
+            redacted.Results = _dataRedactor.RedactPersonalData(redacted.Results);
+            redacted.History.Clear();
+            return redacted;
         }
     }
 }

@@ -92,7 +92,7 @@ All create, update and delete actions on stoolball data should be audited. This 
 To audit a change inject `IAuditRepository` into your class and call `IAuditRepository.CreateAudit()`:
 
 ```csharp
-async Task CreateSomeThing(Thing thingToAudit)
+async Task CreateSomeThing(Thing thingToAudit, IDbTransaction transaction)
 {
     // ... create the thing here
 
@@ -106,7 +106,13 @@ async Task CreateSomeThing(Thing thingToAudit)
         ActorName = loggedInUmbracoMember.Name, // or nameof(SomeClass) for an automated process
         EntityUri = thingToAudit.EntityUri,
         State = JsonConvert.SerializeObject(thingToAudit),
+        RedactedState = JsonConvert.SerialiseObject(CreateRedactedCopy(thingToAudit))
         AuditDate = DateTimeOffset.UtcNow
-    }).ConfigureAwait(false);
+    }, transaction).ConfigureAwait(false);
+}
+
+private Thing CreateRedactedCopy(Thing thing)
+{
+    /// ... copy and redact personal info here
 }
 ```

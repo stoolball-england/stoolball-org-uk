@@ -78,6 +78,7 @@ namespace Stoolball.Data.SqlServer
             public const string Created = "Created {@Entity}. Created by {MemberName} {MemberKey} in {Type:l}.{Method:l}.";
             public const string Updated = "Updated {@Entity}. Updated by {MemberName} {MemberKey} in {Type:l}.{Method:l}.";
             public const string Deleted = "Deleted {@Entity}. Deleted by {MemberName} {MemberKey} in {Type:l}.{Method:l}.";
+            public const string Migrated = "Migrated {@Entity} in {Type:l}.{Method:l}.";
 
             public const string CreateMember = "Created member {MemberUsername} {MemberKey} in {Type:l}.{Method:l}.";
             public const string ApproveMember = "Approved member {MemberUsername} {MemberKey} in {Type:l}.{Method:l}.";

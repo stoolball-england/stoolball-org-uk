@@ -1,36 +1,40 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading.Tasks;
+using Dapper;
+using Stoolball.Competitions;
+using Stoolball.Data.SqlServer;
 using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
+using Stoolball.Security;
 using Stoolball.Teams;
-using Umbraco.Core.Scoping;
 using static Stoolball.Data.SqlServer.Constants;
 using Tables = Stoolball.Data.SqlServer.Constants.Tables;
-using UmbracoLogging = Umbraco.Core.Logging;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
     public class SqlServerTournamentDataMigrator : ITournamentDataMigrator
     {
+        private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IRedirectsRepository _redirectsRepository;
-        private readonly IScopeProvider _scopeProvider;
         private readonly IAuditHistoryBuilder _auditHistoryBuilder;
         private readonly IAuditRepository _auditRepository;
-        private readonly UmbracoLogging.ILogger _logger;
+        private readonly ILogger _logger;
         private readonly IRouteGenerator _routeGenerator;
+        private readonly IDataRedactor _dataRedactor;
 
-        public SqlServerTournamentDataMigrator(IRedirectsRepository redirectsRepository, IScopeProvider scopeProvider, IAuditHistoryBuilder auditHistoryBuilder,
-            IAuditRepository auditRepository, UmbracoLogging.ILogger logger, IRouteGenerator routeGenerator)
+        public SqlServerTournamentDataMigrator(IDatabaseConnectionFactory databaseConnectionFactory, IRedirectsRepository redirectsRepository, IAuditHistoryBuilder auditHistoryBuilder,
+            IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator, IDataRedactor dataRedactor)
         {
+            _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
-            _scopeProvider = scopeProvider ?? throw new ArgumentNullException(nameof(scopeProvider));
             _auditHistoryBuilder = auditHistoryBuilder ?? throw new ArgumentNullException(nameof(auditHistoryBuilder));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
+            _dataRedactor = dataRedactor ?? throw new ArgumentNullException(nameof(dataRedactor));
         }
 
         /// <summary>
@@ -39,31 +43,21 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         /// <returns></returns>
         public async Task DeleteTournaments()
         {
-            try
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                using (var scope = _scopeProvider.CreateScope())
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    var database = scope.Database;
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.TournamentComment}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.TournamentTeam}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.Tournament}", null, transaction).ConfigureAwait(false);
 
-                    using (var transaction = database.GetTransaction())
-                    {
-                        await database.ExecuteAsync($"DELETE FROM {Tables.TournamentComment}", null, transaction).ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason}", null, transaction).ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.TournamentTeam}", null, transaction).ConfigureAwait(false);
-                        await database.ExecuteAsync($"DELETE FROM {Tables.Tournament}", null, transaction).ConfigureAwait(false);
-                        transaction.Complete();
-                    }
+                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/tournaments/", transaction).ConfigureAwait(false);
 
-                    scope.Complete();
+                    transaction.Commit();
                 }
             }
-            catch (Exception e)
-            {
-                _logger.Error(typeof(SqlServerTournamentDataMigrator), e);
-                throw;
-            }
-
-            await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/tournaments/").ConfigureAwait(false);
         }
 
         /// <summary>
@@ -73,12 +67,161 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         {
             if (tournament is null)
             {
-                throw new System.ArgumentNullException(nameof(tournament));
+                throw new ArgumentNullException(nameof(tournament));
             }
 
-            var migratedTournament = new MigratedTournament
+            var migratedTournament = CreateAuditableCopy(tournament);
+            migratedTournament.TournamentId = Guid.NewGuid();
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                TournamentId = Guid.NewGuid(),
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    migratedTournament.TournamentRoute = _routeGenerator.GenerateRoute("/tournaments", migratedTournament.TournamentName + " " + migratedTournament.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.TournamentRoute);
+                    int count;
+                    do
+                    {
+                        count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Tournament} WHERE TournamentRoute = @TournamentRoute", new { migratedTournament.TournamentRoute }, transaction).ConfigureAwait(false);
+                        if (count > 0)
+                        {
+                            migratedTournament.TournamentRoute = _routeGenerator.IncrementRoute(migratedTournament.TournamentRoute);
+                        }
+                    }
+                    while (count > 0);
+
+                    _auditHistoryBuilder.BuildInitialAuditHistory(tournament, migratedTournament, nameof(SqlServerTournamentDataMigrator), CreateRedactedCopy);
+                    migratedTournament.MemberKey = migratedTournament.History.Count > 0 ? migratedTournament.History[0].MemberKey : null;
+
+                    if (migratedTournament.MigratedTournamentLocationId.HasValue)
+                    {
+                        migratedTournament.TournamentLocation = new MatchLocation
+                        {
+                            MatchLocationId = await connection.ExecuteScalarAsync<Guid>($"SELECT MatchLocationId FROM {Tables.MatchLocation} WHERE MigratedMatchLocationId = @MigratedTournamentLocationId", new { migratedTournament.MigratedTournamentLocationId }, transaction).ConfigureAwait(false)
+                        };
+                    }
+
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.Tournament}
+						(TournamentId, MigratedTournamentId, TournamentName, MatchLocationId, QualificationType, PlayerType, PlayersPerTeam, OversPerInningsDefault, 
+                         MaximumTeamsInTournament, SpacesInTournament, StartTime, StartTimeIsKnown, TournamentNotes, TournamentRoute, MemberKey)
+						VALUES 
+                        (@TournamentId, @MigratedTournamentId, @TournamentName, @MatchLocationId, @QualificationType, @PlayerType, @PlayersPerTeam, @OversPerInningsDefault, 
+                         @MaximumTeamsInTournament, @SpacesInTournament, @StartTime, @StartTimeIsKnown, @TournamentNotes, @TournamentRoute, @MemberKey)",
+                     new
+                     {
+                         migratedTournament.TournamentId,
+                         migratedTournament.MigratedTournamentId,
+                         migratedTournament.TournamentName,
+                         migratedTournament.TournamentLocation?.MatchLocationId,
+                         QualificationType = migratedTournament.QualificationType?.ToString(),
+                         PlayerType = migratedTournament.PlayerType.ToString(),
+                         migratedTournament.PlayersPerTeam,
+                         migratedTournament.OversPerInningsDefault,
+                         migratedTournament.MaximumTeamsInTournament,
+                         migratedTournament.SpacesInTournament,
+                         migratedTournament.StartTime,
+                         migratedTournament.StartTimeIsKnown,
+                         migratedTournament.TournamentNotes,
+                         migratedTournament.TournamentRoute,
+                         migratedTournament.MemberKey
+                     },
+                    transaction).ConfigureAwait(false);
+
+                    foreach (var team in migratedTournament.MigratedTeams)
+                    {
+                        team.Team = new Team
+                        {
+                            TeamId = await connection.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @MigratedTeamId", new { team.MigratedTeamId }, transaction).ConfigureAwait(false)
+                        };
+
+                        team.MatchTeamId = Guid.NewGuid();
+
+                        await connection.ExecuteAsync($@"INSERT INTO {Tables.TournamentTeam} 
+								(TournamentTeamId, TournamentId, TeamId, TeamRole) VALUES (@TournamentTeamId, @TournamentId, @TeamId, @TeamRole)",
+                            new
+                            {
+                                TournamentTeamId = team.MatchTeamId,
+                                migratedTournament.TournamentId,
+                                team.Team.TeamId,
+                                TeamRole = TournamentTeamRole.Confirmed.ToString()
+                            },
+                            transaction).ConfigureAwait(false);
+                    }
+
+                    foreach (var migratedSeasonId in migratedTournament.MigratedSeasonIds)
+                    {
+                        var season = new Season { SeasonId = await connection.ExecuteScalarAsync<Guid>($"SELECT SeasonId FROM {Tables.Season} WHERE MigratedSeasonId = @MigratedSeasonId", new { MigratedSeasonId = migratedSeasonId }, transaction).ConfigureAwait(false) };
+                        migratedTournament.Seasons.Add(season);
+
+                        await connection.ExecuteAsync($@"INSERT INTO {Tables.TournamentSeason} 
+								(TournamentSeasonId, TournamentId, SeasonId) VALUES (@TournamentSeasonId, @TournamentId, @SeasonId)",
+                            new
+                            {
+                                TournamentSeasonId = Guid.NewGuid(),
+                                migratedTournament.TournamentId,
+                                season.SeasonId
+                            },
+                            transaction).ConfigureAwait(false);
+                    }
+
+                    await connection.ExecuteAsync($@"UPDATE {Tables.Team} SET 
+							TeamRoute = CONCAT(@TournamentRoute, SUBSTRING(TeamRoute, 6, LEN(TeamRoute)-5)),
+							FromYear = @Year,
+							UntilYear = @Year
+							WHERE TeamType = 'Transient' 
+							AND TeamRoute NOT LIKE '/tournaments%'
+							AND TeamId IN (
+								SELECT TeamId FROM {Tables.TournamentTeam} WHERE TournamentId = @TournamentId
+							)",
+                        new
+                        {
+                            migratedTournament.TournamentRoute,
+                            migratedTournament.StartTime.Year,
+                            migratedTournament.TournamentId
+                        },
+                        transaction).ConfigureAwait(false);
+
+                    await connection.ExecuteAsync($@"UPDATE SkybrudRedirects SET 
+							DestinationUrl = CONCAT(@TournamentRoute, SUBSTRING(DestinationUrl, 6, LEN(DestinationUrl)-5))
+							WHERE DestinationUrl LIKE '/[0-9][0-9][0-9][0-9][0-9]%'
+							AND Url LIKE '/{tournament.TournamentRoute.TrimStart('/')}%'",
+                       new
+                       {
+                           migratedTournament.TournamentRoute
+                       },
+                       transaction).ConfigureAwait(false);
+
+                    await _redirectsRepository.InsertRedirect(tournament.TournamentRoute, migratedTournament.TournamentRoute, string.Empty, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(tournament.TournamentRoute, migratedTournament.TournamentRoute, "/statistics", transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect(tournament.TournamentRoute, migratedTournament.TournamentRoute, "/calendar.ics", transaction).ConfigureAwait(false);
+
+                    foreach (var audit in migratedTournament.History)
+                    {
+                        await _auditRepository.CreateAudit(audit, transaction).ConfigureAwait(false);
+                    }
+
+                    transaction.Commit();
+
+                    _logger.Info(GetType(), LoggingTemplates.Migrated, CreateRedactedCopy(migratedTournament), GetType(), nameof(MigrateTournament));
+                }
+            }
+
+            return migratedTournament;
+        }
+
+        private MigratedTournament CreateRedactedCopy(MigratedTournament tournament)
+        {
+            var redacted = CreateAuditableCopy(tournament);
+            redacted.TournamentNotes = _dataRedactor.RedactPersonalData(tournament.TournamentNotes);
+            redacted.History.Clear();
+            return redacted;
+        }
+
+        private static MigratedTournament CreateAuditableCopy(MigratedTournament tournament)
+        {
+            return new MigratedTournament
+            {
+                TournamentId = tournament.TournamentId,
                 MigratedTournamentId = tournament.MigratedTournamentId,
                 TournamentName = tournament.TournamentName?.Trim(),
                 MigratedTournamentLocationId = tournament.MigratedTournamentLocationId,
@@ -94,120 +237,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 MigratedSeasonIds = tournament.MigratedSeasonIds,
                 TournamentNotes = tournament.TournamentNotes,
             };
-
-            using (var scope = _scopeProvider.CreateScope())
-            {
-                migratedTournament.TournamentRoute = _routeGenerator.GenerateRoute("/tournaments", migratedTournament.TournamentName + " " + migratedTournament.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.TournamentRoute);
-                int count;
-                do
-                {
-                    count = await scope.Database.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Tournament} WHERE TournamentRoute = @TournamentRoute", new { migratedTournament.TournamentRoute }).ConfigureAwait(false);
-                    if (count > 0)
-                    {
-                        migratedTournament.TournamentRoute = _routeGenerator.IncrementRoute(migratedTournament.TournamentRoute);
-                    }
-                }
-                while (count > 0);
-                scope.Complete();
-            }
-
-            _auditHistoryBuilder.BuildInitialAuditHistory(tournament, migratedTournament, nameof(SqlServerMatchDataMigrator));
-
-            using (var scope = _scopeProvider.CreateScope())
-            {
-                try
-                {
-                    var database = scope.Database;
-                    using (var transaction = database.GetTransaction())
-                    {
-                        if (migratedTournament.MigratedTournamentLocationId.HasValue)
-                        {
-                            migratedTournament.TournamentLocation = new MatchLocation
-                            {
-                                MatchLocationId = await database.ExecuteScalarAsync<Guid>($"SELECT MatchLocationId FROM {Tables.MatchLocation} WHERE MigratedMatchLocationId = @0", migratedTournament.MigratedTournamentLocationId).ConfigureAwait(false)
-                            };
-                        }
-
-                        await database.ExecuteAsync($@"INSERT INTO {Tables.Tournament}
-						(TournamentId, MigratedTournamentId, TournamentName, MatchLocationId, QualificationType, PlayerType, PlayersPerTeam, OversPerInningsDefault, 
-                         MaximumTeamsInTournament, SpacesInTournament, StartTime, StartTimeIsKnown, TournamentNotes, TournamentRoute, MemberKey)
-						VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14)",
-                            migratedTournament.TournamentId,
-                            migratedTournament.MigratedTournamentId,
-                            migratedTournament.TournamentName,
-                            migratedTournament.TournamentLocation?.MatchLocationId,
-                            migratedTournament.QualificationType?.ToString(),
-                            migratedTournament.PlayerType.ToString(),
-                            migratedTournament.PlayersPerTeam,
-                            migratedTournament.OversPerInningsDefault,
-                            migratedTournament.MaximumTeamsInTournament,
-                            migratedTournament.SpacesInTournament,
-                            migratedTournament.StartTime,
-                            migratedTournament.StartTimeIsKnown,
-                            migratedTournament.TournamentNotes,
-                            migratedTournament.TournamentRoute,
-                            migratedTournament.History.Count > 0 ? migratedTournament.History[0].MemberKey : null).ConfigureAwait(false);
-                        foreach (var team in migratedTournament.MigratedTeams)
-                        {
-                            team.Team = new Team
-                            {
-                                TeamId = await database.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @0", team.MigratedTeamId).ConfigureAwait(false)
-                            };
-
-                            await database.ExecuteAsync($@"INSERT INTO {Tables.TournamentTeam} 
-								(TournamentTeamId, TournamentId, TeamId, TeamRole) VALUES (@0, @1, @2, @3)",
-                                Guid.NewGuid(),
-                                migratedTournament.TournamentId,
-                                team.Team.TeamId,
-                                TournamentTeamRole.Confirmed.ToString()).ConfigureAwait(false);
-                        }
-                        foreach (var season in migratedTournament.MigratedSeasonIds)
-                        {
-                            var seasonId = await database.ExecuteScalarAsync<Guid>($"SELECT SeasonId FROM {Tables.Season} WHERE MigratedSeasonId = @0", season).ConfigureAwait(false);
-
-                            await database.ExecuteAsync($@"INSERT INTO {Tables.TournamentSeason} 
-								(TournamentSeasonId, TournamentId, SeasonId) VALUES (@0, @1, @2)",
-                                Guid.NewGuid(),
-                                migratedTournament.TournamentId,
-                                seasonId).ConfigureAwait(false);
-                        }
-                        await database.ExecuteAsync($@"UPDATE {Tables.Team} SET 
-							TeamRoute = CONCAT(@0, SUBSTRING(TeamRoute, 6, LEN(TeamRoute)-5)),
-							FromYear = @1,
-							UntilYear = @1
-							WHERE TeamType = 'Transient' 
-							AND TeamRoute NOT LIKE '/tournaments%'
-							AND TeamId IN (
-								SELECT TeamId FROM {Tables.TournamentTeam} WHERE TournamentId = @2
-							)",
-                            migratedTournament.TournamentRoute, migratedTournament.StartTime.Year, migratedTournament.TournamentId).ConfigureAwait(false);
-                        await database.ExecuteAsync($@"UPDATE SkybrudRedirects SET 
-							DestinationUrl = CONCAT(@0, SUBSTRING(DestinationUrl, 6, LEN(DestinationUrl)-5))
-							WHERE DestinationUrl LIKE '/[0-9][0-9][0-9][0-9][0-9]%'
-							AND Url LIKE '/{tournament.TournamentRoute.TrimStart('/')}%'",
-                           migratedTournament.TournamentRoute).ConfigureAwait(false);
-                        transaction.Complete();
-                    }
-
-                }
-                catch (Exception e)
-                {
-                    _logger.Error(typeof(SqlServerTournamentDataMigrator), e);
-                    throw;
-                }
-                scope.Complete();
-            }
-
-            await _redirectsRepository.InsertRedirect(tournament.TournamentRoute, migratedTournament.TournamentRoute, string.Empty).ConfigureAwait(false);
-            await _redirectsRepository.InsertRedirect(tournament.TournamentRoute, migratedTournament.TournamentRoute, "/statistics").ConfigureAwait(false);
-            await _redirectsRepository.InsertRedirect(tournament.TournamentRoute, migratedTournament.TournamentRoute, "/calendar.ics").ConfigureAwait(false);
-
-            foreach (var audit in migratedTournament.History)
-            {
-                await _auditRepository.CreateAudit(audit).ConfigureAwait(false);
-            }
-
-            return migratedTournament;
         }
     }
 }

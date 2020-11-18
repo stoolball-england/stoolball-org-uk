@@ -80,6 +80,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
                 if (newMember)
                 {
                     Services.MemberService.AssignRole(member.Id, Groups.AllMembers);
+                    Logger.Info(GetType(), LoggingTemplates.Migrated, new { Type = "Member", member.Username, member.Key, member.Id }, GetType(), nameof(CreateMember));
                 }
             }
             return Created(new Uri(Request.RequestUri, new Uri($"/umbraco", UriKind.Relative)), JsonConvert.SerializeObject(imported));
@@ -91,7 +92,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
         [HttpPost]
         public IHttpActionResult DeleteMemberGroup(MemberGroup[] groups)
         {
-            foreach (var group in groups) { Services.MemberGroupService.Delete(group); }
+            if (groups != null)
+            {
+                foreach (var group in groups) { Services.MemberGroupService.Delete(group); }
+            }
             return Ok();
         }
 
@@ -115,6 +119,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
                         Name = memberGroup.Name
                     };
                     Services.MemberGroupService.Save(group);
+
+                    Logger.Info(GetType(), LoggingTemplates.Migrated, group, GetType(), nameof(CreateMemberGroup));
                 }
             }
             return Created(new Uri(Request.RequestUri, new Uri($"/umbraco", UriKind.Relative)), JsonConvert.SerializeObject(saveModel));
@@ -134,6 +140,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
                 if (member != null)
                 {
                     Services.MemberService.AssignRole(member.Id, assignment.GroupName);
+                    Logger.Info(GetType(), LoggingTemplates.Migrated, new { Type = "MemberGroupAssignment", member.Key, assignment.GroupName }, GetType(), nameof(AssignMemberGroup));
                 }
             }
 

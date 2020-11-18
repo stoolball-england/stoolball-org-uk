@@ -7,7 +7,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
     public class MigratedPlayerIdentity : PlayerIdentity, IAuditable
     {
-        public Guid PlayerId { get; set; }
         public int MigratedPlayerIdentityId { get; set; }
 
         public int MigratedTeamId { get; set; }
@@ -17,7 +16,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 
         public Uri EntityUri {
-            get { return new Uri($"https://www.stoolball.org.uk/id/player/{PlayerId}"); }
+            get { return new Uri($"https://www.stoolball.org.uk/id/player-identity/{PlayerIdentityId}"); }
         }
     }
 }

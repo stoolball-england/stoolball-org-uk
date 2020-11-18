@@ -16,11 +16,6 @@ namespace Stoolball.Data.SqlServer
         /// </summary>
         /// <param name="audit">The audit details to record</param>
         /// <param name="transaction">The transaction to audit</param>
-        [Obsolete]
-        public async Task CreateAudit(AuditRecord audit)
-        {
-            throw new NotImplementedException();
-        }
         public async Task CreateAudit(AuditRecord audit, IDbTransaction transaction)
         {
             if (audit is null)
