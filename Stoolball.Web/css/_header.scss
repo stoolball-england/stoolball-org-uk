@@ -7,113 +7,154 @@
   Sitewide header 
 *******************/
 
-/* Display an image behind the header */
-header > .container-xl {
+$zindex-header: 900;
+$header_menu_selected_background: #444;
+
+.header {
+    margin-bottom: $spacer*2;
+}
+
+.header__bar {
+    background: $black;
+    color: $white;
     position: relative;
-    z-index: 2;
+    z-index: $zindex-header + 1;
+    min-height: 44px; /* Minimum clickable target height */
 }
 
-.header-photo {
-    display: block;
-    transform: skewY($skew);
-    margin-top: -35px;
-    border-top: theme-color("primary") solid 5px;
-    border-bottom: theme-color("primary") solid 5px;
-    max-width: none;
-    position: relative;
-    z-index: 1;
-}
-
-/* Move the <main /> element down below the header */
-main {
-    margin-top: 30px;
-}
-
-/* Combine flex-grow and flex-shrink to place the logo on the left and the dropdown menus as a group on the right */
-.navbar {
+.header__inner {
     display: flex;
-    padding: $spacer/2 $spacer/2 $spacer/2 0;
-    align-items: start;
+    align-items: center;
+    width: 100%;
 }
 
-.navbar-brand {
-    flex-grow: 1;
-}
-
-.navbar__menu, .navbar__account {
-    flex-shrink: 0;
-}
-
-/* Style the brand to sit on top of the .header-bg image */
-/* Set a maximum width on the logo which allows the group on the right not to wrap */
-.navbar-brand__wrapper {
-    display: block;
-    background: white;
-    padding: 10px 15px;
+.header__logo {
+    min-width: 150px;
+    width: 150px;
+    background: $white;
+    margin: 0 $spacer -15px 0;
     border-radius: 0 0 10px 10px;
-    margin: -20px 0 0 -10px;
-    max-width: 170px;
-    border: theme-color("primary") solid 2px;
 }
 
 @include media-breakpoint-up(sm) {
-    .navbar-brand__wrapper {
-        padding: 10px 15px;
-        max-width: 200px;
+    .header__logo {
+        width: 200px;
+        margin-bottom: -30px;
     }
 }
 
 @include media-breakpoint-up(md) {
-.header-photo {
-    margin-top: -60px;
-}
-.navbar-brand__wrapper {
-        padding: 15px 20px 15px;
-        max-width: 250px;
-        border-width: 3px;
+    .header__logo {
+        width: 250px;
+        margin-bottom: -36px;
     }
 }
 
-/* Style the menu to sit on top of the .header-bg image */
-.navbar__menu > .dropdown {
-    background: white;
-    border-radius: 10px;
-    margin-right: $spacer;
-    box-shadow: 5px 5px 10px rgba(0,0,0,.5);
+.header__logo-inner {
+    display: block;
+    padding: 10px 15px;
 }
 
-/* Style the account button to sit on top of the .header-bg image */
-.navbar__account > .dropdown {
-    background: white;
-    border-radius: 50%;
-    box-shadow: 5px 5px 10px rgba(0,0,0,.5);
+.header__menu-large {
+    flex-grow: 1;
 }
 
-/* Offset the padding on the container, so that the account button is in the top-right corner */
-.navbar__account {
-    margin-right: -15px;
+.header__menu-large [role=menubar] {
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
-/* Rounded edges on the account image */
-.navbar__account__account-image {
-    border-radius: 50%;
+.header__menu-large [role=menuitem] {
+    display: inline-block;
+    color: $white;
+    padding: $spacer/2 $spacer;
+    margin-right: 2px;
 }
 
-/* Reduce the default space around the account button, and hide the dropdown arrow */
-.navbar .navbar__account-button {
-    padding: $spacer/4;
+.header__menu-large [role=menuitem][aria-selected],
+.header__menu-large a:hover, .header__menu-large a:active {
+    background: $header_menu_selected_background;
+    text-decoration: none;
+    font-style: normal;
+    border-radius: 5px;
 }
 
-.navbar .navbar__account-button::after {
-    display: none;
+.header__menu-small.navbar {
+    align-items: center;
+}
+
+.btn.header__menu-small__button, .btn.header__menu-small__button:hover {
+    color: $white;
+}
+
+.btn.header__menu-small__button::after {
+    color: $white;
+    font-size: 14px;
+}
+
+.header__account.navbar {
+    display: flex;
+    align-items: center;
+    width: 44px;
+    height: 44px;
+    margin-right: -($grid-gutter-width/2);
+}
+
+.btn.header__account__button {
+    padding: 5px 10px 4px;
+}
+
+.btn.header__account__button::after {
+    color: $white;
+    font-size: 14px;
+}
+
+.header__account__account-image {
+    margin-right: -10px;
+}
+
+.header__photo {
+    position: relative;
+    z-index: $zindex-header;
+    display: block;
+    transform: skewY($skew);
+    border-top: 30px solid $black;
+    margin-top: -30px;
+    border-bottom: theme-color("primary") solid 5px;
+    box-shadow: $black 0 1px 2px;
+}
+
+.header .dropdown-menu {
+    background: $black;
+    color: $white;
+    padding: 0;
+    border-radius: 0 0 10px 10px;
+}
+
+.header .dropdown-item {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.header .dropdown-item:hover, .header .dropdown-item:focus {
+    background: $header_menu_selected_background;
+    color: $white;
+}
+
+.header .dropdown-item:last-child {
+    padding-bottom: $spacer/2;
+    border-radius: 0 0 5px 5px;
 }
 
 /* Make links clickable across the whole width of a menu */
-.dropdown-item > a, .dropdown-item > em {
+.header .dropdown-item > a, .header .dropdown-item > em {
+    color: $white;
     display: block;
+    padding-left: $spacer*1.5;
+    padding-right: $spacer*1.5;
 }
 
-/* Links get the primary colour as a background when :active, so the foreground needs to contrast with it */
-.dropdown-item:active > a {
-    color: #fff;
+.header .dropdown-item > a:hover, .header .dropdown-item > a:focus {
+    text-decoration: none;
 }
