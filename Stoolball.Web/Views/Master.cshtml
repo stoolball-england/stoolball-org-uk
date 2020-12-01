@@ -49,7 +49,7 @@
                         }
                     </div>
                     <div class="header__menu-large">
-                        <ul class="d-none d-md-flex" role="menubar" aria-label="Stoolball England">
+                        <ul role="menubar" aria-label="Stoolball England">
                             @{
                                 var childrenOfHome = Umbraco.Content(Guid.Parse("7ea74fe5-4982-4bcf-bb8a-8e213c32f91c"))
                                 .Children()
@@ -61,7 +61,7 @@
                                         {
                                             <em role="menuitem" aria-selected="true">@child.Name</em>
                                         }
-                                        else if (Request.RawUrl.Length > 1 && Request.RawUrl.Split(new []{ '/' }, StringSplitOptions.RemoveEmptyEntries)[0].ToUpperInvariant() == child.Url().Replace("/", string.Empty).ToUpperInvariant())
+                                        else if (Request.RawUrl.Length > 1 && Request.RawUrl.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries)[0].ToUpperInvariant() == child.Url().Replace("/", string.Empty).ToUpperInvariant())
                                         {
                                             <a role="menuitem" aria-selected="true" href="@child.Url()">@child.Name</a>
                                         }
@@ -74,35 +74,9 @@
                             }
                         </ul>
                     </div>
-                    <div class="header__menu-small navbar d-flex d-md-none">
+                    <div class="header__account">
                         <div class="dropdown">
-                            <button class="btn dropdown-toggle header__menu-small__button" type="button" id="header__menu-small__button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Menu
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="header__menu-small__button">
-                                @{
-                                    foreach (var child in childrenOfHome)
-                                    {
-                                        if (Regex.IsMatch(Request.RawUrl, $"^{child.Url().Replace("/", @"\/")}?$"))
-                                        {
-                                            <li class="dropdown-item">
-                                                <em>@child.Name</em>
-                                            </li>
-                                        }
-                                        else
-                                        {
-                                            <li class="dropdown-item">
-                                                <a href="@child.Url()">@child.Name</a>
-                                            </li>
-                                        }
-                                    }
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="header__account navbar">
-                        <div class="dropdown">
-                            <button class="btn dropdown-toggle header__account__button" type="button" id="header__account__button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button class="btn header__account__button" type="button" id="header__account__button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Account">
                                 @if (User.Identity.IsAuthenticated)
                                 {
                                     var gravatar = new Gravatar(User.Identity.Name);
@@ -116,13 +90,67 @@
                             <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="header__account__button">
                                 @if (User.Identity.IsAuthenticated)
                                 {
-                                    <li class="dropdown-item"><a href="/account">My account</a></li>
-                                    <li class="dropdown-item"><a href="/account/sign-out" class="dropdown-item">Sign out</a></li>
+                                    if (Request.RawUrl == "/account")
+                                    {
+                                        <li class="dropdown-item"><em aria-selected="true">My account</em></li>
+                                    }
+                                    else
+                                    {
+                                        <li class="dropdown-item"><a href="/account">My account</a></li>
+                                    }
+                                    if (Request.RawUrl.StartsWith("/account/sign-out"))
+                                    {
+                                        <li class="dropdown-item"><em aria-selected="true">Sign out</em></li>
+                                    }
+                                    else
+                                    {
+                                        <li class="dropdown-item"><a href="/account/sign-out">Sign out</a></li>
+                                    }
                                 }
                                 else
                                 {
-                                    <li class="dropdown-item"><a href="/account/create">Create an account</a></li>
-                                    <li class="dropdown-item"><a href="/account/sign-in?ReturnUrl=@HttpUtility.UrlEncode(Request.Url.PathAndQuery)">Sign in</a></li>
+                                    if (Request.RawUrl.StartsWith("/account/create"))
+                                    {
+                                        <li class="dropdown-item"><em aria-selected="true">Create an account</em></li>
+                                    }
+                                    else
+                                    {
+                                        <li class="dropdown-item"><a href="/account/create">Create an account</a></li>
+                                    }
+                                    if (Request.RawUrl.StartsWith("/account/sign-in"))
+                                    {
+                                        <li class="dropdown-item"><em aria-selected="true">Sign in</em></li>
+                                    }
+                                    else
+                                    {
+                                        <li class="dropdown-item"><a href="/account/sign-in?ReturnUrl=@HttpUtility.UrlEncode(Request.Url.PathAndQuery)">Sign in</a></li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="header__menu-small">
+                        <div class="dropdown">
+                            <button class="btn header__menu-small__button" type="button" id="header__menu-small__button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Menu">
+                                <img src="//s.svgbox.net/materialui.svg?fill=white&ic=menu" alt="Menu" width="30" height="30" />
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="header__menu-small__button">
+                                @{
+                                    foreach (var child in childrenOfHome)
+                                    {
+                                        if (Regex.IsMatch(Request.RawUrl, $"^{child.Url().Replace("/", @"\/")}?$"))
+                                        {
+                                            <li class="dropdown-item">
+                                                <em aria-selected="true">@child.Name</em>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="dropdown-item">
+                                                <a href="@child.Url()">@child.Name</a>
+                                            </li>
+                                        }
+                                    }
                                 }
                             </ul>
                         </div>
