@@ -96,7 +96,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     await _redirectsRepository.InsertRedirect("/about/privacy-notice-registering-with-stoolball-england", "/privacy/privacy-notice-registering-with-stoolball-england", null, transaction).ConfigureAwait(false);
 
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/shop", transaction).ConfigureAwait(false);
-                    await _redirectsRepository.InsertRedirect("/shop", "/play/equipment/buy", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/play/equipment/buy", "/shop", null, transaction).ConfigureAwait(false);
 
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/privacy", transaction).ConfigureAwait(false);
                     await _redirectsRepository.InsertRedirect("/privacy", "/privacy/under16", null, transaction).ConfigureAwait(false);

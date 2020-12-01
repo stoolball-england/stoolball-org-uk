@@ -13,7 +13,7 @@ namespace Stoolball
         {
             public const string Home = "Home";
             public const string HomeUrl = "/";
-            public const string Players = "Players";
+            public const string Players = "Play";
             public const string PlayersUrl = "/play";
             public const string Competitions = "Leagues and competitions";
             public const string CompetitionsUrl = "/competitions";
