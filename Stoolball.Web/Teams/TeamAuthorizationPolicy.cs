@@ -2,7 +2,7 @@
 using Stoolball.Security;
 using Stoolball.Teams;
 using Umbraco.Web.Security;
-using static Stoolball.Data.SqlServer.Constants;
+using static Stoolball.Constants;
 
 namespace Stoolball.Web.Teams
 {

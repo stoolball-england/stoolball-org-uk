@@ -16,7 +16,7 @@ using Umbraco.Web;
 using Umbraco.Web.Editors;
 using Umbraco.Web.Models.ContentEditing;
 using Umbraco.Web.Mvc;
-using static Stoolball.Data.SqlServer.Constants;
+using static Stoolball.Constants;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.Apis
 {

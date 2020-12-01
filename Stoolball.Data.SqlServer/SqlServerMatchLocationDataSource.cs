@@ -6,7 +6,7 @@ using Dapper;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using static Stoolball.Data.SqlServer.Constants;
+using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer
 {

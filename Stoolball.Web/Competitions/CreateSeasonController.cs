@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Security;
+using Stoolball.Web.Metadata;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -64,6 +65,8 @@ namespace Stoolball.Web.Competitions
 
                 var the = model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";
                 model.Metadata.PageTitle = $"Add a season in {the}{model.Season.Competition.CompetitionName}";
+
+                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
 
                 return CurrentTemplate(model);
             }

@@ -8,7 +8,7 @@ using Stoolball.Competitions;
 using Stoolball.Logging;
 using Stoolball.Routing;
 using Stoolball.Security;
-using static Stoolball.Data.SqlServer.Constants;
+using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer
 {

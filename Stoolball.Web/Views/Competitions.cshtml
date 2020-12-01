@@ -2,7 +2,7 @@
 @using Humanizer
 @using System.Text.RegularExpressions
 <h1>
-    Stoolball competitions
+    @Stoolball.Constants.Pages.Competitions
     @if (!string.IsNullOrEmpty(Model.CompetitionQuery.Query))
     {
         @: matching '@Model.CompetitionQuery.Query'

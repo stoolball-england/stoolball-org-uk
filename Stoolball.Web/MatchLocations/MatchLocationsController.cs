@@ -50,7 +50,7 @@ namespace Stoolball.Web.MatchLocations
             model.TotalMatchLocations = await _matchLocationDataSource.ReadTotalMatchLocations(model.MatchLocationQuery).ConfigureAwait(false);
             model.MatchLocations = await _matchLocationDataSource.ReadMatchLocations(model.MatchLocationQuery).ConfigureAwait(false);
 
-            model.Metadata.PageTitle = "Grounds and sports centres";
+            model.Metadata.PageTitle = Constants.Pages.MatchLocations;
             if (!string.IsNullOrEmpty(model.MatchLocationQuery.Query))
             {
                 model.Metadata.PageTitle += $" matching '{model.MatchLocationQuery.Query}'";

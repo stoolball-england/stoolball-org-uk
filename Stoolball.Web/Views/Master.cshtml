@@ -1,5 +1,6 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Metadata.IHasViewMetadata>
 @using ClientDependency.Core.Mvc
+@using Stoolball.Web.Metadata
 @{
     Layout = null;
     Html.RequiresCss("~/css/base.css", 1);
@@ -13,6 +14,16 @@
     if (!string.IsNullOrEmpty(Model.Stylesheet))
     {
         Html.RequiresCss($"~/css/{Model.Stylesheet}.min.css");
+    }
+
+    if (Model.Breadcrumbs.Count() == 0)
+    {
+        var breadcrumb = Umbraco.AssignedContentItem.Parent;
+        while (breadcrumb != null)
+        {
+            Model.Breadcrumbs.Insert(0, new Breadcrumb { Name = breadcrumb.Name, Url = new Uri(breadcrumb.Url(), UriKind.Relative) });
+            breadcrumb = breadcrumb.Parent;
+        }
     }
 }
 <!DOCTYPE html>
@@ -35,7 +46,7 @@
     @Html.Partial("_Header")
     <main>
         <div class="container-xl">
-            @Html.Partial("_Breadcrumb")         
+            @Html.Partial("_Breadcrumb", Model.Breadcrumbs)
             @RenderBody()
         </div>
     </main>

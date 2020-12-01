@@ -8,6 +8,7 @@ using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Security;
 using Stoolball.Web.Matches;
+using Stoolball.Web.Metadata;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -81,6 +82,8 @@ namespace Stoolball.Web.MatchLocations
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation);
 
                 model.Metadata.PageTitle = $"Matches for {model.MatchLocation}";
+
+                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.MatchLocations, Url = new Uri(Constants.Pages.MatchLocationsUrl, UriKind.Relative) });
 
                 return CurrentTemplate(model);
             }

@@ -11,7 +11,7 @@ using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
 using Umbraco.Web.Security;
-using static Stoolball.Data.SqlServer.Constants;
+using static Stoolball.Constants;
 
 namespace Stoolball.Web.Account
 {

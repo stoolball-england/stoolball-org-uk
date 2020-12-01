@@ -1,7 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamsViewModel>
 @using Humanizer
 <h1>
-    Stoolball teams
+    @Stoolball.Constants.Pages.Teams
     @if (!string.IsNullOrEmpty(Model.TeamQuery.Query))
     {
         @: matching '@Model.TeamQuery.Query'

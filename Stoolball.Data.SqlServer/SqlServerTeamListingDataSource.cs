@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Stoolball.MatchLocations;
 using Stoolball.Teams;
-using static Stoolball.Data.SqlServer.Constants;
+using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer
 {

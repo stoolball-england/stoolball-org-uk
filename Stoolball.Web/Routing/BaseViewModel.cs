@@ -47,6 +47,12 @@ namespace Stoolball.Web.Routing
         /// </summary>
         public string Stylesheet { get { return _contentModel.Value<string>("stylesheet"); } }
 
+        /// <inheritdoc/>
+        public List<Breadcrumb> Breadcrumbs { get; } = new List<Breadcrumb>(new[] {
+                    new Breadcrumb { Name = Constants.Pages.Home, Url = new Uri(Constants.Pages.HomeUrl, UriKind.Relative) },
+                    new Breadcrumb { Name = Constants.Pages.Players, Url = new Uri(Constants.Pages.PlayersUrl, UriKind.Relative) }
+        });
+
         #region Implement IPublishedContent
         public int Id => _contentModel.Id;
 

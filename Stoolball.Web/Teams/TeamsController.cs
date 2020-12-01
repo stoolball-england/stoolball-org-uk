@@ -50,7 +50,7 @@ namespace Stoolball.Web.Teams
             model.TotalTeams = await _teamDataSource.ReadTotalTeams(model.TeamQuery).ConfigureAwait(false);
             model.Teams = await _teamDataSource.ReadTeamListings(model.TeamQuery).ConfigureAwait(false);
 
-            model.Metadata.PageTitle = "Stoolball teams";
+            model.Metadata.PageTitle = Constants.Pages.Teams;
             if (!string.IsNullOrEmpty(model.TeamQuery.Query))
             {
                 model.Metadata.PageTitle += $" matching '{model.TeamQuery.Query}'";

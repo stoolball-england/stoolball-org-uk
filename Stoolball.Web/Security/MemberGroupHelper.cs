@@ -6,7 +6,7 @@ using Stoolball.Routing;
 using Stoolball.Security;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
-using static Stoolball.Data.SqlServer.Constants;
+using static Stoolball.Constants;
 
 namespace Stoolball.Web.Security
 {

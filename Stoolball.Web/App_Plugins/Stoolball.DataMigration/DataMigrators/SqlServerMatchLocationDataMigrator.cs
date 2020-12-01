@@ -6,8 +6,8 @@ using Stoolball.Logging;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Security;
-using static Stoolball.Data.SqlServer.Constants;
-using Tables = Stoolball.Data.SqlServer.Constants.Tables;
+using static Stoolball.Constants;
+using Tables = Stoolball.Constants.Tables;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {

@@ -8,6 +8,7 @@ using Stoolball.Email;
 using Stoolball.Matches;
 using Stoolball.Security;
 using Stoolball.Web.Matches;
+using Stoolball.Web.Metadata;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -90,6 +91,8 @@ namespace Stoolball.Web.Competitions
                 var the = model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase);
                 model.Metadata.PageTitle = $"Results for {(the ? string.Empty : "the ")}{model.Season.SeasonFullNameAndPlayerType()}";
                 model.Metadata.Description = model.Season.Description();
+
+                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
 
                 return CurrentTemplate(model);
             }

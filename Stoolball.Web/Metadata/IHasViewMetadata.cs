@@ -1,4 +1,5 @@
-﻿using Stoolball.Metadata;
+﻿using System.Collections.Generic;
+using Stoolball.Metadata;
 using Umbraco.Core.Models.PublishedContent;
 
 namespace Stoolball.Web.Metadata
@@ -19,5 +20,11 @@ namespace Stoolball.Web.Metadata
         /// Gets the custom stylesheet that should be applied to the page (minus the .css extension)
         /// </summary>
         string Stylesheet { get; }
+
+        /// <summary>
+        /// Gets the pages to display in a breadcrumb trail
+        /// </summary>
+        /// <returns></returns>
+        List<Breadcrumb> Breadcrumbs { get; }
     }
 }

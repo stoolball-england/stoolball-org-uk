@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Email;
 using Stoolball.Security;
 using Stoolball.Teams;
+using Stoolball.Web.Metadata;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -65,6 +67,8 @@ namespace Stoolball.Web.Teams
                 model.Team.Introduction = _emailProtector.ProtectEmailAddresses(model.Team.Introduction, User.Identity.IsAuthenticated);
                 model.Team.PlayingTimes = _emailProtector.ProtectEmailAddresses(model.Team.PlayingTimes, User.Identity.IsAuthenticated);
                 model.Team.PublicContactDetails = _emailProtector.ProtectEmailAddresses(model.Team.PublicContactDetails, User.Identity.IsAuthenticated);
+
+                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
 
                 return CurrentTemplate(model);
             }

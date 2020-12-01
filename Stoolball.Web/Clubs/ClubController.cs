@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Clubs;
 using Stoolball.Security;
+using Stoolball.Web.Metadata;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -56,6 +58,8 @@ namespace Stoolball.Web.Clubs
 
                 model.Metadata.PageTitle = model.Club.ClubName;
                 model.Metadata.Description = model.Club.Description();
+
+                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
 
                 return CurrentTemplate(model);
             }

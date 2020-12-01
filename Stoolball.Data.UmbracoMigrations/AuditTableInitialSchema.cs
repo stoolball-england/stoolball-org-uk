@@ -1,6 +1,5 @@
 ﻿using System;
 using NPoco;
-using Stoolball.Data.SqlServer;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations

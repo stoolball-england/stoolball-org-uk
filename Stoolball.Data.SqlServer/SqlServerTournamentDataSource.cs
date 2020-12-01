@@ -7,7 +7,7 @@ using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using static Stoolball.Data.SqlServer.Constants;
+using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer
 {

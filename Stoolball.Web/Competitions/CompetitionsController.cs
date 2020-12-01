@@ -50,7 +50,7 @@ namespace Stoolball.Web.Competitions
             model.TotalCompetitions = await _competitionDataSource.ReadTotalCompetitions(model.CompetitionQuery).ConfigureAwait(false);
             model.Competitions = await _competitionDataSource.ReadCompetitions(model.CompetitionQuery).ConfigureAwait(false);
 
-            model.Metadata.PageTitle = "Stoolball competitions";
+            model.Metadata.PageTitle = Constants.Pages.Competitions;
             if (!string.IsNullOrEmpty(model.CompetitionQuery.Query))
             {
                 model.Metadata.PageTitle += $" matching '{model.CompetitionQuery.Query}'";

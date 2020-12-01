@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Email;
 using Stoolball.Security;
+using Stoolball.Web.Metadata;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -65,6 +67,8 @@ namespace Stoolball.Web.Competitions
                 model.Season.Competition.PublicContactDetails = _emailProtector.ProtectEmailAddresses(model.Season.Competition.PublicContactDetails, User.Identity.IsAuthenticated);
 
                 model.Season.Introduction = _emailProtector.ProtectEmailAddresses(model.Season.Introduction, User.Identity.IsAuthenticated);
+
+                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
 
                 return CurrentTemplate(model);
             }

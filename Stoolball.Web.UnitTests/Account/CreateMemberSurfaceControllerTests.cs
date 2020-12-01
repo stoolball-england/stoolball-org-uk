@@ -14,7 +14,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Umbraco.Web.Mvc;
 using Xunit;
-using static Stoolball.Data.SqlServer.Constants;
+using static Stoolball.Constants;
 
 namespace Stoolball.Web.Tests.Account
 {

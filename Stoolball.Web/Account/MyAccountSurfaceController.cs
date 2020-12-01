@@ -1,7 +1,7 @@
 ﻿using System.Web.Mvc;
 using Stoolball.Web.Security;
 using Umbraco.Web.Mvc;
-using static Stoolball.Data.SqlServer.Constants;
+using static Stoolball.Constants;
 
 namespace Stoolball.Web.Account
 {

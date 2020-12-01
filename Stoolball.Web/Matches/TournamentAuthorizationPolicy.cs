@@ -2,7 +2,7 @@
 using Stoolball.Matches;
 using Stoolball.Security;
 using Umbraco.Web.Security;
-using static Stoolball.Data.SqlServer.Constants;
+using static Stoolball.Constants;
 
 namespace Stoolball.Web.Matches
 {

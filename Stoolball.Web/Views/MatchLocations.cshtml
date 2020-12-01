@@ -2,7 +2,7 @@
 @using Humanizer
 @using System.Linq
 <h1>
-    Grounds and sports centres
+    @Stoolball.Constants.Pages.MatchLocations
     @if (!string.IsNullOrEmpty(Model.MatchLocationQuery.Query))
     {
         @: matching '@Model.MatchLocationQuery.Query'

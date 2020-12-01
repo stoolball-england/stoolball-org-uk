@@ -7,7 +7,7 @@ using Stoolball.Clubs;
 using Stoolball.Logging;
 using Stoolball.Routing;
 using Xunit;
-using static Stoolball.Data.SqlServer.Constants;
+using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
 {

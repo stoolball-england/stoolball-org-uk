@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Email;
 using Stoolball.MatchLocations;
 using Stoolball.Security;
 using Stoolball.Web.Configuration;
+using Stoolball.Web.Metadata;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -67,6 +69,8 @@ namespace Stoolball.Web.MatchLocations
                 model.Metadata.Description = model.MatchLocation.Description();
 
                 model.MatchLocation.MatchLocationNotes = _emailProtector.ProtectEmailAddresses(model.MatchLocation.MatchLocationNotes, User.Identity.IsAuthenticated);
+
+                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.MatchLocations, Url = new Uri(Constants.Pages.MatchLocationsUrl, UriKind.Relative) });
 
                 return CurrentTemplate(model);
             }

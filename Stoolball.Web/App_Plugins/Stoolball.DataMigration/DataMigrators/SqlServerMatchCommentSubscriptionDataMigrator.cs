@@ -7,8 +7,8 @@ using Stoolball.Data.SqlServer;
 using Stoolball.Logging;
 using Stoolball.Notifications;
 using Umbraco.Core.Services;
-using static Stoolball.Data.SqlServer.Constants;
-using Tables = Stoolball.Data.SqlServer.Constants.Tables;
+using static Stoolball.Constants;
+using Tables = Stoolball.Constants.Tables;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
