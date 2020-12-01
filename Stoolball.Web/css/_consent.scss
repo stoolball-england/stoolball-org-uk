@@ -33,3 +33,9 @@
     display: inline-block;
     margin: 0 $spacer/2 0 0;
 }
+
+/* Change the background of disabled checkboxes back to grey, but not the standard disabled grey because here the tick is white, not black */
+.consent .custom-checkbox .custom-control-input:disabled:checked ~ .custom-control-label::before {
+    background-color: #666;
+    border-color: #444;
+}

@@ -69,6 +69,18 @@ input[type='time'] {
     width: 8em;
 }
 
+/* Make Bootstrap custom checkboxes bigger */
+.custom-control-label {
+    padding-left: .5rem;
+    min-height: 2rem;
+}
+
+.custom-control-label::before, .custom-control-label::after {
+    top: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
 /* Make click events on inline SVG images bubble up to parent elements */
 svg {
     pointer-events: none;
