@@ -1,0 +1,161 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Metadata.IHasViewMetadata>
+@using System.Text.RegularExpressions
+@using Stoolball.Web.Account
+@functions {
+    private bool IsCurrentPage(string requestedPath, string sectionPath)
+    {
+        return Regex.IsMatch(requestedPath, $"^{sectionPath.Replace("/", @"\/")}?$");
+    }
+
+    private bool IsCurrentSection(string requestedPath, string sectionPath)
+    {
+        if (requestedPath.Length <= 1) { return false; }
+        var requestedSection = requestedPath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries)[0].ToUpperInvariant();
+        var matchingSections = new List<string>(new []{ sectionPath.Replace("/", string.Empty).ToUpperInvariant() });
+        if (matchingSections[0] == "PLAY")
+        {
+            matchingSections.AddRange(new[] { "TEAMS", "COMPETITIONS", "MATCHES", "TOURNAMENTS", "LOCATIONS" });
+        }
+        return matchingSections.Contains(requestedSection);
+    }
+} 
+<header class="header">
+    <nav class="header__bar" aria-label="Stoolball England">
+        <div class="container-xl">
+            <div class="header__inner">
+                <div class="header__logo">
+                    @if (Request.RawUrl == "/")
+                    {
+                        <div class="header__logo-inner"><img src="~/images/logos/stoolball-england.svg" alt="Stoolball England" /></div>
+                    }
+                    else
+                    {
+                        <a href="/" class="header__logo-inner"><img src="~/images/logos/stoolball-england.svg" alt="Stoolball England" /></a>
+                    }
+                </div>
+                <div class="header__menu-large">
+                    <ul role="menubar" aria-label="Stoolball England">
+                        @{
+                            var childrenOfHome = Umbraco.Content(Guid.Parse("7ea74fe5-4982-4bcf-bb8a-8e213c32f91c"))
+                            .Children()
+                            .Where(x => x.IsVisible());
+                            foreach (var child in childrenOfHome)
+                            {
+                                <li role="none">
+                                    @if (IsCurrentPage(Request.RawUrl, child.Url()))
+                                    {
+                                        <em role="menuitem" aria-selected="true">@child.Name</em>
+                                    }
+                                    else if (IsCurrentSection(Request.RawUrl, child.Url()))
+                                    {
+                                        <a role="menuitem" aria-selected="true" href="@child.Url()">@child.Name</a>
+                                    }
+                                    else
+                                    {
+                                        <a role="menuitem" href="@child.Url()">@child.Name</a>
+                                    }
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+                <div class="header__account">
+                    <div class="dropdown">
+                        <button class="btn header__account__button" type="button" id="header__account__button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Account">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                var gravatar = new Gravatar(User.Identity.Name);
+                                <img src="@gravatar.Url" alt="Account" width="30" height="30" class="header__account__account-image" />
+                            }
+                            else
+                            {
+                                <img src="//s.svgbox.net/materialui.svg?fill=white#person" alt="Account" width="30" height="30" class="header__account__account-image" />
+                            }
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="header__account__button">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                if (Request.RawUrl == "/account")
+                                {
+                                    <li class="dropdown-item"><em aria-selected="true">My account</em></li>
+                                }
+                                else
+                                {
+                                    <li class="dropdown-item"><a href="/account">My account</a></li>
+                                }
+                                if (Request.RawUrl.StartsWith("/account/sign-out"))
+                                {
+                                    <li class="dropdown-item"><em aria-selected="true">Sign out</em></li>
+                                }
+                                else
+                                {
+                                    <li class="dropdown-item"><a href="/account/sign-out">Sign out</a></li>
+                                }
+                            }
+                            else
+                            {
+                                if (Request.RawUrl.StartsWith("/account/create"))
+                                {
+                                    <li class="dropdown-item"><em aria-selected="true">Create an account</em></li>
+                                }
+                                else
+                                {
+                                    <li class="dropdown-item"><a href="/account/create">Create an account</a></li>
+                                }
+                                if (Request.RawUrl.StartsWith("/account/create"))
+                                {
+                                    <li class="dropdown-item"><em aria-selected="true">Sign in</em></li>
+                                }
+                                else
+                                {
+                                    <li class="dropdown-item"><a href="/account/sign-in?ReturnUrl=@HttpUtility.UrlEncode(Request.Url.PathAndQuery)">Sign in</a></li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="header__menu-small">
+                    <div class="dropdown">
+                        <button class="btn header__menu-small__button" type="button" id="header__menu-small__button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Menu">
+                            <img src="//s.svgbox.net/materialui.svg?fill=white&ic=menu" alt="Menu" width="30" height="30" />
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="header__menu-small__button">
+                            @{
+                                foreach (var child in childrenOfHome)
+                                {
+                                    if (IsCurrentPage(Request.RawUrl, child.Url()))
+                                    {
+                                        <li class="dropdown-item">
+                                            <em aria-selected="true">@child.Name</em>
+                                        </li>
+                                    }
+                                    else if (IsCurrentSection(Request.RawUrl, child.Url()))
+                                    {
+                                        <li class="dropdown-item">
+                                            <a href="@child.Url()" aria-selected="true">@child.Name</a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li class="dropdown-item">
+                                            <a href="@child.Url()">@child.Name</a>
+                                        </li>
+                                    }
+                                }
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    @if (Model.HeaderPhotoWithInheritance() != null)
+    {
+        <img srcset="@Model.HeaderPhotoWithInheritance().GetCropUrl("extra-small") 576w,
+            @Model.HeaderPhotoWithInheritance().GetCropUrl("small") 768w,
+            @Model.HeaderPhotoWithInheritance().GetCropUrl("medium") 992w,
+            @Model.HeaderPhotoWithInheritance().GetCropUrl("large") 1200w,
+            @Model.HeaderPhotoWithInheritance().GetCropUrl("extra-large") 2000w"
+             sizes="100vw" src="@Model.HeaderPhotoWithInheritance().GetCropUrl("large")" alt="" class="header__photo" />
+    }
+</header>

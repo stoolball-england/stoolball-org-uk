@@ -103,9 +103,9 @@ $dropdown-border-radius: 0 0 $border-radius*2 $border-radius*2;
         color: $white;
         padding: $spacer/2 $spacer;
         margin-right: 2px;
-        text-decoration: none;
         font-style: normal;
         border-radius: $border-radius;
+        box-shadow: none;
     }
     
     // Change the menu button background on hover or when selected
@@ -196,7 +196,7 @@ $dropdown-border-radius: 0 0 $border-radius*2 $border-radius*2;
     display: block;
     padding: $spacer/4 $spacer*1.5;
     font-style: normal;
-    text-decoration: none;
+    box-shadow: none;
 }
 
 // Show a focus ring when navigating with the keyboard

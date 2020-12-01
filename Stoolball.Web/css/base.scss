@@ -1,4 +1,5 @@
 ﻿@import "_theme.scss";
+@import "_functions.scss";
 @import "../Content/bootstrap/bootstrap-reboot.scss";
 @import "../Content/bootstrap/bootstrap-grid.scss";
 
@@ -10,7 +11,7 @@
 @import "_header.scss";
 
 /* Required for nav */
-@import "../Content/bootstrap/_breadcrumb.scss";
+@import "_breadcrumb.scss";
 
 /* Makes .sr-only available */
 @import "../Content/bootstrap/utilities/_screenreaders";
@@ -22,6 +23,21 @@ img { max-width: 100%; }
 @import "../Content/bootstrap/utilities/_text.scss";
 @import "../Content/bootstrap/_tables.scss";
 @import "_tables.scss";
+
+a {
+    box-shadow: link-underline(theme-color("primary"));
+}
+
+a:hover {
+    text-decoration: none;
+    color: $link-color;
+}
+
+a:focus {
+    outline: 2px solid; // Inherit the link colour
+    outline-offset: 2px;
+    box-shadow: none;
+}
 
 blockquote { font-style: italic; }
 

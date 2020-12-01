@@ -842,6 +842,8 @@
     <Content Include="Scripts\bootstrap.bundle.min.js.map" />
     <Content Include="Scripts\bootstrap.bundle.js.map" />
     <Content Include="Media\Web.config" />
+    <Content Include="css\_breadcrumb.scss" />
+    <Content Include="css\_functions.scss" />
     <None Include="Status\offline.json" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
@@ -1348,6 +1350,8 @@
     <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml" />
     <Content Include="Views\ProductList.cshtml" />
+    <Content Include="Views\Partials\_Header.cshtml" />
+    <Content Include="Views\Partials\_Breadcrumb.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

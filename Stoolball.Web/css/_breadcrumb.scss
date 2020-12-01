@@ -1,0 +1,17 @@
+﻿@import "_theme.scss";
+@import "_functions.scss";
+@import "../Content/bootstrap/_breadcrumb.scss";
+
+/* De-emphasise the breadcrumb relative to normal links, while still keeping it accessible */
+.breadcrumb {
+    padding: 0; 
+    background: none;
+}
+.breadcrumb a[href] {
+    box-shadow: none;
+    color: #767676; // WCAG AA lightest grey
+}
+
+.breadcrumb a[href]:hover {
+    box-shadow: link-underline($black);
+}

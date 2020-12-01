@@ -1,0 +1,28 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Metadata.IHasViewMetadata>
+@{
+    var pages = new List<IPublishedContent>();
+    var page = Umbraco.AssignedContentItem.Parent;
+    while (page != null)
+    {
+        pages.Insert(0, page);
+        page = page.Parent;
+    }
+}
+@if (pages.Count > 0)
+{
+    <nav aria-label="Breadcrumb">
+        <ol class="breadcrumb">
+            @for (var i = 0; i < pages.Count; i++)
+            {
+                if (i < pages.Count - 1)
+                {
+                    <li class="breadcrumb-item"><a href="@pages[i].Url()">@pages[i].Name</a></li>
+                }
+                else
+                {
+                    <li class="breadcrumb-item" aria-current="location"><a href="@pages[i].Url()">@pages[i].Name</a></li>
+                }
+            }
+        </ol>
+    </nav>
+}
