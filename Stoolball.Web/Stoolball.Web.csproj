@@ -1353,6 +1353,7 @@
     <Content Include="Views\ProductList.cshtml" />
     <Content Include="Views\Partials\_Header.cshtml" />
     <Content Include="Views\Partials\_Breadcrumb.cshtml" />
+    <Content Include="Views\Partials\_Footer.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -3,13 +3,21 @@
 @import "../Content/bootstrap/_mixins.scss";
 @import "../Content/bootstrap/_variables.scss";
 
-/* Skew the footer to match the header, and create space around the top to prevent the skewed border overlapping. */
+/* Skew the footer border to match the header, and create space around the top to prevent the skewed border overlapping. 
+   Use rotate() though because skew is not supported in a pseudo-element.    
+*/
 footer {
     margin-top: 60px;
-    padding-top: 40px;
-    transform: skewY($skew);
-    border-top: theme-color("primary") solid 5px;
 }
-footer > div {
-    transform: skewY($deskew);
+footer::before {
+    border-top: theme-color("primary") solid 5px;
+    display: block;
+    content: "";
+    transform: rotate($skew);
+    padding-top: 40px;
+}
+
+// Remove the underline from social media icons
+.footer__social-media a { 
+    box-shadow: none; 
 }
