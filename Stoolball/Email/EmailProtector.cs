@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
+using HtmlAgilityPack;
 
 namespace Stoolball.Email
 {
@@ -10,6 +11,9 @@ namespace Stoolball.Email
     {
         // From http://regexlib.com/REDetails.aspx?regexp_id=328
         private const string EMAIL_REGEX = @"((""[^""\f\n\r\t\v\b]+"")|([\w\!\#\$\%\&\'\*\+\-\~\/\^\`\|\{\}]+(\.[\w\!\#\$\%\&\'\*\+\-\~\/\^\`\|\{\}]+)*))@((\[(((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9])))\])|(((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9])))|((([A-Za-z0-9\-])+\.)+[A-Za-z\-]+))";
+
+        private const string REPLACEMENT_HTML_BEFORE_LINK = "(email address available – please ";
+        private const string REPLACEMENT_HTML_AFTER_LINK = ")";
 
         /// <summary>
         /// Links email addresses in HTML, but protecting them from unauthenticated users
@@ -22,28 +26,98 @@ namespace Stoolball.Email
         {
             if (string.IsNullOrEmpty(html)) return html;
 
-            return Regex.Replace(html, EMAIL_REGEX, match =>
+            var document = new HtmlDocument();
+            document.LoadHtml(html);
+            var emailLinks = document.DocumentNode.SelectNodes("//a[starts-with(@href,'mailto:')]");
+            if (emailLinks != null)
             {
-                if (userIsAuthenticated)
+                foreach (HtmlNode node in emailLinks)
                 {
-                    return ObfuscatedLink(match.Value);
+                    if (AllowEmailAddress(node.Attributes["href"].Value.Substring(7), userIsAuthenticated, excludedAddress))
+                    {
+                        node.Attributes["href"].Value = Obfuscate(node.Attributes["href"].Value);
+                        node.InnerHtml = Regex.Replace(node.InnerHtml, EMAIL_REGEX, match => Obfuscate(match.Value));
+                    }
+                    else
+                    {
+                        ReplaceNodeWithProtectedHtml(node.ParentNode, node);
+                    }
+                }
+            }
+
+            var textNodes = document.DocumentNode.SelectNodes("//text()[normalize-space(.) != '']");
+            if (textNodes != null)
+            {
+                foreach (HtmlTextNode node in textNodes)
+                {
+                    ProtectTextNode(node, node.ParentNode, userIsAuthenticated, excludedAddress);
+                }
+            }
+
+            return document.DocumentNode.OuterHtml;
+        }
+
+        private static void ReplaceNodeWithProtectedHtml(HtmlNode targetNode, HtmlNode childNode)
+        {
+            var signInLink = CreateSignInLink(targetNode.OwnerDocument);
+
+            targetNode.ReplaceChild(signInLink, childNode);
+            targetNode.InsertBefore(targetNode.OwnerDocument.CreateTextNode(REPLACEMENT_HTML_BEFORE_LINK), signInLink);
+            targetNode.InsertAfter(targetNode.OwnerDocument.CreateTextNode(REPLACEMENT_HTML_AFTER_LINK), signInLink);
+        }
+
+        private static bool AllowEmailAddress(string emailAddress, bool userIsAuthenticated, string excludedAddress)
+        {
+            if (userIsAuthenticated) return true;
+            if (emailAddress == excludedAddress) return true;
+            return false;
+        }
+
+        private static void ProtectTextNode(HtmlTextNode textNode, HtmlNode targetNode, bool userIsAuthenticated, string excludedAddress)
+        {
+            var match = Regex.Match(textNode.OuterHtml, EMAIL_REGEX);
+            if (match.Success)
+            {
+                var beforeMatch = targetNode.OwnerDocument.CreateTextNode(textNode.OuterHtml.Substring(0, match.Index));
+                var afterMatch = targetNode.OwnerDocument.CreateTextNode(textNode.OuterHtml.Substring(match.Index + match.Length));
+
+                if (AllowEmailAddress(match.Value, userIsAuthenticated, excludedAddress))
+                {
+                    var replacement = CreateObfuscatedLink(targetNode.OwnerDocument, match.Value);
+                    targetNode.ReplaceChild(replacement, textNode);
+                    targetNode.InsertBefore(beforeMatch, replacement);
+                    targetNode.InsertAfter(afterMatch, replacement);
                 }
                 else
                 {
-                    if (excludedAddress == match.Value)
-                    {
-                        return ObfuscatedLink(match.Value);
-                    }
+                    var signInLink = CreateSignInLink(targetNode.OwnerDocument);
 
-                    return @"(email address available – please <a href=""/account/sign-in"">sign in</a>)";
+                    targetNode.ReplaceChild(signInLink, textNode);
+                    targetNode.InsertBefore(beforeMatch, signInLink);
+                    targetNode.InsertBefore(targetNode.OwnerDocument.CreateTextNode(REPLACEMENT_HTML_BEFORE_LINK), signInLink);
+                    targetNode.InsertAfter(afterMatch, signInLink);
+                    targetNode.InsertAfter(targetNode.OwnerDocument.CreateTextNode(REPLACEMENT_HTML_AFTER_LINK), signInLink);
                 }
-            });
+
+                ProtectTextNode(afterMatch, afterMatch.ParentNode, userIsAuthenticated, excludedAddress);
+            }
         }
 
-        private static string ObfuscatedLink(string emailAddress)
+        private static HtmlNode CreateSignInLink(HtmlDocument document)
+        {
+            var link = document.CreateElement("a");
+            link.SetAttributeValue("href", "/account/sign-in");
+            link.InnerHtml = "sign in";
+            return link;
+        }
+
+        private static HtmlNode CreateObfuscatedLink(HtmlDocument document, string emailAddress)
         {
             var obfuscatedEmail = Obfuscate(emailAddress);
-            return $@"<a href=""&#0109;&#0097;&#0105;&#0108;&#0116;&#0111;&#0058;{obfuscatedEmail}"">{obfuscatedEmail}</a>";
+            var link = document.CreateElement("a");
+            link.SetAttributeValue("href", $"&#0109;&#0097;&#0105;&#0108;&#0116;&#0111;&#0058;{obfuscatedEmail}");
+            link.InnerHtml = obfuscatedEmail;
+            return link;
         }
 
         /// <summary>
