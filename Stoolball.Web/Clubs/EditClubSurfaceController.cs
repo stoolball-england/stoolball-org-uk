@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Clubs;
 using Stoolball.Security;
+using Stoolball.Web.Metadata;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -60,6 +62,9 @@ namespace Stoolball.Web.Clubs
             };
             viewModel.IsAuthorized = isAuthorized;
             viewModel.Metadata.PageTitle = $"Edit {club.ClubName}";
+
+            viewModel.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
+
             return View("EditClub", viewModel);
         }
     }

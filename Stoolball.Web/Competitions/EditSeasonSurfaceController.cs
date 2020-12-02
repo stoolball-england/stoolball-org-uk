@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Security;
+using Stoolball.Web.Metadata;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -78,6 +79,9 @@ namespace Stoolball.Web.Competitions
             };
             viewModel.IsAuthorized = isAuthorized;
             viewModel.Metadata.PageTitle = $"Edit {beforeUpdate.SeasonFullNameAndPlayerType()}";
+
+            viewModel.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
+
             return View("EditSeason", viewModel);
         }
     }

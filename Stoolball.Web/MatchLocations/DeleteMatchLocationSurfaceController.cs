@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Security;
+using Stoolball.Web.Metadata;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -69,6 +70,9 @@ namespace Stoolball.Web.MatchLocations
             }
 
             viewModel.Metadata.PageTitle = $"Delete " + viewModel.MatchLocation.NameAndLocalityOrTown();
+
+            viewModel.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.MatchLocations, Url = new Uri(Constants.Pages.MatchLocationsUrl, UriKind.Relative) });
+
             return View("DeleteMatchLocation", viewModel);
         }
     }

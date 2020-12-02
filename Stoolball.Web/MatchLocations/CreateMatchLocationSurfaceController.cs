@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Security;
+using Stoolball.Web.Metadata;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -93,6 +95,9 @@ namespace Stoolball.Web.MatchLocations
             };
             viewModel.IsAuthorized = isAuthorized;
             viewModel.Metadata.PageTitle = $"Add a ground or sports centre";
+
+            viewModel.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.MatchLocations, Url = new Uri(Constants.Pages.MatchLocationsUrl, UriKind.Relative) });
+
             return View("CreateMatchLocation", viewModel);
         }
     }
