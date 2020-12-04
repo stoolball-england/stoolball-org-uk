@@ -59,9 +59,10 @@ stoolball.consent = {
     const container = document.createElement("div");
     container.classList.add("container-xl");
     const request = document.createElement("p");
+    request.classList.add("consent__request");
     request.appendChild(
       document.createTextNode(
-        "This website saves information in cookies on your device. Is that OK?"
+        "Our website works better if it can save information on your device. Is that OK?"
       )
     );
     consent.appendChild(container);
@@ -75,8 +76,8 @@ stoolball.consent = {
       "btn btn-primary d-none",
       "Accept selected"
     );
-    const rejectButton = createButton("btn btn-secondary", "Reject all");
-    const choicesButton = createButton("btn btn-secondary", "Show choices");
+    const rejectButton = createButton("btn btn-danger", "Reject all");
+    const choicesButton = createButton("btn btn-light", "Show choices");
 
     const choices = document.createElement("div");
     choices.setAttribute("class", "d-none");
@@ -101,6 +102,17 @@ stoolball.consent = {
       "Social media – show better links to services like Facebook and Twitter, but they will track you"
     );
 
+    const linkToCookiePolicy = document.createElement("a");
+    linkToCookiePolicy.href = "/privacy/cookies/";
+    linkToCookiePolicy.appendChild(document.createTextNode("cookies"));
+    const cookiePara = document.createElement("p");
+    cookiePara.classList.add("consent__policy");
+    cookiePara.appendChild(document.createTextNode("Read more about "));
+    cookiePara.appendChild(linkToCookiePolicy);
+    cookiePara.appendChild(
+      document.createTextNode(" to understand your choices.")
+    );
+
     acceptButton.addEventListener("click", function (e) {
       e.preventDefault();
       saveChoices(true, true, true);
@@ -121,11 +133,12 @@ stoolball.consent = {
 
     choicesButton.addEventListener("click", function (e) {
       e.preventDefault();
-      choices.setAttribute("class", "d-block");
+      choices.setAttribute("class", "d-block consent__checkboxes");
       acceptSelectedButton.classList.remove("d-none");
       acceptSelectedButton.classList.add("d-inline");
       choicesButton.classList.add("d-none");
       consent.classList.add("consent__choices");
+      functional.querySelector("input").focus();
     });
 
     rejectButton.addEventListener("click", function (e) {
@@ -138,6 +151,7 @@ stoolball.consent = {
     choices.appendChild(functional);
     choices.appendChild(improvement);
     choices.appendChild(tracking);
+    choices.appendChild(cookiePara);
 
     container.appendChild(choices);
 
