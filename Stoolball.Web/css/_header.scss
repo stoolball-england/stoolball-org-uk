@@ -121,9 +121,14 @@ $offset-container-padding: -(($grid-gutter-width/2)-$space-for-header-focus-ring
     }
 }
 
+// Round off the account image when signed-in
+.header__account__account-image {
+    border-radius: 50%;
+}
+
 // Dropdown 'Hamburger' menu for small screens, and offset the padding of .container-xl
 .header__menu-small {
-    margin-right: $offset-container-padding; 
+    margin-right: $offset-container-padding;
 }
 
 // Hide the 'Hamburger' menu when the main menu appears, and move padding offset to 'Account' menu
