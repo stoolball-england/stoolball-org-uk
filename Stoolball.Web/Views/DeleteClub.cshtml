@@ -15,21 +15,6 @@
 
 <h1>Delete @Model.Club.ClubName</h1>
 
-@if (!Model.Deleted)
-{
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a class="nav-link" href="@Model.Club.ClubRoute">Summary</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="@Model.Club.ClubRoute/matches">Matches</a>
-        </li>
-        <li class="nav-item">
-            <em class="nav-link active">Edit</em>
-        </li>
-    </ul>
-}
-
 @if (Model.IsAuthorized[AuthorizedAction.DeleteClub])
 {
     if (!Model.Deleted)

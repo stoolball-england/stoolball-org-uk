@@ -23,18 +23,6 @@
 
 <h1>Add a team</h1>
 
-<ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a class="nav-link" href="/teams">Search</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="/clubs/add">Add club</a>
-    </li>
-    <li class="nav-item">
-        <em class="nav-link active">Add team</em>
-    </li>
-</ul>
-
 @if (Model.IsAuthorized[AuthorizedAction.CreateTeam])
 {
     using (Html.BeginUmbracoForm<CreateTeamSurfaceController>

@@ -21,15 +21,6 @@
 
 <h1>Add a ground or sports centre</h1>
 
-<ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a class="nav-link" href="/locations">Search</a>
-    </li>
-    <li class="nav-item">
-        <em class="nav-link active">Add</em>
-    </li>
-</ul>
-
 @if (Model.IsAuthorized[AuthorizedAction.CreateMatchLocation])
 {
     using (Html.BeginUmbracoForm<CreateMatchLocationSurfaceController>

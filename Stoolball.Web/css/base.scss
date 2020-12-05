@@ -8,13 +8,20 @@
 @import "../Content/bootstrap/transitions";
 @import "../Content/bootstrap/_dropdown.scss";
 @import "../Content/bootstrap/_type.scss"; // for .list-unstyled
+@import "_dropdown.scss";
 @import "_header.scss";
 
 /* Required for nav */
 @import "_breadcrumb.scss";
+@import "_tabs.scss";
 
 /* Makes .sr-only available */
 @import "../Content/bootstrap/utilities/_screenreaders";
+
+/* Required for forms and form buttons */
+@import "../Content/bootstrap/_forms.scss";
+@import "../Content/bootstrap/_buttons.scss";
+@import "_forms.scss";
 
 /* Images - don't let them overflow their container */
 img { max-width: 100%; }
@@ -33,13 +40,17 @@ a:hover {
     color: $link-color;
 }
 
-a:focus {
+a:focus, a:active {
     outline: 2px solid; // Inherit the link colour
     outline-offset: 2px;
     box-shadow: none;
 }
 
 blockquote { font-style: italic; }
+
+h1 { 
+    margin-bottom: 1rem; 
+}
 
 /* Required to use boxed content using alert styles */
 @import "../Content/bootstrap/_alert.scss";
@@ -61,17 +72,6 @@ blockquote { font-style: italic; }
 */
 .gravatar { flex: 0 0 60px; }
 .gravatar > img { border-radius: 50%; }
-
-/* Required for tabbed navigaton */
-@import "../Content/bootstrap/_nav.scss";
-
-/* Add some space below a tabbed navigation */
-.nav-tabs { margin-bottom: $spacer; }
-
-/* Required for forms and form buttons */
-@import "../Content/bootstrap/_forms.scss";
-@import "../Content/bootstrap/_buttons.scss";
-@import "_forms.scss";
 
 /* For Umbraco editing */
 @import "_blocks.scss";

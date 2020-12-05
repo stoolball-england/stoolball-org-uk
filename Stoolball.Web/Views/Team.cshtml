@@ -22,8 +22,8 @@
     </li>
     @if (Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam])
     {
-        <li class="nav-item">
-            <a class="nav-link" href="@Model.Team.TeamRoute/edit">Edit</a>
+        <li class="nav-item nav-item-admin">
+            <a class="nav-link nav-link-edit" href="@Model.Team.TeamRoute/edit">Edit team</a>
         </li>
     }
 </ul>

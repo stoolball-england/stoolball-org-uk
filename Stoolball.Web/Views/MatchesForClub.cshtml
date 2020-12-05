@@ -13,12 +13,6 @@
     <li class="nav-item">
         <em class="nav-link active">Matches</em>
     </li>
-    @if (Model.IsAuthorized[AuthorizedAction.EditClub] || Model.IsAuthorized[AuthorizedAction.DeleteClub])
-    {
-        <li class="nav-item">
-            <a class="nav-link" href="@Model.Club.ClubRoute/edit">Edit</a>
-        </li>
-    }
 </ul>
 
 @if (Model.Matches.Matches.Count > 0)

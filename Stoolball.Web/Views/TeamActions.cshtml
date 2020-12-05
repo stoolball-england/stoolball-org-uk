@@ -7,18 +7,6 @@
 
 <h1>Edit @Model.Team.TeamName</h1>
 
-<ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.Team.TeamRoute">Summary</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.Team.TeamRoute/matches">Matches</a>
-    </li>
-    <li class="nav-item">
-        <em class="nav-link active">Edit</em>
-    </li>
-</ul>
-
 @if (Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam])
 {
     <dl>

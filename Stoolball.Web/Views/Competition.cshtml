@@ -13,8 +13,11 @@
 </li>
 @if (Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
 {
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.Competition.CompetitionRoute/edit">Edit</a>
+    <li class="nav-item nav-item-admin">
+        <a class="nav-link nav-link-add" href="@Model.Competition.CompetitionRoute/add">Add season</a>
+    </li>
+    <li class="nav-item nav-item-admin">
+        <a class="nav-link nav-link-edit" href="@Model.Competition.CompetitionRoute/edit">Edit competition</a>
     </li>
 }
 </ul>

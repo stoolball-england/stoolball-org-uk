@@ -20,15 +20,6 @@
 
 <h1>Add a season in @the@Model.Season.Competition.CompetitionName</h1>
 
-<ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.Season.Competition.CompetitionRoute">Summary</a>
-    </li>
-    <li class="nav-item">
-        <em class="nav-link active">Edit</em>
-    </li>
-</ul>
-
 @if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
 {
     using (Html.BeginUmbracoForm<CreateSeasonSurfaceController>

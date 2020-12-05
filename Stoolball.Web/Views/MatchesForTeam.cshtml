@@ -1,5 +1,20 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamViewModel>
+@using Stoolball.Web.Matches
+@using Stoolball.Matches
 @using Stoolball.Security
+@{
+    var matchMenu = new AddMatchMenuViewModel { BaseRoute = Model.Team.TeamRoute, EnableTournaments = true };
+
+    if (Model.IsInACurrentLeague)
+    {
+        matchMenu.MatchTypes.Add(MatchType.LeagueMatch);
+    }
+    if (Model.IsInACurrentKnockoutCompetition)
+    {
+        matchMenu.MatchTypes.Add(MatchType.KnockoutMatch);
+    }
+    matchMenu.MatchTypes.Add(MatchType.FriendlyMatch);
+}
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -20,25 +35,8 @@
     <li class="nav-item">
         <em class="nav-link active">Matches</em>
     </li>
-    @if (Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam])
-    {
-        <li class="nav-item">
-            <a class="nav-link" href="@Model.Team.TeamRoute/edit">Edit</a>
-        </li>
-    }
+    @Html.Partial("_AddMatchMenu", matchMenu)
 </ul>
-
-<p>
-@if (Model.IsInACurrentLeague)
-{
-    <a href="@Model.Team.TeamRoute/matches/add/league" class="btn btn-primary">Add a league match</a>
-}
-@if (Model.IsInACurrentKnockoutCompetition)
-{
-    <a href="@Model.Team.TeamRoute/matches/add/knockout" class="btn btn-primary">Add a knockout match</a>
-}
-<a href="@Model.Team.TeamRoute/matches/add/friendly" class="btn btn-primary">Add a friendly match</a>
-<a href="@Model.Team.TeamRoute/matches/add/tournament" class="btn btn-primary">Add a tournament</a></p>
 
 @if (Model.Matches.Matches.Count > 0)
 {

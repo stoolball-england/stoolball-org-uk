@@ -1,0 +1,49 @@
+﻿@model AddMatchMenuViewModel
+@using Stoolball.Web.Matches
+@using Stoolball.Matches
+@using Humanizer
+@{
+    var matchTypes = Model.MatchTypes.Where(x => x != MatchType.Practice).ToList(); // not supported yet
+    var totalMatchTypesLarge = matchTypes.Count();
+    var totalMatchTypesSmall = totalMatchTypesLarge + (Model.EnableTournaments ? 1 : 0);
+
+    if (totalMatchTypesSmall > 1)
+    {
+        var onlyWithATournament = (totalMatchTypesLarge == 1) ? "d-md-none" : string.Empty;
+        <li class="nav-item nav-item-admin nav-item-admin-sm-last @onlyWithATournament">
+            <div class="dropdown">
+                <button class="btn nav-link nav-link-add" type="button" id="add-match-menu__button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Add match
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="add-match-menu__button">
+                    @for (var i=0;i< totalMatchTypesLarge; i++)
+                    {
+                        var lastChildClass = (i == totalMatchTypesLarge - 1) ? "last-child-md" : string.Empty;
+                        <li class="dropdown-item @lastChildClass">
+                            <a href="@Model.BaseRoute/matches/add/@matchTypes[i].ToString().ToLowerInvariant().Replace("match", string.Empty)">Add @matchTypes[i].Humanize(LetterCasing.LowerCase)</a>
+                        </li>
+                    }
+                    @if (Model.EnableTournaments)
+                    {
+                        <li class="dropdown-item d-md-none">
+                            <a href="@Model.BaseRoute/matches/add/tournament">Add tournament</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </li>
+    }
+    if (totalMatchTypesLarge == 1)
+    {
+        var onlyWhenMenuIsHidden = (totalMatchTypesSmall == 2) ? "d-none d-md-flex nav-item-admin-md-first" : string.Empty;
+        <li class="nav-item nav-item-admin @onlyWhenMenuIsHidden">
+            <a href="@Model.BaseRoute/matches/add/@matchTypes[0].ToString().ToLowerInvariant().Replace("match", string.Empty)" class="nav-link nav-link-add">Add match</a>
+        </li>
+    }
+    if (Model.EnableTournaments)
+    {
+        <li class="nav-item nav-item-admin d-none d-md-flex">
+            <a href="@Model.BaseRoute/matches/add/tournament" class="nav-link nav-link-add">Add tournament</a>
+        </li>
+    }
+}

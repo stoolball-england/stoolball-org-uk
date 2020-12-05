@@ -37,6 +37,23 @@
     <li class="nav-item">
         <em class="nav-link active">Current tab</em>
     </li>
+    <li class="nav-item nav-item-admin">
+        <div class="dropdown">
+            <button class="btn nav-link nav-link-add" type="button" id="add-menu__button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Add a thing
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="add-menu__button">
+                <li class="dropdown-item"><a href="https://example.org">Add a thing</a></li>
+                <li class="dropdown-item"><a href="https://example.org">Add another thing</a></li>
+            </ul>
+        </div>
+    </li>
+    <li class="nav-item nav-item-admin d-none d-md-flex">
+        <a class="nav-link nav-link-add" href="https://example.org">Add another thing</a>
+    </li>
+    <li class="nav-item nav-item-admin">
+        <a class="nav-link nav-link-edit" href="https://example.org">Edit a thing</a>
+    </li>
 </ul>
 <p>Text below tabs.</p>
 <h2>Typography</h2>

@@ -16,11 +16,10 @@
 
 $zindex-header: 900;
 $header_background: $black;
-$header_selected_background: #444;
+$header_selected_background: #555;
 $space-for-header-focus-ring: 3px;
 $minimum-clickable-size: 44px;
 $offset-container-padding: -(($grid-gutter-width/2)-$space-for-header-focus-ring); // Applied to the the final icon, offset the padding of .container-xl, but allow space for the focus ring to show
-$dropdown-border-radius: 0 0 $border-radius*2 $border-radius*2;
 
 // Create some space between the header and the following content
 .header {
@@ -70,6 +69,7 @@ $dropdown-border-radius: 0 0 $border-radius*2 $border-radius*2;
 .header__logo-inner {
     display: block;
     padding: 10px 15px;
+    box-shadow: none;
 }
 
 // Show a focus ring on the home link when navigating with the keyboard
@@ -170,33 +170,11 @@ $dropdown-border-radius: 0 0 $border-radius*2 $border-radius*2;
 .header .dropdown-menu {
     background: $header_background;
     color: $white;
-    margin: 0;
-    padding: 0;
-    border-radius: $dropdown-border-radius;
     z-index: $zindex-header;
-}
-
-.header .dropdown-item:last-child {
-    border-radius: $dropdown-border-radius;
-}
-
-.header .dropdown-item:last-child > * {
-    padding-bottom: $spacer/2;
-    border-radius: $dropdown-border-radius;
-}
-
-// Move the padding from the menu item li to its child element so that links clickable across the 
-// whole width of a menu without dead areas on the edges
-.header .dropdown-item {
-    padding: 0;
 }
 
 .header .dropdown-item > * {
     color: $white;
-    display: block;
-    padding: $spacer/4 $spacer*1.5;
-    font-style: normal;
-    box-shadow: none;
 }
 
 // Show a focus ring when navigating with the keyboard

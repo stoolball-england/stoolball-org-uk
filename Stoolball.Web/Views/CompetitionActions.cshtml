@@ -6,15 +6,6 @@
 
 <h1>Edit @Model.Competition.CompetitionNameAndPlayerType()</h1>
 
-<ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.Competition.CompetitionRoute">Summary</a>
-    </li>
-    <li class="nav-item">
-        <em class="nav-link active">Edit</em>
-    </li>
-</ul>
-
 @if (Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
 {
     @Html.Partial("_CompetitionActions", Model)

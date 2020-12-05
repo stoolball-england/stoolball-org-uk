@@ -38,8 +38,8 @@
     </li>
     @if (Model.IsAuthorized[AuthorizedAction.EditMatch] || Model.IsAuthorized[AuthorizedAction.EditMatchResult] || Model.IsAuthorized[AuthorizedAction.DeleteMatch])
     {
-        <li class="nav-item">
-            <a class="nav-link" href="@Model.Match.MatchRoute/edit">Edit</a>
+        <li class="nav-item nav-item-admin">
+            <a class="nav-link nav-link-edit" href="@Model.Match.MatchRoute/edit">Edit match</a>
         </li>
     }
     </ul>

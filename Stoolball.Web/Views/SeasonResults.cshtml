@@ -28,12 +28,6 @@
     <li class="nav-item">
         <em class="nav-link active">Results</em>
     </li>
-    @if (Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
-    {
-        <li class="nav-item">
-            <a class="nav-link" href="@Model.Season.SeasonRoute/edit">Edit</a>
-        </li>
-    }
 </ul>
 
 @{

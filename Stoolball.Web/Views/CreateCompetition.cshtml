@@ -17,15 +17,6 @@
 
 <h1>Add a competition</h1>
 
-<ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a href="/competitions" class="nav-link">Search</a>
-    </li>
-    <li class="nav-item">
-        <em class="nav-link active">Add</em>
-    </li>
-</ul>
-
 @if (Model.IsAuthorized[AuthorizedAction.CreateCompetition])
 {
     using (Html.BeginUmbracoForm<CreateCompetitionSurfaceController>

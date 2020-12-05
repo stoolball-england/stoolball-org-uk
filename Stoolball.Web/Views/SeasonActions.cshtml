@@ -11,27 +11,6 @@
 
 <h1>Edit @Model.Season.SeasonFullName()</h1>
 
-<ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.Season.SeasonRoute">Summary</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
-    </li>
-    @if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) ||
-        Model.Season.MatchTypes.Contains(MatchType.KnockoutMatch) ||
-        Model.Season.MatchTypes.Contains(MatchType.FriendlyMatch) ||
-        !string.IsNullOrEmpty(Model.Season.Results))
-    {
-        <li class="nav-item">
-            <a class="nav-link" href="@Model.Season.SeasonRoute/results">Results</a>
-        </li>
-    }
-    <li class="nav-item">
-        <em class="nav-link active">Edit</em>
-    </li>
-</ul>
-
 @if (Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
 {
     <h2>Settings for @the@Model.Season.Competition.CompetitionName</h2>

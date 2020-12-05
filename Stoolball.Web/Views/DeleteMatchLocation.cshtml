@@ -15,21 +15,6 @@
 
 <h1>Delete @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</h1>
 
-@if (!Model.Deleted)
-{
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute">Summary</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute/matches">Matches</a>
-        </li>
-        <li class="nav-item">
-            <em class="nav-link active">Edit</em>
-        </li>
-    </ul>
-}
-
 @if (Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation])
 {
     if (!Model.Deleted)

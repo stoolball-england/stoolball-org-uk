@@ -20,18 +20,6 @@
 
 <h1>Edit @Model.Club.ClubName</h1>
 
-<ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.Club.ClubRoute">Summary</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.Club.ClubRoute/matches">Matches</a>
-    </li>
-    <li class="nav-item">
-        <em class="nav-link active">Edit</em>
-    </li>
-</ul>
-
 @if (Model.IsAuthorized[AuthorizedAction.EditClub])
 {
     using (Html.BeginUmbracoForm<EditClubSurfaceController>

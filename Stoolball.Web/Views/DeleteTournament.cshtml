@@ -16,18 +16,6 @@
 
 <h1>Delete @Model.Tournament.TournamentFullNameAndPlayerType(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
 
-@if (!Model.Deleted)
-{
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a class="nav-link" href="@Model.Tournament.TournamentRoute">Summary</a>
-        </li>
-        <li class="nav-item">
-            <em class="nav-link active">Edit</em>
-        </li>
-    </ul>
-}
-
 @if (Model.IsAuthorized[AuthorizedAction.DeleteTournament])
 {
     if (!Model.Deleted)

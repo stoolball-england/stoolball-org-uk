@@ -844,6 +844,8 @@
     <Content Include="Media\Web.config" />
     <Content Include="css\_breadcrumb.scss" />
     <Content Include="css\_functions.scss" />
+    <Content Include="css\_tabs.scss" />
+    <Content Include="css\_dropdown.scss" />
     <None Include="Status\offline.json" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
@@ -1095,6 +1097,7 @@
     <Compile Include="ContentPage\CookiesController.cs" />
     <Compile Include="DapperComposer.cs" />
     <Compile Include="Logging\UmbracoLogWrapper.cs" />
+    <Compile Include="Matches\AddMatchMenuViewModel.cs" />
     <Compile Include="Metadata\Breadcrumb.cs" />
     <Compile Include="Products\ProductList.cs" />
     <Compile Include="Products\ProductListController.cs" />
@@ -1354,6 +1357,7 @@
     <Content Include="Views\Partials\_Header.cshtml" />
     <Content Include="Views\Partials\_Breadcrumb.cshtml" />
     <Content Include="Views\Partials\_Footer.cshtml" />
+    <Content Include="Views\Partials\_AddMatchMenu.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

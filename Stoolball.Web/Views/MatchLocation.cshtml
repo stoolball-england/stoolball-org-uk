@@ -20,8 +20,8 @@ Html.RequiresJs("/matchlocations/match-location.js");
     </li>
     @if (Model.IsAuthorized[AuthorizedAction.EditMatchLocation] || Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation])
     {
-        <li class="nav-item">
-            <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute/edit">Edit</a>
+        <li class="nav-item nav-item-admin">
+            <a class="nav-link nav-link-edit" href="@Model.MatchLocation.MatchLocationRoute/edit">Edit ground or sports centre</a>
         </li>
     }
 </ul>

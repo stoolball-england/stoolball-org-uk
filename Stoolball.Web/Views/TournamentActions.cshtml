@@ -6,15 +6,6 @@
 }
 <h1>Edit @Model.Tournament.TournamentFullNameAndPlayerType(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
 
-<ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.Tournament.TournamentRoute">Summary</a>
-    </li>
-    <li class="nav-item">
-        <em class="nav-link active">Edit</em>
-    </li>
-</ul>
-
 @if (Model.IsAuthorized[AuthorizedAction.EditTournament] || Model.IsAuthorized[AuthorizedAction.DeleteTournament])
 {
 <dl>
