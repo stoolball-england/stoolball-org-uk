@@ -1,14 +1,14 @@
-﻿using Moq;
-using Stoolball.Dates;
-using Stoolball.Matches;
-using Stoolball.Security;
-using Stoolball.Web.Matches;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Moq;
+using Stoolball.Dates;
+using Stoolball.Matches;
+using Stoolball.Security;
+using Stoolball.Web.Matches;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -76,7 +76,7 @@ namespace Stoolball.Web.Tests.Matches
         public async Task Route_matching_tournament_returns_TournamentViewModel()
         {
             var tournamentDataSource = new Mock<ITournamentDataSource>();
-            tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentName = "Example tournament" });
+            tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentName = "Example tournament", TournamentRoute = "/tournaments/example" });
 
             var matchDataSource = new Mock<IMatchListingDataSource>();
             matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());

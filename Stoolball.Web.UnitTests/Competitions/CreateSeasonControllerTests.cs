@@ -56,7 +56,7 @@ namespace Stoolball.Web.Tests.Competitions
         public async Task Returns_SeasonViewModel()
         {
             var dataSource = new Mock<ICompetitionDataSource>();
-            dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionName = "Example" });
+            dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionName = "Example", CompetitionRoute = "/competitions/example" });
 
             using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {
@@ -70,7 +70,7 @@ namespace Stoolball.Web.Tests.Competitions
         public async Task FromYear_defaults_to_current_year()
         {
             var dataSource = new Mock<ICompetitionDataSource>();
-            dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionName = "Example" });
+            dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionName = "Example", CompetitionRoute = "/competitions/example" });
 
             using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {
@@ -84,7 +84,7 @@ namespace Stoolball.Web.Tests.Competitions
         public async Task UntilYear_defaults_to_zero()
         {
             var dataSource = new Mock<ICompetitionDataSource>();
-            dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionName = "Example" });
+            dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionName = "Example", CompetitionRoute = "/competitions/example" });
 
             using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {
@@ -98,7 +98,7 @@ namespace Stoolball.Web.Tests.Competitions
         public async Task PlayersPerTeam_defaults_to_11()
         {
             var dataSource = new Mock<ICompetitionDataSource>();
-            dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionName = "Example" });
+            dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionName = "Example", CompetitionRoute = "/competitions/example" });
 
             using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {

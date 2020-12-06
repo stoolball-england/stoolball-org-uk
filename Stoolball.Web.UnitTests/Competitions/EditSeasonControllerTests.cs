@@ -1,12 +1,12 @@
-﻿using Moq;
-using Stoolball.Competitions;
-using Stoolball.Security;
-using Stoolball.Web.Competitions;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Moq;
+using Stoolball.Competitions;
+using Stoolball.Security;
+using Stoolball.Web.Competitions;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -70,7 +70,14 @@ namespace Stoolball.Web.Tests.Competitions
         public async Task Route_matching_season_returns_SeasonViewModel()
         {
             var dataSource = new Mock<ISeasonDataSource>();
-            dataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season());
+            dataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season
+            {
+                Competition = new Competition
+                {
+                    CompetitionRoute = "/competitions/example"
+                },
+                SeasonRoute = "/competitions/example/1234"
+            });
 
             using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {

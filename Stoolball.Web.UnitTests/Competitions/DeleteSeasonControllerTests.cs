@@ -1,13 +1,13 @@
-﻿using Moq;
-using Stoolball.Competitions;
-using Stoolball.Matches;
-using Stoolball.Security;
-using Stoolball.Web.Competitions;
-using System;
+﻿using System;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Moq;
+using Stoolball.Competitions;
+using Stoolball.Matches;
+using Stoolball.Security;
+using Stoolball.Web.Competitions;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -78,7 +78,8 @@ namespace Stoolball.Web.Tests.Competitions
             dataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season
             {
                 SeasonId = Guid.NewGuid(),
-                Competition = new Competition { CompetitionName = "Example" }
+                Competition = new Competition { CompetitionName = "Example", CompetitionRoute = "/competitions/example" },
+                SeasonRoute = "/competitions/example/1234"
             });
 
             using (var controller = new TestController(dataSource.Object, UmbracoHelper))

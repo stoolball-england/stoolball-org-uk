@@ -1,12 +1,12 @@
-﻿using Moq;
-using Stoolball.Clubs;
-using Stoolball.Security;
-using Stoolball.Web.Clubs;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Moq;
+using Stoolball.Clubs;
+using Stoolball.Security;
+using Stoolball.Web.Clubs;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -70,7 +70,7 @@ namespace Stoolball.Web.Tests.Clubs
         public async Task Route_matching_club_returns_ClubViewModel()
         {
             var dataSource = new Mock<IClubDataSource>();
-            dataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).ReturnsAsync(new Club());
+            dataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).ReturnsAsync(new Club { ClubRoute = "/clubs/example" });
 
             using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {

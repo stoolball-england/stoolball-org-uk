@@ -46,7 +46,7 @@ namespace Stoolball.Competitions
         /// <returns></returns>
         public string SeasonFullNameAndPlayerType()
         {
-            var competitionName = Competition?.CompetitionName;
+            var competitionName = Competition?.CompetitionName ?? string.Empty;
             var playerType = string.Empty;
 
             var type = Competition?.PlayerType.ToString().Humanize(LetterCasing.Sentence);

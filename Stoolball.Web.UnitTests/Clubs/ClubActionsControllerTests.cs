@@ -70,7 +70,7 @@ namespace Stoolball.Web.Tests.Clubs
         public async Task Route_matching_club_returns_ClubViewModel()
         {
             var dataSource = new Mock<IClubDataSource>();
-            dataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).ReturnsAsync(new Club());
+            dataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).ReturnsAsync(new Club { ClubRoute = "/clubs/example" });
 
             using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {

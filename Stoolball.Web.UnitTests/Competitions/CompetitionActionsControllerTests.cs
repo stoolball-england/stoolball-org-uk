@@ -1,12 +1,12 @@
-﻿using Moq;
-using Stoolball.Competitions;
-using Stoolball.Security;
-using Stoolball.Web.Competitions;
-using System;
+﻿using System;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Moq;
+using Stoolball.Competitions;
+using Stoolball.Security;
+using Stoolball.Web.Competitions;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -73,7 +73,7 @@ namespace Stoolball.Web.Tests.Competitions
         public async Task Route_matching_competition_returns_CompetitionViewModel()
         {
             var dataSource = new Mock<ICompetitionDataSource>();
-            dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionName = "Example" });
+            dataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionName = "Example", CompetitionRoute = "/competitions/example" });
 
             using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {

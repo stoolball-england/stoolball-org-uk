@@ -160,7 +160,8 @@ namespace Stoolball.Web.Tests.Matches
                 MatchResultType = matchResultType,
                 MatchInnings = new List<MatchInnings> {
                     new MatchInnings{ InningsOrderInMatch = 1 }
-                }
+                },
+                MatchRoute = "/matches/example"
             });
 
             var urlParser = new Mock<IMatchInningsUrlParser>();
@@ -185,7 +186,8 @@ namespace Stoolball.Web.Tests.Matches
                 MatchResultType = MatchResultType.HomeWin,
                 MatchInnings = new List<MatchInnings> {
                     new MatchInnings{ InningsOrderInMatch = 1 }
-                }
+                },
+                MatchRoute = "/matches/example"
             });
 
             var urlParser = new Mock<IMatchInningsUrlParser>();
@@ -211,6 +213,7 @@ namespace Stoolball.Web.Tests.Matches
                 MatchInnings = new List<MatchInnings> {
                     new MatchInnings{ InningsOrderInMatch = 1 }
                 },
+                MatchRoute = "/matches/example",
                 Tournament = new Tournament { TournamentName = "Example tournament" }
             });
 
@@ -237,6 +240,7 @@ namespace Stoolball.Web.Tests.Matches
                 MatchInnings = new List<MatchInnings> {
                     new MatchInnings{ InningsOrderInMatch = 1, Overs = 9, OversBowled = new List<Over>() }
                 },
+                MatchRoute = "/matches/example",
             });
 
             var urlParser = new Mock<IMatchInningsUrlParser>();

@@ -1,16 +1,16 @@
-﻿using Moq;
-using Stoolball.Competitions;
-using Stoolball.Dates;
-using Stoolball.Matches;
-using Stoolball.Security;
-using Stoolball.Web.Matches;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Moq;
+using Stoolball.Competitions;
+using Stoolball.Dates;
+using Stoolball.Matches;
+using Stoolball.Security;
+using Stoolball.Web.Matches;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -103,7 +103,7 @@ namespace Stoolball.Web.Tests.Matches
         public async Task Route_matching_match_in_the_future_returns_EditLeagueMatchViewModel()
         {
             var matchDataSource = new Mock<IMatchDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { StartTime = DateTime.UtcNow.AddHours(1), Season = new Season() });
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { StartTime = DateTime.UtcNow.AddHours(1), Season = new Season(), MatchRoute = "/matches/example" });
 
             var seasonDataSource = new Mock<ISeasonDataSource>();
             seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult(new Season()));
@@ -122,7 +122,7 @@ namespace Stoolball.Web.Tests.Matches
         public async Task MatchU002ESeason_gets_SeasonId_from_Route()
         {
             var matchDataSource = new Mock<IMatchDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { StartTime = DateTime.UtcNow.AddHours(1), Season = new Season() });
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { StartTime = DateTime.UtcNow.AddHours(1), Season = new Season(), MatchRoute = "/matches/example" });
 
             var season = new Season { SeasonId = Guid.NewGuid() };
             var seasonDataSource = new Mock<ISeasonDataSource>();
@@ -142,7 +142,7 @@ namespace Stoolball.Web.Tests.Matches
         public async Task ModelU002ESeason_gets_SeasonId_from_Route()
         {
             var matchDataSource = new Mock<IMatchDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { StartTime = DateTime.UtcNow.AddHours(1), Season = new Season() });
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { StartTime = DateTime.UtcNow.AddHours(1), Season = new Season(), MatchRoute = "/matches/example" });
 
             var season = new Season { SeasonId = Guid.NewGuid() };
             var seasonDataSource = new Mock<ISeasonDataSource>();
@@ -162,7 +162,7 @@ namespace Stoolball.Web.Tests.Matches
         public async Task ModelU002EPossibleSeasons_gets_SeasonId_from_Route()
         {
             var matchDataSource = new Mock<IMatchDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { StartTime = DateTime.UtcNow.AddHours(1), Season = new Season() });
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { StartTime = DateTime.UtcNow.AddHours(1), Season = new Season(), MatchRoute = "/matches/example" });
 
             var season = new Season { SeasonId = Guid.NewGuid() };
             var seasonDataSource = new Mock<ISeasonDataSource>();

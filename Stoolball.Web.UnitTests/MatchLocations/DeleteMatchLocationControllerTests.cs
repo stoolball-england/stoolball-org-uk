@@ -1,13 +1,13 @@
-﻿using Moq;
-using Stoolball.Matches;
-using Stoolball.MatchLocations;
-using Stoolball.Security;
-using Stoolball.Web.MatchLocations;
-using System;
+﻿using System;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Moq;
+using Stoolball.Matches;
+using Stoolball.MatchLocations;
+using Stoolball.Security;
+using Stoolball.Web.MatchLocations;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -75,7 +75,7 @@ namespace Stoolball.Web.Tests.MatchLocations
         public async Task Route_matching_location_returns_DeleteMatchLocationViewModel()
         {
             var dataSource = new Mock<IMatchLocationDataSource>();
-            dataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), true)).ReturnsAsync(new MatchLocation { MatchLocationId = Guid.NewGuid() });
+            dataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), true)).ReturnsAsync(new MatchLocation { MatchLocationId = Guid.NewGuid(), MatchLocationRoute = "/locations/example" });
 
             using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {

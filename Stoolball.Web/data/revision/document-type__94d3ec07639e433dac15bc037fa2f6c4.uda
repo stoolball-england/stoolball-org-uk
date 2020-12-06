@@ -1,8 +1,6 @@
 {
-  "DefaultTemplate": "umb://template/8f6a8b2fbd0f4f7bb041d6ea48863d33",
-  "AllowedTemplates": [
-    "umb://template/8f6a8b2fbd0f4f7bb041d6ea48863d33"
-  ],
+  "DefaultTemplate": null,
+  "AllowedTemplates": [],
   "Icon": "icon-sweatshirt color-black",
   "Thumbnail": "folder.png",
   "Description": null,
@@ -124,15 +122,10 @@
       "Udi": "umb://document-type-container/5be42d3707a847e7b9b7d51af38bdac2",
       "Ordering": true,
       "Mode": 0
-    },
-    {
-      "Udi": "umb://template/8f6a8b2fbd0f4f7bb041d6ea48863d33",
-      "Ordering": true,
-      "Mode": 0
     }
   ],
   "Name": "Product preview",
   "Alias": "productPreview",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.5"
+  "__version": "3.5.2"
 }

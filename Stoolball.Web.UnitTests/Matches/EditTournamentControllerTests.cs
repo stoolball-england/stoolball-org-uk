@@ -1,13 +1,13 @@
-﻿using Moq;
-using Stoolball.Dates;
-using Stoolball.Matches;
-using Stoolball.Security;
-using Stoolball.Web.Matches;
-using System;
+﻿using System;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Moq;
+using Stoolball.Dates;
+using Stoolball.Matches;
+using Stoolball.Security;
+using Stoolball.Web.Matches;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -76,7 +76,7 @@ namespace Stoolball.Web.Tests.Matches
         public async Task Route_matching_tournament_returns_EditTournamentViewModel()
         {
             var tournamentDataSource = new Mock<ITournamentDataSource>();
-            tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentName = "Example tournament" });
+            tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentName = "Example tournament", TournamentRoute = "/tournaments/example" });
 
             using (var controller = new TestController(tournamentDataSource.Object, new Uri("https://example.org/tournaments/example-tournament"), UmbracoHelper))
             {

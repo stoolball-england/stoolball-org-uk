@@ -1,12 +1,12 @@
-﻿using Moq;
-using Stoolball.Security;
-using Stoolball.Teams;
-using Stoolball.Web.Teams;
-using System;
+﻿using System;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Moq;
+using Stoolball.Security;
+using Stoolball.Teams;
+using Stoolball.Web.Teams;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -73,7 +73,7 @@ namespace Stoolball.Web.Tests.Teams
         public async Task Route_matching_team_returns_TeamViewModel()
         {
             var dataSource = new Mock<ITeamDataSource>();
-            dataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team());
+            dataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team { TeamRoute = "/teams/example" });
 
             using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {

@@ -1,16 +1,16 @@
-﻿using Moq;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Principal;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using Moq;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Matches;
 using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Web.Teams;
-using System;
-using System.Collections.Generic;
-using System.Security.Principal;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -80,10 +80,15 @@ namespace Stoolball.Web.Tests.Teams
         public async Task Route_matching_team_returns_TeamViewModel()
         {
             var teamDataSource = new Mock<ITeamDataSource>();
-            teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team { TeamId = Guid.NewGuid(), TeamName = "Example team" });
+            teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team
+            {
+                TeamId = Guid.NewGuid(),
+                TeamName = "Example team",
+                TeamRoute = "/teams/example"
+            });
 
             var matchDataSource = new Mock<IMatchListingDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing> { new MatchListing { StartTime = DateTimeOffset.UtcNow } });
+            matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing> { new MatchListing { StartTime = DateTimeOffset.UtcNow, MatchRoute = "/tournaments/example" } });
 
             using (var controller = new TestController(teamDataSource.Object, matchDataSource.Object, UmbracoHelper))
             {

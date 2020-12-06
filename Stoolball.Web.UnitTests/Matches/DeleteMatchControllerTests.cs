@@ -1,13 +1,13 @@
-﻿using Moq;
-using Stoolball.Dates;
-using Stoolball.Matches;
-using Stoolball.Security;
-using Stoolball.Web.Matches;
-using System;
+﻿using System;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Moq;
+using Stoolball.Dates;
+using Stoolball.Matches;
+using Stoolball.Security;
+using Stoolball.Web.Matches;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -74,7 +74,7 @@ namespace Stoolball.Web.Tests.Matches
         public async Task Route_matching_match_returns_DeleteMatchViewModel()
         {
             var dataSource = new Mock<IMatchDataSource>();
-            dataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { MatchId = Guid.NewGuid() });
+            dataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { MatchId = Guid.NewGuid(), MatchRoute = "/matches/example" });
 
             using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {

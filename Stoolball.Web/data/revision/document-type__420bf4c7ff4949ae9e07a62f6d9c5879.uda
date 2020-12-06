@@ -1,8 +1,6 @@
 {
-  "DefaultTemplate": "umb://template/0e9ba50d5ae44bd4b164251440213936",
-  "AllowedTemplates": [
-    "umb://template/0e9ba50d5ae44bd4b164251440213936"
-  ],
+  "DefaultTemplate": null,
+  "AllowedTemplates": [],
   "Icon": "icon-movie color-black",
   "Thumbnail": "folder.png",
   "Description": null,
@@ -61,15 +59,10 @@
       "Udi": "umb://document-type-container/5be42d3707a847e7b9b7d51af38bdac2",
       "Ordering": true,
       "Mode": 0
-    },
-    {
-      "Udi": "umb://template/0e9ba50d5ae44bd4b164251440213936",
-      "Ordering": true,
-      "Mode": 0
     }
   ],
   "Name": "Getty image",
   "Alias": "gettyImage",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.5"
+  "__version": "3.5.2"
 }
