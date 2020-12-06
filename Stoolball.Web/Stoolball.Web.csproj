@@ -303,17 +303,17 @@
     <Reference Include="Umbraco.Examine, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\UmbracoCms.Web.8.9.1\lib\net472\Umbraco.Examine.dll</HintPath>
     </Reference>
-    <Reference Include="Umbraco.Forms.Core, Version=8.5.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UmbracoForms.Core.8.5.5\lib\net472\Umbraco.Forms.Core.dll</HintPath>
+    <Reference Include="Umbraco.Forms.Core, Version=8.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\UmbracoForms.Core.8.6.0\lib\net472\Umbraco.Forms.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Umbraco.Forms.Core.Providers, Version=8.5.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UmbracoForms.Core.8.5.5\lib\net472\Umbraco.Forms.Core.Providers.dll</HintPath>
+    <Reference Include="Umbraco.Forms.Core.Providers, Version=8.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\UmbracoForms.Core.8.6.0\lib\net472\Umbraco.Forms.Core.Providers.dll</HintPath>
     </Reference>
-    <Reference Include="Umbraco.Forms.Web, Version=8.5.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UmbracoForms.Core.8.5.5\lib\net472\Umbraco.Forms.Web.dll</HintPath>
+    <Reference Include="Umbraco.Forms.Web, Version=8.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\UmbracoForms.Core.8.6.0\lib\net472\Umbraco.Forms.Web.dll</HintPath>
     </Reference>
     <Reference Include="Umbraco.Licensing, Version=2.0.33.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UmbracoForms.Core.8.5.5\lib\net472\Umbraco.Licensing.dll</HintPath>
+      <HintPath>..\packages\UmbracoForms.Core.8.6.0\lib\net472\Umbraco.Licensing.dll</HintPath>
     </Reference>
     <Reference Include="Umbraco.ModelsBuilder.Embedded, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\UmbracoCms.Web.8.9.1\lib\net472\Umbraco.ModelsBuilder.Embedded.dll</HintPath>
@@ -429,6 +429,7 @@
     <Content Include="App_Plugins\Stoolball.DataMigration\stoolballResource.test.js" />
     <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.controller.js" />
     <Content Include="App_Plugins\Stoolball.PropertyEditors\stylesheet-picker.html" />
+    <Content Include="App_Plugins\UmbracoForms\Assets\aspnet-validation\dist\aspnet-validation.min.js" />
     <Content Include="App_Plugins\UmbracoForms\Assets\BaremetricsCalendar\public\css\application.css" />
     <Content Include="App_Plugins\UmbracoForms\Assets\BaremetricsCalendar\public\js\Calendar.js" />
     <Content Include="App_Plugins\UmbracoForms\Assets\datepicker.init.js" />
@@ -438,6 +439,7 @@
     <Content Include="App_Plugins\UmbracoForms\Assets\moment\min\moment-with-locales.min.js" />
     <Content Include="App_Plugins\UmbracoForms\Assets\pikaday\pikaday.css" />
     <Content Include="App_Plugins\UmbracoForms\Assets\pikaday\pikaday.js" />
+    <Content Include="App_Plugins\UmbracoForms\Assets\promise-polyfill\dist\polyfill.min.js" />
     <Content Include="App_Plugins\UmbracoForms\Assets\themes\default\style.css" />
     <Content Include="App_Plugins\UmbracoForms\Assets\themes\default\umbracoforms.js" />
     <Content Include="App_Plugins\UmbracoForms\Assets\umbracoforms-conditions.js" />
