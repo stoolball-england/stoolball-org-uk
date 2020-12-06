@@ -7,15 +7,40 @@
 
 $dropdown_selected_background: #555;
 $nav-item-admin-colour: #767676;
+$tab-subtle-line-colour: #8fbc8f;
 
-// Add some space below tabbed navigation, and establish a positioning context 
+// Add some space below tabbed navigation, and establish a positioning context
 .nav-tabs {
     margin: 0 0 $spacer;
     position: relative;
     padding-right: 80px; // Plan for two admin items, absolutely positioned at the right
+    border-bottom-color: $tab-subtle-line-colour;
 }
 
-// Absolutely position up to two admin items at the right (2px between), so that admin links don't wrap, 
+.nav-tabs .nav-item {
+    margin-bottom: 0;
+}
+
+// Colour the normal tabs
+.nav-tabs .nav-link.active {
+    background: theme-color("primary");
+    border-color: theme-color("primary");
+    color: $white;
+    box-shadow: 0 1px 0 0 theme-color("primary");
+}
+
+.nav-tabs .nav-link:hover,
+.nav-tabs .nav-link:active {
+    border-color: $tab-subtle-line-colour;
+    box-shadow: 0 1px 0 0 theme-color("primary");
+    outline: none;
+}
+
+.nav-tabs .nav-link:focus {
+    outline-offset: 0;
+}
+
+// Absolutely position up to two admin items at the right (2px between), so that admin links don't wrap,
 // but instead tabs can wrap when they hit the padding on .nav-tabs.
 .nav-item-admin {
     position: absolute;
@@ -49,7 +74,8 @@ $nav-item-admin-colour: #767676;
     vertical-align: baseline;
     border-radius: $border-radius;
     margin-left: 2px;
-
+    position: relative;
+    top: 1px;
 }
 
 .nav-item-admin .nav-link:hover, 
@@ -94,7 +120,7 @@ $nav-item-admin-colour: #767676;
         padding-right: 0;
     }
 
-    .nav-item-admin {
+    .nav-tabs .nav-item-admin {
         position: static;
     }
 
@@ -128,6 +154,10 @@ $nav-item-admin-colour: #767676;
 }
 
 // Change the default menu colour
+.nav-item-admin .dropdown-menu {
+    background: $black;
+}
+
 .nav-item-admin .dropdown-item > * {
     background: $black;
     color: $white;
