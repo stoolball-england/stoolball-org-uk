@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
+using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -64,6 +65,12 @@ namespace Stoolball.Web.Matches
             }
 
             viewModel.Metadata.PageTitle = "Delete " + viewModel.Match.MatchFullName(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false)) + " - stoolball match";
+
+            if (!viewModel.Deleted)
+            {
+                viewModel.Breadcrumbs.Add(new Breadcrumb { Name = viewModel.Match.MatchName, Url = new Uri(viewModel.Match.MatchRoute, UriKind.Relative) });
+            }
+
             return View("DeleteMatch", viewModel);
         }
     }

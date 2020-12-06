@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Matches;
+using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Teams;
-using Stoolball.Web.Metadata;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -81,6 +81,7 @@ namespace Stoolball.Web.Teams
                 model.Metadata.PageTitle = "Delete " + model.Team.TeamName;
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
+                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Team.TeamName, Url = new Uri(model.Team.TeamRoute, UriKind.Relative) });
 
                 return CurrentTemplate(model);
             }

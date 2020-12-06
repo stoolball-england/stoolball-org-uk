@@ -5,9 +5,9 @@ using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
+using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Web.Matches;
-using Stoolball.Web.Metadata;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -83,6 +83,7 @@ namespace Stoolball.Web.Competitions
                 model.Metadata.PageTitle = $"Matches for {model.Season.SeasonFullNameAndPlayerType()}";
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
+                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Season.Competition.CompetitionName, Url = new Uri(model.Season.Competition.CompetitionRoute, UriKind.Relative) });
 
                 return CurrentTemplate(model);
             }

@@ -6,10 +6,10 @@ using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Matches;
+using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Web.Matches;
-using Stoolball.Web.Metadata;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -67,28 +67,27 @@ namespace Stoolball.Web.Teams
             {
                 return new HttpNotFoundResult();
             }
-            else
+
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team);
+
+            model.Matches = new MatchListingViewModel
             {
-                model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team);
-
-                model.Matches = new MatchListingViewModel
+                Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
                 {
-                    Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
-                    {
-                        TeamIds = new List<Guid> { model.Team.TeamId.Value },
-                        IncludeMatches = false
-                    }).ConfigureAwait(false),
-                    DateTimeFormatter = _dateFormatter
-                };
+                    TeamIds = new List<Guid> { model.Team.TeamId.Value },
+                    IncludeMatches = false
+                }).ConfigureAwait(false),
+                DateTimeFormatter = _dateFormatter
+            };
 
-                model.Metadata.PageTitle = model.Team.TeamNameAndPlayerType() + ", " + _dateFormatter.FormatDate(model.Matches.Matches.First().StartTime, false, false);
-            }
+            var match = model.Matches.Matches.First();
+            model.Metadata.PageTitle = model.Team.TeamNameAndPlayerType() + ", " + _dateFormatter.FormatDate(match.StartTime, false, false);
 
             model.Team.Cost = _emailProtector.ProtectEmailAddresses(model.Team.Cost, User.Identity.IsAuthenticated);
             model.Team.Introduction = _emailProtector.ProtectEmailAddresses(model.Team.Introduction, User.Identity.IsAuthenticated);
             model.Team.PublicContactDetails = _emailProtector.ProtectEmailAddresses(model.Team.PublicContactDetails, User.Identity.IsAuthenticated);
 
-            model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
+            model.Breadcrumbs.Add(new Breadcrumb { Name = match.MatchName, Url = new Uri(match.MatchRoute, UriKind.Relative) });
 
             return CurrentTemplate(model);
         }

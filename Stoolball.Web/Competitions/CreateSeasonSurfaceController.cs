@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Matches;
+using Stoolball.Navigation;
 using Stoolball.Security;
-using Stoolball.Web.Metadata;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -92,6 +92,7 @@ namespace Stoolball.Web.Competitions
             viewModel.Metadata.PageTitle = $"Add a season in {the}{season.Competition.CompetitionName}";
 
             viewModel.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
+            viewModel.Breadcrumbs.Add(new Breadcrumb { Name = viewModel.Season.Competition.CompetitionName, Url = new Uri(viewModel.Season.Competition.CompetitionRoute, UriKind.Relative) });
 
             return View("CreateSeason", viewModel);
         }

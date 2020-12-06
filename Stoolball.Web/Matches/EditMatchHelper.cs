@@ -1,15 +1,15 @@
-﻿using Humanizer;
-using Stoolball.Competitions;
-using Stoolball.Matches;
-using Stoolball.MatchLocations;
-using Stoolball.Teams;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Humanizer;
+using Stoolball.Competitions;
+using Stoolball.Matches;
+using Stoolball.MatchLocations;
+using Stoolball.Teams;
 
 namespace Stoolball.Web.Matches
 {

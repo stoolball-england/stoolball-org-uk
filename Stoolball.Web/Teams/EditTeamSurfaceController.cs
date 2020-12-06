@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Teams;
-using Stoolball.Web.Metadata;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -71,6 +71,7 @@ namespace Stoolball.Web.Teams
             viewModel.Metadata.PageTitle = $"Edit {team.TeamName}";
 
             viewModel.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
+            viewModel.Breadcrumbs.Add(new Breadcrumb { Name = viewModel.Team.TeamName, Url = new Uri(viewModel.Team.TeamRoute, UriKind.Relative) });
 
             return View("EditTeam", viewModel);
         }

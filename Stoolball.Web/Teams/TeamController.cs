@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Email;
+using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Teams;
-using Stoolball.Web.Metadata;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;

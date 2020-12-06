@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.MatchLocations;
+using Stoolball.Navigation;
 using Stoolball.Security;
-using Stoolball.Web.Metadata;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -68,6 +68,7 @@ namespace Stoolball.Web.MatchLocations
             viewModel.Metadata.PageTitle = $"Edit {location.NameAndLocalityOrTown()}";
 
             viewModel.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.MatchLocations, Url = new Uri(Constants.Pages.MatchLocationsUrl, UriKind.Relative) });
+            viewModel.Breadcrumbs.Add(new Breadcrumb { Name = viewModel.MatchLocation.NameAndLocalityOrTown(), Url = new Uri(viewModel.MatchLocation.MatchLocationRoute, UriKind.Relative) });
 
             return View("EditMatchLocation", viewModel);
         }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Stoolball.Metadata;
+using Stoolball.Navigation;
 using Stoolball.Web.Metadata;
 using Umbraco.Core.Models.PublishedContent;
 

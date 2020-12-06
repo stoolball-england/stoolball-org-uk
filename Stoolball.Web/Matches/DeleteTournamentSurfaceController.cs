@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
+using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -77,6 +78,12 @@ namespace Stoolball.Web.Matches
             }
 
             viewModel.Metadata.PageTitle = "Delete " + viewModel.Tournament.TournamentFullNameAndPlayerType(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false));
+
+            if (!viewModel.Deleted)
+            {
+                viewModel.Breadcrumbs.Add(new Breadcrumb { Name = viewModel.Tournament.TournamentName, Url = new Uri(viewModel.Tournament.TournamentRoute, UriKind.Relative) });
+            }
+
             return View("DeleteTournament", viewModel);
         }
     }

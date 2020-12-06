@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Humanizer;
 using Stoolball.Dates;
 using Stoolball.Matches;
+using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -164,6 +165,8 @@ namespace Stoolball.Web.Matches
             {
                 model.CurrentInnings.OversBowled.Add(new Over());
             }
+
+            model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.MatchName, Url = new Uri(model.Match.MatchRoute, UriKind.Relative) });
 
             return View("EditBattingScorecard", model);
         }

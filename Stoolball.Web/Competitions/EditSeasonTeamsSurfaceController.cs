@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
+using Stoolball.Navigation;
 using Stoolball.Security;
-using Stoolball.Web.Metadata;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -69,6 +69,8 @@ namespace Stoolball.Web.Competitions
             viewModel.Metadata.PageTitle = $"Teams in the {beforeUpdate.SeasonFullNameAndPlayerType()}";
 
             viewModel.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
+            viewModel.Breadcrumbs.Add(new Breadcrumb { Name = viewModel.Season.Competition.CompetitionName, Url = new Uri(viewModel.Season.Competition.CompetitionRoute, UriKind.Relative) });
+            viewModel.Breadcrumbs.Add(new Breadcrumb { Name = viewModel.Season.SeasonFullName(), Url = new Uri(viewModel.Season.SeasonRoute, UriKind.Relative) });
 
             return View("EditSeasonTeams", viewModel);
         }

@@ -1098,7 +1098,6 @@
     <Compile Include="DapperComposer.cs" />
     <Compile Include="Logging\UmbracoLogWrapper.cs" />
     <Compile Include="Matches\AddMatchMenuViewModel.cs" />
-    <Compile Include="Metadata\Breadcrumb.cs" />
     <Compile Include="Products\ProductList.cs" />
     <Compile Include="Products\ProductListController.cs" />
     <Compile Include="ContentPage\Content.cs" />
