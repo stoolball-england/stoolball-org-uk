@@ -4,12 +4,7 @@
 @using Stoolball.Competitions
 @using Stoolball.Matches
 @using Stoolball.Web.Matches
-@using Stoolball.Security 
-@{
-    var the = Model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase);
-    var h1 = $"Results for {(the ? string.Empty : "the ")}{Model.Season.SeasonFullNameAndPlayerType()}";
-}
-<h1>@h1</h1>
+<h1>@Model.Season.SeasonFullNameAndPlayerType()</h1>
 
 @if (Model.Season.Competition.UntilYear.HasValue)
 {
@@ -51,18 +46,18 @@
                         <th scope="col">No result</th>
                         @if (Model.Season.EnableRunsScored)
                         {
-                columns++;
+                            columns++;
                             <th>Runs scored</th>
                         }
-            @if (Model.Season.EnableRunsConceded)
-            {
-                columns++;
+                        @if (Model.Season.EnableRunsConceded)
+                        {
+                            columns++;
                             <th>Runs conceded</th>
                         }
-            @if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
-            {
-                        <th>Points</th>
-            }
+                        @if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
+                        {
+                            <th>Points</th>
+                        }
                     </tr>
                 </thead>
                 <tbody>
@@ -188,17 +183,17 @@
                 <p>The league table includes the following points adjustments:</p>
                 <ul>
                     @foreach (var adjustment in Model.Season.PointsAdjustments)
-    {
-        var reason = !string.IsNullOrEmpty(adjustment.Reason) ? $"for {adjustment.Reason}" : string.Empty;
-        if (adjustment.Points > 0)
-        {
+                    {
+                        var reason = !string.IsNullOrEmpty(adjustment.Reason) ? $"for {adjustment.Reason}" : string.Empty;
+                        if (adjustment.Points > 0)
+                        {
                             <li>@("point".ToQuantity(adjustment.Points)) awarded to @adjustment.Team.TeamName @reason</li>
                         }
-        else if (adjustment.Points < 0)
-        {
+                        else if (adjustment.Points < 0)
+                        {
                             <li>@("point".ToQuantity(adjustment.Points *-1)) deducted from @adjustment.Team.TeamName @reason</li>
                         }
-    }
+                    }
                 </ul>
             }
 
