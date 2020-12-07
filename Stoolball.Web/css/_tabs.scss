@@ -6,16 +6,15 @@
 /* Required for tabbed navigaton */
 @import "../Content/bootstrap/_nav.scss";
 
-$dropdown_selected_background: #555;
+$selected_background: #555;
 $nav-item-admin-colour: #767676;
-$tab-subtle-line-colour: #8fbc8f;
 
 // Add some space below tabbed navigation, and establish a positioning context
 .nav-tabs {
     margin: 0 0 $spacer;
     position: relative;
     padding-right: 80px; // Plan for two admin items, absolutely positioned at the right
-    border-bottom-color: $tab-subtle-line-colour;
+    border-bottom-color: theme-color("secondary");
 }
 
 // Colour the normal tabs
@@ -27,7 +26,7 @@ $tab-subtle-line-colour: #8fbc8f;
 
 .nav-tabs .nav-link:hover,
 .nav-tabs .nav-link:active {
-    border-color: $tab-subtle-line-colour;
+    border-color: theme-color("secondary");
     outline: none;
 }
 
@@ -39,13 +38,13 @@ $tab-subtle-line-colour: #8fbc8f;
 // but instead tabs can wrap when they hit the padding on .nav-tabs.
 .nav-item-admin {
     position: absolute;
-    right: 34px;
+    right: 46px;
 }
 
-// Spill into the .container-xl margin so that the button content rather than its border can align to the right edge
+// Align to the .container-xl margin 
 // .nav-item-admin-sm-last is used on the last visible child when a following sibling is hidden at the sm breakpoint
 .nav-item-admin:last-child, .nav-item-admin-sm-last {
-    right: -12px;
+    right: 0;
 }
 
 // Hide the text of admin items (and ensure it doesn't wrap when hidden), leaving a minimum-clickable-size button with a background icon.
@@ -54,21 +53,22 @@ $tab-subtle-line-colour: #8fbc8f;
 
 // Invert the colours on hover/focus/active/menu open, because that makes sense visually to connect it to a menu that opens out in white space.
 .nav-tabs > .nav-item-admin .nav-link {
-    @include remove-link-underline;
     display: inline-block;
     width: 0;
     overflow: hidden;
     white-space: nowrap;
     padding: $spacer/2 0 $spacer/2 44px;
     background-size: 20px;
-    background-repeat: no-repeat; 
+    background-repeat: no-repeat;
     background-position: 13px center;
     border-left: 0;
     border-right: 0;
-    color: $nav-item-admin-colour;
     vertical-align: baseline;
-    border-radius: $border-radius;
+    border-radius: $border-radius $border-radius 0 0;
     margin-left: 2px;
+    color: $white;
+    background-color: theme-color("secondary");
+    @include remove-link-underline;
 }
 
 .nav-item-admin .nav-link:hover, 
@@ -76,34 +76,18 @@ $tab-subtle-line-colour: #8fbc8f;
 .nav-item-admin .nav-link:active, 
 .nav-item-admin > .dropdown.show > .nav-link {
     @include remove-link-underline;
-    color: $white;
-    background-color: $black;
     border-color: transparent;
     box-shadow: none;
+    background-color: $black;
 }
 
 .nav-item-admin .nav-link-add {
-    background-image: url(/images/icons/add-grey-24dp.svg);
-}
-
-.nav-item-admin .nav-link-add:hover, 
-.nav-item-admin .nav-link-add:focus, 
-.nav-item-admin .nav-link-add:active, 
-.nav-item-admin > .dropdown.show > .nav-link-add {
     background-image: url(/images/icons/add-white-24dp.svg);
 }
 
 .nav-item-admin .nav-link-edit {
-    background-image: url(/images/icons/settings-grey-24dp.svg);
-}
-
-.nav-item-admin .nav-link-edit:hover,
-.nav-item-admin .nav-link-edit:focus,
-.nav-item-admin .nav-link-edit:active,
-.nav-item-admin > .dropdown.show > .nav-link-edit {
     background-image: url(/images/icons/settings-white-24dp.svg);
 }
-
 
 @include media-breakpoint-up(md) {
     // At md and above, change strategy from absolute positioning to flexbox.
@@ -129,16 +113,47 @@ $tab-subtle-line-colour: #8fbc8f;
         text-align: initial;
         display: inherit;
     }
-    // Now we show the button text as well as the icon
+    // Now we show the button text as well as the icon, and reversed is the hover/focus/active style
     .nav-tabs > .nav-item-admin .nav-link {
         width: auto;
         background-position: 10px center;
         padding: $spacer/2 $spacer $spacer/2 35px;
+        color: $nav-item-admin-colour;
+        background-color: transparent;
+        border-radius: $border-radius;
     }
     // Spill into the .container-xl margin so that the button content rather than its border can align to the right edge
     .nav-item-admin:last-child .nav-link {
         padding-right: $spacer/2;
         margin-right: -($spacer/2);
+    }
+    // Change the image colours
+    .nav-item-admin .nav-link-add {
+        background-image: url(/images/icons/add-grey-24dp.svg);
+    }
+
+    .nav-item-admin .nav-link-add:hover,
+    .nav-item-admin .nav-link-add:focus,
+    .nav-item-admin .nav-link-add:active,
+    .nav-item-admin > .dropdown.show > .nav-link-add {
+        outline: none;
+        background-image: url(/images/icons/add-white-24dp.svg);
+        color: $white;
+        background-color: $black;
+    }
+
+    .nav-item-admin .nav-link-edit {
+        background-image: url(/images/icons/settings-grey-24dp.svg);
+    }
+
+    .nav-item-admin .nav-link-edit:hover,
+    .nav-item-admin .nav-link-edit:focus,
+    .nav-item-admin .nav-link-edit:active,
+    .nav-item-admin > .dropdown.show > .nav-link-edit {
+        outline: none;
+        background-image: url(/images/icons/settings-white-24dp.svg);
+        color: $white;
+        background-color: $black;
     }
 }
 
@@ -160,7 +175,7 @@ $tab-subtle-line-colour: #8fbc8f;
 .nav-item-admin .dropdown-item > a:hover,
 .nav-item-admin .dropdown-item > a:focus,
 .nav-item-admin .dropdown-item > a:active {
-    background: $dropdown_selected_background;
+    background: $selected_background;
     outline: none;
 }
 
