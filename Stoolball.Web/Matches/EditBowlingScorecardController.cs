@@ -56,7 +56,8 @@ namespace Stoolball.Web.Matches
             {
                 Match = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false),
                 DateFormatter = _dateFormatter,
-                InningsOrderInMatch = _matchInningsUrlParser.ParseInningsOrderInMatchFromUrl(new Uri(Request.RawUrl, UriKind.Relative))
+                InningsOrderInMatch = _matchInningsUrlParser.ParseInningsOrderInMatchFromUrl(new Uri(Request.RawUrl, UriKind.Relative)),
+                Autofocus = true
             };
 
             if (model.Match == null || !model.InningsOrderInMatch.HasValue)

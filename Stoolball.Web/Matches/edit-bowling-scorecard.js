@@ -215,7 +215,9 @@
     }
 
     // Focus first field
-    editor.querySelector("input[type='text']:not(:disabled)").focus();
+    if (editor.getAttribute("data-autofocus") !== "false") {
+      editor.querySelector("input[type='text']:not(:disabled)").focus();
+    }
 
     addOver.addEventListener("click", function (e) {
       e.preventDefault();

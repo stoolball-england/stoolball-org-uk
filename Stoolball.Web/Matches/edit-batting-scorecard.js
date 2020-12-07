@@ -278,7 +278,10 @@
     addBatterTd.appendChild(addBatter);
     editor
       .querySelector(".scorecard__extras")
-      .parentElement.insertBefore(addBatterTr, editor.querySelector(".scorecard__extras"));
+      .parentElement.insertBefore(
+        addBatterTr,
+        editor.querySelector(".scorecard__extras")
+      );
     addBatter.addEventListener("click", function (e) {
       e.preventDefault();
       var lastRow = addBatterTr.previousElementSibling;
@@ -356,6 +359,8 @@
     }
 
     // focus the first field
-    editor.querySelector("input[type='text']:not(:disabled)").focus();
+    if (editor.getAttribute("data-autofocus") !== "false") {
+      editor.querySelector("input[type='text']:not(:disabled)").focus();
+    }
   });
 })();

@@ -82,7 +82,8 @@ namespace Stoolball.Web.Matches
             {
                 Match = beforeUpdate,
                 DateFormatter = _dateTimeFormatter,
-                InningsOrderInMatch = _matchInningsUrlParser.ParseInningsOrderInMatchFromUrl(new Uri(Request.RawUrl, UriKind.Relative))
+                InningsOrderInMatch = _matchInningsUrlParser.ParseInningsOrderInMatchFromUrl(new Uri(Request.RawUrl, UriKind.Relative)),
+                Autofocus = true
             };
             model.CurrentInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
             model.CurrentInnings.OversBowled = postedInnings.OversBowled.Where(x => x.PlayerIdentity.PlayerIdentityName?.Trim().Length > 0).ToList();
