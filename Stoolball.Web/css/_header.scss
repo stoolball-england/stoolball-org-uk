@@ -1,4 +1,5 @@
 ﻿@import "_theme.scss";
+@import "_mixins.scss";
 @import "../Content/bootstrap/_functions.scss";
 @import "../Content/bootstrap/_mixins.scss";
 @import "../Content/bootstrap/_variables.scss";
@@ -67,9 +68,9 @@ $offset-container-padding: -(($grid-gutter-width/2)-$space-for-header-focus-ring
 
 // White space around the logo, which only works with display: block applied
 .header__logo-inner {
+    @include remove-link-underline;
     display: block;
     padding: 10px 15px;
-    box-shadow: none;
 }
 
 // Show a focus ring on the home link when navigating with the keyboard
@@ -99,13 +100,13 @@ $offset-container-padding: -(($grid-gutter-width/2)-$space-for-header-focus-ring
 
     // Pad the clickable area of a menu item, and add spacing so that the backgrounds of a selected item and a hovered item do not touch
     .header__menu-large [role=menuitem] {
+        @include remove-link-underline;
         display: inline-block;
         color: $white;
         padding: $spacer/2 ($spacer*.9);
         margin-right: 2px;
         font-style: normal;
         border-radius: $border-radius;
-        box-shadow: none;
     }
     
     // Change the menu button background on hover or when selected

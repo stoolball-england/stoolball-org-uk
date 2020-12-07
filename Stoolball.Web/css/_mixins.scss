@@ -1,0 +1,9 @@
+﻿@import "_theme.scss";
+
+@mixin link-underline {
+    border-bottom: 1px solid theme-color("primary");
+}
+
+@mixin remove-link-underline {
+    border-bottom-color: transparent;
+}

@@ -863,7 +863,7 @@
     <Content Include="Scripts\bootstrap.bundle.js.map" />
     <Content Include="Media\Web.config" />
     <Content Include="css\_breadcrumb.scss" />
-    <Content Include="css\_functions.scss" />
+    <Content Include="css\_mixins.scss" />
     <Content Include="css\_tabs.scss" />
     <Content Include="css\_dropdown.scss" />
     <Content Include="css\_print.scss" />

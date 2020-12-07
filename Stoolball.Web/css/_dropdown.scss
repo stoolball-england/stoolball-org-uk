@@ -1,5 +1,6 @@
 ﻿@import "../Content/bootstrap/_variables.scss";
 @import "../Content/bootstrap/_mixins.scss";
+@import "_mixins.scss";
 
 $dropdown-border-radius: 0 0 $border-radius*2 $border-radius*2;
 
@@ -43,8 +44,8 @@ $dropdown-border-radius: 0 0 $border-radius*2 $border-radius*2;
 }
 
 .dropdown-item > * {
+    @include remove-link-underline;
     display: block;
     padding: $spacer/4 $spacer*1.5;
     font-style: normal;
-    box-shadow: none;
 }

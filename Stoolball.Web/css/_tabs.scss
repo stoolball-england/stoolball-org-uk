@@ -1,4 +1,5 @@
 ﻿@import "_theme.scss";
+@import "_mixins.scss";
 @import "../Content/bootstrap/_variables.scss";
 @import "../Content/bootstrap/_mixins.scss";
 
@@ -17,22 +18,16 @@ $tab-subtle-line-colour: #8fbc8f;
     border-bottom-color: $tab-subtle-line-colour;
 }
 
-.nav-tabs .nav-item {
-    margin-bottom: 0;
-}
-
 // Colour the normal tabs
 .nav-tabs .nav-link.active {
     background: theme-color("primary");
     border-color: theme-color("primary");
     color: $white;
-    box-shadow: 0 1px 0 0 theme-color("primary");
 }
 
 .nav-tabs .nav-link:hover,
 .nav-tabs .nav-link:active {
     border-color: $tab-subtle-line-colour;
-    box-shadow: 0 1px 0 0 theme-color("primary");
     outline: none;
 }
 
@@ -59,6 +54,7 @@ $tab-subtle-line-colour: #8fbc8f;
 
 // Invert the colours on hover/focus/active/menu open, because that makes sense visually to connect it to a menu that opens out in white space.
 .nav-tabs > .nav-item-admin .nav-link {
+    @include remove-link-underline;
     display: inline-block;
     width: 0;
     overflow: hidden;
@@ -67,25 +63,23 @@ $tab-subtle-line-colour: #8fbc8f;
     background-size: 20px;
     background-repeat: no-repeat; 
     background-position: 13px center;
-    box-shadow: none;
     border-left: 0;
     border-right: 0;
     color: $nav-item-admin-colour;
     vertical-align: baseline;
     border-radius: $border-radius;
     margin-left: 2px;
-    position: relative;
-    top: 1px;
 }
 
 .nav-item-admin .nav-link:hover, 
 .nav-item-admin .nav-link:focus, 
 .nav-item-admin .nav-link:active, 
 .nav-item-admin > .dropdown.show > .nav-link {
-    box-shadow: none;
+    @include remove-link-underline;
     color: $white;
     background-color: $black;
     border-color: transparent;
+    box-shadow: none;
 }
 
 .nav-item-admin .nav-link-add {
