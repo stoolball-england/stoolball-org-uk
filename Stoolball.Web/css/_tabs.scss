@@ -89,25 +89,25 @@ $tab-subtle-line-colour: #8fbc8f;
 }
 
 .nav-item-admin .nav-link-add {
-    background-image: url(//s.svgbox.net/materialui.svg?fill=767676&ic=add);
+    background-image: url(/images/icons/add-grey-24dp.svg);
 }
 
 .nav-item-admin .nav-link-add:hover, 
 .nav-item-admin .nav-link-add:focus, 
 .nav-item-admin .nav-link-add:active, 
 .nav-item-admin > .dropdown.show > .nav-link-add {
-    background-image: url(//s.svgbox.net/materialui.svg?fill=ffffff&ic=add);
+    background-image: url(/images/icons/add-white-24dp.svg);
 }
 
 .nav-item-admin .nav-link-edit {
-    background-image: url(//s.svgbox.net/materialui.svg?fill=767676&ic=settings);
+    background-image: url(/images/icons/settings-grey-24dp.svg);
 }
 
 .nav-item-admin .nav-link-edit:hover,
 .nav-item-admin .nav-link-edit:focus,
 .nav-item-admin .nav-link-edit:active,
 .nav-item-admin > .dropdown.show > .nav-link-edit {
-    background-image: url(//s.svgbox.net/materialui.svg?fill=ffffff&ic=settings);
+    background-image: url(/images/icons/settings-white-24dp.svg);
 }
 
 

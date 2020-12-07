@@ -50,7 +50,7 @@ else
             </div>
             <div class="related-item__delete related-item__selected__section">
                 @Html.HiddenFor(m => Model.MatchLocationId, new { @class = "related-item__data related-item__id" })
-                <button class="text-danger">@Html.Partial("_DeleteIcon", (Model.MatchLocationId.Value.ToString(), $"Remove {Model.MatchLocationName} from this match"))</button>
+                <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.MatchLocationName} from this match")</button>
             </div>
         </div>
         Model.MatchLocationName = string.Empty;
@@ -87,7 +87,7 @@ else
         </div>
         <div class="related-item__delete related-item__selected__section">
             <input name="MatchLocationId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
-            <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this match"))</button>
+            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this match")</button>
         </div>
     </div>
 </script>

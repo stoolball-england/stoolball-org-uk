@@ -78,7 +78,7 @@
                 @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
             </div>
 
-            <button class="btn btn-danger">@Html.Partial("_DeleteIcon", (Model.Tournament.TournamentId.ToString(), string.Empty)) Delete @Model.Tournament.TournamentName</button>
+            <button class="btn btn-danger btn-delete">Delete @Model.Tournament.TournamentName</button>
         }
     }
     else

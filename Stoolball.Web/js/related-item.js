@@ -1,13 +1,19 @@
 ﻿(function () {
+  function findSelectedItemForDelete(target) {
+    while (target !== null && target.parentNode !== null) {
+      if (target.classList.contains("related-item__delete")) {
+        return target.parentNode;
+      }
+      target = target.parentNode;
+    }
+  }
+
   window.addEventListener("DOMContentLoaded", function () {
     const relatedItems = document.querySelectorAll(".related-item");
     for (let i = 0; i < relatedItems.length; i++) {
       relatedItems[i].addEventListener("click", function (e) {
         /* Get a consistent target of the selected item container element, or null if it wasn't the delete button clicked */
-        const className = "related-item__delete";
-        const selectedItem = e.target.parentNode.classList.contains(className)
-          ? e.target.parentNode.parentNode
-          : null;
+        const selectedItem = findSelectedItemForDelete(e.target);
 
         if (selectedItem) {
           /* Stop the link from activating and the event from bubbling up further */

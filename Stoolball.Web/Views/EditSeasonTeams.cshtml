@@ -45,7 +45,7 @@
                             <div class="related-item__animate">
                                 @Html.Hidden($"Season.Teams[{i}].Team.TeamId", Model.Season.Teams[i].Team.TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Season.Teams[i].Team.TeamId })
                                 @Html.Hidden($"Season.Teams[{i}].Team.TeamName", displayName, new { @class = "related-item__data", data_item = Model.Season.Teams[i].Team.TeamId })
-                                <button class="text-danger">@Html.Partial("_DeleteIcon", (Model.Season.Teams[i].Team.TeamId.ToString(), $"Remove {Model.Season.Teams[i].Team.TeamName} from this season"))</button>
+                                <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Season.Teams[i].Team.TeamName} from this season")</button>
                             </div>
                         </td>
                     </tr>
@@ -76,7 +76,7 @@
                         <div class="related-item__animate">
                             <input name="Season.Teams[0].Team.TeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
                             <input name="Season.Teams[0].Team.TeamName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
-                            <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this season"))</button>
+                            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this season")</button>
                         </div>
                     </td>
             </tr>

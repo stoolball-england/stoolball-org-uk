@@ -86,13 +86,47 @@ svg {
     pointer-events: none;
 }
 
-/* Align the delete icon with the text inside a delete button */
-.btn-danger > svg { margin-top: -4px; }
+/* Two types of delete button: .btn-delete is an icon with text, .btn-delete-icon is just an icon */
+.btn-delete { 
+    background-image: url(/images/icons/iconmonstr-trash-can-27-white.svg);
+    background-repeat: no-repeat;
+    background-size: 18px;
+    background-position: 10px center;
+    padding-left: 35px;
+}
+
+.btn-delete-icon {
+    padding: 0;
+}
+
+/* Add social media icons to fields for social media accounts */
+.form-control__facebook {
+    padding-left: 35px;
+    background: url(/images/icons/iconmonstr-facebook-6-black.svg) no-repeat left center;
+}
+
+.form-control__twitter {
+    padding-left: 35px;
+    background: url(/images/icons/iconmonstr-twitter-1-black.svg) no-repeat left center;
+}
+
+.form-control__instagram {
+    padding-left: 35px;
+    background: url(/images/icons/iconmonstr-instagram-11-black.svg) no-repeat left center;
+}
+
+.form-control__youtube {
+    padding-left: 35px;
+    background: url(/images/icons/iconmonstr-youtube-6-black.svg) no-repeat left center;
+}
 
 /* Label an option as admin only */
-.admin-only { margin-left: $spacer/2; }
-.admin-only > svg {
-    margin-top: -4px;
+.admin-only { 
+    display: inline-block;
+    margin-left: $spacer/2; 
+    padding-left: 22px;
+    background: url(/images/icons/iconmonstr-lock-1.svg) no-repeat left center;
+    background-size: 16px;
 }
 
 /* Umbraco Forms margin support uses Bootstrap, but does not expect the container margins already to be in place, so offset them */

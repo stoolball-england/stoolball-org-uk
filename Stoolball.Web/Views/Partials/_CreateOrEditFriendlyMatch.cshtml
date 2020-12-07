@@ -27,7 +27,7 @@ else
                 </div>
                 <div class="related-item__delete related-item__selected__section">
                     @Html.HiddenFor(m => Model.Match.Season.SeasonId, new { @class = "related-item__data related-item__id" })
-                    <button class="text-danger">@Html.Partial("_DeleteIcon", (Model.Match.Season.SeasonId.Value.ToString(), $"Remove this match from {Model.SeasonFullName}"))</button>
+                    <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove this match from {Model.SeasonFullName}")</button>
                 </div>
             </div>
             Model.SeasonFullName = string.Empty;
@@ -64,7 +64,7 @@ else
             </div>
             <div class="related-item__delete related-item__selected__section">
                 <input name="Match.Season.SeasonId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
-                <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove this match from {{value}}"))</button>
+                <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove this match from {{value}}")</button>
             </div>
         </div>
     </script>
@@ -92,7 +92,7 @@ else
             </div>
             <div class="related-item__delete related-item__selected__section">
                 @Html.HiddenFor(m => Model.HomeTeamId, new { @class = "related-item__data related-item__id" })
-                <button class="text-danger">@Html.Partial("_DeleteIcon", (Model.HomeTeamId.Value.ToString(), $"Remove {Model.HomeTeamName} from this match"))</button>
+                <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.HomeTeamName} from this match")</button>
             </div>
         </div>
         Model.HomeTeamName = string.Empty;
@@ -129,7 +129,7 @@ else
         </div>
         <div class="related-item__delete related-item__selected__section">
             <input name="HomeTeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
-            <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this match"))</button>
+            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this match")</button>
         </div>
     </div>
 </script>
@@ -144,7 +144,7 @@ else
             </div>
             <div class="related-item__delete related-item__selected__section">
                 @Html.HiddenFor(m => Model.AwayTeamId, new { @class = "related-item__data related-item__id" })
-                <button class="text-danger">@Html.Partial("_DeleteIcon", (Model.AwayTeamId.Value.ToString(), $"Remove {Model.AwayTeamName} from this match"))</button>
+                <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.AwayTeamName} from this match")</button>
             </div>
         </div>
         Model.AwayTeamName = string.Empty;
@@ -181,7 +181,7 @@ else
         </div>
         <div class="related-item__delete related-item__selected__section">
             <input name="AwayTeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
-            <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this match"))</button>
+            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this match")</button>
         </div>
     </div>
 </script>
@@ -196,7 +196,7 @@ else
             </div>
             <div class="related-item__delete related-item__selected__section">
                 @Html.HiddenFor(m => Model.MatchLocationId, new { @class = "related-item__data related-item__id" })
-                <button class="text-danger">@Html.Partial("_DeleteIcon", (Model.MatchLocationId.Value.ToString(), $"Remove {Model.MatchLocationName} from this match"))</button>
+                <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.MatchLocationName} from this match")</button>
             </div>
         </div>
         Model.MatchLocationName = string.Empty;
@@ -233,7 +233,7 @@ else
         </div>
         <div class="related-item__delete related-item__selected__section">
             <input name="MatchLocationId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
-            <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}} from this match"))</button>
+            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this match")</button>
         </div>
     </div>
 </script>

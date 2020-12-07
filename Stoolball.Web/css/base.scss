@@ -63,6 +63,14 @@ h1 {
     margin-bottom: 0;
 }
 
+.alert-tip {
+    background-image: url(/images/icons/iconmonstr-light-bulb-12.svg);
+    background-repeat: no-repeat;
+    background-size: 18px;
+    background-position: 10px center;
+    padding-left: 35px;
+}
+
 /* Display a Gravatar next to its content 
 
     <div class="form-row">

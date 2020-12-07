@@ -161,7 +161,6 @@ namespace Stoolball.Web.Security
             AddSource(SCRIPT_SRC, "'self'");
             AddSource(IMG_SRC, "'self'");
             AddSource(IMG_SRC, "https://s.gravatar.com/avatar/");
-            AddSource(IMG_SRC, "https://s.svgbox.net");
             AddSource(IMG_SRC, "data:"); // for Bootstrap custom checkboxes in the cookie banner
             AddSource(CONNECT_SRC, "'self'");
             AddSource(MANIFEST_SRC, "'self'");

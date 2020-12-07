@@ -262,8 +262,7 @@
         <span class="field-validation-valid" data-valmsg-for="valid-dropdown-field" data-valmsg-replace="true" id="valid-dropdown-field-error"></span>
     </div>
     <div class="form-group">
-        <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="facebook-square" class="svg-inline--fa fa-facebook-square fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="30" height="30"><path fill="currentColor" d="M400 32H48A48 48 0 0 0 0 80v352a48 48 0 0 0 48 48h137.25V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.27c-30.81 0-40.42 19.12-40.42 38.73V256h68.78l-11 71.69h-57.78V480H400a48 48 0 0 0 48-48V80a48 48 0 0 0-48-48z"></path></svg>
-        <label for="unvalidated-email-field">Email field (with icon)</label>
+        <label for="unvalidated-email-field" class="form-control__facebook">Email field (with icon)</label>
         <input aria-describedby="form-email" autocapitalize="off" autocorrect="off" class="form-control" data-val="true" data-val-regex="Please enter a valid email address" id="unvalidated-email-field" name="unvalidated-email-field" required="required" type="email" value="" />
         <span class="field-validation-valid" data-valmsg-for="unvalidated-email-field" data-valmsg-replace="true" id="form-email"></span>
     </div>
@@ -309,7 +308,7 @@
                 <td class="related-item__selected__section"><div class="related-item__animate">Selected item</div></td>
                 <td class="related-item__delete related-item__selected__section">
                     <div class="related-item__animate">
-                        <button class="text-danger">@Html.Partial("_DeleteIcon", (string.Empty, "Remove item"))</button>
+                        <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove item")</button>
                     </div>
                 </td>
             </tr>
@@ -339,7 +338,7 @@
                 <td class="related-item__selected__section"><div class="related-item__animate">Selected item</div></td>
                 <td class="related-item__delete related-item__selected__section">
                     <div class="related-item__animate">
-                        <button class="text-danger">@Html.Partial("_DeleteIcon", (string.Empty, "Remove item"))</button>
+                        <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove item")</button>
                     </div>
                 </td>
             </tr>
@@ -366,7 +365,7 @@
                 <td class="related-item__selected__section"><div class="related-item__animate">{{value}}</div></td>
                 <td class="related-item__delete related-item__selected__section">
                     <div class="related-item__animate">
-                        <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}}"))</button>
+                        <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}}")</button>
                     </div>
                 </td>
             </tr>
@@ -391,7 +390,7 @@
                 <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="Match_MatchLocation_PrimaryAddressableObjectName" />
             </div>
             <div class="related-item__delete related-item__selected__section">
-                <button class="text-danger">@Html.Partial("_DeleteIcon", ("{{data}}", "Remove {{value}}"))</button>
+                <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}}")</button>
             </div>
         </div>
     </script>
@@ -410,14 +409,14 @@
     <button class="btn btn-primary" disabled="disabled">Primary button (disabled)</button>
     <button class="btn btn-secondary">Secondary button</button>
     <button class="btn btn-secondary" disabled="disabled">Secondary button (disabled)</button>
-    <button class="btn btn-danger">@Html.Partial("_DeleteIcon", (string.Empty, string.Empty)) Delete button</button>
-    <button class="btn btn-danger" disabled="disabled">@Html.Partial("_DeleteIcon", (string.Empty, string.Empty)) Delete button (disabled)</button>
+    <button class="btn btn-danger btn-delete">Delete button</button>
+    <button class="btn btn-danger btn-delete" disabled="disabled">Delete button (disabled)</button>
 </form>
 <p>Paragraph below a button (outside the form) and above an informational alert.</p>
 <div class="alert alert-info">
     <p>A paragraph within an informational alert, including a <a href="https://example.org">link</a>.</p>
 </div>
-<p class="alert alert-info"><svg aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512" width="15" height="20"><path fill="currentColor" d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"></path></svg> A paragraph as an informational alert, including an icon.</p>
+<p class="alert alert-info alert-tip">A paragraph as an informational alert, including an icon.</p>
 @Html.GetBlockListHtml(Model, "blockList")
 <h2>Stoolball listings</h2>
 <p>This is a list of teams.</p>
