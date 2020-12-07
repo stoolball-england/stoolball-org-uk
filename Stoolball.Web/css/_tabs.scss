@@ -169,3 +169,9 @@ $tab-subtle-line-colour: #8fbc8f;
     background: $dropdown_selected_background;
     outline: none;
 }
+
+@media print {
+    .nav-tabs {
+        display: none;
+    }
+}

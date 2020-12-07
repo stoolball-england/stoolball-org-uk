@@ -56,6 +56,7 @@ stoolball.consent = {
   function createConsentBanner() {
     const consent = document.createElement("form");
     consent.classList.add("consent");
+    consent.classList.add("d-print-none");
     const container = document.createElement("div");
     container.classList.add("container-xl");
     const request = document.createElement("p");

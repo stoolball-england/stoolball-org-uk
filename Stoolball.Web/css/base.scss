@@ -3,6 +3,9 @@
 @import "../Content/bootstrap/bootstrap-reboot.scss";
 @import "../Content/bootstrap/bootstrap-grid.scss";
 
+/* Sitewide print styles */
+@import "_print.scss";
+
 /* Required for header */
 @import "_consent.scss";
 @import "../Content/bootstrap/transitions";
@@ -53,23 +56,10 @@ h1 {
 }
 
 /* Required to use boxed content using alert styles */
-@import "../Content/bootstrap/_alert.scss";
+@import "_alerts.scss";
 
 /* Required for footer */
 @import "_footer.scss";
-
-/* An alert has even padding, so remove any bottom margin on the last child which would make that look extra large. */
-.alert > :last-child {
-    margin-bottom: 0;
-}
-
-.alert-tip {
-    background-image: url(/images/icons/iconmonstr-light-bulb-12.svg);
-    background-repeat: no-repeat;
-    background-size: 18px;
-    background-position: 10px center;
-    padding-left: 35px;
-}
 
 /* Display a Gravatar next to its content 
 

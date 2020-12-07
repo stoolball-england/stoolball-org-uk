@@ -1,4 +1,5 @@
-﻿@import "../Content/bootstrap/_functions.scss";
+﻿@import "_theme.scss";
+@import "../Content/bootstrap/_functions.scss";
 @import "../Content/bootstrap/_mixins.scss";
 @import "../Content/bootstrap/_variables.scss";
 @import "../Content/bootstrap/_forms.scss";
@@ -81,6 +82,15 @@ input[type='time'] {
     height: 1.5rem;
 }
 
+@media print {
+    .custom-control-input {
+        opacity: 1 !important;
+    }
+    .custom-control-label::before, .custom-control-label::after {
+        display: none;
+    }
+}
+
 /* Make click events on inline SVG images bubble up to parent elements */
 svg {
     pointer-events: none;
@@ -93,6 +103,16 @@ svg {
     background-size: 18px;
     background-position: 10px center;
     padding-left: 35px;
+}
+
+@media print {
+    .btn {
+        color: $black!important;
+    }
+
+    .btn-delete {
+        padding-left: ($spacer/4)*3;
+    }
 }
 
 .btn-delete-icon {
@@ -120,6 +140,15 @@ svg {
     background: url(/images/icons/iconmonstr-youtube-6-black.svg) no-repeat left center;
 }
 
+@media print {
+    .form-control__facebook,
+    .form-control__twitter,
+    .form-control__instagram,
+    .form-control__youtube {
+        padding-left: 0;
+    }
+}
+
 /* Label an option as admin only */
 .admin-only { 
     display: inline-block;
@@ -127,6 +156,12 @@ svg {
     padding-left: 22px;
     background: url(/images/icons/iconmonstr-lock-1.svg) no-repeat left center;
     background-size: 16px;
+}
+
+@media print {
+    .admin-only {
+        padding-left: 0;
+    }
 }
 
 /* Umbraco Forms margin support uses Bootstrap, but does not expect the container margins already to be in place, so offset them */
