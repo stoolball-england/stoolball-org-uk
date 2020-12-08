@@ -1,16 +1,19 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Clubs.ClubViewModel>
 @using Stoolball.Security
+@{ 
+    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditClub] || Model.IsAuthorized[AuthorizedAction.DeleteClub];
+}
 
 <h1>@Model.Club.ClubName</h1>
 
-<ul class="nav nav-tabs">
+<ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
     <li class="nav-item">
         <em class="nav-link active">Summary</em>
     </li>
     <li class="nav-item">
         <a class="nav-link" href="@Model.Club.ClubRoute/matches">Matches</a>
     </li>
-    @if (Model.IsAuthorized[AuthorizedAction.EditClub] || Model.IsAuthorized[AuthorizedAction.DeleteClub])
+    @if (authorizedToEdit)
     {
     <li class="nav-item nav-item-admin">
         <a class="nav-link nav-link-edit" href="@Model.Club.ClubRoute/edit">Edit club</a>

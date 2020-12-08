@@ -13,8 +13,15 @@ $nav-item-admin-colour: #767676;
 .nav-tabs {
     margin: 0 0 $spacer;
     position: relative;
-    padding-right: 80px; // Plan for two admin items, absolutely positioned at the right
     border-bottom-color: theme-color("secondary");
+}
+
+.nav-tabs-has-add, .nav-tabs-has-edit {
+    padding-right: $minimum-clickable-size;
+}
+
+.nav-tabs-has-add.nav-tabs-has-edit {
+    padding-right: 90px; // ($minimum-clickable-size * 2) + 2px
 }
 
 // Colour the normal tabs
@@ -94,7 +101,7 @@ $nav-item-admin-colour: #767676;
     // The first .nav-item-admin uses flex-grow: 1 to take up all the extra space and
     // push others to the right. Its own content is aligned to the right.
     // However, if the first one is hidden we have to force the second to be regarded as the first using .nav-item-admin-md-first
-    .nav-tabs {
+    .nav-tabs.nav-tabs-has-add, .nav-tabs.nav-tabs-has-edit {
         padding-right: 0;
     }
 

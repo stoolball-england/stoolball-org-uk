@@ -3,7 +3,9 @@
 @using Stoolball.Web.Competitions
 @using Stoolball.Security
 @using Humanizer
-
+@{ 
+    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam];
+}
 <h1>@Model.Team.TeamNameLocationAndPlayerType()</h1>
 
 @if (Model.Team.UntilYear.HasValue)
@@ -13,14 +15,14 @@
 </div>
 }
 
-<ul class="nav nav-tabs">
+<ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
     <li class="nav-item">
         <em class="nav-link active">Summary</em>
     </li>
     <li class="nav-item">
         <a class="nav-link" href="@Model.Team.TeamRoute/matches">Matches</a>
     </li>
-    @if (Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam])
+    @if (authorizedToEdit)
     {
         <li class="nav-item nav-item-admin">
             <a class="nav-link nav-link-edit" href="@Model.Team.TeamRoute/edit">Edit team</a>

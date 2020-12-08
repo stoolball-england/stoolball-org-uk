@@ -6,6 +6,7 @@
 @using Stoolball.Security
 @{ 
     Html.RequiresCss("~/css/scorecards.min.css");
+    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditMatch] || Model.IsAuthorized[AuthorizedAction.EditMatchResult] || Model.IsAuthorized[AuthorizedAction.DeleteMatch];
 }
 @functions{
     private string ResultDescription()
@@ -32,11 +33,11 @@
 }
 <h1>@Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
 
-<ul class="nav nav-tabs">
+<ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
     <li class="nav-item">
         <em class="nav-link active">Summary</em>
     </li>
-    @if (Model.IsAuthorized[AuthorizedAction.EditMatch] || Model.IsAuthorized[AuthorizedAction.EditMatchResult] || Model.IsAuthorized[AuthorizedAction.DeleteMatch])
+    @if (authorizedToEdit)
     {
         <li class="nav-item nav-item-admin">
             <a class="nav-link nav-link-edit" href="@Model.Match.MatchRoute/edit">Edit match</a>

@@ -2,6 +2,7 @@
 @using Stoolball.Security
 @{ 
     var firstAndOnlyMatch = Model.Matches.Matches.FirstOrDefault();
+    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam];
 }
 @section head {
     <meta name="robots" content="noindex,follow" />
@@ -16,11 +17,11 @@
     </div>
 }
 
-<ul class="nav nav-tabs">
+<ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
     <li class="nav-item">
         <em class="nav-link active">Summary</em>
     </li>
-    @if (Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam])
+    @if (authorizedToEdit)
     {
         <li class="nav-item nav-item-admin">
             <a class="nav-link nav-link-edit" href="@Model.Team.TeamRoute/edit">Edit team</a>

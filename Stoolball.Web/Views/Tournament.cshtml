@@ -5,13 +5,16 @@
 @using Stoolball.Web.Competitions
 @using Stoolball.Web.Matches
 @using Stoolball.Security
+@{ 
+    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTournament] || Model.IsAuthorized[AuthorizedAction.DeleteTournament];
+}
 <h1>@Model.Tournament.TournamentFullNameAndPlayerType(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
 
-<ul class="nav nav-tabs">
+<ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
     <li class="nav-item">
         <em class="nav-link active">Summary</em>
     </li>
-    @if (Model.IsAuthorized[AuthorizedAction.EditTournament] || Model.IsAuthorized[AuthorizedAction.DeleteTournament])
+    @if (authorizedToEdit)
     {
         <li class="nav-item nav-item-admin">
             <a class="nav-link nav-link-edit" href="@Model.Tournament.TournamentRoute/edit">Edit tournament</a>

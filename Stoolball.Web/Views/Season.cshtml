@@ -3,6 +3,9 @@
 @using Stoolball.Matches
 @using Stoolball.Web.Competitions
 @using Stoolball.Security
+@{ 
+    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition];
+}
 <h1>@Model.Season.SeasonFullNameAndPlayerType()</h1>
 
 @if (Model.Season.Competition.UntilYear.HasValue)
@@ -12,7 +15,7 @@
     </div>
 }
 
-<ul class="nav nav-tabs">
+<ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
     <li class="nav-item">
         <em class="nav-link active">Summary</em>
     </li>
@@ -28,7 +31,7 @@
             <a class="nav-link" href="@Model.Season.SeasonRoute/results">Results</a>
         </li>
     }
-    @if (Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
+    @if (authorizedToEdit)
     {
         <li class="nav-item nav-item-admin">
             <a class="nav-link nav-link-edit" href="@Model.Season.SeasonRoute/edit">Edit season</a>

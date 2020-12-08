@@ -4,21 +4,22 @@
 @using Stoolball.MatchLocations
 @using Stoolball.Security
 @{
-Html.RequiresJs("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey, 50);
-Html.RequiresJs("/js/maps.js", 90);
-Html.RequiresJs("/matchlocations/match-location.js");
+    Html.RequiresJs("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey, 50);
+    Html.RequiresJs("/js/maps.js", 90);
+    Html.RequiresJs("/matchlocations/match-location.js");
+    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditMatchLocation] || Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation];
 }
 
 <h1>@Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</h1>
 
-<ul class="nav nav-tabs">
+<ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
     <li class="nav-item">
         <em class="nav-link active">Summary</em>
     </li>
     <li class="nav-item">
         <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute/matches">Matches</a>
     </li>
-    @if (Model.IsAuthorized[AuthorizedAction.EditMatchLocation] || Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation])
+    @if (authorizedToEdit)
     {
         <li class="nav-item nav-item-admin">
             <a class="nav-link nav-link-edit" href="@Model.MatchLocation.MatchLocationRoute/edit">Edit ground or sports centre</a>
