@@ -19,7 +19,6 @@ $zindex-header: 900;
 $header_background: $black;
 $header_selected_background: #555;
 $space-for-header-focus-ring: 3px;
-$minimum-clickable-size: 44px;
 $offset-container-padding: -(($grid-gutter-width/2)-$space-for-header-focus-ring); // Applied to the the final icon, offset the padding of .container-xl, but allow space for the focus ring to show
 
 // Create some space between the header and the following content

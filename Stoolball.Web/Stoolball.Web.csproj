@@ -787,6 +787,7 @@
     <Content Include="images\icons\iconmonstr-youtube-6-green.svg" />
     <Content Include="images\icons\menu-white-24dp.svg" />
     <Content Include="images\icons\person-white-24dp.svg" />
+    <Content Include="images\icons\search-white-24dp.svg" />
     <Content Include="images\icons\settings-grey-24dp.svg" />
     <Content Include="images\icons\settings-white-24dp.svg" />
     <Content Include="images\logos\stoolball-england-icon-maskable.svg" />

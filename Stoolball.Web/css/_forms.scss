@@ -44,17 +44,35 @@ form { margin-bottom: $spacer; }
 legend { font-size: $font-size-base;}
 
 /* A simple search form with an input field and button. Apply as <form class="form-inline form-search">. */
+.form-search {
+    flex-wrap: nowrap;
+}
+
 .form-search input[type=search] {
     flex-grow: 1;
-    margin: 0 0 $spacer/2;
-
-    @include media-breakpoint-up(sm) {
-        margin: 0 $spacer/2 0 0;
-    }
+    margin: 0 $spacer/4 0 0;
+    min-height: $minimum-clickable-size;
 }
 
 .form-search button[type=submit] {
     flex-shrink: 0;
+    background-image: url(/images/icons/search-white-24dp.svg);
+    background-repeat: no-repeat;
+    background-position: 12px 13px;
+    background-size: 20px;
+    padding: 0 0 0 $minimum-clickable-size;
+    width: 0;
+    overflow: hidden;
+    max-width: $minimum-clickable-size;
+    min-height: $minimum-clickable-size;
+    border: 0;
+
+    @include media-breakpoint-up(md) {
+        width: auto;
+        max-width: none;
+        overflow: visible;
+        padding: 0 $spacer*.75 0 38px;
+    }
 }
 
 /* Set default width of a specific field types to be wide enough for typical entries and a jQuery validation badge */
