@@ -1,0 +1,58 @@
+{
+  "DefaultTemplate": "umb://template/207b1110bbe74e93bd83c3761b338ee3",
+  "AllowedTemplates": [
+    "umb://template/207b1110bbe74e93bd83c3761b338ee3"
+  ],
+  "Icon": "icon-newspaper color-grey",
+  "Thumbnail": "folder.png",
+  "Description": "A home page for Stoolball England news",
+  "IsContainer": true,
+  "Permissions": {
+    "AllowVaryingByCulture": false,
+    "AllowVaryingBySegment": false,
+    "AllowedAtRoot": false,
+    "IsElementType": false,
+    "AllowedChildContentTypes": [
+      "umb://document-type/da6181ad33494a98915f9d000e1e226b"
+    ]
+  },
+  "Parent": "umb://document-type-container/b0a6bedc9cac475b8ebfbca3bffbce3b",
+  "CompositionContentTypes": [
+    "umb://document-type/4669a249dba648a4826ac76d2042af4d",
+    "umb://document-type/d9999f5ac07b4f379d013f0316d8678c"
+  ],
+  "PropertyGroups": [],
+  "PropertyTypes": [],
+  "Udi": "umb://document-type/16aa3fb1f5c64b8290cd427098c577e0",
+  "Dependencies": [
+    {
+      "Udi": "umb://document-type/4669a249dba648a4826ac76d2042af4d",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/d9999f5ac07b4f379d013f0316d8678c",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/da6181ad33494a98915f9d000e1e226b",
+      "Ordering": false,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type-container/b0a6bedc9cac475b8ebfbca3bffbce3b",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/207b1110bbe74e93bd83c3761b338ee3",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "News",
+  "Alias": "news",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
+  "__version": "3.5.2"
+}

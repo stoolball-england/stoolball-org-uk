@@ -619,6 +619,12 @@
     <Content Include="css\cookies.page.min.css">
       <DependentUpon>cookies.page.css</DependentUpon>
     </Content>
+    <Content Include="css\news.css">
+      <DependentUpon>news.scss</DependentUpon>
+    </Content>
+    <Content Include="css\news.min.css">
+      <DependentUpon>news.css</DependentUpon>
+    </Content>
     <Content Include="css\related-items.css">
       <DependentUpon>related-items.scss</DependentUpon>
     </Content>
@@ -755,6 +761,7 @@
     <Content Include="Content\bootstrap\bootstrap.scss" />
     <Content Include="Content\bootstrap\bootstrap-reboot.scss" />
     <Content Include="Content\bootstrap\bootstrap-grid.scss" />
+    <Content Include="css\news.scss" />
     <None Include="css\tinymce.scss" />
     <Content Include="css\tinymce.css">
       <DependentUpon>tinymce.scss</DependentUpon>
@@ -965,6 +972,8 @@
     <Content Include="Views\Partials\BlockList\Components\Tip.cshtml" />
     <Content Include="Views\Partials\BlockList\Components\ProductPreview.cshtml" />
     <Content Include="Views\Partials\BlockList\Components\Consent.cshtml" />
+    <Content Include="Views\News.cshtml" />
+    <Content Include="Views\NewsStory.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -1002,6 +1011,9 @@
     <Compile Include="App_Data\Models\ImageElementType.generated.cs" />
     <Compile Include="App_Data\Models\LoginMember.generated.cs" />
     <Compile Include="App_Data\Models\LogoutMember.generated.cs" />
+    <Compile Include="App_Data\Models\News.generated.cs" />
+    <Compile Include="App_Data\Models\NewsStory.generated.cs" />
+    <Compile Include="App_Data\Models\NewsStorySettings.generated.cs" />
     <Compile Include="App_Data\Models\ProductList.generated.cs" />
     <Compile Include="App_Data\Models\ProductPreview.generated.cs" />
     <Compile Include="App_Data\Models\ResetPassword.generated.cs" />
@@ -1121,6 +1133,10 @@
     <Compile Include="DapperComposer.cs" />
     <Compile Include="Logging\UmbracoLogWrapper.cs" />
     <Compile Include="Matches\AddMatchMenuViewModel.cs" />
+    <Compile Include="News\News.cs" />
+    <Compile Include="News\NewsStory.cs" />
+    <Compile Include="News\NewsController.cs" />
+    <Compile Include="News\NewsStoryController.cs" />
     <Compile Include="Products\ProductList.cs" />
     <Compile Include="Products\ProductListController.cs" />
     <Compile Include="ContentPage\Content.cs" />

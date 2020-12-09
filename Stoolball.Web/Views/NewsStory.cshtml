@@ -1,0 +1,22 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.NewsStory>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using ClientDependency.Core.Mvc
+@using Umbraco.Core.Composing
+@using Stoolball.Dates
+@using Humanizer
+@{
+    Html.RequiresCss("~/css/news.min.css");
+    if (Model.BlockList.Any(x => x.Content is FormElementType))
+    {
+        Html.RequiresJs("~/scripts/jquery.validate.min.js");
+        Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+
+        Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
+        Html.RequiresJs("/js/tinymce.js");
+    }
+    var formatter = Current.Factory.GetInstance<IDateTimeFormatter>();
+}
+
+<h1>@Model.Name</h1>
+<p class="news__date">@(formatter.FormatDate(Model.DisplayDate == DateTime.MinValue ? Model.CreateDate : Model.DisplayDate).Humanize(LetterCasing.Title))</p>
+@Html.GetBlockListHtml(Model, "blockList")

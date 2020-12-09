@@ -38,5 +38,9 @@
   {
     "outputFile": "css/cookies.page.css",
     "inputFile": "css/cookies.page.scss"
+  },
+  {
+    "outputFile": "css/news.css",
+    "inputFile": "css/news.scss"
   }
 ]
