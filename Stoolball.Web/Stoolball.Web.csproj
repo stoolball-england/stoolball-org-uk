@@ -797,6 +797,7 @@
     <Content Include="images\icons\search-white-24dp.svg" />
     <Content Include="images\icons\settings-grey-24dp.svg" />
     <Content Include="images\icons\settings-white-24dp.svg" />
+    <Content Include="images\logos\sport-england.svg" />
     <Content Include="images\logos\stoolball-england-icon-maskable.svg" />
     <Content Include="js\consent.js" />
     <Content Include="js\google-analytics.js" />
