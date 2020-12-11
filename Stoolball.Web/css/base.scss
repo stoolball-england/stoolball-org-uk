@@ -26,8 +26,10 @@
 @import "../Content/bootstrap/_buttons.scss";
 @import "_forms.scss";
 
-/* Images - don't let them overflow their container */
-img { max-width: 100%; }
+/* Images - don't let them have that odd gap or overflow their container */
+img { 
+    max-width: 100%; 
+}
 
 /* Text and table styles */
 @import "../Content/bootstrap/utilities/_text.scss";

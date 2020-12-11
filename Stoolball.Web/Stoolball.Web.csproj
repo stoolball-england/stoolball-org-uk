@@ -661,6 +661,12 @@
     <Content Include="css\scorecards.min.css">
       <DependentUpon>scorecards.css</DependentUpon>
     </Content>
+    <Content Include="css\shop.page.css">
+      <DependentUpon>shop.page.scss</DependentUpon>
+    </Content>
+    <Content Include="css\shop.page.min.css">
+      <DependentUpon>shop.page.css</DependentUpon>
+    </Content>
     <Content Include="css\steps.css">
       <DependentUpon>steps.scss</DependentUpon>
     </Content>
@@ -762,6 +768,7 @@
     <Content Include="Content\bootstrap\bootstrap-reboot.scss" />
     <Content Include="Content\bootstrap\bootstrap-grid.scss" />
     <Content Include="css\news.scss" />
+    <Content Include="css\shop.page.scss" />
     <None Include="css\tinymce.scss" />
     <Content Include="css\tinymce.css">
       <DependentUpon>tinymce.scss</DependentUpon>
@@ -799,6 +806,8 @@
     <Content Include="images\icons\settings-white-24dp.svg" />
     <Content Include="images\logos\sport-england.svg" />
     <Content Include="images\logos\stoolball-england-icon-maskable.svg" />
+    <Content Include="images\promo\halftone-starburst.jpg" />
+    <Content Include="images\promo\spreadshirt.png" />
     <Content Include="js\consent.js" />
     <Content Include="js\google-analytics.js" />
     <Content Include="Matches\edit-batting-scorecard.js" />

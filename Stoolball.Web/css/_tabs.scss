@@ -7,7 +7,6 @@
 @import "../Content/bootstrap/_nav.scss";
 
 $selected_background: #555;
-$nav-item-admin-colour: #767676;
 
 // Add some space below tabbed navigation, and establish a positioning context
 .nav-tabs {
@@ -125,7 +124,7 @@ $nav-item-admin-colour: #767676;
         width: auto;
         background-position: 10px center;
         padding: $spacer/2 $spacer $spacer/2 35px;
-        color: $nav-item-admin-colour;
+        color: $grey;
         background-color: transparent;
         border-radius: $border-radius;
     }

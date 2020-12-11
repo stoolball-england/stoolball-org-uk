@@ -9,7 +9,7 @@
 }
 .breadcrumb a[href] {
     @include remove-link-underline;
-    color: #767676; // WCAG AA lightest grey
+    color: $grey;
 }
 
 .breadcrumb a[href]:hover {
