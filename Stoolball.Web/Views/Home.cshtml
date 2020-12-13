@@ -1,42 +1,57 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.Home>
 @using ContentModels = Umbraco.Web.PublishedModels;
 @using ClientDependency.Core.Mvc
-@{ 
+@{
     Html.RequiresCss("~/css/shop.page.min.css");
+    Html.RequiresCss("~/css/home.min.css");
 }
-<h1 class="sr-only">@Model.Name</h1>
+<div class="container-xl">
+    <h1 class="sr-only">@Model.Name</h1>
 
-<h2>What is stoolball?</h2>
-<ul>
-    <li>Family game</li>
-    <li>Outdoors</li>
-    <li>Indoors</li>
-    <li>Walking</li>
-</ul>
-<hr />
+    <h2>What is stoolball?</h2>
+    <ul>
+        <li>Family game</li>
+        <li>Outdoors</li>
+        <li>Indoors</li>
+        <li>Walking</li>
+    </ul>
+</div>
 
-<h2>Roles</h2>
-<ul>
-    <li>Team finder</li>
-    <li>Organise a team or league</li>
-    <li>Coach</li>
-    <li>Volunteer</li>
-    <li>Key links for players</li>
-</ul>
-<hr />
+<div class="home__team-finder">
+    <form method="get" action="/teams" class="container-xl">
+    <h2>Find a team</h2>
+    <label for="team-search">Enter your town, village or team name…</label>
+        <div class="form-inline form-search">
+            <input type="search" class="form-control" id="team-search" name="q" />
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+</div>
 
-<a class="shop__spreadshirt" href="https://shop.spreadshirt.co.uk/stoolball">
-    <h2>Stoolball gifts for you…</h2>
-    <div>
-        <img src="~/images/promo/spreadshirt.png" alt="Products from our gift shop" width="600" />
-    </div>
-    <p class="btn btn-danger btn-lg">Buy now!</p>
-</a>
-<h2>Buy equipment</h2>
-<hr />
+<div class="container-xl">
+    <h2>Roles</h2>
+    <ul>
+        <li>Organise a team or league</li>
+        <li>Coach</li>
+        <li>Volunteer</li>
+        <li>Key links for players</li>
+    </ul>
+    <hr />
 
-<h2>News</h2>
-<hr />
+    <a class="shop__spreadshirt" href="https://shop.spreadshirt.co.uk/stoolball">
+        <h2>Stoolball gifts for you…</h2>
+        <div>
+            <img src="~/images/promo/spreadshirt.png" alt="Products from our gift shop" width="600" />
+        </div>
+        <p class="btn btn-danger btn-lg">Buy now!</p>
+    </a>
+    <h2>Buy equipment</h2>
+    <hr />
 
-<h2>History</h2>
-Baseball
+    <h2>News</h2>
+    <hr />
+
+    <h2>History</h2>
+    <p>Stoolball stories</p>
+    <p>Baseball</p>
+</div>

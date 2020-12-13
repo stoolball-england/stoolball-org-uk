@@ -9,99 +9,100 @@
     Html.RequiresJs("/matchlocations/match-location.js");
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditMatchLocation] || Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation];
 }
+<div class="container-xl">
+    <h1>@Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</h1>
 
-<h1>@Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</h1>
-
-<ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
-    <li class="nav-item">
-        <em class="nav-link active">Summary</em>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute/matches">Matches</a>
-    </li>
-    @if (authorizedToEdit)
-    {
-        <li class="nav-item nav-item-admin">
-            <a class="nav-link nav-link-edit" href="@Model.MatchLocation.MatchLocationRoute/edit">Edit ground or sports centre</a>
+    <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
+        <li class="nav-item">
+            <em class="nav-link active">Summary</em>
         </li>
-    }
-</ul>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute/matches">Matches</a>
+        </li>
+        @if (authorizedToEdit)
+        {
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-edit" href="@Model.MatchLocation.MatchLocationRoute/edit">Edit ground or sports centre</a>
+            </li>
+        }
+    </ul>
 
-@{
-    var addressLines = new List<string>();
-    if (!string.IsNullOrWhiteSpace(Model.MatchLocation.SecondaryAddressableObjectName))
-    {
-        addressLines.Add(Model.MatchLocation.SecondaryAddressableObjectName);
-    }
-    if (!string.IsNullOrWhiteSpace(Model.MatchLocation.PrimaryAddressableObjectName))
-    {
-        addressLines.Add(Model.MatchLocation.PrimaryAddressableObjectName);
-    }
-    if (!string.IsNullOrWhiteSpace(Model.MatchLocation.StreetDescription))
-    {
-        addressLines.Add(Model.MatchLocation.StreetDescription);
-    }
+    @{
+        var addressLines = new List<string>();
+        if (!string.IsNullOrWhiteSpace(Model.MatchLocation.SecondaryAddressableObjectName))
+        {
+            addressLines.Add(Model.MatchLocation.SecondaryAddressableObjectName);
+        }
+        if (!string.IsNullOrWhiteSpace(Model.MatchLocation.PrimaryAddressableObjectName))
+        {
+            addressLines.Add(Model.MatchLocation.PrimaryAddressableObjectName);
+        }
+        if (!string.IsNullOrWhiteSpace(Model.MatchLocation.StreetDescription))
+        {
+            addressLines.Add(Model.MatchLocation.StreetDescription);
+        }
 
-    if (!string.IsNullOrWhiteSpace(Model.MatchLocation.Locality))
-    {
-        addressLines.Add(Model.MatchLocation.Locality);
-    }
-    if (!string.IsNullOrWhiteSpace(Model.MatchLocation.Town))
-    {
-        addressLines.Add(Model.MatchLocation.Town);
-    }
-    if (!string.IsNullOrWhiteSpace(Model.MatchLocation.AdministrativeArea))
-    {
-        addressLines.Add(Model.MatchLocation.AdministrativeArea);
-    }
-    if (!string.IsNullOrWhiteSpace(Model.MatchLocation.Postcode))
-    {
+        if (!string.IsNullOrWhiteSpace(Model.MatchLocation.Locality))
+        {
+            addressLines.Add(Model.MatchLocation.Locality);
+        }
+        if (!string.IsNullOrWhiteSpace(Model.MatchLocation.Town))
+        {
+            addressLines.Add(Model.MatchLocation.Town);
+        }
+        if (!string.IsNullOrWhiteSpace(Model.MatchLocation.AdministrativeArea))
+        {
+            addressLines.Add(Model.MatchLocation.AdministrativeArea);
+        }
+        if (!string.IsNullOrWhiteSpace(Model.MatchLocation.Postcode))
+        {
+            if (addressLines.Count > 0)
+            {
+                addressLines[addressLines.Count - 1] += " " + Model.MatchLocation.Postcode.ToUpper(CultureInfo.CurrentCulture);
+            }
+            else
+            {
+                addressLines.Add(Model.MatchLocation.Postcode.ToUpper(CultureInfo.CurrentCulture));
+            }
+        }
         if (addressLines.Count > 0)
         {
-            addressLines[addressLines.Count - 1] += " " + Model.MatchLocation.Postcode.ToUpper(CultureInfo.CurrentCulture);
-        }
-        else
-        {
-            addressLines.Add(Model.MatchLocation.Postcode.ToUpper(CultureInfo.CurrentCulture));
+            <p>
+                @foreach (var line in addressLines)
+                {
+                    @line<br />
+                }
+            </p>
         }
     }
-    if (addressLines.Count > 0)
+    @if (Model.MatchLocation.Teams?.Count > 0)
     {
-    <p>
-        @foreach (var line in addressLines)
-        {
-            @line<br />
-        }
-    </p>
+        <h2>Teams based here</h2>
+        @Html.Partial("_TeamList", Model.MatchLocation.Teams)
     }
-}
-@if (Model.MatchLocation.Teams?.Count > 0)
-{
-    <h2>Teams based here</h2>
-    @Html.Partial("_TeamList", Model.MatchLocation.Teams)
-}
 
-@if (Model.MatchLocation.Latitude.HasValue && Model.MatchLocation.Longitude.HasValue)
-{
-    var mapTitle = string.Empty;
-    switch (Model.MatchLocation.GeoPrecision)
+    @if (Model.MatchLocation.Latitude.HasValue && Model.MatchLocation.Longitude.HasValue)
     {
-        case GeoPrecision.Exact:
-            mapTitle = Model.MatchLocation.NameAndLocalityOrTownIfDifferent();
-            break;
-        case GeoPrecision.Postcode:
-            mapTitle = Model.MatchLocation.Postcode;
-            break;
-        case GeoPrecision.Street:
-            mapTitle = Model.MatchLocation.StreetDescription + ", " + Model.MatchLocation.Town;
-            break;
-        case GeoPrecision.Town:
-            mapTitle = Model.MatchLocation.Town;
-            break;
+        var mapTitle = string.Empty;
+        switch (Model.MatchLocation.GeoPrecision)
+        {
+            case GeoPrecision.Exact:
+                mapTitle = Model.MatchLocation.NameAndLocalityOrTownIfDifferent();
+                break;
+            case GeoPrecision.Postcode:
+                mapTitle = Model.MatchLocation.Postcode;
+                break;
+            case GeoPrecision.Street:
+                mapTitle = Model.MatchLocation.StreetDescription + ", " + Model.MatchLocation.Town;
+                break;
+            case GeoPrecision.Town:
+                mapTitle = Model.MatchLocation.Town;
+                break;
+        }
+        <div id="location-map" data-latitude="@Model.MatchLocation.Latitude" data-longitude="@Model.MatchLocation.Longitude" data-precision="@Model.MatchLocation.GeoPrecision.ToString().ToLowerInvariant()" data-title="@Html.AttributeEncode(mapTitle)">
+            <p><a href="https://maps.google.co.uk/?z=16&amp;q=@HttpUtility.UrlEncode(Model.MatchLocation.NameAndLocalityOrTown())@("@")@Model.MatchLocation.Latitude,@Model.MatchLocation.Longitude&amp;ll=@Model.MatchLocation.Latitude,@Model.MatchLocation.Longitude">Map of @mapTitle on Google Maps</a></p>
+        </div>
     }
-<div id="location-map" data-latitude="@Model.MatchLocation.Latitude" data-longitude="@Model.MatchLocation.Longitude" data-precision="@Model.MatchLocation.GeoPrecision.ToString().ToLowerInvariant()" data-title="@Html.AttributeEncode(mapTitle)">
-    <p><a href="https://maps.google.co.uk/?z=16&amp;q=@HttpUtility.UrlEncode(Model.MatchLocation.NameAndLocalityOrTown())@("@")@Model.MatchLocation.Latitude,@Model.MatchLocation.Longitude&amp;ll=@Model.MatchLocation.Latitude,@Model.MatchLocation.Longitude">Map of @mapTitle on Google Maps</a></p>
+
+    @Html.Raw(Model.MatchLocation.MatchLocationNotes)
 </div>
-}
-
-@Html.Raw(Model.MatchLocation.MatchLocationNotes)

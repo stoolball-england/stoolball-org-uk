@@ -18,31 +18,32 @@
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
+<div class="container-xl">
+    <h1>@Model.Team.TeamName</h1>
 
-<h1>@Model.Team.TeamName</h1>
+    @if (Model.Team.UntilYear.HasValue)
+    {
+        <div class="alert alert-info">
+            <p><strong>This team is no longer active.</strong></p>
+        </div>
+    }
 
-@if (Model.Team.UntilYear.HasValue)
-{
-    <div class="alert alert-info">
-        <p><strong>This team is no longer active.</strong></p>
-    </div>
-}
+    <ul class="nav nav-tabs nav-tabs-has-add">
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Team.TeamRoute">Summary</a>
+        </li>
+        <li class="nav-item">
+            <em class="nav-link active">Matches</em>
+        </li>
+        @Html.Partial("_AddMatchMenu", matchMenu)
+    </ul>
 
-<ul class="nav nav-tabs nav-tabs-has-add">
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.Team.TeamRoute">Summary</a>
-    </li>
-    <li class="nav-item">
-        <em class="nav-link active">Matches</em>
-    </li>
-    @Html.Partial("_AddMatchMenu", matchMenu)
-</ul>
-
-@if (Model.Matches.Matches.Count > 0)
-{
-    @Html.Partial("_MatchList", Model.Matches)
-}
-else
-{
-    <p>There are no matches for this team this season.</p>
-}
+    @if (Model.Matches.Matches.Count > 0)
+    {
+        @Html.Partial("_MatchList", Model.Matches)
+    }
+    else
+    {
+        <p>There are no matches for this team this season.</p>
+    }
+</div>

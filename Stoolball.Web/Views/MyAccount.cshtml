@@ -13,47 +13,48 @@
     Html.RequiresJs("~/scripts/jquery.validate.min.js");
     Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
 }
+<div class="container-xl">
+    <h1>@Model.Name</h1>
 
-<h1>@Model.Name</h1>
-
-@if (User.Identity.IsAuthenticated)
-{
-    if (TempData["Success"] == null)
+    @if (User.Identity.IsAuthenticated)
     {
-        using (Html.BeginUmbracoForm<MyAccountSurfaceController>("UpdateAccount"))
+        if (TempData["Success"] == null)
         {
-            @Html.AntiForgeryToken()
-            var gravatar = new Gravatar(User.Identity.Name);
-            var accountUpdate = new MyAccountUpdate();
-            accountUpdate.Name = Members.GetCurrentMember().Name;
+            using (Html.BeginUmbracoForm<MyAccountSurfaceController>("UpdateAccount"))
+            {
+                @Html.AntiForgeryToken()
+                var gravatar = new Gravatar(User.Identity.Name);
+                var accountUpdate = new MyAccountUpdate();
+                accountUpdate.Name = Members.GetCurrentMember().Name;
 
-            <div class="form-group">
-                @Html.LabelFor(m => accountUpdate.Name)
-                @Html.TextBoxFor(m => accountUpdate.Name, new { @class = "form-control", required = "required", aria_describedby = "form-name" })
-                @Html.ValidationMessageFor(m => accountUpdate.Name, null, new { id = "form-name" })
-            </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => accountUpdate.Name)
+                    @Html.TextBoxFor(m => accountUpdate.Name, new { @class = "form-control", required = "required", aria_describedby = "form-name" })
+                    @Html.ValidationMessageFor(m => accountUpdate.Name, null, new { id = "form-name" })
+                </div>
 
-            <div class="form-group">
-                <p class="form-label">Account picture</p>
-                <div class="form-row">
-                    <div class="col gravatar">
-                        <img src="@gravatar.Url" alt="Your account picture from gravatar.com" width="@gravatar.Size" height="@gravatar.Size" />
-                    </div>
-                    <div class="col">
-                        @Html.ProtectEmailAddresses(Model.Value<IHtmlString>("gravatar"))
+                <div class="form-group">
+                    <p class="form-label">Account picture</p>
+                    <div class="form-row">
+                        <div class="col gravatar">
+                            <img src="@gravatar.Url" alt="Your account picture from gravatar.com" width="@gravatar.Size" height="@gravatar.Size" />
+                        </div>
+                        <div class="col">
+                            @Html.ProtectEmailAddresses(Model.Value<IHtmlString>("gravatar"))
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <button class="btn btn-primary">@Model.Value("saveButton")</button>
+                <button class="btn btn-primary">@Model.Value("saveButton")</button>
+            }
+        }
+        else
+        {
+            @Html.ProtectEmailAddresses(Model.Value<IHtmlString>("saved"))
         }
     }
     else
     {
-        @Html.ProtectEmailAddresses(Model.Value<IHtmlString>("saved"))
+        @Html.Partial("_Login")
     }
-}
-else
-{
-    @Html.Partial("_Login")
-}
+</div>

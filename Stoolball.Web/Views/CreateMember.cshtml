@@ -13,53 +13,55 @@
 
     var createMemberModel = Members.CreateRegistrationModel();
 }
-<h1>@Model.Name</h1>
+<div class="container-xl">
+    <h1>@Model.Name</h1>
 
-@if (User.Identity.IsAuthenticated)
-{
-    @Html.Partial("_Logout")
-}
-else
-{
-    if (TempData["FormSuccess"] != null)
+    @if (User.Identity.IsAuthenticated)
     {
-        @Html.ProtectEmailAddresses(Model.Value("memberCreatedSuccessfully").ToString(), TempData["Email"]?.ToString())
+        @Html.Partial("_Logout")
     }
     else
     {
-        using (Html.BeginUmbracoForm<CreateMemberSurfaceController>("CreateMember"))
+        if (TempData["FormSuccess"] != null)
         {
-            @Html.AntiForgeryToken()
-
-            @* Html.ValidationSummary() would display these errors, but it would also display duplicate client-side errors and use inline styles, so use TempData instead. *@
-            if (TempData["Error"] != null)
+            @Html.ProtectEmailAddresses(Model.Value("memberCreatedSuccessfully").ToString(), TempData["Email"]?.ToString())
+        }
+        else
+        {
+            using (Html.BeginUmbracoForm<CreateMemberSurfaceController>("CreateMember"))
             {
-                <p class="validation-summary-errors">@TempData["Error"]</p>
-            }
+                @Html.AntiForgeryToken()
 
-            <div class="form-group">
-                @Html.LabelFor(m => createMemberModel.Name)
-                @Html.TextBoxFor(m => createMemberModel.Name, new { @class = "form-control", required = "required", aria_describedby = "form-name" })
-                @Html.ValidationMessageFor(m => createMemberModel.Name, null, new { id = "form-name" })
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(m => createMemberModel.Email)
-                @Html.TextBoxFor(m => createMemberModel.Email, new { @class = "form-control", type = "email", required = "required", aria_describedby = "form-email", autocorrect="off", autocapitalize="off" })
-                @Html.ValidationMessageFor(m => createMemberModel.Email, "Please enter a valid email address", new { id = "form-email" })
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(m => createMemberModel.Password)
-                @{ var describedBy = "form-password"; }
-                @if (!string.IsNullOrEmpty(Model.PasswordHelp))
+                @* Html.ValidationSummary() would display these errors, but it would also display duplicate client-side errors and use inline styles, so use TempData instead. *@
+                if (TempData["Error"] != null)
                 {
-                    describedBy = "form-password form-password-help";
-                    <p class="form-text" id="form-password-help"><small>@Model.PasswordHelp</small></p>
+                    <p class="validation-summary-errors">@TempData["Error"]</p>
                 }
-                @Html.PasswordFor(m => createMemberModel.Password, new { @class = "form-control", aria_describedby = describedBy, autocorrect="off", autocapitalize="off" })
-                @Html.ValidationMessageFor(m => createMemberModel.Password, "Please create a new password", new { id = "form-password" })
-            </div>
 
-            <button class="btn btn-primary">@Model.Value("createMemberButton")</button>
+                <div class="form-group">
+                    @Html.LabelFor(m => createMemberModel.Name)
+                    @Html.TextBoxFor(m => createMemberModel.Name, new { @class = "form-control", required = "required", aria_describedby = "form-name" })
+                    @Html.ValidationMessageFor(m => createMemberModel.Name, null, new { id = "form-name" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => createMemberModel.Email)
+                    @Html.TextBoxFor(m => createMemberModel.Email, new { @class = "form-control", type = "email", required = "required", aria_describedby = "form-email", autocorrect = "off", autocapitalize = "off" })
+                    @Html.ValidationMessageFor(m => createMemberModel.Email, "Please enter a valid email address", new { id = "form-email" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => createMemberModel.Password)
+                    @{ var describedBy = "form-password"; }
+                    @if (!string.IsNullOrEmpty(Model.PasswordHelp))
+                    {
+                        describedBy = "form-password form-password-help";
+                        <p class="form-text" id="form-password-help"><small>@Model.PasswordHelp</small></p>
+                    }
+                    @Html.PasswordFor(m => createMemberModel.Password, new { @class = "form-control", aria_describedby = describedBy, autocorrect = "off", autocapitalize = "off" })
+                    @Html.ValidationMessageFor(m => createMemberModel.Password, "Please create a new password", new { id = "form-password" })
+                </div>
+
+                <button class="btn btn-primary">@Model.Value("createMemberButton")</button>
+            }
         }
     }
-}
+</div>

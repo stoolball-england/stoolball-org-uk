@@ -1,0 +1,30 @@
+﻿@import "_theme.scss";
+@import "../Content/bootstrap/_functions.scss";
+@import "../Content/bootstrap/_mixins.scss";
+@import "../Content/bootstrap/_variables.scss";
+
+.home__team-finder {
+    transform: skewY($skew);
+    background: #000 url(/images/photos/england-2018.jpg) no-repeat top center;
+    padding: $spacer*2 0;
+    border-top: 5px solid theme-color("primary");
+    border-bottom: 5px solid theme-color("primary");
+    color: $white;
+    margin-bottom: $spacer*2;
+}
+
+.home__team-finder form {
+    transform: skewY($skew*-1);
+}
+
+.home__team-finder h2 {
+    text-shadow: 2px 2px 2px $black;
+}
+
+.home__team-finder label {
+    text-shadow: 2px 2px 2px $black;
+    background: rgba(0,0,0,.5);
+    padding: $spacer*.5;
+    border-radius: $border-radius*2 $border-radius*2 0 0;
+    margin-bottom: 0;
+}

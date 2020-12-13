@@ -6,66 +6,68 @@
 @{ 
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition];
 }
-<h1>@Model.Season.SeasonFullNameAndPlayerType()</h1>
+<div class="container-xl">
+    <h1>@Model.Season.SeasonFullNameAndPlayerType()</h1>
 
-@if (Model.Season.Competition.UntilYear.HasValue)
-{
-    <div class="alert alert-info">
-        <p><strong>This competition isn't played any more.</strong></p>
-    </div>
-}
-
-<ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
-    <li class="nav-item">
-        <em class="nav-link active">Summary</em>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
-    </li>
-    @if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) || 
-        Model.Season.MatchTypes.Contains(MatchType.KnockoutMatch) || 
-        Model.Season.MatchTypes.Contains(MatchType.FriendlyMatch) || 
-        !string.IsNullOrEmpty(Model.Season.Results))
+    @if (Model.Season.Competition.UntilYear.HasValue)
     {
+        <div class="alert alert-info">
+            <p><strong>This competition isn't played any more.</strong></p>
+        </div>
+    }
+
+    <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
         <li class="nav-item">
-            <a class="nav-link" href="@Model.Season.SeasonRoute/results">Results</a>
+            <em class="nav-link active">Summary</em>
         </li>
-    }
-    @if (authorizedToEdit)
-    {
-        <li class="nav-item nav-item-admin">
-            <a class="nav-link nav-link-edit" href="@Model.Season.SeasonRoute/edit">Edit season</a>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute/matches">Matches</a>
         </li>
-    }
-</ul>
+        @if (Model.Season.MatchTypes.Contains(MatchType.LeagueMatch) ||
+            Model.Season.MatchTypes.Contains(MatchType.KnockoutMatch) ||
+            Model.Season.MatchTypes.Contains(MatchType.FriendlyMatch) ||
+            !string.IsNullOrEmpty(Model.Season.Results))
+        {
+            <li class="nav-item">
+                <a class="nav-link" href="@Model.Season.SeasonRoute/results">Results</a>
+            </li>
+        }
+        @if (authorizedToEdit)
+        {
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-edit" href="@Model.Season.SeasonRoute/edit">Edit season</a>
+            </li>
+        }
+    </ul>
 
-@Html.Raw(Model.Season.Competition.Introduction)
-@Html.Raw(Model.Season.Introduction)
+    @Html.Raw(Model.Season.Competition.Introduction)
+    @Html.Raw(Model.Season.Introduction)
 
-@if (Model.Season.Teams.Count > 0)
-{
-    <h2>Teams playing in the @Model.Season.SeasonName()</h2>
-    @Html.Partial("_TeamList", Model.Season.Teams.Select(x => x.Team).ToList())
-}
-
-@if (!string.IsNullOrWhiteSpace(Model.Season.Competition.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Season.Competition.Website))
-{
-    <h2>Contact details</h2>
-    @Html.Raw(Model.Season.Competition.PublicContactDetails)
-
-    if (!string.IsNullOrWhiteSpace(Model.Season.Competition.Website))
+    @if (Model.Season.Teams.Count > 0)
     {
-        <p>Visit the <a href="@Model.Season.Competition.Website">@Model.Season.Competition.CompetitionName's website</a>.</p>
+        <h2>Teams playing in the @Model.Season.SeasonName()</h2>
+        @Html.Partial("_TeamList", Model.Season.Teams.Select(x => x.Team).ToList())
     }
-}
 
-@if (Model.Season.Competition.Seasons.Count > 0)
-{
-    var seasonListModel = new SeasonListViewModel
+    @if (!string.IsNullOrWhiteSpace(Model.Season.Competition.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Season.Competition.Website))
     {
-        ShowCompetitionHeading = false
-    };
-    seasonListModel.Competitions.Add(Model.Season.Competition);
-    <h2>Other seasons in the @Model.Season.Competition.CompetitionName</h2>
-    @Html.Partial("_SeasonList", seasonListModel)
-}
+        <h2>Contact details</h2>
+        @Html.Raw(Model.Season.Competition.PublicContactDetails)
+
+        if (!string.IsNullOrWhiteSpace(Model.Season.Competition.Website))
+        {
+            <p>Visit the <a href="@Model.Season.Competition.Website">@Model.Season.Competition.CompetitionName's website</a>.</p>
+        }
+    }
+
+    @if (Model.Season.Competition.Seasons.Count > 0)
+    {
+        var seasonListModel = new SeasonListViewModel
+        {
+            ShowCompetitionHeading = false
+        };
+        seasonListModel.Competitions.Add(Model.Season.Competition);
+        <h2>Other seasons in the @Model.Season.Competition.CompetitionName</h2>
+        @Html.Partial("_SeasonList", seasonListModel)
+    }
+</div>

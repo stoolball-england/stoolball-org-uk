@@ -13,102 +13,103 @@
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
+<div class="container-xl">
+    <h1>Delete @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
 
-<h1>Delete @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
-
-@if (Model.IsAuthorized[AuthorizedAction.DeleteMatch])
-{
-    if (!Model.Deleted)
+    @if (Model.IsAuthorized[AuthorizedAction.DeleteMatch])
     {
-        <p>If you delete @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false)) you will:</p>
-        <ul>
-            @{
-                var batters = Model.Match.MatchInnings.SelectMany(x => x.PlayerInnings.Select(pi => pi.PlayerIdentity));
-                var fielders = Model.Match.MatchInnings.SelectMany(x => x.PlayerInnings.Select(pi => pi.DismissedBy).OfType<PlayerIdentity>());
-                var wicketTakers = Model.Match.MatchInnings.SelectMany(x => x.PlayerInnings.Select(pi => pi.Bowler).OfType<PlayerIdentity>());
-                var bowlers = Model.Match.MatchInnings.SelectMany(x => x.OversBowled.Select(o => o.PlayerIdentity));
-                var awards = Model.Match.Awards.Select(x => x.PlayerIdentity);
-                var comparer = new PlayerIdentityEqualityComparer();
-                var players = batters.Union(fielders, comparer).Union(wicketTakers, comparer).Union(bowlers, comparer).Union(awards, comparer).ToList();
-            }
-            @if (Model.Match.Teams.Count > 0)
-            {
-                <li>remove this match from match listings for @Model.Match.Teams.Humanize(x => x.Team.TeamName)</li>
-            }
-            else
-            {
-                <li>not affect any teams</li>
-            }
-            @if (Model.Match.Season != null)
-            {
-                <li>remove this match from the @Model.Match.Season.SeasonFullName()</li>
-            }
-            else
-            {
-                <li>not affect any competitions</li>
-            }
-            @if (players.Count > 0)
-            {
-                <li>change batting, bowling and fielding statistics for both teams, affecting @("player".ToQuantity(players.Count))</li>
-            }
-            else
-            {
-                <li>not affect any batting, bowling and fielding statistics</li>
-            }
-            @{
-                var playersAtRisk = players.Where(x => x.TotalMatches == 1).ToList();
-                if (playersAtRisk.Count > 0)
+        if (!Model.Deleted)
+        {
+            <p>If you delete @Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false)) you will:</p>
+            <ul>
+                @{
+                    var batters = Model.Match.MatchInnings.SelectMany(x => x.PlayerInnings.Select(pi => pi.PlayerIdentity));
+                    var fielders = Model.Match.MatchInnings.SelectMany(x => x.PlayerInnings.Select(pi => pi.DismissedBy).OfType<PlayerIdentity>());
+                    var wicketTakers = Model.Match.MatchInnings.SelectMany(x => x.PlayerInnings.Select(pi => pi.Bowler).OfType<PlayerIdentity>());
+                    var bowlers = Model.Match.MatchInnings.SelectMany(x => x.OversBowled.Select(o => o.PlayerIdentity));
+                    var awards = Model.Match.Awards.Select(x => x.PlayerIdentity);
+                    var comparer = new PlayerIdentityEqualityComparer();
+                    var players = batters.Union(fielders, comparer).Union(wicketTakers, comparer).Union(bowlers, comparer).Union(awards, comparer).ToList();
+                }
+                @if (Model.Match.Teams.Count > 0)
                 {
-                    <li>delete @("player".ToQuantity(playersAtRisk.Count)) involved in only this match: @playersAtRisk.Humanize(x => x.PlayerIdentityName)</li>
+                    <li>remove this match from match listings for @Model.Match.Teams.Humanize(x => x.Team.TeamName)</li>
                 }
                 else
                 {
-                    <li>not delete any players</li>
+                    <li>not affect any teams</li>
                 }
-            }
-            @if (Model.Match.Awards.Count > 0)
-            {
-                var awardWinners = Model.Match.Awards.Select(x => x.PlayerIdentity);
-                <li>remove @("player award".ToQuantity(Model.Match.Awards.Count)) from @awardWinners.Humanize(x => x.PlayerIdentityName)'s statistics</li>
-            }
-            else
-            {
-                <li>not affect any player awards</li>
-            }
-            @if (Model.TotalComments > 0)
-            {
-                <li>delete @("comment".ToQuantity(Model.TotalComments)), which may include records of outstanding performances</li>
-            }
-            else
-            {
-                <li>not affect any comments</li>
-            }
-        </ul>
-        <p><strong><strong>You cannot undo this.</strong></strong></p>
+                @if (Model.Match.Season != null)
+                {
+                    <li>remove this match from the @Model.Match.Season.SeasonFullName()</li>
+                }
+                else
+                {
+                    <li>not affect any competitions</li>
+                }
+                @if (players.Count > 0)
+                {
+                    <li>change batting, bowling and fielding statistics for both teams, affecting @("player".ToQuantity(players.Count))</li>
+                }
+                else
+                {
+                    <li>not affect any batting, bowling and fielding statistics</li>
+                }
+                @{
+                    var playersAtRisk = players.Where(x => x.TotalMatches == 1).ToList();
+                    if (playersAtRisk.Count > 0)
+                    {
+                        <li>delete @("player".ToQuantity(playersAtRisk.Count)) involved in only this match: @playersAtRisk.Humanize(x => x.PlayerIdentityName)</li>
+                    }
+                    else
+                    {
+                        <li>not delete any players</li>
+                    }
+                }
+                @if (Model.Match.Awards.Count > 0)
+                {
+                    var awardWinners = Model.Match.Awards.Select(x => x.PlayerIdentity);
+                    <li>remove @("player award".ToQuantity(Model.Match.Awards.Count)) from @awardWinners.Humanize(x => x.PlayerIdentityName)'s statistics</li>
+                }
+                else
+                {
+                    <li>not affect any player awards</li>
+                }
+                @if (Model.TotalComments > 0)
+                {
+                    <li>delete @("comment".ToQuantity(Model.TotalComments)), which may include records of outstanding performances</li>
+                }
+                else
+                {
+                    <li>not affect any comments</li>
+                }
+            </ul>
+            <p><strong><strong>You cannot undo this.</strong></strong></p>
 
 
-        using (Html.BeginUmbracoForm<DeleteMatchSurfaceController>
-                   ("DeleteMatch"))
+            using (Html.BeginUmbracoForm<DeleteMatchSurfaceController>
+                       ("DeleteMatch"))
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Match.MatchName}' into this box:")
+                    @Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck = "false" })
+                    @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
+                </div>
+
+                <button class="btn btn-danger btn-delete">Delete @Model.Match.MatchName</button>
+            }
+        }
+        else
         {
-            @Html.AntiForgeryToken()
-
-            @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
-            <div class="form-group">
-                @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Match.MatchName}' into this box:")
-                @Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck = "false" })
-                @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
-            </div>
-
-            <button class="btn btn-danger btn-delete">Delete @Model.Match.MatchName</button>
+            <p>@Model.Match.MatchName has been deleted.</p>
+            @*<a class="btn btn-primary" href="/matches">Back to matches</a>*@
         }
     }
     else
     {
-        <p>@Model.Match.MatchName has been deleted.</p>
-        @*<a class="btn btn-primary" href="/matches">Back to matches</a>*@
+        @Html.Partial("_Login")
     }
-}
-else
-{
-    @Html.Partial("_Login")
-}
+</div>

@@ -12,58 +12,59 @@
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
+<div class="container-xl">
+    <h1>Delete @Model.Competition.CompetitionName</h1>
 
-<h1>Delete @Model.Competition.CompetitionName</h1>
-
-@if (Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
-{
-    if (!Model.Deleted)
+    @if (Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
     {
-        <p>If you delete @Model.Competition.CompetitionName you will:</p>
-        <ul>
-            @if (Model.TotalMatches > 0)
-            {
-                <li>remove @("match".ToQuantity(Model.TotalMatches)) from the @Model.Competition.CompetitionName competition</li>
-                <li>change statistics for the competition, teams and all their players who played in this competition</li>
-            }
-            else
-            {
-                <li>not affect any matches</li>
-                <li>not affect any statistics</li>
-            }
-            @if (Model.TotalTeams > 0)
-            {
-                <li>change the history of @("team".ToQuantity(Model.TotalTeams))</li>
-            }
-            else
-            {
-                <li>not affect any teams</li>
-            }
-        </ul>
-        <p><strong><strong>You cannot undo this.</strong></strong></p>
-
-        using (Html.BeginUmbracoForm<DeleteCompetitionSurfaceController>
-               ("DeleteCompetition"))
+        if (!Model.Deleted)
         {
-            @Html.AntiForgeryToken()
+            <p>If you delete @Model.Competition.CompetitionName you will:</p>
+            <ul>
+                @if (Model.TotalMatches > 0)
+                {
+                    <li>remove @("match".ToQuantity(Model.TotalMatches)) from the @Model.Competition.CompetitionName competition</li>
+                    <li>change statistics for the competition, teams and all their players who played in this competition</li>
+                }
+                else
+                {
+                    <li>not affect any matches</li>
+                    <li>not affect any statistics</li>
+                }
+                @if (Model.TotalTeams > 0)
+                {
+                    <li>change the history of @("team".ToQuantity(Model.TotalTeams))</li>
+                }
+                else
+                {
+                    <li>not affect any teams</li>
+                }
+            </ul>
+            <p><strong><strong>You cannot undo this.</strong></strong></p>
 
-            @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
-            <div class="form-group">
-                @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Competition.CompetitionName}' into this box:")
-                @Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck="false" })
-                @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
-            </div>
+            using (Html.BeginUmbracoForm<DeleteCompetitionSurfaceController>
+                   ("DeleteCompetition"))
+            {
+                @Html.AntiForgeryToken()
 
-            <button class="btn btn-danger btn-delete">Delete @Model.Competition.CompetitionName</button>
+                @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Competition.CompetitionName}' into this box:")
+                    @Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck = "false" })
+                    @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
+                </div>
+
+                <button class="btn btn-danger btn-delete">Delete @Model.Competition.CompetitionName</button>
+            }
+        }
+        else
+        {
+            <p>@Model.Competition.CompetitionName has been deleted.</p>
+            <a class="btn btn-primary" href="/competitions">Back to Competitions</a>
         }
     }
     else
     {
-        <p>@Model.Competition.CompetitionName has been deleted.</p>
-        <a class="btn btn-primary" href="/competitions">Back to Competitions</a>
+        @Html.Partial("_Login")
     }
-}
-else
-{
-    @Html.Partial("_Login")
-}
+</div>

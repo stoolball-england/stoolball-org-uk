@@ -12,50 +12,51 @@
     Html.RequiresJs("~/scripts/jquery.validate.min.js");
     Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
 }
+<div class="container-xl">
+    <h1>Points for @Model.Season.SeasonFullName()</h1>
 
-<h1>Points for @Model.Season.SeasonFullName()</h1>
-
-@if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
-{
-    using (Html.BeginUmbracoForm<EditSeasonPointsSurfaceController>
-        ("UpdateSeason"))
+    @if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
     {
-        @Html.AntiForgeryToken()
-        @Html.ValidationSummary(true)
+        using (Html.BeginUmbracoForm<EditSeasonPointsSurfaceController>
+            ("UpdateSeason"))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
 
-        <fieldset class="form-group">
-            <legend>Points rules for league matches</legend>
-            <table class="table">
-                <thead>
-                    <tr><th scope="col">Result</th><th scope="col">Points for home team</th><th scope="col">Points for away team</th></tr>
-                </thead>
-                <tbody>
-                    @for (var i = 0; i < Model.Season.PointsRules.Count; i++)
-                    {
-                    <tr>
-                        <th scope="row">
-                            @Model.Season.PointsRules[i].MatchResultType.ToString().Humanize()
-                            @Html.HiddenFor(m => Model.Season.PointsRules[i].PointsRuleId)
-                            @Html.HiddenFor(m => Model.Season.PointsRules[i].MatchResultType)
-                        </th>
-                        <td>
-                            @Html.TextBoxFor(m => Model.Season.PointsRules[i].HomePoints, new { @type = "number", maxlength = "2" })
-                            @Html.ValidationMessageFor(m => Model.Season.PointsRules[i].HomePoints, null)
-                        </td>
-                        <td>
-                            @Html.TextBoxFor(m => Model.Season.PointsRules[i].AwayPoints, new { @type = "number", maxlength = "2" })
-                            @Html.ValidationMessageFor(m => Model.Season.PointsRules[i].AwayPoints, null)
-                        </td>
-                    </tr>
-                    }
-                </tbody>
-            </table>
-        </fieldset>
+            <fieldset class="form-group">
+                <legend>Points rules for league matches</legend>
+                <table class="table">
+                    <thead>
+                        <tr><th scope="col">Result</th><th scope="col">Points for home team</th><th scope="col">Points for away team</th></tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.Season.PointsRules.Count; i++)
+                        {
+                            <tr>
+                                <th scope="row">
+                                    @Model.Season.PointsRules[i].MatchResultType.ToString().Humanize()
+                                    @Html.HiddenFor(m => Model.Season.PointsRules[i].PointsRuleId)
+                                    @Html.HiddenFor(m => Model.Season.PointsRules[i].MatchResultType)
+                                </th>
+                                <td>
+                                    @Html.TextBoxFor(m => Model.Season.PointsRules[i].HomePoints, new { @type = "number", maxlength = "2" })
+                                    @Html.ValidationMessageFor(m => Model.Season.PointsRules[i].HomePoints, null)
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(m => Model.Season.PointsRules[i].AwayPoints, new { @type = "number", maxlength = "2" })
+                                    @Html.ValidationMessageFor(m => Model.Season.PointsRules[i].AwayPoints, null)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </fieldset>
 
-        <button class="btn btn-primary">Save season</button>
+            <button class="btn btn-primary">Save season</button>
+        }
     }
-}
-else
-{
-    @Html.Partial("_Login")
-}
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

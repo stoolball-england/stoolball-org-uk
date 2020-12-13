@@ -1,52 +1,54 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.CompetitionsViewModel>
 @using Humanizer
 @using System.Text.RegularExpressions
-<h1>
-    @Stoolball.Constants.Pages.Competitions
-    @if (!string.IsNullOrEmpty(Model.CompetitionQuery.Query))
+<div class="container-xl">
+    <h1>
+        @Stoolball.Constants.Pages.Competitions
+        @if (!string.IsNullOrEmpty(Model.CompetitionQuery.Query))
+        {
+            @: matching '@Model.CompetitionQuery.Query'
+        }
+    </h1>
+
+    <ul class="nav nav-tabs nav-tabs-has-add">
+        <li class="nav-item">
+            <em class="nav-link active">Search</em>
+        </li>
+        <li class="nav-item nav-item-admin">
+            <a class="nav-link nav-link-add" href="/competitions/add">Add competition</a>
+        </li>
+    </ul>
+
+    <form method="get" action="@Request.Url" class="form-inline form-search">
+        <label class="sr-only" for="competition-search">Competition name</label>
+        <input type="search" class="form-control" id="competition-search" name="q" value="@Model.CompetitionQuery.Query" />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <dl>
+        @foreach (var competition in Model.Competitions)
+        {
+            if (!competition.UntilYear.HasValue && competition.Seasons.Count > 0)
+            {
+                <dt><a href="@competition.Seasons.First().SeasonRoute">@competition.CompetitionName</a></dt>
+                <dd>@(Regex.Replace((competition.PlayerType.Humanize(LetterCasing.LowerCase) + " team").ToQuantity(competition.Seasons.First().Teams.Count), "^0 ", "No ")).</dd>
+            }
+            else if (!competition.UntilYear.HasValue)
+            {
+                <dt><a href="@(competition.CompetitionRoute)">@competition.CompetitionName</a></dt>
+                <dd>@competition.PlayerType.Humanize(LetterCasing.Sentence).</dd>
+            }
+            else
+            {
+                <dt><a href="@(competition.Seasons.Count > 0 ? competition.Seasons.First().SeasonRoute : competition.CompetitionRoute)">@competition.CompetitionName</a></dt>
+                <dd>@competition.PlayerType.Humanize(LetterCasing.Sentence). No longer played.</dd>
+            }
+        }
+    </dl>
+    @if (Model.TotalCompetitions > (Model.CompetitionQuery.PageNumber * Model.CompetitionQuery.PageSize))
     {
-        @: matching '@Model.CompetitionQuery.Query'
+        var query = HttpUtility.ParseQueryString(Request.Url.Query);
+        query["page"] = (Model.CompetitionQuery.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        <p><a href="/competitions?@query">Load more</a></p>
     }
-</h1>
-
-<ul class="nav nav-tabs nav-tabs-has-add">
-    <li class="nav-item">
-        <em class="nav-link active">Search</em>
-    </li>
-    <li class="nav-item nav-item-admin">
-        <a class="nav-link nav-link-add" href="/competitions/add">Add competition</a>
-    </li>
-</ul>
-
-<form method="get" action="@Request.Url" class="form-inline form-search">
-    <label class="sr-only" for="competition-search">Competition name</label>
-    <input type="search" class="form-control" id="competition-search" name="q" value="@Model.CompetitionQuery.Query" />
-    <button type="submit" class="btn btn-primary">Search</button>
-</form>
-
-<dl>
-    @foreach (var competition in Model.Competitions)
-    {
-        if (!competition.UntilYear.HasValue && competition.Seasons.Count > 0)
-        {
-            <dt><a href="@competition.Seasons.First().SeasonRoute">@competition.CompetitionName</a></dt>
-            <dd>@(Regex.Replace((competition.PlayerType.Humanize(LetterCasing.LowerCase) + " team").ToQuantity(competition.Seasons.First().Teams.Count), "^0 ", "No ")).</dd>
-        }
-        else if (!competition.UntilYear.HasValue)
-        {
-            <dt><a href="@(competition.CompetitionRoute)">@competition.CompetitionName</a></dt>
-            <dd>@competition.PlayerType.Humanize(LetterCasing.Sentence).</dd>
-        }
-        else
-        {
-            <dt><a href="@(competition.Seasons.Count > 0 ? competition.Seasons.First().SeasonRoute : competition.CompetitionRoute)">@competition.CompetitionName</a></dt>
-            <dd>@competition.PlayerType.Humanize(LetterCasing.Sentence). No longer played.</dd>
-        }
-    }
-</dl>
-@if (Model.TotalCompetitions > (Model.CompetitionQuery.PageNumber * Model.CompetitionQuery.PageSize))
-{
-    var query = HttpUtility.ParseQueryString(Request.Url.Query);
-    query["page"] = (Model.CompetitionQuery.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
-    <p><a href="/competitions?@query">Load more</a></p>
-}
+</div>

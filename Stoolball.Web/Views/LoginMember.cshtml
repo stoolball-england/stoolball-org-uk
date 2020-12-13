@@ -8,13 +8,15 @@
     Html.RequiresJs("~/scripts/jquery.validate.min.js");
     Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
 }
-<h1>@Model.Name</h1>
+<div class="container-xl">
+    <h1>@Model.Name</h1>
 
-@if (User.Identity.IsAuthenticated)
-{
-   @Html.Partial("_Logout")
-}
-else
-{
-   @Html.Partial("_Login")
-}
+    @if (User.Identity.IsAuthenticated)
+    {
+        @Html.Partial("_Logout")
+    }
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

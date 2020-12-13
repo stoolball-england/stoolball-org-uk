@@ -3,34 +3,35 @@
 @{ 
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditClub] || Model.IsAuthorized[AuthorizedAction.DeleteClub];
 }
+<div class="container-xl">
+    <h1>@Model.Club.ClubName</h1>
 
-<h1>@Model.Club.ClubName</h1>
+    <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
+        <li class="nav-item">
+            <em class="nav-link active">Summary</em>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Club.ClubRoute/matches">Matches</a>
+        </li>
+        @if (authorizedToEdit)
+        {
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-edit" href="@Model.Club.ClubRoute/edit">Edit club</a>
+            </li>
+        }
+    </ul>
 
-<ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
-    <li class="nav-item">
-        <em class="nav-link active">Summary</em>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.Club.ClubRoute/matches">Matches</a>
-    </li>
-    @if (authorizedToEdit)
+    @if (Model.Club.Teams.Count > 0)
     {
-    <li class="nav-item nav-item-admin">
-        <a class="nav-link nav-link-edit" href="@Model.Club.ClubRoute/edit">Edit club</a>
-    </li>
+        @Html.Partial("_TeamList", Model.Club.Teams)
     }
-</ul>
+    else
+    {
+        <p>@Model.Club.ClubName doesn't have any active teams.</p>
+    }
 
-@if (Model.Club.Teams.Count > 0)
-{
-    @Html.Partial("_TeamList", Model.Club.Teams)
-}
-else
-{
-    <p>@Model.Club.ClubName doesn't have any active teams.</p>
-}
-
-@if (Model.Club.ClubMark)
-{
-    @Html.Partial("_ClubMark")
-}
+    @if (Model.Club.ClubMark)
+    {
+        @Html.Partial("_ClubMark")
+    }
+</div>

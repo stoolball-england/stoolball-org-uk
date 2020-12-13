@@ -15,20 +15,22 @@
         return new BlockListModel(blockList.Where(x => x.Settings != null && x.Settings.Value<bool>("includeInSummary")).ToList());
     }
 }
-<h1>@Model.Name</h1>
+<div class="container-xl">
+    <h1>@Model.Name</h1>
 
-@foreach (var story in Model.Stories)
-{
-    <article>
-        <h2><a href="@story.Url()">@story.Name</a></h2>
-        <p class="news__date">@(formatter.FormatDate(story.DisplayDate == DateTime.MinValue ? story.CreateDate : story.DisplayDate).Humanize(LetterCasing.Title))</p>
-        @Html.GetBlockListHtml(FilterBlockList(story.BlockList))
-    </article>
-}
+    @foreach (var story in Model.Stories)
+    {
+        <article>
+            <h2><a href="@story.Url()">@story.Name</a></h2>
+            <p class="news__date">@(formatter.FormatDate(story.DisplayDate == DateTime.MinValue ? story.CreateDate : story.DisplayDate).Humanize(LetterCasing.Title))</p>
+            @Html.GetBlockListHtml(FilterBlockList(story.BlockList))
+        </article>
+    }
 
-@if (Model.TotalStories > (Model.PageNumber * Model.PageSize))
-{
-    var query = HttpUtility.ParseQueryString(Request.Url.Query);
-    query["page"] = (Model.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
-    <p><a href="@Model.Url()?@query">Load more</a></p>
-}
+    @if (Model.TotalStories > (Model.PageNumber * Model.PageSize))
+    {
+        var query = HttpUtility.ParseQueryString(Request.Url.Query);
+        query["page"] = (Model.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        <p><a href="@Model.Url()?@query">Load more</a></p>
+    }
+</div>

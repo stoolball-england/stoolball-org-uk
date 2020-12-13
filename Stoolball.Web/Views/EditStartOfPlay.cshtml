@@ -21,99 +21,99 @@
 
     Html.RequiresCss("~/css/steps.min.css");
 }
+<div class="container-xl">
+    <h1>Edit @Model.Match.MatchFullName(x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
 
-<h1>Edit @Model.Match.MatchFullName(x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
-
-@if (Model.IsAuthorized[AuthorizedAction.EditMatchResult])
-{
-    using (Html.BeginUmbracoForm<EditStartOfPlaySurfaceController>
-        ("UpdateMatch"))
+    @if (Model.IsAuthorized[AuthorizedAction.EditMatchResult])
     {
-        @Html.AntiForgeryToken()
-        @Html.ValidationSummary(true)
+        using (Html.BeginUmbracoForm<EditStartOfPlaySurfaceController>
+            ("UpdateMatch"))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
 
-        <ol class="steps">
-            <li aria-current="step"><em class="sr-only">Start of play</em></li>
-            @for (var i = 0; i < Model.Match.MatchInnings.Count; i++)
+            <ol class="steps">
+                <li aria-current="step"><em class="sr-only">Start of play</em></li>
+                @for (var i = 0; i < Model.Match.MatchInnings.Count; i++)
+                {
+                    <li><span class="sr-only">@((i+1).Ordinalize()) innings batting</span></li>
+                    <li><span class="sr-only">@((i+1).Ordinalize()) innings bowling</span></li>
+                }
+                <li><span class="sr-only">Result</span></li>
+            </ol>
+
+            <button class="btn btn-primary sr-only">Save and continue &gt;</button>
+
+            var hasHomeTeam = Model.Match.Teams.Any(x => x.TeamRole == TeamRole.Home);
+            var hasAwayTeam = Model.Match.Teams.Any(x => x.TeamRole == TeamRole.Away);
+            if (!hasHomeTeam || !hasAwayTeam)
             {
-                <li><span class="sr-only">@((i+1).Ordinalize()) innings batting</span></li>
-                <li><span class="sr-only">@((i+1).Ordinalize()) innings bowling</span></li>
+                <h2>Confirm the teams that aren't yet known</h2>
             }
-            <li><span class="sr-only">Result</span></li>
-        </ol>
 
-        <button class="btn btn-primary sr-only">Save and continue &gt;</button>
+            if (!hasHomeTeam && Model.PossibleHomeTeams.Count > 0)
+            {
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.HomeTeamId)
+                    @Html.DropDownListFor(m => Model.HomeTeamId, Model.PossibleHomeTeams, "To be confirmed", new { @class = "form-control", required = "required", aria_describedby = "home-team" })
+                    @Html.ValidationMessageFor(m => Model.HomeTeamId, null, new { id = "home-team" })
+                </div>
+            }
 
-        var hasHomeTeam = Model.Match.Teams.Any(x => x.TeamRole == TeamRole.Home);
-        var hasAwayTeam = Model.Match.Teams.Any(x => x.TeamRole == TeamRole.Away);
-        if (!hasHomeTeam || !hasAwayTeam)
-        {
-            <h2>Confirm the teams that aren't yet known</h2>
-        }
+            if (!hasAwayTeam && Model.PossibleAwayTeams.Count > 0)
+            {
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.AwayTeamId)
+                    @Html.DropDownListFor(m => Model.AwayTeamId, Model.PossibleAwayTeams, "To be confirmed", new { @class = "form-control", required = "required", aria_describedby = "away-team" })
+                    @Html.ValidationMessageFor(m => Model.AwayTeamId, null, new { id = "away-team" })
+                </div>
+            }
 
-        if (!hasHomeTeam && Model.PossibleHomeTeams.Count > 0)
-        {
-            <div class="form-group">
-                @Html.LabelFor(m => Model.HomeTeamId)
-                @Html.DropDownListFor(m => Model.HomeTeamId, Model.PossibleHomeTeams, "To be confirmed", new { @class = "form-control", required = "required", aria_describedby = "home-team" })
-                @Html.ValidationMessageFor(m => Model.HomeTeamId, null, new { id = "home-team" })
-            </div>
-        }
-
-        if (!hasAwayTeam && Model.PossibleAwayTeams.Count > 0)
-        {
-            <div class="form-group">
-                @Html.LabelFor(m => Model.AwayTeamId)
-                @Html.DropDownListFor(m => Model.AwayTeamId, Model.PossibleAwayTeams, "To be confirmed", new { @class = "form-control", required = "required", aria_describedby = "away-team" })
-                @Html.ValidationMessageFor(m => Model.AwayTeamId, null, new { id = "away-team" })
-            </div>
-        }
-
-        if (!hasHomeTeam && Model.PossibleHomeTeams.Count == 0)
-        {
-            <div class="form-group related-item">
-                @Html.LabelFor(m => Model.HomeTeamId)
-                @if (Model.HomeTeamId.HasValue)
-                {
-                    <div class="related-item__selected">
-                        <div class="related-item__selected__section">
-                            @Html.TextBoxFor(m => Model.HomeTeamName, new { @class = "form-control", @readonly = "readonly" })
-                        </div>
-                        <div class="related-item__delete related-item__selected__section">
-                            @Html.HiddenFor(m => Model.HomeTeamId, new { @class = "related-item__data related-item__id" })
-                            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.HomeTeamName} from this match")</button>
-                        </div>
-                    </div>
-                    Model.HomeTeamName = string.Empty;
-                    @Html.TextBoxFor(m => Model.HomeTeamName, new
+            if (!hasHomeTeam && Model.PossibleHomeTeams.Count == 0)
+            {
+                <div class="form-group related-item">
+                    @Html.LabelFor(m => Model.HomeTeamId)
+                    @if (Model.HomeTeamId.HasValue)
                     {
-                        @class = "form-control related-item__search",
-                        placeholder = "Type the home team name",
-                        autocomplete = "off",
-                        required = "required",
-                        type = "search",
-                        data_url = "/api/teams/autocomplete",
-                        data_template = "home-team-template",
-                        aria_label = "Type a team name and press down arrow to select from the matching choices",
-                        disabled = "disabled"
-                    })
-                }
-                else
-                {
-                    @Html.TextBoxFor(m => Model.HomeTeamName, new
+                        <div class="related-item__selected">
+                            <div class="related-item__selected__section">
+                                @Html.TextBoxFor(m => Model.HomeTeamName, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                            <div class="related-item__delete related-item__selected__section">
+                                @Html.HiddenFor(m => Model.HomeTeamId, new { @class = "related-item__data related-item__id" })
+                                <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.HomeTeamName} from this match")</button>
+                            </div>
+                        </div>
+                        Model.HomeTeamName = string.Empty;
+                        @Html.TextBoxFor(m => Model.HomeTeamName, new
+                        {
+                            @class = "form-control related-item__search",
+                            placeholder = "Type the home team name",
+                            autocomplete = "off",
+                            required = "required",
+                            type = "search",
+                            data_url = "/api/teams/autocomplete",
+                            data_template = "home-team-template",
+                            aria_label = "Type a team name and press down arrow to select from the matching choices",
+                            disabled = "disabled"
+                        })
+                    }
+                    else
                     {
-                        @class = "form-control related-item__search",
-                        placeholder = "Type the home team name",
-                        autocomplete = "off",
-                        required = "required",
-                        type = "search",
-                        data_url = "/api/teams/autocomplete",
-                        data_template = "home-team-template",
-                        aria_label = "Type a team name and press down arrow to select from the matching choices"
-                    })
-                }
-            </div>
-            <script type="text/x-template" id="home-team-template">
+                        @Html.TextBoxFor(m => Model.HomeTeamName, new
+                        {
+                            @class = "form-control related-item__search",
+                            placeholder = "Type the home team name",
+                            autocomplete = "off",
+                            required = "required",
+                            type = "search",
+                            data_url = "/api/teams/autocomplete",
+                            data_template = "home-team-template",
+                            aria_label = "Type a team name and press down arrow to select from the matching choices"
+                        })
+                    }
+                </div>
+                <script type="text/x-template" id="home-team-template">
                 <div class="related-item__selected">
                     <div class="related-item__selected__section">
                         <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="HomeTeamName" name="HomeTeamName" />
@@ -123,54 +123,54 @@
                         <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this match")</button>
                     </div>
                 </div>
-            </script>
-        }
+                </script>
+            }
 
-        if (!hasAwayTeam && Model.PossibleAwayTeams.Count == 0)
-        {
-            <div class="form-group related-item">
-                @Html.LabelFor(m => Model.AwayTeamId)
-                @if (Model.AwayTeamId.HasValue)
-                {
-                    <div class="related-item__selected">
-                        <div class="related-item__selected__section">
-                            @Html.TextBoxFor(m => Model.AwayTeamName, new { @class = "form-control", @readonly = "readonly" })
-                        </div>
-                        <div class="related-item__delete related-item__selected__section">
-                            @Html.HiddenFor(m => Model.AwayTeamId, new { @class = "related-item__data related-item__id" })
-                            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.AwayTeamName} from this match")</button>
-                        </div>
-                    </div>
-                    Model.AwayTeamName = string.Empty;
-                    @Html.TextBoxFor(m => Model.AwayTeamName, new
+            if (!hasAwayTeam && Model.PossibleAwayTeams.Count == 0)
+            {
+                <div class="form-group related-item">
+                    @Html.LabelFor(m => Model.AwayTeamId)
+                    @if (Model.AwayTeamId.HasValue)
                     {
-                        @class = "form-control related-item__search",
-                        placeholder = "Type the away team name",
-                        autocomplete = "off",
-                        required = "required",
-                        type = "search",
-                        data_url = "/api/teams/autocomplete",
-                        data_template = "away-team-template",
-                        aria_label = "Type a team name and press down arrow to select from the matching choices",
-                        disabled = "disabled"
-                    })
-                }
-                else
-                {
-                    @Html.TextBoxFor(m => Model.AwayTeamName, new
+                        <div class="related-item__selected">
+                            <div class="related-item__selected__section">
+                                @Html.TextBoxFor(m => Model.AwayTeamName, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                            <div class="related-item__delete related-item__selected__section">
+                                @Html.HiddenFor(m => Model.AwayTeamId, new { @class = "related-item__data related-item__id" })
+                                <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.AwayTeamName} from this match")</button>
+                            </div>
+                        </div>
+                        Model.AwayTeamName = string.Empty;
+                        @Html.TextBoxFor(m => Model.AwayTeamName, new
+                        {
+                            @class = "form-control related-item__search",
+                            placeholder = "Type the away team name",
+                            autocomplete = "off",
+                            required = "required",
+                            type = "search",
+                            data_url = "/api/teams/autocomplete",
+                            data_template = "away-team-template",
+                            aria_label = "Type a team name and press down arrow to select from the matching choices",
+                            disabled = "disabled"
+                        })
+                    }
+                    else
                     {
-                        @class = "form-control related-item__search",
-                        placeholder = "Type the away team name",
-                        autocomplete = "off",
-                        required = "required",
-                        type = "search",
-                        data_url = "/api/teams/autocomplete",
-                        data_template = "away-team-template",
-                        aria_label = "Type a team name and press down arrow to select from the matching choices"
-                    })
-                }
-            </div>
-            <script type="text/x-template" id="away-team-template">
+                        @Html.TextBoxFor(m => Model.AwayTeamName, new
+                        {
+                            @class = "form-control related-item__search",
+                            placeholder = "Type the away team name",
+                            autocomplete = "off",
+                            required = "required",
+                            type = "search",
+                            data_url = "/api/teams/autocomplete",
+                            data_template = "away-team-template",
+                            aria_label = "Type a team name and press down arrow to select from the matching choices"
+                        })
+                    }
+                </div>
+                <script type="text/x-template" id="away-team-template">
                 <div class="related-item__selected">
                     <div class="related-item__selected__section">
                         <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="AwayTeamName" name="AwayTeamName" />
@@ -180,52 +180,52 @@
                         <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this match")</button>
                     </div>
                 </div>
-            </script>
-        }
-
-        <h2>If the match went ahead</h2>
-
-        <div class="form-group related-item">
-            @Html.LabelFor(m => Model.MatchLocationName)
-            @if (Model.MatchLocationId.HasValue)
-            {
-                <div class="related-item__selected">
-                    <div class="related-item__selected__section">
-                        @Html.TextBoxFor(m => Model.MatchLocationName, new { @class = "form-control", @readonly = "readonly" })
-                    </div>
-                    <div class="related-item__delete related-item__selected__section">
-                        @Html.HiddenFor(m => Model.MatchLocationId, new { @class = "related-item__data related-item__id" })
-                        <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.MatchLocationName} from this match")</button>
-                    </div>
-                </div>
-                Model.MatchLocationName = string.Empty;
-                @Html.TextBoxFor(m => Model.MatchLocationName, new
-                {
-                    @class = "form-control related-item__search",
-                    placeholder = "Type the ground or sports centre name",
-                    autocomplete = "off",
-                    type = "search",
-                    data_url = "/api/locations/autocomplete",
-                    data_template = "location-template",
-                    aria_label = "Type a ground or sports centre name add and press down arrow to select from the matching choices",
-                    disabled = "disabled"
-                })
+                </script>
             }
-            else
-            {
-                @Html.TextBoxFor(m => Model.MatchLocationName, new
+
+            <h2>If the match went ahead</h2>
+
+            <div class="form-group related-item">
+                @Html.LabelFor(m => Model.MatchLocationName)
+                @if (Model.MatchLocationId.HasValue)
                 {
-                    @class = "form-control related-item__search",
-                    placeholder = "Type the ground or sports centre name",
-                    autocomplete = "off",
-                    type = "search",
-                    data_url = "/api/locations/autocomplete",
-                    data_template = "location-template",
-                    aria_label = "Type a ground or sports centre name add and press down arrow to select from the matching choices"
-                })
-            }
-        </div>
-        <script type="text/x-template" id="location-template">
+                    <div class="related-item__selected">
+                        <div class="related-item__selected__section">
+                            @Html.TextBoxFor(m => Model.MatchLocationName, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                        <div class="related-item__delete related-item__selected__section">
+                            @Html.HiddenFor(m => Model.MatchLocationId, new { @class = "related-item__data related-item__id" })
+                            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.MatchLocationName} from this match")</button>
+                        </div>
+                    </div>
+                    Model.MatchLocationName = string.Empty;
+                    @Html.TextBoxFor(m => Model.MatchLocationName, new
+                    {
+                        @class = "form-control related-item__search",
+                        placeholder = "Type the ground or sports centre name",
+                        autocomplete = "off",
+                        type = "search",
+                        data_url = "/api/locations/autocomplete",
+                        data_template = "location-template",
+                        aria_label = "Type a ground or sports centre name add and press down arrow to select from the matching choices",
+                        disabled = "disabled"
+                    })
+                }
+                else
+                {
+                    @Html.TextBoxFor(m => Model.MatchLocationName, new
+                    {
+                        @class = "form-control related-item__search",
+                        placeholder = "Type the ground or sports centre name",
+                        autocomplete = "off",
+                        type = "search",
+                        data_url = "/api/locations/autocomplete",
+                        data_template = "location-template",
+                        aria_label = "Type a ground or sports centre name add and press down arrow to select from the matching choices"
+                    })
+                }
+            </div>
+            <script type="text/x-template" id="location-template">
             <div class="related-item__selected">
                 <div class="related-item__selected__section">
                     <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="MatchLocationName" name="MatchLocationName" />
@@ -235,64 +235,64 @@
                     <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this match")</button>
                 </div>
             </div>
-        </script>
+            </script>
 
-        object tossWonByUnknownAttributes;
-        if (!string.IsNullOrEmpty(Model.TossWonBy))
-        {
-            tossWonByUnknownAttributes = new { @class = "custom-control-input", @id = "toss-won-by-unknown" };
-        }
-        else
-        {
-            tossWonByUnknownAttributes = new { @class = "custom-control-input", @id = "toss-won-by-unknown", @checked = "checked" };
-        }
-        <fieldset class="form-group">
-            <legend>Who won the toss?</legend>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.TossWonBy, string.Empty, tossWonByUnknownAttributes)
-                <label for="toss-won-by-unknown" class="custom-control-label">Don't know</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.TossWonBy, Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.MatchTeamId.ToString() ?? TeamRole.Home.ToString(), new { @class = "custom-control-input", @id = $"toss-won-by-home" })
-                <label for="toss-won-by-home" class="custom-control-label">@(Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.Team.TeamName ?? "Home team")</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.TossWonBy, Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.MatchTeamId.ToString() ?? TeamRole.Away.ToString(), new { @class = "custom-control-input", @id = $"toss-won-by-away" })
-                <label for="toss-won-by-away" class="custom-control-label">@(Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.Team.TeamName ?? "Away team")</label>
-            </div>
-            @Html.ValidationMessageFor(m => Model.TossWonBy)
-        </fieldset>
+            object tossWonByUnknownAttributes;
+            if (!string.IsNullOrEmpty(Model.TossWonBy))
+            {
+                tossWonByUnknownAttributes = new { @class = "custom-control-input", @id = "toss-won-by-unknown" };
+            }
+            else
+            {
+                tossWonByUnknownAttributes = new { @class = "custom-control-input", @id = "toss-won-by-unknown", @checked = "checked" };
+            }
+            <fieldset class="form-group">
+                <legend>Who won the toss?</legend>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.TossWonBy, string.Empty, tossWonByUnknownAttributes)
+                    <label for="toss-won-by-unknown" class="custom-control-label">Don't know</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.TossWonBy, Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.MatchTeamId.ToString() ?? TeamRole.Home.ToString(), new { @class = "custom-control-input", @id = $"toss-won-by-home" })
+                    <label for="toss-won-by-home" class="custom-control-label">@(Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.Team.TeamName ?? "Home team")</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.TossWonBy, Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.MatchTeamId.ToString() ?? TeamRole.Away.ToString(), new { @class = "custom-control-input", @id = $"toss-won-by-away" })
+                    <label for="toss-won-by-away" class="custom-control-label">@(Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.Team.TeamName ?? "Away team")</label>
+                </div>
+                @Html.ValidationMessageFor(m => Model.TossWonBy)
+            </fieldset>
 
-        object battedFirstUnknownAttributes;
-        if (!string.IsNullOrEmpty(Model.BattedFirst))
-        {
-            battedFirstUnknownAttributes = new { @class = "custom-control-input", @id = "batted-first-unknown" };
-        }
-        else
-        {
-            battedFirstUnknownAttributes = new { @class = "custom-control-input", @id = "batted-first-unknown", @checked = "checked" };
-        }
-        <fieldset class="form-group">
-            <legend>Who batted first?</legend>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.BattedFirst, string.Empty, battedFirstUnknownAttributes)
-                <label for="batted-first-unknown" class="custom-control-label">Don't know</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.BattedFirst, Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.MatchTeamId.ToString() ?? TeamRole.Home.ToString(), new { @class = "custom-control-input", @id = $"batted-first-home" })
-                <label for="batted-first-home" class="custom-control-label">@(Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.Team.TeamName ?? "Home team")</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.BattedFirst, Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.MatchTeamId.ToString() ?? TeamRole.Away.ToString(), new { @class = "custom-control-input", @id = $"batted-first-away" })
-                <label for="batted-first-away" class="custom-control-label">@(Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.Team.TeamName ?? "Away team")</label>
-            </div>
-            @Html.ValidationMessageFor(m => Model.BattedFirst)
-        </fieldset>
+            object battedFirstUnknownAttributes;
+            if (!string.IsNullOrEmpty(Model.BattedFirst))
+            {
+                battedFirstUnknownAttributes = new { @class = "custom-control-input", @id = "batted-first-unknown" };
+            }
+            else
+            {
+                battedFirstUnknownAttributes = new { @class = "custom-control-input", @id = "batted-first-unknown", @checked = "checked" };
+            }
+            <fieldset class="form-group">
+                <legend>Who batted first?</legend>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.BattedFirst, string.Empty, battedFirstUnknownAttributes)
+                    <label for="batted-first-unknown" class="custom-control-label">Don't know</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.BattedFirst, Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.MatchTeamId.ToString() ?? TeamRole.Home.ToString(), new { @class = "custom-control-input", @id = $"batted-first-home" })
+                    <label for="batted-first-home" class="custom-control-label">@(Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.Team.TeamName ?? "Home team")</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.BattedFirst, Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.MatchTeamId.ToString() ?? TeamRole.Away.ToString(), new { @class = "custom-control-input", @id = $"batted-first-away" })
+                    <label for="batted-first-away" class="custom-control-label">@(Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.Team.TeamName ?? "Away team")</label>
+                </div>
+                @Html.ValidationMessageFor(m => Model.BattedFirst)
+            </fieldset>
 
-        <h2>Or, if the match was not played</h2>
+            <h2>Or, if the match was not played</h2>
 
-        object noResultAttributes;
-        if (Model.Match.MatchResultType.HasValue && new List<MatchResultType> {
+            object noResultAttributes;
+            if (Model.Match.MatchResultType.HasValue && new List<MatchResultType> {
             MatchResultType.HomeWinByForfeit,
             MatchResultType.AwayWinByForfeit,
             MatchResultType.Postponed,
@@ -300,50 +300,51 @@
             MatchResultType.AbandonedDuringPlayAndPostponed,
             MatchResultType.AbandonedDuringPlayAndCancelled
         }.Contains(Model.Match.MatchResultType.Value))
-        {
-            noResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeUnknown" };
-        }
-        else
-        {
-            noResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeUnknown", @checked = "checked" };
-        }
-        <fieldset class="form-group">
-            <legend>Why not?</legend>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, -1, noResultAttributes)
-                <label for="MatchResultTypeUnknown" class="custom-control-label">Not applicable – match went ahead</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.HomeWinByForfeit, new { @class = "custom-control-input", @id = MatchResultType.HomeWinByForfeit.ToString() })
-                <label for="@MatchResultType.HomeWinByForfeit.ToString()" class="custom-control-label">@MatchResultType.HomeWinByForfeit.ToString().Humanize().Replace("Home", Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.Team.TeamName ?? "Home")</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.AwayWinByForfeit, new { @class = "custom-control-input", @id = MatchResultType.AwayWinByForfeit.ToString() })
-                <label for="@MatchResultType.AwayWinByForfeit.ToString()" class="custom-control-label">@MatchResultType.AwayWinByForfeit.ToString().Humanize().Replace("Away", Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.Team.TeamName ?? "Away")</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.Postponed, new { @class = "custom-control-input", @id = MatchResultType.Postponed.ToString() })
-                <label for="@MatchResultType.Postponed.ToString()" class="custom-control-label">@MatchResultType.Postponed.ToString().Humanize()</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.Cancelled, new { @class = "custom-control-input", @id = MatchResultType.Cancelled.ToString() })
-                <label for="@MatchResultType.Cancelled.ToString()" class="custom-control-label">@MatchResultType.Cancelled.ToString().Humanize()</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.AbandonedDuringPlayAndPostponed, new { @class = "custom-control-input", @id = MatchResultType.AbandonedDuringPlayAndPostponed.ToString() })
-                <label for="@MatchResultType.AbandonedDuringPlayAndPostponed.ToString()" class="custom-control-label">@MatchResultType.AbandonedDuringPlayAndPostponed.ToString().Humanize()</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.AbandonedDuringPlayAndCancelled, new { @class = "custom-control-input", @id = MatchResultType.AbandonedDuringPlayAndCancelled.ToString() })
-                <label for="@MatchResultType.AbandonedDuringPlayAndCancelled.ToString()" class="custom-control-label">@MatchResultType.AbandonedDuringPlayAndCancelled.ToString().Humanize()</label>
-            </div>
-            @Html.ValidationMessageFor(m => Model.Match.MatchResultType, null, new { id = "result-type-validation" })
-        </fieldset>
+            {
+                noResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeUnknown" };
+            }
+            else
+            {
+                noResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeUnknown", @checked = "checked" };
+            }
+            <fieldset class="form-group">
+                <legend>Why not?</legend>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, -1, noResultAttributes)
+                    <label for="MatchResultTypeUnknown" class="custom-control-label">Not applicable – match went ahead</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.HomeWinByForfeit, new { @class = "custom-control-input", @id = MatchResultType.HomeWinByForfeit.ToString() })
+                    <label for="@MatchResultType.HomeWinByForfeit.ToString()" class="custom-control-label">@MatchResultType.HomeWinByForfeit.ToString().Humanize().Replace("Home", Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.Team.TeamName ?? "Home")</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.AwayWinByForfeit, new { @class = "custom-control-input", @id = MatchResultType.AwayWinByForfeit.ToString() })
+                    <label for="@MatchResultType.AwayWinByForfeit.ToString()" class="custom-control-label">@MatchResultType.AwayWinByForfeit.ToString().Humanize().Replace("Away", Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.Team.TeamName ?? "Away")</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.Postponed, new { @class = "custom-control-input", @id = MatchResultType.Postponed.ToString() })
+                    <label for="@MatchResultType.Postponed.ToString()" class="custom-control-label">@MatchResultType.Postponed.ToString().Humanize()</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.Cancelled, new { @class = "custom-control-input", @id = MatchResultType.Cancelled.ToString() })
+                    <label for="@MatchResultType.Cancelled.ToString()" class="custom-control-label">@MatchResultType.Cancelled.ToString().Humanize()</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.AbandonedDuringPlayAndPostponed, new { @class = "custom-control-input", @id = MatchResultType.AbandonedDuringPlayAndPostponed.ToString() })
+                    <label for="@MatchResultType.AbandonedDuringPlayAndPostponed.ToString()" class="custom-control-label">@MatchResultType.AbandonedDuringPlayAndPostponed.ToString().Humanize()</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.AbandonedDuringPlayAndCancelled, new { @class = "custom-control-input", @id = MatchResultType.AbandonedDuringPlayAndCancelled.ToString() })
+                    <label for="@MatchResultType.AbandonedDuringPlayAndCancelled.ToString()" class="custom-control-label">@MatchResultType.AbandonedDuringPlayAndCancelled.ToString().Humanize()</label>
+                </div>
+                @Html.ValidationMessageFor(m => Model.Match.MatchResultType, null, new { id = "result-type-validation" })
+            </fieldset>
 
-        <button class="btn btn-primary">Save and continue &gt;</button>
+            <button class="btn btn-primary">Save and continue &gt;</button>
+        }
     }
-}
-else
-{
-    @Html.Partial("_Login")
-}
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

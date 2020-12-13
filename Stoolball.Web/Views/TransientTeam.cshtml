@@ -7,66 +7,67 @@
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
+<div class="container-xl">
+    <h1>@Model.Team.TeamNameAndPlayerType(), @Model.Matches.DateTimeFormatter.FormatDate(firstAndOnlyMatch.StartTime, false, false)</h1>
 
-<h1>@Model.Team.TeamNameAndPlayerType(), @Model.Matches.DateTimeFormatter.FormatDate(firstAndOnlyMatch.StartTime, false, false)</h1>
-
-@if (firstAndOnlyMatch.StartTime < DateTime.UtcNow)
-{
-    <div class="alert alert-info">
-        <p><strong>This team is no longer active.</strong></p>
-    </div>
-}
-
-<ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
-    <li class="nav-item">
-        <em class="nav-link active">Summary</em>
-    </li>
-    @if (authorizedToEdit)
+    @if (firstAndOnlyMatch.StartTime < DateTime.UtcNow)
     {
-        <li class="nav-item nav-item-admin">
-            <a class="nav-link nav-link-edit" href="@Model.Team.TeamRoute/edit">Edit team</a>
+        <div class="alert alert-info">
+            <p><strong>This team is no longer active.</strong></p>
+        </div>
+    }
+
+    <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
+        <li class="nav-item">
+            <em class="nav-link active">Summary</em>
         </li>
-    }
-</ul>
+        @if (authorizedToEdit)
+        {
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-edit" href="@Model.Team.TeamRoute/edit">Edit team</a>
+            </li>
+        }
+    </ul>
 
-@if (Model.Team.Club != null)
-{
-    <p>Part of <a href="@Model.Team.Club.ClubRoute">@Model.Team.Club.ClubName</a>.</p>
-}
-
-@Html.Raw(Model.Team.Introduction)
-
-<h2>When and where</h2>
-@{
-    IHtmlString atLocation = null;
-    if (Model.Team.MatchLocations.Count > 0)
+    @if (Model.Team.Club != null)
     {
-        atLocation = new HtmlString(" at <a href=\"" + Model.Team.MatchLocations.First().MatchLocationRoute + "\">" + Model.Team.MatchLocations.First().NameAndLocalityOrTownIfDifferent() + "</a>");
+        <p>Part of <a href="@Model.Team.Club.ClubRoute">@Model.Team.Club.ClubName</a>.</p>
     }
-}
 
-@{ var verb = (firstAndOnlyMatch.StartTime < DateTime.UtcNow) ? "came" : "will come"; }
-<p>This team @verb together once to play in a tournament@(atLocation):</p>
-@Html.Partial("_MatchList", Model.Matches)
+    @Html.Raw(Model.Team.Introduction)
 
-@if (!string.IsNullOrWhiteSpace(Model.Team.Cost))
-{
-    <h2>How much does it cost?</h2>
-    @Html.Raw(Model.Team.Cost)
-}
+    <h2>When and where</h2>
+    @{
+        IHtmlString atLocation = null;
+        if (Model.Team.MatchLocations.Count > 0)
+        {
+            atLocation = new HtmlString(" at <a href=\"" + Model.Team.MatchLocations.First().MatchLocationRoute + "\">" + Model.Team.MatchLocations.First().NameAndLocalityOrTownIfDifferent() + "</a>");
+        }
+    }
 
-@if (!string.IsNullOrWhiteSpace(Model.Team.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Team.Website))
-{
-    <h2>Contact details</h2>
-    @Html.Raw(Model.Team.PublicContactDetails)
+    @{ var verb = (firstAndOnlyMatch.StartTime < DateTime.UtcNow) ? "came" : "will come"; }
+    <p>This team @verb together once to play in a tournament@(atLocation):</p>
+    @Html.Partial("_MatchList", Model.Matches)
 
-    if (!string.IsNullOrWhiteSpace(Model.Team.Website))
+    @if (!string.IsNullOrWhiteSpace(Model.Team.Cost))
     {
-        <p>Visit <a href="@Model.Team.Website">@Model.Team.TeamName's website</a>.</p>
+        <h2>How much does it cost?</h2>
+        @Html.Raw(Model.Team.Cost)
     }
-}
 
-@if (Model.Team.Club != null && Model.Team.Club.ClubMark)
-{
-    @Html.Partial("_ClubMark")
-}
+    @if (!string.IsNullOrWhiteSpace(Model.Team.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Team.Website))
+    {
+        <h2>Contact details</h2>
+        @Html.Raw(Model.Team.PublicContactDetails)
+
+        if (!string.IsNullOrWhiteSpace(Model.Team.Website))
+        {
+            <p>Visit <a href="@Model.Team.Website">@Model.Team.TeamName's website</a>.</p>
+        }
+    }
+
+    @if (Model.Team.Club != null && Model.Team.Club.ClubMark)
+    {
+        @Html.Partial("_ClubMark")
+    }
+</div>

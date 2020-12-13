@@ -8,36 +8,37 @@
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
+<div class="container-xl">
+    <h1>Edit @Model.Season.SeasonFullName()</h1>
 
-<h1>Edit @Model.Season.SeasonFullName()</h1>
-
-@if (Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
-{
-    <h2>Settings for @the@Model.Season.Competition.CompetitionName</h2>
-    var competitionModel = new CompetitionViewModel(Model, Services.UserService) { Competition = Model.Season.Competition };
-    foreach (var permission in Model.IsAuthorized)
+    @if (Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
     {
-        competitionModel.IsAuthorized.Add(permission.Key, permission.Value);
-    }
-    @Html.Partial("_CompetitionActions", competitionModel)
-
-    <h2>Settings for the @Model.Season.SeasonName()</h2>
-    if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
-    {
-        <dt><a href="@Model.Season.SeasonRoute/edit/season">Edit the @Model.Season.SeasonName()</a></dt>
-        <dd>Set the introduction, types of match played, the how results are shown.</dd>
-        <dt><a href="@Model.Season.SeasonRoute/edit/teams">Teams in the @Model.Season.SeasonName()</a></dt>
-        <dd>Set which teams are playing in the season.</dd>
-        <dt><a href="@Model.Season.SeasonRoute/edit/points">Points for the @Model.Season.SeasonName()</a></dt>
-        <dd>Set how league points are calculated.</dd>
-        if (Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
+        <h2>Settings for @the@Model.Season.Competition.CompetitionName</h2>
+        var competitionModel = new CompetitionViewModel(Model, Services.UserService) { Competition = Model.Season.Competition };
+        foreach (var permission in Model.IsAuthorized)
         {
-            <dt><a href="@Model.Season.SeasonRoute/delete">Delete the @Model.Season.SeasonName()</a> @Html.Partial("_AdminOnly")</dt>
-            <dd>Lose the results of this season. Remove it from the details of matches and teams.</dd>
+            competitionModel.IsAuthorized.Add(permission.Key, permission.Value);
+        }
+        @Html.Partial("_CompetitionActions", competitionModel)
+
+        <h2>Settings for the @Model.Season.SeasonName()</h2>
+        if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
+        {
+            <dt><a href="@Model.Season.SeasonRoute/edit/season">Edit the @Model.Season.SeasonName()</a></dt>
+            <dd>Set the introduction, types of match played, the how results are shown.</dd>
+            <dt><a href="@Model.Season.SeasonRoute/edit/teams">Teams in the @Model.Season.SeasonName()</a></dt>
+            <dd>Set which teams are playing in the season.</dd>
+            <dt><a href="@Model.Season.SeasonRoute/edit/points">Points for the @Model.Season.SeasonName()</a></dt>
+            <dd>Set how league points are calculated.</dd>
+            if (Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
+            {
+                <dt><a href="@Model.Season.SeasonRoute/delete">Delete the @Model.Season.SeasonName()</a> @Html.Partial("_AdminOnly")</dt>
+                <dd>Lose the results of this season. Remove it from the details of matches and teams.</dd>
+            }
         }
     }
-}
-else
-{
-    @Html.Partial("_Login")
-}
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

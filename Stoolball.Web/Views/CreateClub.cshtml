@@ -17,19 +17,20 @@
     Html.RequiresCss("~/css/related-items.min.css");
     Html.RequiresJs("~/js/related-items.js");
 }
+<div class="container-xl">
+    <h1>Add a club</h1>
 
-<h1>Add a club</h1>
-
-@if (Model.IsAuthorized[AuthorizedAction.CreateClub])
-{
-    using (Html.BeginUmbracoForm<CreateClubSurfaceController>
-        ("CreateClub"))
+    @if (Model.IsAuthorized[AuthorizedAction.CreateClub])
     {
-        @Html.AntiForgeryToken()
-        @Html.Partial("_CreateOrEditClub")
+        using (Html.BeginUmbracoForm<CreateClubSurfaceController>
+            ("CreateClub"))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Partial("_CreateOrEditClub")
+        }
     }
-}
-else
-{
-    @Html.Partial("_Login")
-}
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

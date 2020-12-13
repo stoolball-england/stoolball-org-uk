@@ -1,67 +1,69 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamsViewModel>
 @using Humanizer
-<h1>
-    @Stoolball.Constants.Pages.Teams
-    @if (!string.IsNullOrEmpty(Model.TeamQuery.Query))
+<div class="container-xl">
+    <h1>
+        @Stoolball.Constants.Pages.Teams
+        @if (!string.IsNullOrEmpty(Model.TeamQuery.Query))
+        {
+            @: matching '@Model.TeamQuery.Query'
+        }
+    </h1>
+
+    <ul class="nav nav-tabs nav-tabs-has-add">
+        <li class="nav-item">
+            <em class="nav-link active">Search</em>
+        </li>
+        <li class="nav-item nav-item-admin nav-item-admin-sm-last d-md-none">
+            <div class="dropdown">
+                <button class="btn nav-link nav-link-add" type="button" id="add-menu__button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Add club or team
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="add-menu__button">
+                    <li class="dropdown-item"><a href="/clubs/add">Add club</a></li>
+                    <li class="dropdown-item"><a href="/teams/add">Add team</a></li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item nav-item-admin d-none d-md-flex nav-item-admin-md-first">
+            <a class="nav-link nav-link-add" href="/clubs/add">Add club</a>
+        </li>
+        <li class="nav-item nav-item-admin d-none d-md-flex">
+            <a class="nav-link nav-link-add" href="/teams/add">Add team</a>
+        </li>
+    </ul>
+
+    <form method="get" action="@Request.Url" class="form-inline form-search">
+        <label class="sr-only" for="team-search">Team name</label>
+        <input type="search" class="form-control" id="team-search" name="q" value="@Model.TeamQuery.Query" />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <ul>
+        @foreach (var listing in Model.Teams)
+        {
+            var listingText = listing.ClubOrTeamName;
+            var location = listing.MatchLocations.FirstOrDefault()?.LocalityOrTown();
+            if (!string.IsNullOrEmpty(location) &&
+                !listingText.Replace("'", string.Empty).ToUpperInvariant().Contains(location.Replace("'", string.Empty).ToUpperInvariant()))
+            {
+                listingText += ", " + location;
+            }
+            if (listing.Active)
+            {
+                listing.PlayerTypes.Sort(); // by id, which puts adult teams before junior
+                listingText = $"{listingText} ({listing.PlayerTypes.Select((value, index) => value.Humanize(index > 0 ? LetterCasing.LowerCase : LetterCasing.Sentence)).Humanize()})";
+            }
+            else
+            {
+                listingText = $"{listingText} (No longer active)";
+            }
+            <li><a href="@listing.ClubOrTeamRoute">@listingText</a></li>
+        }
+    </ul>
+    @if (Model.TotalTeams > (Model.TeamQuery.PageNumber * Model.TeamQuery.PageSize))
     {
-        @: matching '@Model.TeamQuery.Query'
+        var query = HttpUtility.ParseQueryString(Request.Url.Query);
+        query["page"] = (Model.TeamQuery.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        <p><a href="/teams?@query">Load more</a></p>
     }
-</h1>
-
-<ul class="nav nav-tabs nav-tabs-has-add">
-    <li class="nav-item">
-        <em class="nav-link active">Search</em>
-    </li>
-    <li class="nav-item nav-item-admin nav-item-admin-sm-last d-md-none">
-        <div class="dropdown">
-            <button class="btn nav-link nav-link-add" type="button" id="add-menu__button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Add club or team
-            </button>
-            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="add-menu__button">
-                <li class="dropdown-item"><a href="/clubs/add">Add club</a></li>
-                <li class="dropdown-item"><a href="/teams/add">Add team</a></li>
-            </ul>
-        </div>
-    </li>
-    <li class="nav-item nav-item-admin d-none d-md-flex nav-item-admin-md-first">
-        <a class="nav-link nav-link-add" href="/clubs/add">Add club</a>
-    </li>
-    <li class="nav-item nav-item-admin d-none d-md-flex">
-        <a class="nav-link nav-link-add" href="/teams/add">Add team</a>
-    </li>
-</ul>
-
-<form method="get" action="@Request.Url" class="form-inline form-search">
-    <label class="sr-only" for="team-search">Team name</label>
-    <input type="search" class="form-control" id="team-search" name="q" value="@Model.TeamQuery.Query" />
-    <button type="submit" class="btn btn-primary">Search</button>
-</form>
-
-<ul>
-    @foreach (var listing in Model.Teams)
-    {
-        var listingText = listing.ClubOrTeamName;
-        var location = listing.MatchLocations.FirstOrDefault()?.LocalityOrTown();
-        if (!string.IsNullOrEmpty(location) &&
-            !listingText.Replace("'", string.Empty).ToUpperInvariant().Contains(location.Replace("'", string.Empty).ToUpperInvariant()))
-        {
-            listingText += ", " + location;
-        }
-        if (listing.Active)
-        {
-            listing.PlayerTypes.Sort(); // by id, which puts adult teams before junior
-            listingText = $"{listingText} ({listing.PlayerTypes.Select((value, index) => value.Humanize(index > 0 ? LetterCasing.LowerCase : LetterCasing.Sentence)).Humanize()})";
-        }
-        else
-        {
-            listingText = $"{listingText} (No longer active)";
-        }
-        <li><a href="@listing.ClubOrTeamRoute">@listingText</a></li>
-    }
-</ul>
-@if (Model.TotalTeams > (Model.TeamQuery.PageNumber * Model.TeamQuery.PageSize))
-{
-    var query = HttpUtility.ParseQueryString(Request.Url.Query);
-    query["page"] = (Model.TeamQuery.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
-    <p><a href="/teams?@query">Load more</a></p>
-}
+</div>

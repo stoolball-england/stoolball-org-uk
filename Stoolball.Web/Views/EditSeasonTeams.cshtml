@@ -16,58 +16,59 @@
     Html.RequiresCss("~/css/autocomplete.min.css");
 
     Html.RequiresCss("~/css/related-items.min.css");
-    Html.RequiresJs("~/js/related-items.js");}
+    Html.RequiresJs("~/js/related-items.js");
+}
+<div class="container-xl">
+    <h1>Teams in the @Model.Season.SeasonFullName()</h1>
 
-<h1>Teams in the @Model.Season.SeasonFullName()</h1>
-
-@if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
-{
-    using (Html.BeginUmbracoForm<EditSeasonTeamsSurfaceController>
-        ("UpdateSeason"))
+    @if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
     {
-        @Html.AntiForgeryToken()
-        @Html.ValidationSummary(true)
+        using (Html.BeginUmbracoForm<EditSeasonTeamsSurfaceController>
+            ("UpdateSeason"))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
 
-        <button class="sr-only">Save season</button>
+            <button class="sr-only">Save season</button>
 
-        <table class="table table-hover related-items">
-            <thead class="thead-dark">
-                <tr><th scope="col">Teams</th><th scope="col">Date withdrew</th><th scope="col"></th></tr>
-            </thead>
-            <tbody>
-                @for (var i = 0; i < Model.Season.Teams.Count; i++)
-                {
-                    var displayName = Model.Season.Teams[i].Team.UntilYear.HasValue ? Model.Season.Teams[i].Team.TeamName + " (no longer active)" : Model.Season.Teams[i].Team.TeamName;
+            <table class="table table-hover related-items">
+                <thead class="thead-dark">
+                    <tr><th scope="col">Teams</th><th scope="col">Date withdrew</th><th scope="col"></th></tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.Season.Teams.Count; i++)
+                    {
+                        var displayName = Model.Season.Teams[i].Team.UntilYear.HasValue ? Model.Season.Teams[i].Team.TeamName + " (no longer active)" : Model.Season.Teams[i].Team.TeamName;
+                        <tr>
+                            <td class="related-item__selected__section"><div class="related-item__animate">@displayName</div></td>
+                            <td class="related-item__selected__section"><div class="related-item__animate">@Html.TextBoxFor(m => Model.Season.Teams[i].WithdrawnDate, "{0:yyyy-MM-dd}", new { @type = "date", @class = "related-item__data", data_item = Model.Season.Teams[i].Team.TeamId })</div></td>
+                            <td class="related-item__delete related-item__selected__section">
+                                <div class="related-item__animate">
+                                    @Html.Hidden($"Season.Teams[{i}].Team.TeamId", Model.Season.Teams[i].Team.TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Season.Teams[i].Team.TeamId })
+                                    @Html.Hidden($"Season.Teams[{i}].Team.TeamName", displayName, new { @class = "related-item__data", data_item = Model.Season.Teams[i].Team.TeamId })
+                                    <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Season.Teams[i].Team.TeamName} from this season")</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
                     <tr>
-                        <td class="related-item__selected__section"><div class="related-item__animate">@displayName</div></td>
-                        <td class="related-item__selected__section"><div class="related-item__animate">@Html.TextBoxFor(m => Model.Season.Teams[i].WithdrawnDate, "{0:yyyy-MM-dd}", new { @type = "date", @class = "related-item__data", data_item = Model.Season.Teams[i].Team.TeamId })</div></td>
-                        <td class="related-item__delete related-item__selected__section">
-                            <div class="related-item__animate">
-                                @Html.Hidden($"Season.Teams[{i}].Team.TeamId", Model.Season.Teams[i].Team.TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Season.Teams[i].Team.TeamId })
-                                @Html.Hidden($"Season.Teams[{i}].Team.TeamName", displayName, new { @class = "related-item__data", data_item = Model.Season.Teams[i].Team.TeamId })
-                                <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Season.Teams[i].Team.TeamName} from this season")</button>
-                            </div>
+                        <td colspan="3">
+                            @Html.Label("team-autocomplete", "Add a team", new { @class = "sr-only" })
+                            @Html.TextBox("team-autocomplete", string.Empty, new
+                            {
+                                @class = "form-control related-item__search",
+                                placeholder = "Add a team",
+                                autocomplete = "off",
+                                type = "search",
+                                data_url = "/api/teams/autocomplete",
+                                data_template = "team-template",
+                                aria_label = "Type a team name and press down arrow to select the team"
+                            })
                         </td>
                     </tr>
-                }
-                <tr>
-                    <td colspan="3">
-                        @Html.Label("team-autocomplete", "Add a team", new { @class = "sr-only" })
-                        @Html.TextBox("team-autocomplete", string.Empty, new
-                        {
-                            @class = "form-control related-item__search",
-                            placeholder = "Add a team",
-                            autocomplete = "off",
-                            type = "search",
-                            data_url = "/api/teams/autocomplete",
-                            data_template = "team-template",
-                            aria_label = "Type a team name and press down arrow to select the team"
-                        })
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <script type="text/x-template" id="team-template">
+                </tbody>
+            </table>
+            <script type="text/x-template" id="team-template">
             <table>
                 <tr>
                     <td class="related-item__selected__section"><div class="related-item__animate">{{value}}</div></td>
@@ -81,12 +82,13 @@
                     </td>
             </tr>
             </table>
-        </script>
+            </script>
 
-        <button class="btn btn-primary">Save season</button>
+            <button class="btn btn-primary">Save season</button>
+        }
     }
-}
-else
-{
-    @Html.Partial("_Login")
-}
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

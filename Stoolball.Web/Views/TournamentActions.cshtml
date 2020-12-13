@@ -4,26 +4,28 @@
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
-<h1>Edit @Model.Tournament.TournamentFullNameAndPlayerType(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
+<div class="container-xl">
+    <h1>Edit @Model.Tournament.TournamentFullNameAndPlayerType(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
 
-@if (Model.IsAuthorized[AuthorizedAction.EditTournament] || Model.IsAuthorized[AuthorizedAction.DeleteTournament])
-{
-<dl>
-    @if (Model.IsAuthorized[AuthorizedAction.EditTournament])
+    @if (Model.IsAuthorized[AuthorizedAction.EditTournament] || Model.IsAuthorized[AuthorizedAction.DeleteTournament])
     {
-        <dt><a href="@Model.Tournament.TournamentRoute/edit/tournament">Edit @Model.Tournament.TournamentFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
-        <dd>Set the name, date, time and location of the tournament, who can play, the match format and the notes.</dd>
-        <dt><a href="@Model.Tournament.TournamentRoute/edit/teams">Teams in the @Model.Tournament.TournamentFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
-        <dd>Set which teams are playing in the tournament.</dd>
+        <dl>
+            @if (Model.IsAuthorized[AuthorizedAction.EditTournament])
+            {
+                <dt><a href="@Model.Tournament.TournamentRoute/edit/tournament">Edit @Model.Tournament.TournamentFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
+                <dd>Set the name, date, time and location of the tournament, who can play, the match format and the notes.</dd>
+                <dt><a href="@Model.Tournament.TournamentRoute/edit/teams">Teams in the @Model.Tournament.TournamentFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
+                <dd>Set which teams are playing in the tournament.</dd>
+            }
+            @if (Model.IsAuthorized[AuthorizedAction.DeleteTournament])
+            {
+                <dt><a href="@Model.Tournament.TournamentRoute/delete">Delete @Model.Tournament.TournamentFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
+                <dd>Matches and match statistics will be lost. Players and teams that only feature in this tournament will be deleted.</dd>
+            }
+        </dl>
     }
-    @if (Model.IsAuthorized[AuthorizedAction.DeleteTournament])
+    else
     {
-        <dt><a href="@Model.Tournament.TournamentRoute/delete">Delete @Model.Tournament.TournamentFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
-        <dd>Matches and match statistics will be lost. Players and teams that only feature in this tournament will be deleted.</dd>
+        @Html.Partial("_Login")
     }
-</dl>
-}
-else
-{
-    @Html.Partial("_Login")
-}
+</div>

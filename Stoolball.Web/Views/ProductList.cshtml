@@ -12,16 +12,18 @@
 
     var emailProtector = (IEmailProtector)Current.Factory.GetInstance(typeof(IEmailProtector));
 }
-<h1>@Model.Name</h1>
-@Html.Raw(emailProtector.ProtectEmailAddresses(Model.Introduction.ToHtmlString(), User.Identity.IsAuthenticated))
-@if (Model.Products.Any())
-{
-    <ul>
-        @Html.GetBlockListHtml(Model, "products")
-    </ul>
-}
-@Html.Raw(emailProtector.ProtectEmailAddresses(Model.FurtherDetails.ToHtmlString(), User.Identity.IsAuthenticated))
-@if (Model.EnquiryForm != null)
-{
-    @Umbraco.RenderMacro("renderUmbracoForm", new { FormGuid = Model.EnquiryForm, FormTheme = "stoolball", ExcludeScripts = "1" })
-}
+<div class="container-xl">
+    <h1>@Model.Name</h1>
+    @Html.Raw(emailProtector.ProtectEmailAddresses(Model.Introduction.ToHtmlString(), User.Identity.IsAuthenticated))
+    @if (Model.Products.Any())
+    {
+        <ul>
+            @Html.GetBlockListHtml(Model, "products")
+        </ul>
+    }
+    @Html.Raw(emailProtector.ProtectEmailAddresses(Model.FurtherDetails.ToHtmlString(), User.Identity.IsAuthenticated))
+    @if (Model.EnquiryForm != null)
+    {
+        @Umbraco.RenderMacro("renderUmbracoForm", new { FormGuid = Model.EnquiryForm, FormTheme = "stoolball", ExcludeScripts = "1" })
+    }
+</div>

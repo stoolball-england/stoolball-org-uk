@@ -18,19 +18,20 @@
     Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
     Html.RequiresJs("/js/tinymce.js");
 }
+<div class="container-xl">
+    <h1>Add a ground or sports centre</h1>
 
-<h1>Add a ground or sports centre</h1>
-
-@if (Model.IsAuthorized[AuthorizedAction.CreateMatchLocation])
-{
-    using (Html.BeginUmbracoForm<CreateMatchLocationSurfaceController>
-        ("CreateMatchLocation"))
+    @if (Model.IsAuthorized[AuthorizedAction.CreateMatchLocation])
     {
-        @Html.AntiForgeryToken()
-        @Html.Partial("_CreateOrEditMatchLocation")
+        using (Html.BeginUmbracoForm<CreateMatchLocationSurfaceController>
+            ("CreateMatchLocation"))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Partial("_CreateOrEditMatchLocation")
+        }
     }
-}
-else
-{
-    @Html.Partial("_Login")
-}
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

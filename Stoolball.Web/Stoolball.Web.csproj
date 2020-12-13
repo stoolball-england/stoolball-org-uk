@@ -619,6 +619,12 @@
     <Content Include="css\cookies.page.min.css">
       <DependentUpon>cookies.page.css</DependentUpon>
     </Content>
+    <Content Include="css\home.css">
+      <DependentUpon>home.scss</DependentUpon>
+    </Content>
+    <Content Include="css\home.min.css">
+      <DependentUpon>home.css</DependentUpon>
+    </Content>
     <Content Include="css\news.css">
       <DependentUpon>news.scss</DependentUpon>
     </Content>
@@ -769,6 +775,7 @@
     <Content Include="Content\bootstrap\bootstrap-grid.scss" />
     <Content Include="css\news.scss" />
     <Content Include="css\shop.page.scss" />
+    <Content Include="css\home.scss" />
     <None Include="css\tinymce.scss" />
     <Content Include="css\tinymce.css">
       <DependentUpon>tinymce.scss</DependentUpon>
@@ -806,6 +813,7 @@
     <Content Include="images\icons\settings-white-24dp.svg" />
     <Content Include="images\logos\sport-england.svg" />
     <Content Include="images\logos\stoolball-england-icon-maskable.svg" />
+    <Content Include="images\photos\england-2018.jpg" />
     <Content Include="images\promo\halftone-starburst.jpg" />
     <Content Include="images\promo\spreadshirt.png" />
     <Content Include="js\consent.js" />

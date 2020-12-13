@@ -20,19 +20,20 @@
     Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
     Html.RequiresJs("/js/tinymce.js");
 }
+<div class="container-xl">
+    <h1>Add a team</h1>
 
-<h1>Add a team</h1>
-
-@if (Model.IsAuthorized[AuthorizedAction.CreateTeam])
-{
-    using (Html.BeginUmbracoForm<CreateTeamSurfaceController>
-        ("CreateTeam"))
+    @if (Model.IsAuthorized[AuthorizedAction.CreateTeam])
     {
-        @Html.AntiForgeryToken()
-        @Html.Partial("_CreateOrEditTeam")
+        using (Html.BeginUmbracoForm<CreateTeamSurfaceController>
+            ("CreateTeam"))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Partial("_CreateOrEditTeam")
+        }
     }
-}
-else
-{
-    @Html.Partial("_Login")
-}
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

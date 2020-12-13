@@ -6,145 +6,147 @@
 @{ 
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam];
 }
-<h1>@Model.Team.TeamNameLocationAndPlayerType()</h1>
+<div class="container-xl">
+    <h1>@Model.Team.TeamNameLocationAndPlayerType()</h1>
 
-@if (Model.Team.UntilYear.HasValue)
-{
-<div class="alert alert-info">
-    <p><strong>This team is no longer active.</strong></p>
-</div>
-}
-
-<ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
-    <li class="nav-item">
-        <em class="nav-link active">Summary</em>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="@Model.Team.TeamRoute/matches">Matches</a>
-    </li>
-    @if (authorizedToEdit)
+    @if (Model.Team.UntilYear.HasValue)
     {
-        <li class="nav-item nav-item-admin">
-            <a class="nav-link nav-link-edit" href="@Model.Team.TeamRoute/edit">Edit team</a>
-        </li>
+        <div class="alert alert-info">
+            <p><strong>This team is no longer active.</strong></p>
+        </div>
     }
-</ul>
 
-@if (Model.Team.Club != null)
-{
-    <p>Part of <a href="@Model.Team.Club.ClubRoute">@Model.Team.Club.ClubName</a>.</p>
-}
+    <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
+        <li class="nav-item">
+            <em class="nav-link active">Summary</em>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Team.TeamRoute/matches">Matches</a>
+        </li>
+        @if (authorizedToEdit)
+        {
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-edit" href="@Model.Team.TeamRoute/edit">Edit team</a>
+            </li>
+        }
+    </ul>
 
-@Html.Raw(Model.Team.Introduction)
+    @if (Model.Team.Club != null)
+    {
+        <p>Part of <a href="@Model.Team.Club.ClubRoute">@Model.Team.Club.ClubName</a>.</p>
+    }
 
-@{ var whenWhereHeadingRendered = false; }
-@if (Model.Team.MatchLocations.Count > 0)
-{
-    whenWhereHeadingRendered = true;
-    <h2>When and where</h2>
-    <p>This team plays at @Html.Raw(Model.Team.MatchLocations.Humanize(x => $"<a href=\"{Html.Encode(x.MatchLocationRoute)}\">{Html.Encode(x.NameAndLocalityOrTownIfDifferent())}</a>")).</p>
-}
+    @Html.Raw(Model.Team.Introduction)
 
-@if (!string.IsNullOrWhiteSpace(Model.Team.PlayingTimes))
-{
-    if (!whenWhereHeadingRendered)
+    @{ var whenWhereHeadingRendered = false; }
+    @if (Model.Team.MatchLocations.Count > 0)
     {
         whenWhereHeadingRendered = true;
         <h2>When and where</h2>
+        <p>This team plays at @Html.Raw(Model.Team.MatchLocations.Humanize(x => $"<a href=\"{Html.Encode(x.MatchLocationRoute)}\">{Html.Encode(x.NameAndLocalityOrTownIfDifferent())}</a>")).</p>
     }
-    @Html.Raw(Model.Team.PlayingTimes)
-}
 
-@{ 
-    var seasonListModel = new SeasonListViewModel
+    @if (!string.IsNullOrWhiteSpace(Model.Team.PlayingTimes))
     {
-        ShowCompetitionHeading = true
-    };
-    seasonListModel.Competitions.AddRange(Model.Team.Seasons
-        .GroupBy(x => x.Season.Competition.CompetitionId)
-        .Select(seasonsInACompetition =>
+        if (!whenWhereHeadingRendered)
         {
-            var competition = seasonsInACompetition.First().Season.Competition;
-            competition.Seasons.AddRange(seasonsInACompetition.Select(season => season.Season));
-            return competition;
-        }));
-
-    @Html.Partial("_SeasonList", seasonListModel);
-}
-
-@if (!string.IsNullOrWhiteSpace(Model.Team.Cost))
-{
-    <h2>How much does it cost?</h2>
-    @Html.Raw(Model.Team.Cost)
-}
-
-@if (!string.IsNullOrWhiteSpace(Model.Team.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Team.Website))
-{
-    <h2>Contact details</h2>
-    @Html.Raw(Model.Team.PublicContactDetails)
-
-    if (!string.IsNullOrWhiteSpace(Model.Team.Website))
-    {
-        <p>Visit <a href="@Model.Team.Website">@Model.Team.TeamName's website</a>.</p>
+            whenWhereHeadingRendered = true;
+            <h2>When and where</h2>
+        }
+        @Html.Raw(Model.Team.PlayingTimes)
     }
-}
 
-@if (Model.Team.Club != null && Model.Team.Club.ClubMark)
-{
-    @Html.Partial("_ClubMark")
-}
-
-@if (Model.Team.TeamType != TeamType.Representative
-     && string.IsNullOrWhiteSpace(Model.Team.PublicContactDetails)
-     && string.IsNullOrWhiteSpace(Model.Team.Website)
-     )
-{
-    // Prompt for more contact information, unless it's a representative team when we don't expect it
-    if (!string.IsNullOrWhiteSpace(Model.Team.PrivateContactDetails))
-    {
-        <p>
-            We may be able to contact this team, but we don't have permission to publish their details.
-            If you'd like to play for them, <a href="/contact">contact us</a> and we'll pass your details on.
-        </p>
-    }
-    else
-    {
-        <p>
-            This team hasn't given us any contact details. If you'd like to play for them, try contacting
-            their opposition teams or the secretary of their league, and ask them to pass on your details.
-        </p>
-    }
-    <p> If you play for this team, please <a href="/teams/add">help us to improve this page</a>.</p>
-}
-@*
-    $club = $this->team->GetClub();
-    if ($club and ($club->GetFacebookUrl() or $club->GetTwitterAccount() or $club->GetInstagramAccount())) {
-        ?>
-        <div class="social screen">
-        <?php
-        if ($club->GetFacebookUrl())
+    @{
+        var seasonListModel = new SeasonListViewModel
         {
-        ?>
-            <a href="<?php echo Html::Encode($club->GetFacebookUrl()); ?>" class="facebook-group"><img src="/images/play/find-us-on-facebook.png" alt="Find us on Facebook" width="137" height="22" /></a>
-        <?php
-        }
-        if ($club->GetTwitterAccount()) {
-            ?>
-            <a href="https://twitter.com/<?php echo Html::Encode(substr($club->GetTwitterAccount(), 1)); ?>" class="twitter-follow-button">Follow <?php echo Html::Encode($this->team->GetClub()->GetTwitterAccount()); ?></a>
-            <script src="https://platform.twitter.com/widgets.js"></script>
-            <?php
-        }
-        if ($club->GetInstagramAccount()) {
-            ?>
-            <a href="https://www.instagram.com/<?php echo Html::Encode(trim($club->GetInstagramAccount(),'@')); ?>/?ref=badge" class="instagram"><img src="//badges.instagram.com/static/images/ig-badge-view-24.png" alt="Instagram" /></a>
-            <?php
-        }
-        ?>
-        </div>
-        <?php
-    } else {
-        $this->ShowSocial();
+            ShowCompetitionHeading = true
+        };
+        seasonListModel.Competitions.AddRange(Model.Team.Seasons
+            .GroupBy(x => x.Season.Competition.CompetitionId)
+            .Select(seasonsInACompetition =>
+            {
+                var competition = seasonsInACompetition.First().Season.Competition;
+                competition.Seasons.AddRange(seasonsInACompetition.Select(season => season.Season));
+                return competition;
+            }));
+
+        @Html.Partial("_SeasonList", seasonListModel);
     }
 
-    ?>
-*@
+    @if (!string.IsNullOrWhiteSpace(Model.Team.Cost))
+    {
+        <h2>How much does it cost?</h2>
+        @Html.Raw(Model.Team.Cost)
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.Team.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Team.Website))
+    {
+        <h2>Contact details</h2>
+        @Html.Raw(Model.Team.PublicContactDetails)
+
+        if (!string.IsNullOrWhiteSpace(Model.Team.Website))
+        {
+            <p>Visit <a href="@Model.Team.Website">@Model.Team.TeamName's website</a>.</p>
+        }
+    }
+
+    @if (Model.Team.Club != null && Model.Team.Club.ClubMark)
+    {
+        @Html.Partial("_ClubMark")
+    }
+
+    @if (Model.Team.TeamType != TeamType.Representative
+         && string.IsNullOrWhiteSpace(Model.Team.PublicContactDetails)
+         && string.IsNullOrWhiteSpace(Model.Team.Website)
+         )
+    {
+        // Prompt for more contact information, unless it's a representative team when we don't expect it
+        if (!string.IsNullOrWhiteSpace(Model.Team.PrivateContactDetails))
+        {
+            <p>
+                We may be able to contact this team, but we don't have permission to publish their details.
+                If you'd like to play for them, <a href="/contact">contact us</a> and we'll pass your details on.
+            </p>
+        }
+        else
+        {
+            <p>
+                This team hasn't given us any contact details. If you'd like to play for them, try contacting
+                their opposition teams or the secretary of their league, and ask them to pass on your details.
+            </p>
+        }
+        <p> If you play for this team, please <a href="/teams/add">help us to improve this page</a>.</p>
+    }
+    @*
+        $club = $this->team->GetClub();
+        if ($club and ($club->GetFacebookUrl() or $club->GetTwitterAccount() or $club->GetInstagramAccount())) {
+            ?>
+            <div class="social screen">
+            <?php
+            if ($club->GetFacebookUrl())
+            {
+            ?>
+                <a href="<?php echo Html::Encode($club->GetFacebookUrl()); ?>" class="facebook-group"><img src="/images/play/find-us-on-facebook.png" alt="Find us on Facebook" width="137" height="22" /></a>
+            <?php
+            }
+            if ($club->GetTwitterAccount()) {
+                ?>
+                <a href="https://twitter.com/<?php echo Html::Encode(substr($club->GetTwitterAccount(), 1)); ?>" class="twitter-follow-button">Follow <?php echo Html::Encode($this->team->GetClub()->GetTwitterAccount()); ?></a>
+                <script src="https://platform.twitter.com/widgets.js"></script>
+                <?php
+            }
+            if ($club->GetInstagramAccount()) {
+                ?>
+                <a href="https://www.instagram.com/<?php echo Html::Encode(trim($club->GetInstagramAccount(),'@')); ?>/?ref=badge" class="instagram"><img src="//badges.instagram.com/static/images/ig-badge-view-24.png" alt="Instagram" /></a>
+                <?php
+            }
+            ?>
+            </div>
+            <?php
+        } else {
+            $this->ShowSocial();
+        }
+
+        ?>
+    *@
+</div>

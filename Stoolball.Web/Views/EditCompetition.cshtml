@@ -14,19 +14,20 @@
     Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
     Html.RequiresJs("/js/tinymce.js");
 }
+<div class="container-xl">
+    <h1>Edit @Model.Competition.CompetitionName</h1>
 
-<h1>Edit @Model.Competition.CompetitionName</h1>
-
-@if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
-{
-    using (Html.BeginUmbracoForm<EditCompetitionSurfaceController>
-        ("UpdateCompetition"))
+    @if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
     {
-        @Html.AntiForgeryToken()
-        @Html.Partial("_CreateOrEditCompetition")
+        using (Html.BeginUmbracoForm<EditCompetitionSurfaceController>
+            ("UpdateCompetition"))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Partial("_CreateOrEditCompetition")
+        }
     }
-}
-else
-{
-    @Html.Partial("_Login")
-}
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

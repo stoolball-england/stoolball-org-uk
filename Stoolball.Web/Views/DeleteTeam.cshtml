@@ -12,67 +12,68 @@
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
+<div class="container-xl">
+    <h1>Delete @Model.Team.TeamName</h1>
 
-<h1>Delete @Model.Team.TeamName</h1>
-
-@if (Model.IsAuthorized[AuthorizedAction.DeleteTeam])
-{
-    if (!Model.Deleted)
+    @if (Model.IsAuthorized[AuthorizedAction.DeleteTeam])
     {
-        <p>If you delete @Model.Team.TeamName you will:</p>
-        <ul>
-            @if (Model.Team.Players.Count > 0)
-            {
-                <li>delete @("player".ToQuantity(Model.Team.Players.Count)) and all their statistics and awards</li>
-            }
-            else
-            {
-                <li>not delete any players</li>
-            }
-            @if (Model.TotalMatches > 0)
-            {
-                <li>leave @("match".ToQuantity(Model.TotalMatches)) with a missing team and an incomplete scorecard</li>
-                <li>delete statistics for this team</li>
-                <li>delete statistics for opposition teams and their players</li>
-            }
-            else
-            {
-                <li>not affect any matches</li>
-                <li>not affect any statistics</li>
-            }
-            @if (Model.Team.Seasons.Count > 0)
-            {
-                <li>remove this team from @("competition season".ToQuantity(Model.Team.Seasons.Count)), changing the results</li>
-            }
-            else
-            {
-                <li>not affect any competitions</li>
-            }
-        </ul>
-        <p><strong><strong>You cannot undo this.</strong></strong></p>
-
-        using (Html.BeginUmbracoForm<DeleteTeamSurfaceController>
-               ("DeleteTeam"))
+        if (!Model.Deleted)
         {
-            @Html.AntiForgeryToken()
+            <p>If you delete @Model.Team.TeamName you will:</p>
+            <ul>
+                @if (Model.Team.Players.Count > 0)
+                {
+                    <li>delete @("player".ToQuantity(Model.Team.Players.Count)) and all their statistics and awards</li>
+                }
+                else
+                {
+                    <li>not delete any players</li>
+                }
+                @if (Model.TotalMatches > 0)
+                {
+                    <li>leave @("match".ToQuantity(Model.TotalMatches)) with a missing team and an incomplete scorecard</li>
+                    <li>delete statistics for this team</li>
+                    <li>delete statistics for opposition teams and their players</li>
+                }
+                else
+                {
+                    <li>not affect any matches</li>
+                    <li>not affect any statistics</li>
+                }
+                @if (Model.Team.Seasons.Count > 0)
+                {
+                    <li>remove this team from @("competition season".ToQuantity(Model.Team.Seasons.Count)), changing the results</li>
+                }
+                else
+                {
+                    <li>not affect any competitions</li>
+                }
+            </ul>
+            <p><strong><strong>You cannot undo this.</strong></strong></p>
 
-            @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
-            <div class="form-group">
-                @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Team.TeamName}' into this box:")
-                @Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck="false" })
-                @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
-            </div>
+            using (Html.BeginUmbracoForm<DeleteTeamSurfaceController>
+                   ("DeleteTeam"))
+            {
+                @Html.AntiForgeryToken()
 
-            <button class="btn btn-danger btn-delete">Delete @Model.Team.TeamName</button>
+                @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Team.TeamName}' into this box:")
+                    @Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck = "false" })
+                    @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
+                </div>
+
+                <button class="btn btn-danger btn-delete">Delete @Model.Team.TeamName</button>
+            }
+        }
+        else
+        {
+            <p>@Model.Team.TeamName has been deleted.</p>
+            <a class="btn btn-primary" href="/teams">Back to clubs and teams</a>
         }
     }
     else
     {
-        <p>@Model.Team.TeamName has been deleted.</p>
-        <a class="btn btn-primary" href="/teams">Back to clubs and teams</a>
+        @Html.Partial("_Login")
     }
-}
-else
-{
-    @Html.Partial("_Login")
-}
+</div>

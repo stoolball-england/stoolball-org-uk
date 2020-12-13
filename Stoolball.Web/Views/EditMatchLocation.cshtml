@@ -18,19 +18,20 @@
     Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
     Html.RequiresJs("/js/tinymce.js");
 }
+<div class="container-xl">
+    <h1>Edit @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</h1>
 
-<h1>Edit @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</h1>
-
-@if (Model.IsAuthorized[AuthorizedAction.EditMatchLocation])
-{
-    using (Html.BeginUmbracoForm<EditMatchLocationSurfaceController>
-        ("UpdateMatchLocation"))
+    @if (Model.IsAuthorized[AuthorizedAction.EditMatchLocation])
     {
-        @Html.AntiForgeryToken()
-        @Html.Partial("_CreateOrEditMatchLocation")
+        using (Html.BeginUmbracoForm<EditMatchLocationSurfaceController>
+            ("UpdateMatchLocation"))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Partial("_CreateOrEditMatchLocation")
+        }
     }
-}
-else
-{
-    @Html.Partial("_Login")
-}
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

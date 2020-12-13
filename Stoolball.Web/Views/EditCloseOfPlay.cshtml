@@ -21,69 +21,70 @@
 
     Html.RequiresCss("~/css/steps.min.css");
 }
+<div class="container-xl">
+    <h1>Edit @Model.Match.MatchFullName(x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
 
-<h1>Edit @Model.Match.MatchFullName(x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
-
-@if (Model.IsAuthorized[AuthorizedAction.EditMatchResult])
-{
-    using (Html.BeginUmbracoForm<EditCloseOfPlaySurfaceController>
-        ("UpdateMatch"))
+    @if (Model.IsAuthorized[AuthorizedAction.EditMatchResult])
     {
-        @Html.AntiForgeryToken()
-        @Html.ValidationSummary(true)
+        using (Html.BeginUmbracoForm<EditCloseOfPlaySurfaceController>
+            ("UpdateMatch"))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
 
-        <ol class="steps">
-            <li class="steps__completed"><em class="sr-only">Start of play</em></li>
-            @for (var i = 0; i < Model.Match.MatchInnings.Count; i++)
+            <ol class="steps">
+                <li class="steps__completed"><em class="sr-only">Start of play</em></li>
+                @for (var i = 0; i < Model.Match.MatchInnings.Count; i++)
+                {
+                    <li class="steps__completed"><span class="sr-only">@((i+1).Ordinalize()) innings batting</span></li>
+                    <li class="steps__completed"><span class="sr-only">@((i+1).Ordinalize()) innings bowling</span></li>
+                }
+                <li aria-current="step"><span class="sr-only">Result</span></li>
+            </ol>
+
+            object unknownResultAttributes;
+            if (Model.Match.MatchResultType.HasValue)
             {
-                <li class="steps__completed"><span class="sr-only">@((i+1).Ordinalize()) innings batting</span></li>
-                <li class="steps__completed"><span class="sr-only">@((i+1).Ordinalize()) innings bowling</span></li>
+                unknownResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeUnknown" };
             }
-            <li aria-current="step"><span class="sr-only">Result</span></li>
-        </ol>
+            else
+            {
+                unknownResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeUnknown", @checked = "checked" };
+            }
+            <fieldset class="form-group">
+                <legend>Who won?</legend>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, -1, unknownResultAttributes)
+                    <label for="MatchResultTypeUnknown" class="custom-control-label">Don't know</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.HomeWin, new { @class = "custom-control-input", @id = MatchResultType.HomeWin.ToString() })
+                    <label for="@MatchResultType.HomeWin.ToString()" class="custom-control-label">@(Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.Team.TeamName)</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.AwayWin, new { @class = "custom-control-input", @id = MatchResultType.AwayWin.ToString() })
+                    <label for="@MatchResultType.AwayWin.ToString()" class="custom-control-label">@(Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.Team.TeamName)</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.Tie, new { @class = "custom-control-input", @id = MatchResultType.Tie.ToString() })
+                    <label for="@MatchResultType.Tie.ToString()" class="custom-control-label">@MatchResultType.Tie.ToString().Humanize()</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.AbandonedDuringPlayAndPostponed, new { @class = "custom-control-input", @id = MatchResultType.AbandonedDuringPlayAndPostponed.ToString() })
+                    <label for="@MatchResultType.AbandonedDuringPlayAndPostponed.ToString()" class="custom-control-label">@MatchResultType.AbandonedDuringPlayAndPostponed.ToString().Humanize()</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.AbandonedDuringPlayAndCancelled, new { @class = "custom-control-input", @id = MatchResultType.AbandonedDuringPlayAndCancelled.ToString() })
+                    <label for="@MatchResultType.AbandonedDuringPlayAndCancelled.ToString()" class="custom-control-label">@MatchResultType.AbandonedDuringPlayAndCancelled.ToString().Humanize()</label>
+                </div>
+                @Html.ValidationMessageFor(m => Model.Match.MatchResultType, null, new { id = "result-type-validation" })
+            </fieldset>
 
-        object unknownResultAttributes;
-        if (Model.Match.MatchResultType.HasValue)
-        {
-            unknownResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeUnknown" };
+            <button class="btn btn-primary">Save match</button>
         }
-        else
-        {
-            unknownResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeUnknown", @checked = "checked" };
-        }
-        <fieldset class="form-group">
-            <legend>Who won?</legend>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, -1, unknownResultAttributes)
-                <label for="MatchResultTypeUnknown" class="custom-control-label">Don't know</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.HomeWin, new { @class = "custom-control-input", @id = MatchResultType.HomeWin.ToString() })
-                <label for="@MatchResultType.HomeWin.ToString()" class="custom-control-label">@(Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.Team.TeamName)</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.AwayWin, new { @class = "custom-control-input", @id = MatchResultType.AwayWin.ToString() })
-                <label for="@MatchResultType.AwayWin.ToString()" class="custom-control-label">@(Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.Team.TeamName)</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.Tie, new { @class = "custom-control-input", @id = MatchResultType.Tie.ToString() })
-                <label for="@MatchResultType.Tie.ToString()" class="custom-control-label">@MatchResultType.Tie.ToString().Humanize()</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.AbandonedDuringPlayAndPostponed, new { @class = "custom-control-input", @id = MatchResultType.AbandonedDuringPlayAndPostponed.ToString() })
-                <label for="@MatchResultType.AbandonedDuringPlayAndPostponed.ToString()" class="custom-control-label">@MatchResultType.AbandonedDuringPlayAndPostponed.ToString().Humanize()</label>
-            </div>
-            <div class="custom-control custom-radio">
-                @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.AbandonedDuringPlayAndCancelled, new { @class = "custom-control-input", @id = MatchResultType.AbandonedDuringPlayAndCancelled.ToString() })
-                <label for="@MatchResultType.AbandonedDuringPlayAndCancelled.ToString()" class="custom-control-label">@MatchResultType.AbandonedDuringPlayAndCancelled.ToString().Humanize()</label>
-            </div>
-            @Html.ValidationMessageFor(m => Model.Match.MatchResultType, null, new { id = "result-type-validation" })
-        </fieldset>
-
-        <button class="btn btn-primary">Save match</button>
     }
-}
-else
-{
-    @Html.Partial("_Login")
-}
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

@@ -1,6 +1,5 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<SeasonViewModel>
 @using ClientDependency.Core.Mvc
-@using Stoolball.Matches
 @using Stoolball.Web.Competitions
 @using Stoolball.Security
 @section head {
@@ -15,20 +14,21 @@
     Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
     Html.RequiresJs("/js/tinymce.js");
 }
+<div class="container-xl">
+    <h1>Edit @Model.Season.SeasonFullName()</h1>
 
-<h1>Edit @Model.Season.SeasonFullName()</h1>
-
-@if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
-{
-    using (Html.BeginUmbracoForm<EditSeasonSurfaceController>
-        ("UpdateSeason"))
+    @if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
     {
-        @Html.AntiForgeryToken()
-        @Html.ValidationSummary(true)
-        @Html.Partial("_CreateOrEditSeason")
+        using (Html.BeginUmbracoForm<EditSeasonSurfaceController>
+            ("UpdateSeason"))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            @Html.Partial("_CreateOrEditSeason")
+        }
     }
-}
-else
-{
-    @Html.Partial("_Login")
-}
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

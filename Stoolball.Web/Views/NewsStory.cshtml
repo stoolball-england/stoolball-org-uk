@@ -16,7 +16,8 @@
     }
     var formatter = Current.Factory.GetInstance<IDateTimeFormatter>();
 }
-
-<h1>@Model.Name</h1>
-<p class="news__date">@(formatter.FormatDate(Model.DisplayDate == DateTime.MinValue ? Model.CreateDate : Model.DisplayDate).Humanize(LetterCasing.Title))</p>
-@Html.GetBlockListHtml(Model, "blockList")
+<div class="container-xl">
+    <h1>@Model.Name</h1>
+    <p class="news__date">@(formatter.FormatDate(Model.DisplayDate == DateTime.MinValue ? Model.CreateDate : Model.DisplayDate).Humanize(LetterCasing.Title))</p>
+    @Html.GetBlockListHtml(Model, "blockList")
+</div>

@@ -3,37 +3,39 @@
 @{ 
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition];
 }
-<h1>@Model.Competition.CompetitionNameAndPlayerType()</h1>
+<div class="container-xl">
+    <h1>@Model.Competition.CompetitionNameAndPlayerType()</h1>
 
-@if (Model.Competition.UntilYear.HasValue)
-{
-    <p class="alert alert-info"><strong>This competition isn't played any more.</strong></p>
-}
-
-<ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-add nav-tabs-has-edit" : string.Empty)">
-<li class="nav-item">
-    <em class="nav-link active">Summary</em>
-</li>
-@if (authorizedToEdit)
-{
-    <li class="nav-item nav-item-admin">
-        <a class="nav-link nav-link-add" href="@Model.Competition.CompetitionRoute/add">Add season</a>
-    </li>
-    <li class="nav-item nav-item-admin">
-        <a class="nav-link nav-link-edit" href="@Model.Competition.CompetitionRoute/edit">Edit competition</a>
-    </li>
-}
-</ul>
-
-@Html.Raw(Model.Competition.Introduction)
-
-@if (!string.IsNullOrWhiteSpace(Model.Competition.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Competition.Website))
-{
-    <h2>Contact details</h2>
-    @Html.Raw(Model.Competition.PublicContactDetails)
-
-    if (!string.IsNullOrWhiteSpace(Model.Competition.Website))
+    @if (Model.Competition.UntilYear.HasValue)
     {
-        <p>Visit the <a href="@Model.Competition.Website">@Model.Competition.CompetitionName's website</a>.</p>
+        <p class="alert alert-info"><strong>This competition isn't played any more.</strong></p>
     }
-}
+
+    <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-add nav-tabs-has-edit" : string.Empty)">
+        <li class="nav-item">
+            <em class="nav-link active">Summary</em>
+        </li>
+        @if (authorizedToEdit)
+        {
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-add" href="@Model.Competition.CompetitionRoute/add">Add season</a>
+            </li>
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-edit" href="@Model.Competition.CompetitionRoute/edit">Edit competition</a>
+            </li>
+        }
+    </ul>
+
+    @Html.Raw(Model.Competition.Introduction)
+
+    @if (!string.IsNullOrWhiteSpace(Model.Competition.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Competition.Website))
+    {
+        <h2>Contact details</h2>
+        @Html.Raw(Model.Competition.PublicContactDetails)
+
+        if (!string.IsNullOrWhiteSpace(Model.Competition.Website))
+        {
+            <p>Visit the <a href="@Model.Competition.Website">@Model.Competition.CompetitionName's website</a>.</p>
+        }
+    }
+</div>

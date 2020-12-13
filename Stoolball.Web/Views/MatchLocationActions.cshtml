@@ -3,25 +3,26 @@
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
+<div class="container-xl">
+    <h1>Edit @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</h1>
 
-<h1>Edit @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</h1>
-
-@if (Model.IsAuthorized[AuthorizedAction.EditMatchLocation] || Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation])
-{
-<dl>
-    @if (Model.IsAuthorized[AuthorizedAction.EditMatchLocation])
+    @if (Model.IsAuthorized[AuthorizedAction.EditMatchLocation] || Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation])
     {
-        <dt><a href="@Model.MatchLocation.MatchLocationRoute/edit/location">Edit @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</a></dt>
-        <dd>Set the address, map and notes.</dd>
+        <dl>
+            @if (Model.IsAuthorized[AuthorizedAction.EditMatchLocation])
+            {
+                <dt><a href="@Model.MatchLocation.MatchLocationRoute/edit/location">Edit @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</a></dt>
+                <dd>Set the address, map and notes.</dd>
+            }
+            @if (Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation])
+            {
+                <dt><a href="@Model.MatchLocation.MatchLocationRoute/delete">Delete @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</a> @Html.Partial("_AdminOnly")</dt>
+                <dd>Matches played here will have an unknown location. Teams based here will lose their home.</dd>
+            }
+        </dl>
     }
-    @if (Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation])
+    else
     {
-        <dt><a href="@Model.MatchLocation.MatchLocationRoute/delete">Delete @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</a> @Html.Partial("_AdminOnly")</dt>
-        <dd>Matches played here will have an unknown location. Teams based here will lose their home.</dd>
+        @Html.Partial("_Login")
     }
-    </dl>
-}
-else
-{
-    @Html.Partial("_Login")
-}
+</div>

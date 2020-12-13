@@ -21,49 +21,50 @@
     Html.RequiresCss("~/css/steps.min.css");
     Html.RequiresCss("~/css/scorecards.min.css");
 }
+<div class="container-xl">
+    <h1>Edit @Model.Match.MatchFullName(x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
 
-<h1>Edit @Model.Match.MatchFullName(x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
-
-@if (Model.IsAuthorized[AuthorizedAction.EditMatchResult])
-{
-    using (Html.BeginUmbracoForm<EditBattingScorecardSurfaceController>
-        ("UpdateMatch"))
+    @if (Model.IsAuthorized[AuthorizedAction.EditMatchResult])
     {
-        @Html.AntiForgeryToken()
+        using (Html.BeginUmbracoForm<EditBattingScorecardSurfaceController>
+            ("UpdateMatch"))
+        {
+            @Html.AntiForgeryToken()
 
-        <ol class="steps">
-            <li class="steps__completed"><em class="sr-only">Start of play</em></li>
-            @{
-                for (var i = 0; i < Model.Match.MatchInnings.Count; i++)
-                {
-                    if (Model.InningsOrderInMatch < (i + 1))
+            <ol class="steps">
+                <li class="steps__completed"><em class="sr-only">Start of play</em></li>
+                @{
+                    for (var i = 0; i < Model.Match.MatchInnings.Count; i++)
                     {
-                        <li><span class="sr-only">@((i + 1).Ordinalize()) innings batting</span></li>
-                        <li><span class="sr-only">@((i + 1).Ordinalize()) innings bowling</span></li>
-                    }
-                    else if (Model.InningsOrderInMatch == (i + 1))
-                    {
-                        <li aria-current="step"><span class="sr-only">@((i + 1).Ordinalize()) innings batting</span></li>
-                        <li><span class="sr-only">@((i + 1).Ordinalize()) innings bowling</span></li>
-                    }
-                    else if (Model.InningsOrderInMatch > (i + 1))
-                    {
-                        <li class="steps__completed"><span class="sr-only">@((i + 1).Ordinalize()) innings batting</span></li>
-                        <li class="steps__completed"><span class="sr-only">@((i + 1).Ordinalize()) innings bowling</span></li>
+                        if (Model.InningsOrderInMatch < (i + 1))
+                        {
+                            <li><span class="sr-only">@((i + 1).Ordinalize()) innings batting</span></li>
+                            <li><span class="sr-only">@((i + 1).Ordinalize()) innings bowling</span></li>
+                        }
+                        else if (Model.InningsOrderInMatch == (i + 1))
+                        {
+                            <li aria-current="step"><span class="sr-only">@((i + 1).Ordinalize()) innings batting</span></li>
+                            <li><span class="sr-only">@((i + 1).Ordinalize()) innings bowling</span></li>
+                        }
+                        else if (Model.InningsOrderInMatch > (i + 1))
+                        {
+                            <li class="steps__completed"><span class="sr-only">@((i + 1).Ordinalize()) innings batting</span></li>
+                            <li class="steps__completed"><span class="sr-only">@((i + 1).Ordinalize()) innings bowling</span></li>
+                        }
                     }
                 }
-            }
-            <li><span class="sr-only">Result</span></li>
-        </ol>
+                <li><span class="sr-only">Result</span></li>
+            </ol>
 
-        <button class="btn btn-primary sr-only">Save and continue &gt;</button>
+            <button class="btn btn-primary sr-only">Save and continue &gt;</button>
 
-        @Html.Partial("_EditBattingScorecard")
+            @Html.Partial("_EditBattingScorecard")
 
-        <button class="btn btn-primary">Save and continue &gt;</button>
+            <button class="btn btn-primary">Save and continue &gt;</button>
+        }
     }
-}
-else
-{
-    @Html.Partial("_Login")
-}
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

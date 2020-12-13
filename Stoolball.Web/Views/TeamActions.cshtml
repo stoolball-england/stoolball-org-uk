@@ -4,25 +4,26 @@
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
+<div class="container-xl">
+    <h1>Edit @Model.Team.TeamName</h1>
 
-<h1>Edit @Model.Team.TeamName</h1>
-
-@if (Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam])
-{
-    <dl>
-        @if (Model.IsAuthorized[AuthorizedAction.EditTeam])
-        {
-            <dt><a href="@Model.Team.TeamRoute/edit/team">Edit @Model.Team.TeamName</a></dt>
-            <dd>Set the introduction, type of team, home grounds and sports halls, cost to play, contact details and more.</dd>
-        }
-        @if (Model.IsAuthorized[AuthorizedAction.DeleteTeam])
-        {
-            <dt><a href="@Model.Team.TeamRoute/delete">Delete @Model.Team.TeamName</a> @Html.Partial("_AdminOnly")</dt>
-            <dd>Remove the team out of all competitions. Delete players and statistics, including for opposition teams.</dd>
-        }
-    </dl>
-}
-else
-{
-    @Html.Partial("_Login")
-}
+    @if (Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam])
+    {
+        <dl>
+            @if (Model.IsAuthorized[AuthorizedAction.EditTeam])
+            {
+                <dt><a href="@Model.Team.TeamRoute/edit/team">Edit @Model.Team.TeamName</a></dt>
+                <dd>Set the introduction, type of team, home grounds and sports halls, cost to play, contact details and more.</dd>
+            }
+            @if (Model.IsAuthorized[AuthorizedAction.DeleteTeam])
+            {
+                <dt><a href="@Model.Team.TeamRoute/delete">Delete @Model.Team.TeamName</a> @Html.Partial("_AdminOnly")</dt>
+                <dd>Remove the team out of all competitions. Delete players and statistics, including for opposition teams.</dd>
+            }
+        </dl>
+    }
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

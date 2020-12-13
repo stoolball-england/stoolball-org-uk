@@ -8,118 +8,120 @@
 @{ 
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTournament] || Model.IsAuthorized[AuthorizedAction.DeleteTournament];
 }
-<h1>@Model.Tournament.TournamentFullNameAndPlayerType(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
+<div class="container-xl">
+    <h1>@Model.Tournament.TournamentFullNameAndPlayerType(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
 
-<ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
-    <li class="nav-item">
-        <em class="nav-link active">Summary</em>
-    </li>
-    @if (authorizedToEdit)
-    {
-        <li class="nav-item nav-item-admin">
-            <a class="nav-link nav-link-edit" href="@Model.Tournament.TournamentRoute/edit">Edit tournament</a>
+    <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
+        <li class="nav-item">
+            <em class="nav-link active">Summary</em>
         </li>
-    }
-</ul>
+        @if (authorizedToEdit)
+        {
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-edit" href="@Model.Tournament.TournamentRoute/edit">Edit tournament</a>
+            </li>
+        }
+    </ul>
 
-<p>
-    When:
-    @(Model.Tournament.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(Model.Tournament.StartTime.LocalDateTime) : Model.DateTimeFormatter.FormatDate(Model.Tournament.StartTime.LocalDateTime))
-    @if (Model.Tournament.TournamentLocation?.Latitude != null && Model.Tournament.TournamentLocation?.Longitude != null)
-    {
-        var solarTimes = new SolarTimes(Model.Tournament.StartTime.LocalDateTime, Model.Tournament.TournamentLocation.Latitude, Model.Tournament.TournamentLocation.Longitude);
-        @: (sunset @Model.DateTimeFormatter.FormatTime(solarTimes.Sunset))
-    }
-</p>
-
-@if (Model.Tournament.TournamentLocation != null)
-{
-    <p>Where: <a href="@Model.Tournament.TournamentLocation.MatchLocationRoute">@Model.Tournament.TournamentLocation.NameAndLocalityOrTown()</a></p>
-}
-
-@if (Model.Tournament.OversPerInningsDefault.HasValue)
-{
-    <p>Matches are @Model.Tournament.OversPerInningsDefault overs.</p>
-}
-@{
-    var showSpacesLeft = (Model.Tournament.SpacesInTournament.HasValue &&
-        Model.Tournament.StartTime > DateTime.UtcNow &&
-        Model.Tournament.QualificationType != TournamentQualificationType.ClosedTournament);
-    if (Model.Tournament.PlayersPerTeam.HasValue ||
-        showSpacesLeft ||
-        Model.Tournament.Teams.Count > 0 ||
-        Model.Tournament.QualificationType.HasValue)
-    {
-        <h2>Teams</h2>
-    }
-
-}
-@if (Model.Tournament.PlayersPerTeam.HasValue ||
-    Model.Tournament.QualificationType.HasValue ||
-    showSpacesLeft)
-{
     <p>
-        @if (Model.Tournament.PlayersPerTeam.HasValue)
+        When:
+        @(Model.Tournament.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(Model.Tournament.StartTime.LocalDateTime) : Model.DateTimeFormatter.FormatDate(Model.Tournament.StartTime.LocalDateTime))
+        @if (Model.Tournament.TournamentLocation?.Latitude != null && Model.Tournament.TournamentLocation?.Longitude != null)
         {
-            @Model.Tournament.PlayersPerTeam.Value@: players per team.
-        }
-        @if (Model.Tournament.QualificationType == TournamentQualificationType.OpenTournament)
-        {
-            @:Any @Model.Tournament.PlayerType.Humanize(LetterCasing.LowerCase) team may enter this tournament.
-        }
-        else if (Model.Tournament.QualificationType == TournamentQualificationType.ClosedTournament)
-        {
-            @:Only invited or qualifying teams may enter this tournament.
-        }
-        @if (showSpacesLeft)
-        {
-            <strong>@Model.Tournament.SpacesInTournament spaces.</strong>
+            var solarTimes = new SolarTimes(Model.Tournament.StartTime.LocalDateTime, Model.Tournament.TournamentLocation.Latitude, Model.Tournament.TournamentLocation.Longitude);
+            @: (sunset @Model.DateTimeFormatter.FormatTime(solarTimes.Sunset))
         }
     </p>
-}
-@if (Model.Tournament.Teams.Count > 0)
-{
-    @Html.Partial("_TeamList", Model.Tournament.Teams.Select(x => x.Team).ToList())
-}
 
-@if (Model.Matches.Matches.Count > 0)
-{
-	<h2>Matches</h2>
-    @Html.Partial("_MatchList", Model.Matches)
-}
-
-@if (!string.IsNullOrWhiteSpace(Model.Tournament.TournamentNotes) || Model.Tournament.Seasons.Count > 0)
-{
-    <h2>Notes</h2>
-}
-
-@if (!string.IsNullOrWhiteSpace(Model.Tournament.TournamentNotes))
-{
-    @Html.Raw(Model.Tournament.TournamentNotes)
-}
-
-@if (Model.Tournament.Seasons.Count == 1)
-{
-    var season = Model.Tournament.Seasons.First();
-    var the = season.Competition.CompetitionName.StartsWith("THE ");
-
-    <p>This tournament is listed in @(the ? string.Empty : "the ") <a href="@season.SeasonRoute">@season.SeasonFullName()</a>.</p>
-}
-else if (Model.Tournament.Seasons.Count > 1)
-{
-    <p>This tournament is listed in the following seasons:</p>
-
-    var seasonListModel = new SeasonListViewModel
+    @if (Model.Tournament.TournamentLocation != null)
     {
-        ShowCompetitionHeading = false,
-        ShowSeasonFullName = true
-    };
-    seasonListModel.Competitions.AddRange(Model.Tournament.Seasons
-        .Select(season =>
+        <p>Where: <a href="@Model.Tournament.TournamentLocation.MatchLocationRoute">@Model.Tournament.TournamentLocation.NameAndLocalityOrTown()</a></p>
+    }
+
+    @if (Model.Tournament.OversPerInningsDefault.HasValue)
+    {
+        <p>Matches are @Model.Tournament.OversPerInningsDefault overs.</p>
+    }
+    @{
+        var showSpacesLeft = (Model.Tournament.SpacesInTournament.HasValue &&
+            Model.Tournament.StartTime > DateTime.UtcNow &&
+            Model.Tournament.QualificationType != TournamentQualificationType.ClosedTournament);
+        if (Model.Tournament.PlayersPerTeam.HasValue ||
+            showSpacesLeft ||
+            Model.Tournament.Teams.Count > 0 ||
+            Model.Tournament.QualificationType.HasValue)
         {
-            var competition = season.Competition;
-            competition.Seasons.Add(season);
-            return competition;
-        }));
-    @Html.Partial("_SeasonList", seasonListModel)
-}
+            <h2>Teams</h2>
+        }
+
+    }
+    @if (Model.Tournament.PlayersPerTeam.HasValue ||
+        Model.Tournament.QualificationType.HasValue ||
+        showSpacesLeft)
+    {
+        <p>
+            @if (Model.Tournament.PlayersPerTeam.HasValue)
+            {
+                @Model.Tournament.PlayersPerTeam.Value@: players per team.
+            }
+            @if (Model.Tournament.QualificationType == TournamentQualificationType.OpenTournament)
+            {
+                @:Any @Model.Tournament.PlayerType.Humanize(LetterCasing.LowerCase) team may enter this tournament.
+            }
+            else if (Model.Tournament.QualificationType == TournamentQualificationType.ClosedTournament)
+            {
+                @:Only invited or qualifying teams may enter this tournament.
+            }
+            @if (showSpacesLeft)
+            {
+                <strong>@Model.Tournament.SpacesInTournament spaces.</strong>
+            }
+        </p>
+    }
+    @if (Model.Tournament.Teams.Count > 0)
+    {
+        @Html.Partial("_TeamList", Model.Tournament.Teams.Select(x => x.Team).ToList())
+    }
+
+    @if (Model.Matches.Matches.Count > 0)
+    {
+        <h2>Matches</h2>
+        @Html.Partial("_MatchList", Model.Matches)
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.Tournament.TournamentNotes) || Model.Tournament.Seasons.Count > 0)
+    {
+        <h2>Notes</h2>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.Tournament.TournamentNotes))
+    {
+        @Html.Raw(Model.Tournament.TournamentNotes)
+    }
+
+    @if (Model.Tournament.Seasons.Count == 1)
+    {
+        var season = Model.Tournament.Seasons.First();
+        var the = season.Competition.CompetitionName.StartsWith("THE ");
+
+        <p>This tournament is listed in @(the ? string.Empty : "the ") <a href="@season.SeasonRoute">@season.SeasonFullName()</a>.</p>
+    }
+    else if (Model.Tournament.Seasons.Count > 1)
+    {
+        <p>This tournament is listed in the following seasons:</p>
+
+        var seasonListModel = new SeasonListViewModel
+        {
+            ShowCompetitionHeading = false,
+            ShowSeasonFullName = true
+        };
+        seasonListModel.Competitions.AddRange(Model.Tournament.Seasons
+            .Select(season =>
+            {
+                var competition = season.Competition;
+                competition.Seasons.Add(season);
+                return competition;
+            }));
+        @Html.Partial("_SeasonList", seasonListModel)
+    }
+</div>

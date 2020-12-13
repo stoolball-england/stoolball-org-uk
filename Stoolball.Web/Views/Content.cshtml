@@ -11,6 +11,7 @@
         Html.RequiresJs("/js/tinymce.js");
     }
 }
-
-<h1>@Model.Name</h1>
-@Html.GetBlockListHtml(Model, "blockList")
+<div class="container-xl">
+    <h1>@Model.Name</h1>
+    @Html.GetBlockListHtml(Model, "blockList")
+</div>

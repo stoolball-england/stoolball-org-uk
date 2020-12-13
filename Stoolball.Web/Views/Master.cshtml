@@ -45,10 +45,8 @@
 <body>
     @Html.Partial("_Header")
     <main>
-        <div class="container-xl">
-            @Html.Partial("_Breadcrumb", Model.Breadcrumbs)
-            @RenderBody()
-        </div>
+        @Html.Partial("_Breadcrumb", Model.Breadcrumbs)
+        @RenderBody()
     </main>
     @Html.Partial("_Footer")
     @Html.RenderJsHere()
