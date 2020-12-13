@@ -5,6 +5,10 @@
     Html.RequiresCss("~/css/shop.page.min.css");
     Html.RequiresCss("~/css/home.min.css");
 }
+@section head {
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@800&display=swap" rel="stylesheet" />
+}
 <div class="container-xl">
     <h1 class="sr-only">@Model.Name</h1>
 
@@ -17,34 +21,56 @@
     </ul>
 </div>
 
-<div class="home__team-finder">
+<article class="home__team-finder">
     <form method="get" action="/teams" class="container-xl">
-    <h2>Find a team</h2>
-    <label for="team-search">Enter your town, village or team name…</label>
+        <h2>Find a team</h2>
+        <label for="team-search">Enter your town, village or team name…</label>
         <div class="form-inline form-search">
             <input type="search" class="form-control" id="team-search" name="q" />
             <button type="submit" class="btn btn-primary">Search</button>
         </div>
     </form>
-</div>
+</article>
 
 <div class="container-xl">
-    <h2>Roles</h2>
-    <ul>
-        <li>Organise a team or league</li>
-        <li>Coach</li>
-        <li>Volunteer</li>
-        <li>Key links for players</li>
-    </ul>
-    <hr />
 
-    <a class="shop__spreadshirt" href="https://shop.spreadshirt.co.uk/stoolball">
-        <h2>Stoolball gifts for you…</h2>
-        <div>
-            <img src="~/images/promo/spreadshirt.png" alt="Products from our gift shop" width="600" />
-        </div>
-        <p class="btn btn-danger btn-lg">Buy now!</p>
-    </a>
+    <div class="home__boxes">
+        <article class="home__organise">
+            <div>
+                <h2>Organise</h2>
+            </div>
+        </article>
+
+        <a href="#" class="home__coach">
+            <div>
+                <h2>Coach</h2>
+            </div>
+        </a>
+
+        <a href="/about/volunteer-in-stoolball/" class="home__volunteer">
+            <div>
+                <h2>Volunteer</h2>
+                <p class="btn btn-danger btn-lg">Be a part of it!</p>
+            </div>
+        </a>
+
+        <article class="home__player-links">
+            <div>
+                <h2>Play</h2>
+            </div>
+        </article>
+    </div>
+
+    <article>
+        <a class="shop__spreadshirt" href="https://shop.spreadshirt.co.uk/stoolball">
+            <h2>Stoolball gifts for you…</h2>
+            <div>
+                <img src="~/images/promo/spreadshirt.png" alt="Products from our gift shop" width="600" />
+            </div>
+            <p class="btn btn-danger btn-lg">Buy now!</p>
+        </a>
+    </article>
+
     <h2>Buy equipment</h2>
     <hr />
 

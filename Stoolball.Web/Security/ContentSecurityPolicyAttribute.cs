@@ -40,6 +40,7 @@ namespace Stoolball.Web.Security
 
             SetupDirectives();
             SetupDefaultPolicy();
+            SetupGoogleFonts();
             SetupGoogleAnalytics();
 
             if (GoogleMaps)
@@ -151,6 +152,12 @@ namespace Stoolball.Web.Security
             AddSource(IMG_SRC, "https://maps.google.co.uk");
             AddSource(IMG_SRC, "https://maps.googleapis.com");
             AddSource(IMG_SRC, "data:");
+            AddSource(FONT_SRC, "https://fonts.gstatic.com");
+        }
+
+        private void SetupGoogleFonts()
+        {
+            AddSource(STYLE_SRC, "https://fonts.googleapis.com");
             AddSource(FONT_SRC, "https://fonts.gstatic.com");
         }
 
