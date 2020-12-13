@@ -51,6 +51,7 @@
 }
 
 .home__boxes > *:hover, .home__boxes > *:focus, .home__boxes > *:active {
+    outline: none;
     border-color: $black;
     position: relative;
     z-index: 1;
