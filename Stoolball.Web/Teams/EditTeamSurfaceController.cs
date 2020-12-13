@@ -63,17 +63,21 @@ namespace Stoolball.Web.Teams
                 return Redirect(updatedTeam.TeamRoute);
             }
 
-            var viewModel = new TeamViewModel(CurrentPage, Services.UserService)
+            var model = new TeamViewModel(CurrentPage, Services.UserService)
             {
                 Team = team,
             };
-            viewModel.IsAuthorized = isAuthorized;
-            viewModel.Metadata.PageTitle = $"Edit {team.TeamName}";
+            model.IsAuthorized = isAuthorized;
+            model.Metadata.PageTitle = $"Edit {team.TeamName}";
 
-            viewModel.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
-            viewModel.Breadcrumbs.Add(new Breadcrumb { Name = viewModel.Team.TeamName, Url = new Uri(viewModel.Team.TeamRoute, UriKind.Relative) });
+            model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
+            if (model.Team.Club != null)
+            {
+                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Team.Club.ClubName, Url = new Uri(model.Team.Club.ClubRoute, UriKind.Relative) });
+            }
+            model.Breadcrumbs.Add(new Breadcrumb { Name = model.Team.TeamName, Url = new Uri(model.Team.TeamRoute, UriKind.Relative) });
 
-            return View("EditTeam", viewModel);
+            return View("EditTeam", model);
         }
     }
 }

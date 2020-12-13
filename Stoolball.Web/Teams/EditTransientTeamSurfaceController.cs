@@ -71,28 +71,28 @@ namespace Stoolball.Web.Teams
                 return Redirect(updatedTeam.TeamRoute);
             }
 
-            var viewModel = new TeamViewModel(CurrentPage, Services.UserService)
+            var model = new TeamViewModel(CurrentPage, Services.UserService)
             {
                 Team = team,
             };
-            viewModel.IsAuthorized = isAuthorized;
+            model.IsAuthorized = isAuthorized;
 
-            viewModel.Matches = new MatchListingViewModel
+            model.Matches = new MatchListingViewModel
             {
                 Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
                 {
-                    TeamIds = new List<Guid> { viewModel.Team.TeamId.Value },
+                    TeamIds = new List<Guid> { model.Team.TeamId.Value },
                     IncludeMatches = false
                 }).ConfigureAwait(false),
                 DateTimeFormatter = _dateFormatter
             };
 
-            viewModel.Metadata.PageTitle = $"Edit {viewModel.Team.TeamName}, {_dateFormatter.FormatDate(viewModel.Matches.Matches.First().StartTime, false, false)}";
+            var match = model.Matches.Matches.First();
+            model.Metadata.PageTitle = $"Edit {model.Team.TeamName}, {_dateFormatter.FormatDate(match.StartTime, false, false)}";
 
-            viewModel.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
-            viewModel.Breadcrumbs.Add(new Breadcrumb { Name = viewModel.Team.TeamName, Url = new Uri(viewModel.Team.TeamRoute, UriKind.Relative) });
+            model.Breadcrumbs.Add(new Breadcrumb { Name = match.MatchName, Url = new Uri(match.MatchRoute, UriKind.Relative) });
 
-            return View("EditTransientTeam", viewModel);
+            return View("EditTransientTeam", model);
         }
     }
 }

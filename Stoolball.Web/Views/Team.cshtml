@@ -31,11 +31,6 @@
         }
     </ul>
 
-    @if (Model.Team.Club != null)
-    {
-        <p>Part of <a href="@Model.Team.Club.ClubRoute">@Model.Team.Club.ClubName</a>.</p>
-    }
-
     @Html.Raw(Model.Team.Introduction)
 
     @{ var whenWhereHeadingRendered = false; }

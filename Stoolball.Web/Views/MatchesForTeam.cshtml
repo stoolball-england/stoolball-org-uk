@@ -19,7 +19,7 @@
     <meta name="robots" content="noindex,follow" />
 }
 <div class="container-xl">
-    <h1>@Model.Team.TeamName</h1>
+    <h1>@Model.Team.TeamNameLocationAndPlayerType()</h1>
 
     @if (Model.Team.UntilYear.HasValue)
     {

@@ -41,50 +41,54 @@ namespace Stoolball.Web.Teams
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> DeleteTeam([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] MatchingTextConfirmation model)
+        public async Task<ActionResult> DeleteTeam([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] MatchingTextConfirmation postedModel)
         {
-            if (model is null)
+            if (postedModel is null)
             {
-                throw new ArgumentNullException(nameof(model));
+                throw new ArgumentNullException(nameof(postedModel));
             }
 
-            var viewModel = new DeleteTeamViewModel(CurrentPage, Services.UserService)
+            var model = new DeleteTeamViewModel(CurrentPage, Services.UserService)
             {
                 Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false),
             };
-            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Team);
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team);
 
-            if (viewModel.IsAuthorized[AuthorizedAction.DeleteTeam] && ModelState.IsValid)
+            if (model.IsAuthorized[AuthorizedAction.DeleteTeam] && ModelState.IsValid)
             {
-                Services.MemberGroupService.Delete(Services.MemberGroupService.GetById(viewModel.Team.MemberGroupKey.Value));
+                Services.MemberGroupService.Delete(Services.MemberGroupService.GetById(model.Team.MemberGroupKey.Value));
 
                 var currentMember = Members.GetCurrentMember();
-                await _teamRepository.DeleteTeam(viewModel.Team, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                viewModel.Deleted = true;
+                await _teamRepository.DeleteTeam(model.Team, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                model.Deleted = true;
             }
             else
             {
-                var teamIds = new List<Guid> { viewModel.Team.TeamId.Value };
-                viewModel.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchQuery
+                var teamIds = new List<Guid> { model.Team.TeamId.Value };
+                model.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchQuery
                 {
                     TeamIds = teamIds,
                     IncludeTournamentMatches = true
                 }).ConfigureAwait(false);
-                viewModel.Team.Players = (await _playerDataSource.ReadPlayerIdentities(new PlayerIdentityQuery
+                model.Team.Players = (await _playerDataSource.ReadPlayerIdentities(new PlayerIdentityQuery
                 {
                     TeamIds = teamIds
                 }).ConfigureAwait(false))?.Select(x => new Player { PlayerIdentities = new List<PlayerIdentity> { x } }).ToList();
             }
 
-            viewModel.Metadata.PageTitle = $"Delete {viewModel.Team.TeamName}";
+            model.Metadata.PageTitle = $"Delete {model.Team.TeamName}";
 
-            viewModel.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
-            if (!viewModel.Deleted)
+            model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
+            if (model.Team.Club != null)
             {
-                viewModel.Breadcrumbs.Add(new Breadcrumb { Name = viewModel.Team.TeamName, Url = new Uri(viewModel.Team.TeamRoute, UriKind.Relative) });
+                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Team.Club.ClubName, Url = new Uri(model.Team.Club.ClubRoute, UriKind.Relative) });
+            }
+            if (!model.Deleted)
+            {
+                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Team.TeamName, Url = new Uri(model.Team.TeamRoute, UriKind.Relative) });
             }
 
-            return View("DeleteTeam", viewModel);
+            return View("DeleteTeam", model);
         }
     }
 }

@@ -78,10 +78,10 @@ namespace Stoolball.Web.Teams
                     DateTimeFormatter = _dateFormatter
                 };
 
-                model.Metadata.PageTitle = $"Edit {model.Team.TeamName}, {_dateFormatter.FormatDate(model.Matches.Matches.First().StartTime, false, false)}";
+                var match = model.Matches.Matches.First();
+                model.Metadata.PageTitle = $"Edit {model.Team.TeamName}, {_dateFormatter.FormatDate(match.StartTime, false, false)}";
 
-                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
-                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Team.TeamName, Url = new Uri(model.Team.TeamRoute, UriKind.Relative) });
+                model.Breadcrumbs.Add(new Breadcrumb { Name = match.MatchName, Url = new Uri(match.MatchRoute, UriKind.Relative) });
 
                 return CurrentTemplate(model);
             }

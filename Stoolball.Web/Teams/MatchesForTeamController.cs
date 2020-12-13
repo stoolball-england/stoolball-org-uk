@@ -90,6 +90,10 @@ namespace Stoolball.Web.Teams
                 model.Metadata.PageTitle = $"Matches for {model.Team.TeamName} stoolball team";
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
+                if (model.Team.Club != null)
+                {
+                    model.Breadcrumbs.Add(new Breadcrumb { Name = model.Team.Club.ClubName, Url = new Uri(model.Team.Club.ClubRoute, UriKind.Relative) });
+                }
 
                 return CurrentTemplate(model);
             }
