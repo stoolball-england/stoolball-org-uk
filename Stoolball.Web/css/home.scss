@@ -48,6 +48,7 @@
 
 .home__boxes > * > div {
     height: 100%;
+    position: relative;
 }
 
 .home__boxes > *:hover, .home__boxes > *:focus, .home__boxes > *:active {
@@ -65,13 +66,22 @@
     padding: $spacer*3 $spacer $spacer/2;
 }
 
+.home__boxes p {
+    position: absolute;
+    margin: 0;
+    left: 1rem;
+    bottom: 1rem;
+    box-shadow: 2px 2px 2px $black;
+}
+
 .home__organise {
     border-radius: 0 0 0 $border-radius*8;
     margin-right: -5px;
 }
 
 .home__organise > div {
-    background-color: khaki;
+    background: khaki url(/images/photos/organise.jpg) no-repeat;
+    background-size: cover;
     border-radius: 0 0 0 $border-radius*8;
 }
 
@@ -81,33 +91,26 @@
 }
 
 .home__coach > div {
-    background-color: powderblue;
-}
-
-.home__volunteer {
-    margin-left: -5px;
-    margin-right: -5px;
-}
-.home__volunteer > div {
-    position: relative;
-    background: darkseagreen url(/images/photos/kelvin.jpg) no-repeat;
+    background: powderblue url(/images/photos/coach.jpg) no-repeat;
     background-size: cover;
-}
-
-.home__volunteer p {
-    position: absolute;
-    margin: 0;
-    left: 1rem;
-    bottom: 1rem;
-    box-shadow: 2px 2px 2px $black;
 }
 
 .home__player-links {
     margin-left: -5px;
-    border-radius: 0 0 $border-radius*8 0;
+    margin-right: -5px;
 }
 
 .home__player-links div {
-    background-color: #eee;
+    background: #ffaefe url(/images/photos/play.jpg) no-repeat;
+    background-size: cover;
+}
+
+.home__volunteer {
+    margin-left: -5px;
+    border-radius: 0 0 $border-radius*8 0;
+}
+.home__volunteer > div {
+    background: darkseagreen url(/images/photos/kelvin.jpg) no-repeat;
+    background-size: cover;
     border-radius: 0 0 $border-radius*8 0;
 }
