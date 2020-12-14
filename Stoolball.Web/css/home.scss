@@ -12,7 +12,13 @@
     border-top: 5px solid theme-color("primary");
     border-bottom: 5px solid theme-color("primary");
     color: $white;
-    margin-bottom: $spacer*2;
+    margin-bottom: $spacer;
+}
+
+@include media-breakpoint-up(md) {
+    .home__team-finder {
+        margin-bottom: $spacer*2;
+    }
 }
 
 .home__team-finder form {
@@ -34,24 +40,30 @@
 .home__boxes {
     display: flex;
     width: 100%;
+    flex-wrap: wrap;
     margin-bottom: $spacer;
 }
 
-.home__boxes > * {
-    width: 25%;
-    margin-top: -($spacer*4);
+.home__boxes > a {
+    width: 50%;
     padding: 0;
-    min-height: 400px;
+    min-height: 200px;
     border: 5px solid transparent;
     flex-grow: 1;
+    background-clip: content-box;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
 }
 
-.home__boxes > * > div {
+.home__boxes > a > div {
     height: 100%;
     position: relative;
+    width: 100%;
+    text-align: center;
 }
 
-.home__boxes > *:hover, .home__boxes > *:focus, .home__boxes > *:active {
+.home__boxes > a:hover, .home__boxes > a:focus, .home__boxes > a:active {
     outline: none;
     border-color: $black;
     position: relative;
@@ -60,57 +72,151 @@
 
 .home__boxes h2 {
     font-family: 'Assistant';
-    font-size: 2.5em;
+    font-size: 2rem;
     background: rgba(0,0,0,.5);
     color: white;
-    padding: $spacer*3 $spacer $spacer/2;
+    padding: $spacer/2 $spacer $spacer/2;
 }
 
-.home__boxes p {
+.home__boxes__button {
     position: absolute;
     margin: 0;
-    left: 1rem;
     bottom: 1rem;
+    width: 100%;
+    text-align: center;
+}
+
+.home__boxes__button p {
     box-shadow: 2px 2px 2px $black;
+    white-space: nowrap;
+    margin: 0 auto;
+    display: inline-block;
 }
 
 .home__organise {
-    border-radius: 0 0 0 $border-radius*8;
+    border-radius: $border-radius*8 0 0 0;
+    background: khaki;
     margin-right: -5px;
+    margin-bottom: -5px;
 }
 
 .home__organise > div {
-    background: khaki url(/images/photos/organise.jpg) no-repeat;
-    background-size: cover;
-    border-radius: 0 0 0 $border-radius*8;
+    background: center top / contain url(/images/photos/organise.jpg) no-repeat;
 }
 
 .home__coach {
+    border-radius: 0 $border-radius*8 0 0;
+    background: powderblue;
     margin-left: -5px;
-    margin-right: -5px;
+    margin-bottom: -5px;
 }
 
 .home__coach > div {
-    background: powderblue url(/images/photos/coach.jpg) no-repeat;
-    background-size: cover;
+    background: center top / contain url(/images/photos/coach.jpg) no-repeat;
 }
 
-.home__player-links {
-    margin-left: -5px;
+.home__play {
+    background: #ffaefe;
+    border-radius: 0 0 0 $border-radius*8;
+    margin-top: -5px;
     margin-right: -5px;
 }
 
-.home__player-links div {
-    background: #ffaefe url(/images/photos/play.jpg) no-repeat;
-    background-size: cover;
+.home__play > div {
+    background: center top / contain url(/images/photos/play.jpg) no-repeat;
 }
 
 .home__volunteer {
-    margin-left: -5px;
+    background: darkseagreen;
     border-radius: 0 0 $border-radius*8 0;
+    margin-top: -5px;
+    margin-left: -5px;
 }
 .home__volunteer > div {
-    background: darkseagreen url(/images/photos/kelvin.jpg) no-repeat;
-    background-size: cover;
-    border-radius: 0 0 $border-radius*8 0;
+    background: center top / contain url(/images/photos/kelvin.jpg) no-repeat;
+}
+
+@include media-breakpoint-up(sm) {
+    .home__boxes > a {
+        min-height: 300px;
+    }
+
+    .home__boxes h2 {
+        font-size: 2.2rem;
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .home__boxes {
+        flex-wrap: nowrap;
+        margin-bottom: $spacer*2;
+    }
+
+    .home__boxes > a {
+        width: 25%;
+        margin-top: 0;
+        margin-bottom: 0;
+        min-height: 400px;
+    }
+
+    .home__boxes h2 {
+        font-size: 2.2rem; /* Based on 'Volunteer' at the start of md breakpoint. */
+        padding: $spacer/2 $spacer $spacer/2;
+        text-align: left;
+    }
+
+    .home__organise {
+        margin-right: -5px;
+        border-radius: 0 0 0 $border-radius*8;
+    }
+
+    .home__organise > div {
+        background-size: cover;
+        background-position-x: center;
+    }
+
+    .home__coach {
+        margin-left: -5px;
+        margin-right: -5px;
+        border-radius: unset;
+    }
+
+    .home__coach > div {
+        background-size: cover;
+        background-position-x: right;
+    }
+
+    .home__play {
+        margin-left: -5px;
+        margin-right: -5px;
+        border-radius: unset;
+    }
+
+    .home__play > div {
+        background-size: cover;
+        background-position-x: right;
+    }
+
+    .home__volunteer {
+        margin-left: -5px;
+    }
+
+    .home__volunteer > div {
+        background-size: cover;
+        background-position-x: center;
+    }
+    .home__boxes__button {
+        text-align: left;
+        padding: 0 $spacer;
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    // Bootstrap's .btn-lg, but applied only when this media query matches
+    .home__boxes .btn {
+        padding: 0.5rem 1rem;
+        font-size: 1.25rem;
+        line-height: 1.5;
+        border-radius: 0.3rem;
+    }
 }
