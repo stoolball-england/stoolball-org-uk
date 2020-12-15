@@ -133,7 +133,7 @@
     margin-left: -5px;
 }
 .home__volunteer > div {
-    background: center top / contain url(/images/photos/kelvin.jpg) no-repeat;
+    background: center top / contain url(/images/photos/volunteer.jpg) no-repeat;
 }
 
 @include media-breakpoint-up(sm) {
@@ -183,7 +183,6 @@
 
     .home__coach > div {
         background-size: cover;
-        background-position-x: right;
     }
 
     .home__play {

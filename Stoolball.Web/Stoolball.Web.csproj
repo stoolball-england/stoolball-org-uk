@@ -815,9 +815,9 @@
     <Content Include="images\logos\stoolball-england-icon-maskable.svg" />
     <Content Include="images\photos\coach.jpg" />
     <Content Include="images\photos\england-2018.jpg" />
-    <Content Include="images\photos\kelvin.jpg" />
     <Content Include="images\photos\organise.jpg" />
     <Content Include="images\photos\play.jpg" />
+    <Content Include="images\photos\volunteer.jpg" />
     <Content Include="images\promo\halftone-starburst.jpg" />
     <Content Include="images\promo\spreadshirt.png" />
     <Content Include="js\consent.js" />
