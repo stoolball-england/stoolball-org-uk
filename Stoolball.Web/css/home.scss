@@ -3,6 +3,48 @@
 @import "../Content/bootstrap/_mixins.scss";
 @import "../Content/bootstrap/_variables.scss";
 
+.keep-together {
+    white-space: nowrap;
+}
+
+.home__what-is-stoolball {
+    background: #78883e url(/images/photos/what-is-stoolball.jpg) no-repeat top right; // background colour from the photo
+    margin: 3rem 0;
+    border-radius: 20px;
+    color: white;
+    overflow: hidden;
+}
+
+.home__what-is-stoolball__content {
+    background: rgba(0,0,0,.5);
+    padding: 20px 30px;
+}
+
+@include media-breakpoint-up(lg) {
+    .home__what-is-stoolball__content {
+        max-width: 48%;
+    }
+}
+
+.home__what-is-stoolball h2 {
+    font-family: 'Assistant';
+    font-size: 2.2rem;
+}
+
+.home__what-is-stoolball ul {
+    font-size: 1.3rem;
+}
+
+.home__what-is-stoolball p {
+    margin-bottom: 0;
+}
+
+.home__what-is-stoolball a:link, .home__what-is-stoolball a:visited {
+    color: white;
+    border-color: white;
+}
+
+
 .home__team-finder {
     position: relative;
     z-index: 2;
@@ -12,12 +54,12 @@
     border-top: 5px solid theme-color("primary");
     border-bottom: 5px solid theme-color("primary");
     color: $white;
-    margin-bottom: $spacer;
+    margin-bottom: $spacer*2;
 }
 
 @include media-breakpoint-up(md) {
     .home__team-finder {
-        margin-bottom: $spacer*2;
+        margin-bottom: $spacer*3;
     }
 }
 
@@ -41,7 +83,7 @@
     display: flex;
     width: 100%;
     flex-wrap: wrap;
-    margin-bottom: $spacer;
+    margin-bottom: $spacer*2;
 }
 
 .home__boxes > a {
@@ -149,7 +191,7 @@
 @include media-breakpoint-up(md) {
     .home__boxes {
         flex-wrap: nowrap;
-        margin-bottom: $spacer*2;
+        margin-bottom: $spacer*3;
     }
 
     .home__boxes > a {

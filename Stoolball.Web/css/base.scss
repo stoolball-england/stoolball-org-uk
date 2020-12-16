@@ -57,6 +57,10 @@ h1 {
     margin-bottom: 1rem; 
 }
 
+ul { 
+    padding-left: 1rem; 
+}
+
 /* Required to use boxed content using alert styles */
 @import "_alerts.scss";
 
