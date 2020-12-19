@@ -8,17 +8,34 @@
     $white-space: nowrap;
 }
 
-.home__what-is-stoolball {
-    background: #78883e url(/images/photos/what-is-stoolball.jpg) no-repeat top right; // background colour from the photo
+.home__what-is-stoolball:link, .home__what-is-stoolball:visited {
+    display: block;
+    background: content-box top right / 100% #78883e url(/images/photos/what-is-stoolball.jpg) no-repeat; // background colour from the photo
     margin: $spacer*3 0;
     border-radius: 20px;
     color: $white;
-    overflow: hidden;
+}
+
+.home__what-is-stoolball:hover, .home__what-is-stoolball:focus, .home__what-is-stoolball:active {
+    background-size: 105%;
+    transition: all .1s;
 }
 
 .home__what-is-stoolball__content {
     background: rgba(0,0,0,.5);
     padding: 20px 30px;
+    border-radius: 20px;
+    border: 5px solid transparent;
+}
+
+.home__what-is-stoolball:hover .home__what-is-stoolball__content, .home__what-is-stoolball:focus .home__what-is-stoolball__content, .home__what-is-stoolball:active .home__what-is-stoolball__content {
+    border: 5px solid $black;
+}
+
+.home__what-is-stoolball:hover .btn, .home__what-is-stoolball:focus .btn, .home__what-is-stoolball:active .btn {
+    color: #fff;
+    background-color: #218838;
+    border-color: #fff;
 }
 
 @include media-breakpoint-up(lg) {
@@ -38,18 +55,8 @@
 
 .home__what-is-stoolball p {
     margin-bottom: 0;
+    border-width: 2px;
 }
-
-.home__what-is-stoolball a:link, .home__what-is-stoolball a:visited {
-    color: $white;
-    border-color: $white;
-}
-
-.home__what-is-stoolball a:hover, .home__what-is-stoolball a:focus, .home__what-is-stoolball a:active {
-    background: $white;
-    color: $black;
-}
-
 
 .home__team-finder {
     position: relative;

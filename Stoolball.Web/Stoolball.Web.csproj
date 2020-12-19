@@ -794,7 +794,6 @@
     <Content Include="Global.asax" />
     <Content Include="images\icons\add-grey-24dp.svg" />
     <Content Include="images\icons\add-white-24dp.svg" />
-    <Content Include="images\icons\Dogmoj-de-hilelismo-02.svg" />
     <Content Include="images\icons\iconmonstr-facebook-6-black.svg" />
     <Content Include="images\icons\iconmonstr-facebook-6-green.svg" />
     <Content Include="images\icons\iconmonstr-instagram-11-black.svg" />
@@ -812,8 +811,9 @@
     <Content Include="images\icons\search-white-24dp.svg" />
     <Content Include="images\icons\settings-grey-24dp.svg" />
     <Content Include="images\icons\settings-white-24dp.svg" />
-    <Content Include="images\icons\Three_Lines_Ornament_Black_Down_Left.svg" />
-    <Content Include="images\icons\Three_Lines_Ornament_Black_Down_Right.svg" />
+    <Content Include="images\icons\wikimedia-dogmoj-de-hilelismo-02.svg" />
+    <Content Include="images\icons\wikimedia-three-lines-ornament-black-down-left.svg" />
+    <Content Include="images\icons\wikimedia-three-lines-ornament-black-down-right.svg" />
     <Content Include="images\logos\sport-england.svg" />
     <Content Include="images\logos\stoolball-england-icon-maskable.svg" />
     <Content Include="images\photos\baseball.jpg" />
