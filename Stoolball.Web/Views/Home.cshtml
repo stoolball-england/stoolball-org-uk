@@ -7,7 +7,7 @@
 }
 @section head {
     <link rel="preconnect" href="https://fonts.gstatic.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
 }
 <h1 class="sr-only">@Model.Name</h1>
 
@@ -94,9 +94,13 @@
     <hr />
 
     <h2>News</h2>
-    <hr />
 
-    <h2>History</h2>
-    <p>Stoolball stories</p>
-    <p>Baseball</p>
+    <article class="home__history" id="home__history">
+        <h2><a href="/history">Stoolball stories</a></h2>
+        <ul class="home__boxes">
+            <li class="home__history-item home__glynde"><a href="/history/story/glynde-butterflies">Gertrude Brand: <span class="home__history-subtitle">stoolball's first centurion</span></a></li>
+            <li class="home__history-item home__baseball"><a href="/history/baseballs-origins-in-stoolball">Baseball: <span class="home__history-subtitle">a child of stoolball</span></a></li>
+            <li class="home__history-item home__grantham"><a href="/history/story/major-w-w-grantham"><span class="home__history-title">Grantham</span><span class="sr-only">:</span> <span class="home__history-subtitle">the man who took stoolball around the world</span></a></li>
+        </ul>
+    </article>
 </div>

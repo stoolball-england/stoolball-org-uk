@@ -1,17 +1,18 @@
 ﻿@import "_theme.scss";
+@import "_mixins.scss";
 @import "../Content/bootstrap/_functions.scss";
 @import "../Content/bootstrap/_mixins.scss";
 @import "../Content/bootstrap/_variables.scss";
 
 .keep-together {
-    white-space: nowrap;
+    $white-space: nowrap;
 }
 
 .home__what-is-stoolball {
     background: #78883e url(/images/photos/what-is-stoolball.jpg) no-repeat top right; // background colour from the photo
-    margin: 3rem 0;
+    margin: $spacer*3 0;
     border-radius: 20px;
-    color: white;
+    color: $white;
     overflow: hidden;
 }
 
@@ -40,8 +41,13 @@
 }
 
 .home__what-is-stoolball a:link, .home__what-is-stoolball a:visited {
-    color: white;
-    border-color: white;
+    color: $white;
+    border-color: $white;
+}
+
+.home__what-is-stoolball a:hover, .home__what-is-stoolball a:focus, .home__what-is-stoolball a:active {
+    background: $white;
+    color: $black;
 }
 
 
@@ -84,9 +90,10 @@
     width: 100%;
     flex-wrap: wrap;
     margin-bottom: $spacer*2;
+    padding: 0;
 }
 
-.home__boxes > a {
+.home__boxes a {
     width: 50%;
     padding: 0;
     min-height: 200px;
@@ -98,25 +105,27 @@
     overflow: hidden;
 }
 
-.home__boxes > a > div {
+.home__boxes a > div {
     height: 100%;
     position: relative;
     width: 100%;
     text-align: center;
 }
 
-.home__boxes > a:hover, .home__boxes > a:focus, .home__boxes > a:active {
+.home__boxes a:hover, .home__boxes a:focus, .home__boxes a:active {
     outline: none;
     border-color: $black;
     position: relative;
     z-index: 1;
+    transform: scale(1.01);
+    transition: all .1s;
 }
 
 .home__boxes h2 {
     font-family: 'Assistant';
     font-size: 1.9rem;
     background: rgba(0,0,0,.5);
-    color: white;
+    color: $white;
     padding: $spacer/2 $spacer $spacer/2;
 }
 
@@ -130,7 +139,7 @@
 
 .home__boxes__button p {
     box-shadow: 2px 2px 2px $black;
-    white-space: nowrap;
+    $white-space: nowrap;
     margin: 0 auto;
     display: inline-block;
 }
@@ -194,7 +203,7 @@
         margin-bottom: $spacer*3;
     }
 
-    .home__boxes > a {
+    .home__boxes a {
         width: 25%;
         margin-top: 0;
         margin-bottom: 0;
@@ -259,5 +268,164 @@
         font-size: 1.25rem;
         line-height: 1.5;
         border-radius: 0.3rem;
+    }
+}
+
+.home__history h2 {
+    font: bold 3em 'Dancing Script';
+    color: theme-color("primary");
+    text-align: center;
+    margin: $spacer*2 0 1rem;
+    padding-top: $spacer* 2;
+    border-top: 1px solid #ddd;
+
+    & a:link, a:visited {
+        @include remove-link-underline;
+    }
+
+    & a:focus, a:hover, a:active {
+        @include link-underline;
+        border-bottom-width: 2px;
+    }
+
+    &::after {
+        content: '';
+        background: url(/images/icons/wikimedia-dogmoj-de-hilelismo-02.svg) no-repeat center;
+        background-size: 150px;
+        height: .6em;
+        display: block;
+        margin: auto;
+    }
+
+
+    @include media-breakpoint-up(sm) {
+        margin: $spacer*2 0 1rem;
+
+        &::before, &::after {
+            content: '';
+            background: url(/images/icons/wikimedia-three-lines-ornament-black-down-left.svg) no-repeat center;
+            background-size: 55px;
+            width: 65px;
+            height: .6em;
+            display: inline-block;
+        }
+
+        &::after {
+            background-image: url(/images/icons/wikimedia-three-lines-ornament-black-down-right.svg);
+        }
+    }
+
+    @include media-breakpoint-up(md) {
+        font-size: 5em;
+
+        &::before, &::after {
+            background-size: 95px;
+            width: 115px;
+        }
+    }
+}
+
+.home__history ul {
+    display: flex;
+    flex-direction: column;
+}
+
+.home__history-item {
+    list-style: none;
+    width: 100%;
+    margin-bottom: $spacer;
+    display: flex;
+    justify-content: center;
+}
+
+.home__baseball a {
+    background: border-box top center url(/images/photos/baseball.jpg) no-repeat;
+}
+
+.home__grantham a {
+    background: border-box top center url(/images/photos/downsmen.jpg) no-repeat;
+}
+
+.home__history-item a {
+    position: relative;
+    border-radius: 20px;
+    height: 400px;
+    overflow: hidden;
+    display: block;
+    width: 100%;
+    max-width: 370px;
+    color: $white;
+    font: 3rem 'Dancing Script';
+    text-align: center;
+    text-shadow: 2px 2px 3px $black;
+}
+
+.home__history-title {
+    display: block;
+    padding: 0 $spacer;
+}
+
+.home__history-subtitle {
+    display: block;
+    font-size: 2.5rem;
+    text-transform: capitalize;
+    padding: 0 $spacer;
+}
+
+.home__grantham .home__history-title {
+    font-size: 4rem;
+}
+
+.home__grantham .home__history-subtitle {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.home__glynde a {
+    background: border-box top center url(/images/photos/gertrude.jpg) no-repeat;
+}
+
+@include media-breakpoint-up(sm) {
+    .home__history ul {
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .home__history-item {
+        width: 48%;
+    }
+
+    .home__glynde {
+        margin-right: $spacer/2;
+    }
+
+    .home__baseball {
+        margin-left: $spacer/2;
+    }
+
+    .home__grantham .home__history-title {
+        font-size: 3.5rem;
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .home__history-item {
+        width: 33%;
+    }
+
+    // Adjust the space between items
+    .home__baseball {
+        margin-left: 0;
+    }
+
+    .home__grantham {
+        margin-left: $spacer/2;
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    .home__grantham .home__history-title {
+        font-size: 4rem;
     }
 }
