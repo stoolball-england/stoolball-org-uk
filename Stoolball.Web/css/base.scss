@@ -26,6 +26,9 @@
 @import "../Content/bootstrap/_buttons.scss";
 @import "_forms.scss";
 
+/* Tiles layout base classes */
+@import "_tiles.scss";
+
 /* Images - don't let them have that odd gap or overflow their container */
 img { 
     max-width: 100%; 

@@ -23,7 +23,7 @@ $offset-container-padding: -(($grid-gutter-width/2)-$space-for-header-focus-ring
 
 // Create some space between the header and the following content
 .header {
-    margin-bottom: $spacer*2;
+    margin-bottom: $spacer;
 }
 
 // This is outside .container-xl, therefore spans the viewport
@@ -54,6 +54,10 @@ $offset-container-padding: -(($grid-gutter-width/2)-$space-for-header-focus-ring
 }
 
 @include media-breakpoint-up(sm) {
+    .header {
+        margin-bottom: $spacer*2;
+    }
+    
     .header__logo {
         width: 200px;
     }

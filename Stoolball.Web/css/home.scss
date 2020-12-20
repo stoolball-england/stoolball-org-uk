@@ -10,15 +10,11 @@
 
 .home__what-is-stoolball:link, .home__what-is-stoolball:visited {
     display: block;
-    background: content-box top right / 100% #78883e url(/images/photos/what-is-stoolball.jpg) no-repeat; // background colour from the photo
-    margin: $spacer*3 0;
+    background: content-box top right #78883e url(/images/photos/what-is-stoolball.jpg) no-repeat; // background colour from the photo
+    margin: $spacer*2 0;
     border-radius: 20px;
     color: $white;
-}
-
-.home__what-is-stoolball:hover, .home__what-is-stoolball:focus, .home__what-is-stoolball:active {
-    background-size: 105%;
-    transition: all .1s;
+    @include remove-link-underline;
 }
 
 .home__what-is-stoolball__content {
@@ -29,18 +25,33 @@
 }
 
 .home__what-is-stoolball:hover .home__what-is-stoolball__content, .home__what-is-stoolball:focus .home__what-is-stoolball__content, .home__what-is-stoolball:active .home__what-is-stoolball__content {
-    border: 5px solid $black;
+    border-color: $black;
 }
 
 .home__what-is-stoolball:hover .btn, .home__what-is-stoolball:focus .btn, .home__what-is-stoolball:active .btn {
-    color: #fff;
+    color: $white;
     background-color: #218838;
-    border-color: #fff;
+    border-color: $white;
+}
+
+@include media-breakpoint-up(md) {
+    .home__what-is-stoolball:link, .home__what-is-stoolball:visited {
+        margin: $spacer*3 0;
+        background-size: 100%;
+    }
+
+    .home__what-is-stoolball:hover, .home__what-is-stoolball:focus, .home__what-is-stoolball:active {
+        background-size: 105%;
+        transition: all .1s;
+    }
 }
 
 @include media-breakpoint-up(lg) {
     .home__what-is-stoolball__content {
         max-width: 48%;
+    }
+    .home__what-is-stoolball:hover .home__what-is-stoolball__content, .home__what-is-stoolball:focus .home__what-is-stoolball__content, .home__what-is-stoolball:active .home__what-is-stoolball__content {
+        border-color: transparent;
     }
 }
 
@@ -92,177 +103,159 @@
     margin-bottom: 0;
 }
 
-.home__boxes {
-    display: flex;
-    width: 100%;
-    flex-wrap: wrap;
-    margin-bottom: $spacer*2;
-    padding: 0;
-}
-
-.home__boxes a {
+.roles .tile {
     width: 50%;
-    padding: 0;
-    min-height: 200px;
-    border: 5px solid transparent;
-    flex-grow: 1;
-    background-clip: content-box;
-    display: flex;
-    justify-content: center;
-    overflow: hidden;
 }
 
-.home__boxes a > div {
+.roles .tile__link {
+    min-height: 200px;
+}
+
+.roles .tile__link > div {
     height: 100%;
     position: relative;
     width: 100%;
     text-align: center;
 }
 
-.home__boxes a:hover, .home__boxes a:focus, .home__boxes a:active {
-    outline: none;
-    border-color: $black;
-    position: relative;
-    z-index: 1;
-    transform: scale(1.01);
-    transition: all .1s;
-}
-
-.home__boxes h2 {
+.roles__header {
     font-family: 'Assistant';
     font-size: 1.9rem;
     background: rgba(0,0,0,.5);
-    color: $white;
-    padding: $spacer/2 $spacer $spacer/2;
 }
 
-.home__boxes__button {
-    position: absolute;
-    margin: 0;
-    bottom: 1rem;
-    width: 100%;
-    text-align: center;
-}
-
-.home__boxes__button p {
+.roles__footer p {
     box-shadow: 2px 2px 2px $black;
     $white-space: nowrap;
-    margin: 0 auto;
+    margin: 0 auto $spacer;
     display: inline-block;
 }
 
-.home__organise {
-    border-radius: $border-radius*8 0 0 0;
-    background: khaki;
+.roles__organise {
     margin-right: -5px;
     margin-bottom: -5px;
 }
 
-.home__organise > div {
+.roles__organise > a {
+    border-radius: $border-radius*8 0 0 0;
+    background: content-box khaki;
+}
+
+.roles__organise > a > div {
     background: center top / contain url(/images/photos/organise.jpg) no-repeat;
 }
 
-.home__coach {
-    border-radius: 0 $border-radius*8 0 0;
-    background: powderblue;
+.roles__coach {
     margin-left: -5px;
     margin-bottom: -5px;
 }
 
-.home__coach > div {
+.roles__coach > a {
+    border-radius: 0 $border-radius*8 0 0;
+    background: content-box powderblue;
+}
+
+.roles__coach > a > div {
     background: center top / contain url(/images/photos/coach.jpg) no-repeat;
 }
 
-.home__play {
-    background: #ffaefe;
-    border-radius: 0 0 0 $border-radius*8;
+.roles__play {
     margin-top: -5px;
     margin-right: -5px;
 }
 
-.home__play > div {
+.roles__play > a {
+    background: content-box #ffaefe;
+    border-radius: 0 0 0 $border-radius*8;
+}
+
+.roles__play > a > div {
     background: center top / contain url(/images/photos/play.jpg) no-repeat;
 }
 
-.home__volunteer {
-    background: darkseagreen;
-    border-radius: 0 0 $border-radius*8 0;
+.roles__volunteer {
     margin-top: -5px;
     margin-left: -5px;
 }
-.home__volunteer > div {
+
+.roles__volunteer > a {
+    background: content-box darkseagreen;
+    border-radius: 0 0 $border-radius*8 0;
+}
+.roles__volunteer > a > div {
     background: center top / contain url(/images/photos/volunteer.jpg) no-repeat;
 }
 
 @include media-breakpoint-up(sm) {
-    .home__boxes > a {
+    .roles .tile__link {
         min-height: 300px;
-    }
-
-    .home__boxes h2 {
-        font-size: 2.2rem;
     }
 }
 
 @include media-breakpoint-up(md) {
-    .home__boxes {
-        flex-wrap: nowrap;
-        margin-bottom: $spacer*3;
-    }
-
-    .home__boxes a {
+    .roles .tile {
         width: 25%;
-        margin-top: 0;
-        margin-bottom: 0;
-        min-height: 400px;
     }
 
-    .home__boxes h2 {
+    .roles__header {
         font-size: 2.2rem; /* Based on 'Volunteer' at the start of md breakpoint. */
-        padding: $spacer/2 $spacer $spacer/2;
         text-align: left;
     }
 
-    .home__organise {
+    .roles .tile__link {
+        min-height: 400px;
+    }
+
+    .roles__organise {
         margin-right: -5px;
+    }
+
+    .roles__organise > a {
         border-radius: 0 0 0 $border-radius*8;
     }
 
-    .home__organise > div {
+    .roles__organise > a > div {
         background-size: cover;
         background-position-x: center;
     }
 
-    .home__coach {
+    .roles__coach {
         margin-left: -5px;
         margin-right: -5px;
+    }
+
+    .roles__coach > a {
         border-radius: unset;
     }
 
-    .home__coach > div {
+    .roles__coach > a > div {
         background-size: cover;
     }
 
-    .home__play {
+    .roles__play {
         margin-left: -5px;
         margin-right: -5px;
+    }
+
+    .roles__play > a {
         border-radius: unset;
     }
 
-    .home__play > div {
+    .roles__play > a > div {
         background-size: cover;
         background-position-x: right;
     }
 
-    .home__volunteer {
+    .roles__volunteer {
         margin-left: -5px;
     }
 
-    .home__volunteer > div {
+    .roles__volunteer > a > div {
         background-size: cover;
         background-position-x: center;
     }
-    .home__boxes__button {
+
+    .roles__footer {
         text-align: left;
         padding: 0 $spacer;
     }
@@ -270,19 +263,19 @@
 
 @include media-breakpoint-up(lg) {
     // Bootstrap's .btn-lg, but applied only when this media query matches
-    .home__boxes .btn {
-        padding: 0.5rem 1rem;
+    .roles .btn {
+        padding: $spacer/2 $spacer;
         font-size: 1.25rem;
         line-height: 1.5;
         border-radius: 0.3rem;
     }
 }
 
-.home__history h2 {
+.history h2 {
     font: bold 3em 'Dancing Script';
     color: theme-color("primary");
     text-align: center;
-    margin: $spacer*2 0 1rem;
+    margin: $spacer*2 0 $spacer;
     padding-top: $spacer* 2;
     border-top: 1px solid #ddd;
 
@@ -306,7 +299,7 @@
 
 
     @include media-breakpoint-up(sm) {
-        margin: $spacer*2 0 1rem;
+        margin: $spacer*2 0 $spacer;
 
         &::before, &::after {
             content: '';
@@ -332,34 +325,30 @@
     }
 }
 
-.home__history ul {
-    display: flex;
+.history .tiles {
     flex-direction: column;
 }
 
-.home__history-item {
-    list-style: none;
-    width: 100%;
+.history__tile {
+    height: 400px;
     margin-bottom: $spacer;
     display: flex;
     justify-content: center;
 }
 
-.home__baseball a {
+.history__baseball .tile__link {
     background: border-box top center url(/images/photos/baseball.jpg) no-repeat;
 }
 
-.home__grantham a {
+.history__grantham .tile__link {
     background: border-box top center url(/images/photos/downsmen.jpg) no-repeat;
 }
 
-.home__history-item a {
+.history .tile__link {
+    display: block;
     position: relative;
     border-radius: 20px;
-    height: 400px;
     overflow: hidden;
-    display: block;
-    width: 100%;
     max-width: 370px;
     color: $white;
     font: 3rem 'Dancing Script';
@@ -367,72 +356,63 @@
     text-shadow: 2px 2px 3px $black;
 }
 
-.home__history-title {
-    display: block;
+.history__title {
     padding: 0 $spacer;
 }
 
-.home__history-subtitle {
+.history__subtitle {
     display: block;
     font-size: 2.5rem;
     text-transform: capitalize;
     padding: 0 $spacer;
 }
 
-.home__grantham .home__history-title {
+.history__grantham .history__title {
     font-size: 4rem;
 }
 
-.home__grantham .home__history-subtitle {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-}
-
-.home__glynde a {
+.history__glynde .tile__link {
     background: border-box top center url(/images/photos/gertrude.jpg) no-repeat;
 }
 
 @include media-breakpoint-up(sm) {
-    .home__history ul {
+    .history .tiles {
         flex-direction: row;
-        justify-content: center;
     }
 
-    .home__history-item {
+    .history__tile {
         width: 48%;
     }
 
-    .home__glynde {
+    .history__glynde {
         margin-right: $spacer/2;
     }
 
-    .home__baseball {
+    .history__baseball {
         margin-left: $spacer/2;
     }
 
-    .home__grantham .home__history-title {
+    .history__grantham .history__title {
         font-size: 3.5rem;
     }
 }
 
 @include media-breakpoint-up(md) {
-    .home__history-item {
+    .history__tile {
         width: 33%;
     }
-
     // Adjust the space between items
-    .home__baseball {
+    .history__baseball {
         margin-left: 0;
     }
 
-    .home__grantham {
+    .history__grantham {
         margin-left: $spacer/2;
     }
 }
 
 @include media-breakpoint-up(lg) {
-    .home__grantham .home__history-title {
+    .history__grantham .history__title {
         font-size: 4rem;
     }
 }

@@ -905,6 +905,7 @@
     <Content Include="css\_dropdown.scss" />
     <Content Include="css\_print.scss" />
     <Content Include="css\_alerts.scss" />
+    <Content Include="css\_tiles.scss" />
     <None Include="Status\offline.json" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
