@@ -10,7 +10,7 @@
 
 .home__what-is-stoolball:link, .home__what-is-stoolball:visited {
     display: block;
-    background: content-box top right #78883e url(/images/photos/what-is-stoolball.jpg) no-repeat; // background colour from the photo
+    background: content-box top right $black url(/images/photos/what-is-stoolball.jpg) no-repeat;
     margin: $spacer*2 0;
     border-radius: 20px;
     color: $white;
