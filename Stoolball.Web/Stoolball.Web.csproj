@@ -826,8 +826,8 @@
     <Content Include="images\photos\play.jpg" />
     <Content Include="images\photos\volunteer.jpg" />
     <Content Include="images\photos\what-is-stoolball.jpg" />
-    <Content Include="images\promo\halftone-starburst.jpg" />
-    <Content Include="images\promo\spreadshirt.png" />
+    <Content Include="images\shop\halftone-starburst.jpg" />
+    <Content Include="images\shop\spreadshirt.png" />
     <Content Include="images\shop\ball.jpg" />
     <Content Include="images\shop\bat.jpg" />
     <Content Include="images\shop\wicket.jpg" />

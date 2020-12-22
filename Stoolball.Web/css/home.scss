@@ -307,6 +307,11 @@ $button-shadow: 2px 2px 2px $black;
     justify-content: center;
 }
 
+.shop img {
+    width: auto;
+    height: auto;
+}
+
 .shop__footer {
     background: rgba(0,0,0,.6);
     color: $white;
@@ -383,6 +388,45 @@ $button-shadow: 2px 2px 2px $black;
     }
 }
 
+// .shop_spreadshirt is a large responsive advert for the Spreadshirt shop
+// The whole advert is a link around an header, image and text that appears like a button
+.shop__spreadshirt {
+    display: block;
+    background: url(/images/shop/halftone-starburst.jpg);
+    background-size: 100%;
+    padding: $spacer;
+    text-align: center;
+    border-radius: 40px;
+    border: 0;
+    margin-bottom: $spacer*4;
+}
+
+.shop__spreadshirt:hover, .shop__spreadshirt:focus, .shop__spreadshirt:active {
+    box-shadow: 0 0 0 5px $black;
+    outline: none;
+}
+
+.shop__spreadshirt h2 {
+    font-size: 4rem;
+    font-weight: bold;
+    font-style: italic;
+    text-shadow: 2px 2px 4px $grey;
+    padding: 0 $spacer $spacer;
+}
+
+.shop__spreadshirt img {
+    display: inline-block;
+    margin-bottom: 1em;
+}
+
+.shop__spreadshirt:hover img, .shop__spreadshirt:focus img, .shop__spreadshirt:active img {
+    transform: scale(1.05);
+    transition: all .1s;
+}
+
+.shop__spreadshirt p {
+    box-shadow: 2px 2px 2px $black;
+}
 
 .history h2 {
     font: bold 3em 'Dancing Script';

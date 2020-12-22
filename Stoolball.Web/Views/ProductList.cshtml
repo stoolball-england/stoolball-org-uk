@@ -14,7 +14,16 @@
 }
 <div class="container-xl">
     <h1>@Model.Name</h1>
-    @Html.Raw(emailProtector.ProtectEmailAddresses(Model.Introduction.ToHtmlString(), User.Identity.IsAuthenticated))
+
+    
+    <div class="product-list__intro">
+        <div>@Html.Raw(emailProtector.ProtectEmailAddresses(Model.Introduction.ToHtmlString(), User.Identity.IsAuthenticated))</div>
+        <a href="https://shop.spreadshirt.co.uk/stoolball">            
+            <img src="~/images/promo/spreadshirt.png" alt="Products from our gift shop" width="600" />
+            <p class="btn btn-success btn-lg">Visit our gift shop ❯</p>
+        </a>
+    </div>
+
     @if (Model.Products.Any())
     {
         <ul class="tiles product-list">
