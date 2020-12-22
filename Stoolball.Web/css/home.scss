@@ -5,7 +5,7 @@
 @import "../Content/bootstrap/_variables.scss";
 
 .keep-together {
-    $white-space: nowrap;
+    white-space: nowrap;
 }
 
 .home__what-is-stoolball:link, .home__what-is-stoolball:visited {
@@ -193,6 +193,10 @@
 }
 
 @include media-breakpoint-up(md) {
+    .roles.tiles {
+        margin-bottom: $spacer*3;
+    }
+
     .roles .tile {
         width: 25%;
     }
@@ -270,6 +274,34 @@
         border-radius: 0.3rem;
     }
 }
+
+.shop {
+    margin-bottom: $spacer*3;
+}
+
+// Offset the transparent border
+.shop .tiles {
+    margin-bottom: $spacer/4;
+    width: calc(100% + 10px);
+    margin-left: -5px;
+}
+
+.shop h2 {
+    font-family: 'Assistant';
+    font-size: 2rem;
+    margin: 0 0 $spacer/4;
+    background: 1.5rem center / 35px theme-color("primary") url(/images/icons/iconmonstr-basket-3.svg) no-repeat;
+    color: $white;
+    padding: $spacer $spacer $spacer $spacer*5;
+    border-radius: $border-radius*2;
+}
+
+@include media-breakpoint-up(md) {
+    .shop h2 {
+        font-size: 2.5rem;
+    }
+}
+
 
 .history h2 {
     font: bold 3em 'Dancing Script';

@@ -30,8 +30,10 @@
 @import "_tiles.scss";
 
 /* Images - don't let them have that odd gap or overflow their container */
-img { 
-    max-width: 100%; 
+img {
+    max-width: 100%;
+    width: auto;
+    height: auto;
 }
 
 /* Text and table styles */

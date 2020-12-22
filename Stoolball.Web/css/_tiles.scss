@@ -19,6 +19,7 @@
 
 .tile__link {
     display: block;
+    position: relative;
     width: 100%;
     height: 100%;
     padding: 0;
@@ -30,7 +31,6 @@
 .tile__link:hover, .tile__link:focus, .tile__link:active {
     outline: none;
     border-color: $black;
-    position: relative;
     z-index: 1;
     transform: scale(1.01);
     transition: all .1s;
@@ -52,7 +52,6 @@
 @include media-breakpoint-up(md) {
     .tiles {
         flex-wrap: nowrap;
-        margin-bottom: $spacer*3;
     }
 
     .tiles .tile {

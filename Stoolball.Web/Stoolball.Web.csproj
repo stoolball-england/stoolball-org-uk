@@ -794,6 +794,7 @@
     <Content Include="Global.asax" />
     <Content Include="images\icons\add-grey-24dp.svg" />
     <Content Include="images\icons\add-white-24dp.svg" />
+    <Content Include="images\icons\iconmonstr-basket-3.svg" />
     <Content Include="images\icons\iconmonstr-facebook-6-black.svg" />
     <Content Include="images\icons\iconmonstr-facebook-6-green.svg" />
     <Content Include="images\icons\iconmonstr-instagram-11-black.svg" />
@@ -827,6 +828,9 @@
     <Content Include="images\photos\what-is-stoolball.jpg" />
     <Content Include="images\promo\halftone-starburst.jpg" />
     <Content Include="images\promo\spreadshirt.png" />
+    <Content Include="images\shop\ball.jpg" />
+    <Content Include="images\shop\bat.jpg" />
+    <Content Include="images\shop\wicket.jpg" />
     <Content Include="js\consent.js" />
     <Content Include="js\google-analytics.js" />
     <Content Include="Matches\edit-batting-scorecard.js" />

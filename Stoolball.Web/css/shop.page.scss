@@ -1,6 +1,85 @@
 ﻿@import "_theme.scss";
+@import "../Content/bootstrap/_mixins.scss";
 @import "../Content/bootstrap/_functions.scss";
 @import "../Content/bootstrap/_variables.scss";
+
+$button-shadow: 2px 2px 2px $black;
+
+.shop .tile__link {
+    background: content-box $black;
+    justify-content: center;
+}
+
+.shop__footer {
+    background: rgba(0,0,0,.6);
+    color: $white;
+    padding: $spacer;
+    font-weight: bold;
+}
+
+.shop__price {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: $spacer/2;
+    background: theme-color("primary");
+    color: $white;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.shop__button {
+    box-shadow: $button-shadow;
+}
+
+@media screen and (min-width: 515px) {
+    .shop .tile__link {
+        align-items: center;
+    }
+
+    .shop img {
+        max-width: 50%;
+    }
+
+    .shop__footer {
+        position: relative;
+        font-size: 2rem;
+        background-color: transparent;
+    }
+}
+
+@media screen and (min-width: 630px) {
+    .shop__price {
+        font-size: 1.5rem;
+    }
+    .shop__footer {
+        padding: $spacer $spacer*2;
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .shop .tile__link {
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .shop img {
+        max-width: 100%;
+    }
+
+    .shop__footer {
+        font-size: 1.5rem;
+        padding: $spacer;
+        flex-grow: 1;
+    }
+
+    .shop__footer-text {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        height: 100%;
+    }
+}
 
 // .shop_spreadshirt is a large responsive advert for the Spreadshirt shop
 // The whole advert is a link around an header, image and text that appears like a button
@@ -12,7 +91,7 @@
     text-align: center;
     border-radius: 40px;
     border: 0;
-    margin-bottom: $spacer;
+    margin-bottom: $spacer*4;
 }
 
 .shop__spreadshirt:hover, .shop__spreadshirt:focus, .shop__spreadshirt:active {
@@ -39,5 +118,5 @@
 }
 
 .shop__spreadshirt p {
-    box-shadow: 2px 2px 2px $black;
+    box-shadow: $button-shadow;
 }
