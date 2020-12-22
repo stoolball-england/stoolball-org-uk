@@ -1008,6 +1008,7 @@
     <Content Include="Views\Partials\BlockList\Components\Consent.cshtml" />
     <Content Include="Views\News.cshtml" />
     <Content Include="Views\NewsStory.cshtml" />
+    <Content Include="Views\Partials\BlockList\BlockList.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <Content Include="Web.config" />
   </ItemGroup>

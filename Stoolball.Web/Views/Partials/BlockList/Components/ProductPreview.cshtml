@@ -3,24 +3,26 @@
 @{
     var content = (ContentModels.ProductPreview)Model.Content;
 }
-<li>
+<li class="tile product-preview@((content.ProductPage != null) ? " product-preview__linked" : string.Empty)">
     @if (content.ProductPage != null) { 
-        @:<a href="@content.ProductPage">
+        @:<a href="@content.ProductPage.Url()">
     }
-    <figure>
-        <img src="@content.Photo.MediaUrl()?width=180&height=180&mode=max&upscale=false" alt="@content.ProductName" width="180" />
-        <figcaption><p class="product-preview__name">@content.ProductName <span class="product-preview__price">£@content.Price</span></p></figcaption>
+    <figure class="tile__link">
+        <img src="@content.Photo.MediaUrl()?width=180&height=180&mode=pad&bgcolor=fff&upscale=false" alt="@content.ProductName" width="180" height="180" />
+        <figcaption class="product-preview__detail">
+            <p class="product-preview__title">@content.ProductName</p>
+            @if (!string.IsNullOrWhiteSpace(content.Description))
+            {
+                <p class="product-preview__description">@content.Description
+                @if (!string.IsNullOrWhiteSpace(content.Delivery))
+                {
+                    @:£@content.Delivery delivery.
+                }
+                </p>
+            }
+        </figcaption>
     </figure>
-    
-    @if (!string.IsNullOrWhiteSpace(content.Description))
-    {
-        <p class="product-preview__description">@content.Description
-    @if (!string.IsNullOrWhiteSpace(content.Delivery))
-    {
-        @:£@content.Delivery delivery.
-    }
-        </p>
-    }
+    <span class="product-preview__price">£@content.Price</span>   
     @if (content.ProductPage != null) {
         @:</a>
     }

@@ -4,6 +4,8 @@
 @import "../Content/bootstrap/_mixins.scss";
 @import "../Content/bootstrap/_variables.scss";
 
+$button-shadow: 2px 2px 2px $black;
+
 .keep-together {
     white-space: nowrap;
 }
@@ -125,7 +127,7 @@
 }
 
 .roles__footer p {
-    box-shadow: 2px 2px 2px $black;
+    box-shadow: $button-shadow;
     $white-space: nowrap;
     margin: 0 auto $spacer;
     display: inline-block;
@@ -199,6 +201,8 @@
 
     .roles .tile {
         width: 25%;
+        margin-top: 0;
+        margin-bottom: 0;
     }
 
     .roles__header {
@@ -296,9 +300,86 @@
     border-radius: $border-radius*2;
 }
 
+
+.shop .tile__link {
+    margin: 0;
+    background: content-box $black;
+    justify-content: center;
+}
+
+.shop__footer {
+    background: rgba(0,0,0,.6);
+    color: $white;
+    padding: $spacer;
+    font-weight: bold;
+}
+
+.shop__price {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: $spacer/2;
+    background: theme-color("primary");
+    color: $white;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.shop__button {
+    box-shadow: $button-shadow;
+}
+
+@media screen and (min-width: 515px) {
+    .shop .tile__link {
+        align-items: center;
+    }
+
+    .shop img {
+        max-width: 50%;
+    }
+
+    .shop__footer {
+        position: relative;
+        font-size: 2rem;
+        background-color: transparent;
+    }
+}
+
+@media screen and (min-width: 630px) {
+    .shop__price {
+        font-size: 1.5rem;
+    }
+
+    .shop__footer {
+        padding: $spacer $spacer*2;
+    }
+}
+
 @include media-breakpoint-up(md) {
     .shop h2 {
         font-size: 2.5rem;
+    }
+
+    .shop .tile__link {
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .shop img {
+        max-width: 100%;
+    }
+
+    .shop__footer {
+        font-size: 1.5rem;
+        padding: $spacer;
+        flex-grow: 1;
+    }
+
+    .shop__footer-text {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        height: 100%;
     }
 }
 

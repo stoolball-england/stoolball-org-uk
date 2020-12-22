@@ -17,8 +17,8 @@
     @Html.Raw(emailProtector.ProtectEmailAddresses(Model.Introduction.ToHtmlString(), User.Identity.IsAuthenticated))
     @if (Model.Products.Any())
     {
-        <ul>
-            @Html.GetBlockListHtml(Model, "products")
+        <ul class="tiles product-list">
+            @Html.GetBlockListHtml(Model, "products", "BlockList")
         </ul>
     }
     @Html.Raw(emailProtector.ProtectEmailAddresses(Model.FurtherDetails.ToHtmlString(), User.Identity.IsAuthenticated))

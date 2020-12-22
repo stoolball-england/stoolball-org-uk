@@ -3,81 +3,99 @@
 @import "../Content/bootstrap/_functions.scss";
 @import "../Content/bootstrap/_variables.scss";
 
-$button-shadow: 2px 2px 2px $black;
-
-.shop .tile__link {
-    background: content-box $black;
-    justify-content: center;
+.tiles.product-list {
+    flex-wrap: wrap;
+    margin-bottom: $spacer/2;
 }
 
-.shop__footer {
-    background: rgba(0,0,0,.6);
+.product-preview {
+    position: relative;
+    width: 100%;
+    background: lighten(theme-color("secondary"), 20%);
+    overflow: visible;
+    margin-bottom: $spacer;
+    color: $black;
+}
+
+.product-preview__linked > a:link, .product-preview > a:visited {
+    color: $black;
+    display: block;
+    border: none;
+    height: 100%;
+}
+
+.product-preview__linked > a:hover, .product-preview > a:focus, .product-preview a:active {
+    outline: 5px solid $black;
+}
+
+.product-preview__linked .product-preview__detail:after {
+    content: 'Product details ❯';
+    display: inline-block;
+    text-align: right;
+    padding: $spacer/2 $spacer;
+    background: theme-color("primary");
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    color: white;
+}
+
+.product-preview .tile__link {
+    border: none;
+    transform: none;
+    margin: 0;
+}
+
+.product-preview img {
+    border-top: 2px solid theme-color("secondary");
+    border-left: 2px solid theme-color("secondary");
+    border-bottom: 2px solid theme-color("secondary");
+}
+
+.product-preview__detail {
+    width: 100%;
+}
+
+.product-preview__title {
+    background: $black;
     color: $white;
-    padding: $spacer;
+    padding: $spacer $spacer*4 $spacer $spacer;
+    margin: 0;
     font-weight: bold;
+    font-size: 1.3em;
 }
 
-.shop__price {
+.product-preview__description {
+    padding: $spacer;
+    margin: 0;
+}
+
+.product-preview__linked .product-preview__description {
+    padding-bottom: 3rem;
+}
+
+.product-preview__price {
     position: absolute;
     top: 0;
     right: 0;
-    padding: $spacer/2;
     background: theme-color("primary");
     color: $white;
+    padding: $spacer/2;
     font-weight: bold;
-    font-size: 1rem;
-}
-
-.shop__button {
-    box-shadow: $button-shadow;
-}
-
-@media screen and (min-width: 515px) {
-    .shop .tile__link {
-        align-items: center;
-    }
-
-    .shop img {
-        max-width: 50%;
-    }
-
-    .shop__footer {
-        position: relative;
-        font-size: 2rem;
-        background-color: transparent;
-    }
-}
-
-@media screen and (min-width: 630px) {
-    .shop__price {
-        font-size: 1.5rem;
-    }
-    .shop__footer {
-        padding: $spacer $spacer*2;
-    }
+    z-index: 1;
 }
 
 @include media-breakpoint-up(md) {
-    .shop .tile__link {
-        flex-direction: column;
-        justify-content: flex-start;
+    .product-preview {
+        width: 45%;
     }
 
-    .shop img {
-        max-width: 100%;
+    .product-preview:nth-child(odd) {
+        margin-right: 5px;
     }
 
-    .shop__footer {
-        font-size: 1.5rem;
-        padding: $spacer;
-        flex-grow: 1;
-    }
-
-    .shop__footer-text {
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        height: 100%;
+    .product-preview:nth-child(even) {
+        margin-left: 5px;
     }
 }
 
@@ -118,5 +136,5 @@ $button-shadow: 2px 2px 2px $black;
 }
 
 .shop__spreadshirt p {
-    box-shadow: $button-shadow;
+    box-shadow: 2px 2px 2px $black;
 }
