@@ -1,0 +1,37 @@
+﻿@import "_theme.scss";
+@import "_mixins.scss";
+@import "../Content/bootstrap/_functions.scss";
+@import "../Content/bootstrap/_mixins.scss";
+@import "../Content/bootstrap/_variables.scss";
+
+@import "../Content/bootstrap/_type.scss"; 
+@import "../Content/bootstrap/utilities/_text.scss"; // TODO: review usage - probably unused
+
+h1 {
+    margin-bottom: $spacer;
+    font-weight: $font-weight-bold;
+    letter-spacing: -.02em;
+}
+
+a {
+    @include link-underline;
+}
+
+a:hover {
+    text-decoration: none;
+    color: $link-color;
+}
+
+a:focus, a:active {
+    @include remove-link-underline;
+    outline: 2px solid; // Inherit the link colour
+    outline-offset: 2px;
+}
+
+blockquote {
+    font-style: italic;
+}
+
+ul {
+    padding-left: 1rem;
+}

@@ -58,8 +58,7 @@ $button-shadow: 2px 2px 2px $black;
 }
 
 .home__what-is-stoolball h2 {
-    font-family: 'Assistant';
-    font-size: 2.2rem;
+    font: $font-weight-bold 2.2rem $headings-font-family;
 }
 
 .home__what-is-stoolball ul {
@@ -94,6 +93,7 @@ $button-shadow: 2px 2px 2px $black;
 }
 
 .home__team-finder h2 {
+    font-weight: $font-weight-bold;
     text-shadow: 2px 2px 2px $black;
 }
 
@@ -121,8 +121,7 @@ $button-shadow: 2px 2px 2px $black;
 }
 
 .roles__header {
-    font-family: 'Assistant';
-    font-size: 1.9rem;
+    font: 800 1.9rem $headings-font-family;
     background: rgba(0,0,0,.5);
 }
 
@@ -291,8 +290,7 @@ $button-shadow: 2px 2px 2px $black;
 }
 
 .shop h2 {
-    font-family: 'Assistant';
-    font-size: 2rem;
+    font: $font-weight-bold 2rem $headings-font-family;
     margin: 0 0 $spacer/4;
     background: 1.5rem center / 35px theme-color("primary") url(/images/icons/iconmonstr-basket-3.svg) no-repeat;
     color: $white;
@@ -317,6 +315,7 @@ $button-shadow: 2px 2px 2px $black;
     color: $white;
     padding: $spacer;
     font-weight: bold;
+    font-size: 1.3em;
 }
 
 .shop__price {

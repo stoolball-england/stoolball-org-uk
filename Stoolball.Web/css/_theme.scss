@@ -1,5 +1,21 @@
-﻿$theme-colors: ( "primary": #008000, "secondary": #8fbc8f, "info": #b5d498);
-$skew: -1deg;
+﻿// Colours
+$theme-colors: ( "primary": #008000, "secondary": #8fbc8f, "info": #b5d498);
 $black: #222;
 $grey: #767676; // WCAG AA lightest grey
+
+// UI element sizes
 $minimum-clickable-size: 44px;
+
+// Brand elements
+$skew: -1deg;
+
+// Assistant = Preferred heading font from Google Fonts, similar to Futura at 600
+// Calibri = Windows system font with the most similar x-height & width to reduce text shifting as the font loads
+// Futura, -apple-system, BlinkMacSystemFont = Apple system fonts. Text shifting untested.
+$headings-font-family: Assistant, Calibri, Futura, sans-serif;
+$headings-font-weight: 600;
+
+// Mada = Preferred body font from Google Fonts
+// Candara = Windows system font with the most similar x-height & width to reduce text shifting as the font loads
+// -apple-system, BlinkMacSystemFont = Apple system fonts. Text shifting untested.
+$font-family-sans-serif: Mada, Candara, -apple-system, BlinkMacSystemFont, sans-serif;

@@ -6,11 +6,14 @@
 /* Sitewide print styles */
 @import "_print.scss";
 
+/* Text and table styles */
+@import "_text.scss";
+@import "_tables.scss";
+
 /* Required for header */
 @import "_consent.scss";
 @import "../Content/bootstrap/transitions";
 @import "../Content/bootstrap/_dropdown.scss";
-@import "../Content/bootstrap/_type.scss"; // for .list-unstyled
 @import "_dropdown.scss";
 @import "_header.scss";
 
@@ -32,36 +35,6 @@
 /* Images - don't let them have that odd gap or overflow their container */
 img {
     max-width: 100%;
-}
-
-/* Text and table styles */
-@import "../Content/bootstrap/utilities/_text.scss";
-@import "../Content/bootstrap/_tables.scss";
-@import "_tables.scss";
-
-a {
-    @include link-underline;
-}
-
-a:hover {
-    text-decoration: none;
-    color: $link-color;
-}
-
-a:focus, a:active {
-    @include remove-link-underline;
-    outline: 2px solid; // Inherit the link colour
-    outline-offset: 2px;
-}
-
-blockquote { font-style: italic; }
-
-h1 { 
-    margin-bottom: 1rem; 
-}
-
-ul { 
-    padding-left: 1rem; 
 }
 
 /* Required to use boxed content using alert styles */
