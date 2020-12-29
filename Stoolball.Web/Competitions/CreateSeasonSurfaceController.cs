@@ -77,10 +77,10 @@ namespace Stoolball.Web.Competitions
             {
                 // Create the season
                 var currentMember = Members.GetCurrentMember();
-                await _seasonRepository.CreateSeason(season, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                var createdSeason = await _seasonRepository.CreateSeason(season, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // Redirect to the season
-                return Redirect(season.SeasonRoute);
+                return Redirect(createdSeason.SeasonRoute);
             }
 
             var viewModel = new SeasonViewModel(CurrentPage, Services.UserService)
