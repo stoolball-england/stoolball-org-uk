@@ -18,7 +18,45 @@ footer::before {
     padding-top: 40px;
 }
 
-// Remove the underline from social media icons
-.footer__social-media a { 
+// Use Flexbox to arrange the links horizontally and space them out
+.footer__links {
+    display: flex;
+    margin-bottom: $spacer*1.5;
+}
+
+.footer__links > * {
+    margin-right: $spacer*1.5;
+}
+.footer__links > :last-child {
+    margin-right: 0;
+}
+
+// Remove the underline from social media icons,
+// and expand the clickable area to (almost) 44px
+.footer__social-media a {
     @include remove-link-underline;
+    display: inline-block;
+    padding: 8px;
+}
+
+// Add the default link focus indicator as a hover effect too
+.footer__social-media a:hover {
+    @include link-focus;
+}
+
+.footer__recognised a {
+    @include remove-link-underline;
+}
+
+// Pad the image to create space between it and the leading text
+.footer__recognised img {
+    margin: 3px;
+}
+
+// When moving to two columns, align the Sport England logo to the right,
+// rather than floating in space at the left of the second column
+@include media-breakpoint-up(sm) {
+    .footer__recognised {
+        text-align: right;
+    }
 }

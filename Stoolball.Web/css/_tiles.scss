@@ -2,6 +2,7 @@
 @import "../Content/bootstrap/_functions.scss";
 @import "../Content/bootstrap/_mixins.scss";
 @import "../Content/bootstrap/_variables.scss";
+@import "./_mixins.scss";
 
 .tiles {
     display: flex;
@@ -29,7 +30,7 @@
 }
 
 .tile__link:hover, .tile__link:focus, .tile__link:active {
-    outline: none;
+    @include remove-link-focus;
     border-color: $black;
     z-index: 1;
     transform: scale(1.01);

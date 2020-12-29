@@ -10,7 +10,7 @@
 
 // Show a focus ring when navigating with the keyboard - using box-shadow supports rounding the corners
 @mixin header-focus-ring {
-    outline: 0;
+    @include remove-link-focus;
     box-shadow: 0 0 0 0.2rem $white;
     position: relative; // displays box-shadow on top of its siblings
 }

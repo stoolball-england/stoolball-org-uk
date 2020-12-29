@@ -24,8 +24,7 @@ a:hover {
 
 a:focus, a:active {
     @include remove-link-underline;
-    outline: 2px solid; // Inherit the link colour
-    outline-offset: 2px;
+    @include link-focus;
 }
 
 blockquote {

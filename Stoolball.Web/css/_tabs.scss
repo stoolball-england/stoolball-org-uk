@@ -32,8 +32,8 @@ $selected_background: #555;
 
 .nav-tabs .nav-link:hover,
 .nav-tabs .nav-link:active {
+    @include remove-link-focus;
     border-color: theme-color("secondary");
-    outline: none;
 }
 
 .nav-tabs .nav-link:focus {
@@ -142,7 +142,7 @@ $selected_background: #555;
     .nav-item-admin .nav-link-add:focus,
     .nav-item-admin .nav-link-add:active,
     .nav-item-admin > .dropdown.show > .nav-link-add {
-        outline: none;
+        @include remove-link-focus;
         background-image: url(/images/icons/add-white-24dp.svg);
         color: $white;
         background-color: $black;
@@ -156,7 +156,7 @@ $selected_background: #555;
     .nav-item-admin .nav-link-edit:focus,
     .nav-item-admin .nav-link-edit:active,
     .nav-item-admin > .dropdown.show > .nav-link-edit {
-        outline: none;
+        @include remove-link-focus;
         background-image: url(/images/icons/settings-white-24dp.svg);
         color: $white;
         background-color: $black;
@@ -181,8 +181,8 @@ $selected_background: #555;
 .nav-item-admin .dropdown-item > a:hover,
 .nav-item-admin .dropdown-item > a:focus,
 .nav-item-admin .dropdown-item > a:active {
+    @include remove-link-focus;
     background: $selected_background;
-    outline: none;
 }
 
 @media print {

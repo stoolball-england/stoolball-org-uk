@@ -7,3 +7,12 @@
 @mixin remove-link-underline {
     border-bottom-color: transparent;
 }
+
+@mixin link-focus {
+    outline: 2px solid; // Inherit the link colour
+    outline-offset: 2px;
+}
+
+@mixin remove-link-focus {
+    outline: none;
+}
