@@ -10,12 +10,13 @@ $minimum-clickable-size: 44px;
 $skew: -1deg;
 
 // Assistant = Preferred heading font from Google Fonts, similar to Futura at 600
-// Calibri = Windows system font with the most similar x-height & width to reduce text shifting as the font loads
-// Futura, -apple-system, BlinkMacSystemFont = Apple system fonts. Text shifting untested.
-$headings-font-family: Assistant, Calibri, Futura, sans-serif;
+// Calibri = Windows system font with the most similar x-height & width & style to reduce text shifting as the font loads. Also on some Macs, perhaps with MS Office.
+// Trebuchet MS is next best, and available on both Windows and Mac. 
+// Don't use Futura on Mac even though it's there and we're trying to look like it, because at this weight it's extra-bold and very different.
+$headings-font-family: Assistant, Calibri, 'Trebuchet MS', sans-serif;
 $headings-font-weight: 600;
 
 // Mada = Preferred body font from Google Fonts
-// Candara = Windows system font with the most similar x-height & width to reduce text shifting as the font loads
-// -apple-system, BlinkMacSystemFont = Apple system fonts. Text shifting untested.
-$font-family-sans-serif: Mada, Candara, -apple-system, BlinkMacSystemFont, sans-serif;
+// Candara = Windows and Mac system font with the most similar x-height & width to reduce text shifting as the font loads.
+// 'Apple SD Gothic Neo' = Apple system font since Catalina June 2019, and also a good match.
+$font-family-sans-serif: Mada, Candara, 'Apple SD Gothic Neo', sans-serif;
