@@ -28,6 +28,7 @@ $selected_background: #555;
     background: theme-color("primary");
     border-color: theme-color("primary");
     color: $white;
+    font-style: normal;
 }
 
 .nav-tabs .nav-link:hover,

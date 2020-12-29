@@ -56,11 +56,6 @@ namespace Stoolball.Web.Competitions
             {
                 return new HttpNotFoundResult();
             }
-            else if (model.Competition.Seasons.Count > 0)
-            {
-                Response.AddHeader("Location", new Uri(Request.Url, new Uri(model.Competition.Seasons[0].SeasonRoute, UriKind.Relative)).ToString());
-                return new HttpStatusCodeResult(303);
-            }
             else
             {
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Competition);

@@ -59,15 +59,4 @@
             <p>Visit the <a href="@Model.Season.Competition.Website">@Model.Season.Competition.CompetitionName's website</a>.</p>
         }
     }
-
-    @if (Model.Season.Competition.Seasons.Count > 0)
-    {
-        var seasonListModel = new SeasonListViewModel
-        {
-            ShowCompetitionHeading = false
-        };
-        seasonListModel.Competitions.Add(Model.Season.Competition);
-        <h2>Other seasons in the @Model.Season.Competition.CompetitionName</h2>
-        @Html.Partial("_SeasonList", seasonListModel)
-    }
 </div>

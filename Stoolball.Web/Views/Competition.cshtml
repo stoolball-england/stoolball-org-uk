@@ -1,4 +1,5 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.CompetitionViewModel>
+@using Stoolball.Web.Competitions
 @using Stoolball.Security
 @{ 
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition];
@@ -11,22 +12,34 @@
         <p class="alert alert-info"><strong>This competition isn't played any more.</strong></p>
     }
 
+@if (authorizedToEdit)
+{
+    @* When another tab is added, only the last two should be protected by authorizedToEdit, but there's no point having just one tab *@
     <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-add nav-tabs-has-edit" : string.Empty)">
         <li class="nav-item">
             <em class="nav-link active">Summary</em>
         </li>
-        @if (authorizedToEdit)
-        {
-            <li class="nav-item nav-item-admin">
-                <a class="nav-link nav-link-add" href="@Model.Competition.CompetitionRoute/add">Add season</a>
-            </li>
-            <li class="nav-item nav-item-admin">
-                <a class="nav-link nav-link-edit" href="@Model.Competition.CompetitionRoute/edit">Edit competition</a>
-            </li>
-        }
+        <li class="nav-item nav-item-admin">
+            <a class="nav-link nav-link-add" href="@Model.Competition.CompetitionRoute/add">Add season</a>
+        </li>
+        <li class="nav-item nav-item-admin">
+            <a class="nav-link nav-link-edit" href="@Model.Competition.CompetitionRoute/edit">Edit competition</a>
+        </li>
     </ul>
+}
 
     @Html.Raw(Model.Competition.Introduction)
+
+    @if (Model.Competition.Seasons.Count > 0)
+    {
+        var seasonListModel = new SeasonListViewModel
+        {
+            ShowCompetitionHeading = false
+        };
+        seasonListModel.Competitions.Add(Model.Competition);
+        <h2>Seasons</h2>
+        @Html.Partial("_SeasonList", seasonListModel)
+    }
 
     @if (!string.IsNullOrWhiteSpace(Model.Competition.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Competition.Website))
     {

@@ -26,7 +26,7 @@ namespace Stoolball.Data.SqlServer
         }
 
         /// <summary>
-        /// Gets a single stoolball competition based on its route, with the route of its latest season, if any
+        /// Gets a single stoolball competition based on its route, with basic details of its seasons, if any
         /// </summary>
         /// <param name="route">/competitions/example-competition</param>
         /// <returns>A matching <see cref="Competition"/> or <c>null</c> if not found</returns>
@@ -45,9 +45,7 @@ namespace Stoolball.Data.SqlServer
                             FROM {Tables.Competition} AS co
                             LEFT JOIN {Tables.Season} AS s ON co.CompetitionId = s.CompetitionId
                             LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
-                            WHERE LOWER(co.CompetitionRoute) = @Route
-                            AND (s.FromYear = (SELECT MAX(FromYear) FROM {Tables.Season} WHERE CompetitionId = co.CompetitionId) 
-                            OR s.FromYear IS NULL)",
+                            WHERE LOWER(co.CompetitionRoute) = @Route",
                     (competition, season, matchType) =>
                     {
                         if (season != null)
@@ -66,6 +64,12 @@ namespace Stoolball.Data.SqlServer
                 var competitionToReturn = competitions.FirstOrDefault(); // get an example with the properties that are the same for every row
                 if (competitionToReturn != null && competitionToReturn.Seasons.Count > 0)
                 {
+                    competitionToReturn.Seasons = competitions.Select(competition => competition.Seasons.SingleOrDefault())
+                                                    .OfType<Season>()
+                                                    .Distinct(new SeasonEqualityComparer())
+                                                    .ToList();
+
+
                     competitionToReturn.Seasons[0].MatchTypes = competitions
                         .Select(competition => competition.Seasons.FirstOrDefault()?.MatchTypes.FirstOrDefault())
                         .OfType<MatchType>()
