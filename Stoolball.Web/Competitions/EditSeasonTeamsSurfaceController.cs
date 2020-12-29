@@ -38,7 +38,7 @@ namespace Stoolball.Web.Competitions
         {
             if (season is null)
             {
-                throw new ArgumentNullException(nameof(season));
+                season = new Season(); // if there are no teams, season is null
             }
 
             var beforeUpdate = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl).ConfigureAwait(false);

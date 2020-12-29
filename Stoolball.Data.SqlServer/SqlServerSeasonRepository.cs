@@ -61,8 +61,8 @@ namespace Stoolball.Data.SqlServer
                 UntilYear = season.UntilYear,
                 Competition = new Competition
                 {
-                    CompetitionId = season.Competition.CompetitionId,
-                    CompetitionRoute = season.Competition.CompetitionRoute
+                    CompetitionId = season.Competition?.CompetitionId,
+                    CompetitionRoute = season.Competition?.CompetitionRoute
                 },
                 Introduction = season.Introduction,
                 MatchTypes = season.MatchTypes,
