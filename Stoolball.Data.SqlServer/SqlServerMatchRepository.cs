@@ -101,7 +101,7 @@ namespace Stoolball.Data.SqlServer
                 MatchTeamId = teamInMatch.MatchTeamId,
                 Team = new Team
                 {
-                    TeamId = teamInMatch.Team.TeamId
+                    TeamId = teamInMatch.Team?.TeamId
                 },
                 TeamRole = teamInMatch.TeamRole,
                 WonToss = teamInMatch.WonToss,
@@ -143,8 +143,8 @@ namespace Stoolball.Data.SqlServer
                     Wides = x.Wides,
                     RunsConceded = x.RunsConceded
                 }).ToList(),
-                BattingTeam = CreateAuditableCopy(innings.BattingTeam),
-                BowlingTeam = CreateAuditableCopy(innings.BowlingTeam),
+                BattingTeam = innings.BattingTeam != null ? CreateAuditableCopy(innings.BattingTeam) : null,
+                BowlingTeam = innings.BowlingTeam != null ? CreateAuditableCopy(innings.BowlingTeam) : null,
                 Overs = innings.Overs,
                 Byes = innings.Byes,
                 NoBalls = innings.NoBalls,
