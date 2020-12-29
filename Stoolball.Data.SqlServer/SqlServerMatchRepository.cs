@@ -101,7 +101,8 @@ namespace Stoolball.Data.SqlServer
                 MatchTeamId = teamInMatch.MatchTeamId,
                 Team = new Team
                 {
-                    TeamId = teamInMatch.Team?.TeamId
+                    TeamId = teamInMatch.Team?.TeamId,
+                    TeamName = teamInMatch.Team?.TeamName
                 },
                 TeamRole = teamInMatch.TeamRole,
                 WonToss = teamInMatch.WonToss,
