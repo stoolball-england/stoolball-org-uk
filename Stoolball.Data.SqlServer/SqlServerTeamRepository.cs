@@ -134,11 +134,10 @@ namespace Stoolball.Data.SqlServer
                     transaction.Commit();
 
                     _logger.Info(GetType(), LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerTeamRepository.CreateTeam));
+
+                    return auditableTeam;
                 }
             }
-
-
-            return team;
         }
 
         /// <summary>
