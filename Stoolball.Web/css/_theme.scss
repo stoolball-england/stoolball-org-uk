@@ -15,6 +15,8 @@ $skew: -1deg;
 // Don't use Futura on Mac even though it's there and we're trying to look like it, because at this weight it's extra-bold and very different.
 $headings-font-family: Assistant, Calibri, 'Trebuchet MS', sans-serif;
 $headings-font-weight: 600;
+$h3-font-size: 1.5rem;
+$h4-font-size: 1.25rem;
 
 // Mada = Preferred body font from Google Fonts
 // Candara = Windows and Mac system font with the most similar x-height & width to reduce text shifting as the font loads.
