@@ -8,6 +8,11 @@
 
 $selected_background: #555;
 
+// Reset list styles
+.nav-item {
+    padding: 0;
+}
+
 // Add some space below tabbed navigation, and establish a positioning context
 .nav-tabs {
     margin: 0 0 $spacer;

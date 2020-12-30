@@ -35,13 +35,15 @@ ul {
     padding-left: 1rem;
 }
 
+li {
+    padding: 0 0 $spacer/4;
+}
+
+// .list-columns is intended for lists of short links, eg player, team or season names.
+// It arranges the list first vertically, then horizontally for three or more columns.
 @media screen {
     .list-columns {
         columns: 2;
-    }
-
-    .list-columns > * {
-        padding: 0 0 $spacer/4;
     }
 
     @include media-breakpoint-up(sm) {

@@ -7,6 +7,11 @@
     padding: 0; 
     background: none;
 }
+
+.breadcrumb-item {
+    padding: 0;
+}
+
 .breadcrumb a[href] {
     @include remove-link-underline;
     color: $grey;

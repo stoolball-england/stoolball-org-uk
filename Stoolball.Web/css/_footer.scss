@@ -26,6 +26,7 @@ footer::before {
 
 .footer__links > * {
     margin-right: $spacer*1.5;
+    padding: 0;
 }
 .footer__links > :last-child {
     margin-right: 0;

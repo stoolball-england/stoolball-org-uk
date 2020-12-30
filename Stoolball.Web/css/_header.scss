@@ -92,6 +92,10 @@ $offset-container-padding: -(($grid-gutter-width/2)-$space-for-header-focus-ring
     display: none;
 }
 
+.header__menu-large li {
+    padding: 0;
+}
+
 @include media-breakpoint-up(md) {
     // Use flexbox to display the main menu horizontally
     .header__menu-large [role=menubar] {
@@ -100,7 +104,6 @@ $offset-container-padding: -(($grid-gutter-width/2)-$space-for-header-focus-ring
         margin: 0;
         padding: 0;
     }
-
     // Pad the clickable area of a menu item, and add spacing so that the backgrounds of a selected item and a hovered item do not touch
     .header__menu-large [role=menuitem] {
         @include remove-link-underline;
@@ -111,14 +114,11 @@ $offset-container-padding: -(($grid-gutter-width/2)-$space-for-header-focus-ring
         font-style: normal;
         border-radius: $border-radius;
     }
-    
     // Change the menu button background on hover or when selected
-    .header__menu-large a:hover, .header__menu-large [role=menuitem][aria-selected]
-    {
+    .header__menu-large a:hover, .header__menu-large [role=menuitem][aria-selected] {
         background: $header_selected_background;
         color: $white;
     }
-
     // Show a focus ring when navigating with the keyboard
     .header__menu-large a:focus, .header__menu-large a:active {
         @include header-focus-ring;
