@@ -74,9 +74,9 @@
         @Html.Raw(Model.Team.Cost)
     }
 
+    <h2>Contact details</h2>
     @if (!string.IsNullOrWhiteSpace(Model.Team.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Team.Website))
     {
-        <h2>Contact details</h2>
         @Html.Raw(Model.Team.PublicContactDetails)
 
         if (!string.IsNullOrWhiteSpace(Model.Team.Website))
@@ -84,34 +84,17 @@
             <p>Visit <a href="@Model.Team.Website">@Model.Team.TeamName's website</a>.</p>
         }
     }
+    else if (Model.Team.TeamType != TeamType.Representative)
+    {
+        // Prompt for more contact information, unless it's a representative team when we don't expect it
+        @Html.Partial("_ContactDetailsMissing", "team")
+    }
 
     @if (Model.Team.Club != null && Model.Team.Club.ClubMark)
     {
         @Html.Partial("_ClubMark")
     }
 
-    @if (Model.Team.TeamType != TeamType.Representative
-         && string.IsNullOrWhiteSpace(Model.Team.PublicContactDetails)
-         && string.IsNullOrWhiteSpace(Model.Team.Website)
-         )
-    {
-        // Prompt for more contact information, unless it's a representative team when we don't expect it
-        if (!string.IsNullOrWhiteSpace(Model.Team.PrivateContactDetails))
-        {
-            <p>
-                We may be able to contact this team, but we don't have permission to publish their details.
-                If you'd like to play for them, <a href="/contact">contact us</a> and we'll pass your details on.
-            </p>
-        }
-        else
-        {
-            <p>
-                This team hasn't given us any contact details. If you'd like to play for them, try contacting
-                their opposition teams or the secretary of their league, and ask them to pass on your details.
-            </p>
-        }
-        <p> If you play for this team, please <a href="/teams/add">help us to improve this page</a>.</p>
-    }
     @*
         $club = $this->team->GetClub();
         if ($club and ($club->GetFacebookUrl() or $club->GetTwitterAccount() or $club->GetInstagramAccount())) {

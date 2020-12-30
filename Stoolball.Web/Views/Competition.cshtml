@@ -12,21 +12,21 @@
         <p class="alert alert-info"><strong>This competition isn't played any more.</strong></p>
     }
 
-@if (authorizedToEdit)
-{
-    @* When another tab is added, only the last two should be protected by authorizedToEdit, but there's no point having just one tab *@
-    <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-add nav-tabs-has-edit" : string.Empty)">
-        <li class="nav-item">
-            <em class="nav-link active">Summary</em>
-        </li>
-        <li class="nav-item nav-item-admin">
-            <a class="nav-link nav-link-add" href="@Model.Competition.CompetitionRoute/add">Add season</a>
-        </li>
-        <li class="nav-item nav-item-admin">
-            <a class="nav-link nav-link-edit" href="@Model.Competition.CompetitionRoute/edit">Edit competition</a>
-        </li>
-    </ul>
-}
+    @if (authorizedToEdit)
+    {
+        @* When another tab is added, only the last two should be protected by authorizedToEdit, but there's no point having just one tab *@
+        <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-add nav-tabs-has-edit" : string.Empty)">
+            <li class="nav-item">
+                <em class="nav-link active">Summary</em>
+            </li>
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-add" href="@Model.Competition.CompetitionRoute/add">Add season</a>
+            </li>
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-edit" href="@Model.Competition.CompetitionRoute/edit">Edit competition</a>
+            </li>
+        </ul>
+    }
 
     @Html.Raw(Model.Competition.Introduction)
 
@@ -41,14 +41,18 @@
         @Html.Partial("_SeasonList", seasonListModel)
     }
 
+    <h2>Contact details</h2>
     @if (!string.IsNullOrWhiteSpace(Model.Competition.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Competition.Website))
     {
-        <h2>Contact details</h2>
         @Html.Raw(Model.Competition.PublicContactDetails)
 
         if (!string.IsNullOrWhiteSpace(Model.Competition.Website))
         {
             <p>Visit the <a href="@Model.Competition.Website">@Model.Competition.CompetitionName's website</a>.</p>
         }
+    }
+    else
+    {
+        @Html.Partial("_ContactDetailsMissing", "competition")
     }
 </div>

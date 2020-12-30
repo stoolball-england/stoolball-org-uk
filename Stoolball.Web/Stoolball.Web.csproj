@@ -1432,6 +1432,7 @@
     <Content Include="Views\Partials\_Breadcrumb.cshtml" />
     <Content Include="Views\Partials\_Footer.cshtml" />
     <Content Include="Views\Partials\_AddMatchMenu.cshtml" />
+    <Content Include="Views\Partials\_ContactDetailsMissing.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
