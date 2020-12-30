@@ -70,14 +70,19 @@ namespace Stoolball.Web.Clubs
                     Club = club,
                     Matches = new MatchListingViewModel
                     {
-                        Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
-                        {
-                            TeamIds = club.Teams.Select(team => team.TeamId.Value).ToList(),
-                            FromDate = _seasonEstimator.EstimateSeasonDates(DateTimeOffset.UtcNow).fromDate
-                        }).ConfigureAwait(false),
                         DateTimeFormatter = _dateFormatter
-                    },
+                    }
                 };
+
+                // Only get matches if there are teams, otherwise matches for all teams will be returned
+                if (model.Club.Teams.Count > 0)
+                {
+                    model.Matches.Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
+                    {
+                        TeamIds = club.Teams.Select(team => team.TeamId.Value).ToList(),
+                        FromDate = _seasonEstimator.EstimateSeasonDates(DateTimeOffset.UtcNow).fromDate
+                    }).ConfigureAwait(false);
+                }
 
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Club);
 
