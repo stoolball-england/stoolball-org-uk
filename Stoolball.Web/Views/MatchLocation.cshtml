@@ -84,6 +84,7 @@
     @if (Model.MatchLocation.Latitude.HasValue && Model.MatchLocation.Longitude.HasValue)
     {
         var mapTitle = string.Empty;
+        var precisionWarning = string.Empty;
         switch (Model.MatchLocation.GeoPrecision)
         {
             case GeoPrecision.Exact:
@@ -91,15 +92,23 @@
                 break;
             case GeoPrecision.Postcode:
                 mapTitle = Model.MatchLocation.Postcode;
+                precisionWarning = "Note: This map shows the nearest postcode. The match location should be nearby.";
                 break;
             case GeoPrecision.Street:
                 mapTitle = Model.MatchLocation.StreetDescription + ", " + Model.MatchLocation.Town;
+                precisionWarning = "Note: This map shows the nearest road. The match location should be nearby.";
                 break;
             case GeoPrecision.Town:
                 mapTitle = Model.MatchLocation.Town;
+                precisionWarning = "Note: This map shows the town or village. Contact the home team to find the match location.";
                 break;
         }
-        <div id="location-map" data-latitude="@Model.MatchLocation.Latitude" data-longitude="@Model.MatchLocation.Longitude" data-precision="@Model.MatchLocation.GeoPrecision.ToString().ToLowerInvariant()" data-title="@Html.AttributeEncode(mapTitle)">
+        <h2>Map of @mapTitle</h2>
+        if (!string.IsNullOrEmpty(precisionWarning))
+        {
+            <p>@precisionWarning</p>
+        }
+        <div id="location-map" data-latitude="@Model.MatchLocation.Latitude" data-longitude="@Model.MatchLocation.Longitude" data-precision="@Model.MatchLocation.GeoPrecision.ToString().ToLowerInvariant()">
             <p><a href="https://maps.google.co.uk/?z=16&amp;q=@HttpUtility.UrlEncode(Model.MatchLocation.NameAndLocalityOrTown())@("@")@Model.MatchLocation.Latitude,@Model.MatchLocation.Longitude&amp;ll=@Model.MatchLocation.Latitude,@Model.MatchLocation.Longitude">Map of @mapTitle on Google Maps</a></p>
         </div>
     }

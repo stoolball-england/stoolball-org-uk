@@ -18,8 +18,8 @@
    */
     a[href^="#"]::after,
     a[href^="javascript:"]::after,
-    .print__no-url[href]::after
-    {
+    .print__no-urls a[href]::after,
+    .print__no-url[href]::after {
         content: "";
     }
 
