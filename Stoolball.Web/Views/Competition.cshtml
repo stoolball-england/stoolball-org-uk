@@ -30,6 +30,7 @@
 
     @Html.Raw(Model.Competition.Introduction)
 
+    <h2>Seasons</h2>
     @if (Model.Competition.Seasons.Count > 0)
     {
         var seasonListModel = new SeasonListViewModel
@@ -37,9 +38,17 @@
             ShowCompetitionHeading = false
         };
         seasonListModel.Competitions.Add(Model.Competition);
-        <h2>Seasons</h2>
         @Html.Partial("_SeasonList", seasonListModel)
     }
+    else
+    {
+        <p>No seasons have been added for this competition.</p>
+        if (authorizedToEdit)
+        {
+            <p><a class="btn btn-primary btn-add" href="@Model.Competition.CompetitionRoute/add">Add season</a></p>
+        }
+    }
+
 
     <h2>Contact details</h2>
     @if (!string.IsNullOrWhiteSpace(Model.Competition.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Competition.Website))

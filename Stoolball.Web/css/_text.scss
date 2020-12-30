@@ -19,7 +19,7 @@ a {
 
 a:hover {
     text-decoration: none;
-    color: $link-color;
+    color: darken($link-color, 10%);
 }
 
 a:focus, a:active {
@@ -33,4 +33,38 @@ blockquote {
 
 ul {
     padding-left: 1rem;
+}
+
+@media screen {
+    .list-columns {
+        columns: 2;
+    }
+
+    .list-columns > * {
+        padding: 0 0 $spacer/4;
+    }
+
+    @include media-breakpoint-up(sm) {
+        .list-columns {
+            columns: auto;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .list-columns > * {
+            width: 33%;
+        }
+    }
+
+    @include media-breakpoint-up(md) {
+        .list-columns > * {
+            width: 25%;
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+        .list-columns > * {
+            width: (100%/6);
+        }
+    }
 }

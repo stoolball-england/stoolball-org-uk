@@ -5,7 +5,7 @@
     {
         <h2>@competition.CompetitionName</h2>
     }
-    <ul>
+    <ul class="list-columns">
         @foreach (var season in competition.Seasons)
         {
             <li><a href="@season.SeasonRoute">@(Model.ShowSeasonFullName ? season.SeasonFullName() : season.SeasonName())</a></li>
