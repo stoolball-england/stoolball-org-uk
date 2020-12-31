@@ -17,7 +17,7 @@ $selected_background: #555;
 .nav-tabs {
     margin: 0 0 $spacer;
     position: relative;
-    border-bottom-color: theme-color("secondary");
+    border-bottom-color: theme-color("alt-secondary");
 }
 
 .nav-tabs-has-add, .nav-tabs-has-edit {
@@ -39,7 +39,7 @@ $selected_background: #555;
 .nav-tabs .nav-link:hover,
 .nav-tabs .nav-link:active {
     @include remove-link-focus;
-    border-color: theme-color("secondary");
+    border-color: theme-color("alt-secondary");
 }
 
 .nav-tabs .nav-link:focus {
@@ -79,7 +79,7 @@ $selected_background: #555;
     border-radius: $border-radius $border-radius 0 0;
     margin-left: 2px;
     color: $white;
-    background-color: theme-color("secondary");
+    background-color: theme-color("alt-secondary");
     @include remove-link-underline;
 }
 

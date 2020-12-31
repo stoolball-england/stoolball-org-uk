@@ -3,8 +3,11 @@
 @using Stoolball.Web.Competitions
 @using Stoolball.Security
 @using Humanizer
+@using ClientDependency.Core.Mvc
 @{ 
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam];
+    Html.RequiresJs("/teams/team.js");
+    Html.RequiresCss("/teams/team.min.css");
 }
 <div class="container-xl">
     <h1>@Model.Team.TeamNameLocationAndPlayerType()</h1>
@@ -65,7 +68,7 @@
                 return competition;
             }));
 
-        @Html.Partial("_SeasonList", seasonListModel);
+        @Html.Partial("_SeasonListExpandable", seasonListModel);
     }
 
     @if (!string.IsNullOrWhiteSpace(Model.Team.Cost))

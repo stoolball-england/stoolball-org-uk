@@ -776,6 +776,13 @@
     <Content Include="css\news.scss" />
     <Content Include="css\shop.page.scss" />
     <Content Include="css\home.scss" />
+    <Content Include="Teams\team.css">
+      <DependentUpon>team.scss</DependentUpon>
+    </Content>
+    <Content Include="Teams\team.min.css">
+      <DependentUpon>team.css</DependentUpon>
+    </Content>
+    <Content Include="Teams\team.scss" />
     <None Include="css\tinymce.scss" />
     <Content Include="css\tinymce.css">
       <DependentUpon>tinymce.scss</DependentUpon>
@@ -996,6 +1003,7 @@
     <Content Include="Scripts\umd\popper.js" />
     <Content Include="Scripts\umd\popper.min.js" />
     <Content Include="service-worker.js" />
+    <Content Include="Teams\team.js" />
     <Content Include="Views\Partials\BlockList\Components\FormattedText.cshtml" />
     <Content Include="Views\Content.cshtml" />
     <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedText.html" />
@@ -1433,6 +1441,7 @@
     <Content Include="Views\Partials\_Footer.cshtml" />
     <Content Include="Views\Partials\_AddMatchMenu.cshtml" />
     <Content Include="Views\Partials\_ContactDetailsMissing.cshtml" />
+    <Content Include="Views\Partials\_SeasonListExpandable.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,7 +1,17 @@
 ﻿// Colours
-$theme-colors: ( "primary": #008000, "secondary": #8fbc8f, "info": #b5d498);
+// Secondary is the WCAG AA lightest brown when used with white text
+$theme-colors: ( "primary": #008000, "secondary": #8c7256, "alt-secondary": #8fbc8f, "info": #b5d498);
 $black: #222;
-$grey: #767676; // WCAG AA lightest grey
+$grey: #767676; // WCAG AA lightest grey when used with white text
+
+// Don't use opacity for disabled buttons, as it'll break AA accessibility. Use grey instead.
+$btn-disabled-opacity: 1;
+.btn {
+    &.disabled, &:disabled {
+        background-color: $grey;
+        border-color: $grey;
+    }
+}
 
 // UI element sizes
 $minimum-clickable-size: 44px;

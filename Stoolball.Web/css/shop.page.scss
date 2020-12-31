@@ -49,7 +49,7 @@
 .product-preview {
     position: relative;
     width: 100%;
-    background: lighten(theme-color("secondary"), 20%);
+    background: lighten(theme-color("alt-secondary"), 20%);
     overflow: visible;
     margin-bottom: $spacer;
     color: $black;
@@ -85,9 +85,9 @@
 }
 
 .product-preview img {
-    border-top: 2px solid theme-color("secondary");
-    border-left: 2px solid theme-color("secondary");
-    border-bottom: 2px solid theme-color("secondary");
+    border-top: 2px solid theme-color("alt-secondary");
+    border-left: 2px solid theme-color("alt-secondary");
+    border-bottom: 2px solid theme-color("alt-secondary");
 }
 
 .product-preview__detail {

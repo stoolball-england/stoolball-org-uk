@@ -1,0 +1,7 @@
+﻿@import "../Content/bootstrap/_functions.scss";
+@import "../Content/bootstrap/_variables.scss";
+
+// teams.js can add a button to show all competitions. Add some space below it.
+.season-list__show-all {
+    margin-bottom: $spacer;
+}

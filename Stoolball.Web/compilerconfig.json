@@ -50,5 +50,9 @@
   {
     "outputFile": "css/home.css",
     "inputFile": "css/home.scss"
+  },
+  {
+    "outputFile": "Teams/team.css",
+    "inputFile": "Teams/team.scss"
   }
 ]
