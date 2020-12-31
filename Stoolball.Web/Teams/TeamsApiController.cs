@@ -1,9 +1,9 @@
-﻿using Stoolball.Teams;
-using Stoolball.Web.WebApi;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Stoolball.Teams;
+using Stoolball.Web.WebApi;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -37,6 +37,7 @@ namespace Stoolball.Web.Teams
             }
 
             var teamQuery = new TeamQuery { Query = query };
+            teamQuery.ExcludeTeamTypes.Add(TeamType.Transient);
             foreach (var guid in not)
             {
                 if (guid == null) continue;

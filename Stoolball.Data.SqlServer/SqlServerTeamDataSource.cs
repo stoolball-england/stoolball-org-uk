@@ -232,6 +232,12 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@ExcludeTeamIds", teamQuery.ExcludeTeamIds.Select(x => x.ToString()));
             }
 
+            if (teamQuery?.ExcludeTeamTypes?.Count > 0)
+            {
+                where.Add("t.TeamType NOT IN @ExcludeTeamTypes");
+                parameters.Add("@ExcludeTeamTypes", teamQuery.ExcludeTeamTypes.Select(x => x.ToString()));
+            }
+
             sql = sql.Replace("<<JOIN>>", join.Count > 0 ? string.Join(" ", join) : string.Empty)
                      .Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
 

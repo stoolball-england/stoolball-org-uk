@@ -2,17 +2,17 @@
 @using Stoolball.Navigation;
 @if (Model != null && Model.Count > 1)
 {
-    <nav aria-label="Breadcrumb" class="container-xl">
+    <nav aria-label="Breadcrumb" class="container-xl print__no-urls">
         <ol class="breadcrumb">
             @for (var i = 0; i < Model.Count; i++)
             {
                 if (i < Model.Count - 1)
                 {
-                    <li class="breadcrumb-item"><a href="@Model[i].Url" class="print__no-url">@Model[i].Name</a></li>
+                    <li class="breadcrumb-item"><a href="@Model[i].Url">@Model[i].Name</a></li>
                 }
                 else
                 {
-                    <li class="breadcrumb-item" aria-current="location"><a href="@Model[i].Url" class="print__no-url">@Model[i].Name</a></li>
+                    <li class="breadcrumb-item" aria-current="location"><a href="@Model[i].Url">@Model[i].Name</a></li>
                 }
             }
         </ol>

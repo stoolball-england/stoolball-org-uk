@@ -4,6 +4,11 @@ $theme-colors: ( "primary": #008000, "secondary": #8c7256, "alt-secondary": #8fb
 $black: #222;
 $grey: #767676; // WCAG AA lightest grey when used with white text
 
+// Adjust alert colours to be AA accessible text and have greater contrast against the page background.
+$alert-bg-level: -7;
+$alert-border-level: -6;
+$alert-color-level: 8;
+
 // Don't use opacity for disabled buttons, as it'll break AA accessibility. Use grey instead.
 $btn-disabled-opacity: 1;
 .btn {

@@ -36,22 +36,17 @@
 
     @Html.Raw(Model.Team.Introduction)
 
-    @{ var whenWhereHeadingRendered = false; }
-    @if (Model.Team.MatchLocations.Count > 0)
+    @if (Model.Team.MatchLocations.Count > 0 || !string.IsNullOrWhiteSpace(Model.Team.PlayingTimes))
     {
-        whenWhereHeadingRendered = true;
         <h2>When and where</h2>
-        <p>This team plays at @Html.Raw(Model.Team.MatchLocations.Humanize(x => $"<a href=\"{Html.Encode(x.MatchLocationRoute)}\">{Html.Encode(x.NameAndLocalityOrTownIfDifferent())}</a>")).</p>
-    }
-
-    @if (!string.IsNullOrWhiteSpace(Model.Team.PlayingTimes))
-    {
-        if (!whenWhereHeadingRendered)
+        if (Model.Team.MatchLocations.Count > 0)
         {
-            whenWhereHeadingRendered = true;
-            <h2>When and where</h2>
+            <p>This team plays at @Html.Raw(Model.Team.MatchLocations.Humanize(x => $"<a href=\"{Html.Encode(x.MatchLocationRoute)}\">{Html.Encode(x.NameAndLocalityOrTownIfDifferent())}</a>")).</p>
         }
-        @Html.Raw(Model.Team.PlayingTimes)
+        if (!string.IsNullOrWhiteSpace(Model.Team.PlayingTimes))
+        {
+            @Html.Raw(Model.Team.PlayingTimes)
+        }
     }
 
     @{
