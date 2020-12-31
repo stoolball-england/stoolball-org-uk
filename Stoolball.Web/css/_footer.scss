@@ -15,7 +15,7 @@ footer::before {
     display: block;
     content: "";
     transform: rotate($skew);
-    padding-top: 40px;
+    padding-top: 30px;
 }
 
 // Use Flexbox to arrange the links horizontally and space them out
@@ -64,6 +64,10 @@ footer::before {
 
 // Add extra white-space as the footer gets bigger
 @include media-breakpoint-up(md) {
+    footer::before {
+        padding-top: 40px;
+    }
+
     .footer__links {
         margin-bottom: $spacer*1;
     }
