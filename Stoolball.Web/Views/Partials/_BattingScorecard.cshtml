@@ -11,7 +11,7 @@
     var nothingToDisplay = (minimalScorecard && !Model.Runs.HasValue && !Model.Wickets.HasValue);
     if (!nothingToDisplay)
     {
-        <table class="table batting-scorecard">
+        <table class="batting-scorecard table-hover table-as-cards">
             <caption>@Model.BattingTeam.Team.TeamName's batting</caption>
 
             @if (!minimalScorecard)
@@ -26,35 +26,48 @@
                 {
                     <tr>
                         <th class="player-name">@playerInnings.PlayerIdentity.PlayerIdentityName</th>
-                        <td>
+                        <td data-label="How out">
                             @if (playerInnings.DismissalType == DismissalType.NotOut)
                             {
                                 <strong>@(playerInnings.DismissalType?.Humanize(LetterCasing.LowerCase))</strong>
                             }
                             else
                             {
-                                @(playerInnings.DismissalType?.Humanize(LetterCasing.LowerCase).Replace("run out", "run-out") ?? "not known")
-                            }
-                            @if ((playerInnings.DismissalType == DismissalType.Caught || playerInnings.DismissalType == DismissalType.RunOut) && playerInnings.DismissedBy != null)
-                            {
-                                <span class="player-name">(@playerInnings.DismissedBy.PlayerIdentityName)</span>
-                            }
-                        </td>
-                        <td class="player-name">
-                            @if (playerInnings.Bowler != null)
-                            {
-                                @playerInnings.Bowler.PlayerIdentityName
+                                <div>@* makes the dismissal type and player name a single flex item with .table-as-cards at small sizes *@
+                                    @(playerInnings.DismissalType?.Humanize(LetterCasing.LowerCase).Replace("run out", "run-out") ?? "not known")
+                                    @if ((playerInnings.DismissalType == DismissalType.Caught || playerInnings.DismissalType == DismissalType.RunOut) && playerInnings.DismissedBy != null)
+                                    {
+                                    <span class="player-name dismissed-by">(@playerInnings.DismissedBy.PlayerIdentityName)</span>
+                                    }
+                                </div>
                             }
                         </td>
-                        <td class="numeric runs">
-                            @playerInnings.RunsScored
-                        </td>
-                        <td class="numeric">
-                            @if (playerInnings.BallsFaced.HasValue)
-                            {
+                        @if (playerInnings.Bowler != null)
+                        {
+                            <td class="player-name" data-label="Bowler">@playerInnings.Bowler.PlayerIdentityName</td>
+                        }
+                        else
+                        {
+                            <td class="player-name d-none d-sm-table-cell"></td>
+                        }
+                        @if (playerInnings.RunsScored.HasValue)
+                        {
+                            <td class="numeric-sm runs" data-label="Runs">@playerInnings.RunsScored</td>
+                        }
+                        else
+                        {
+                            <td class="numeric-sm runs d-none d-sm-table-cell"></td>
+                        }
+                        @if (playerInnings.BallsFaced.HasValue)
+                        {
+                            <td class="numeric-sm" data-label="Balls">
                                 <span class="balls-faced">@playerInnings.BallsFaced</span>
-                            }
-                        </td>
+                            </td>
+                        }
+                        else
+                        {
+                            <td class="numeric d-none d-sm-table-cell"></td>
+                        }
                     </tr>
                 }
                 @{
@@ -79,8 +92,8 @@
                     {
                         @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Bonus runs", CssClass = "scorecard__extras", RowValue = Model.BonusOrPenaltyRuns.Value.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
                     }
-                    @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Total", CssClass = "scorecard__totals", RowValue = Model.Runs?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
-                    @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Wickets", CssClass = "scorecard__totals", RowValue = (Model.Wickets == -1) ? "all out" : Model.Wickets?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
+                    @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Total", CssClass = "scorecard__totals" + (Model.Runs.HasValue ? string.Empty : " d-none d-sm-table-row"), RowValue = Model.Runs?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
+                    @Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Wickets", CssClass = "scorecard__totals" + (Model.Wickets.HasValue ? string.Empty : " d-none d-sm-table-row"), RowValue = (Model.Wickets == -1) ? "all out" : Model.Wickets?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard });
                 }
             </tbody>
         </table>

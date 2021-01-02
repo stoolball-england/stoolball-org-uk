@@ -1,0 +1,14 @@
+﻿@import "../css/_theme.scss";
+@import "../Content/bootstrap/_functions.scss";
+@import "../Content/bootstrap/_mixins.scss";
+@import "../Content/bootstrap/_variables.scss";
+
+// The match result should be prominent but won't always have following content, so it uses <strong> with h3 styles
+.match-result {
+    font-size: $h3-font-size;
+    font-family: $headings-font-family;
+    font-weight: $headings-font-weight;
+    line-height: $headings-line-height;
+    color: $headings-color;
+    margin-bottom: $spacer*1.5;
+}

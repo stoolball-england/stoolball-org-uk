@@ -1,8 +1,9 @@
 ﻿@model MatchInnings
 @using Stoolball.Matches
+@using Humanizer 
 @if (Model.OversBowled.Count > 0)
 {
-    <table class="table bowling-scorecard">
+    <table class="bowling-scorecard table-hover table-as-cards">
         <caption>@Model.BowlingTeam.Team.TeamName's bowling, over-by-over</caption>
         <thead>
             <tr>
@@ -25,11 +26,11 @@
                     }
                     <tr>
                         <th scope="row" class="player-name">@over.PlayerIdentity.PlayerIdentityName</th>
-                        <td class="numeric">@over.BallsBowled</td>
-                        <td class="numeric">@over.Wides</td>
-                        <td class="numeric">@over.NoBalls</td>
-                        <td class="numeric">@over.RunsConceded</td>
-                        <td class="numeric">@total</td>
+                        <td class="numeric" data-label="Balls"><span class="scorecard__numeric-value">@over.BallsBowled</span></td>
+                        <td class="numeric" data-label="Wides"><span class="scorecard__numeric-value">@over.Wides</span></td>
+                        <td class="numeric" data-label="No balls"><span class="scorecard__numeric-value">@over.NoBalls</span></td>
+                        <td class="numeric" data-label="Runs"><span class="scorecard__numeric-value">@over.RunsConceded</span></td>
+                        <td class="numeric" data-label="Total"><span class="scorecard__numeric-value">@total</span></td>
                     </tr>
                 }
             }

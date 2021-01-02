@@ -52,7 +52,7 @@ namespace Stoolball.Data.SqlServer
                             ml.MatchLocationId, ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
                             ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
                             s.SeasonId, s.SeasonRoute, s.FromYear, s.UntilYear,
-                            co.CompetitionName, co.MemberGroupName
+                            co.CompetitionName, co.MemberGroupName, co.CompetitionRoute
                             FROM {Tables.Match} AS m
                             LEFT JOIN {Tables.Tournament} AS tourney ON m.TournamentId = tourney.TournamentId
                             LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId

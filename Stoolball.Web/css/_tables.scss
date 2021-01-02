@@ -3,51 +3,134 @@
 @import "../Content/bootstrap/_variables.scss";
 @import "../Content/bootstrap/_tables.scss";
 
+@mixin numeric-value {
+    text-align: right;
+    white-space: nowrap;
+}
+
 /* Bootstrap removes all styling from tables because they're used in calendars etc. 
    Bootstrap tables have .table applied but you can't do that in TinyMCE for Umbraco as configured by default.
-   Add some spacing, padding and border to tables until it becomes a problem. */
+   @extend .table so that tables have Bootstrap table styles by default.
+*/
 table {
-  margin-bottom: $spacer;
+  @extend .table;
+  border-bottom: $table-border-width solid $table-border-color;
 }
 
-th,
-td {
-  padding: $spacer/4;
-}
-
+// Display the caption as a heading for the table, not a footnote like in academic text
 caption {
-  caption-side: top;
+    caption-side: top;
+    background: theme-color("primary");
+    color: $white;
+    padding: $spacer*.75;
+    font-weight: bold;
+    font-size: 1.2rem;
+    border-radius: $border-radius $border-radius 0 0;
 }
 
+// Table header rows are reversed by default
+table thead th, table thead td {
+    background: $table-dark-bg;
+    color: $table-dark-color;
+    border-bottom: none;
+}
+
+// Numeric values should be right-aligned so that figure columns line up
+td.numeric,
+th.numeric {
+    @include numeric-value;
+}
+
+/* Apply .table-as-cards to a <table> to enable transformation of each row to a card format at small sizes.
+
+   .table-as-cards expects the each cell in a body row to have a data-label attribute repeating the column heading, because the column headings are hidden.
+   Omit the data-label attribute from the first cell in a row to have it act like a rowspan introducing all the other cells.
+
+   Typical example:
+   
+    <table class="table-as-cards">
+    <thead>
+        <tr>
+            <th scope="col">Heading 1</th>
+            <th scope="col">Heading 2</th>
+            <th scope="col">Heading 3</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row">Row heading</th>
+            <td data-label="Heading 2">Data</td>
+            <td data-label="Heading 3">Data</td>
+        </tr>
+    </tbody>
+    </table>
+*/
 .table-as-cards thead {
   display: none;
 }
 
-.table-as-cards tr {
-  display: flex;
-  flex-direction: column;
+// Treat a row heading like the column headings we've just hidden
+.table-as-cards th:first-child {
+    background: $table-dark-bg;
+    color: $table-dark-color;
 }
 
+.table-as-cards th:first-child a:link, .table-as-cards th:first-child a:visited {
+    color: $table-dark-color;
+    border-bottom-color: $table-dark-color;
+}
+
+// Each cell which has data-label applied gets transformed into a flex container, where the flex items are its ::before pseudo-element and the original contents
+// This creates a miniature table row appearance, with the ::before as the row heading and the original contents as the data
+.table-as-cards [data-label] {
+    display: flex;
+}
+
+// The ::before pseudo-element is acting like a row heading cell using the heading in the data-label attribute, so style it like a heading.
+// padding-right adds space between it and the original cell contents.
 .table-as-cards [data-label]::before {
-  content: attr(data-label) ": ";
+    content: attr(data-label);
+    display: inline-block;
+    font-weight: bold;
+    width: 50%;
+    text-align: left;
+    padding-right: $table-cell-padding;
 }
 
-td.numeric,
-th.numeric {
-  text-align: right;
-  white-space: nowrap;
+// Preserve the text-align: right of .numeric when it is applied. Otherwise it's just left-aligned after the width of the ::before pseudo-element above
+.table-as-cards [data-label].numeric::before {
+    flex-grow: 1;
 }
 
-@include media-breakpoint-up(md) {
-  .table-as-cards thead {
-    display: table-header-group;
-  }
+@include media-breakpoint-up(sm) {
+    
+    // When .table-as-cards is in use, it might only be appropriate to apply .numeric when the table returns to a standard display
+    td.numeric-sm,
+    th.numeric-sm {
+        @include numeric-value;
+    }
 
-  .table-as-cards tr {
-    display: table-row;
-  }
+    // Reset everything that .table-as-cards did, so that the table is now displayed normally
+    .table-as-cards thead {
+        display: table-header-group;
+    }
 
-  .table-as-cards [data-label]::before {
-    content: none;
-  }
+    .table-as-cards tbody th:first-child {
+        width: inherit;
+        background: none;
+        color: inherit;
+    }
+
+    .table-as-cards tbody th:first-child a:link, .table-as-cards tbody th:first-child a:visited {
+        color: $link-color;
+        border-bottom-color: $link-color;
+    }
+
+    .table-as-cards [data-label] {
+        display: table-cell;
+    }
+
+    .table-as-cards [data-label]::before {
+        content: none;
+    }
 }

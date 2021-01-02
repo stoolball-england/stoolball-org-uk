@@ -19,7 +19,7 @@
     Html.RequiresJs("~/matches/edit-bowling-scorecard.js");
 
     Html.RequiresCss("~/css/steps.min.css");
-    Html.RequiresCss("~/css/scorecards.min.css");
+    Html.RequiresCss("~/matches/scorecards.min.css");
 }
 <div class="container-xl">
     <h1>Edit @Model.Match.MatchFullName(x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>

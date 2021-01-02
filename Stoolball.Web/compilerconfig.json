@@ -28,10 +28,6 @@
     "inputFile": "css/steps.scss"
   },
   {
-    "outputFile": "css/scorecards.css",
-    "inputFile": "css/scorecards.scss"
-  },
-  {
     "outputFile": "css/rules.page.css",
     "inputFile": "css/rules.page.scss"
   },
@@ -54,5 +50,13 @@
   {
     "outputFile": "Teams/team.css",
     "inputFile": "Teams/team.scss"
+  },
+  {
+    "outputFile": "Matches/match.css",
+    "inputFile": "Matches/match.scss"
+  },
+  {
+    "outputFile": "Matches/scorecards.css",
+    "inputFile": "Matches/scorecards.scss"
   }
 ]

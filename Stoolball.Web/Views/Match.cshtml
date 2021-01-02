@@ -4,8 +4,9 @@
 @using Humanizer
 @using Innovative.SolarCalculator
 @using Stoolball.Security
-@{ 
-    Html.RequiresCss("~/css/scorecards.min.css");
+@{
+    Html.RequiresCss("~/matches/match.min.css");
+    Html.RequiresCss("~/matches/scorecards.min.css");
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditMatch] || Model.IsAuthorized[AuthorizedAction.EditMatchResult] || Model.IsAuthorized[AuthorizedAction.DeleteMatch];
 }
 @functions{
@@ -34,33 +35,27 @@
 <div class="container-xl">
     <h1>@Model.Match.MatchFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
 
-    <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
-        <li class="nav-item">
-            <em class="nav-link active">Summary</em>
-        </li>
-        @if (authorizedToEdit)
-        {
+    @* authorizedToEdit only needs to protect the edit tab, but there's no point having only one tab *@
+    @if (authorizedToEdit)
+    {
+        <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
+            <li class="nav-item">
+                <em class="nav-link active">Summary</em>
+            </li>
             <li class="nav-item nav-item-admin">
                 <a class="nav-link nav-link-edit" href="@Model.Match.MatchRoute/edit">Edit match</a>
             </li>
-        }
-    </ul>
+        </ul>
+    }
 
     <p>
-        @Model.Match.MatchType.Humanize(LetterCasing.Sentence)@{
-            if (Model.Match.Season != null)
-            {
-                var seasonName = Model.Match.Season.SeasonFullName();
-                var inTheSeason = (seasonName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? " in" : " in the";
-                @inTheSeason <a href="@Model.Match.Season.SeasonRoute">@seasonName</a>
-            }
-        }
+        @Model.Match.MatchType.Humanize(LetterCasing.Sentence)
+        @if (Model.Match.Teams.Count > 0)
+        {
+            @(Model.Match.Teams.Count > 1 ? "between " : "involving ")
+            @Html.Raw(Model.Match.Teams.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>"))
+        }.
     </p>
-
-    @if (Model.Match.Teams.Count > 0)
-    {
-        <p>Who: @Html.Raw(Model.Match.Teams.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>"))</p>
-    }
 
     <p>
         When:
@@ -89,14 +84,7 @@
     @{
         if (Model.Match.MatchResultType.HasValue || Model.Match.InningsOrderIsKnown || Model.Match.HasScorecard())
         {
-            // Put the result in the h2, so long as we have something to put after it. Otherwise put the result after the h2.
-            var resultHeader = "Result";
-            if (Model.Match.MatchResultType.HasValue && (Model.Match.InningsOrderIsKnown || Model.Match.HasScorecard()))
-            {
-                resultHeader += ": " + ResultDescription();
-            }
-
-            <h2>@resultHeader</h2>
+            <p class="match-result"><strong>Result: @ResultDescription()</strong></p>
         }
 
         var tossWinners = Model.Match.Teams.FirstOrDefault(x => x.WonToss.HasValue && x.WonToss.Value);
@@ -121,15 +109,9 @@
         }
         else
         {
-            // Got to be just result and batting order now.
-            // Only include result if batting order's not there, otherwise result will already be in header.
-            if (Model.Match.MatchResultType.HasValue && !Model.Match.InningsOrderIsKnown)
-            {
-                <p>@ResultDescription().</p>
-            }
-
             if (Model.Match.InningsOrderIsKnown && tossWinners == null)
             {
+                // Show the batting order, since it's not stated as part of the toss result and not implied by showing scorecards in order.
                 var firstToBat = Model.Match.Teams.FirstOrDefault(x => x.MatchTeamId == Model.Match.MatchInnings.First().BattingTeam?.MatchTeamId);
                 if (firstToBat != null)
                 {
@@ -137,10 +119,11 @@
                 }
             }
         }
-    }
-    @if (!string.IsNullOrWhiteSpace(Model.Match.MatchNotes))
-    {
-        <h2>Notes</h2>
-        @Html.Raw(Model.Match.MatchNotes)
+
+        if (!string.IsNullOrWhiteSpace(Model.Match.MatchNotes))
+        {
+            <h2>Notes</h2>
+            @Html.Raw(Model.Match.MatchNotes)
+        }
     }
 </div>

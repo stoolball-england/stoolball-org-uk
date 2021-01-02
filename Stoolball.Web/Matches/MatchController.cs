@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Matches;
+using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -67,6 +69,13 @@ namespace Stoolball.Web.Matches
                 model.Metadata.Description = model.Match.Description();
 
                 model.Match.MatchNotes = _emailProtector.ProtectEmailAddresses(model.Match.MatchNotes, User.Identity.IsAuthenticated);
+
+                if (model.Match.Season != null)
+                {
+                    model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
+                    model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.Season.Competition.CompetitionName, Url = new Uri(model.Match.Season.Competition.CompetitionRoute, UriKind.Relative) });
+                    model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.Season.SeasonName(), Url = new Uri(model.Match.Season.SeasonRoute, UriKind.Relative) });
+                }
 
                 return CurrentTemplate(model);
             }
