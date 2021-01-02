@@ -1,9 +1,15 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.SeasonViewModel>
 @using Humanizer
+@using ClientDependency.Core.Mvc
 @using System.Linq
 @using Stoolball.Competitions
 @using Stoolball.Matches
 @using Stoolball.Web.Matches
+@using Stoolball.Security
+@{
+    Html.RequiresCss("/competitions/competitions.min.css");
+    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition];
+}
 <div class="container-xl">
     <h1>@Model.Season.SeasonFullNameAndPlayerType()</h1>
 
@@ -24,6 +30,12 @@
         <li class="nav-item">
             <em class="nav-link active">Results</em>
         </li>
+        @if (authorizedToEdit)
+        {
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-edit" href="@Model.Season.SeasonRoute/edit/points">Edit points</a>
+            </li>
+        }
     </ul>
 
     @{
@@ -35,8 +47,7 @@
                 var matchesAwaitingResults = new MatchListingViewModel { DateTimeFormatter = Model.Matches.DateTimeFormatter };
                 var withdrawnTeams = Model.Season.Teams.Where(x => x.WithdrawnDate.HasValue);
                 var columns = 7;
-                <table class="table table-as-cards">
-                    <caption>@(Model.Season.ResultsTableType == ResultsTableType.LeagueTable ? "League" : "Results") table for the @Model.Season.SeasonName()</caption>
+                <table class="results-table table-as-cards table-as-cards-reset-md">
                     <thead>
                         <tr>
                             <th scope="col">Team</th>
@@ -217,9 +228,9 @@
 
         if (noResults)
         {
-            <p>There's no results table for this season yet.</p>
-            <p>Add match results to this website to see your table updated instantly. For leagues, points are calculated.</p>
-            <p>If you're the administrator for the @Model.Season.Competition.CompetitionName edit the season to switch this on now.</p>
+            <p>There's no results table for this season.</p>
+            <p>You can add match results to this website to see your table updated instantly. For leagues, points are calculated.</p>
+            <p>To get started, see <a href="/organise/website/results-tables/">Results tables – how they work</a>.</p>
         }
     }
 </div>

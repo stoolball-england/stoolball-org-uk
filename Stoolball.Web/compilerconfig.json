@@ -58,5 +58,9 @@
   {
     "outputFile": "Matches/scorecards.css",
     "inputFile": "Matches/scorecards.scss"
+  },
+  {
+    "outputFile": "Competitions/competitions.css",
+    "inputFile": "Competitions/competitions.scss"
   }
 ]

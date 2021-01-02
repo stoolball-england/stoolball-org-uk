@@ -581,6 +581,12 @@
     <Content Include="App_Plugins\uSync8\uSyncService.js" />
     <Content Include="App_Plugins\uSync8\usync_872.css" />
     <Content Include="App_Plugins\uSync8\uSync_872.js" />
+    <Content Include="Competitions\competitions.css">
+      <DependentUpon>competitions.scss</DependentUpon>
+    </Content>
+    <Content Include="Competitions\competitions.min.css">
+      <DependentUpon>competitions.css</DependentUpon>
+    </Content>
     <Content Include="config\grid.editors.config.js" />
     <Content Include="config\Lang\cs-CZ.user.xml" />
     <Content Include="config\Lang\da-DK.user.xml" />
@@ -654,6 +660,7 @@
     <Content Include="App_Plugins\UmbracoForms\Data\Web.config" />
     <Content Include="App_Plugins\UmbracoForms\Data\Templates\contactform.json" />
     <Content Include="App_Plugins\UmbracoForms\Data\Templates\commentform.json" />
+    <Content Include="Competitions\competitions.scss" />
     <None Include="config\uSync8.local.xdt.config" />
     <Content Include="css\rules.page.css">
       <DependentUpon>rules.page.scss</DependentUpon>
@@ -661,10 +668,10 @@
     <Content Include="css\rules.page.min.css">
       <DependentUpon>rules.page.css</DependentUpon>
     </Content>
-    <Content Include="css\scorecards.css">
+    <Content Include="Matches\scorecards.css">
       <DependentUpon>scorecards.scss</DependentUpon>
     </Content>
-    <Content Include="css\scorecards.min.css">
+    <Content Include="Matches\scorecards.min.css">
       <DependentUpon>scorecards.css</DependentUpon>
     </Content>
     <Content Include="css\shop.page.css">
@@ -680,7 +687,7 @@
       <DependentUpon>steps.css</DependentUpon>
     </Content>
     <Content Include="css\steps.scss" />
-    <Content Include="css\scorecards.scss" />
+    <Content Include="Matches\scorecards.scss" />
     <Content Include="css\rules.page.scss" />
     <Content Include="css\cookies.page.scss" />
     <Content Include="Content\bootstrap\_variables.scss" />
@@ -776,6 +783,12 @@
     <Content Include="css\news.scss" />
     <Content Include="css\shop.page.scss" />
     <Content Include="css\home.scss" />
+    <Content Include="Matches\match.css">
+      <DependentUpon>match.scss</DependentUpon>
+    </Content>
+    <Content Include="Matches\match.min.css">
+      <DependentUpon>match.css</DependentUpon>
+    </Content>
     <Content Include="Teams\team.css">
       <DependentUpon>team.scss</DependentUpon>
     </Content>
@@ -918,6 +931,7 @@
     <Content Include="css\_alerts.scss" />
     <Content Include="css\_tiles.scss" />
     <Content Include="css\_text.scss" />
+    <Content Include="Matches\match.scss" />
     <None Include="Status\offline.json" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />

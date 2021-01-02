@@ -61,23 +61,23 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         await _redirectsRepository.InsertRedirect("/you/signup.php", createMemberPage.Id, createMemberPage.Key, new Uri(createMemberPage.Url(), UriKind.Relative), transaction).ConfigureAwait(false);
                     }
 
-                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/organisers/insurance", transaction).ConfigureAwait(false);
-                    await _redirectsRepository.InsertRedirect("/insurance", "/organisers/insurance", null, transaction).ConfigureAwait(false);
-                    await _redirectsRepository.InsertRedirect("/manage/insurance", "/organisers/insurance", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/organise/insurance", transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/insurance", "/organise/insurance", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/manage/insurance", "/organise/insurance", null, transaction).ConfigureAwait(false);
 
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/play/manage", transaction).ConfigureAwait(false);
-                    await _redirectsRepository.InsertRedirect("/play/manage", "/organisers", null, transaction).ConfigureAwait(false);
-                    await _redirectsRepository.InsertRedirect("/play/manage/start-a-new-stoolball-team", "/organisers/start-a-new-stoolball-team", null, transaction).ConfigureAwait(false);
-                    await _redirectsRepository.InsertRedirect("/play/manage/insurance", "/organisers/insurance", null, transaction).ConfigureAwait(false);
-                    await _redirectsRepository.InsertRedirect("/play/manage/promote-stoolball-and-find-new-players", "/organisers/promote-stoolball-and-find-new-players", null, transaction).ConfigureAwait(false);
-                    await _redirectsRepository.InsertRedirect("/play/manage/website", "/organisers/website", null, transaction).ConfigureAwait(false);
-                    await _redirectsRepository.InsertRedirect("/play/manage/website/matches-and-results-why-you-should-add-yours", "/organisers/website/matches-and-results-why-you-should-add-yours", null, transaction).ConfigureAwait(false);
-                    await _redirectsRepository.InsertRedirect("/play/manage/website/how-to-add-match-results", "/organisers/website/how-to-add-match-results", null, transaction).ConfigureAwait(false);
-                    await _redirectsRepository.InsertRedirect("/play/manage/website/league-tables", "/organisers/website/league-tables", null, transaction).ConfigureAwait(false);
-                    await _redirectsRepository.InsertRedirect("/play/manage/safeguarding-and-child-protection", "/organisers/safeguarding-and-child-protection", null, transaction).ConfigureAwait(false);
-                    await _redirectsRepository.InsertRedirect("/play/manage/", "/organisers/", null, transaction).ConfigureAwait(false);
-                    await _redirectsRepository.InsertRedirect("/play/manage/", "/organisers/", null, transaction).ConfigureAwait(false);
-                    await _redirectsRepository.InsertRedirect("/play/manage/", "/organisers/", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/play/manage", "/organise", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/play/manage/start-a-new-stoolball-team", "/organise/start-a-new-stoolball-team", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/play/manage/insurance", "/organise/insurance", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/play/manage/promote-stoolball-and-find-new-players", "/organise/promote-stoolball-and-find-new-players", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/play/manage/website", "/organise/website", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/play/manage/website/matches-and-results-why-you-should-add-yours", "/organise/website/matches-and-results-why-you-should-add-yours", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/play/manage/website/how-to-add-match-results", "/organise/website/how-to-add-match-results", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/play/manage/website/league-tables", "/organise/website/results-tables", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/play/manage/safeguarding-and-child-protection", "/organise/safeguarding-and-child-protection", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/play/manage/", "/organise/", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/play/manage/", "/organise/", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/play/manage/", "/organise/", null, transaction).ConfigureAwait(false);
 
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/teams/all", transaction).ConfigureAwait(false);
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/teams/ladies", transaction).ConfigureAwait(false);

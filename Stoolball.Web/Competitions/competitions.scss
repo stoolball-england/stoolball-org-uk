@@ -1,0 +1,16 @@
+﻿@import "../css/_theme.scss";
+@import "../Content/bootstrap/_functions.scss";
+@import "../Content/bootstrap/_mixins.scss";
+@import "../Content/bootstrap/_variables.scss";
+
+
+.results-table tbody th { 
+    font-weight: normal; 
+    width: 50%;
+}
+
+@include media-breakpoint-up(sm) {
+    .results-table tbody th {
+        width: auto;
+    }
+}

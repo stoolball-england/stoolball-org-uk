@@ -41,7 +41,7 @@ th.numeric {
     @include numeric-value;
 }
 
-/* Apply .table-as-cards to a <table> to enable transformation of each row to a card format at small sizes.
+/* Apply .table-as-cards to a <table> to enable transformation of each row to a card format, with a .table-as-cards-reset-* class to return to standard table formatting.
 
    .table-as-cards expects the each cell in a body row to have a data-label attribute repeating the column heading, because the column headings are hidden.
    Omit the data-label attribute from the first cell in a row to have it act like a rowspan introducing all the other cells.
@@ -102,35 +102,75 @@ th.numeric {
     flex-grow: 1;
 }
 
+@mixin table-as-cards-reset-thead {
+    display: table-header-group;
+}
+
+@mixin table-as-cards-reset-th {
+    background: none;
+    color: inherit;
+}
+
+@mixin table-as-cards-reset-th-link {
+    color: $link-color;
+    border-bottom-color: $link-color;
+}
+
+@mixin table-as-cards-reset-label {
+    display: table-cell;
+}
+
+@mixin table-as-cards-reset-before {
+    content: none;
+}
+
 @include media-breakpoint-up(sm) {
-    
     // When .table-as-cards is in use, it might only be appropriate to apply .numeric when the table returns to a standard display
     td.numeric-sm,
     th.numeric-sm {
         @include numeric-value;
     }
-
     // Reset everything that .table-as-cards did, so that the table is now displayed normally
-    .table-as-cards thead {
-        display: table-header-group;
+    .table-as-cards-reset-sm thead {
+        @include table-as-cards-reset-thead;
     }
 
-    .table-as-cards tbody th:first-child {
-        width: inherit;
-        background: none;
-        color: inherit;
+    .table-as-cards-reset-sm tbody th:first-child {
+        @include table-as-cards-reset-th;
     }
 
-    .table-as-cards tbody th:first-child a:link, .table-as-cards tbody th:first-child a:visited {
-        color: $link-color;
-        border-bottom-color: $link-color;
+    .table-as-cards-reset-sm tbody th:first-child a:link, .table-as-cards-reset-sm tbody th:first-child a:visited {
+        @include table-as-cards-reset-th-link;
     }
 
-    .table-as-cards [data-label] {
-        display: table-cell;
+    .table-as-cards-reset-sm [data-label] {
+        @include table-as-cards-reset-label;
     }
 
-    .table-as-cards [data-label]::before {
-        content: none;
+    .table-as-cards-reset-sm [data-label]::before {
+        @include table-as-cards-reset-before;
+    }
+}
+
+@include media-breakpoint-up(md) {
+    // Reset everything that .table-as-cards did, so that the table is now displayed normally
+    .table-as-cards-reset-md thead {
+        @include table-as-cards-reset-thead;
+    }
+
+    .table-as-cards-reset-md tbody th:first-child {
+        @include table-as-cards-reset-th;
+    }
+
+    .table-as-cards-reset-md tbody th:first-child a:link, .table-as-cards-reset-md tbody th:first-child a:visited {
+        @include table-as-cards-reset-th-link;
+    }
+
+    .table-as-cards-reset-md [data-label] {
+        @include table-as-cards-reset-label;
+    }
+
+    .table-as-cards-reset-md [data-label]::before {
+        @include table-as-cards-reset-before;
     }
 }

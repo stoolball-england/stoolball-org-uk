@@ -1,7 +1,6 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.SeasonViewModel>
 @using System.Linq
 @using Stoolball.Matches
-@using Stoolball.Web.Competitions
 @using Stoolball.Security
 @{ 
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition];
