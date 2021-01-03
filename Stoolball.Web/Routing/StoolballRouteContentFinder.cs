@@ -87,7 +87,7 @@ namespace Stoolball.Web.Routing
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}table{OPTIONAL_SLASH}", StoolballRouteType.SeasonResultsTable },
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.SeasonActions },
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}edit{SLASH}season{OPTIONAL_SLASH}", StoolballRouteType.EditSeason },
-                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}edit{SLASH}points{OPTIONAL_SLASH}", StoolballRouteType.EditSeasonPoints },
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}edit{SLASH}table{OPTIONAL_SLASH}", StoolballRouteType.EditSeasonResultsTable },
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}edit{SLASH}teams{OPTIONAL_SLASH}", StoolballRouteType.EditSeasonTeams },
                 { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}delete{OPTIONAL_SLASH}", StoolballRouteType.DeleteSeason },
 

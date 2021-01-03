@@ -66,7 +66,7 @@ th.numeric {
     </table>
 */
 .table-as-cards thead {
-  display: none;
+  @extend .sr-only; // Needs to remain in the accessibility tree for headers to be announced by screen readers
 }
 
 // Each cell which has data-label applied gets transformed into a flex container, where the flex items are its ::before pseudo-element and the original contents
@@ -92,7 +92,7 @@ th.numeric {
 }
 
 @mixin table-as-cards-reset-thead {
-    display: table-header-group;
+    position: static; // undo .sr-only
 }
 
 @mixin table-as-cards-reset-label {
@@ -110,30 +110,30 @@ th.numeric {
         @include numeric-value;
     }
     // Reset everything that .table-as-cards did, so that the table is now displayed normally
-    .table-as-cards-reset-sm thead {
+    .table-as-cards.table-as-cards-reset-sm thead {
         @include table-as-cards-reset-thead;
     }
 
-    .table-as-cards-reset-sm [data-label] {
+    .table-as-cards.table-as-cards-reset-sm [data-label] {
         @include table-as-cards-reset-label;
     }
 
-    .table-as-cards-reset-sm [data-label]::before {
+    .table-as-cards.table-as-cards-reset-sm [data-label]::before {
         @include table-as-cards-reset-before;
     }
 }
 
 @include media-breakpoint-up(md) {
     // Reset everything that .table-as-cards did, so that the table is now displayed normally
-    .table-as-cards-reset-md thead {
+    .table-as-cards.table-as-cards-reset-md thead {
         @include table-as-cards-reset-thead;
     }
 
-    .table-as-cards-reset-md [data-label] {
+    .table-as-cards.table-as-cards-reset-md [data-label] {
         @include table-as-cards-reset-label;
     }
 
-    .table-as-cards-reset-md [data-label]::before {
+    .table-as-cards.table-as-cards-reset-md [data-label]::before {
         @include table-as-cards-reset-before;
     }
 }

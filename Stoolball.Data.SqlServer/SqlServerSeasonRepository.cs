@@ -121,6 +121,15 @@ namespace Stoolball.Data.SqlServer
                         auditableSeason.SeasonRoute = $"{auditableSeason.SeasonRoute}-{auditableSeason.UntilYear.ToString(CultureInfo.InvariantCulture).Substring(2)}";
                     }
 
+                    // Get the most recent season, if any, to copy existing settings as defaults
+                    var previousSeason = await connection.QuerySingleOrDefaultAsync<Season>(
+                        "SELECT TOP 1 SeasonId, ResultsTableType, EnableRunsScored, EnableRunsConceded FROM StoolballSeason WHERE CompetitionId = @CompetitionId AND FromYear < @FromYear ORDER BY FromYear DESC",
+                        new
+                        {
+                            auditableSeason.Competition.CompetitionId,
+                            auditableSeason.FromYear
+                        }, transaction).ConfigureAwait(false);
+
                     await connection.ExecuteAsync(
                         $@"INSERT INTO {Tables.Season} (SeasonId, CompetitionId, FromYear, UntilYear, Introduction, EnableTournaments, EnableBonusOrPenaltyRuns,
                                 PlayersPerTeam, Overs, EnableLastPlayerBatsOn, ResultsTableType, EnableRunsScored, EnableRunsConceded, Results, SeasonRoute) 
@@ -139,9 +148,9 @@ namespace Stoolball.Data.SqlServer
                             auditableSeason.PlayersPerTeam,
                             auditableSeason.Overs,
                             auditableSeason.EnableLastPlayerBatsOn,
-                            ResultsTableType = auditableSeason.ResultsTableType.ToString(),
-                            auditableSeason.EnableRunsScored,
-                            auditableSeason.EnableRunsConceded,
+                            ResultsTableType = previousSeason?.ResultsTableType.ToString() ?? ResultsTableType.None.ToString(),
+                            EnableRunsScored = previousSeason?.EnableRunsScored ?? false,
+                            EnableRunsConceded = previousSeason?.EnableRunsConceded ?? false,
                             auditableSeason.Results,
                             auditableSeason.SeasonRoute
                         }, transaction).ConfigureAwait(false);
@@ -160,17 +169,16 @@ namespace Stoolball.Data.SqlServer
                     }
 
                     // Copy points rules from the most recent season
-                    auditableSeason.PointsRules = (await connection.QueryAsync<PointsRule>(
-                        $@"SELECT MatchResultType, HomePoints, AwayPoints FROM { Tables.SeasonPointsRule } WHERE SeasonId = 
-                                (
-                                    SELECT TOP 1 SeasonId FROM StoolballSeason WHERE CompetitionId = @CompetitionId AND FromYear < @FromYear ORDER BY FromYear DESC
-                                )",
-                            new
-                            {
-                                auditableSeason.Competition.CompetitionId,
-                                auditableSeason.FromYear
-                            },
-                            transaction).ConfigureAwait(false)).ToList();
+                    if (previousSeason != null)
+                    {
+                        auditableSeason.PointsRules = (await connection.QueryAsync<PointsRule>(
+                            $@"SELECT MatchResultType, HomePoints, AwayPoints FROM { Tables.SeasonPointsRule } WHERE SeasonId = @SeasonId",
+                                new
+                                {
+                                    previousSeason.SeasonId
+                                },
+                                transaction).ConfigureAwait(false)).ToList();
+                    }
 
                     // If there are none, start with some default points rules
                     if (auditableSeason.PointsRules.Count == 0)
@@ -204,34 +212,35 @@ namespace Stoolball.Data.SqlServer
                     }
 
                     // Copy teams from the most recent season, where the teams did not withdraw and were still active in the season being added
-                    var teamIds = await connection.QueryAsync<Guid>(
-                        $@"SELECT t.TeamId FROM { Tables.SeasonTeam } st INNER JOIN { Tables.Team } t ON st.TeamId = t.TeamId 
-                                WHERE st.SeasonId = (
-                                    SELECT TOP 1 SeasonId FROM { Tables.Season } WHERE CompetitionId = @CompetitionId AND FromYear < @FromYear ORDER BY FromYear DESC
-                                )
+                    if (previousSeason != null)
+                    {
+                        var teamIds = await connection.QueryAsync<Guid>(
+                            $@"SELECT t.TeamId FROM { Tables.SeasonTeam } st INNER JOIN { Tables.Team } t ON st.TeamId = t.TeamId 
+                                WHERE st.SeasonId = @SeasonId
                                 AND 
                                 st.WithdrawnDate IS NULL
                                 AND (t.UntilYear IS NULL OR t.UntilYear <= @FromYear)",
-                        new
-                        {
-                            auditableSeason.Competition.CompetitionId,
-                            auditableSeason.FromYear
-                        },
-                        transaction).ConfigureAwait(false);
-
-                    foreach (var teamId in teamIds)
-                    {
-                        auditableSeason.Teams.Add(new TeamInSeason { Team = new Team { TeamId = teamId } });
-                        await connection.ExecuteAsync($@"INSERT INTO { Tables.SeasonTeam } 
-                                (SeasonTeamId, SeasonId, TeamId)
-                                VALUES (@SeasonTeamId, @SeasonId, @TeamId)",
                             new
                             {
-                                SeasonTeamId = Guid.NewGuid(),
-                                auditableSeason.SeasonId,
-                                teamId
+                                previousSeason.SeasonId,
+                                auditableSeason.FromYear
                             },
                             transaction).ConfigureAwait(false);
+
+                        foreach (var teamId in teamIds)
+                        {
+                            auditableSeason.Teams.Add(new TeamInSeason { Team = new Team { TeamId = teamId } });
+                            await connection.ExecuteAsync($@"INSERT INTO { Tables.SeasonTeam } 
+                                (SeasonTeamId, SeasonId, TeamId)
+                                VALUES (@SeasonTeamId, @SeasonId, @TeamId)",
+                                new
+                                {
+                                    SeasonTeamId = Guid.NewGuid(),
+                                    auditableSeason.SeasonId,
+                                    teamId
+                                },
+                                transaction).ConfigureAwait(false);
+                        }
                     }
 
                     var redacted = CreateRedactedCopy(auditableSeason);
@@ -289,9 +298,6 @@ namespace Stoolball.Data.SqlServer
                                 Overs = @Overs,
                                 EnableLastPlayerBatsOn = @EnableLastPlayerBatsOn,
                                 EnableBonusOrPenaltyRuns = @EnableBonusOrPenaltyRuns,
-                                ResultsTableType = @ResultsTableType,
-                                EnableRunsScored = @EnableRunsScored,
-                                EnableRunsConceded = @EnableRunsConceded,
                                 Results = @Results
 						        WHERE SeasonId = @SeasonId",
                         new
@@ -302,9 +308,6 @@ namespace Stoolball.Data.SqlServer
                             auditableSeason.Overs,
                             auditableSeason.EnableLastPlayerBatsOn,
                             auditableSeason.EnableBonusOrPenaltyRuns,
-                            ResultsTableType = auditableSeason.ResultsTableType.ToString(),
-                            auditableSeason.EnableRunsScored,
-                            auditableSeason.EnableRunsConceded,
                             auditableSeason.Results,
                             auditableSeason.SeasonId
                         }, transaction).ConfigureAwait(false);
@@ -358,7 +361,7 @@ namespace Stoolball.Data.SqlServer
         /// <summary>
         /// Updates league points settings for a stoolball season
         /// </summary>
-        public async Task<Season> UpdatePoints(Season season, Guid memberKey, string memberName)
+        public async Task<Season> UpdateResultsTable(Season season, Guid memberKey, string memberName)
         {
             if (season is null)
             {
@@ -378,6 +381,20 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
+                    await connection.ExecuteAsync(
+                    $@"UPDATE {Tables.Season} SET
+                            ResultsTableType = @ResultsTableType,
+                            EnableRunsScored = @EnableRunsScored,
+                            EnableRunsConceded = @EnableRunsConceded
+						    WHERE SeasonId = @SeasonId",
+                    new
+                    {
+                        ResultsTableType = auditableSeason.ResultsTableType.ToString(),
+                        auditableSeason.EnableRunsScored,
+                        auditableSeason.EnableRunsConceded,
+                        auditableSeason.SeasonId
+                    }, transaction).ConfigureAwait(false);
+
                     foreach (var rule in auditableSeason.PointsRules)
                     {
                         await connection.ExecuteAsync($@"UPDATE {Tables.SeasonPointsRule} SET 
@@ -407,7 +424,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.UpdatePoints));
+                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.UpdateResultsTable));
                 }
             }
 

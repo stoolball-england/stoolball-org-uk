@@ -37,7 +37,7 @@ namespace Stoolball.Web.Competitions
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
-        public async Task<ActionResult> CreateSeason([Bind(Prefix = "Season", Include = "FromYear,UntilYear,EnableTournaments,EnableBonusOrPenaltyRuns,PlayersPerTeam,Overs,EnableLastPlayerBatsOn,ResultsTableType,EnableRunsScored,EnableRunsConceded")] Season season)
+        public async Task<ActionResult> CreateSeason([Bind(Prefix = "Season", Include = "FromYear,UntilYear,EnableTournaments,EnableBonusOrPenaltyRuns,PlayersPerTeam,Overs,EnableLastPlayerBatsOn")] Season season)
         {
             if (season is null)
             {

@@ -1,4 +1,5 @@
-﻿using Stoolball.Competitions;
+﻿using System;
+using Stoolball.Competitions;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
 using Umbraco.Core.Models.PublishedContent;
@@ -13,5 +14,6 @@ namespace Stoolball.Web.Competitions
         }
         public Season Season { get; set; }
         public MatchListingViewModel Matches { get; set; }
+        public Uri UrlReferrer { get; set; }
     }
 }

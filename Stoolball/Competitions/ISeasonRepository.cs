@@ -19,7 +19,7 @@ namespace Stoolball.Competitions
         /// <summary>
         /// Updates league points settings for a stoolball season
         /// </summary>
-        Task<Season> UpdatePoints(Season season, Guid memberKey, string memberName);
+        Task<Season> UpdateResultsTable(Season season, Guid memberKey, string memberName);
 
         /// <summary>
         /// Updates the teams in a stoolball season

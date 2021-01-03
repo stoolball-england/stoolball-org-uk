@@ -29,7 +29,7 @@
         SeasonResultsTable,
         CreateSeason,
         EditSeason,
-        EditSeasonPoints,
+        EditSeasonResultsTable,
         EditSeasonTeams,
         DeleteSeason,
         Competition,

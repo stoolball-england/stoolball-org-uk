@@ -28,8 +28,8 @@
             <dd>Set the introduction, types of match played, the how results are shown.</dd>
             <dt><a href="@Model.Season.SeasonRoute/edit/teams">Teams in the @Model.Season.SeasonName()</a></dt>
             <dd>Set which teams are playing in the season.</dd>
-            <dt><a href="@Model.Season.SeasonRoute/edit/points">Points for the @Model.Season.SeasonName()</a></dt>
-            <dd>Set how league points are calculated.</dd>
+            <dt><a href="@Model.Season.SeasonRoute/edit/table">Edit results table for the @Model.Season.SeasonName()</a></dt>
+            <dd>Set whether to show a results table and, for leagues, how points are calculated.</dd>
             if (Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
             {
                 <dt><a href="@Model.Season.SeasonRoute/delete">Delete the @Model.Season.SeasonName()</a> @Html.Partial("_AdminOnly")</dt>

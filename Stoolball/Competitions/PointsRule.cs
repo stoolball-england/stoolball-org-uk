@@ -1,6 +1,6 @@
-﻿using Stoolball.Matches;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Stoolball.Matches;
 
 namespace Stoolball.Competitions
 {

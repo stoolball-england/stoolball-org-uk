@@ -1032,6 +1032,7 @@
     <Content Include="Views\News.cshtml" />
     <Content Include="Views\NewsStory.cshtml" />
     <Content Include="Views\Partials\BlockList\BlockList.cshtml" />
+    <Content Include="Views\EditSeasonResultsTable.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -1165,8 +1166,8 @@
     <Compile Include="Competitions\DeleteSeasonSurfaceController.cs" />
     <Compile Include="Competitions\EditSeasonTeamsSurfaceController.cs" />
     <Compile Include="Competitions\EditSeasonTeamsController.cs" />
-    <Compile Include="Competitions\EditSeasonPointsController.cs" />
-    <Compile Include="Competitions\EditSeasonPointsSurfaceController.cs" />
+    <Compile Include="Competitions\EditSeasonResultsTableController.cs" />
+    <Compile Include="Competitions\EditSeasonResultsTableSurfaceController.cs" />
     <Compile Include="Competitions\EditSeasonSurfaceController.cs" />
     <Compile Include="Competitions\CreateSeasonSurfaceController.cs" />
     <Compile Include="Competitions\CreateSeasonController.cs" />
@@ -1416,7 +1417,6 @@
     <Content Include="Views\DeleteMatch.cshtml" />
     <Content Include="Views\DeleteTournament.cshtml" />
     <Content Include="Views\SeasonResultsTable.cshtml" />
-    <Content Include="Views\EditSeasonPoints.cshtml" />
     <Content Include="Views\EditSeasonTeams.cshtml" />
     <Content Include="Views\CreateLeagueMatch.cshtml" />
     <Content Include="Views\CreateKnockoutMatch.cshtml" />

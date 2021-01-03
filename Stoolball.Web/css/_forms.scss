@@ -41,7 +41,9 @@
 form { margin-bottom: $spacer; }
 
 /* Legends should look like labels */
-legend { font-size: $font-size-base;}
+legend { 
+    font-size: $font-size-base;
+}
 
 /* A simple search form with an input field and button. Apply as <form class="form-inline form-search">. */
 .form-search {
@@ -134,6 +136,7 @@ svg {
 @media print {
     .btn {
         color: $black!important;
+        background: none;
     }
 
     .btn-delete {

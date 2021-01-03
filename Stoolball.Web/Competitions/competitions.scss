@@ -32,3 +32,22 @@
         width: auto;
     }
 }
+
+// Edit results table settings page
+.edit-results-table tbody th {
+    width: 8em;
+}
+
+.edit-results-table [data-label]::before {
+    font-weight: normal;
+}
+
+@include media-breakpoint-up(sm) {
+    .edit-results-table tbody th {
+        width: 40%;
+    }
+}
+
+.edit-results-table .field-validation-error {
+    display: block;
+}

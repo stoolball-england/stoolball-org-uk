@@ -24,7 +24,7 @@ namespace Stoolball.Web.Tests.Competitions
             Setup();
         }
 
-        private class TestController : EditSeasonPointsController
+        private class TestController : EditSeasonResultsTableController
         {
             public TestController(ISeasonDataSource seasonDataSource, UmbracoHelper umbracoHelper)
            : base(

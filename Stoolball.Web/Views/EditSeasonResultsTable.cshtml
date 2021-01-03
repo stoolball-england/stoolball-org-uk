@@ -1,0 +1,100 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<SeasonViewModel>
+@using ClientDependency.Core.Mvc
+@using Humanizer
+@using Stoolball.Competitions
+@using Stoolball.Web.Competitions
+@using Stoolball.Security
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+    Html.RequiresCss("/competitions/competitions.min.css");
+}
+<div class="container-xl">
+    <h1>Edit results table for @Model.Season.SeasonFullName()</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
+    {
+        using (Html.BeginUmbracoForm<EditSeasonResultsTableSurfaceController>
+            ("UpdateSeason"))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+            @Html.HiddenFor(m => Model.UrlReferrer)
+
+            <fieldset class="form-group">
+                <legend>What type of results table do you want?</legend>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Season.ResultsTableType, ResultsTableType.None, new { @class = "custom-control-input", @id = ResultsTableType.None.ToString() })
+                    <label for="@ResultsTableType.None.ToString()" class="custom-control-label">@ResultsTableType.None.ToString()</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Season.ResultsTableType, ResultsTableType.LeagueTable, new { @class = "custom-control-input", @id = ResultsTableType.LeagueTable.ToString() })
+                    <label for="@ResultsTableType.LeagueTable.ToString()" class="custom-control-label">@ResultsTableType.LeagueTable.ToString().Humanize() (sorted by league points)</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Season.ResultsTableType, ResultsTableType.NonLeagueResultsTable, new { @class = "custom-control-input", @id = ResultsTableType.NonLeagueResultsTable.ToString() })
+                    <label for="@ResultsTableType.NonLeagueResultsTable.ToString()" class="custom-control-label">@ResultsTableType.NonLeagueResultsTable.ToString().Humanize() (no points, sorted alphabetically)</label>
+                </div>
+                @Html.ValidationMessageFor(m => Model.Season.ResultsTableType, null, new { id = "table-type-validation" })
+            </fieldset>
+
+            <fieldset class="form-group">
+                <legend>Optional columns</legend>
+                <div class="custom-control custom-checkbox">
+                    @Html.CheckBoxFor(m => Model.Season.EnableRunsScored, new { @class = "custom-control-input" })
+                    @Html.LabelFor(m => Model.Season.EnableRunsScored, "Show runs scored", new { @class = "custom-control-label" })
+                </div>
+                <div class="custom-control custom-checkbox">
+                    @Html.CheckBoxFor(m => Model.Season.EnableRunsConceded, new { @class = "custom-control-input" })
+                    @Html.LabelFor(m => Model.Season.EnableRunsConceded, "Show runs conceded", new { @class = "custom-control-label" })
+                </div>
+            </fieldset>
+
+            <fieldset class="form-group">
+                <table class="table-as-cards table-hover edit-results-table">
+                    <caption>How are points awarded for league matches?</caption>
+                    <thead>
+                        <tr><th scope="col">Result</th><th scope="col">Points for home team</th><th scope="col">Points for away team</th></tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.Season.PointsRules.Count; i++)
+                        {
+                            <tr>
+                                <th scope="row">
+                                    @Model.Season.PointsRules[i].MatchResultType.ToString().Humanize()
+                                    @Html.HiddenFor(m => Model.Season.PointsRules[i].PointsRuleId)
+                                    @Html.HiddenFor(m => Model.Season.PointsRules[i].MatchResultType)
+                                </th>
+                                <td data-label="Points for home team">
+                                    <div>
+                                        @* Ensures the textbox and validation error are a single flex-item when using .table-as-cards *@
+                                    @Html.TextBoxFor(m => Model.Season.PointsRules[i].HomePoints, new { @type = "number", maxlength = "2", data_val_number = "Please type a number", data_val_required = "This field is required" })
+                                    @Html.ValidationMessageFor(m => Model.Season.PointsRules[i].HomePoints, null)
+                                </div>
+                            </td>
+                            <td data-label="Points for away team">
+                                <div>
+                                    @Html.TextBoxFor(m => Model.Season.PointsRules[i].AwayPoints, new { @type = "number", maxlength = "2", data_val_number = "Please type a number", data_val_required = "This field is required" })
+                                    @Html.ValidationMessageFor(m => Model.Season.PointsRules[i].AwayPoints, null)
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </fieldset>
+
+            <button class="btn btn-primary">Save results table</button>
+        }
+    }
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>
