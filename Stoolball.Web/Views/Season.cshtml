@@ -44,7 +44,7 @@
 
     @if (Model.Season.Teams.Count > 0)
     {
-        <h2>Teams playing in the @Model.Season.SeasonName()</h2>
+        <h2>Teams</h2>
         @Html.Partial("_TeamList", Model.Season.Teams.Select(x => x.Team).ToList())
     }
 
