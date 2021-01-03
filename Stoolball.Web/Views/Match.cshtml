@@ -54,7 +54,7 @@
         {
             @(Model.Match.Teams.Count > 1 ? "between " : "involving ")
             @Html.Raw(Model.Match.Teams.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>"))
-        }.
+        }
     </p>
 
     <p>

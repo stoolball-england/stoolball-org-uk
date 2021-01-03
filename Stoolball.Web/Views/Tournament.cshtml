@@ -11,17 +11,18 @@
 <div class="container-xl">
     <h1>@Model.Tournament.TournamentFullNameAndPlayerType(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
 
-    <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
-        <li class="nav-item">
-            <em class="nav-link active">Summary</em>
-        </li>
-        @if (authorizedToEdit)
-        {
+    @* authorizedToEdit only needs to protect the last tab, but there's no point having only one tab *@
+    @if (authorizedToEdit)
+    {
+        <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
+            <li class="nav-item">
+                <em class="nav-link active">Summary</em>
+            </li>
             <li class="nav-item nav-item-admin">
                 <a class="nav-link nav-link-edit" href="@Model.Tournament.TournamentRoute/edit">Edit tournament</a>
             </li>
-        }
-    </ul>
+        </ul>
+    }
 
     <p>
         When:
@@ -110,18 +111,11 @@
     {
         <p>This tournament is listed in the following seasons:</p>
 
-        var seasonListModel = new SeasonListViewModel
-        {
-            ShowCompetitionHeading = false,
-            ShowSeasonFullName = true
-        };
-        seasonListModel.Competitions.AddRange(Model.Tournament.Seasons
-            .Select(season =>
+        <ul>
+            @foreach (var season in Model.Tournament.Seasons)
             {
-                var competition = season.Competition;
-                competition.Seasons.Add(season);
-                return competition;
-            }));
-        @Html.Partial("_SeasonList", seasonListModel)
+                <li><a href="@season.SeasonRoute">@season.SeasonFullName()</a></li>
+            }
+        </ul>
     }
 </div>

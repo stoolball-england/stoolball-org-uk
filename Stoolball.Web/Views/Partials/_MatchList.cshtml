@@ -34,7 +34,7 @@
                 }
 
                 var showSpaces = false;
-                if (match.SpacesInTournament > 0 && match.TournamentQualificationType != TournamentQualificationType.ClosedTournament)
+                if (match.SpacesInTournament > 0 && match.StartTime > DateTime.UtcNow && match.TournamentQualificationType != TournamentQualificationType.ClosedTournament)
                 {
                     if (!fullstop)
                     {
