@@ -2,8 +2,6 @@
 @using Stoolball.Web.Clubs
 @Html.ValidationSummary(true)
 
-<button class="btn btn-primary sr-only">Save club</button>
-
 <div class="form-group">
     @Html.LabelFor(m => Model.Club.ClubName)
     @Html.TextBoxFor(m => Model.Club.ClubName, new { @class = "form-control", required = "required", aria_describedby = "club-name" })
@@ -27,7 +25,7 @@
                     <div class="related-item__animate">
                         @Html.Hidden($"Club.Teams[{i}].TeamId", Model.Club.Teams[i].TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Club.Teams[i].TeamId })
                         @Html.Hidden($"Club.Teams[{i}].TeamName", displayName, new { @class = "related-item__data", data_item = Model.Club.Teams[i].TeamId })
-                        <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Club.Teams[i].TeamName} from this club")</button>
+                        <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Club.Teams[i].TeamName} from this club")</button>
                     </div>
                 </td>
             </tr>
@@ -41,7 +39,7 @@
                     placeholder = "Add a team",
                     autocomplete = "off",
                     type = "search",
-                    data_url = "/api/teams/autocomplete",
+                    data_url = "/api/teams/autocomplete?includeclubteams=false",
                     data_template = "team-template",
                     aria_label = "Type a team name and press down arrow to select the team"
                 })
@@ -57,7 +55,7 @@
                 <div class="related-item__animate">
                     <input name="Club.Teams[0].TeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
                     <input name="Club.Teams[0].TeamName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
-                    <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this club")</button>
+                    <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this club")</button>
                 </div>
             </td>
         </tr>

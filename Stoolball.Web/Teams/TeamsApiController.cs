@@ -29,7 +29,7 @@ namespace Stoolball.Web.Teams
 
         [HttpGet]
         [Route("api/teams/autocomplete")]
-        public async Task<AutocompleteResultSet> Autocomplete([FromUri] string query, [FromUri] string[] not)
+        public async Task<AutocompleteResultSet> Autocomplete([FromUri] string query, [FromUri] string[] not, bool includeClubTeams = true)
         {
             if (not is null)
             {
@@ -38,6 +38,7 @@ namespace Stoolball.Web.Teams
 
             var teamQuery = new TeamQuery { Query = query };
             teamQuery.ExcludeTeamTypes.Add(TeamType.Transient);
+            teamQuery.IncludeClubTeams = includeClubTeams;
             foreach (var guid in not)
             {
                 if (guid == null) continue;

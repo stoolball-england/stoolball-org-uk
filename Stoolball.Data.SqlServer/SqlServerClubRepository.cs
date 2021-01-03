@@ -101,7 +101,8 @@ namespace Stoolball.Data.SqlServer
                             auditableClub.ClubName
                         }, transaction).ConfigureAwait(false);
 
-                    await connection.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = @ClubId WHERE TeamId IN @TeamIds", new { auditableClub.ClubId, TeamIds = auditableClub.Teams.Select(x => x.TeamId) }, transaction).ConfigureAwait(false);
+                    // Check for ClubId IS NULL, otherwise the owner of Club B can edit Club A by reassigning its team
+                    await connection.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = @ClubId WHERE TeamId IN @TeamIds AND ClubId IS NULL", new { auditableClub.ClubId, TeamIds = auditableClub.Teams.Select(x => x.TeamId) }, transaction).ConfigureAwait(false);
 
                     var serialisedClub = JsonConvert.SerializeObject(auditableClub);
                     await _auditRepository.CreateAudit(new AuditRecord
@@ -191,7 +192,9 @@ namespace Stoolball.Data.SqlServer
                     }
 
                     await connection.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = NULL WHERE ClubId = @ClubId AND TeamId NOT IN @TeamIds", new { auditableClub.ClubId, TeamIds = auditableClub.Teams.Select(x => x.TeamId) }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = @ClubId WHERE TeamId IN @TeamIds", new { auditableClub.ClubId, TeamIds = auditableClub.Teams.Select(x => x.TeamId) }, transaction).ConfigureAwait(false);
+
+                    // Check for ClubId IS NULL, otherwise the owner of Club B can edit Club A by reassigning its team
+                    await connection.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = @ClubId WHERE TeamId IN @TeamIds AND ClubId IS NULL", new { auditableClub.ClubId, TeamIds = auditableClub.Teams.Select(x => x.TeamId) }, transaction).ConfigureAwait(false);
 
                     if (club.ClubRoute != auditableClub.ClubRoute)
                     {

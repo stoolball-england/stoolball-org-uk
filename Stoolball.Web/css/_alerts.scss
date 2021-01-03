@@ -14,6 +14,14 @@
     padding-left: 35px;
 }
 
+.alert-tip a:link, .alert-tip a:visited {
+    color: #007A00; // slightly darker to meet WCAG AA
+}
+
+.alert-tip a:hover {
+    color: #004d00; // still use the standard hover colour
+}
+
 @media print {
     .alert-tip {
         padding-left: $spacer*1.25;

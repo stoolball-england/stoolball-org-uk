@@ -11,5 +11,9 @@ namespace Stoolball.Teams
         public List<Guid> CompetitionIds { get; internal set; } = new List<Guid>();
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 50;
+        /// <summary>
+        /// Gets or sets whether to include teams that are in clubs
+        /// </summary>
+        public bool IncludeClubTeams { get; internal set; } = true;
     }
 }

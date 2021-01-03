@@ -26,6 +26,7 @@
             ("CreateClub"))
         {
             @Html.AntiForgeryToken()
+            <p class="alert alert-info alert-tip">A club links teams together. Do you need to <a href="/teams/add">add a team</a> instead?</p>
             @Html.Partial("_CreateOrEditClub")
         }
     }
