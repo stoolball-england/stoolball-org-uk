@@ -625,10 +625,10 @@
     <Content Include="css\cookies.page.min.css">
       <DependentUpon>cookies.page.css</DependentUpon>
     </Content>
-    <Content Include="css\home.css">
+    <Content Include="HomePage\home.css">
       <DependentUpon>home.scss</DependentUpon>
     </Content>
-    <Content Include="css\home.min.css">
+    <Content Include="HomePage\home.min.css">
       <DependentUpon>home.css</DependentUpon>
     </Content>
     <Content Include="css\news.css">
@@ -782,7 +782,7 @@
     <Content Include="Content\bootstrap\bootstrap-grid.scss" />
     <Content Include="css\news.scss" />
     <Content Include="css\shop.page.scss" />
-    <Content Include="css\home.scss" />
+    <Content Include="HomePage\home.scss" />
     <Content Include="Matches\match.css">
       <DependentUpon>match.scss</DependentUpon>
     </Content>

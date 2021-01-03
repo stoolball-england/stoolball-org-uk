@@ -44,10 +44,6 @@
     "inputFile": "css/shop.page.scss"
   },
   {
-    "outputFile": "css/home.css",
-    "inputFile": "css/home.scss"
-  },
-  {
     "outputFile": "Teams/team.css",
     "inputFile": "Teams/team.scss"
   },
@@ -62,5 +58,9 @@
   {
     "outputFile": "Competitions/competitions.css",
     "inputFile": "Competitions/competitions.scss"
+  },
+  {
+    "outputFile": "HomePage/home.css",
+    "inputFile": "HomePage/home.scss"
   }
 ]
