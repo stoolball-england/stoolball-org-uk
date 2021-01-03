@@ -19,8 +19,8 @@ namespace Stoolball.Tests.Competitions
         }
 
         [Theory]
-        [InlineData("Example competition", 2020, 2020, PlayerType.Ladies, "Example competition, 2020 season (Ladies)")]
-        [InlineData("Example competition", 2020, 2021, PlayerType.Ladies, "Example competition, 2020/21 season (Ladies)")]
+        [InlineData("Example competition", 2020, 2020, PlayerType.Ladies, "Example competition (Ladies), 2020 season")]
+        [InlineData("Example competition", 2020, 2021, PlayerType.Ladies, "Example competition (Ladies), 2020/21 season")]
         [InlineData("Example ladies competition", 2020, 2020, PlayerType.Ladies, "Example ladies competition, 2020 season")]
         [InlineData("Example ladies' competition", 2020, 2021, PlayerType.Ladies, "Example ladies' competition, 2020/21 season")]
         public void Season_full_name_and_player_type_is_built_correctly(string competitionName, int fromYear, int untilYear, PlayerType playerType, string expectedName)

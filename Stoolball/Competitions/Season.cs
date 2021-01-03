@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Text;
 using HtmlAgilityPack;
-using Humanizer;
 using Stoolball.Logging;
 using Stoolball.Matches;
 
@@ -46,16 +45,8 @@ namespace Stoolball.Competitions
         /// <returns></returns>
         public string SeasonFullNameAndPlayerType()
         {
-            var competitionName = Competition?.CompetitionName ?? string.Empty;
-            var playerType = string.Empty;
-
-            var type = Competition?.PlayerType.ToString().Humanize(LetterCasing.Sentence);
-            if (type != null && !competitionName.Replace("'", string.Empty).ToUpperInvariant().Contains(type.Replace("'", string.Empty).ToUpperInvariant()))
-            {
-                playerType = " (" + type + ")";
-            }
-
-            return $"{SeasonFullName()}{playerType}".Trim();
+            var competitionName = Competition?.CompetitionNameAndPlayerType() ?? string.Empty;
+            return $"{competitionName}, {SeasonName()}".Trim();
         }
 
         public Competition Competition { get; set; }
