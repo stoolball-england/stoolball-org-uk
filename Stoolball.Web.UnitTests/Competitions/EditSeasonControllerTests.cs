@@ -74,6 +74,7 @@ namespace Stoolball.Web.Tests.Competitions
             {
                 Competition = new Competition
                 {
+                    CompetitionName = "Example competition",
                     CompetitionRoute = "/competitions/example"
                 },
                 SeasonRoute = "/competitions/example/1234"

@@ -78,7 +78,10 @@ namespace Stoolball.Web.Tests.Teams
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team { TeamId = Guid.NewGuid(), TeamRoute = "/teams/example" });
 
             var matchDataSource = new Mock<IMatchListingDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing> { new MatchListing { StartTime = DateTimeOffset.UtcNow } });
+            matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing> { new MatchListing {
+                StartTime = DateTimeOffset.UtcNow,
+                MatchRoute = "/example"
+            } });
 
             using (var controller = new TestController(teamDataSource.Object, matchDataSource.Object, UmbracoHelper))
             {
