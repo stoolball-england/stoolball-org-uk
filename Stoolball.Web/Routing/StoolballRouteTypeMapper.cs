@@ -47,7 +47,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.EditSeasonTeams, typeof(EditSeasonTeamsController) },
             { StoolballRouteType.DeleteSeason, typeof(DeleteSeasonController) },
             { StoolballRouteType.MatchesForSeason, typeof(MatchesForSeasonController) },
-            { StoolballRouteType.SeasonResults, typeof(SeasonResultsController) },
+            { StoolballRouteType.SeasonResultsTable, typeof(SeasonResultsTableController) },
             { StoolballRouteType.Match, typeof(MatchController) },
             { StoolballRouteType.MatchActions, typeof(MatchActionsController) },
             { StoolballRouteType.CreateFriendlyMatch, typeof(CreateFriendlyMatchController) },

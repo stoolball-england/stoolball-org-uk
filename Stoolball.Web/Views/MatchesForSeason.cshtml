@@ -24,7 +24,7 @@
             !string.IsNullOrEmpty(Model.Season.Results))
         {
             <li class="nav-item">
-                <a class="nav-link" href="@Model.Season.SeasonRoute/results">Results</a>
+                <a class="nav-link" href="@Model.Season.SeasonRoute/table">Table</a>
             </li>
         }
         @Html.Partial("_AddMatchMenu", matchMenu)

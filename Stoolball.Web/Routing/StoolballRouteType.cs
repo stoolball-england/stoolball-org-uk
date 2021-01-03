@@ -26,7 +26,7 @@
         Teams,
         Season,
         SeasonActions,
-        SeasonResults,
+        SeasonResultsTable,
         CreateSeason,
         EditSeason,
         EditSeasonPoints,

@@ -21,14 +21,14 @@ using Xunit;
 
 namespace Stoolball.Web.Tests.Competitions
 {
-    public class SeasonResultsControllerTests : UmbracoBaseTest
+    public class SeasonResultsTableControllerTests : UmbracoBaseTest
     {
-        public SeasonResultsControllerTests()
+        public SeasonResultsTableControllerTests()
         {
             Setup();
         }
 
-        private class TestController : SeasonResultsController
+        private class TestController : SeasonResultsTableController
         {
             public TestController(ISeasonDataSource seasonDataSource, UmbracoHelper umbracoHelper)
            : base(

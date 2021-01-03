@@ -1178,7 +1178,7 @@
     <Compile Include="Competitions\MatchesForSeasonController.cs" />
     <Compile Include="Competitions\SeasonActionsController.cs" />
     <Compile Include="Competitions\DeleteSeasonController.cs" />
-    <Compile Include="Competitions\SeasonResultsController.cs" />
+    <Compile Include="Competitions\SeasonResultsTableController.cs" />
     <Compile Include="Competitions\SeasonController.cs" />
     <Compile Include="Competitions\CompetitionViewModel.cs" />
     <Compile Include="Competitions\DeleteSeasonViewModel.cs" />
@@ -1415,7 +1415,7 @@
     <Content Include="Views\TournamentActions.cshtml" />
     <Content Include="Views\DeleteMatch.cshtml" />
     <Content Include="Views\DeleteTournament.cshtml" />
-    <Content Include="Views\SeasonResults.cshtml" />
+    <Content Include="Views\SeasonResultsTable.cshtml" />
     <Content Include="Views\EditSeasonPoints.cshtml" />
     <Content Include="Views\EditSeasonTeams.cshtml" />
     <Content Include="Views\CreateLeagueMatch.cshtml" />
