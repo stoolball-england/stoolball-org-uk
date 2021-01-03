@@ -69,17 +69,6 @@ th.numeric {
   display: none;
 }
 
-// Treat a row heading like the column headings we've just hidden
-.table-as-cards th:first-child {
-    background: $table-dark-bg;
-    color: $table-dark-color;
-}
-
-.table-as-cards th:first-child a:link, .table-as-cards th:first-child a:visited {
-    color: $table-dark-color;
-    border-bottom-color: $table-dark-color;
-}
-
 // Each cell which has data-label applied gets transformed into a flex container, where the flex items are its ::before pseudo-element and the original contents
 // This creates a miniature table row appearance, with the ::before as the row heading and the original contents as the data
 .table-as-cards [data-label] {
@@ -94,7 +83,7 @@ th.numeric {
     font-weight: bold;
     width: 50%;
     text-align: left;
-    padding-right: $table-cell-padding;
+    margin-right: $table-cell-padding;
 }
 
 // Preserve the text-align: right of .numeric when it is applied. Otherwise it's just left-aligned after the width of the ::before pseudo-element above
@@ -104,16 +93,6 @@ th.numeric {
 
 @mixin table-as-cards-reset-thead {
     display: table-header-group;
-}
-
-@mixin table-as-cards-reset-th {
-    background: none;
-    color: inherit;
-}
-
-@mixin table-as-cards-reset-th-link {
-    color: $link-color;
-    border-bottom-color: $link-color;
 }
 
 @mixin table-as-cards-reset-label {
@@ -135,14 +114,6 @@ th.numeric {
         @include table-as-cards-reset-thead;
     }
 
-    .table-as-cards-reset-sm tbody th:first-child {
-        @include table-as-cards-reset-th;
-    }
-
-    .table-as-cards-reset-sm tbody th:first-child a:link, .table-as-cards-reset-sm tbody th:first-child a:visited {
-        @include table-as-cards-reset-th-link;
-    }
-
     .table-as-cards-reset-sm [data-label] {
         @include table-as-cards-reset-label;
     }
@@ -156,14 +127,6 @@ th.numeric {
     // Reset everything that .table-as-cards did, so that the table is now displayed normally
     .table-as-cards-reset-md thead {
         @include table-as-cards-reset-thead;
-    }
-
-    .table-as-cards-reset-md tbody th:first-child {
-        @include table-as-cards-reset-th;
-    }
-
-    .table-as-cards-reset-md tbody th:first-child a:link, .table-as-cards-reset-md tbody th:first-child a:visited {
-        @include table-as-cards-reset-th-link;
     }
 
     .table-as-cards-reset-md [data-label] {

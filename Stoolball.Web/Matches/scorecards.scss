@@ -23,9 +23,18 @@
   white-space: nowrap;
 }
 
+// Treat a row heading like the column headings hidden by .table-as-cards.
 // Apply a standard width to the visually-dominant first column in .table-as-cards, ensuring a series of batting and bowling scorecards all line-up
 .batting-scorecard th:first-child, .bowling-scorecard th:first-child {
+    background: $table-dark-bg;
+    color: $table-dark-color;
     width: 8rem;
+}
+
+.batting-scorecard th:first-child a:link, .batting-scorecard th:first-child a:visited,
+.bowling-scorecard th:first-child a:link, .bowling-scorecard th:first-child a:visited {
+    color: $table-dark-color;
+    border-bottom-color: $table-dark-color;
 }
 
 // Because .table-as-cards is applied, each td is the last on its row. Its padding-right is therefore added to the padding-right of .container-xl,
@@ -86,10 +95,21 @@
     .player-name, tbody th.player-name:first-child {
         width: 20%;
     }
-    
+
     // Table flow will normally wrap the player names first, but it actually looks better if other things are allowed to wrap first
     .player-name {
         white-space: nowrap;
+    }
+
+    // Reset the reversed colour on the first column
+    .table-as-cards-reset-sm tbody th:first-child {
+        background: none;
+        color: inherit;
+    }
+
+    .table-as-cards-reset-sm tbody th:first-child a:link, .table-as-cards-reset-sm tbody th:first-child a:visited {
+        color: $link-color;
+        border-bottom-color: $link-color;
     }
 
     // Reset to default - now the .table-as-cards flex layout is gone, wrapping works better
@@ -101,6 +121,7 @@
     .batting-scorecard td {
         padding-right: $table-cell-padding;
     }
+
     // Reset font-weight on runs scored. Balls-faced are now de-emphasised compared to runs by shrinking the font-size and adding brackets.
     .batting-scorecard .runs,
     .batting-scorecard .balls {

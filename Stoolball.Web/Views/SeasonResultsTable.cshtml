@@ -47,28 +47,28 @@
                 var matchesAwaitingResults = new MatchListingViewModel { DateTimeFormatter = Model.Matches.DateTimeFormatter };
                 var withdrawnTeams = Model.Season.Teams.Where(x => x.WithdrawnDate.HasValue);
                 var columns = 7;
-                <table class="results-table table-as-cards table-as-cards-reset-md">
+                <table class="results-table table-as-cards table-as-cards-reset-md table-hover">
                     <thead>
                         <tr>
                             <th scope="col">Team</th>
-                            <th scope="col">Played</th>
-                            <th scope="col">Won</th>
-                            <th scope="col">Lost</th>
-                            <th scope="col">Tied</th>
-                            <th scope="col">No result</th>
+                            <th scope="col" class="numeric">Played</th>
+                            <th scope="col" class="numeric">Won</th>
+                            <th scope="col" class="numeric">Lost</th>
+                            <th scope="col" class="numeric">Tied</th>
+                            <th scope="col" class="numeric">No result</th>
                             @if (Model.Season.EnableRunsScored)
                             {
                                 columns++;
-                                <th>Runs scored</th>
+                                <th scope="col" class="numeric">Runs scored</th>
                             }
                             @if (Model.Season.EnableRunsConceded)
                             {
                                 columns++;
-                                <th>Runs conceded</th>
+                                <th scope="col" class="numeric">Runs conceded</th>
                             }
                             @if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
                             {
-                                <th>Points</th>
+                                <th scope="col" class="numeric">Points</th>
                             }
                         </tr>
                     </thead>
@@ -163,22 +163,22 @@
                             {
                                 <tr>
                                     <th scope="row"><a href="@row.Team.TeamRoute">@row.Team.TeamName</a></th>
-                                    <td data-label="Played">@row.Played</td>
-                                    <td data-label="Won">@row.Won</td>
-                                    <td data-label="Lost">@row.Lost</td>
-                                    <td data-label="Tied">@row.Tied</td>
-                                    <td data-label="No result">@row.NoResult</td>
+                                    <td data-label="Played" class="numeric"><span class="results-table__numeric-value">@row.Played</span></td>
+                                    <td data-label="Won" class="numeric"><span class="results-table__numeric-value">@row.Won</span></td>
+                                    <td data-label="Lost" class="numeric"><span class="results-table__numeric-value">@row.Lost</span></td>
+                                    <td data-label="Tied" class="numeric"><span class="results-table__numeric-value">@row.Tied</span></td>
+                                    <td data-label="No result" class="numeric"><span class="results-table__numeric-value">@row.NoResult</span></td>
                                     @if (Model.Season.EnableRunsScored)
                                     {
-                                        <td data-label="Runs scored">@row.RunsScored</td>
+                                        <td data-label="Runs scored" class="numeric"><span class="results-table__numeric-value">@row.RunsScored</span></td>
                                     }
                                     @if (Model.Season.EnableRunsConceded)
                                     {
-                                        <td data-label="Runs conceded">@row.RunsConceded</td>
+                                        <td data-label="Runs conceded" class="numeric"><span class="results-table__numeric-value">@row.RunsConceded</span></td>
                                     }
                                     @if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
                                     {
-                                        <td data-label="Points">@row.Points</td>
+                                        <td data-label="Points" class="numeric"><span class="results-table__numeric-value">@row.Points</span></td>
                                     }
                                 </tr>
                             }
