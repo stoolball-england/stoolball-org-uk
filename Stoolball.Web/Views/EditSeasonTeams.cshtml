@@ -17,6 +17,8 @@
 
     Html.RequiresCss("~/css/related-items.min.css");
     Html.RequiresJs("~/js/related-items.js");
+
+    Html.RequiresCss("~/competitions/competitions.min.css");
 }
 <div class="container-xl">
     <h1>Teams in the @Model.Season.SeasonFullName()</h1>
@@ -27,11 +29,8 @@
             ("UpdateSeason"))
         {
             @Html.AntiForgeryToken()
-            @Html.ValidationSummary(true)
 
-            <button class="sr-only">Save season</button>
-
-            <table class="table table-hover related-items">
+            <table class="table table-hover related-items edit-season-teams-table">
                 <thead class="thead-dark">
                     <tr><th scope="col">Teams</th><th scope="col">Date withdrew</th><th scope="col"></th></tr>
                 </thead>
@@ -41,12 +40,15 @@
                         var displayName = Model.Season.Teams[i].Team.UntilYear.HasValue ? Model.Season.Teams[i].Team.TeamName + " (no longer active)" : Model.Season.Teams[i].Team.TeamName;
                         <tr>
                             <td class="related-item__selected__section"><div class="related-item__animate">@displayName</div></td>
-                            <td class="related-item__selected__section"><div class="related-item__animate">@Html.TextBoxFor(m => Model.Season.Teams[i].WithdrawnDate, "{0:yyyy-MM-dd}", new { @type = "date", @class = "related-item__data", data_item = Model.Season.Teams[i].Team.TeamId })</div></td>
+                            <td class="related-item__selected__section"><div class="related-item__animate">
+                                @Html.TextBoxFor(m => Model.Season.Teams[i].WithdrawnDate, "{0:yyyy-MM-dd}", new { @type = "date", @class = "related-item__data", data_item = Model.Season.Teams[i].Team.TeamId })
+                                @Html.ValidationMessageFor(m => Model.Season.Teams[i].WithdrawnDate, null)
+                            </div></td>
                             <td class="related-item__delete related-item__selected__section">
                                 <div class="related-item__animate">
                                     @Html.Hidden($"Season.Teams[{i}].Team.TeamId", Model.Season.Teams[i].Team.TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Season.Teams[i].Team.TeamId })
                                     @Html.Hidden($"Season.Teams[{i}].Team.TeamName", displayName, new { @class = "related-item__data", data_item = Model.Season.Teams[i].Team.TeamId })
-                                    <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Season.Teams[i].Team.TeamName} from this season")</button>
+                                    <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Season.Teams[i].Team.TeamName} from this season")</button>
                                 </div>
                             </td>
                         </tr>
@@ -77,14 +79,14 @@
                         <div class="related-item__animate">
                             <input name="Season.Teams[0].Team.TeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
                             <input name="Season.Teams[0].Team.TeamName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
-                            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this season")</button>
+                            <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this season")</button>
                         </div>
                     </td>
             </tr>
             </table>
             </script>
 
-            <button class="btn btn-primary">Save season</button>
+            <button class="btn btn-primary">Save teams</button>
         }
     }
     else

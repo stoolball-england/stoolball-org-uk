@@ -83,7 +83,7 @@ input[type='number'] {
 }
 
 input[type='date'] {
-    width: 13em;
+    width: 12em; // Chrome needs this space for jQuery validation and its calendar icon
 }
 
 input[type='time'] {
@@ -146,6 +146,10 @@ svg {
 
 .btn-delete-icon {
     padding: 0;
+}
+
+.btn-delete-icon > img {
+    max-width: none; // don't allow this image to shrink when space is tight
 }
 
 /* Add social media icons to fields for social media accounts */

@@ -15,7 +15,7 @@
             <td class="related-item__delete related-item__selected__section">
                 <div class="related-item__animate">
                     <input type="hidden" class="related-item__data related-item__id" data-item="{{item-id}}" />
-                    <button class="text-danger><svg /></button>
+                    <button type="button" class="text-danger><svg /></button>
                 </div>
             </td>
         </tr>
@@ -43,7 +43,7 @@
             </div>
             <div class="related-item__delete related-item__selected__section">
                 <input name="xxx" type="hidden" class="related-item__data related-item__id" value="{{data}}" />
-                <button class="text-danger><svg /></button>
+                <button type="button" class="text-danger><svg /></button>
             </div>
         </div>
     </script>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
@@ -44,6 +45,8 @@ namespace Stoolball.Web.Competitions
             var beforeUpdate = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl).ConfigureAwait(false);
             season.SeasonId = beforeUpdate.SeasonId;
 
+            ReplaceDateFormatErrorMessages("Date withdrew");
+
             var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate.Competition);
 
             if (isAuthorized[AuthorizedAction.EditCompetition] && ModelState.IsValid)
@@ -70,9 +73,28 @@ namespace Stoolball.Web.Competitions
 
             viewModel.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
             viewModel.Breadcrumbs.Add(new Breadcrumb { Name = viewModel.Season.Competition.CompetitionName, Url = new Uri(viewModel.Season.Competition.CompetitionRoute, UriKind.Relative) });
-            viewModel.Breadcrumbs.Add(new Breadcrumb { Name = viewModel.Season.SeasonFullName(), Url = new Uri(viewModel.Season.SeasonRoute, UriKind.Relative) });
+            viewModel.Breadcrumbs.Add(new Breadcrumb { Name = viewModel.Season.SeasonName(), Url = new Uri(viewModel.Season.SeasonRoute, UriKind.Relative) });
 
             return View("EditSeasonTeams", viewModel);
+        }
+
+        /// <summary>
+        /// ModelState date format error messages for date fields only say its invalid, without saying YYYY-MM-DD is the valid format. Update the message to be more helpful.
+        /// </summary>
+        /// <remarks>
+        /// Only browsers which do not support HTML <input type="date" /> should ever see this message, which mainly means Safari.
+        /// Using a [RegularExpression] validator on the property in order to set the ErrorMessage property does not work, because it does not allow a valid value to pass from a browser that supports <input type="date" />.
+        /// </remarks>
+        /// <param name="fieldDisplayName">The field name used in the default error message, which is xxx when using System.ComponentModel.DataAnnotations [Display(Name = "xxx")]</param>
+        private void ReplaceDateFormatErrorMessages(string fieldDisplayName)
+        {
+            var fieldsWithDateFormatErrors = ModelState.Keys.Where(x => ModelState[x].Errors.Count > 0 && ModelState[x].Errors.Any(e => e.ErrorMessage.EndsWith($"is not valid for {fieldDisplayName}.", StringComparison.OrdinalIgnoreCase)));
+            foreach (var fieldName in fieldsWithDateFormatErrors)
+            {
+                var dateFormatError = ModelState[fieldName].Errors.Single(e => e.ErrorMessage.EndsWith($"is not valid for {fieldDisplayName}.", StringComparison.OrdinalIgnoreCase));
+                ModelState[fieldName].Errors.Remove(dateFormatError);
+                ModelState.AddModelError(fieldName, "Enter a date in YYYY-MM-DD format.");
+            }
         }
     }
 }

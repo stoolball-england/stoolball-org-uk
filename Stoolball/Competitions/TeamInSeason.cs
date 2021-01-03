@@ -1,5 +1,6 @@
-﻿using Stoolball.Teams;
-using System;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using Stoolball.Teams;
 
 namespace Stoolball.Competitions
 {
@@ -7,6 +8,8 @@ namespace Stoolball.Competitions
     {
         public Season Season { get; set; }
         public Team Team { get; set; }
+
+        [Display(Name = "Date withdrew")]
         public DateTimeOffset? WithdrawnDate { get; set; }
     }
 }

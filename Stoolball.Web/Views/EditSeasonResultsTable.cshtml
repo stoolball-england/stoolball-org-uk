@@ -73,7 +73,7 @@
                                 </th>
                                 <td data-label="Points for home team">
                                     <div>
-                                        @* Ensures the textbox and validation error are a single flex-item when using .table-as-cards *@
+                                        @* Extra div ensures the textbox and validation error are a single flex-item when using .table-as-cards *@
                                     @Html.TextBoxFor(m => Model.Season.PointsRules[i].HomePoints, new { @type = "number", maxlength = "2", data_val_number = "Please type a number", data_val_required = "This field is required" })
                                     @Html.ValidationMessageFor(m => Model.Season.PointsRules[i].HomePoints, null)
                                 </div>
