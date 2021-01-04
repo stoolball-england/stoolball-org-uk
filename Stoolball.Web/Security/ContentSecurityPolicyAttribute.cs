@@ -100,7 +100,6 @@ namespace Stoolball.Web.Security
         private void SetupTinyMCE()
         {
             AddSource(STYLE_SRC, "'unsafe-inline'");
-            AddSource(FONT_SRC, "'self'"); // in Firefox, but not Chrome
         }
 
         private void AddSource(string directive, string source)
@@ -164,6 +163,7 @@ namespace Stoolball.Web.Security
             AddSource(IMG_SRC, "data:"); // for Bootstrap custom checkboxes in the cookie banner
             AddSource(CONNECT_SRC, "'self'");
             AddSource(MANIFEST_SRC, "'self'");
+            AddSource(FONT_SRC, "'self'");
         }
 
         private void SetupDirectives()
