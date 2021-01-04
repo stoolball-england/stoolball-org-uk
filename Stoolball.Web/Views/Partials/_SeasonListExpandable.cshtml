@@ -3,19 +3,21 @@
 @using Stoolball.Competitions
 @using System.Linq
 @{
-    var (currentSeasonFrom, currentSeasonUntil) = Current.Factory.GetInstance<ISeasonEstimator>().EstimateSeasonDates(DateTime.UtcNow);
     var allSeasons = Model.Competitions.SelectMany(x => x.Seasons);
-
-    var seasonFromYear = currentSeasonFrom.Year + 1;
-    var seasonUntilYear = currentSeasonUntil.Year + 1;
-    IEnumerable<Season> lastSeasonOnwards = Array.Empty<Season>();
-    do
+    if (allSeasons.Any())
     {
-        seasonFromYear--;
-        seasonUntilYear--;
-        lastSeasonOnwards = allSeasons.Where(x => seasonFromYear == seasonUntilYear ? x.UntilYear >= seasonFromYear : x.FromYear >= seasonFromYear);
+        var (currentSeasonFrom, currentSeasonUntil) = Current.Factory.GetInstance<ISeasonEstimator>().EstimateSeasonDates(DateTime.UtcNow);
 
-    } while (!lastSeasonOnwards.Any());
+        var seasonFromYear = currentSeasonFrom.Year + 1;
+        var seasonUntilYear = currentSeasonUntil.Year + 1;
+        IEnumerable<Season> lastSeasonOnwards = Array.Empty<Season>();
+        do
+        {
+            seasonFromYear--;
+            seasonUntilYear--;
+            lastSeasonOnwards = allSeasons.Where(x => seasonFromYear == seasonUntilYear ? x.UntilYear >= seasonFromYear : x.FromYear >= seasonFromYear);
+
+        } while (!lastSeasonOnwards.Any());
 
     <h2>Competitions</h2>
     <ul class="season-list__current">
@@ -24,8 +26,8 @@
             <li><a href="@season.SeasonRoute">@season.SeasonFullName()</a></li>
         }
     </ul>
-    if (lastSeasonOnwards.Count() < allSeasons.Count())
-    {
+        if (lastSeasonOnwards.Count() < allSeasons.Count())
+        {
         <div class="season-list__all d-none">
             @foreach (var competition in Model.Competitions)
             {
@@ -41,5 +43,6 @@
                 </ul>
             }
         </div>
+            }
+        }
     }
-}
