@@ -17,8 +17,8 @@
     display: inline;
 }
 
-.breadcrumb-item + .breadcrumb-item::before {
-    padding-right: $spacer/4; // Update Bootstrap padding to reflect change to display value above.
+.breadcrumb-item + .breadcrumb-item {
+    padding-left: $spacer/4; // Update Bootstrap padding to reflect change to display value above.
 }
 
 .breadcrumb a[href] {
