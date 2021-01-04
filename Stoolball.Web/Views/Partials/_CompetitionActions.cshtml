@@ -7,9 +7,9 @@
     @if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
     {
         <dt><a href="@Model.Competition.CompetitionRoute/edit/competition">Edit @the'@Model.Competition.CompetitionName' competition</a></dt>
-        <dd>Set the introduction, contact details, overs per match and more.</dd>
+        <dd>Set the introduction, who can play and the contact details.</dd>
         <dt><a href="@Model.Competition.CompetitionRoute/add">Add a season</a></dt>
-        <dd>Add a new season of competition, then you can add teams and matches.</dd>
+        <dd>Add a new season of the competition, then you can add teams and matches.</dd>
     }
     @if (Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
     {
