@@ -232,10 +232,10 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@ExcludeTeamIds", teamQuery.ExcludeTeamIds.Select(x => x.ToString()));
             }
 
-            if (teamQuery?.ExcludeTeamTypes?.Count > 0)
+            if (teamQuery?.TeamTypes?.Count > 0)
             {
-                where.Add("t.TeamType NOT IN @ExcludeTeamTypes");
-                parameters.Add("@ExcludeTeamTypes", teamQuery.ExcludeTeamTypes.Select(x => x.ToString()));
+                where.Add("t.TeamType IN @TeamTypes");
+                parameters.Add("@TeamTypes", teamQuery.TeamTypes.Select(x => x.ToString()));
             }
 
             if (teamQuery != null && !teamQuery.IncludeClubTeams)

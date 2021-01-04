@@ -29,16 +29,21 @@ namespace Stoolball.Web.Teams
 
         [HttpGet]
         [Route("api/teams/autocomplete")]
-        public async Task<AutocompleteResultSet> Autocomplete([FromUri] string query, [FromUri] string[] not, bool includeClubTeams = true)
+        public async Task<AutocompleteResultSet> Autocomplete([FromUri] string query, [FromUri] string[] not, [FromUri] string[] teamType, [FromUri] bool includeClubTeams = true)
         {
             if (not is null)
             {
                 throw new ArgumentNullException(nameof(not));
             }
 
+            if (teamType is null)
+            {
+                throw new ArgumentNullException(nameof(teamType));
+            }
+
             var teamQuery = new TeamQuery { Query = query };
-            teamQuery.ExcludeTeamTypes.Add(TeamType.Transient);
             teamQuery.IncludeClubTeams = includeClubTeams;
+
             foreach (var guid in not)
             {
                 if (guid == null) continue;
@@ -52,6 +57,15 @@ namespace Stoolball.Web.Teams
                     // ignore that one
                 }
             }
+
+            foreach (var unparsedType in teamType)
+            {
+                if (Enum.TryParse<TeamType>(unparsedType, out var parsedType))
+                {
+                    teamQuery.TeamTypes.Add(parsedType);
+                }
+            }
+
             var teams = await _teamDataSource.ReadTeams(teamQuery).ConfigureAwait(false);
             return new AutocompleteResultSet
             {

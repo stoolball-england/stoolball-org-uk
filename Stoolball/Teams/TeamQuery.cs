@@ -7,7 +7,7 @@ namespace Stoolball.Teams
     {
         public string Query { get; internal set; }
         public List<Guid> ExcludeTeamIds { get; internal set; } = new List<Guid>();
-        public List<TeamType> ExcludeTeamTypes { get; internal set; } = new List<TeamType>();
+        public List<TeamType> TeamTypes { get; internal set; } = new List<TeamType>();
         public List<Guid> CompetitionIds { get; internal set; } = new List<Guid>();
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 50;
