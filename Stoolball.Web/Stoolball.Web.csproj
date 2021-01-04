@@ -932,6 +932,14 @@
     <Content Include="css\_tiles.scss" />
     <Content Include="css\_text.scss" />
     <Content Include="Matches\match.scss" />
+    <Content Include="fonts\mada-v9-latin-700.woff" />
+    <Content Include="fonts\mada-v9-latin-700.woff2" />
+    <Content Include="fonts\mada-v9-latin-regular.woff" />
+    <Content Include="fonts\mada-v9-latin-regular.woff2" />
+    <Content Include="fonts\assistant-v6-latin-600.woff" />
+    <Content Include="fonts\assistant-v6-latin-600.woff2" />
+    <Content Include="fonts\assistant-v6-latin-700.woff" />
+    <Content Include="fonts\assistant-v6-latin-700.woff2" />
     <None Include="Status\offline.json" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />

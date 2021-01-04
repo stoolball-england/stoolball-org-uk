@@ -1,5 +1,9 @@
 @import "base.scss";
 
+body { 
+    padding: 10px;
+}
+
 .mce-content-body *[data-mce-selected="inline-boundary"] {
     background: none;
     outline: 1px dashed theme-color("primary");
