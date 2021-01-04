@@ -940,6 +940,8 @@
     <Content Include="fonts\assistant-v6-latin-600.woff2" />
     <Content Include="fonts\assistant-v6-latin-700.woff" />
     <Content Include="fonts\assistant-v6-latin-700.woff2" />
+    <Content Include="fonts\Web.config" />
+    <Content Include="images\Web.config" />
     <None Include="Status\offline.json" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
