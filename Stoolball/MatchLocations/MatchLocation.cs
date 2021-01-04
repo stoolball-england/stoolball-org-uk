@@ -37,7 +37,8 @@ namespace Stoolball.MatchLocations
         [MaxLength(30)]
         public string AdministrativeArea { get; set; }
 
-        [MaxLength(8)]
+        [MaxLength(9)]
+        [RegularExpression("^[A-Za-z]{1,2}[0-9]{1,2}[A-Za-z]? ?[0-9][ABDEFGHJLNPQRSTUWXYZabdefghjlnpqrstuwxyz]{2}$", ErrorMessage = "Please enter a valid UK postcode")]
         public string Postcode { get; set; }
 
         /// <summary>
@@ -52,7 +53,8 @@ namespace Stoolball.MatchLocations
 
         public double? Longitude { get; set; }
 
-        [Display(Name = "Accuracy of the map")]
+        [Display(Name = "How accurate is the map?")]
+        [Required]
         public GeoPrecision? GeoPrecision { get; set; }
 
         [Display(Name = "Notes")]

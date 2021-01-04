@@ -51,8 +51,8 @@
         zoomLevel = 9;
       }
 
-      // Make the placeholder big enough for a map
-      mapContainer.style.height = "500px";
+      // Apply standard appearance for maps
+      mapContainer.classList.add("google-map");
 
       // Create the map
       let latlng = new google.maps.LatLng(lati, longi);
@@ -201,6 +201,11 @@
   }
 */
   window.addEventListener("DOMContentLoaded", function (event) {
+    // Check for consent because Google might track the user
+    if (!stoolball.consent.hasTrackingConsent()) {
+      return;
+    }
+
     createMap();
 
     latitude.addEventListener("change", updateMap);

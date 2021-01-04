@@ -100,7 +100,7 @@ stoolball.consent = {
     );
     const tracking = createCheckbox(
       "tracking",
-      "Social media – show better links to services like Facebook and Twitter, but they will track you"
+      "Maps and social media – show maps and better links to services like Facebook and Twitter, but they will track you"
     );
 
     const linkToCookiePolicy = document.createElement("a");

@@ -29,6 +29,9 @@
 @import "../Content/bootstrap/_buttons.scss";
 @import "_forms.scss";
 
+/* Required for maps */
+@import "_maps.scss";
+
 /* Tiles layout base classes */
 @import "_tiles.scss";
 

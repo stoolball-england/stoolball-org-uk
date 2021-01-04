@@ -61,7 +61,7 @@ namespace Stoolball.Data.SqlServer
                 Locality = matchLocation.Locality,
                 Town = matchLocation.Town,
                 AdministrativeArea = matchLocation.AdministrativeArea,
-                Postcode = matchLocation.Postcode,
+                Postcode = matchLocation.Postcode.ToUpperInvariant(),
                 GeoPrecision = matchLocation.GeoPrecision,
                 Latitude = matchLocation.Latitude,
                 Longitude = matchLocation.Longitude,

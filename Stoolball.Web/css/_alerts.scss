@@ -27,3 +27,9 @@
         padding-left: $spacer*1.25;
     }
 }
+
+// Don't use green links on a red background!
+.alert-danger a:link, .alert-danger a:visited {
+    color: inherit;
+    border-color: inherit;
+}

@@ -92,15 +92,15 @@
                 break;
             case GeoPrecision.Postcode:
                 mapTitle = Model.MatchLocation.Postcode;
-                precisionWarning = "Note: This map shows the nearest postcode. The match location should be nearby.";
+                precisionWarning = "Note: This map shows the nearest postcode. The ground or sports centre should be nearby.";
                 break;
             case GeoPrecision.Street:
                 mapTitle = Model.MatchLocation.StreetDescription + ", " + Model.MatchLocation.Town;
-                precisionWarning = "Note: This map shows the nearest road. The match location should be nearby.";
+                precisionWarning = "Note: This map shows the nearest road. The ground or sports centre should be nearby.";
                 break;
             case GeoPrecision.Town:
                 mapTitle = Model.MatchLocation.Town;
-                precisionWarning = "Note: This map shows the town or village. Contact the home team to find the match location.";
+                precisionWarning = "Note: This map shows the town or village. Contact the home team to find the ground or sports centre.";
                 break;
         }
         <h2>Map of @mapTitle</h2>

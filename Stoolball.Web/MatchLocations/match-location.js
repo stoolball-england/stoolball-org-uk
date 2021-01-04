@@ -13,11 +13,10 @@
       zoomLevel = 11;
     }
 
-    // Make the placeholder big enough for a map
+    // Apply standard appearance for maps
     const mapControl = mapContainer.getElementsByTagName("p")[0];
     mapControl.tagName = "div";
-    mapControl.style.width = "100%";
-    mapControl.style.height = "500px";
+    mapControl.classList.add("google-map");
     mapControl.classList.add("print__no-urls");
 
     // Create the map
