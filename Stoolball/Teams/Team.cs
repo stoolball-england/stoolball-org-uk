@@ -92,7 +92,7 @@ namespace Stoolball.Teams
         public TeamType TeamType { get; set; }
 
         [Required]
-        [Display(Name = "Player type")]
+        [Display(Name = "Who can play?")]
         public PlayerType PlayerType { get; set; }
 
         public List<Player> Players { get; internal set; } = new List<Player>();

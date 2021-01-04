@@ -1,13 +1,13 @@
-﻿using Humanizer;
-using Stoolball.Competitions;
-using Stoolball.Logging;
-using Stoolball.MatchLocations;
-using Stoolball.Teams;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using Humanizer;
+using Stoolball.Competitions;
+using Stoolball.Logging;
+using Stoolball.MatchLocations;
+using Stoolball.Teams;
 
 namespace Stoolball.Matches
 {
@@ -65,7 +65,7 @@ namespace Stoolball.Matches
         public DateTimeOffset StartTime { get; set; }
         public bool StartTimeIsKnown { get; set; }
 
-        [Display(Name = "Player type")]
+        [Display(Name = "Who can play?")]
         [Required]
         public PlayerType PlayerType { get; set; }
 
@@ -73,7 +73,7 @@ namespace Stoolball.Matches
         public int? PlayersPerTeam { get; set; }
 
         [Required]
-        [Display(Name = "Who can play?")]
+        [Display(Name = "Which teams can enter?")]
         public TournamentQualificationType? QualificationType { get; set; }
         public List<TeamInTournament> Teams { get; internal set; } = new List<TeamInTournament>();
 
@@ -91,8 +91,7 @@ namespace Stoolball.Matches
         public List<Season> Seasons { get; internal set; } = new List<Season>();
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 
-        public Uri EntityUri
-        {
+        public Uri EntityUri {
             get { return new Uri($"https://www.stoolball.org.uk/id/tournament/{TournamentId}"); }
         }
 

@@ -31,7 +31,7 @@
 }
 
 /* Bootstrap expects .form-text after the element but it's better before, where the user will see it in time */
-.form-text {
+.form-text, .has-form-text > small {
     margin-top: $spacer*-.5;
     margin-bottom: $spacer/4;
     color: #777;

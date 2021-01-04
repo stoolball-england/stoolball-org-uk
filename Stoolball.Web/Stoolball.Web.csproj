@@ -1190,6 +1190,7 @@
     <Compile Include="Competitions\SeasonsApiController.cs" />
     <Compile Include="ContentPage\CookiesController.cs" />
     <Compile Include="DapperComposer.cs" />
+    <Compile Include="HtmlHelpers\LabelExtensions.cs" />
     <Compile Include="Logging\UmbracoLogWrapper.cs" />
     <Compile Include="Matches\AddMatchMenuViewModel.cs" />
     <Compile Include="News\News.cs" />

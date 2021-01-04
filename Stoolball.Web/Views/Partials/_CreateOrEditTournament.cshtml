@@ -76,10 +76,10 @@
 </script>
 
 <fieldset class="form-group">
-    <legend>Who can play?</legend>
+    <legend>Which teams can enter?</legend>
     <div class="custom-control custom-radio">
         @Html.RadioButtonFor(m => Model.Tournament.QualificationType, TournamentQualificationType.OpenTournament, new { @class = "custom-control-input", @id = TournamentQualificationType.OpenTournament.ToString() })
-        <label for="@TournamentQualificationType.OpenTournament.ToString()" class="custom-control-label">any team may enter</label>
+        <label for="@TournamentQualificationType.OpenTournament.ToString()" class="custom-control-label">any team can enter</label>
     </div>
     <div class="custom-control custom-radio">
         @Html.RadioButtonFor(m => Model.Tournament.QualificationType, TournamentQualificationType.ClosedTournament, new { @class = "custom-control-input", @id = TournamentQualificationType.ClosedTournament.ToString() })
@@ -89,7 +89,7 @@
 </fieldset>
 
 <fieldset class="form-group">
-    <legend>Player type</legend>
+    <legend>Who can play?</legend>
     <div class="custom-control custom-radio">
         @Html.RadioButtonFor(m => Model.Tournament.PlayerType, PlayerType.Mixed, new { @class = "custom-control-input", @id = "player-type-1" })
         <label for="player-type-1" class="custom-control-label">Mixed</label>

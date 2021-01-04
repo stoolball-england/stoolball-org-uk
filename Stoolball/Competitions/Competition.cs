@@ -66,7 +66,7 @@ namespace Stoolball.Competitions
         public int? UntilYear { get; set; }
 
         [Required]
-        [Display(Name = "Player type")]
+        [Display(Name = "Who can play?")]
         public PlayerType PlayerType { get; set; }
 
         public Guid? MemberGroupKey { get; set; }
