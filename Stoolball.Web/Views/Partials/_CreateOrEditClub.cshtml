@@ -25,7 +25,7 @@
                 <td class="related-item__delete related-item__selected__section">
                     <div class="related-item__animate">
                         @Html.Hidden($"Club.Teams[{i}].TeamId", Model.Club.Teams[i].TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Club.Teams[i].TeamId })
-                        @Html.Hidden($"Club.Teams[{i}].TeamName", displayName, new { @class = "related-item__data", data_item = Model.Club.Teams[i].TeamId })
+                        @Html.Hidden($"Club.Teams[{i}].TeamName", displayName, new { @class = "related-item__data", data_item = Model.Club.Teams[i].TeamId })@* Redisplayed if !ModelState.IsValid *@
                         <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Club.Teams[i].TeamName} from this club")</button>
                     </div>
                 </td>

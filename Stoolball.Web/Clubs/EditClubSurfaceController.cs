@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Clubs;
@@ -44,6 +45,12 @@ namespace Stoolball.Web.Clubs
             var beforeUpdate = await _clubDataSource.ReadClubByRoute(Request.RawUrl).ConfigureAwait(false);
             club.ClubId = beforeUpdate.ClubId;
             club.ClubRoute = beforeUpdate.ClubRoute;
+
+            // We're not interested in validating the details of the selected teams
+            foreach (var key in ModelState.Keys.Where(x => x.StartsWith("Club.Teams", StringComparison.OrdinalIgnoreCase)))
+            {
+                ModelState[key].Errors.Clear();
+            }
 
             var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 

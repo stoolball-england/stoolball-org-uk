@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Navigation;
@@ -60,6 +61,12 @@ namespace Stoolball.Web.Teams
             if (team.AgeRangeUpper.HasValue && team.AgeRangeUpper < team.AgeRangeLower)
             {
                 ModelState.AddModelError("Team.AgeRangeUpper", "The maximum age for players cannot be lower than the minimum age");
+            }
+
+            // We're not interested in validating the details of the selected locations
+            foreach (var key in ModelState.Keys.Where(x => x.StartsWith("Team.MatchLocations", StringComparison.OrdinalIgnoreCase)))
+            {
+                ModelState[key].Errors.Clear();
             }
 
             var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);

@@ -47,6 +47,12 @@ namespace Stoolball.Web.Competitions
 
             ReplaceDateFormatErrorMessages("Date withdrew");
 
+            // We're not interested in validating the details of the selected teams
+            foreach (var key in ModelState.Keys.Where(x => x.StartsWith("Season.Teams", StringComparison.OrdinalIgnoreCase)))
+            {
+                ModelState[key].Errors.Clear();
+            }
+
             var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate.Competition);
 
             if (isAuthorized[AuthorizedAction.EditCompetition] && ModelState.IsValid)

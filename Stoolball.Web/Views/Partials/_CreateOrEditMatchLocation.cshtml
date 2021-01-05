@@ -18,13 +18,13 @@
 </div>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.MatchLocation.StreetDescription, false, new { @class = "has-form-text" })
+    @Html.LabelFor(m => Model.MatchLocation.StreetDescription, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @Html.TextBoxFor(m => Model.MatchLocation.StreetDescription, new { @class = "form-control", aria_describedby = "street-validation" })
     @Html.ValidationMessageFor(m => Model.MatchLocation.StreetDescription, null, new { id = "street-validation" })
 </div>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.MatchLocation.Locality, false, new { @class = "has-form-text" })
+    @Html.LabelFor(m => Model.MatchLocation.Locality, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @Html.TextBoxFor(m => Model.MatchLocation.Locality, new { @class = "form-control", aria_describedby = "locality-validation" })
     @Html.ValidationMessageFor(m => Model.MatchLocation.Locality, null, new { id = "locality-validation" })
 </div>
@@ -36,13 +36,13 @@
 </div>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.MatchLocation.AdministrativeArea, false, new { @class = "has-form-text" })
+    @Html.LabelFor(m => Model.MatchLocation.AdministrativeArea, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @Html.TextBoxFor(m => Model.MatchLocation.AdministrativeArea, new { @class = "form-control", aria_describedby = "area-validation" })
     @Html.ValidationMessageFor(m => Model.MatchLocation.AdministrativeArea, null, new { id = "area-validation" })
 </div>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.MatchLocation.Postcode, false, new { @class = "has-form-text" })
+    @Html.LabelFor(m => Model.MatchLocation.Postcode, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @Html.TextBoxFor(m => Model.MatchLocation.Postcode, new { @class = "form-control postcode", aria_describedby = "postcode-validation", maxlength="9" })
     @Html.ValidationMessageFor(m => Model.MatchLocation.Postcode, null, new { id = "postcode-validation" })
 </div>

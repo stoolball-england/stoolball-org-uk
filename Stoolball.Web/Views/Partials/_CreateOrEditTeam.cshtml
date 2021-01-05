@@ -2,7 +2,7 @@
 @using Stoolball.Teams
 @using Stoolball.Web.Teams
 @using Stoolball.Web.HtmlHelpers
-@Html.ValidationSummary(true)
+@Html.ValidationSummary(false)
 
 <div class="form-group">
     @Html.LabelFor(m => Model.Team.TeamName)
@@ -119,13 +119,10 @@
         <tbody>
             @for (var i = 0; i < Model.Team.MatchLocations.Count; i++)
             {
-                /* This posts back PAON and Town because those two fields are [Required] on the MatchLocation class.
+                /* The value of PAON and Town is only important to redisplay here if (ModelState.IsValid == false).
                  *
-                 * PAON and Town both contain the same value returned by the autocomplete. Only MatchLocationId is used in saving,
-                 * and any value for PAON and Town will do to pass that [Required] validation.
-                 *
-                 * The value of PAON and Town is only important to redisplay here if (ModelState.IsValid == false). Because they're duplicated
-                 * it's important to use NameAndLocalityOrTownIfDifferent() rather than NameAndLocalityOrTown(), so that the duplicate 'town' is not displayed.
+                 * PAON and Town both contain the same value for locations returned by the autocomplete, which is NameAndLocalityOrTownIfDifferent(). Because it's duplicated
+                 * it's important to use NameAndLocalityOrTownIfDifferent() again here rather than NameAndLocalityOrTown(), so that the duplicate 'town' is not displayed.
                  */
                 <tr class="related-item__selected">
                     <td class="related-item__selected__section"><div class="related-item__animate">@Model.Team.MatchLocations[i].NameAndLocalityOrTownIfDifferent()</div></td>
