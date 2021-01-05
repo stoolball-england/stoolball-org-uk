@@ -100,6 +100,7 @@ namespace Stoolball.Teams
         public string Introduction { get; set; }
 
         [Display(Name = "Minimum age for players")]
+        [Required]
         public int? AgeRangeLower { get; set; }
 
         [Display(Name = "Maximum age for players")]

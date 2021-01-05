@@ -1,9 +1,8 @@
 ﻿@model TeamViewModel
 @using Stoolball.Teams
 @using Stoolball.Web.Teams
+@using Stoolball.Web.HtmlHelpers
 @Html.ValidationSummary(true)
-
-<button class="btn btn-primary sr-only">Save team</button>
 
 <div class="form-group">
     @Html.LabelFor(m => Model.Team.TeamName)
@@ -16,31 +15,31 @@
     <fieldset class="form-group" id="team-type">
         <legend>Type of team</legend>
         <div class="custom-control custom-radio">
-            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.Regular, new { @class = "custom-control-input", @id = "team-type-1" })
+            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.Regular, new { @class = "custom-control-input", aria_describedby = "team-type-validation", @id = "team -type-1" })
             <label for="team-type-1" class="custom-control-label">Plays regularly, with open membership</label>
         </div>
         <div class="custom-control custom-radio">
-            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.Representative, new { @class = "custom-control-input", @id = "team-type-2" })
+            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.Representative, new { @class = "custom-control-input", aria_describedby = "team-type-validation", @id = "team-type-2" })
             <label for="team-type-2" class="custom-control-label">Represents a league or group</label>
         </div>
         <div class="custom-control custom-radio">
-            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.ClosedGroup, new { @class = "custom-control-input", @id = "team-type-3" })
+            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.ClosedGroup, new { @class = "custom-control-input", aria_describedby = "team-type-validation", @id = "team-type-3" })
             <label for="team-type-3" class="custom-control-label">Closed group (for example, only staff can join a work team)</label>
         </div>
         <div class="custom-control custom-radio">
-            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.Occasional, new { @class = "custom-control-input", @id = "team-type-4" })
+            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.Occasional, new { @class = "custom-control-input", aria_describedby = "team-type-validation", @id = "team-type-4" })
             <label for="team-type-4" class="custom-control-label">Plays occasionally, with open membership</label>
         </div>
         <div class="custom-control custom-radio">
-            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.SchoolAgeGroup, new { @class = "custom-control-input", @id = "team-type-5" })
+            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.SchoolAgeGroup, new { @class = "custom-control-input", aria_describedby = "team-type-validation", @id = "team-type-5" })
             <label for="team-type-5" class="custom-control-label">School year group(s)</label>
         </div>
         <div class="custom-control custom-radio">
-            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.SchoolClub, new { @class = "custom-control-input", @id = "team-type-6" })
+            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.SchoolClub, new { @class = "custom-control-input", aria_describedby = "team-type-validation", @id = "team-type-6" })
             <label for="team-type-6" class="custom-control-label">School club (for example, after school)</label>
         </div>
         <div class="custom-control custom-radio">
-            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.SchoolOther, new { @class = "custom-control-input", @id = "team-type-7" })
+            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.SchoolOther, new { @class = "custom-control-input", aria_describedby = "team-type-validation", @id = "team-type-7" })
             <label for="team-type-7" class="custom-control-label">Other school team</label>
         </div>
         @Html.ValidationMessageFor(m => Model.Team.TeamType, null, new { id = "team-type-validation" })
@@ -54,7 +53,7 @@
 </div>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.Team.AgeRangeUpper)
+    @Html.LabelFor(m => Model.Team.AgeRangeUpper, false, new { @class = "has-form-text" })
     @Html.TextBoxFor(m => Model.Team.AgeRangeUpper, new { @class = "form-control", aria_describedby = "age-upper", @type = "number" })
     @Html.ValidationMessageFor(m => Model.Team.AgeRangeUpper, null, new { id = "age-upper" })
 </div>
@@ -63,14 +62,14 @@
 {
     <div class="form-group">
         @Html.LabelFor(m => Model.Team.FromYear)
-        <p class="form-text" id="from-help"><small>If you're not sure, an estimate is fine.</small></p>
+        <p class="form-text" id="from-help"><small>If you're not sure, an estimate is fine. Optional.</small></p>
         @Html.TextBoxFor(m => Model.Team.FromYear, new { @class = "form-control", aria_describedby = "from-year from-help", @type = "number" })
         @Html.ValidationMessageFor(m => Model.Team.FromYear, null, new { id = "from-year" })
     </div>
 
     <div class="form-group">
         @Html.LabelFor(m => Model.Team.UntilYear)
-        <p class="form-text" id="until-help"><small>If you're not sure, an estimate is fine.</small></p>
+        <p class="form-text" id="until-help"><small>If you're not sure, an estimate is fine. Optional.</small></p>
         @Html.TextBoxFor(m => Model.Team.UntilYear, new { @class = "form-control", aria_describedby = "until-year until-help", @type = "number" })
         @Html.ValidationMessageFor(m => Model.Team.UntilYear, null, new { id = "until-year" })
     </div>
@@ -79,34 +78,34 @@
 <fieldset class="form-group" id="team-type">
     <legend>Who can play?</legend>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.Mixed, new { @class = "custom-control-input", @id = "player-type-1" })
+        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.Mixed, new { @class = "custom-control-input", aria_describedby = "player-type-validation", @id = "player-type-1" })
         <label for="player-type-1" class="custom-control-label">Mixed</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.Ladies, new { @class = "custom-control-input", @id = "player-type-2" })
+        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.Ladies, new { @class = "custom-control-input", aria_describedby = "player-type-validation", @id = "player-type-2" })
         <label for="player-type-2" class="custom-control-label">Ladies</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.JuniorMixed, new { @class = "custom-control-input", @id = "player-type-3" })
+        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.JuniorMixed, new { @class = "custom-control-input", aria_describedby = "player-type-validation", @id = "player-type-3" })
         <label for="player-type-3" class="custom-control-label">Junior mixed</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.JuniorGirls, new { @class = "custom-control-input", @id = "player-type-4" })
+        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.JuniorGirls, new { @class = "custom-control-input", aria_describedby = "player-type-validation", @id = "player-type-4" })
         <label for="player-type-4" class="custom-control-label">Junior girls</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.JuniorBoys, new { @class = "custom-control-input", @id = "player-type-5" })
+        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.JuniorBoys, new { @class = "custom-control-input", aria_describedby = "player-type-validation", @id = "player-type-5" })
         <label for="player-type-5" class="custom-control-label">Junior boys</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.Men, new { @class = "custom-control-input", @id = "player-type-6" })
+        @Html.RadioButtonFor(m => Model.Team.PlayerType, PlayerType.Men, new { @class = "custom-control-input", aria_describedby = "player-type-validation", @id = "player-type-6" })
         <label for="player-type-6" class="custom-control-label">Men</label>
     </div>
     @Html.ValidationMessageFor(m => Model.Team.PlayerType, null, new { id = "player-type-validation" })
 </fieldset>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.Team.Introduction)
+    @Html.LabelFor(m => Model.Team.Introduction, false, new { @class = "has-form-text" })
     @Html.TextAreaFor(m => Model.Team.Introduction, new { @class = "form-control", aria_describedby = "intro-validation" })
     @Html.ValidationMessageFor(m => Model.Team.Introduction, null, new { id = "intro-validation" })
 </div>
@@ -135,7 +134,7 @@
                             @Html.Hidden($"Team.MatchLocations[{i}].MatchLocationId", Model.Team.MatchLocations[i].MatchLocationId, new { @class = "related-item__data related-item__id", data_item = Model.Team.MatchLocations[i].MatchLocationId })
                             @Html.Hidden($"Team.MatchLocations[{i}].PrimaryAddressableObjectName", Model.Team.MatchLocations[i].PrimaryAddressableObjectName, new { @class = "related-item__data", data_item = Model.Team.MatchLocations[i].MatchLocationId })
                             @Html.Hidden($"Team.MatchLocations[{i}].Town", Model.Team.MatchLocations[i].Town, new { @class = "related-item__data", data_item = Model.Team.MatchLocations[i].MatchLocationId })
-                            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Team.MatchLocations[i].NameAndLocalityOrTownIfDifferent()} from this team")</button>
+                            <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Team.MatchLocations[i].NameAndLocalityOrTownIfDifferent()} from this team")</button>
                         </div>
                     </td>
                 </tr>
@@ -166,7 +165,7 @@
                         <input name="Team.MatchLocations[0].MatchLocationId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
                         <input name="Team.MatchLocations[0].PrimaryAddressableObjectName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
                         <input name="Team.MatchLocations[0].Town" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
-                        <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this team")</button>
+                        <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this team")</button>
                     </div>
                 </td>
             </tr>
@@ -174,54 +173,54 @@
     </script>
 
     <div class="form-group">
-        @Html.LabelFor(m => Model.Team.PlayingTimes)
+        @Html.LabelFor(m => Model.Team.PlayingTimes, false, new { @class = "has-form-text" })
         @Html.TextAreaFor(m => Model.Team.PlayingTimes, new { @class = "form-control", aria_describedby = "times-validation" })
         @Html.ValidationMessageFor(m => Model.Team.PlayingTimes, null, new { id = "times-validation" })
     </div>
 }
     <div class="form-group">
         @Html.LabelFor(m => Model.Team.Cost)
-        <p class="form-text" id="cost-help"><small>Do you have a membership fee? Match fees? Special rates for juniors?</small></p>
+        <p class="form-text" id="cost-help"><small>Do you have a membership fee? Match fees? Special rates for juniors? Optional.</small></p>
         @Html.TextAreaFor(m => Model.Team.Cost, new { @class = "form-control", aria_describedby = "cost-validation cost-help" })
         @Html.ValidationMessageFor(m => Model.Team.Cost, null, new { id = "cost-validation" })
     </div>
 
     <div class="form-group">
         @Html.LabelFor(m => Model.Team.PublicContactDetails)
-        <p class="form-text" id="public-help"><small>Publish a phone number and email so new players can get in touch. Don't include your home address.</small></p>
+        <p class="form-text" id="public-help"><small>Recommended. Publish a phone number and email so new players can get in touch. Don't include your home address.</small></p>
         @Html.TextAreaFor(m => Model.Team.PublicContactDetails, new { @class = "form-control", aria_describedby = "public-validation public-help" })
         @Html.ValidationMessageFor(m => Model.Team.PublicContactDetails, null, new { id = "public-validation" })
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(m => Model.Team.Facebook, new { @class = "form-control__facebook" })
+        @Html.LabelFor(m => Model.Team.Facebook, false, new { @class = "has-form-text form-control__facebook" })
         @Html.TextBoxFor(m => Model.Team.Facebook, new { @class = "form-control", aria_describedby = "facebook" })
         @Html.ValidationMessageFor(m => Model.Team.Facebook, null, new { id = "facebook" })
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => Model.Team.Twitter, new { @class = "form-control__twitter" })
+        @Html.LabelFor(m => Model.Team.Twitter, false, new { @class = "has-form-text form-control__twitter" })
         @Html.TextBoxFor(m => Model.Team.Twitter, new { @class = "form-control", aria_describedby = "twitter" })
         @Html.ValidationMessageFor(m => Model.Team.Twitter, null, new { id = "twitter" })
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => Model.Team.Instagram, new { @class = "form-control__instagram" })
+        @Html.LabelFor(m => Model.Team.Instagram, false, new { @class = "has-form-text form-control__instagram" })
         @Html.TextBoxFor(m => Model.Team.Instagram, new { @class = "form-control", aria_describedby = "instagram" })
         @Html.ValidationMessageFor(m => Model.Team.Instagram, null, new { id = "instagram" })
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => Model.Team.YouTube, new { @class = "form-control__youtube" })
+        @Html.LabelFor(m => Model.Team.YouTube, false, new { @class = "has-form-text form-control__youtube" })
         @Html.TextBoxFor(m => Model.Team.YouTube, new { @class = "form-control", aria_describedby = "youtube" })
         @Html.ValidationMessageFor(m => Model.Team.YouTube, null, new { id = "youtube" })
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => Model.Team.Website)
+        @Html.LabelFor(m => Model.Team.Website, false, new { @class = "has-form-text" })
         @Html.TextBoxFor(m => Model.Team.Website, new { @class = "form-control", aria_describedby = "website" })
         @Html.ValidationMessageFor(m => Model.Team.Website, null, new { id = "website" })
     </div>
 
     <div class="form-group">
         @Html.LabelFor(m => Model.Team.PrivateContactDetails)
-        <p class="form-text" id="private-help"><small>Please provide a phone number and email, if different from above. We won't share this with anyone else.</small></p>
+        <p class="form-text" id="private-help"><small>Recommended. Please provide a phone number and email, if different from above. We won't share this with anyone else.</small></p>
         @Html.TextAreaFor(m => Model.Team.PrivateContactDetails, new { @class = "form-control", aria_describedby = "private-validation private-help" })
         @Html.ValidationMessageFor(m => Model.Team.PrivateContactDetails, null, new { id = "private-validation" })
     </div>
