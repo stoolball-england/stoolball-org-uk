@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Dates;
@@ -60,6 +61,12 @@ namespace Stoolball.Web.Matches
             model.Tournament.TournamentLocation = beforeUpdate.TournamentLocation;
             model.Tournament.PlayerType = beforeUpdate.PlayerType;
 
+            // We're not interested in validating the details of the selected teams
+            foreach (var key in ModelState.Keys.Where(x => x.StartsWith("Tournament.Teams", StringComparison.OrdinalIgnoreCase)))
+            {
+                ModelState[key].Errors.Clear();
+            }
+
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
             if (model.IsAuthorized[AuthorizedAction.EditTournament] && ModelState.IsValid)
@@ -67,8 +74,8 @@ namespace Stoolball.Web.Matches
                 var currentMember = Members.GetCurrentMember();
                 var updatedTournament = await _tournamentRepository.UpdateTeams(model.Tournament, currentMember.Key, Members.CurrentUserName, currentMember.Name).ConfigureAwait(false);
 
-                // Redirect to the tournament
-                return Redirect(updatedTournament.TournamentRoute);
+                // Redirect to the tournament actions page
+                return Redirect(updatedTournament.TournamentRoute + "/edit");
             }
 
             model.Metadata.PageTitle = "Teams in the " + model.Tournament.TournamentFullName(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false));
