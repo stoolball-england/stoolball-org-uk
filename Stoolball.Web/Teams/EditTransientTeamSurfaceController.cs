@@ -60,6 +60,16 @@ namespace Stoolball.Web.Teams
             team.PublicContactDetails = Request.Unvalidated.Form["Team.PublicContactDetails"];
             team.PrivateContactDetails = Request.Unvalidated.Form["Team.PrivateContactDetails"];
 
+            if (team.AgeRangeLower < 11 && !team.AgeRangeUpper.HasValue)
+            {
+                ModelState.AddModelError("Team.AgeRangeUpper", "School teams and junior teams must specify a maximum age for players");
+            }
+
+            if (team.AgeRangeUpper.HasValue && team.AgeRangeUpper < team.AgeRangeLower)
+            {
+                ModelState.AddModelError("Team.AgeRangeUpper", "The maximum age for players cannot be lower than the minimum age");
+            }
+
             var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
             if (isAuthorized[AuthorizedAction.EditTeam] && ModelState.IsValid)
@@ -67,7 +77,7 @@ namespace Stoolball.Web.Teams
                 var currentMember = Members.GetCurrentMember();
                 var updatedTeam = await _teamRepository.UpdateTransientTeam(team, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                // redirect back to the team
+                // redirect back to the team, as there is no actions page for a transient team
                 return Redirect(updatedTeam.TeamRoute);
             }
 
