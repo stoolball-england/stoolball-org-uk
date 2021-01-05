@@ -51,17 +51,20 @@
 
 /* .related-item the single item version, which is not in a table */
 .related-item {
-    display: table;
     width: 100%;
 }
 
 .related-item__selected {
-    display: table-row;
+    display: flex;
+    align-items: center;
+}
+
+.related-item__selected__section:first-child {
+    flex-grow: 1;
 }
 
 .related-item__selected__section {
     transition: padding .5s;
-    display: table-cell;
 }
 
 .related-item__deleted > .related-item__selected__section {
@@ -78,7 +81,7 @@
 }
 
 .related-item__delete {
-    width: 55px;
+    width: 35px;
     text-align: right;
 }
 

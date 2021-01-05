@@ -2,6 +2,7 @@
 @using Stoolball.Teams
 @using Stoolball.Matches
 @using Stoolball.Web.Matches
+@using Stoolball.Web.HtmlHelpers
 @Html.AntiForgeryToken()
 @Html.ValidationSummary(true)
 
@@ -18,13 +19,13 @@
 </div>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.StartTime)
+    @Html.LabelFor(m => Model.StartTime, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @Html.TextBoxFor(m => Model.StartTime, "{0:HH:mm}", new { @type = "time", @class = "form-control", aria_describedby = "start-time" })
     @Html.ValidationMessageFor(m => Model.StartTime, null, new { id = "start-time" })
 </div>
 
 <div class="form-group related-item">
-    @Html.LabelFor(m => Model.TournamentLocationName)
+    @Html.LabelFor(m => Model.TournamentLocationName, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @if (Model.TournamentLocationId.HasValue)
     {
         <div class="related-item__selected">
@@ -78,59 +79,59 @@
 <fieldset class="form-group">
     <legend>Which teams can enter?</legend>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Tournament.QualificationType, TournamentQualificationType.OpenTournament, new { @class = "custom-control-input", @id = TournamentQualificationType.OpenTournament.ToString() })
-        <label for="@TournamentQualificationType.OpenTournament.ToString()" class="custom-control-label">any team can enter</label>
+        @Html.RadioButtonFor(m => Model.Tournament.QualificationType, TournamentQualificationType.OpenTournament, new { @class = "custom-control-input", aria_describedby = "qualification-type", @id = TournamentQualificationType.OpenTournament.ToString() })
+        <label for="@TournamentQualificationType.OpenTournament.ToString()" class="custom-control-label">Any team can enter</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Tournament.QualificationType, TournamentQualificationType.ClosedTournament, new { @class = "custom-control-input", @id = TournamentQualificationType.ClosedTournament.ToString() })
-        <label for="@TournamentQualificationType.ClosedTournament.ToString()" class="custom-control-label">only invited or qualifying teams can enter</label>
+        @Html.RadioButtonFor(m => Model.Tournament.QualificationType, TournamentQualificationType.ClosedTournament, new { @class = "custom-control-input", aria_describedby = "qualification-type", @id = TournamentQualificationType.ClosedTournament.ToString() })
+        <label for="@TournamentQualificationType.ClosedTournament.ToString()" class="custom-control-label">Only invited or qualifying teams can enter</label>
     </div>
-    @Html.ValidationMessageFor(m => Model.Tournament.QualificationType)
+    @Html.ValidationMessageFor(m => Model.Tournament.QualificationType, null, new { id="qualification-type" })
 </fieldset>
 
 <fieldset class="form-group">
     <legend>Who can play?</legend>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Tournament.PlayerType, PlayerType.Mixed, new { @class = "custom-control-input", @id = "player-type-1" })
+        @Html.RadioButtonFor(m => Model.Tournament.PlayerType, PlayerType.Mixed, new { @class = "custom-control-input", aria_describedby= "player-type", @id = "player-type-1" })
         <label for="player-type-1" class="custom-control-label">Mixed</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Tournament.PlayerType, PlayerType.Ladies, new { @class = "custom-control-input", @id = "player-type-2" })
+        @Html.RadioButtonFor(m => Model.Tournament.PlayerType, PlayerType.Ladies, new { @class = "custom-control-input", aria_describedby = "player-type", @id = "player-type-2" })
         <label for="player-type-2" class="custom-control-label">Ladies</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Tournament.PlayerType, PlayerType.JuniorMixed, new { @class = "custom-control-input", @id = "player-type-3" })
+        @Html.RadioButtonFor(m => Model.Tournament.PlayerType, PlayerType.JuniorMixed, new { @class = "custom-control-input", aria_describedby = "player-type", @id = "player-type-3" })
         <label for="player-type-3" class="custom-control-label">Junior mixed</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Tournament.PlayerType, PlayerType.JuniorGirls, new { @class = "custom-control-input", @id = "player-type-4" })
+        @Html.RadioButtonFor(m => Model.Tournament.PlayerType, PlayerType.JuniorGirls, new { @class = "custom-control-input", aria_describedby = "player-type", @id = "player-type-4" })
         <label for="player-type-4" class="custom-control-label">Junior girls</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Tournament.PlayerType, PlayerType.JuniorBoys, new { @class = "custom-control-input", @id = "player-type-5" })
+        @Html.RadioButtonFor(m => Model.Tournament.PlayerType, PlayerType.JuniorBoys, new { @class = "custom-control-input", aria_describedby = "player-type", @id = "player-type-5" })
         <label for="player-type-5" class="custom-control-label">Junior boys</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Tournament.PlayerType, PlayerType.Men, new { @class = "custom-control-input", @id = "player-type-6" })
+        @Html.RadioButtonFor(m => Model.Tournament.PlayerType, PlayerType.Men, new { @class = "custom-control-input", aria_describedby = "player-type", @id = "player-type-6" })
         <label for="player-type-6" class="custom-control-label">Men</label>
     </div>
-    @Html.ValidationMessageFor(m => Model.Tournament.PlayerType)
+    @Html.ValidationMessageFor(m => Model.Tournament.PlayerType, null, new { id = "player-type" })
 </fieldset>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.Tournament.PlayersPerTeam)
+    @Html.LabelFor(m => Model.Tournament.PlayersPerTeam, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @Html.TextBoxFor(m => Model.Tournament.PlayersPerTeam, new { @class = "form-control", aria_describedby = "players-per-team", @type = "number" })
     @Html.ValidationMessageFor(m => Model.Tournament.PlayersPerTeam, null, new { id = "players-per-team" })
 </div>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.Tournament.OversPerInningsDefault)
+    @Html.LabelFor(m => Model.Tournament.OversPerInningsDefault, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @Html.TextBoxFor(m => Model.Tournament.OversPerInningsDefault, new { @class = "form-control", aria_describedby = "overs", @type = "number" })
     @Html.ValidationMessageFor(m => Model.Tournament.OversPerInningsDefault, null, new { id = "overs" })
 </div>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.Tournament.TournamentNotes)
+    @Html.LabelFor(m => Model.Tournament.TournamentNotes, RequiredFieldStatus.Recommended, new { @class = "has-form-text" })
     <p class="form-text" id="notes-help"><small>Remember to include contact details.</small></p>
     @Html.TextAreaFor(m => Model.Tournament.TournamentNotes, new { @class = "form-control", aria_describedby = "notes-help notes-validation" })
     @Html.ValidationMessageFor(m => Model.Tournament.TournamentNotes, null, new { id = "notes-validation" })

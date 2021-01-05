@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Dates;
@@ -59,15 +58,26 @@ namespace Stoolball.Web.Matches
             // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
             model.Tournament.TournamentNotes = Request.Unvalidated.Form["Tournament.TournamentNotes"];
 
-            if (!string.IsNullOrEmpty(Request.Form["TournamentDate"]))
+            if (!string.IsNullOrEmpty(Request.Form["TournamentDate"]) && DateTimeOffset.TryParse(Request.Form["TournamentDate"], out var parsedDate))
             {
-                model.TournamentDate = DateTimeOffset.Parse(Request.Form["TournamentDate"], CultureInfo.CurrentCulture);
+                model.TournamentDate = parsedDate;
                 model.Tournament.StartTime = model.TournamentDate.Value;
+
                 if (!string.IsNullOrEmpty(Request.Form["StartTime"]))
                 {
-                    model.StartTime = DateTimeOffset.Parse(Request.Form["StartTime"], CultureInfo.CurrentCulture);
-                    model.Tournament.StartTime = model.Tournament.StartTime.Add(model.StartTime.Value.TimeOfDay);
-                    model.Tournament.StartTimeIsKnown = true;
+                    if (DateTimeOffset.TryParse(Request.Form["StartTime"], out var parsedTime))
+                    {
+                        model.StartTime = parsedTime;
+                        model.Tournament.StartTime = model.Tournament.StartTime.Add(model.StartTime.Value.TimeOfDay);
+                        model.Tournament.StartTimeIsKnown = true;
+                    }
+                    else
+                    {
+                        // This may be seen in browsers that don't support <input type="time" />, mainly Safari.
+                        // Each browser that supports <input type="time" /> may have a very different interface so don't advertise
+                        // this format up-front as it could confuse the majority. Instead, only reveal it here.
+                        ModelState.AddModelError("StartTime", "Enter a time in 24-hour HH:MM format.");
+                    }
                 }
                 else
                 {
@@ -76,6 +86,15 @@ namespace Stoolball.Web.Matches
                     model.Tournament.StartTimeIsKnown = false;
                 }
             }
+            else
+            {
+                // This may be seen in browsers that don't support <input type="date" />, mainly Safari. 
+                // This is the format <input type="date" /> expects and posts, so we have to repopulate the field in this format,
+                // so although this code _can_ parse other formats we don't advertise that. We also don't want YYYY-MM-DD in 
+                // the field label as it would confuse the majority, so only reveal it here.
+                ModelState.AddModelError("TournamentDate", "Enter a date in YYYY-MM-DD format.");
+            }
+
             if (!string.IsNullOrEmpty(Request.Form["TournamentLocationId"]))
             {
                 model.TournamentLocationId = new Guid(Request.Form["TournamentLocationId"]);
