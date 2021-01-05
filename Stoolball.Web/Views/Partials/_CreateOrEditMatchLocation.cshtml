@@ -76,8 +76,8 @@
 </fieldset>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.MatchLocation.MatchLocationNotes)
-    <p class="form-text" id="notes-help"><small>Is it easy to find? Is there parking? Disabled facilities? Toilets? Optional.</small></p>
+    @Html.LabelFor(m => Model.MatchLocation.MatchLocationNotes, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+    <p class="form-text" id="notes-help"><small>Is it easy to find? Is there parking? Disabled facilities? Toilets?</small></p>
     @Html.TextAreaFor(m => Model.MatchLocation.MatchLocationNotes, new { @class = "form-control", aria_describedby = "notes-validation notes-help" })
     @Html.ValidationMessageFor(m => Model.MatchLocation.MatchLocationNotes, null, new { id = "notes-validation" })
 </div>

@@ -4,8 +4,8 @@
 @using Stoolball.Web.Competitions
 @using Stoolball.Web.HtmlHelpers
 <div class="form-group">
-    @Html.LabelFor(m => Model.Season.Introduction)
-    <p class="form-text" id="intro-help"><small>The introduction to the competition is displayed for all seasons. This is added just for this season. Optional.</small></p>
+    @Html.LabelFor(m => Model.Season.Introduction, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+    <p class="form-text" id="intro-help"><small>The introduction to the competition is displayed for all seasons. This is added just for this season.</small></p>
     @Html.TextAreaFor(m => Model.Season.Introduction, new { @class = "form-control", aria_describedby = "intro-validation intro-help" })
     @Html.ValidationMessageFor(m => Model.Season.Introduction, null, new { id = "intro-validation" })
 </div>
@@ -40,13 +40,13 @@
 </fieldset>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.Season.PlayersPerTeam, false, new { @class = "has-form-text" })
+    @Html.LabelFor(m => Model.Season.PlayersPerTeam, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @Html.TextBoxFor(m => Model.Season.PlayersPerTeam, new { @class = "form-control", aria_describedby = "players-per-team", type = "number" })
     @Html.ValidationMessageFor(m => Model.Season.PlayersPerTeam, null, new { id = "players-per-team" })
 </div>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.Season.Overs, false, new { @class = "has-form-text" })
+    @Html.LabelFor(m => Model.Season.Overs, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @Html.TextBoxFor(m => Model.Season.Overs, new { @class = "form-control", aria_describedby = "overs", type = "number" })
     @Html.ValidationMessageFor(m => Model.Season.Overs, null, new { id = "overs" })
 </div>
@@ -78,8 +78,8 @@
 </fieldset>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.Season.Results)
-    <p class="form-text" id="results-help"><small>Your results table is generated from your scorecards, but you could say who won if scorecards were not added, or how a tie was resolved in a league. Optional.</small></p>
+    @Html.LabelFor(m => Model.Season.Results, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+    <p class="form-text" id="results-help"><small>Your results table is generated from your scorecards, but you could say who won if scorecards were not added, or how a tie was resolved in a league.</small></p>
     @Html.TextAreaFor(m => Model.Season.Results, new { @class = "form-control", aria_describedby = "results-validation results-help" })
     @Html.ValidationMessageFor(m => Model.Season.Results, null, new { id = "results-validation" })
 </div>
