@@ -1,6 +1,6 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<SeasonViewModel>
 @using ClientDependency.Core.Mvc
-@using Stoolball.Matches
+@using Stoolball.Teams
 @using Stoolball.Web.Competitions
 @using Stoolball.Security
 @section head {
@@ -62,7 +62,7 @@
                                 placeholder = "Add a team",
                                 autocomplete = "off",
                                 type = "search",
-                                data_url = "/api/teams/autocomplete",
+                                data_url = $"/api/teams/autocomplete?teamType={TeamType.ClosedGroup.ToString()}&teamType={TeamType.Occasional.ToString()}&teamType={TeamType.Regular.ToString()}&teamType={TeamType.Representative.ToString()}&teamType={TeamType.SchoolAgeGroup.ToString()}&teamType={TeamType.SchoolClub.ToString()}&teamType={TeamType.SchoolOther.ToString()}",
                                 data_template = "team-template",
                                 aria_label = "Type a team name and press down arrow to select the team"
                             })
