@@ -61,6 +61,11 @@ namespace Stoolball.Web.Competitions
                 return new HttpStatusCodeResult(400);
             }
 
+            if (!season.MatchTypes.Any())
+            {
+                ModelState.AddModelError("Season.MatchTypes", $"Please select at least one type of match");
+            }
+
             var isAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate.Competition);
 
             if (isAuthorized[AuthorizedAction.EditCompetition] && ModelState.IsValid)

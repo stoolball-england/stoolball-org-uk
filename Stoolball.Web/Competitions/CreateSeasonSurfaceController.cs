@@ -63,12 +63,17 @@ namespace Stoolball.Web.Competitions
                 return new HttpStatusCodeResult(400);
             }
 
+            if (!season.MatchTypes.Any())
+            {
+                ModelState.AddModelError("Season.MatchTypes", $"Please select at least one type of match");
+            }
+
             season.Competition = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false);
 
             // Ensure there isn't already a season with the submitted year(s)
             if (season.Competition.Seasons.Any(x => x.FromYear == season.FromYear && x.UntilYear == season.UntilYear))
             {
-                ModelState.AddModelError(string.Empty, $"There is already a {season.SeasonName()}");
+                ModelState.AddModelError("Season.FromYear", $"There is already a {season.SeasonName()}");
             }
 
             var isAuthorized = _authorizationPolicy.IsAuthorized(season.Competition);

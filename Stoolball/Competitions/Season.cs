@@ -56,6 +56,7 @@ namespace Stoolball.Competitions
         public int FromYear { get; set; }
 
         [Required]
+        [Display(Name = "What year does it end?")]
         public int UntilYear { get; set; }
 
         public string Introduction { get; set; }
@@ -66,7 +67,10 @@ namespace Stoolball.Competitions
         [Display(Name = "How many overs in a match?")]
         public int? Overs { get; set; }
 
+        [Display(Name = "What happens when only one batter is left?")]
         public bool EnableLastPlayerBatsOn { get; set; }
+
+        [Display(Name = "Can bonus or penalty runs be awarded?")]
         public bool EnableBonusOrPenaltyRuns { get; set; }
         public bool EnableTournaments { get; set; }
         public List<MatchType> MatchTypes { get; internal set; } = new List<MatchType>();

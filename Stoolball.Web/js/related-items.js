@@ -13,11 +13,25 @@
         dataItem = remainingData[i].getAttribute("data-item");
       }
 
-      remainingData[i].setAttribute(
-        "name",
-        remainingData[i]
-          .getAttribute("name")
-          .replace(/\[[0-9]+\]/, "[" + index + "]")
+      replaceIndex(remainingData[i], "name", index);
+      replaceIndex(remainingData[i], "aria-describedby", index);
+
+      const validator = remainingData[i].parentNode.querySelector(
+        ".field-validation-valid"
+      );
+      if (validator) {
+        replaceIndex(validator, "id", index);
+        replaceIndex(validator, "data-valmsg-for", index);
+      }
+    }
+  }
+
+  function replaceIndex(element, attribute, index) {
+    const currentValue = element.getAttribute(attribute);
+    if (currentValue) {
+      element.setAttribute(
+        attribute,
+        currentValue.replace(/\[[0-9]+\]/, "[" + index + "]")
       );
     }
   }

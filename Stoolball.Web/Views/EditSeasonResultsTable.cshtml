@@ -30,15 +30,15 @@
             <fieldset class="form-group">
                 <legend>What type of results table do you want?</legend>
                 <div class="custom-control custom-radio">
-                    @Html.RadioButtonFor(m => Model.Season.ResultsTableType, ResultsTableType.None, new { @class = "custom-control-input", @id = ResultsTableType.None.ToString() })
+                    @Html.RadioButtonFor(m => Model.Season.ResultsTableType, ResultsTableType.None, new { @class = "custom-control-input", @id = ResultsTableType.None.ToString(), aria_describedby= "table-type-validation" })
                     <label for="@ResultsTableType.None.ToString()" class="custom-control-label">@ResultsTableType.None.ToString()</label>
                 </div>
                 <div class="custom-control custom-radio">
-                    @Html.RadioButtonFor(m => Model.Season.ResultsTableType, ResultsTableType.LeagueTable, new { @class = "custom-control-input", @id = ResultsTableType.LeagueTable.ToString() })
+                    @Html.RadioButtonFor(m => Model.Season.ResultsTableType, ResultsTableType.LeagueTable, new { @class = "custom-control-input", @id = ResultsTableType.LeagueTable.ToString(), aria_describedby = "table-type-validation" })
                     <label for="@ResultsTableType.LeagueTable.ToString()" class="custom-control-label">@ResultsTableType.LeagueTable.ToString().Humanize() (sorted by league points)</label>
                 </div>
                 <div class="custom-control custom-radio">
-                    @Html.RadioButtonFor(m => Model.Season.ResultsTableType, ResultsTableType.NonLeagueResultsTable, new { @class = "custom-control-input", @id = ResultsTableType.NonLeagueResultsTable.ToString() })
+                    @Html.RadioButtonFor(m => Model.Season.ResultsTableType, ResultsTableType.NonLeagueResultsTable, new { @class = "custom-control-input", @id = ResultsTableType.NonLeagueResultsTable.ToString(), aria_describedby = "table-type-validation" })
                     <label for="@ResultsTableType.NonLeagueResultsTable.ToString()" class="custom-control-label">@ResultsTableType.NonLeagueResultsTable.ToString().Humanize() (no points, sorted alphabetically)</label>
                 </div>
                 @Html.ValidationMessageFor(m => Model.Season.ResultsTableType, null, new { id = "table-type-validation" })
@@ -74,14 +74,14 @@
                                 <td data-label="Points for home team">
                                     <div>
                                         @* Extra div ensures the textbox and validation error are a single flex-item when using .table-as-cards *@
-                                    @Html.TextBoxFor(m => Model.Season.PointsRules[i].HomePoints, new { @type = "number", maxlength = "2", data_val_number = "Please type a number", data_val_required = "This field is required" })
-                                    @Html.ValidationMessageFor(m => Model.Season.PointsRules[i].HomePoints, null)
+                                    @Html.TextBoxFor(m => Model.Season.PointsRules[i].HomePoints, new { @type = "number", maxlength = "2", data_val_number = "Please type a number", data_val_required = "This field is required", aria_describedby = $"home-points-{i}" })
+                                    @Html.ValidationMessageFor(m => Model.Season.PointsRules[i].HomePoints, null, new { id = $"home-points-{i}" })
                                 </div>
                             </td>
                             <td data-label="Points for away team">
                                 <div>
-                                    @Html.TextBoxFor(m => Model.Season.PointsRules[i].AwayPoints, new { @type = "number", maxlength = "2", data_val_number = "Please type a number", data_val_required = "This field is required" })
-                                    @Html.ValidationMessageFor(m => Model.Season.PointsRules[i].AwayPoints, null)
+                                    @Html.TextBoxFor(m => Model.Season.PointsRules[i].AwayPoints, new { @type = "number", maxlength = "2", data_val_number = "Please type a number", data_val_required = "This field is required", aria_describedby = $"away-points-{i}" })
+                                    @Html.ValidationMessageFor(m => Model.Season.PointsRules[i].AwayPoints, null, new { id = $"away-points-{i}" })
                                 </div>
                             </td>
                         </tr>

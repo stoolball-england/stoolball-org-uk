@@ -55,19 +55,19 @@
 <fieldset class="form-group" id="geoprecision">
     <legend>How accurate is the map?</legend>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Exact, new { @class = "custom-control-input", @id = "geo-0" })
+        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Exact, new { @class = "custom-control-input", @id = "geo-0", aria_describedby = "precision-validation" })
         <label for="geo-0" class="custom-control-label">It shows exactly where the ground or sports centre is</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Postcode, new { @class = "custom-control-input", @id = "geo-1" })
+        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Postcode, new { @class = "custom-control-input", @id = "geo-1", aria_describedby = "precision-validation" })
         <label for="geo-1" class="custom-control-label">It's the right postcode, and the ground or sports centre is nearby</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Street, new { @class = "custom-control-input", @id = "geo-2" })
+        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Street, new { @class = "custom-control-input", @id = "geo-2", aria_describedby = "precision-validation" })
         <label for="geo-2" class="custom-control-label">The ground or sports centre is somewhere on this road</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Town, new { @class = "custom-control-input", @id = "geo-3" })
+        @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Town, new { @class = "custom-control-input", @id = "geo-3", aria_describedby = "precision-validation" })
         <label for="geo-3" class="custom-control-label">It shows the right town or village, but I don't know where the ground or sports centre is</label>
     </div>
     @Html.ValidationMessageFor(m => Model.MatchLocation.GeoPrecision, null, new { id = "precision-validation" })

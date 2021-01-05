@@ -37,12 +37,12 @@
             <fieldset class="form-group">
                 <legend>What year does it end?</legend>
                 <div class="custom-control custom-radio">
-                    @Html.RadioButtonFor(m => Model.Season.UntilYear, 0, new { @class = "custom-control-input", @id = "end-year-1" })
-                    <label for="end-year-1" class="custom-control-label">the same year (for example, April to September)</label>
+                    @Html.RadioButtonFor(m => Model.Season.UntilYear, 0, new { @class = "custom-control-input", @id = "end-year-1", aria_describedby = "end-year-validation" })
+                    <label for="end-year-1" id="end-year-1-label" class="custom-control-label">The same year (for example, April to September)</label>
                 </div>
                 <div class="custom-control custom-radio">
-                    @Html.RadioButtonFor(m => Model.Season.UntilYear, 1, new { @class = "custom-control-input", @id = "end-year-2" })
-                    <label for="end-year-2" class="custom-control-label">the next year (for example, October to March)</label>
+                    @Html.RadioButtonFor(m => Model.Season.UntilYear, 1, new { @class = "custom-control-input", @id = "end-year-2", aria_describedby = "end-year-validation" })
+                    <label for="end-year-2" class="custom-control-label">The next year (for example, October to March)</label>
                 </div>
                 @Html.ValidationMessageFor(m => Model.Season.UntilYear, null, new { id = "end-year-validation" })
             </fieldset>

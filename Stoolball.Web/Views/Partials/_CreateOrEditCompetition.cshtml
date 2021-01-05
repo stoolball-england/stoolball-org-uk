@@ -29,27 +29,27 @@
 <fieldset class="form-group">
     <legend>Who can play?</legend>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.Mixed, new { @class = "custom-control-input", @id = "player-type-1" })
+        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.Mixed, new { @class = "custom-control-input", @id = "player-type-1", aria_describedby= "player-type-validation" })
         <label for="player-type-1" class="custom-control-label">Mixed</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.Ladies, new { @class = "custom-control-input", @id = "player-type-2" })
+        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.Ladies, new { @class = "custom-control-input", @id = "player-type-2", aria_describedby = "player-type-validation" })
         <label for="player-type-2" class="custom-control-label">Ladies</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.JuniorMixed, new { @class = "custom-control-input", @id = "player-type-3" })
+        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.JuniorMixed, new { @class = "custom-control-input", @id = "player-type-3", aria_describedby = "player-type-validation" })
         <label for="player-type-3" class="custom-control-label">Junior mixed</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.JuniorGirls, new { @class = "custom-control-input", @id = "player-type-4" })
+        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.JuniorGirls, new { @class = "custom-control-input", @id = "player-type-4", aria_describedby = "player-type-validation" })
         <label for="player-type-4" class="custom-control-label">Junior girls</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.JuniorBoys, new { @class = "custom-control-input", @id = "player-type-5" })
+        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.JuniorBoys, new { @class = "custom-control-input", @id = "player-type-5", aria_describedby = "player-type-validation" })
         <label for="player-type-5" class="custom-control-label">Junior boys</label>
     </div>
     <div class="custom-control custom-radio">
-        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.Men, new { @class = "custom-control-input", @id = "player-type-6" })
+        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.Men, new { @class = "custom-control-input", @id = "player-type-6", aria_describedby = "player-type-validation" })
         <label for="player-type-6" class="custom-control-label">Men</label>
     </div>
     @Html.ValidationMessageFor(m => Model.Competition.PlayerType, null, new { id = "player-type-validation" })
