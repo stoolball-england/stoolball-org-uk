@@ -53,7 +53,12 @@ namespace Stoolball.Web.Matches
             {
                 model.Match.Season = null;
             }
-            _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form);
+            _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form, ModelState);
+
+            if (!model.HomeTeamId.HasValue && !model.AwayTeamId.HasValue)
+            {
+                ModelState.AddModelError("HomeTeamId", "Please select at least one team");
+            }
 
             model.IsAuthorized[AuthorizedAction.CreateMatch] = User.Identity.IsAuthenticated;
 

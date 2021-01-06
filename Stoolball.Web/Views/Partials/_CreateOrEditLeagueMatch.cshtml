@@ -1,5 +1,6 @@
 ﻿@model EditLeagueMatchViewModel
 @using Stoolball.Web.Matches
+@using Stoolball.Web.HtmlHelpers
 @Html.AntiForgeryToken()
 @Html.ValidationSummary(true)
 
@@ -23,7 +24,7 @@ else
 </div>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.StartTime)
+    @Html.LabelFor(m => Model.StartTime, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @Html.TextBoxFor(m => Model.StartTime, "{0:HH:mm}", new { @type = "time", @class = "form-control", aria_describedby = "start-time" })
     @Html.ValidationMessageFor(m => Model.StartTime, null, new { id = "start-time" })
 </div>
@@ -41,7 +42,7 @@ else
 </div>
 
 <div class="form-group related-item">
-    @Html.LabelFor(m => Model.MatchLocationName)
+    @Html.LabelFor(m => Model.MatchLocationName, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @if (Model.MatchLocationId.HasValue)
     {
         <div class="related-item__selected">
@@ -50,7 +51,7 @@ else
             </div>
             <div class="related-item__delete related-item__selected__section">
                 @Html.HiddenFor(m => Model.MatchLocationId, new { @class = "related-item__data related-item__id" })
-                <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.MatchLocationName} from this match")</button>
+                <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.MatchLocationName} from this match")</button>
             </div>
         </div>
         Model.MatchLocationName = string.Empty;
@@ -87,13 +88,13 @@ else
         </div>
         <div class="related-item__delete related-item__selected__section">
             <input name="MatchLocationId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
-            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this match")</button>
+            <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this match")</button>
         </div>
     </div>
 </script>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.Match.MatchNotes)
+    @Html.LabelFor(m => Model.Match.MatchNotes, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @Html.TextAreaFor(m => Model.Match.MatchNotes, new { @class = "form-control", aria_describedby = "notes-validation" })
     @Html.ValidationMessageFor(m => Model.Match.MatchNotes, null, new { id = "notes-validation" })
 </div>

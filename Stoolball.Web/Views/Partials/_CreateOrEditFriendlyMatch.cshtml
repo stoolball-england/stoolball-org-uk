@@ -1,5 +1,6 @@
 ﻿@model EditFriendlyMatchViewModel
 @using Stoolball.Web.Matches
+@using Stoolball.Web.HtmlHelpers
 @Html.AntiForgeryToken()
 @Html.ValidationSummary(true)
 
@@ -10,7 +11,7 @@
 else if (Model.PossibleSeasons.Count > 0)
 {
     <div class="form-group">
-        @Html.LabelFor(m => Model.Match.Season.SeasonId)
+        @Html.LabelFor(m => Model.Match.Season.SeasonId, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
         @Html.DropDownListFor(m => Model.Match.Season.SeasonId, Model.PossibleSeasons, "None", new { @class = "form-control", aria_describedby = "match-season" })
         @Html.ValidationMessageFor(m => Model.Match.Season.SeasonId, null, new { id = "match-season" })
     </div>
@@ -27,7 +28,7 @@ else
                 </div>
                 <div class="related-item__delete related-item__selected__section">
                     @Html.HiddenFor(m => Model.Match.Season.SeasonId, new { @class = "related-item__data related-item__id" })
-                    <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove this match from {Model.SeasonFullName}")</button>
+                    <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove this match from {Model.SeasonFullName}")</button>
                 </div>
             </div>
             Model.SeasonFullName = string.Empty;
@@ -64,7 +65,7 @@ else
             </div>
             <div class="related-item__delete related-item__selected__section">
                 <input name="Match.Season.SeasonId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
-                <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove this match from {{value}}")</button>
+                <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove this match from {{value}}")</button>
             </div>
         </div>
     </script>
@@ -77,18 +78,19 @@ else
 </div>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.StartTime)
+    @Html.LabelFor(m => Model.StartTime, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @Html.TextBoxFor(m => Model.StartTime, "{0:HH:mm}", new { @type = "time", @class = "form-control", aria_describedby = "start-time" })
     @Html.ValidationMessageFor(m => Model.StartTime, null, new { id = "start-time" })
 </div>
 
 <div class="form-group related-item">
-    @Html.LabelFor(m => Model.HomeTeamId)
+    @Html.LabelFor(m => Model.HomeTeamId, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+    <p class="form-text" id="home-team-or"><small>If you're still arranging the match you can fill in one team and leave the other blank.</small></p>
     @if (Model.HomeTeamId.HasValue)
     {
         <div class="related-item__selected">
             <div class="related-item__selected__section">
-                @Html.TextBoxFor(m => Model.HomeTeamName, new { @class = "form-control", @readonly = "readonly" })
+                @Html.TextBoxFor(m => Model.HomeTeamName, new { @class = "form-control", @readonly = "readonly", aria_describedby = "home-team-or home-team" })
             </div>
             <div class="related-item__delete related-item__selected__section">
                 @Html.HiddenFor(m => Model.HomeTeamId, new { @class = "related-item__data related-item__id" })
@@ -121,11 +123,12 @@ else
             aria_label = "Type a team name and press down arrow to select from the matching choices"
         })
     }
+    @Html.ValidationMessageFor(m => Model.HomeTeamId, null, new { id = "home-team" })
 </div>
 <script type="text/x-template" id="home-team-template">
     <div class="related-item__selected">
         <div class="related-item__selected__section">
-            <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="HomeTeamName" name="HomeTeamName" />
+            <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="HomeTeamName" name="HomeTeamName" aria-describedby="home-team-or home-team" />
         </div>
         <div class="related-item__delete related-item__selected__section">
             <input name="HomeTeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
@@ -135,12 +138,13 @@ else
 </script>
 
 <div class="form-group related-item">
-    @Html.LabelFor(m => Model.AwayTeamId)
+    @Html.LabelFor(m => Model.AwayTeamId, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+    <p class="form-text" id="away-team-or"><small>If you're still arranging the match you can fill in one team and leave the other blank.</small></p>
     @if (Model.AwayTeamId.HasValue)
     {
         <div class="related-item__selected">
             <div class="related-item__selected__section">
-                @Html.TextBoxFor(m => Model.AwayTeamName, new { @class = "form-control", @readonly = "readonly" })
+                @Html.TextBoxFor(m => Model.AwayTeamName, new { @class = "form-control", @readonly = "readonly", aria_describedby = "away-team-or" })
             </div>
             <div class="related-item__delete related-item__selected__section">
                 @Html.HiddenFor(m => Model.AwayTeamId, new { @class = "related-item__data related-item__id" })
@@ -173,11 +177,12 @@ else
             aria_label = "Type a team name and press down arrow to select from the matching choices"
         })
     }
+    @Html.ValidationMessageFor(m => Model.AwayTeamId, null, new { id = "away-team" })
 </div>
 <script type="text/x-template" id="away-team-template">
     <div class="related-item__selected">
         <div class="related-item__selected__section">
-            <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="AwayTeamName" name="AwayTeamName" />
+            <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="AwayTeamName" name="AwayTeamName" aria-describedby="away-team-or away-team" />
         </div>
         <div class="related-item__delete related-item__selected__section">
             <input name="AwayTeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
@@ -187,7 +192,7 @@ else
 </script>
 
 <div class="form-group related-item">
-    @Html.LabelFor(m => Model.MatchLocationName)
+    @Html.LabelFor(m => Model.MatchLocationName, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @if (Model.MatchLocationId.HasValue)
     {
         <div class="related-item__selected">
@@ -239,7 +244,7 @@ else
 </script>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.Match.MatchNotes)
+    @Html.LabelFor(m => Model.Match.MatchNotes, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @Html.TextAreaFor(m => Model.Match.MatchNotes, new { @class = "form-control", aria_describedby = "notes-validation" })
     @Html.ValidationMessageFor(m => Model.Match.MatchNotes, null, new { id = "notes-validation" })
 </div>

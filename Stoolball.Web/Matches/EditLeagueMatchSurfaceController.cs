@@ -67,7 +67,12 @@ namespace Stoolball.Web.Matches
             model.Match.UpdateMatchNameAutomatically = beforeUpdate.UpdateMatchNameAutomatically;
             model.Match.Season = beforeUpdate.Season;
 
-            _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form);
+            _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form, ModelState);
+
+            if (model.HomeTeamId.HasValue && model.HomeTeamId == model.AwayTeamId)
+            {
+                ModelState.AddModelError("AwayTeamId", "The away team cannot be the same as the home team");
+            }
 
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 

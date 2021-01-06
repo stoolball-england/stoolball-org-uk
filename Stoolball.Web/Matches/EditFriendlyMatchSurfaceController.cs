@@ -66,7 +66,12 @@ namespace Stoolball.Web.Matches
             model.Match.MatchRoute = beforeUpdate.MatchRoute;
             model.Match.UpdateMatchNameAutomatically = beforeUpdate.UpdateMatchNameAutomatically;
 
-            _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form);
+            _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form, ModelState);
+
+            if (!model.HomeTeamId.HasValue && !model.AwayTeamId.HasValue)
+            {
+                ModelState.AddModelError("HomeTeamId", "Please select at least one team");
+            }
 
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 

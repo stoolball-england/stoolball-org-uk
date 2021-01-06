@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -75,7 +74,7 @@ namespace Stoolball.Web.Matches
             model.PossibleAwayTeams.Sort(new TeamComparer(model.Team.TeamId));
         }
 
-        public void ConfigureModelFromRequestData(IEditMatchViewModel model, NameValueCollection unvalidatedFormData, NameValueCollection formData)
+        public void ConfigureModelFromRequestData(IEditMatchViewModel model, NameValueCollection unvalidatedFormData, NameValueCollection formData, ModelStateDictionary modelState)
         {
             if (model is null)
             {
@@ -92,6 +91,11 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(formData));
             }
 
+            if (modelState is null)
+            {
+                throw new ArgumentNullException(nameof(modelState));
+            }
+
             // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
             model.Match.MatchNotes = unvalidatedFormData["Match.MatchNotes"];
 
@@ -100,15 +104,26 @@ namespace Stoolball.Web.Matches
                 model.Match.MatchName = formData["MatchName"];
             }
 
-            if (!string.IsNullOrEmpty(formData["MatchDate"]))
+            if (!string.IsNullOrEmpty(formData["MatchDate"]) && DateTimeOffset.TryParse(formData["MatchDate"], out var parsedDate))
             {
-                model.MatchDate = DateTimeOffset.Parse(formData["MatchDate"], CultureInfo.CurrentCulture);
+                model.MatchDate = parsedDate;
                 model.Match.StartTime = model.MatchDate.Value;
+
                 if (!string.IsNullOrEmpty(formData["StartTime"]))
                 {
-                    model.StartTime = DateTimeOffset.Parse(formData["StartTime"], CultureInfo.CurrentCulture);
-                    model.Match.StartTime = model.Match.StartTime.Add(model.StartTime.Value.TimeOfDay);
-                    model.Match.StartTimeIsKnown = true;
+                    if (DateTimeOffset.TryParse(formData["StartTime"], out var parsedTime))
+                    {
+                        model.StartTime = parsedTime;
+                        model.Match.StartTime = model.Match.StartTime.Add(model.StartTime.Value.TimeOfDay);
+                        model.Match.StartTimeIsKnown = true;
+                    }
+                    else
+                    {
+                        // This may be seen in browsers that don't support <input type="time" />, mainly Safari.
+                        // Each browser that supports <input type="time" /> may have a very different interface so don't advertise
+                        // this format up-front as it could confuse the majority. Instead, only reveal it here.
+                        modelState.AddModelError("StartTime", "Enter a time in 24-hour HH:MM format.");
+                    }
                 }
                 else
                 {
@@ -117,6 +132,15 @@ namespace Stoolball.Web.Matches
                     model.Match.StartTimeIsKnown = false;
                 }
             }
+            else
+            {
+                // This may be seen in browsers that don't support <input type="date" />, mainly Safari. 
+                // This is the format <input type="date" /> expects and posts, so we have to repopulate the field in this format,
+                // so although this code _can_ parse other formats we don't advertise that. We also don't want YYYY-MM-DD in 
+                // the field label as it could confuse the majority, so only reveal it here.
+                modelState.AddModelError("MatchDate", "Enter a date in YYYY-MM-DD format.");
+            }
+
             if (!string.IsNullOrEmpty(formData["HomeTeamId"]))
             {
                 model.HomeTeamId = new Guid(formData["HomeTeamId"]);

@@ -50,7 +50,12 @@ namespace Stoolball.Web.Matches
 
             var model = new EditLeagueMatchViewModel(CurrentPage, Services.UserService) { Match = postedMatch };
             model.Match.MatchType = MatchType.LeagueMatch;
-            _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form);
+            _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form, ModelState);
+
+            if (model.HomeTeamId.HasValue && model.HomeTeamId == model.AwayTeamId)
+            {
+                ModelState.AddModelError("AwayTeamId", "The away team cannot be the same as the home team");
+            }
 
             model.IsAuthorized[AuthorizedAction.CreateMatch] = User.Identity.IsAuthenticated;
 
