@@ -45,6 +45,11 @@ legend {
     font-size: $font-size-base;
 }
 
+/* Use a different fallback font due to a Firefox bug. See documentation in _theme.scss with the definition of $options-font-family. */
+option {
+    font-family: $options-font-family;
+}
+
 /* A simple search form with an input field and button. Apply as <form class="form-inline form-search">. */
 .form-search {
     flex-wrap: nowrap;

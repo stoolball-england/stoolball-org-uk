@@ -943,6 +943,10 @@
     <Content Include="fonts\Web.config" />
     <Content Include="images\Web.config" />
     <Content Include="css\_maps.scss" />
+    <Content Include="fonts\assistant-v6-latin-800.woff" />
+    <Content Include="fonts\assistant-v6-latin-800.woff2" />
+    <Content Include="fonts\dancing-script-v15-latin-700.woff" />
+    <Content Include="fonts\dancing-script-v15-latin-700.woff2" />
     <None Include="Status\offline.json" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
