@@ -40,12 +40,13 @@ namespace Stoolball.Data.SqlServer
                     $@"SELECT co.CompetitionId, co.CompetitionName, co.PlayerType, co.Introduction, co.FromYear, co.UntilYear, 
                             co.PublicContactDetails, co.PrivateContactDetails, co.Facebook, co.Twitter, co.Instagram, co.YouTube, co.Website, co.CompetitionRoute, 
                             co.MemberGroupKey, co.MemberGroupName,
-                            s.SeasonRoute, s.FromYear, s.UntilYear, s.PlayersPerTeam, s.Overs,
+                            s.SeasonRoute, s.FromYear, s.UntilYear, s.PlayersPerTeam, s.Overs, s.EnableTournaments, s.EnableLastPlayerBatsOn, s.EnableBonusOrPenaltyRuns,
                             mt.MatchType
                             FROM {Tables.Competition} AS co
                             LEFT JOIN {Tables.Season} AS s ON co.CompetitionId = s.CompetitionId
                             LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
-                            WHERE LOWER(co.CompetitionRoute) = @Route",
+                            WHERE LOWER(co.CompetitionRoute) = @Route
+                            ORDER BY s.FromYear DESC, s.UntilYear DESC",
                     (competition, season, matchType) =>
                     {
                         if (season != null)

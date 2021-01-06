@@ -54,7 +54,7 @@ namespace Stoolball.Web.Competitions
             {
                 var model = new SeasonViewModel(contentModel.Content, Services?.UserService)
                 {
-                    Season = competition.Seasons.LastOrDefault() ?? new Season { PlayersPerTeam = 11 }
+                    Season = competition.Seasons.FirstOrDefault() ?? new Season { PlayersPerTeam = 11 }
                 };
                 var summerSeason = model.Season.FromYear == model.Season.UntilYear;
                 model.Season.Competition = competition;
