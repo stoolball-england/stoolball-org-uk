@@ -668,6 +668,7 @@
     <Content Include="css\rules.page.min.css">
       <DependentUpon>rules.page.css</DependentUpon>
     </Content>
+    <Content Include="Matches\close-of-play.js" />
     <Content Include="Matches\scorecards.css">
       <DependentUpon>scorecards.scss</DependentUpon>
     </Content>

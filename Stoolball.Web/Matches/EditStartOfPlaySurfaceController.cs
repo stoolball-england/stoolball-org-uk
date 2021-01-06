@@ -51,7 +51,7 @@ namespace Stoolball.Web.Matches
         {
             if (postedMatch is null)
             {
-                throw new ArgumentNullException(nameof(postedMatch));
+                postedMatch = new Match();
             }
 
             var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false);
@@ -74,7 +74,7 @@ namespace Stoolball.Web.Matches
             model.Match.Teams = beforeUpdate.Teams;
             model.Match.MatchInnings = beforeUpdate.MatchInnings;
 
-            await AddMissingTeamsFromRequest(model, beforeUpdate.Season?.SeasonRoute).ConfigureAwait(false);
+            await AddMissingTeamsFromRequest(model, beforeUpdate.Season?.SeasonRoute, ModelState).ConfigureAwait(false);
 
             ReadMatchLocationFromRequest(model);
 
@@ -82,12 +82,33 @@ namespace Stoolball.Web.Matches
 
             ReadBattedFirstFromRequest(model);
 
+            if (bool.TryParse(Request.Form["MatchWentAhead"], out var matchWentAhead))
+            {
+                // Reset the fields which are not compatible with the selection for whether the match went ahead.
+                // They may have been set, then the match went ahead option was changed, and their values would now be misleading.
+                model.MatchWentAhead = matchWentAhead;
+                if (model.MatchWentAhead.Value && model.Match.MatchResultType != MatchResultType.HomeWin && model.Match.MatchResultType != MatchResultType.AwayWin && model.Match.MatchResultType != MatchResultType.Tie)
+                {
+                    model.Match.MatchResultType = null;
+                }
+
+                if (!model.MatchWentAhead.Value)
+                {
+                    model.TossWonBy = null;
+                    model.BattedFirst = null;
+                }
+
+                // Validate this field as required, but conditionally based on whether the match went ahead
+                if (!model.MatchWentAhead.Value && !model.Match.MatchResultType.HasValue)
+                {
+                    ModelState.AddModelError("Match.MatchResultType", "The Why didn't the match go ahead? field is required");
+                }
+            }
+
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
             if (model.IsAuthorized[AuthorizedAction.EditMatchResult] && ModelState.IsValid)
             {
-                if ((int)model.Match.MatchResultType == -1) { model.Match.MatchResultType = null; }
-
                 var currentMember = Members.GetCurrentMember();
                 var updatedMatch = await _matchRepository.UpdateStartOfPlay(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
@@ -132,7 +153,7 @@ namespace Stoolball.Web.Matches
             return View("EditStartOfPlay", model);
         }
 
-        private async Task AddMissingTeamsFromRequest(EditStartOfPlayViewModel model, string seasonRoute)
+        private async Task AddMissingTeamsFromRequest(EditStartOfPlayViewModel model, string seasonRoute, ModelStateDictionary modelState)
         {
             if (model.Match.MatchType == MatchType.KnockoutMatch && !string.IsNullOrEmpty(seasonRoute))
             {
@@ -154,6 +175,13 @@ namespace Stoolball.Web.Matches
                 // Add teams to model.Teams only if they're missing, 
                 AddTeamIfMissing(model.Match.Teams, TeamRole.Home);
                 AddTeamIfMissing(model.Match.Teams, TeamRole.Away);
+            }
+
+            if (model.Match.MatchType == MatchType.KnockoutMatch &&
+                model.Match.Teams.Count == 2 &&
+                model.Match.Teams[0].Team.TeamId == model.Match.Teams[1].Team.TeamId)
+            {
+                ModelState.AddModelError("AwayTeamId", "The away team cannot be the same as the home team");
             }
         }
 

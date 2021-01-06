@@ -75,6 +75,11 @@ namespace Stoolball.Web.Matches
 
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
 
+                if (model.Match.MatchResultType.HasValue)
+                {
+                    model.MatchWentAhead = (model.Match.MatchResultType == MatchResultType.HomeWin || model.Match.MatchResultType == MatchResultType.AwayWin || model.Match.MatchResultType == MatchResultType.Tie);
+                }
+
                 if (model.Match.MatchType == MatchType.KnockoutMatch)
                 {
                     model.Match.Season = await _seasonDataSource.ReadSeasonByRoute(model.Match.Season.SeasonRoute, true).ConfigureAwait(false);

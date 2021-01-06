@@ -24,16 +24,25 @@ namespace Stoolball.Web.Matches
         [Required]
         public Guid? HomeTeamId { get; set; }
 
+        [Display(Name = "Home team")]
+        [Required]
         public string HomeTeamName { get; set; }
 
         [Display(Name = "Away team")]
         [Required]
         public Guid? AwayTeamId { get; set; }
+
+        [Display(Name = "Away team")]
+        [Required]
         public string AwayTeamName { get; set; }
 
         [Display(Name = "Ground or sports centre name")]
         public string MatchLocationName { get; set; }
         public Guid? MatchLocationId { get; set; }
+
+        [Required]
+        [Display(Name = "Did the match go ahead?")]
+        public bool? MatchWentAhead { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="TeamInMatch.MatchTeamId"/> of the team that won the toss, or the string 'Home' or 'Away' for an unknown team
