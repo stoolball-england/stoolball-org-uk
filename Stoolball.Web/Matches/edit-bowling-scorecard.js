@@ -126,6 +126,7 @@
 
     // Add over button
     const addOver = document.createElement("button");
+    addOver.setAttribute("type", "button");
     addOver.setAttribute("class", "btn btn-secondary");
     addOver.setAttribute("disabled", "disabled");
     addOver.appendChild(document.createTextNode("Add an over"));

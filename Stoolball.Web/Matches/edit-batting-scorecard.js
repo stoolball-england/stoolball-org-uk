@@ -6,7 +6,9 @@
       const batter = tr.querySelector(".scorecard__player-name");
       const dismissalType = tr.querySelector(".scorecard__dismissal");
       if (batter.value) {
-        dismissalType.removeAttribute("disabled");
+        if (dismissalType) {
+          dismissalType.removeAttribute("disabled");
+        }
         // If this batting row is used, ensure next one is ready
         if (
           tr.nextElementSibling &&
@@ -18,11 +20,13 @@
           nextBatter.removeAttribute("disabled");
         } else {
           editor
-            .querySelector(".edit-batting-scorecard__add-batter button")
+            .querySelector(".batting-scorecard-editor__add-batter button")
             .removeAttribute("disabled");
         }
       } else {
-        dismissalType.setAttribute("disabled", "disabled");
+        if (dismissalType) {
+          dismissalType.setAttribute("disabled", "disabled");
+        }
         // If this batting row not used, disable the following ones to reduce tabbing
         if (
           tr.nextElementSibling &&
@@ -31,7 +35,7 @@
           disableFollowingRows(tr);
         } else {
           editor
-            .querySelector(".edit-batting-scorecard__add-batter button")
+            .querySelector(".batting-scorecard-editor__add-batter button")
             .setAttribute("disabled", "disabled");
         }
       }
@@ -189,10 +193,12 @@
 
     function enableBattingRowEvent(e) {
       if (e.target && e.target.classList.contains("scorecard__player-name")) {
-        enableBattingRow(e.target.parentElement.parentElement);
+        enableBattingRow(e.target.parentElement.parentElement.parentElement);
       }
       if (e.target.classList.contains("scorecard__dismissal")) {
-        dismissalTypeEnableDetails(e.target.parentElement.parentElement);
+        dismissalTypeEnableDetails(
+          e.target.parentElement.parentElement.parentElement
+        );
       }
     }
 
@@ -267,12 +273,13 @@
 
     // Add batter button
     const addBatterTr = document.createElement("tr");
-    addBatterTr.classList.add("edit-batting-scorecard__add-batter");
+    addBatterTr.classList.add("batting-scorecard-editor__add-batter");
     const addBatterTd = document.createElement("td");
     addBatterTd.setAttribute("colspan", "6");
     addBatterTr.appendChild(addBatterTd);
     const addBatter = document.createElement("button");
-    addBatter.setAttribute("class", "btn btn-secondary");
+    addBatter.setAttribute("type", "button");
+    addBatter.setAttribute("class", "btn btn-secondary btn-add");
     addBatter.setAttribute("disabled", "disabled");
     addBatter.appendChild(document.createTextNode("Add a batter"));
     addBatterTd.appendChild(addBatter);

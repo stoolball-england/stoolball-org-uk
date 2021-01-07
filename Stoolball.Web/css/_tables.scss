@@ -2,6 +2,7 @@
 @import "../Content/bootstrap/_mixins.scss";
 @import "../Content/bootstrap/_variables.scss";
 @import "../Content/bootstrap/_tables.scss";
+@import "./_mixins.scss";
 
 @mixin numeric-value {
     text-align: right;
@@ -89,18 +90,6 @@ th.numeric {
 // Preserve the text-align: right of .numeric when it is applied. Otherwise it's just left-aligned after the width of the ::before pseudo-element above
 .table-as-cards [data-label].numeric::before {
     flex-grow: 1;
-}
-
-@mixin table-as-cards-reset-thead {
-    position: static; // undo .sr-only
-}
-
-@mixin table-as-cards-reset-label {
-    display: table-cell;
-}
-
-@mixin table-as-cards-reset-before {
-    content: none;
 }
 
 @include media-breakpoint-up(sm) {

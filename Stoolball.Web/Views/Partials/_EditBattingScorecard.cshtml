@@ -29,7 +29,7 @@
 }
 <p class="scorecard__full-name-hint d-none alert alert-info alert-tip" role="alert">Full names, if you know them, are better for comparing players.</p>
 
-<table class="table batting-scorecard batting-scorecard-editor" data-autofocus="@Model.Autofocus.ToString().ToLowerInvariant()">
+<table class="batting-scorecard-base batting-scorecard-editor table-as-cards" data-autofocus="@Model.Autofocus.ToString().ToLowerInvariant()">
     <caption>@Model.CurrentInnings.BattingTeam.Team.TeamName's batting</caption>
     <thead>
         <tr>
@@ -45,12 +45,16 @@
         @for (var i = 0; i < (Model.Match.PlayersPerTeam); i++)
         {
             <tr class="scorecard__batter">
-                <th scope="row">@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[i].PlayerIdentity.PlayerIdentityName, new { autocomplete = "off", @class = "scorecard__player-name", data_team = Model.CurrentInnings.BattingTeam.Team.TeamId.ToString() })</th>
-                <td>@Html.DropDownListFor(m => Model.CurrentInnings.PlayerInnings[i].DismissalType, new SelectList(dismissalTypes, "Value", "Text", Model.CurrentInnings.PlayerInnings[i].DismissalType.HasValue ? Model.CurrentInnings.PlayerInnings[i].DismissalType.ToString() : string.IsNullOrEmpty(Model.CurrentInnings.PlayerInnings[i].PlayerIdentity.PlayerIdentityName) ? DismissalType.DidNotBat.ToString() : string.Empty), new { @class = "scorecard__dismissal" })</td>
-                <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[i].DismissedBy.PlayerIdentityName, new { autocomplete = "off", @class = "scorecard__player-name", data_team = Model.CurrentInnings.BowlingTeam.Team.TeamId.ToString() })</td>
-                <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[i].Bowler.PlayerIdentityName, new { autocomplete = "off", @class = "scorecard__player-name", data_team = Model.CurrentInnings.BowlingTeam.Team.TeamId.ToString() })</td>
-                <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[i].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"The runs for the {(i + 1).Ordinalize()} batter must be a number.", min = "0", data_msg_min = $"The runs for the {(i + 1).Ordinalize()} batter must be a number, 0 or more", @class = "scorecard__runs" })</td>
-                <td>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[i].BallsFaced, new { autocomplete = "off", type = "number", data_val_number = $"The balls faced for the {(i + 1).Ordinalize()} batter must be a number.", min = "0", data_msg_min = $"The balls faced for the {(i + 1).Ordinalize()} batter must be a number, 0 or more", @class = "scorecard__balls" })</td>
+                <th scope="row" data-label="@((i+1).Ordinalize()) batter" class="scorecard__batter-container">
+                    <div> @* Extra divs act as flex-items when using .table-as-cards. Allowing the form field to be a flex-item means its height grows if the label wraps. *@
+                        @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[i].PlayerIdentity.PlayerIdentityName, new { autocomplete = "off", @class = "scorecard__player-name scorecard__batter-name", data_team = Model.CurrentInnings.BattingTeam.Team.TeamId.ToString() })
+                    </div>
+                </th>
+                <td data-label="How out" class="scorecard__dismissal-container"><div>@Html.DropDownListFor(m => Model.CurrentInnings.PlayerInnings[i].DismissalType, new SelectList(dismissalTypes, "Value", "Text", Model.CurrentInnings.PlayerInnings[i].DismissalType.HasValue ? Model.CurrentInnings.PlayerInnings[i].DismissalType.ToString() : string.IsNullOrEmpty(Model.CurrentInnings.PlayerInnings[i].PlayerIdentity.PlayerIdentityName) ? DismissalType.DidNotBat.ToString() : string.Empty), new { @class = "scorecard__dismissal" })</div></td>
+                <td data-label="Caught/run-out by" class="scorecard__dismissed-by-container"><div>@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[i].DismissedBy.PlayerIdentityName, new { autocomplete = "off", @class = "scorecard__player-name", data_team = Model.CurrentInnings.BowlingTeam.Team.TeamId.ToString() })</div></td>
+                <td data-label="Bowler" class="scorecard__bowler-container">@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[i].Bowler.PlayerIdentityName, new { autocomplete = "off", @class = "scorecard__player-name", data_team = Model.CurrentInnings.BowlingTeam.Team.TeamId.ToString() })</td>
+                <td data-label="Runs" class="scorecard__runs-container">@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[i].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"The runs for the {(i + 1).Ordinalize()} batter must be a number.", min = "0", data_msg_min = $"The runs for the {(i + 1).Ordinalize()} batter must be a number, 0 or more", @class = "scorecard__runs" })</td>
+                <td data-label="Balls" class="scorecard__balls-container">@Html.TextBoxFor(m => Model.CurrentInnings.PlayerInnings[i].BallsFaced, new { autocomplete = "off", type = "number", data_val_number = $"The balls faced for the {(i + 1).Ordinalize()} batter must be a number.", min = "0", data_msg_min = $"The balls faced for the {(i + 1).Ordinalize()} batter must be a number, 0 or more", @class = "scorecard__balls" })</td>
             </tr>
         }
         <tr class="scorecard__extras">

@@ -16,3 +16,15 @@
 @mixin remove-link-focus {
     outline: none;
 }
+
+@mixin table-as-cards-reset-thead {
+    position: static; // undo .sr-only
+}
+
+@mixin table-as-cards-reset-label {
+    display: table-cell;
+}
+
+@mixin table-as-cards-reset-before {
+    content: none;
+}
