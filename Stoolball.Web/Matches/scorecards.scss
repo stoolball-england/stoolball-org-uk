@@ -154,6 +154,11 @@ $space-character-width: .25em;
    .batting-scorecard-editor works similarly to .table-as-cards, but customises it heavily so does not use the standard class.
 */
 
+// jQuery autocomplete suggestions for players should not be limited to the width of their input. Instead, show the whole content.
+.player-suggestions {
+    width: auto !important;
+}
+
 .batting-scorecard-editor thead {
     @include sr-only(); // Needs to remain in the accessibility tree for headers to be announced by screen readers
 }
