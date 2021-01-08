@@ -167,7 +167,6 @@ $space-character-width: .25em;
 // This creates a miniature table row appearance, with the label as the row heading and the input as the data.
 .batting-scorecard-editor__player-innings-field {
     display: flex;
-    align-items: end;
 }
 
 // The label element is acting like a row heading cell, so style it like a heading.
@@ -183,40 +182,35 @@ $space-character-width: .25em;
     width: 9rem;
 }
 
-// Allow the batter name to expand to make to most of whatever space is available at each breakpoint
-.scorecard__batter-name {
-    width: 100%;
-}
-
 // There's a space before this to allow wrapping. It doesn't wrap yet, so offset the space.
 .batting-scorecard-editor__dismissed-by-label > .text-nowrap {
     margin-left: -$space-character-width;
 }
 
 // These rows need to have one column when the batter rows have every column stacked.
-// This changes the display of the cells to flex-item rather than table-cell
-.batting-scorecard-editor .scorecard__extras,
-.batting-scorecard-editor .scorecard__totals {
+.batting-scorecard-editor__final-rows {
     display: flex;
 }
 
-.batting-scorecard-editor .scorecard__extras th,
-.batting-scorecard-editor .scorecard__totals th {
-    flex-grow: 1;
-}
-
-.batting-scorecard-editor .scorecard__extras td,
-.batting-scorecard-editor .scorecard__totals td {
-    width: 7em;
-}
-
-// These cells are empty, in the balls column at full size,
-// but they are an extra column when the others are stacked into one by flexbox
-.batting-scorecard-editor .scorecard__extras td:last-child,
-.batting-scorecard-editor .scorecard__totals td:last-child {
+// These cells are empty and hidden from the accessibility tree while flexbox is in use
+.batting-scorecard-editor__final-rows > :nth-child(1),
+.batting-scorecard-editor__final-rows > :nth-child(2),
+.batting-scorecard-editor__final-rows > :nth-child(3),
+.batting-scorecard-editor__final-rows > :last-child {
     display: none;
 }
 
+// Set a width for the cell containing the numeric fields. 
+// Allow the header to take up the remaining space, so that the header text aligns to the fields.
+.batting-scorecard-editor__final-rows th {
+    flex-grow: 1;
+}
+
+.batting-scorecard-editor__final-rows [headers] {
+    width: 7em;
+}
+
+// Colour the first field in the stack to visually separate each stacked player innings from the next.
 .batting-scorecard-editor__batter {
     background: $table-dark-bg;
     color: $table-dark-color;
@@ -252,9 +246,19 @@ $space-character-width: .25em;
     }
 
     // Now we have two columns we can go back to showing these as two columns
-    .batting-scorecard-editor .scorecard__extras, .batting-scorecard-editor .scorecard__totals {
+    .batting-scorecard-editor__final-rows {
         display: table-row;
     }
+
+    // Adjust the padding so that these rows line up with the player innings rows above
+    .batting-scorecard-editor__final-rows th {
+        padding-right: $table-cell-padding*2;
+    }
+
+    .batting-scorecard-editor__final-rows [headers] {
+        padding-left: 0;
+    }
+
     // Move the 'Add batter' button into the spacer below the name of the batter above, to not interrupt the standard scorecard layout
     .batting-scorecard-editor__add-batter {
         height: 0;
@@ -263,12 +267,12 @@ $space-character-width: .25em;
 
     .batting-scorecard-editor__add-batter > td {
         padding: 0;
-        border: 0;
+        border: none;
     }
 
     .batting-scorecard-editor__add-batter button {
         position: absolute;
-        margin-left: $spacer/4*3;
+        margin-left: 0;
         margin-top: $spacer*-3;
     }
 }
@@ -283,6 +287,16 @@ $space-character-width: .25em;
     .batting-scorecard-editor__dismissal-label {
         display: block;
         width: auto;
+    }
+
+    // Move the 'Add batter' button into the Byes row to not interrupt the standard scorecard layout
+    .batting-scorecard-editor__add-batter button {
+        margin-top: $spacer/2;
+    }
+
+    // Reveal one of the extra columns so that the final rows still span the table
+    .batting-scorecard-editor__final-rows > :nth-child(1) {
+        display: table-cell;
     }
 }
 
@@ -306,6 +320,11 @@ $space-character-width: .25em;
     .batting-scorecard-editor__runs-label,
     .batting-scorecard-editor__balls-label {
         width: 3em;
+    }
+
+    // Reveal one of the extra columns so that the final rows still span the table
+    .batting-scorecard-editor__final-rows > :nth-child(2) {
+        display: table-cell;
     }
 }
 
@@ -349,6 +368,16 @@ $space-character-width: .25em;
         display: block;
         width: auto;
     }
+
+    // Remove the border of the top player innings because it shows unevenly for the table-cells and stacked cells in Firefox
+    .batting-scorecard-editor__player-innings:first-child > * {
+        border-top: none;
+    }
+
+    // Reveal one of the extra columns so that the final rows still span the table
+    .batting-scorecard-editor__final-rows > :nth-child(3) {
+        display: table-cell;
+    }
 }
 
 
@@ -370,8 +399,9 @@ $space-character-width: .25em;
         padding-right: $table-cell-padding;
     }
 
-    // The runs header finally can act like a .numeric as it no longer has stacked columns below it.
-    .batting-scorecard-editor__runs-header {
+    // The runs header and final data rows finally can act like a .numeric as there are no longer has stacked columns
+    .batting-scorecard-editor__runs-header,
+    .batting-scorecard-editor__final-rows [headers] {
         @include numeric-value;
     }
 
@@ -393,24 +423,24 @@ $space-character-width: .25em;
     }
 
     // Reset display to re-enable the effect of the colspan attribute
-    .batting-scorecard-editor .scorecard__extras th, .batting-scorecard-editor .scorecard__totals th,
-    .batting-scorecard-editor .scorecard__extras td:last-child, .batting-scorecard-editor .scorecard__totals td:last-child {
+    .batting-scorecard-editor__final-rows th,
+    .batting-scorecard-editor__final-rows td:last-child {
         display: table-cell;
-    }
-
-    // Move the 'Add batter' button into the Byes row to not interrupt the standard scorecard layout
-    .batting-scorecard-editor__add-batter button {
-        position: absolute;
-        margin-left: $spacer/4*3;
-        margin-top: $spacer/2;
     }
 }
 
 @media screen and (min-width: 1060px) {
     // There's now enough room to restore the padding
-    .batting-scorecard-editor__header, .batting-scorecard-editor__player-innings-field {
+    .batting-scorecard-editor__header, .batting-scorecard-editor__player-innings-field,
+    .batting-scorecard-editor__final-rows th, .batting-scorecard-editor__final-rows [headers] {
         padding: $table-cell-padding;
     }
+
+    // Adjust the 'Add batter' button to match
+    .batting-scorecard-editor__add-batter button {
+        margin-left: $table-cell-padding;
+    }
+
     // And let all the player-name boxes take advantage of the width
     .batting-scorecard-editor .scorecard__player-name {
         width: 100%;

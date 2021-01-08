@@ -33,12 +33,12 @@
     <caption>@Model.CurrentInnings.BattingTeam.Team.TeamName's batting</caption>
     <thead>
         <tr>
-            <th scope="col" class="batting-scorecard-editor__header batting-scorecard-editor__batter-header">Batter</th>
-            <th scope="col" class="batting-scorecard-editor__header">How out</th>
-            <th scope="col" class="batting-scorecard-editor__header">Caught/run-out by</th>
-            <th scope="col" class="batting-scorecard-editor__header">Bowler</th>
-            <th scope="col" class="batting-scorecard-editor__header batting-scorecard-editor__runs-header">Runs</th>
-            <th scope="col" class="batting-scorecard-editor__header numeric">Balls</th>
+            <th class="batting-scorecard-editor__header batting-scorecard-editor__batter-header">Batter</th>
+            <th class="batting-scorecard-editor__header">How out</th>
+            <th class="batting-scorecard-editor__header">Caught/run-out by</th>
+            <th class="batting-scorecard-editor__header">Bowler</th>
+            <th class="batting-scorecard-editor__header batting-scorecard-editor__runs-header">Runs</th>
+            <th class="batting-scorecard-editor__header numeric">Balls</th>
         </tr>
     </thead>
     <tbody>
@@ -77,37 +77,55 @@
                 </td>
             </tr>
         }
-        <tr class="scorecard__extras">
-            <th colspan="4">Byes</th>
-            <td>@Html.TextBoxFor(m => Model.CurrentInnings.Byes, new { autocomplete = "off", type = "number", data_val_number = $"Byes must be a number.", min = "0", data_msg_min = $"Byes must be a number, 0 or more", @class = "scorecard__runs" })</td>
+        <tr class="batting-scorecard-editor__final-rows scorecard__extras">
+            <td></td>@* Unfortunately the need to be responsive means colspan can't be used, because varying numbers of columns are stacked above and this needs to keep in sync *@
+            <td></td>
+            <td></td>
+            <th scope="row" id="byes-header">Byes</th>
+            <td headers="byes-header">@Html.TextBoxFor(m => Model.CurrentInnings.Byes, new { autocomplete = "off", type = "number", data_val_number = $"Byes must be a number.", min = "0", data_msg_min = $"Byes must be a number, 0 or more", @class = "scorecard__runs" })</td>
             <td></td>
         </tr>
-        <tr class="scorecard__extras">
-            <th colspan="4">Wides</th>
-            <td>@Html.TextBoxFor(m => Model.CurrentInnings.Wides, new { autocomplete = "off", type = "number", data_val_number = $"Wides must be a number.", min = "0", data_msg_min = $"Wides must be a number, 0 or more", @class = "scorecard__runs" })</td>
+        <tr class="batting-scorecard-editor__final-rows scorecard__extras">
+            <td></td>
+            <td></td>
+            <td></td>
+            <th scope="row" id="wides-header">Wides</th>
+            <td headers="wides-header">@Html.TextBoxFor(m => Model.CurrentInnings.Wides, new { autocomplete = "off", type = "number", data_val_number = $"Wides must be a number.", min = "0", data_msg_min = $"Wides must be a number, 0 or more", @class = "scorecard__runs" })</td>
             <td></td>
         </tr>
-        <tr class="scorecard__extras">
-            <th colspan="4">No balls</th>
-            <td>@Html.TextBoxFor(m => Model.CurrentInnings.NoBalls, new { autocomplete = "off", type = "number", data_val_number = $"No balls must be a number.", min = "0", data_msg_min = $"No balls must be a number, 0 or more", @class = "scorecard__runs" })</td>
+        <tr class="batting-scorecard-editor__final-rows scorecard__extras">
+            <td></td>
+            <td></td>
+            <td></td>
+            <th scope="row" id="no-balls-header">No balls</th>
+            <td headers="no-balls-header">@Html.TextBoxFor(m => Model.CurrentInnings.NoBalls, new { autocomplete = "off", type = "number", data_val_number = $"No balls must be a number.", min = "0", data_msg_min = $"No balls must be a number, 0 or more", @class = "scorecard__runs" })</td>
             <td></td>
         </tr>
         @if (Model.Match.EnableBonusOrPenaltyRuns)
         {
-            <tr class="scorecard__extras">
-                <th colspan="4">Bonus or penalty runs</th>
-                <td>@Html.TextBoxFor(m => Model.CurrentInnings.BonusOrPenaltyRuns, new { autocomplete = "off", type = "number", data_val_number = $"Bonus or penalty runs must be a number.", @class = "scorecard__runs" })</td>
+            <tr class="batting-scorecard-editor__final-rows scorecard__extras">
+                <td></td>
+                <td></td>
+                <td></td>
+                <th scope="row" id="bonus-or-penalty-runs-header">Bonus or penalty runs</th>
+                <td headers="bonus-or-penalty-runs-header">@Html.TextBoxFor(m => Model.CurrentInnings.BonusOrPenaltyRuns, new { autocomplete = "off", type = "number", data_val_number = $"Bonus or penalty runs must be a number.", @class = "scorecard__runs" })</td>
                 <td></td>
             </tr>
         }
-        <tr class="scorecard__totals">
-            <th scope="row" colspan="4">Total</th>
-            <td>@Html.TextBoxFor(m => Model.CurrentInnings.Runs, new { autocomplete = "off", type = "number", data_val_number = $"The total must be a number.", @class = "scorecard__total" })</td>
+        <tr class="batting-scorecard-editor__final-rows scorecard__totals">
+            <td></td>
+            <td></td>
+            <td></td>
+            <th scope="row" id="total-runs-header">Total</th>
+            <td headers="total-runs-header">@Html.TextBoxFor(m => Model.CurrentInnings.Runs, new { autocomplete = "off", type = "number", data_val_number = $"The total must be a number.", @class = "scorecard__total" })</td>
             <td></td>
         </tr>
-        <tr class="scorecard__totals">
-            <th scope="row" colspan="4">Wickets</th>
-            <td>@Html.DropDownListFor(m => Model.CurrentInnings.Wickets, new SelectList(wicketsItems, "Value", "Text", Model.CurrentInnings.Wickets), string.Empty, new { @class = "scorecard__wickets" })</td>
+        <tr class="batting-scorecard-editor__final-rows scorecard__totals">
+            <td></td>
+            <td></td>
+            <td></td>
+            <th scope="row" id="wickets-header">Wickets</th>
+            <td headers="wickets-header">@Html.DropDownListFor(m => Model.CurrentInnings.Wickets, new SelectList(wicketsItems, "Value", "Text", Model.CurrentInnings.Wickets), string.Empty, new { @class = "scorecard__wickets" })</td>
             <td></td>
         </tr>
     </tbody>
