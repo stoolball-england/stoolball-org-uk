@@ -28,3 +28,8 @@
 @mixin table-as-cards-reset-before {
     content: none;
 }
+
+@mixin numeric-value {
+    text-align: right;
+    white-space: nowrap;
+}

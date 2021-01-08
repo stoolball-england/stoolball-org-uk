@@ -1,7 +1,9 @@
-﻿@import "../Content/bootstrap/_functions.scss";
-@import "../Content/bootstrap/_mixins.scss";
+﻿@import "../Content/bootstrap/_mixins.scss";
+@import "../Content/bootstrap/_functions.scss";
 @import "../Content/bootstrap/_variables.scss";
-@import "./css/mixins.scss";
+@import "../css/_mixins.scss";
+
+$space-character-width: .25em;
 
 /* View scorecards */
 .batting-scorecard-base, .bowling-scorecard {
@@ -41,7 +43,7 @@
 // Because .table-as-cards is applied, each td is the last on its row. Its padding-right is therefore added to the padding-right of .container-xl,
 // making wrapping more likely. Remove the extra one, but put it back in .scorecard__totals where there's a background colour that makes the lack of padding too obvious,
 // and .scorecard__extras, which needs to align with .scorecard__totals in the minimal scorecard.
-.batting-scorecard-base td {
+.batting-scorecard td {
     padding-right: 0;
 }
 
@@ -147,16 +149,43 @@
 }
 
 
-/* Edit scorecards */
+/* Edit scorecards 
 
+   .batting-scorecard-editor works similarly to .table-as-cards, but customises it heavily so does not use the standard class.
+*/
+
+.batting-scorecard-editor thead {
+    @include sr-only(); // Needs to remain in the accessibility tree for headers to be announced by screen readers
+}
+
+// Each cell gets transformed into a flex container, where the flex items are its label and its input (or div surrounding the input for those with labels that might wrap).
+// This creates a miniature table row appearance, with the label as the row heading and the input as the data.
+.batting-scorecard-editor__player-innings-field {
+    display: flex;
+    align-items: end;
+}
+
+// The label element is acting like a row heading cell, so style it like a heading.
+// padding-right adds space between it and the original cell contents.
 // Set a width that allows the labels to not wrap
-.batting-scorecard-editor [data-label]::before {
+.batting-scorecard-editor__label {
+    content: attr(data-label);
+    display: inline-block;
+    font-weight: bold;
+    width: 50%;
+    text-align: left;
+    margin-right: $table-cell-padding;
     width: 9rem;
 }
 
 // Allow the batter name to expand to make to most of whatever space is available at each breakpoint
 .scorecard__batter-name {
     width: 100%;
+}
+
+// There's a space before this to allow wrapping. It doesn't wrap yet, so offset the space.
+.batting-scorecard-editor__dismissed-by-label > .text-nowrap {
+    margin-left: -$space-character-width;
 }
 
 // These rows need to have one column when the batter rows have every column stacked.
@@ -183,29 +212,40 @@
     display: none;
 }
 
-.scorecard__batter-container {
+.batting-scorecard-editor__batter {
     background: $table-dark-bg;
     color: $table-dark-color;
 }
 
-@media (min-width:530px) {
+@media (min-width:505px) {
     // Now some labels can wrap, because we can bring the column up sooner that way
-    .batting-scorecard-editor [data-label]::before {
-        width: 6rem;
+    .batting-scorecard-editor__label {
+        width: 5rem;
     }
 
-    // There's now space to show the batter name in its own column.
-    // It abuts the gutter provided by .container-xl, so doesn't need its own padding.
-    .scorecard__batter-container[data-label] {
-        @include table-as-cards-reset-label;
+    // Remove side padding from every cell, because they abut the gutter of .container-xl and don't need to duplicate it
+    .batting-scorecard-editor__player-innings-field {
+        padding: $table-cell-padding 0;
+    }
+
+    // The first column can now move out of the stack. 
+    // Restore its padding to separate it from the stack, and stack the label instead.
+    .batting-scorecard-editor__batter {
+        display: table-cell;
         background: none;
         color: $black;
-        padding-left: 0;
+        padding-right: $table-cell-padding;
     }
-    .scorecard__batter-container[data-label]::before {
+    .batting-scorecard-editor__batter-label {
         display: block;
         width: auto;
     }
+
+    // This wraps now, so remove the offset space.
+    .batting-scorecard-editor__dismissed-by-label > .text-nowrap {
+        margin-left: 0;
+    }
+
     // Now we have two columns we can go back to showing these as two columns
     .batting-scorecard-editor .scorecard__extras, .batting-scorecard-editor .scorecard__totals {
         display: table-row;
@@ -228,89 +268,116 @@
     }
 }
 
-@media screen and (min-width: 710px) {
-    .scorecard__dismissal-container[data-label] {
-        @include table-as-cards-reset-label;
+@media screen and (min-width: 675px) {
+    // The second column can now move out of the stack.
+    // Restore its padding to separate it from the stack, and stack the label instead.
+    .batting-scorecard-editor__dismissal {
+        display: table-cell;
         padding-right: $table-cell-padding;
     }
-    .scorecard__dismissal-container[data-label]::before {
+    .batting-scorecard-editor__dismissal-label {
         display: block;
         width: auto;
     }
 }
 
-@media screen and (min-width: 865px) {
-    .scorecard__dismissed-by-container[data-label] {
-        @include table-as-cards-reset-label;
+@media screen and (min-width: 830px) {
+    // The third column can now move out of the stack.
+    // Restore its padding to separate it from the stack, and stack the label instead.
+    .batting-scorecard-editor__dismissed-by {
+        display: table-cell;
         padding-right: $table-cell-padding;
     }
-    .scorecard__dismissed-by-container[data-label]::before {
+    .batting-scorecard-editor__dismissed-by-label {
         display: block;
         width: auto;
     }
-    .scorecard__bowler-container[data-label]::before,
-    .scorecard__runs-container[data-label]::before,
-    .scorecard__balls-container[data-label]::before {
+
+    // There's a space before this to allow wrapping. Now that it doesn't wrap, offset the space.
+    .batting-scorecard-editor__dismissed-by-label > .text-nowrap {
+        margin-left: -$space-character-width;
+    }
+    .batting-scorecard-editor__bowler-label,
+    .batting-scorecard-editor__runs-label,
+    .batting-scorecard-editor__balls-label {
         width: 3em;
     }
 }
 
-@media screen and (min-width: 970px) {
+@media screen and (min-width: 925px) {
+    // The fourth column can now move out of the stack.
+    // Restore its padding to separate it from the stack, and start treating the remaining columns as .numeric
+    .batting-scorecard-editor__bowler {
+        display: table-cell;
+        padding-right: $table-cell-padding;
+    }
+
+    .batting-scorecard-editor__runs,
+    .batting-scorecard-editor__balls {
+        @include numeric-value;
+    }
+
+    // The table header can now be revealed, but adjust the padding to match the cells below, and keep the last column hidden
     .batting-scorecard-editor thead {
-        @include table-as-cards-reset-thead;
+        position: static; // undo .sr-only
+    }
+
+    .batting-scorecard-editor__header {
+        padding-left: 0;
+    }
+
+    .batting-scorecard-editor__batter-header {
+        padding-left: $table-cell-padding;
     }
 
     .batting-scorecard-editor thead th:last-child {
         display: none;
     }
 
-    .scorecard__batter-container[data-label]::before, 
-    .scorecard__dismissal-container[data-label]::before, 
-    .scorecard__dismissed-by-container[data-label]::before, 
-    .scorecard__bowler-container[data-label]::before {
-        @include table-as-cards-reset-before;
+    // Hide the labels which were acting as replacements for the table header, except for those still stacked
+    .batting-scorecard-editor__label {
+        display: none;
     }
 
-    .scorecard__bowler-container[data-label] {
-        @include table-as-cards-reset-label;
-        padding-right: $table-cell-padding;
-    }
-    .batting-scorecard-editor [data-label]::before {
+    .batting-scorecard-editor__runs-label,
+    .batting-scorecard-editor__balls-label {
         display: block;
         width: auto;
     }
 }
 
-@media screen and (min-width: 1040px) {
-    // Reset everything that .table-as-cards did, so that the table is now displayed normally
+
+@media screen and (min-width: 995px) {
+    // Reset the remaining properties of the header so that it is displayed normally
     .batting-scorecard-editor thead th:last-child {
         display: table-cell;
     }
 
-    .batting-scorecard-editor [data-label] {
-        @include table-as-cards-reset-label;
+    // Ensure all the labels that took the place of the header row are now hidden
+    .batting-scorecard-editor__label {
+        display: none;
     }
 
-    .batting-scorecard-editor [data-label]::before {
-        @include table-as-cards-reset-before;
+    // The fifth column can now move out of the stack.
+    // Restore its padding to separate it from the final column.
+    .batting-scorecard-editor__runs {
+        display: table-cell;
+        padding-right: $table-cell-padding;
     }
 
-    // Reset the reversed colour on the first column
-    .batting-scorecard-editor tbody th:first-child {
-        background: none;
-        color: inherit;
+    // The runs header finally can act like a .numeric as it no longer has stacked columns below it.
+    .batting-scorecard-editor__runs-header {
+        @include numeric-value;
+    }
+
+    // Only one column left in the stack, so restore the stack to an ordinary column.
+    .batting-scorecard-editor__balls {
+        display: table-cell;
     }
 
     // Reset to default - now the .table-as-cards flex layout is gone, wrapping works better
     .batting-scorecard-editor .dismissed-by {
         display: inline;
-    }
-    // Undo the padding change above now that .table-as-cards does not apply and cells are not always the last in a row.
-    .batting-scorecard-editor td {
-        padding-right: $table-cell-padding;
-    }
-    .batting-scorecard-editor .scorecard__balls-container {
-        padding-right: 0;
     }
 
     // Reset font-weight on runs scored. Balls-faced are now de-emphasised compared to runs by shrinking the font-size and adding brackets.
@@ -326,11 +393,6 @@
         display: table-cell;
     }
 
-    // Hide the batter name label now we have the table headers back
-    .batting-scorecard-editor__batter-name {
-        display: none;
-    }
-
     // Move the 'Add batter' button into the Byes row to not interrupt the standard scorecard layout
     .batting-scorecard-editor__add-batter button {
         position: absolute;
@@ -340,11 +402,12 @@
 }
 
 @media screen and (min-width: 1060px) {
-    .scorecard__batter-container[data-label] {
-        padding-left: $table-cell-padding;
-    }
     // There's now enough room to restore the padding
-    .batting-scorecard-editor .scorecard__balls-container {
-        padding-right: $table-cell-padding;
+    .batting-scorecard-editor__header, .batting-scorecard-editor__player-innings-field {
+        padding: $table-cell-padding;
+    }
+    // And let all the player-name boxes take advantage of the width
+    .batting-scorecard-editor .scorecard__player-name {
+        width: 100%;
     }
 }
