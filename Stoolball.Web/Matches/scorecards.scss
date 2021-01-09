@@ -187,6 +187,11 @@ $space-character-width: .25em;
     margin-left: -$space-character-width;
 }
 
+// Remove a Bootstrap default because although we have two tbody elements for accessibility, we don't want it to look separate.
+table tbody + tbody {
+    border-top: unset;
+}
+
 // These rows need to have one column when the batter rows have every column stacked.
 .batting-scorecard-editor__final-rows {
     display: flex;
