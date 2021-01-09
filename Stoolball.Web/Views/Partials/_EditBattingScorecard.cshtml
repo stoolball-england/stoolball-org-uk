@@ -68,11 +68,11 @@
                 </td>
                 <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__runs">
                     @Html.LabelFor(m => Model.CurrentInnings.PlayerInningsSearch[i].RunsScored, "Runs", new { aria_hidden = "true", @class = "batting-scorecard-editor__label batting-scorecard-editor__runs-label" })
-                    @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].RunsScored, new { autocomplete = "off", type = "number", data_val_number = $"The runs for the {(i + 1).Ordinalize(CultureInfo.CurrentCulture)} batter must be a number.", min = "0", data_msg_min = $"The runs for the {(i + 1).Ordinalize(CultureInfo.CurrentCulture)} batter must be a number, 0 or more", @class = "scorecard__runs" })
+                    @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].RunsScored, new { autocomplete = "off", type = "number", min = "0", @class = "scorecard__runs" })
                 </td>
                 <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__balls">
                     @Html.LabelFor(m => Model.CurrentInnings.PlayerInningsSearch[i].BallsFaced, "Balls", new { aria_hidden = "true", @class = "batting-scorecard-editor__label batting-scorecard-editor__balls-label" })
-                    @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].BallsFaced, new { autocomplete = "off", type = "number", data_val_number = $"The balls faced for the {(i + 1).Ordinalize(CultureInfo.CurrentCulture)} batter must be a number.", min = "0", data_msg_min = $"The balls faced for the {(i + 1).Ordinalize(CultureInfo.CurrentCulture)} batter must be a number, 0 or more", @class = "scorecard__balls" })
+                    @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].BallsFaced, new { autocomplete = "off", type = "number", min = "0", @class = "scorecard__balls" })
                 </td>
             </tr>
         }
@@ -84,7 +84,7 @@
             <td></td>
             <td></td>
             <th scope="row" id="byes-header">Byes</th>
-            <td headers="byes-header">@Html.TextBoxFor(m => Model.CurrentInnings.MatchInnings.Byes, new { autocomplete = "off", type = "number", data_val_number = $"Byes must be a number.", min = "0", data_msg_min = $"Byes must be a number, 0 or more", @class = "scorecard__runs" })</td>
+            <td headers="byes-header">@Html.TextBoxFor(m => Model.CurrentInnings.MatchInnings.Byes, new { autocomplete = "off", type = "number", min = "0", @class = "scorecard__runs" })</td>
             <td></td>
         </tr>
         <tr class="batting-scorecard-editor__final-rows scorecard__extras">
@@ -92,7 +92,7 @@
             <td></td>
             <td></td>
             <th scope="row" id="wides-header">Wides</th>
-            <td headers="wides-header">@Html.TextBoxFor(m => Model.CurrentInnings.MatchInnings.Wides, new { autocomplete = "off", type = "number", data_val_number = $"Wides must be a number.", min = "0", data_msg_min = $"Wides must be a number, 0 or more", @class = "scorecard__runs" })</td>
+            <td headers="wides-header">@Html.TextBoxFor(m => Model.CurrentInnings.MatchInnings.Wides, new { autocomplete = "off", type = "number", min = "0", @class = "scorecard__runs" })</td>
             <td></td>
         </tr>
         <tr class="batting-scorecard-editor__final-rows scorecard__extras">
@@ -100,7 +100,7 @@
             <td></td>
             <td></td>
             <th scope="row" id="no-balls-header">No balls</th>
-            <td headers="no-balls-header">@Html.TextBoxFor(m => Model.CurrentInnings.MatchInnings.NoBalls, new { autocomplete = "off", type = "number", data_val_number = $"No balls must be a number.", min = "0", data_msg_min = $"No balls must be a number, 0 or more", @class = "scorecard__runs" })</td>
+            <td headers="no-balls-header">@Html.TextBoxFor(m => Model.CurrentInnings.MatchInnings.NoBalls, new { autocomplete = "off", type = "number", min = "0", @class = "scorecard__runs" })</td>
             <td></td>
         </tr>
         @if (Model.Match.EnableBonusOrPenaltyRuns)
@@ -110,7 +110,7 @@
                 <td></td>
                 <td></td>
                 <th scope="row" id="bonus-or-penalty-runs-header">Bonus or penalty runs</th>
-                <td headers="bonus-or-penalty-runs-header">@Html.TextBoxFor(m => Model.CurrentInnings.MatchInnings.BonusOrPenaltyRuns, new { autocomplete = "off", type = "number", data_val_number = $"Bonus or penalty runs must be a number.", @class = "scorecard__runs" })</td>
+                <td headers="bonus-or-penalty-runs-header">@Html.TextBoxFor(m => Model.CurrentInnings.MatchInnings.BonusOrPenaltyRuns, new { autocomplete = "off", type = "number", @class = "scorecard__runs" })</td>
                 <td></td>
             </tr>
         }
@@ -119,7 +119,7 @@
             <td></td>
             <td></td>
             <th scope="row" id="total-runs-header">Total</th>
-            <td headers="total-runs-header">@Html.TextBoxFor(m => Model.CurrentInnings.MatchInnings.Runs, new { autocomplete = "off", type = "number", data_val_number = $"The total must be a number.", @class = "scorecard__total" })</td>
+            <td headers="total-runs-header">@Html.TextBoxFor(m => Model.CurrentInnings.MatchInnings.Runs, new { autocomplete = "off", type = "number", @class = "scorecard__total" })</td>
             <td></td>
         </tr>
         <tr class="batting-scorecard-editor__final-rows scorecard__totals">
@@ -158,11 +158,11 @@
             </td>
             <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__runs">
                 <label aria-hidden="true" class="batting-scorecard-editor__label batting-scorecard-editor__runs-label" for="CurrentInnings_PlayerInningsSearch_[0]__RunsScored">Runs</label>
-                <input autocomplete="off" class="scorecard__runs" data-val="true" data-msg-number="The runs for the [0th] batter must be a number." data-msg-min="The runs for the [0th] batter must be a number, 0 or more" min="0" name="CurrentInnings.PlayerInningsSearch[0].RunsScored" type="number" value="" />
+                <input autocomplete="off" class="scorecard__runs" min="0" name="CurrentInnings.PlayerInningsSearch[0].RunsScored" type="number" value="" />
             </td>
             <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__balls">
                 <label aria-hidden="true" class="batting-scorecard-editor__label batting-scorecard-editor__balls-label" for="CurrentInnings_PlayerInningsSearch_[0]__BallsFaced">Balls</label>
-                <input autocomplete="off" class="scorecard__balls" data-val="true" data-msg-number="The balls faced for the [0th] batter must be a number." data-msg-min="The balls faced for the [0th] batter must be a number, 0 or more" min="0" name="CurrentInnings.PlayerInningsSearch[0].BallsFaced" type="number" value="" />
+                <input autocomplete="off" class="scorecard__balls" min="0" name="CurrentInnings.PlayerInningsSearch[0].BallsFaced" type="number" value="" />
             </td>
         </tr>
     </table>
