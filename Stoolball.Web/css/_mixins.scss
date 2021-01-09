@@ -33,3 +33,9 @@
     text-align: right;
     white-space: nowrap;
 }
+
+@mixin media-touch-action {
+    @media screen and (max-height: 850px) and (max-width: 576px) {
+        @content
+    }
+}

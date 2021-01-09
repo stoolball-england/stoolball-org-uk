@@ -65,6 +65,16 @@ namespace Stoolball.Matches
             return (hasBatting || hasOvers || hasRuns || hasWickets);
         }
 
+        public bool HasCompleteScorecard()
+        {
+            var hasMissingBatting = MatchInnings.Any(x => x.PlayerInnings.Count == 0);
+            var hasMissingOvers = MatchInnings.Any(x => x.OversBowled.Count == 0);
+            var hasMissingRuns = MatchInnings.Select(x => x.Runs.HasValue).Contains(false);
+            var hasMissingWickets = MatchInnings.Select(x => x.Wickets.HasValue).Contains(false);
+
+            return !(hasMissingBatting || hasMissingOvers || hasMissingRuns || hasMissingWickets);
+        }
+
         public List<MatchAward> Awards { get; internal set; } = new List<MatchAward>();
 
         [Display(Name = "Notes")]

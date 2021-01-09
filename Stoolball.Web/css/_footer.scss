@@ -18,6 +18,13 @@ footer::before {
     padding-top: 30px;
 }
 
+// padding-bottom allows for position: fixed elements for easy access on mobile
+@include media-touch-action {
+    footer {
+        padding-bottom: 80px;
+    }
+}
+
 // Use Flexbox to arrange the links horizontally and space them out
 .footer__links {
     display: flex;

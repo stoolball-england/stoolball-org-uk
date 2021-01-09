@@ -5,6 +5,7 @@
 @import "../Content/bootstrap/_forms.scss";
 @import "../Content/bootstrap/_buttons.scss";
 @import "../Content/bootstrap/_custom-forms.scss";
+@import "./_mixins.scss";
 
 /* Bootstrap and .NET JQuery validation are applying different rules in some cases, 
    so re-use the Bootstrap styles but on different selectors, and in a way that invalid wins 
@@ -125,7 +126,7 @@ svg {
     pointer-events: none;
 }
 
-.btn-primary::after {
+.btn-primary::after, .btn-secondary::after {
     content: '❯';
     padding-left: .5em;
 }
@@ -164,6 +165,30 @@ svg {
 
 .btn-delete-icon > img {
     max-width: none; // don't allow this image to shrink when space is tight
+}
+
+
+// Wrap a button in .touch-action to have it appear at the bottom of the screen on mobiles
+// where it can easily be reached with one hand
+@include media-touch-action {
+    .touch-action {
+        position: fixed;
+        z-index: 1;
+        bottom: 0;
+        width: 100%;
+        background: rgba(255,255,255,.95);
+        box-shadow: rgba(0,0,0,.5) 0 -2px 5px 0px;
+        display: flex;
+        justify-content: center;
+        margin: 0 (-($grid-gutter-width/2));
+        padding: $spacer;
+    }
+
+    .touch-action .btn {
+        display: block;
+        width: 100%;
+        @include button-size($btn-padding-y, $btn-padding-x, $btn-font-size, $btn-line-height, $btn-border-radius);
+    }
 }
 
 /* Add social media icons to fields for social media accounts */

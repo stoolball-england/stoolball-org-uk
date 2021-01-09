@@ -7,12 +7,12 @@
 @{
     Html.RequiresCss("~/matches/match.min.css");
     Html.RequiresCss("~/matches/scorecards.min.css");
-    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditMatch] || Model.IsAuthorized[AuthorizedAction.EditMatchResult] || Model.IsAuthorized[AuthorizedAction.DeleteMatch];
+    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditMatch] || Model.IsAuthorized[AuthorizedAction.DeleteMatch];
 }
 @functions{
     private string ResultDescription()
     {
-        var description = Model.Match.MatchResultType.Humanize(LetterCasing.Sentence);
+        var description = Model.Match.MatchResultType?.Humanize(LetterCasing.Sentence);
         if (Model.Match.MatchResultType == MatchResultType.HomeWin || Model.Match.MatchResultType == MatchResultType.HomeWinByForfeit)
         {
             var homeTeam = Model.Match.Teams.Where(x => x.TeamRole == TeamRole.Home).FirstOrDefault()?.Team;
@@ -28,6 +28,10 @@
             {
                 description = description.Replace("Away", awayTeam.TeamName);
             }
+        }
+        if (!Model.Match.MatchResultType.HasValue)
+        {
+            description = "Unknown";
         }
         return description;
     }
@@ -82,9 +86,25 @@
     }
 
     @{
-        if (Model.Match.MatchResultType.HasValue || Model.Match.InningsOrderIsKnown || Model.Match.HasScorecard())
+        if (Model.Match.StartTime <= DateTime.UtcNow)
         {
             <p class="match-result"><strong>Result: @ResultDescription()</strong></p>
+
+            var resultRequired = !Model.Match.MatchResultType.HasValue || !Model.Match.HasCompleteScorecard();
+            if (resultRequired)
+            {
+                <div class="touch-action">
+                    <div class="update-result">
+                        <a class="btn btn-secondary btn-lg" href="@Model.Match.MatchRoute/edit/start-of-play">Edit result</a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="update-result">
+                    <a class="btn btn-secondary" href="@Model.Match.MatchRoute/edit/start-of-play">Edit result</a>
+                </div>
+            }
         }
 
         var tossWinners = Model.Match.Teams.FirstOrDefault(x => x.WonToss.HasValue && x.WonToss.Value);
