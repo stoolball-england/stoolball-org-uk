@@ -182,9 +182,10 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@TeamTypes", teamQuery.TeamTypes.Select(x => x.ToString()));
             }
 
+            // For listings, clubs with one active team are treated like a team without a club, so that the team is returned
             if (teamQuery != null && !teamQuery.IncludeClubTeams)
             {
-                where.Add("t.ClubId IS NULL");
+                where.Add($"(t.ClubId IS NULL OR (SELECT COUNT(TeamId) FROM { Tables.Team } WHERE ClubId = t.ClubId AND UntilYear IS NULL) = 1)");
             }
 
             return (where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty, parameters);
@@ -205,6 +206,12 @@ namespace Stoolball.Data.SqlServer
             {
                 where.Add("(ct.TeamType IN @TeamTypes OR ct.TeamType IS NULL)");
                 parameters.Add("@TeamTypes", teamQuery.TeamTypes.Select(x => x.ToString()));
+            }
+
+            // For listings, clubs with one active team are treated like a team without a club, so that the team is returned
+            if (teamQuery != null && !teamQuery.IncludeClubTeams)
+            {
+                where.Add($"(SELECT COUNT(TeamId) FROM { Tables.Team } WHERE ClubId = c.ClubId AND UntilYear IS NULL) != 1");
             }
 
             return (where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty, parameters);
