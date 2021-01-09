@@ -503,20 +503,23 @@
             {
                 PlayersPerTeam = 2
             },
-            CurrentInnings = new MatchInnings
+            CurrentInnings = new MatchInningsViewModel
             {
-                BattingTeam = new TeamInMatch { Team = new Team { TeamName = "The batting team" } },
-                BowlingTeam = new TeamInMatch { Team = new Team { TeamName = "The bowling team" } },
-                Byes = 2,
-                Wides = 4,
-                NoBalls = 6,
-                BonusOrPenaltyRuns = 8,
-                Overs = 1,
-                Runs = 100,
-                Wickets = 1
+                MatchInnings = new MatchInnings
+                {
+                    BattingTeam = new TeamInMatch { Team = new Team { TeamName = "The batting team" } },
+                    BowlingTeam = new TeamInMatch { Team = new Team { TeamName = "The bowling team" } },
+                    Byes = 2,
+                    Wides = 4,
+                    NoBalls = 6,
+                    BonusOrPenaltyRuns = 8,
+                    Overs = 1,
+                    Runs = 100,
+                    Wickets = 1
+                }
             }
         };
-        innings.CurrentInnings.PlayerInnings.Add(new PlayerInnings
+        innings.CurrentInnings.MatchInnings.PlayerInnings.Add(new PlayerInnings
         {
             PlayerIdentity = new PlayerIdentity { PlayerIdentityName = "Player One" },
             DismissalType = DismissalType.Caught,
@@ -525,7 +528,7 @@
             RunsScored = 50,
             BallsFaced = 60
         });
-        innings.CurrentInnings.PlayerInnings.Add(new PlayerInnings
+        innings.CurrentInnings.MatchInnings.PlayerInnings.Add(new PlayerInnings
         {
             PlayerIdentity = new PlayerIdentity { PlayerIdentityName = "Player Four" },
             DismissalType = DismissalType.BodyBeforeWicket,
@@ -533,7 +536,24 @@
             RunsScored = 10,
             BallsFaced = 10
         });
-        innings.CurrentInnings.OversBowled.Add(new Over
+        innings.CurrentInnings.PlayerInningsSearch.Add(new PlayerInningsViewModel
+        {
+            Batter = "Player One",
+            DismissalType = DismissalType.Caught,
+            DismissedBy = "Player Two",
+            Bowler = "Player Three",
+            RunsScored = 50,
+            BallsFaced = 60
+        });
+        innings.CurrentInnings.PlayerInningsSearch.Add(new PlayerInningsViewModel
+        {
+            Batter = "Player Four",
+            DismissalType = DismissalType.BodyBeforeWicket,
+            Bowler = "Player Three",
+            RunsScored = 10,
+            BallsFaced = 10
+        });
+        innings.CurrentInnings.MatchInnings.OversBowled.Add(new Over
         {
             PlayerIdentity = new PlayerIdentity { PlayerIdentityName = "Player Two" },
             BallsBowled = 8,
@@ -541,9 +561,19 @@
             NoBalls = 4,
             RunsConceded = 8
         });
-    }
-    @Html.Partial("_BattingScorecard", innings.CurrentInnings)
-    @Html.Partial("_BowlingScorecard", innings.CurrentInnings)
+        innings.CurrentInnings.OversBowledSearch.Add(new OverViewModel
+        {
+            Bowler = "Player Two",
+            BallsBowled = 8,
+            Wides = 2,
+            NoBalls = 4,
+            RunsConceded = 8
+        });
+        }
+
+
+        @Html.Partial("_BattingScorecard", innings.CurrentInnings.MatchInnings)
+    @Html.Partial("_BowlingScorecard", innings.CurrentInnings.MatchInnings)
     @Html.Partial("_EditBattingScorecard", innings)
     @Html.Partial("_EditBowlingScorecard", innings)
 </div>
