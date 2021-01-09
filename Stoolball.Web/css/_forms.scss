@@ -125,6 +125,11 @@ svg {
     pointer-events: none;
 }
 
+.btn-primary::after {
+    content: '❯';
+    padding-left: .5em;
+}
+
 .btn-add {
     background-image: url(/images/icons/add-white-24dp.svg);
     background-repeat: no-repeat;
