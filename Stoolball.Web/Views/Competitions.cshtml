@@ -53,6 +53,6 @@
     {
         var query = HttpUtility.ParseQueryString(Request.Url.Query);
         query["page"] = (Model.CompetitionQuery.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
-        <p><a href="/competitions?@query">Load more</a></p>
+        <p><a href="/competitions?@query" class="btn btn-secondary">Next page</a></p>
     }
 </div>

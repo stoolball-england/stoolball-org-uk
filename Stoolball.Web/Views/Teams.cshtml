@@ -96,6 +96,6 @@
     {
         var query = HttpUtility.ParseQueryString(Request.Url.Query);
         query["page"] = (Model.TeamQuery.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
-        <p><a href="/teams?@query">Load more</a></p>
+        <p><a href="/teams?@query" class="btn btn-secondary">Next page</a></p>
     }
 </div>

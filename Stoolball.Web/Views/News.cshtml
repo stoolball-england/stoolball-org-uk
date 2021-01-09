@@ -31,6 +31,6 @@
     {
         var query = HttpUtility.ParseQueryString(Request.Url.Query);
         query["page"] = (Model.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
-        <p><a href="@Model.Url()?@query">Load more</a></p>
+        <p><a href="@Model.Url()?@query" class="btn btn-secondary">Next page</a></p>
     }
 </div>

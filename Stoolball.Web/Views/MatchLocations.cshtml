@@ -47,6 +47,6 @@
     {
         var query = HttpUtility.ParseQueryString(Request.Url.Query);
         query["page"] = (Model.MatchLocationQuery.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
-        <p><a href="/locations?@query">Load more</a></p>
+        <p><a href="/locations?@query" class="btn btn-secondary">Next page</a></p>
     }
 </div>
