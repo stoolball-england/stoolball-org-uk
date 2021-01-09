@@ -47,8 +47,15 @@ $space-character-width: .25em;
     padding-right: 0;
 }
 
+// A border between the top and bottom sections is useful, because otherwise stacked headers can look like headers for the extras and totals.
+.batting-scorecard tbody + tbody {
+    border-color: $table-dark-bg;
+}
+
+// width: 100% helps to align the numbers in a minimal scorecard with those in a full scorecard, when both appear
 .scorecard__extras td, .scorecard__totals td {
     padding-right: $table-cell-padding;
+    width: 100%;
 }
 
 // eg for "caught (Jane Smith)", put the name on a separate line. Creates better wrapping behaviour, where the column does not get too wide and push left into the
@@ -88,7 +95,7 @@ $space-character-width: .25em;
 
 .scorecard__numeric-value {
     display: inline-block;
-    width: 2em;
+    width: 1.7em;
     text-align: right;
 }
 
@@ -97,6 +104,10 @@ $space-character-width: .25em;
     // Set widths so that columns line up when there are multiple scorecards on a page. Do it above sm breakpoint so they don't interfere with .table-as-cards.
     .player-name, tbody th.player-name:first-child {
         width: 20%;
+    }
+
+    .scorecard__extras td, .scorecard__totals td {
+        width: auto;
     }
     // Table flow will normally wrap the player names first, but it actually looks better if other things are allowed to wrap first
     .player-name {
@@ -142,9 +153,16 @@ $space-character-width: .25em;
     .batting-scorecard .balls-faced:after {
         content: ")";
     }
+
+    // The border between top and bottom tbody sections stops being useful now as the layout has changed
+    .batting-scorecard tbody + tbody {
+        border: unset;
+    }
+
     // Reset display to re-enable the effect of the colspan attribute
     .batting-scorecard .scorecard__extras th, .batting-scorecard .scorecard__totals th {
         display: table-cell;
+        width: 100%;
     }
 }
 
@@ -188,8 +206,8 @@ $space-character-width: .25em;
 }
 
 // Remove a Bootstrap default because although we have two tbody elements for accessibility, we don't want it to look separate.
-table tbody + tbody {
-    border-top: unset;
+.batting-scorecard-editor tbody + tbody {
+    border-top: none;
 }
 
 // These rows need to have one column when the batter rows have every column stacked.

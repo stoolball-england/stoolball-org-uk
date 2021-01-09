@@ -20,8 +20,9 @@
                     <tr><th scope="col">Batter</th><th scope="col">How out</th><th scope="col">Bowler</th><th scope="col" class="numeric">Runs</th><th scope="col" class="numeric balls-faced-header">Balls</th></tr>
                 </thead>
             }
-
-            <tbody>
+            @if (Model.PlayerInnings.Count > 0)
+            {
+                <tbody>
                 @foreach (var playerInnings in Model.PlayerInnings)
                 {
                     <tr>
@@ -70,6 +71,9 @@
                         }
                     </tr>
                 }
+                </tbody>
+            }
+            <tbody>
                 @{
                     if (Model.Byes.HasValue || !minimalScorecard)
                     {

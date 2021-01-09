@@ -70,6 +70,19 @@ namespace Stoolball.Web.Matches
 
                 model.Match.MatchNotes = _emailProtector.ProtectEmailAddresses(model.Match.MatchNotes, User.Identity.IsAuthenticated);
 
+                // If a team was all out, convert wickets to -1. This value is used by the view, and also by matches imported from the old website.
+                foreach (var innings in model.Match.MatchInnings)
+                {
+                    if (innings.Wickets.HasValue)
+                    {
+                        if ((innings.Wickets == model.Match.PlayersPerTeam - 1 && !model.Match.LastPlayerBatsOn) ||
+                            (innings.Wickets == model.Match.PlayersPerTeam && model.Match.LastPlayerBatsOn))
+                        {
+                            innings.Wickets = -1;
+                        }
+                    }
+                }
+
                 if (model.Match.Season != null)
                 {
                     model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
