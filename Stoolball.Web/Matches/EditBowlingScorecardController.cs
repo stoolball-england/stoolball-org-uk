@@ -55,8 +55,8 @@ namespace Stoolball.Web.Matches
             var model = new EditScorecardViewModel(contentModel.Content, Services?.UserService)
             {
                 Match = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false),
-                DateFormatter = _dateFormatter,
                 InningsOrderInMatch = _matchInningsUrlParser.ParseInningsOrderInMatchFromUrl(new Uri(Request.RawUrl, UriKind.Relative)),
+                DateFormatter = _dateFormatter,
                 Autofocus = true
             };
 
@@ -82,15 +82,26 @@ namespace Stoolball.Web.Matches
 
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
 
-                model.CurrentInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
-                if (!model.CurrentInnings.Overs.HasValue)
+                model.CurrentInnings.MatchInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
+                if (!model.CurrentInnings.MatchInnings.Overs.HasValue)
                 {
-                    model.CurrentInnings.Overs = model.Match.Tournament != null ? 6 : 12;
+                    model.CurrentInnings.MatchInnings.Overs = model.Match.Tournament != null ? 6 : 12;
                 }
-                while (model.CurrentInnings.OversBowled.Count < model.CurrentInnings.Overs)
+                while (model.CurrentInnings.MatchInnings.OversBowled.Count < model.CurrentInnings.MatchInnings.Overs)
                 {
-                    model.CurrentInnings.OversBowled.Add(new Over());
+                    model.CurrentInnings.MatchInnings.OversBowled.Add(new Over());
                 }
+
+                // Convert overs bowled to a view model, purely to change the field names to ones which will not trigger pop-up contact/password managers 
+                // while retaining the benefits of ASP.NET model binding. Using the "search" keyword in the property name also helps to disable contact/password managers.
+                model.CurrentInnings.OversBowledSearch.AddRange(model.CurrentInnings.MatchInnings.OversBowled.Select(x => new OverViewModel
+                {
+                    Bowler = x.PlayerIdentity?.PlayerIdentityName,
+                    BallsBowled = x.BallsBowled,
+                    Wides = x.Wides,
+                    NoBalls = x.NoBalls,
+                    RunsConceded = x.RunsConceded
+                }));
 
                 model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
 

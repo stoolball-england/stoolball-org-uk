@@ -1210,6 +1210,9 @@
     <Compile Include="HtmlHelpers\RequiredFieldStatus.cs" />
     <Compile Include="Logging\UmbracoLogWrapper.cs" />
     <Compile Include="Matches\AddMatchMenuViewModel.cs" />
+    <Compile Include="Matches\MatchInningsViewModel.cs" />
+    <Compile Include="Matches\OverViewModel.cs" />
+    <Compile Include="Matches\PlayerInningsViewModel.cs" />
     <Compile Include="News\News.cs" />
     <Compile Include="News\NewsStory.cs" />
     <Compile Include="News\NewsController.cs" />

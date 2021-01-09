@@ -27,7 +27,7 @@
     @if (Model.IsAuthorized[AuthorizedAction.EditMatchResult])
     {
         using (Html.BeginUmbracoForm<EditBowlingScorecardSurfaceController>
-            ("UpdateMatch"))
+            ("UpdateMatch", null, new { id = "calling-it-search-disables-contact-managers" }))
         {
             @Html.AntiForgeryToken()
 

@@ -7,7 +7,7 @@
 <p class="scorecard__full-name-hint d-none alert alert-info alert-tip" role="alert">Full names, if you know them, are better for comparing players.</p>
 
 <table class="table bowling-scorecard-editor" data-autofocus="@Model.Autofocus.ToString().ToLowerInvariant()">
-    <caption>@Model.CurrentInnings.BowlingTeam.Team.TeamName's bowling, over-by-over</caption>
+    <caption>@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamName's bowling, over-by-over</caption>
     <thead>
         <tr>
             <th scope="col">Bowler</th>
@@ -18,14 +18,14 @@
         </tr>
     </thead>
     <tbody>
-        @for (var i = 0; i < (Model.CurrentInnings.Overs); i++)
+        @for (var i = 0; i < (Model.CurrentInnings.MatchInnings.Overs); i++)
         {
             <tr>
-                <th scope="row">@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].PlayerIdentity.PlayerIdentityName, new { autocomplete = "off", @class = "scorecard__player-name", data_team = Model.CurrentInnings.BowlingTeam.Team.TeamId.ToString() })</th>
-                <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].BallsBowled, new { autocomplete = "off", type = "number", data_val_number = $"The balls bowled for the {(i + 1).Ordinalize()} over must be a number.", min = "1", data_msg_min = $"The balls bowled for the {(i + 1).Ordinalize()} over must be a number between 1 and 12", max = "12", data_msg_max = $"The balls bowled for the {(i + 1).Ordinalize()} over must be a number between 1 and 12", @class = "scorecard__balls" })</td>
-                <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].Wides, new { autocomplete = "off", type = "number", data_val_number = $"The wides for the {(i + 1).Ordinalize()} over must be a number.", min = "0", data_msg_min = $"The wides for the {(i + 1).Ordinalize()} over must be a number, 0 or more", @class = "scorecard__wides" })</td>
-                <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].NoBalls, new { autocomplete = "off", type = "number", data_val_number = $"The no balls for the {(i + 1).Ordinalize()} over must be a number.", min = "0", data_msg_min = $"The no balls for the {(i + 1).Ordinalize()} over must be a number, 0 or more", @class = "scorecard__no-balls" })</td>
-                <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowled[i].RunsConceded, new { autocomplete = "off", type = "number", data_val_number = $"The over total for the {(i + 1).Ordinalize()} over must be a number.", min = "0", data_msg_min = $"The over total for the {(i + 1).Ordinalize()} over must be a number, 0 or more", @class = "scorecard__runs" })</td>
+                <th scope="row">@Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].Bowler, new { autocomplete = "off", data_lpignore = "true", @class = "scorecard__player-name", data_team = Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString() })</th>
+                <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].BallsBowled, new { autocomplete = "off", type = "number", data_val_number = $"The balls bowled for the {(i + 1).Ordinalize()} over must be a number.", min = "1", data_msg_min = $"The balls bowled for the {(i + 1).Ordinalize()} over must be a number between 1 and 12", max = "12", data_msg_max = $"The balls bowled for the {(i + 1).Ordinalize()} over must be a number between 1 and 12", @class = "scorecard__balls" })</td>
+                <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].Wides, new { autocomplete = "off", type = "number", data_val_number = $"The wides for the {(i + 1).Ordinalize()} over must be a number.", min = "0", data_msg_min = $"The wides for the {(i + 1).Ordinalize()} over must be a number, 0 or more", @class = "scorecard__wides" })</td>
+                <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].NoBalls, new { autocomplete = "off", type = "number", data_val_number = $"The no balls for the {(i + 1).Ordinalize()} over must be a number.", min = "0", data_msg_min = $"The no balls for the {(i + 1).Ordinalize()} over must be a number, 0 or more", @class = "scorecard__no-balls" })</td>
+                <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].RunsConceded, new { autocomplete = "off", type = "number", data_val_number = $"The over total for the {(i + 1).Ordinalize()} over must be a number.", min = "0", data_msg_min = $"The over total for the {(i + 1).Ordinalize()} over must be a number, 0 or more", @class = "scorecard__runs" })</td>
             </tr>
         }
     </tbody>
@@ -33,11 +33,11 @@
 <script type="text/x-template" id="over-template">
     <table>
         <tr>
-            <th scope="row"><input autocomplete="off" class="scorecard__player-name" data-team="@Model.CurrentInnings.BowlingTeam.Team.TeamId.ToString()" name="CurrentInnings.OversBowled[0].PlayerIdentity.PlayerIdentityName" type="text" value="" /></th>
-            <td><input autocomplete="off" class="scorecard__balls" data-val="true" data-msg-number="The balls bowled for the [0th] over must be a number." min="1" data-msg-min="The balls bowled for the [0th] over must be a number between 1 and 12" max="12" data-msg-max="The balls bowled for the [0th] over must be a number between 1 and 12" name="CurrentInnings.OversBowled[0].BallsBowled" type="number" value="" /></td>
-            <td><input autocomplete="off" class="scorecard__wides" data-val="true" data-msg-number="The wides for the [0th] over must be a number." min="0" data-msg-min="The wides for the [0th] over must be a number, 0 or more" name="CurrentInnings.OversBowled[0].Wides" type="number" value="" /></td>
-            <td><input autocomplete="off" class="scorecard__no-balls" data-val="true" data-msg-number="The no balls for the [0th] over must be a number." data-msg-min="The no balls for the [0th] over must be a number, 0 or more" min="0" name="CurrentInnings.OversBowled[0].NoBalls" type="number" value="" /></td>
-            <td><input autocomplete="off" class="scorecard__runs" data-val="true" data-msg-number="The over total for the [0th] over must be a number." data-msg-min="The over total for the [0th] over must be a number, 0 or more" min="0" name="CurrentInnings.OversBowled[0].RunsConceded" type="number" value="" /></td>
+            <th scope="row"><input autocomplete="off" data-lpignore="true" class="scorecard__player-name" data-team="@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString()" name="CurrentInnings.OversBowledSearch[0].Bowler" type="text" value="" /></th>
+            <td><input autocomplete="off" class="scorecard__balls" data-val="true" data-msg-number="The balls bowled for the [0th] over must be a number." min="1" data-msg-min="The balls bowled for the [0th] over must be a number between 1 and 12" max="12" data-msg-max="The balls bowled for the [0th] over must be a number between 1 and 12" name="CurrentInnings.OversBowledSearch[0].BallsBowled" type="number" value="" /></td>
+            <td><input autocomplete="off" class="scorecard__wides" data-val="true" data-msg-number="The wides for the [0th] over must be a number." min="0" data-msg-min="The wides for the [0th] over must be a number, 0 or more" name="CurrentInnings.OversBowledSearch[0].Wides" type="number" value="" /></td>
+            <td><input autocomplete="off" class="scorecard__no-balls" data-val="true" data-msg-number="The no balls for the [0th] over must be a number." data-msg-min="The no balls for the [0th] over must be a number, 0 or more" min="0" name="CurrentInnings.OversBowledSearch[0].NoBalls" type="number" value="" /></td>
+            <td><input autocomplete="off" class="scorecard__runs" data-val="true" data-msg-number="The over total for the [0th] over must be a number." data-msg-min="The over total for the [0th] over must be a number, 0 or more" min="0" name="CurrentInnings.OversBowledSearch[0].RunsConceded" type="number" value="" /></td>
         </tr>
     </table>
 </script>

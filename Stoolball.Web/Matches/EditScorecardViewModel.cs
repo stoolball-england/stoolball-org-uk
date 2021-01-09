@@ -11,11 +11,12 @@ namespace Stoolball.Web.Matches
         public EditScorecardViewModel(IPublishedContent contentModel, IUserService userService) : base(contentModel, userService)
         {
         }
+
         public Match Match { get; set; }
+        public int? InningsOrderInMatch { get; set; }
+        public MatchInningsViewModel CurrentInnings { get; set; } = new MatchInningsViewModel();
 
         public IDateTimeFormatter DateFormatter { get; set; }
-        public int? InningsOrderInMatch { get; set; }
-        public MatchInnings CurrentInnings { get; set; }
 
         public bool Autofocus { get; set; }
     }

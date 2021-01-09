@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -8,6 +9,7 @@ using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
+using Stoolball.Teams;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -44,11 +46,11 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> UpdateMatch([Bind(Prefix = "CurrentInnings", Include = "Byes,Wides,NoBalls,BonusOrPenaltyRuns,Runs,Wickets,PlayerInnings")] MatchInnings postedInnings)
+        public async Task<ActionResult> UpdateMatch([Bind(Prefix = "CurrentInnings", Include = "MatchInnings,PlayerInningsSearch")] MatchInningsViewModel postedData)
         {
-            if (postedInnings is null)
+            if (postedData is null)
             {
-                throw new ArgumentNullException(nameof(postedInnings));
+                throw new ArgumentNullException(nameof(postedData));
             }
 
             var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false);
@@ -66,58 +68,54 @@ namespace Stoolball.Web.Matches
             }
 
             var i = 0;
-            foreach (var innings in postedInnings.PlayerInnings)
+            foreach (var innings in postedData.PlayerInningsSearch)
             {
-                // Remove bowling team members if an empty name is posted
-                if (string.IsNullOrWhiteSpace(innings.DismissedBy?.PlayerIdentityName)) { innings.DismissedBy = null; }
-                if (string.IsNullOrWhiteSpace(innings.Bowler?.PlayerIdentityName)) { innings.Bowler = null; }
-
                 // The batter name is required if any other fields are filled in for an innings
-                if (string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].PlayerIdentity?.PlayerIdentityName) &&
-                    (postedInnings.PlayerInnings[i].DismissalType.HasValue &&
-                    postedInnings.PlayerInnings[i].DismissalType != DismissalType.DidNotBat ||
-                    !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName) ||
-                    !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].Bowler?.PlayerIdentityName) ||
-                    postedInnings.PlayerInnings[i].RunsScored != null ||
-                    postedInnings.PlayerInnings[i].BallsFaced != null))
+                if (string.IsNullOrWhiteSpace(innings.Batter) &&
+                    (innings.DismissalType.HasValue &&
+                    innings.DismissalType != DismissalType.DidNotBat ||
+                    !string.IsNullOrWhiteSpace(innings.DismissedBy) ||
+                    !string.IsNullOrWhiteSpace(innings.Bowler) ||
+                    innings.RunsScored != null ||
+                    innings.BallsFaced != null))
                 {
-                    ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].PlayerIdentity.PlayerIdentityName", $"You've added details for the {(i + 1).Ordinalize()} batter. Please name the batter.");
+                    ModelState.AddModelError($"CurrentInnings.PlayerInningsSearch[{i}].Batter", $"You've added details for the {(i + 1).Ordinalize(CultureInfo.CurrentCulture)} batter. Please name the batter.");
                 }
 
                 // The batter must have batted if any other fields are filled in for an innings
-                if ((postedInnings.PlayerInnings[i].DismissalType == DismissalType.DidNotBat || postedInnings.PlayerInnings[i].DismissalType == DismissalType.TimedOut) &&
-                    (!string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName) ||
-                    !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].Bowler?.PlayerIdentityName) ||
-                    postedInnings.PlayerInnings[i].RunsScored != null ||
-                    postedInnings.PlayerInnings[i].BallsFaced != null))
+                if ((innings.DismissalType == DismissalType.DidNotBat || innings.DismissalType == DismissalType.TimedOut) &&
+                    (!string.IsNullOrWhiteSpace(innings.DismissedBy) ||
+                    !string.IsNullOrWhiteSpace(innings.Bowler) ||
+                    innings.RunsScored != null ||
+                    innings.BallsFaced != null))
                 {
-                    ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].DismissalType", $"You've said the {(i + 1).Ordinalize()} batter did not bat, but you added batting details.");
+                    ModelState.AddModelError($"CurrentInnings.PlayerInningsSearch[{i}].DismissalType", $"You've said the {(i + 1).Ordinalize(CultureInfo.CurrentCulture)} batter did not bat, but you added batting details.");
                 }
 
                 // The batter can't be not out if a a bowler or fielder is named
-                if ((postedInnings.PlayerInnings[i].DismissalType == DismissalType.NotOut || postedInnings.PlayerInnings[i].DismissalType == DismissalType.Retired || postedInnings.PlayerInnings[i].DismissalType == DismissalType.RetiredHurt) &&
-                    (!string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName) ||
-                    !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].Bowler?.PlayerIdentityName)
+                if ((innings.DismissalType == DismissalType.NotOut || innings.DismissalType == DismissalType.Retired || innings.DismissalType == DismissalType.RetiredHurt) &&
+                    (!string.IsNullOrWhiteSpace(innings.DismissedBy) ||
+                    !string.IsNullOrWhiteSpace(innings.Bowler)
                     ))
                 {
-                    ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].DismissalType", $"You've said the {(i + 1).Ordinalize()} batter was not out, but you named a fielder and/or bowler.");
+                    ModelState.AddModelError($"CurrentInnings.PlayerInningsSearch[{i}].DismissalType", $"You've said the {(i + 1).Ordinalize(CultureInfo.CurrentCulture)} batter was not out, but you named a fielder and/or bowler.");
                 }
 
                 // Caught and bowled by the same person is caught and bowled
-                if (postedInnings.PlayerInnings[i].DismissalType == DismissalType.Caught &&
-                    !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName) &&
-                    postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName == postedInnings.PlayerInnings[i].Bowler?.PlayerIdentityName)
+                if (innings.DismissalType == DismissalType.Caught &&
+                    !string.IsNullOrWhiteSpace(innings.DismissedBy) &&
+                    innings.DismissedBy?.Trim() == innings.Bowler?.Trim())
                 {
-                    postedInnings.PlayerInnings[i].DismissalType = DismissalType.CaughtAndBowled;
-                    postedInnings.PlayerInnings[i].DismissedBy = null;
+                    innings.DismissalType = DismissalType.CaughtAndBowled;
+                    innings.DismissedBy = null;
                 }
 
                 // If there's a fielder, the dismissal type should be caught or run-out
-                if (postedInnings.PlayerInnings[i].DismissalType != DismissalType.Caught &&
-                    postedInnings.PlayerInnings[i].DismissalType != DismissalType.RunOut &&
-                    !string.IsNullOrWhiteSpace(postedInnings.PlayerInnings[i].DismissedBy?.PlayerIdentityName))
+                if (innings.DismissalType != DismissalType.Caught &&
+                    innings.DismissalType != DismissalType.RunOut &&
+                    !string.IsNullOrWhiteSpace(innings.DismissedBy))
                 {
-                    ModelState.AddModelError($"CurrentInnings.PlayerInnings[{i}].DismissalType", $"You've named the fielder for the {(i + 1).Ordinalize()} batter, but they were not caught or run-out.");
+                    ModelState.AddModelError($"CurrentInnings.PlayerInningsSearch[{i}].DismissalType", $"You've named the fielder for the {(i + 1).Ordinalize(CultureInfo.CurrentCulture)} batter, but they were not caught or run-out.");
                 }
 
                 i++;
@@ -126,35 +124,53 @@ namespace Stoolball.Web.Matches
             var model = new EditScorecardViewModel(CurrentPage, Services.UserService)
             {
                 Match = beforeUpdate,
-                DateFormatter = _dateTimeFormatter,
                 InningsOrderInMatch = _matchInningsUrlParser.ParseInningsOrderInMatchFromUrl(new Uri(Request.RawUrl, UriKind.Relative)),
+                DateFormatter = _dateTimeFormatter,
                 Autofocus = true
             };
-            model.CurrentInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
-            model.CurrentInnings.PlayerInnings = postedInnings.PlayerInnings.Where(x => x.PlayerIdentity?.PlayerIdentityName?.Trim().Length > 0).ToList();
-            model.CurrentInnings.Byes = postedInnings.Byes;
-            model.CurrentInnings.Wides = postedInnings.Wides;
-            model.CurrentInnings.NoBalls = postedInnings.NoBalls;
-            model.CurrentInnings.BonusOrPenaltyRuns = postedInnings.BonusOrPenaltyRuns;
-            model.CurrentInnings.Runs = postedInnings.Runs;
-            model.CurrentInnings.Wickets = postedInnings.Wickets;
+            model.CurrentInnings.MatchInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
+            model.CurrentInnings.MatchInnings.PlayerInnings = postedData.PlayerInningsSearch.Where(x => !string.IsNullOrWhiteSpace(x.Batter)).Select(x => new PlayerInnings
+            {
+                PlayerIdentity = new PlayerIdentity
+                {
+                    PlayerIdentityName = x.Batter.Trim()
+                },
+                DismissalType = x.DismissalType,
+                DismissedBy = string.IsNullOrWhiteSpace(x.DismissedBy) ? null : new PlayerIdentity
+                {
+                    PlayerIdentityName = x.DismissedBy.Trim()
+                },
+                Bowler = string.IsNullOrWhiteSpace(x.Bowler) ? null : new PlayerIdentity
+                {
+                    PlayerIdentityName = x.Bowler.Trim()
+                },
+                RunsScored = x.RunsScored,
+                BallsFaced = x.BallsFaced
+            }).ToList();
+            model.CurrentInnings.PlayerInningsSearch = postedData.PlayerInningsSearch;
+            model.CurrentInnings.MatchInnings.Byes = postedData.MatchInnings.Byes;
+            model.CurrentInnings.MatchInnings.Wides = postedData.MatchInnings.Wides;
+            model.CurrentInnings.MatchInnings.NoBalls = postedData.MatchInnings.NoBalls;
+            model.CurrentInnings.MatchInnings.BonusOrPenaltyRuns = postedData.MatchInnings.BonusOrPenaltyRuns;
+            model.CurrentInnings.MatchInnings.Runs = postedData.MatchInnings.Runs;
+            model.CurrentInnings.MatchInnings.Wickets = postedData.MatchInnings.Wickets;
 
             if (!model.Match.PlayersPerTeam.HasValue)
             {
                 model.Match.PlayersPerTeam = model.Match.Tournament != null ? 8 : 11;
             }
-            if (model.Match.PlayersPerTeam.Value < postedInnings.PlayerInnings.Count)
+            if (model.Match.PlayersPerTeam.Value < postedData.MatchInnings.PlayerInnings.Count)
             {
-                model.Match.PlayersPerTeam = postedInnings.PlayerInnings.Count;
+                model.Match.PlayersPerTeam = postedData.MatchInnings.PlayerInnings.Count;
             }
-            _playerInningsScaffolder.ScaffoldPlayerInnings(model.CurrentInnings.PlayerInnings, model.Match.PlayersPerTeam.Value);
+            _playerInningsScaffolder.ScaffoldPlayerInnings(model.CurrentInnings.MatchInnings.PlayerInnings, model.Match.PlayersPerTeam.Value);
 
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 
             if (model.IsAuthorized[AuthorizedAction.EditMatchResult] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
-                await _matchRepository.UpdateBattingScorecard(model.CurrentInnings, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _matchRepository.UpdateBattingScorecard(model.CurrentInnings.MatchInnings, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // redirect to the bowling scorecard for this innings
                 return Redirect($"{model.Match.MatchRoute}/edit/innings/{model.InningsOrderInMatch.Value}/bowling");
@@ -162,9 +178,9 @@ namespace Stoolball.Web.Matches
 
             model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
-            while (model.CurrentInnings.OversBowled.Count < model.CurrentInnings.Overs)
+            while (model.CurrentInnings.MatchInnings.OversBowled.Count < model.CurrentInnings.MatchInnings.Overs)
             {
-                model.CurrentInnings.OversBowled.Add(new Over());
+                model.CurrentInnings.MatchInnings.OversBowled.Add(new Over());
             }
 
             model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.MatchName, Url = new Uri(model.Match.MatchRoute, UriKind.Relative) });

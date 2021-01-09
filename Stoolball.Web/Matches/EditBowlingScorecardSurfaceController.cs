@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -8,6 +9,7 @@ using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
+using Stoolball.Teams;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -22,7 +24,7 @@ namespace Stoolball.Web.Matches
     {
         private readonly IMatchDataSource _matchDataSource;
         private readonly IMatchRepository _matchRepository;
-        private readonly IAuthorizationPolicy<Stoolball.Matches.Match> _authorizationPolicy;
+        private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateTimeFormatter;
         private readonly IMatchInningsUrlParser _matchInningsUrlParser;
 
@@ -42,11 +44,11 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> UpdateMatch([Bind(Prefix = "CurrentInnings", Include = "OversBowled")] MatchInnings postedInnings)
+        public async Task<ActionResult> UpdateMatch([Bind(Prefix = "CurrentInnings", Include = "MatchInnings,OversBowledSearch")] MatchInningsViewModel postedData)
         {
-            if (postedInnings is null)
+            if (postedData is null)
             {
-                throw new ArgumentNullException(nameof(postedInnings));
+                throw new ArgumentNullException(nameof(postedData));
             }
 
             var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false);
@@ -65,15 +67,15 @@ namespace Stoolball.Web.Matches
 
             // The bowler name is required if any other fields are filled in for an over
             var i = 0;
-            foreach (var over in postedInnings.OversBowled)
+            foreach (var over in postedData.OversBowledSearch)
             {
-                if (string.IsNullOrWhiteSpace(postedInnings.OversBowled[i].PlayerIdentity?.PlayerIdentityName) &&
-                    (postedInnings.OversBowled[i].BallsBowled.HasValue ||
-                     postedInnings.OversBowled[i].Wides.HasValue ||
-                     postedInnings.OversBowled[i].NoBalls.HasValue ||
-                     postedInnings.OversBowled[i].RunsConceded.HasValue))
+                if (string.IsNullOrWhiteSpace(over.Bowler) &&
+                    (over.BallsBowled.HasValue ||
+                     over.Wides.HasValue ||
+                     over.NoBalls.HasValue ||
+                     over.RunsConceded.HasValue))
                 {
-                    ModelState.AddModelError($"CurrentInnings.OversBowled[{i}].PlayerIdentity.PlayerIdentityName", $"You've added the {(i + 1).Ordinalize()} over. Please name the bowler.");
+                    ModelState.AddModelError($"CurrentInnings.OversBowledSearch[{i}].Bowler", $"You've added the {(i + 1).Ordinalize(CultureInfo.CurrentCulture)} over. Please name the bowler.");
                 }
                 i++;
             }
@@ -81,19 +83,30 @@ namespace Stoolball.Web.Matches
             var model = new EditScorecardViewModel(CurrentPage, Services.UserService)
             {
                 Match = beforeUpdate,
-                DateFormatter = _dateTimeFormatter,
                 InningsOrderInMatch = _matchInningsUrlParser.ParseInningsOrderInMatchFromUrl(new Uri(Request.RawUrl, UriKind.Relative)),
+                DateFormatter = _dateTimeFormatter,
                 Autofocus = true
             };
-            model.CurrentInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
-            model.CurrentInnings.OversBowled = postedInnings.OversBowled.Where(x => x.PlayerIdentity.PlayerIdentityName?.Trim().Length > 0).ToList();
-            if (!model.CurrentInnings.Overs.HasValue)
+            model.CurrentInnings.MatchInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
+            model.CurrentInnings.MatchInnings.OversBowled = postedData.OversBowledSearch.Where(x => x.Bowler?.Trim().Length > 0).Select(x => new Over
             {
-                model.CurrentInnings.Overs = model.Match.Tournament != null ? 6 : 12;
+                PlayerIdentity = new PlayerIdentity
+                {
+                    PlayerIdentityName = x.Bowler.Trim()
+                },
+                BallsBowled = x.BallsBowled,
+                Wides = x.Wides,
+                NoBalls = x.NoBalls,
+                RunsConceded = x.RunsConceded
+            }).ToList();
+            model.CurrentInnings.OversBowledSearch = postedData.OversBowledSearch;
+            if (!model.CurrentInnings.MatchInnings.Overs.HasValue)
+            {
+                model.CurrentInnings.MatchInnings.Overs = model.Match.Tournament != null ? 6 : 12;
             }
-            if (model.CurrentInnings.Overs.Value < postedInnings.OversBowled.Count)
+            if (model.CurrentInnings.MatchInnings.Overs.Value < postedData.OversBowledSearch.Count)
             {
-                model.CurrentInnings.Overs = postedInnings.OversBowled.Count;
+                model.CurrentInnings.MatchInnings.Overs = postedData.OversBowledSearch.Count;
             }
 
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
@@ -101,7 +114,7 @@ namespace Stoolball.Web.Matches
             if (model.IsAuthorized[AuthorizedAction.EditMatchResult] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
-                await _matchRepository.UpdateBowlingScorecard(model.CurrentInnings, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _matchRepository.UpdateBowlingScorecard(model.CurrentInnings.MatchInnings, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // redirect to the next innings or close of play
                 if (model.InningsOrderInMatch.Value < model.Match.MatchInnings.Count)
@@ -116,9 +129,9 @@ namespace Stoolball.Web.Matches
 
             model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
-            while (model.CurrentInnings.OversBowled.Count < model.CurrentInnings.Overs)
+            while (model.CurrentInnings.MatchInnings.OversBowled.Count < model.CurrentInnings.MatchInnings.Overs)
             {
-                model.CurrentInnings.OversBowled.Add(new Over());
+                model.CurrentInnings.MatchInnings.OversBowled.Add(new Over());
             }
 
             model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.MatchName, Url = new Uri(model.Match.MatchRoute, UriKind.Relative) });

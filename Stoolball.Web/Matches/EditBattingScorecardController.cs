@@ -58,8 +58,8 @@ namespace Stoolball.Web.Matches
             var model = new EditScorecardViewModel(contentModel.Content, Services?.UserService)
             {
                 Match = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false),
-                DateFormatter = _dateFormatter,
                 InningsOrderInMatch = _matchInningsUrlParser.ParseInningsOrderInMatchFromUrl(new Uri(Request.RawUrl, UriKind.Relative)),
+                DateFormatter = _dateFormatter,
                 Autofocus = true
             };
 
@@ -85,12 +85,24 @@ namespace Stoolball.Web.Matches
 
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
 
-                model.CurrentInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
+                model.CurrentInnings.MatchInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
                 if (!model.Match.PlayersPerTeam.HasValue)
                 {
                     model.Match.PlayersPerTeam = model.Match.Tournament != null ? 8 : 11;
                 }
-                _playerInningsScaffolder.ScaffoldPlayerInnings(model.CurrentInnings.PlayerInnings, model.Match.PlayersPerTeam.Value);
+                _playerInningsScaffolder.ScaffoldPlayerInnings(model.CurrentInnings.MatchInnings.PlayerInnings, model.Match.PlayersPerTeam.Value);
+
+                // Convert player innings to a view model, purely to change the field names to ones which will not trigger pop-up contact/password managers 
+                // while retaining the benefits of ASP.NET model binding. Using the "search" keyword in the property name also helps to disable contact/password managers.
+                model.CurrentInnings.PlayerInningsSearch.AddRange(model.CurrentInnings.MatchInnings.PlayerInnings.Select(x => new PlayerInningsViewModel
+                {
+                    Batter = x.PlayerIdentity?.PlayerIdentityName,
+                    DismissalType = x.DismissalType,
+                    DismissedBy = x.DismissedBy?.PlayerIdentityName,
+                    Bowler = x.Bowler?.PlayerIdentityName,
+                    RunsScored = x.RunsScored,
+                    BallsFaced = x.BallsFaced
+                }));
 
                 model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
