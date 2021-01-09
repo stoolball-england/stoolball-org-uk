@@ -1,6 +1,6 @@
-﻿using Stoolball.MatchLocations;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Stoolball.MatchLocations;
 
 namespace Stoolball.Teams
 {
@@ -8,6 +8,7 @@ namespace Stoolball.Teams
     {
         public Guid? TeamListingId { get; set; }
         public string ClubOrTeamName { get; set; }
+        public TeamType? TeamType { get; set; }
         public bool Active { get; set; }
         public string ClubOrTeamRoute { get; set; }
         public List<PlayerType> PlayerTypes { get; internal set; } = new List<PlayerType>();

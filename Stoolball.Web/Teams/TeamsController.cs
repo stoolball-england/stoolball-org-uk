@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Teams;
 using Stoolball.Web.Routing;
@@ -43,6 +44,8 @@ namespace Stoolball.Web.Teams
                 TeamQuery = new TeamQuery
                 {
                     Query = Request.QueryString["q"]?.Trim(),
+                    IncludeClubTeams = false,
+                    TeamTypes = new List<TeamType> { TeamType.LimitedMembership, TeamType.Occasional, TeamType.Regular, TeamType.Representative, TeamType.SchoolClub },
                     PageNumber = pageNumber > 0 ? pageNumber : 1
                 }
             };

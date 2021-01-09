@@ -1,5 +1,6 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamsViewModel>
 @using Humanizer
+@using Stoolball.Teams
 <div class="container-xl">
     <h1>
         @Stoolball.Constants.Pages.Teams
@@ -38,28 +39,55 @@
         <button type="submit" class="btn btn-primary">Search</button>
     </form>
 
-    <ul>
+    <dl>
         @foreach (var listing in Model.Teams)
         {
-            var listingText = listing.ClubOrTeamName;
+            var linkText = listing.ClubOrTeamName;
             var location = listing.MatchLocations.FirstOrDefault()?.LocalityOrTown();
             if (!string.IsNullOrEmpty(location) &&
-                !listingText.Replace("'", string.Empty).ToUpperInvariant().Contains(location.Replace("'", string.Empty).ToUpperInvariant()))
+                !linkText.Replace("'", string.Empty).ToUpperInvariant().Contains(location.Replace("'", string.Empty).ToUpperInvariant()))
             {
-                listingText += ", " + location;
+                linkText += ", " + location;
             }
-            if (listing.Active)
+
+            listing.PlayerTypes.Sort(); // by id, which puts adult teams before junior
+            var playerTypes = $"{listing.PlayerTypes.Select((value, index) => value.Humanize(index > 0 ? LetterCasing.LowerCase : LetterCasing.Sentence)).Humanize()}";
+
+            var detail = string.Empty;
+            if (listing.TeamType.HasValue)
             {
-                listing.PlayerTypes.Sort(); // by id, which puts adult teams before junior
-                listingText = $"{listingText} ({listing.PlayerTypes.Select((value, index) => value.Humanize(index > 0 ? LetterCasing.LowerCase : LetterCasing.Sentence)).Humanize()})";
+                if (listing.TeamType == TeamType.SchoolClub)
+                {
+                    detail = playerTypes + " school club. ";
+                }
+                else
+                {
+                    detail = listing.TeamType.Humanize(LetterCasing.Sentence) + $" {playerTypes.Humanize(LetterCasing.LowerCase)} team. ";
+                }
+                if (!listing.Active)
+                {
+                    detail += $"No longer active.";
+                }
             }
             else
             {
-                listingText = $"{listingText} (No longer active)";
+                if (listing.PlayerTypes.Count > 0)
+                {
+                    detail = $"Club with {(listing.PlayerTypes.Count > 1 ? string.Empty : "one ")}{playerTypes.Humanize(LetterCasing.LowerCase)} {(listing.PlayerTypes.Count > 1 ? "teams" : "team")}. ";
+                    if (!listing.Active)
+                    {
+                        detail += $"No longer active.";
+                    }
+                }
+                else
+                {
+                    detail = "Club with no active teams. ";
+                }
             }
-            <li><a href="@listing.ClubOrTeamRoute">@listingText</a></li>
+            <dt><a href="@listing.ClubOrTeamRoute">@linkText</a></dt>
+            <dd>@detail</dd>
         }
-    </ul>
+    </dl>
     @if (Model.TotalTeams > (Model.TeamQuery.PageNumber * Model.TeamQuery.PageSize))
     {
         var query = HttpUtility.ParseQueryString(Request.Url.Query);

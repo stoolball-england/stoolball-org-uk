@@ -40,7 +40,7 @@
                     placeholder = "Add a team",
                     autocomplete = "off",
                     type = "search",
-                    data_url = $"/api/teams/autocomplete?includeclubteams=false&teamType={TeamType.ClosedGroup.ToString()}&teamType={TeamType.Occasional.ToString()}&teamType={TeamType.Regular.ToString()}&teamType={TeamType.SchoolClub.ToString()}",
+                    data_url = $"/api/teams/autocomplete?includeclubteams=false&teamType={TeamType.LimitedMembership.ToString()}&teamType={TeamType.Occasional.ToString()}&teamType={TeamType.Regular.ToString()}&teamType={TeamType.SchoolClub.ToString()}",
                     data_template = "team-template",
                     aria_label = "Type a team name and press down arrow to select the team"
                 })

@@ -103,7 +103,7 @@ namespace Stoolball.Data.SqlServer
                                                 {teamWhere}
                                                 UNION
                                                 SELECT c.ClubId AS TeamListingId, cn.ClubName AS ClubOrTeamName,
-                                                CASE WHEN(SELECT COUNT(TeamId) FROM { Tables.Team } WHERE ClubId = c.ClubId) > 0 THEN 1 ELSE 0 END AS Active
+                                                CASE WHEN(SELECT COUNT(TeamId) FROM { Tables.Team } t2 WHERE ClubId = c.ClubId AND t2.UntilYear IS NULL) > 0 THEN 1 ELSE 0 END AS Active
                                                 FROM { Tables.Club } AS c
                                                 INNER JOIN { Tables.ClubName } AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
                                                 LEFT JOIN { Tables.Team } AS ct ON c.ClubId = ct.ClubId AND ct.UntilYear IS NULL
@@ -116,7 +116,7 @@ namespace Stoolball.Data.SqlServer
 
                 // Now that the inner query can select just the paged ids we need, the outer query can use them to select complete data sets including multiple rows
                 // based on the matching ids rather than directly on the paging criteria
-                var outerQuery = $@"SELECT t.TeamId AS TeamListingId, tn.TeamName AS ClubOrTeamName, t.TeamRoute AS ClubOrTeamRoute, CASE WHEN UntilYear IS NULL THEN 1 ELSE 0 END AS Active,
+                var outerQuery = $@"SELECT t.TeamId AS TeamListingId, tn.TeamName AS ClubOrTeamName, t.TeamType, t.TeamRoute AS ClubOrTeamRoute, CASE WHEN UntilYear IS NULL THEN 1 ELSE 0 END AS Active,
                                 t.PlayerType, 
                                 ml.Locality, ml.Town, ml.MatchLocationRoute
                                 FROM { Tables.Team } AS t 
@@ -125,8 +125,8 @@ namespace Stoolball.Data.SqlServer
                                 LEFT JOIN { Tables.MatchLocation } AS ml ON ml.MatchLocationId = tml.MatchLocationId 
                                 WHERE t.TeamId IN ({innerQuery})
                                 UNION
-                                SELECT c.ClubId AS TeamListingId, cn.ClubName AS ClubOrTeamName, c.ClubRoute AS ClubOrTeamRoute, 
-                                CASE WHEN (SELECT COUNT(TeamId) FROM { Tables.Team } WHERE ClubId = c.ClubId) > 0 THEN 1 ELSE 0 END AS Active,
+                                SELECT c.ClubId AS TeamListingId, cn.ClubName AS ClubOrTeamName, NULL AS TeamType, c.ClubRoute AS ClubOrTeamRoute, 
+                                CASE WHEN (SELECT COUNT(TeamId) FROM { Tables.Team } t2 WHERE ClubId = c.ClubId AND t2.UntilYear IS NULL) > 0 THEN 1 ELSE 0 END AS Active,
                                 ct.PlayerType,
                                 ml.Locality, ml.Town, ml.MatchLocationRoute
                                 FROM { Tables.Club } AS c 
@@ -156,7 +156,7 @@ namespace Stoolball.Data.SqlServer
                 var resolvedListings = teamListings.GroupBy(team => team.TeamListingId).Select(copiesOfTeam =>
                 {
                     var resolvedTeam = copiesOfTeam.First();
-                    resolvedTeam.PlayerTypes = copiesOfTeam.Select(listing => listing.PlayerTypes.SingleOrDefault()).OfType<PlayerType>().Distinct().ToList();
+                    resolvedTeam.PlayerTypes = copiesOfTeam.SelectMany(listing => listing.PlayerTypes).OfType<PlayerType>().Distinct().ToList();
                     resolvedTeam.MatchLocations = copiesOfTeam.Select(listing => listing.MatchLocations.SingleOrDefault()).OfType<MatchLocation>().Distinct(new MatchLocationEqualityComparer()).ToList();
                     return resolvedTeam;
                 }).ToList();
@@ -170,14 +170,24 @@ namespace Stoolball.Data.SqlServer
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();
 
-            where.Add($"t.ClubId IS NULL AND NOT t.TeamType = '{TeamType.Transient.ToString()}'");
             if (!string.IsNullOrEmpty(teamQuery?.Query))
             {
                 where.Add("(tn.TeamName LIKE @Query OR t.PlayerType LIKE @Query OR ml.Locality LIKE @Query OR ml.Town LIKE @Query OR ml.AdministrativeArea LIKE @Query)");
                 parameters.Add("@Query", $"%{teamQuery.Query}%");
             }
 
-            return ("WHERE " + string.Join(" AND ", where), parameters);
+            if (teamQuery?.TeamTypes?.Count > 0)
+            {
+                where.Add("t.TeamType IN @TeamTypes");
+                parameters.Add("@TeamTypes", teamQuery.TeamTypes.Select(x => x.ToString()));
+            }
+
+            if (teamQuery != null && !teamQuery.IncludeClubTeams)
+            {
+                where.Add("t.ClubId IS NULL");
+            }
+
+            return (where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty, parameters);
         }
 
         private static (string where, Dictionary<string, object> parameters) BuildClubWhereQuery(TeamQuery teamQuery)
@@ -185,14 +195,19 @@ namespace Stoolball.Data.SqlServer
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();
 
-            where.Add($"NOT ct.TeamType = '{TeamType.Transient.ToString()}'");
             if (!string.IsNullOrEmpty(teamQuery?.Query))
             {
                 where.Add("(cn.ClubName LIKE @Query OR ct.PlayerType LIKE @Query OR ml.Locality LIKE @Query OR ml.Town LIKE @Query OR ml.AdministrativeArea LIKE @Query)");
                 parameters.Add("@Query", $"%{teamQuery.Query}%");
             }
 
-            return ("WHERE " + string.Join(" AND ", where), parameters);
+            if (teamQuery?.TeamTypes?.Count > 0)
+            {
+                where.Add("(ct.TeamType IN @TeamTypes OR ct.TeamType IS NULL)");
+                parameters.Add("@TeamTypes", teamQuery.TeamTypes.Select(x => x.ToString()));
+            }
+
+            return (where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty, parameters);
         }
     }
 }

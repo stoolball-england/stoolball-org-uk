@@ -10,7 +10,7 @@
 		/// <summary>
 		/// A team that only particular people can join, such as a work team
 		/// </summary>
-		ClosedGroup,
+		LimitedMembership,
 
 		/// <summary>
 		/// A team selected to represent a league or other group

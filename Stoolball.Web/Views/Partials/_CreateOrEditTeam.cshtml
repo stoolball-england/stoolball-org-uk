@@ -23,8 +23,8 @@
             <label for="team-type-2" class="custom-control-label">Represents a league or group</label>
         </div>
         <div class="custom-control custom-radio">
-            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.ClosedGroup, new { @class = "custom-control-input", aria_describedby = "team-type-validation", @id = "team-type-3" })
-            <label for="team-type-3" class="custom-control-label">Closed group (for example, only staff can join a work team)</label>
+            @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.LimitedMembership, new { @class = "custom-control-input", aria_describedby = "team-type-validation", @id = "team-type-3" })
+            <label for="team-type-3" class="custom-control-label">Limited membership (for example, only staff can join a work team)</label>
         </div>
         <div class="custom-control custom-radio">
             @Html.RadioButtonFor(m => Model.Team.TeamType, TeamType.Occasional, new { @class = "custom-control-input", aria_describedby = "team-type-validation", @id = "team-type-4" })

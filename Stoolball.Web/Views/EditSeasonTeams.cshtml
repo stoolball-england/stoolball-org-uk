@@ -57,15 +57,15 @@
                         <td colspan="3">
                             @Html.Label("team-autocomplete", "Add a team", new { @class = "sr-only" })
                             @Html.TextBox("team-autocomplete", string.Empty, new
-                            {
-                                @class = "form-control related-item__search",
-                                placeholder = "Add a team",
-                                autocomplete = "off",
-                                type = "search",
-                                data_url = $"/api/teams/autocomplete?teamType={TeamType.ClosedGroup.ToString()}&teamType={TeamType.Occasional.ToString()}&teamType={TeamType.Regular.ToString()}&teamType={TeamType.Representative.ToString()}&teamType={TeamType.SchoolAgeGroup.ToString()}&teamType={TeamType.SchoolClub.ToString()}&teamType={TeamType.SchoolOther.ToString()}",
-                                data_template = "team-template",
-                                aria_label = "Type a team name and press down arrow to select the team"
-                            })
+                       {
+                           @class = "form-control related-item__search",
+                           placeholder = "Add a team",
+                           autocomplete = "off",
+                           type = "search",
+                           data_url = $"/api/teams/autocomplete?teamType={TeamType.LimitedMembership.ToString()}&teamType={TeamType.Occasional.ToString()}&teamType={TeamType.Regular.ToString()}&teamType={TeamType.Representative.ToString()}&teamType={TeamType.SchoolAgeGroup.ToString()}&teamType={TeamType.SchoolClub.ToString()}&teamType={TeamType.SchoolOther.ToString()}",
+                           data_template = "team-template",
+                           aria_label = "Type a team name and press down arrow to select the team"
+                       })
                         </td>
                     </tr>
                 </tbody>
