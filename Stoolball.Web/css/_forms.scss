@@ -139,6 +139,10 @@ svg {
     padding-left: 35px;
 }
 
+.btn-add::after {
+    display: none; // undo adding ❯
+}
+
 /* Two types of delete button: .btn-delete is an icon with text, .btn-delete-icon is just an icon */
 .btn-delete { 
     background-image: url(/images/icons/iconmonstr-trash-can-27-white.svg);
