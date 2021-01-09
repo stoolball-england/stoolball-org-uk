@@ -330,15 +330,10 @@ $space-character-width: .25em;
 
 @media screen and (min-width: 925px) {
     // The fourth column can now move out of the stack.
-    // Restore its padding to separate it from the stack, and start treating the remaining columns as .numeric
+    // Restore its padding to separate it from the stack
     .batting-scorecard-editor__bowler {
         display: table-cell;
         padding-right: $table-cell-padding;
-    }
-
-    .batting-scorecard-editor__runs,
-    .batting-scorecard-editor__balls {
-        @include numeric-value;
     }
 
     // The table header can now be revealed, but adjust the padding to match the cells below, and keep the last column hidden
@@ -397,12 +392,6 @@ $space-character-width: .25em;
     .batting-scorecard-editor__runs {
         display: table-cell;
         padding-right: $table-cell-padding;
-    }
-
-    // The runs header and final data rows finally can act like a .numeric as there are no longer has stacked columns
-    .batting-scorecard-editor__runs-header,
-    .batting-scorecard-editor__final-rows [headers] {
-        @include numeric-value;
     }
 
     // Only one column left in the stack, so restore the stack to an ordinary column.
