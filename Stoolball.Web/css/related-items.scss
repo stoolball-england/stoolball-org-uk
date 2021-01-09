@@ -80,9 +80,11 @@
     height: 0;
 }
 
+// Used in both versions - box-sizing ensures the width is consistent in both contexts
 .related-item__delete {
     width: 35px;
     text-align: right;
+    box-sizing: content-box;
 }
 
 .related-item__delete button {
