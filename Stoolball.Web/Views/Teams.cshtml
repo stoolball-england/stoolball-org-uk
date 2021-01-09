@@ -33,6 +33,10 @@
         </li>
     </ul>
 
+    @if (string.IsNullOrEmpty(Model.TeamQuery.Query))
+    {
+        <p class="alert alert-info alert-tip">Try searching for <a href="/teams?q=ladies">ladies teams</a>, <a href="/teams?q=mixed">mixed teams</a> or <a href="/teams?q=junior">junior teams</a>.</p>
+    }
     <form method="get" action="@Request.Url" class="form-inline form-search">
         <label class="sr-only" for="team-search">Team name</label>
         <input type="search" class="form-control" id="team-search" name="q" value="@Model.TeamQuery.Query" />
