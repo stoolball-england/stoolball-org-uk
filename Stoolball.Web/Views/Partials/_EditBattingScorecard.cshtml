@@ -19,7 +19,7 @@
         new SelectListItem { Text = DismissalType.RetiredHurt.Humanize(LetterCasing.LowerCase), Value = (DismissalType.RetiredHurt).ToString() },
         new SelectListItem { Text = DismissalType.Retired.Humanize(LetterCasing.LowerCase), Value = (DismissalType.Retired).ToString() },
         new SelectListItem { Text = "not known", Value = string.Empty },
-                    };
+                            };
     var wicketsItems = new List<SelectListItem>();
     var totalWickets = Model.Match.LastPlayerBatsOn ? Model.Match.PlayersPerTeam : Model.Match.PlayersPerTeam - 1;
     for (var i = 0; i <= totalWickets; i++)
@@ -27,8 +27,6 @@
         wicketsItems.Add(new SelectListItem { Text = i == totalWickets ? "all out" : i.ToInvariantString(), Value = i.ToInvariantString() });
     }
 }
-<p class="scorecard__full-name-hint d-none alert alert-info alert-tip" role="alert">Full names, if you know them, are better for comparing players.</p>
-
 <table class="batting-scorecard-base batting-scorecard-editor" data-autofocus="@Model.Autofocus.ToString().ToLowerInvariant()">
     <caption>@Model.CurrentInnings.MatchInnings.BattingTeam.Team.TeamName's batting</caption>
     <thead>
@@ -46,8 +44,9 @@
         {
             <tr class="batting-scorecard-editor__player-innings">
                 <th scope="row" class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__batter">
-                    @Html.LabelFor(m => Model.CurrentInnings.PlayerInningsSearch[i].Batter, $"{(i+1).Ordinalize(CultureInfo.CurrentCulture)} batter", new { aria_hidden = "true", @class= "batting-scorecard-editor__label batting-scorecard-editor__batter-label" })
-                    <div> @* Extra divs act as flex-items when using .table-as-cards. Allowing the form field to be a flex-item means its height grows if the label wraps. *@
+                    @Html.LabelFor(m => Model.CurrentInnings.PlayerInningsSearch[i].Batter, $"{(i + 1).Ordinalize(CultureInfo.CurrentCulture)} batter", new { aria_hidden = "true", @class = "batting-scorecard-editor__label batting-scorecard-editor__batter-label" })
+                    <div>
+                        @* Extra divs act as flex-items when using .table-as-cards. Allowing the form field to be a flex-item means its height grows if the label wraps. *@
                         @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].Batter, new { autocomplete = "off", data_lpignore = "true", @class = "scorecard__player-name", data_team = Model.CurrentInnings.MatchInnings.BattingTeam.Team.TeamId.ToString() })
                     </div>
                 </th>
@@ -77,10 +76,11 @@
                 </td>
             </tr>
         }
-        </tbody>
-        <tbody>
+    </tbody>
+    <tbody>
         <tr class="batting-scorecard-editor__final-rows scorecard__extras">
-            <td></td>@* Unfortunately the need to be responsive means colspan can't be used, because varying numbers of columns are stacked above and this needs to keep in sync *@
+            <td></td>
+            @* Unfortunately the need to be responsive means colspan can't be used, because varying numbers of columns are stacked above and this needs to keep in sync *@
             <td></td>
             <td></td>
             <th scope="row" id="byes-header">Byes</th>
@@ -167,3 +167,4 @@
         </tr>
     </table>
 </script>
+<p class="scorecard__full-name-hint d-none alert alert-info alert-tip" role="alert">Full names, if you know them, are better for comparing players.</p>

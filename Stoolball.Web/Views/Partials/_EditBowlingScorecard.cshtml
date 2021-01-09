@@ -4,8 +4,6 @@
 
 @Html.ValidationSummary(false)
 
-<p class="scorecard__full-name-hint d-none alert alert-info alert-tip" role="alert">Full names, if you know them, are better for comparing players.</p>
-
 <table class="table bowling-scorecard-editor" data-autofocus="@Model.Autofocus.ToString().ToLowerInvariant()">
     <caption>@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamName's bowling, over-by-over</caption>
     <thead>
@@ -41,3 +39,5 @@
         </tr>
     </table>
 </script>
+
+<p class="scorecard__full-name-hint d-none alert alert-info alert-tip" role="alert">Full names, if you know them, are better for comparing players.</p>
