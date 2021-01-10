@@ -1,7 +1,7 @@
-﻿using Stoolball.MatchLocations;
-using System;
+﻿using System;
 using System.Linq;
 using System.Text;
+using Stoolball.MatchLocations;
 using Xunit;
 
 namespace Stoolball.Tests.MatchLocations
@@ -203,11 +203,11 @@ namespace Stoolball.Tests.MatchLocations
         }
 
         [Fact]
-        public void Postcode_allows_8_characters()
+        public void Postcode_allows_9_characters()
         {
             var x = "x";
             var someValue = new StringBuilder();
-            for (var i = 1; i <= 8; i++) someValue.Append(x);
+            for (var i = 1; i <= 9; i++) someValue.Append(x);
 
             var matchLocation = new MatchLocation { Postcode = someValue.ToString() };
 
@@ -218,11 +218,11 @@ namespace Stoolball.Tests.MatchLocations
 
 
         [Fact]
-        public void Postcode_disallows_9_characters()
+        public void Postcode_disallows_10_characters()
         {
             var x = "x";
             var someValue = new StringBuilder();
-            for (var i = 1; i <= 9; i++) someValue.Append(x);
+            for (var i = 1; i <= 10; i++) someValue.Append(x);
 
             var matchLocation = new MatchLocation { Postcode = someValue.ToString() };
 

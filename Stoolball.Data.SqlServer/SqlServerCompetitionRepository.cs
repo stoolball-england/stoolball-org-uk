@@ -287,7 +287,7 @@ namespace Stoolball.Data.SqlServer
                 }
             }
 
-            return competition;
+            return auditableCompetition;
         }
 
         private static string PrefixUrlProtocol(string url)

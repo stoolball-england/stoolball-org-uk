@@ -197,7 +197,7 @@ namespace Stoolball.Web.Tests.Matches
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Equal(12, ((EditScorecardViewModel)((ViewResult)result).Model).CurrentInnings.Overs);
+                Assert.Equal(12, ((EditScorecardViewModel)((ViewResult)result).Model).CurrentInnings.MatchInnings.Overs);
             }
         }
 
@@ -224,7 +224,7 @@ namespace Stoolball.Web.Tests.Matches
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Equal(6, ((EditScorecardViewModel)((ViewResult)result).Model).CurrentInnings.Overs);
+                Assert.Equal(6, ((EditScorecardViewModel)((ViewResult)result).Model).CurrentInnings.MatchInnings.Overs);
             }
         }
 
@@ -250,7 +250,7 @@ namespace Stoolball.Web.Tests.Matches
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Equal(9, ((EditScorecardViewModel)((ViewResult)result).Model).CurrentInnings.OversBowled.Count);
+                Assert.Equal(9, ((EditScorecardViewModel)((ViewResult)result).Model).CurrentInnings.OversBowledSearch.Count);
             }
         }
     }
