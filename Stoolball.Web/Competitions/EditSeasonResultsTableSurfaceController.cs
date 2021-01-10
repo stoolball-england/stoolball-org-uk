@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Navigation;
+using Stoolball.Routing;
 using Stoolball.Security;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -19,15 +20,17 @@ namespace Stoolball.Web.Competitions
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly ISeasonRepository _seasonRepository;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
+        private readonly IPostSaveRedirector _postSaveRedirector;
 
         public EditSeasonResultsTableSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ISeasonDataSource seasonDataSource,
-            ISeasonRepository seasonRepository, IAuthorizationPolicy<Competition> authorizationPolicy)
+            ISeasonRepository seasonRepository, IAuthorizationPolicy<Competition> authorizationPolicy, IPostSaveRedirector postSaveRedirector)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _seasonRepository = seasonRepository ?? throw new ArgumentNullException(nameof(seasonRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
+            _postSaveRedirector = postSaveRedirector ?? throw new ArgumentNullException(nameof(postSaveRedirector));
         }
 
         [HttpPost]
@@ -52,14 +55,7 @@ namespace Stoolball.Web.Competitions
                 var currentMember = Members.GetCurrentMember();
                 await _seasonRepository.UpdateResultsTable(season, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                // redirect back to the season results table page that led here (ensuring we don't allow off-site redirects), 
-                // or the season actions if that's not available
-                if (!string.IsNullOrEmpty(Request.Form["UrlReferrer"]))
-                {
-                    return Redirect(new Uri(Request.Form["UrlReferrer"]).AbsolutePath);
-                }
-
-                return Redirect(beforeUpdate.SeasonRoute + "/edit");
+                return _postSaveRedirector.WorkOutRedirect(beforeUpdate.SeasonRoute, beforeUpdate.SeasonRoute, "/edit", Request.Form["UrlReferrer"]);
             }
 
             var viewModel = new SeasonViewModel(CurrentPage, Services.UserService)

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Navigation;
+using Stoolball.Routing;
 using Stoolball.Security;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -19,15 +20,17 @@ namespace Stoolball.Web.Competitions
         private readonly ICompetitionDataSource _competitionDataSource;
         private readonly ICompetitionRepository _competitionRepository;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
+        private readonly IPostSaveRedirector _postSaveRedirector;
 
         public EditCompetitionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ICompetitionDataSource competitionDataSource,
-            ICompetitionRepository competitionRepository, IAuthorizationPolicy<Competition> authorizationPolicy)
+            ICompetitionRepository competitionRepository, IAuthorizationPolicy<Competition> authorizationPolicy, IPostSaveRedirector postSaveRedirector)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
             _competitionRepository = competitionRepository ?? throw new ArgumentNullException(nameof(competitionRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
+            _postSaveRedirector = postSaveRedirector ?? throw new ArgumentNullException(nameof(postSaveRedirector));
         }
 
         [HttpPost]
@@ -57,14 +60,7 @@ namespace Stoolball.Web.Competitions
                 var currentMember = Members.GetCurrentMember();
                 var updatedCompetition = await _competitionRepository.UpdateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                // redirect back to the season actions page that led here (ensuring we don't allow off-site redirects), 
-                // or the competition actions if that's not available
-                if (!string.IsNullOrEmpty(Request.Form["UrlReferrer"]))
-                {
-                    return Redirect(new Uri(Request.Form["UrlReferrer"]).AbsolutePath);
-                }
-
-                return Redirect(updatedCompetition.CompetitionRoute + "/edit");
+                return _postSaveRedirector.WorkOutRedirect(competition.CompetitionRoute, updatedCompetition.CompetitionRoute, "/edit", Request.Form["UrlReferrer"]);
             }
 
             var viewModel = new CompetitionViewModel(CurrentPage, Services.UserService)

@@ -57,6 +57,7 @@ namespace Stoolball.Web
             composition.Register<IBattingScorecardComparer, BattingScorecardComparer>(Lifetime.Singleton);
             composition.Register<IYouTubeUrlNormaliser, YouTubeUrlNormaliser>(Lifetime.Singleton);
             composition.Register<IDataRedactor, DataRedactor>(Lifetime.Singleton);
+            composition.Register<IPostSaveRedirector, PostSaveRedirector>(Lifetime.Singleton);
 
             // Data migration from the old Stoolball England website
             composition.Register<IAuditHistoryBuilder, AuditHistoryBuilder>(Lifetime.Singleton);

@@ -103,6 +103,7 @@
     <Compile Include="MatchLocations\EditMatchLocationControllerTests.cs" />
     <Compile Include="MatchLocations\DeleteMatchLocationControllerTests.cs" />
     <Compile Include="MatchLocations\MatchLocationsControllerTests.cs" />
+    <Compile Include="Routing\PostSaveRedirectorTests.cs" />
     <Compile Include="Teams\CreateTeamControllerTests.cs" />
     <Compile Include="Teams\EditTransientTeamControllerTests.cs" />
     <Compile Include="Teams\EditTeamControllerTests.cs" />

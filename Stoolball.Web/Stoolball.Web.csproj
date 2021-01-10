@@ -1281,8 +1281,10 @@
     <Compile Include="MatchLocations\DeleteMatchLocationController.cs" />
     <Compile Include="MatchLocations\MatchLocationsApiController.cs" />
     <Compile Include="MatchLocations\DeleteMatchLocationViewModel.cs" />
+    <Compile Include="Routing\IPostSaveRedirector.cs" />
     <Compile Include="Routing\IStoolballRouterController.cs" />
     <Compile Include="Routing\IStoolballRouteTypeMapper.cs" />
+    <Compile Include="Routing\PostSaveRedirector.cs" />
     <Compile Include="Routing\StoolballRouteTypeMapper.cs" />
     <Compile Include="Security\ContentSecurityPolicyAttribute.cs" />
     <Compile Include="Security\DelegatedContentSecurityPolicyAttribute.cs" />
