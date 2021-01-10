@@ -1108,9 +1108,10 @@ namespace Stoolball.Data.SqlServer
             }
 
 
-            match.MatchRoute = _routeGenerator.GenerateRoute("/matches", baseRoute + " " + match.StartTime.LocalDateTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.MatchRoute);
-            if (match.MatchRoute != routeBeforeUpdate)
+            var generatedRoute = _routeGenerator.GenerateRoute("/matches", baseRoute + " " + match.StartTime.LocalDateTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.MatchRoute);
+            if (!_routeGenerator.IsMatchingRoute(routeBeforeUpdate, generatedRoute))
             {
+                match.MatchRoute = generatedRoute;
                 int count;
                 do
                 {

@@ -206,10 +206,10 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-
-                    auditableCompetition.CompetitionRoute = _routeGenerator.GenerateRoute("/competitions", auditableCompetition.CompetitionName, NoiseWords.CompetitionRoute);
-                    if (auditableCompetition.CompetitionRoute != competition.CompetitionRoute)
+                    var baseRoute = _routeGenerator.GenerateRoute("/competitions", auditableCompetition.CompetitionName, NoiseWords.CompetitionRoute);
+                    if (!_routeGenerator.IsMatchingRoute(competition.CompetitionRoute, baseRoute))
                     {
+                        auditableCompetition.CompetitionRoute = baseRoute;
                         int count;
                         do
                         {

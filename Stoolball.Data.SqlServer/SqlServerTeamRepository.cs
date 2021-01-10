@@ -285,10 +285,10 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-
-                    auditableTeam.TeamRoute = _routeGenerator.GenerateRoute("/teams", auditableTeam.TeamName, NoiseWords.TeamRoute);
-                    if (auditableTeam.TeamRoute != team.TeamRoute)
+                    var baseRoute = _routeGenerator.GenerateRoute("/teams", auditableTeam.TeamName, NoiseWords.TeamRoute);
+                    if (!_routeGenerator.IsMatchingRoute(team.TeamRoute, baseRoute))
                     {
+                        auditableTeam.TeamRoute = baseRoute;
                         int count;
                         do
                         {
@@ -435,9 +435,10 @@ namespace Stoolball.Data.SqlServer
                 using (var transaction = connection.BeginTransaction())
                 {
                     var routePrefix = Regex.Match(auditableTeam.TeamRoute, @"^\/tournaments\/[a-z0-9-]+\/teams").Value;
-                    auditableTeam.TeamRoute = _routeGenerator.GenerateRoute(routePrefix, auditableTeam.TeamName, NoiseWords.TeamRoute);
-                    if (auditableTeam.TeamRoute != team.TeamRoute)
+                    var baseRoute = _routeGenerator.GenerateRoute(routePrefix, auditableTeam.TeamName, NoiseWords.TeamRoute);
+                    if (!_routeGenerator.IsMatchingRoute(team.TeamRoute, baseRoute))
                     {
+                        auditableTeam.TeamRoute = baseRoute;
                         int count;
                         do
                         {

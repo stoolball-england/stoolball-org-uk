@@ -217,9 +217,10 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    auditableTournament.TournamentRoute = _routeGenerator.GenerateRoute("/tournaments", auditableTournament.TournamentName + " " + auditableTournament.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.TournamentRoute);
-                    if (auditableTournament.TournamentRoute != tournament.TournamentRoute)
+                    var baseRoute = _routeGenerator.GenerateRoute("/tournaments", auditableTournament.TournamentName + " " + auditableTournament.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.TournamentRoute);
+                    if (!_routeGenerator.IsMatchingRoute(tournament.TournamentRoute, baseRoute))
                     {
+                        auditableTournament.TournamentRoute = baseRoute;
                         int count;
                         do
                         {

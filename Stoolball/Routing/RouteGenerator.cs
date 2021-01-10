@@ -1,12 +1,13 @@
-﻿using Humanizer;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Humanizer;
 
 namespace Stoolball.Routing
 {
     public class RouteGenerator : IRouteGenerator
     {
+        /// <inheritdoc/>
         public string GenerateRoute(string prefix, string name, IEnumerable<string> noiseWords)
         {
             if (string.IsNullOrEmpty(name))
@@ -28,23 +29,55 @@ namespace Stoolball.Routing
             return string.IsNullOrEmpty(prefix) ? route : $"{prefix}/{route}";
         }
 
+        /// <inheritdoc/>
         public string IncrementRoute(string route)
         {
             if (string.IsNullOrEmpty(route))
             {
-                throw new System.ArgumentException("message", nameof(route));
+                throw new System.ArgumentException($"'{nameof(route)}' cannot be null or empty", nameof(route));
             }
 
-            var match = Regex.Match(route, "-(?<counter>[0-9]+)$");
-            if (match.Success)
+            var (baseRoute, counter) = SplitRouteAndCounter(route);
+            if (counter != null)
             {
-                var counter = int.Parse(match.Groups["counter"].Value, NumberStyles.Integer, CultureInfo.InvariantCulture);
-                return $"{route.Substring(0, match.Index)}-{++counter}";
+                var updatedCounter = int.Parse(counter, NumberStyles.Integer, CultureInfo.InvariantCulture);
+                return $"{baseRoute}-{++updatedCounter}";
             }
             else
             {
                 return route + "-1";
             }
+        }
+
+        private static (string baseRoute, string counter) SplitRouteAndCounter(string route)
+        {
+            var match = Regex.Match(route, "-(?<counter>[0-9]+)$");
+            if (match.Success)
+            {
+                return (route.Substring(0, match.Index), match.Groups["counter"].Value);
+            }
+            else
+            {
+                return (route, null);
+            }
+        }
+
+        /// <inheritdoc/>
+        public bool IsMatchingRoute(string routeBefore, string routeAfter)
+        {
+            if (string.IsNullOrEmpty(routeBefore))
+            {
+                throw new System.ArgumentException($"'{nameof(routeBefore)}' cannot be null or empty", nameof(routeBefore));
+            }
+
+            if (string.IsNullOrEmpty(routeAfter))
+            {
+                throw new System.ArgumentException($"'{nameof(routeAfter)}' cannot be null or empty", nameof(routeAfter));
+            }
+
+            var (baseRouteBefore, _) = SplitRouteAndCounter(routeBefore);
+            var (baseRouteAfter, _) = SplitRouteAndCounter(routeAfter);
+            return (baseRouteAfter == baseRouteBefore);
         }
     }
 }

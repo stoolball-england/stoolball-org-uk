@@ -150,9 +150,10 @@ namespace Stoolball.Data.SqlServer
                 using (var transaction = connection.BeginTransaction())
                 {
 
-                    auditableClub.ClubRoute = _routeGenerator.GenerateRoute("/clubs", auditableClub.ClubName, NoiseWords.ClubRoute);
-                    if (auditableClub.ClubRoute != club.ClubRoute)
+                    var baseRoute = _routeGenerator.GenerateRoute("/clubs", auditableClub.ClubName, NoiseWords.ClubRoute);
+                    if (!_routeGenerator.IsMatchingRoute(club.ClubRoute, baseRoute))
                     {
+                        auditableClub.ClubRoute = baseRoute;
                         int count;
                         do
                         {

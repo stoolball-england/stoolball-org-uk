@@ -1,5 +1,5 @@
-﻿using Stoolball.Routing;
-using System;
+﻿using System;
+using Stoolball.Routing;
 using Xunit;
 
 namespace Stoolball.Tests.Routing
@@ -105,6 +105,20 @@ namespace Stoolball.Tests.Routing
             var result = generator.IncrementRoute(original);
 
             Assert.Equal("example-11", result);
+        }
+
+        [Theory]
+        [InlineData("/original", "/original", true)]
+        [InlineData("/original", "/original-1", true)]
+        [InlineData("/original-1", "/original-2", true)]
+        [InlineData("/original", "/something-went-wrong", false)]
+        public void Routes_should_match_disregarding_counter(string original, string generated, bool shouldMatch)
+        {
+            var generator = new RouteGenerator();
+
+            var result = generator.IsMatchingRoute(original, generated);
+
+            Assert.Equal(shouldMatch, result);
         }
     }
 }

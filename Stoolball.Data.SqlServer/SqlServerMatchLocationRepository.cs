@@ -186,9 +186,10 @@ namespace Stoolball.Data.SqlServer
                 using (var transaction = connection.BeginTransaction())
                 {
 
-                    auditableMatchLocation.MatchLocationRoute = _routeGenerator.GenerateRoute("/locations", auditableMatchLocation.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute);
-                    if (auditableMatchLocation.MatchLocationRoute != matchLocation.MatchLocationRoute)
+                    var baseRoute = _routeGenerator.GenerateRoute("/locations", auditableMatchLocation.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute);
+                    if (!_routeGenerator.IsMatchingRoute(matchLocation.MatchLocationRoute, baseRoute))
                     {
+                        auditableMatchLocation.MatchLocationRoute = baseRoute;
                         int count;
                         do
                         {
