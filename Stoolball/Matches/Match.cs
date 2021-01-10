@@ -67,12 +67,16 @@ namespace Stoolball.Matches
 
         public bool HasCompleteScorecard()
         {
-            var hasMissingBatting = MatchInnings.Any(x => x.PlayerInnings.Count == 0);
-            var hasMissingOvers = MatchInnings.Any(x => x.OversBowled.Count == 0);
-            var hasMissingRuns = MatchInnings.Select(x => x.Runs.HasValue).Contains(false);
-            var hasMissingWickets = MatchInnings.Select(x => x.Wickets.HasValue).Contains(false);
+            if (MatchResultType.HasValue && new List<Matches.MatchResultType> { Matches.MatchResultType.HomeWin, Matches.MatchResultType.AwayWin, Matches.MatchResultType.Tie }.Contains(MatchResultType.Value))
+            {
+                var hasMissingBatting = MatchInnings.Any(x => x.PlayerInnings.Count == 0);
+                var hasMissingOvers = MatchInnings.Any(x => x.OversBowled.Count == 0);
+                var hasMissingRuns = MatchInnings.Select(x => x.Runs.HasValue).Contains(false);
+                var hasMissingWickets = MatchInnings.Select(x => x.Wickets.HasValue).Contains(false);
 
-            return !(hasMissingBatting || hasMissingOvers || hasMissingRuns || hasMissingWickets);
+                return !(hasMissingBatting || hasMissingOvers || hasMissingRuns || hasMissingWickets);
+            }
+            else return true; // no need for a complete scorecard unless it's a home or away win or tie
         }
 
         public List<MatchAward> Awards { get; internal set; } = new List<MatchAward>();
