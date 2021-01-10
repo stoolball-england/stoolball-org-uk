@@ -99,6 +99,7 @@ li {
 // Highlight an unusual match, eg a friendly in a set of league matches
 .match-list__match-type {
     font-weight: normal;
+    white-space: nowrap;
 }
 
 // Highlight the next match with a style based on .alert-info, that spans the entire width including the gutters of .container-xl
