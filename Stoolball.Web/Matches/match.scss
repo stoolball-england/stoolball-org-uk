@@ -17,9 +17,3 @@
 .update-result {
     margin: 0 0 $spacer*2;
 }
-
-@include media-touch-action {
-    .touch-action .update-result {
-        margin: 0;
-    }
-}

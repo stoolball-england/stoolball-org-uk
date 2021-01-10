@@ -91,20 +91,9 @@
             <p class="match-result"><strong>Result: @ResultDescription()</strong></p>
 
             var resultRequired = !Model.Match.MatchResultType.HasValue || !Model.Match.HasCompleteScorecard();
-            if (resultRequired)
-            {
-                <div class="touch-action">
-                    <div class="update-result">
-                        <a class="btn btn-secondary btn-lg" href="@Model.Match.MatchRoute/edit/start-of-play">Edit result</a>
-                    </div>
-                </div>
-            }
-            else
-            {
-                <div class="update-result">
-                    <a class="btn btn-secondary" href="@Model.Match.MatchRoute/edit/start-of-play">Edit result</a>
-                </div>
-            }
+            <div class="update-result">
+                <a class="btn btn-secondary@(resultRequired ? " btn-lg" : null)" href="@Model.Match.MatchRoute/edit/start-of-play">Edit result</a>
+            </div>
         }
 
         var tossWinners = Model.Match.Teams.FirstOrDefault(x => x.WonToss.HasValue && x.WonToss.Value);
