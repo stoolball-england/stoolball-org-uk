@@ -74,14 +74,16 @@
                 if (dateOfNextMatch == match.StartTime.Date && Model.HighlightNextMatch) { matchClass += " match-list__next"; }
             }
 
-            var matchType = string.Empty;
+            string matchType = null;
             if (Model.MatchTypesToLabel.Count > 0 && Model.MatchTypesToLabel.Contains(match.MatchType.Value) && !match.MatchName.Replace("'", string.Empty).ToUpperInvariant().Contains(match.MatchType.Humanize(LetterCasing.AllCaps)))
             {
-                matchType = $" ({match.MatchType.Humanize(LetterCasing.LowerCase)})";
+                matchType = $"({match.MatchType.Humanize(LetterCasing.LowerCase)})";
             }
 
             <li class="@matchClass">
-                <p class="@(Model.ShowMatchDate ? "list-results__title" : null)"><a href="@match.MatchRoute">@match.MatchName</a>@matchType</p>
+                <p class="@(Model.ShowMatchDate ? "list-results__title" : null)"><a href="@match.MatchRoute">@match.MatchName</a>
+                @if (!string.IsNullOrEmpty(matchType)) { <span class="match-list__match-type">@matchType</span> }
+                </p>
                 @if (Model.ShowMatchDate)
                 {
                     <p class="list-results__detail">@(match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(match.StartTime.LocalDateTime) : Model.DateTimeFormatter.FormatDate(match.StartTime.LocalDateTime))</p>
