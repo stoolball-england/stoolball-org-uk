@@ -77,6 +77,7 @@ namespace Stoolball.Web.Teams
                     TeamIds = new List<Guid> { model.Team.TeamId.Value },
                     IncludeMatches = false
                 }).ConfigureAwait(false),
+                HighlightNextMatch = false,
                 DateTimeFormatter = _dateFormatter
             };
 

@@ -70,3 +70,50 @@ li {
         }
     }
 }
+
+
+// Title and detail styles for listings - competitions, teams, matches and locations.
+.list-results__title {
+    font-weight: bold;
+    margin: 0;
+}
+
+.list-results__detail {
+    margin-bottom: $spacer/2;
+}
+
+// Lists of matches and tournaments appear in several places around the site.
+// .match-list-minimal takes the ordered list and displays it as a standard unordered list.
+.match-list-minimal {
+    padding-left: $spacer;
+    list-style: disc;
+}
+
+// .match-list__match identifies each match in a list (not using .match-list-minimal) 
+// and resets it to an inert container for .list-results__title and .list-results__detail
+.match-list__match {
+    padding: 0;
+    margin: 0;
+}
+
+// Highlight the next match with a style based on .alert-info, that spans the entire width including the gutters of .container-xl
+.match-list__next {
+    padding: $spacer $grid-gutter-width/2;
+    margin: 0 (-$grid-gutter-width/2) ($spacer/2);
+    background: theme-color-level("info", $alert-bg-level);
+    border-radius: $border-radius;
+}
+
+.match-list__next .list-results__detail {
+    margin: 0;
+}
+
+@media print {
+    // Change the highlighting to a left border for print, because the background colour probably won't be printed
+    .match-list__next {
+        border-left: 5px solid theme-color("primary");
+        border-radius: 0;
+        padding: 0 10px;
+        margin-left: -15px;
+    }
+}

@@ -1,6 +1,6 @@
-﻿using Stoolball.Dates;
+﻿using System.Collections.Generic;
+using Stoolball.Dates;
 using Stoolball.Matches;
-using System.Collections.Generic;
 
 namespace Stoolball.Web.Matches
 {
@@ -11,5 +11,6 @@ namespace Stoolball.Web.Matches
 
         public List<MatchType> MatchTypesToLabel { get; internal set; } = new List<MatchType>();
         public bool ShowMatchDate { get; set; } = true;
+        public bool HighlightNextMatch { get; set; } = true;
     }
 }

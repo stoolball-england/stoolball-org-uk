@@ -28,8 +28,8 @@
     <dl>
         @foreach (var location in Model.MatchLocations)
         {
-            <dt><a href="@location.MatchLocationRoute">@location.NameAndLocalityOrTownIfDifferent()</a></dt>
-            <dd>
+            <dt class="list-results__title"><a href="@location.MatchLocationRoute">@location.NameAndLocalityOrTownIfDifferent()</a></dt>
+            <dd class="list-results__detail">
                 @if (location.Teams.Count > 0)
                 {
                     var playerTypes = location.Teams.Select(x => x.PlayerType).Distinct().ToList();

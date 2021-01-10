@@ -88,8 +88,8 @@
                     detail = "Club with no active teams. ";
                 }
             }
-            <dt><a href="@listing.ClubOrTeamRoute">@linkText</a></dt>
-            <dd>@detail</dd>
+            <dt class="list-results__title"><a href="@listing.ClubOrTeamRoute">@linkText</a></dt>
+            <dd class="list-results__detail">@detail</dd>
         }
     </dl>
     @if (Model.TotalTeams > (Model.TeamQuery.PageNumber * Model.TeamQuery.PageSize))

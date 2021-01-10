@@ -34,18 +34,18 @@
         {
             if (!competition.UntilYear.HasValue && competition.Seasons.Count > 0)
             {
-                <dt><a href="@competition.Seasons.First().SeasonRoute">@competition.CompetitionName</a></dt>
-                <dd>@(Regex.Replace((competition.PlayerType.Humanize(LetterCasing.LowerCase) + " team").ToQuantity(competition.Seasons.First().Teams.Count), "^0 ", "No ")).</dd>
+                <dt class="list-results__title"><a href="@competition.Seasons.First().SeasonRoute">@competition.CompetitionName</a></dt>
+                <dd class="list-results__detail">@(Regex.Replace((competition.PlayerType.Humanize(LetterCasing.LowerCase) + " team").ToQuantity(competition.Seasons.First().Teams.Count), "^0 ", "No ")).</dd>
             }
             else if (!competition.UntilYear.HasValue)
             {
-                <dt><a href="@(competition.CompetitionRoute)">@competition.CompetitionName</a></dt>
-                <dd>@competition.PlayerType.Humanize(LetterCasing.Sentence).</dd>
+                <dt class="list-results__title"><a href="@(competition.CompetitionRoute)">@competition.CompetitionName</a></dt>
+                <dd class="list-results__detail">@competition.PlayerType.Humanize(LetterCasing.Sentence).</dd>
             }
             else
             {
-                <dt><a href="@(competition.Seasons.Count > 0 ? competition.Seasons.First().SeasonRoute : competition.CompetitionRoute)">@competition.CompetitionName</a></dt>
-                <dd>@competition.PlayerType.Humanize(LetterCasing.Sentence). No longer played.</dd>
+                <dt class="list-results__title"><a href="@(competition.Seasons.Count > 0 ? competition.Seasons.First().SeasonRoute : competition.CompetitionRoute)">@competition.CompetitionName</a></dt>
+                <dd class="list-results__detail">@competition.PlayerType.Humanize(LetterCasing.Sentence). No longer played.</dd>
             }
         }
     </dl>

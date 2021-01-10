@@ -20,6 +20,10 @@ $selected_background: #555;
     border-bottom-color: theme-color("alt-secondary");
 }
 
+.nav-tabs + ol {
+    margin-top: $spacer*1.5;
+}
+
 .nav-tabs-has-add, .nav-tabs-has-edit {
     padding-right: $minimum-clickable-size;
 }

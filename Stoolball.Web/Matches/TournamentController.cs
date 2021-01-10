@@ -75,6 +75,7 @@ namespace Stoolball.Web.Matches
                         IncludeTournaments = false
                     }).ConfigureAwait(false),
                     ShowMatchDate = false,
+                    HighlightNextMatch = false,
                     DateTimeFormatter = _dateFormatter
                 };
 
