@@ -1,10 +1,19 @@
 (function () {
   window.addEventListener("DOMContentLoaded", function () {
     const editor = document.querySelector(".batting-scorecard-editor");
+    const playerInningsRowClass = "batting-scorecard-editor__player-innings";
+    const playerNameFieldClass = "scorecard__player-name";
+    const dismissalTypeFieldClass = "scorecard__dismissal";
+    const runsFieldClass = "scorecard__runs";
+    const wicketsFieldClass = "scorecard__wickets";
+    const totalRunsFieldClass = "scorecard__total";
+    const ballsFacedFieldClass = "scorecard__balls";
+    const addBatterRowClass = "batting-scorecard-editor__add-batter";
+    const enterFullNamesTipClass = "scorecard__full-name-tip";
 
     function enableBattingRow(tr) {
-      const batter = tr.querySelector(".scorecard__player-name");
-      const dismissalType = tr.querySelector(".scorecard__dismissal");
+      const batter = tr.querySelector("." + playerNameFieldClass);
+      const dismissalType = tr.querySelector("." + dismissalTypeFieldClass);
       if (batter.value) {
         if (dismissalType) {
           dismissalType.removeAttribute("disabled");
@@ -12,15 +21,15 @@
         // If this batting row is used, ensure next one is ready
         if (
           tr.nextElementSibling &&
-          tr.nextElementSibling.classList.contains("scorecard__batter")
+          tr.nextElementSibling.classList.contains(playerInningsRowClass)
         ) {
           const nextBatter = tr.nextElementSibling.querySelector(
-            ".scorecard__player-name"
+            "." + playerNameFieldClass
           );
           nextBatter.removeAttribute("disabled");
         } else {
           editor
-            .querySelector(".batting-scorecard-editor__add-batter button")
+            .querySelector("." + addBatterRowClass + " button")
             .removeAttribute("disabled");
         }
       } else {
@@ -30,12 +39,12 @@
         // If this batting row not used, disable the following ones to reduce tabbing
         if (
           tr.nextElementSibling &&
-          tr.nextElementSibling.classList.contains("scorecard__batter")
+          tr.nextElementSibling.classList.contains(playerInningsRowClass)
         ) {
           disableFollowingRows(tr);
         } else {
           editor
-            .querySelector(".batting-scorecard-editor__add-batter button")
+            .querySelector("." + addBatterRowClass + " button")
             .setAttribute("disabled", "disabled");
         }
       }
@@ -44,11 +53,11 @@
     function disableFollowingRows(tr) {
       while (
         tr.nextElementSibling &&
-        tr.nextElementSibling.classList.contains("scorecard__batter")
+        tr.nextElementSibling.classList.contains(playerInningsRowClass)
       ) {
-        const thisBatter = tr.querySelector(".scorecard__player-name");
+        const thisBatter = tr.querySelector("." + playerNameFieldClass);
         const nextBatter = tr.nextElementSibling.querySelector(
-          ".scorecard__player-name"
+          "." + playerNameFieldClass
         );
         if (!thisBatter.value && !nextBatter.value) {
           nextBatter.setAttribute("disabled", "disabled");
@@ -61,7 +70,7 @@
       let enableDismissedBy = true,
         enableBowler = true,
         enableRuns = true;
-      const dismissalType = tr.querySelector(".scorecard__dismissal");
+      const dismissalType = tr.querySelector("." + dismissalTypeFieldClass);
       switch (dismissalType.value) {
         case "DidNotBat":
         case "TimedOut":
@@ -87,22 +96,22 @@
           break;
       }
 
-      const dismissedBy = tr.querySelectorAll(".scorecard__player-name")[1];
+      const dismissedBy = tr.querySelectorAll("." + playerNameFieldClass)[1];
       if (enableDismissedBy) {
         dismissedBy.removeAttribute("disabled");
       } else {
         dismissedBy.setAttribute("disabled", "disabled");
       }
 
-      const bowler = tr.querySelectorAll(".scorecard__player-name")[2];
+      const bowler = tr.querySelectorAll("." + playerNameFieldClass)[2];
       if (enableBowler) {
         bowler.removeAttribute("disabled");
       } else {
         bowler.setAttribute("disabled", "disabled");
       }
 
-      const runs = tr.querySelector(".scorecard__runs");
-      const balls = tr.querySelector(".scorecard__balls");
+      const runs = tr.querySelector("." + runsFieldClass);
+      const balls = tr.querySelector("." + ballsFacedFieldClass);
       if (enableRuns) {
         runs.removeAttribute("disabled");
         balls.removeAttribute("disabled");
@@ -116,7 +125,9 @@
     function calculateRuns() {
       // Add up the runs in all the run boxes, including extras
       let calculatedTotal = 0;
-      const inputs = editor.querySelectorAll(".scorecard__runs:not(:disabled)");
+      const inputs = editor.querySelectorAll(
+        "." + runsFieldClass + ":not(:disabled)"
+      );
       for (let i = 0; i < inputs.length; i++) {
         let runs = parseInt(inputs[i].value);
         if (!isNaN(runs)) {
@@ -162,7 +173,7 @@
       }
     }
 
-    const total = editor.querySelector(".scorecard__total");
+    const total = editor.querySelector("." + totalRunsFieldClass);
     let calculateInningsRuns = false;
     if (!total.value) {
       calculateInningsRuns = true;
@@ -170,7 +181,7 @@
     }
 
     // Calculate wickets total
-    const wickets = editor.querySelector(".scorecard__wickets");
+    const wickets = editor.querySelector("." + wicketsFieldClass);
     let calculateWickets = false;
 
     if (wickets.selectedIndex === 0) {
@@ -182,7 +193,25 @@
       // Set wickets taken, but if 0 set to unknown to avoid risk of
       // stating 0 when that's not known
       const totalWickets = editor.querySelectorAll(
-        ".scorecard__dismissal :checked[value='Bowled'],.scorecard__dismissal :checked[value='CaughtAndBowled'],.scorecard__dismissal :checked[value='BodyBeforeWicket'],.scorecard__dismissal :checked[value='RunOut'],.scorecard__dismissal :checked[value='HitTheBallTwice'],.scorecard__dismissal :checked[value='TimedOut'],.scorecard__dismissal :checked[value='Caught']"
+        [
+          "Bowled",
+          "CaughtAndBowled",
+          "BodyBeforeWicket",
+          "RunOut",
+          "HitTheBallTwice",
+          "TimedOut",
+          "Caught",
+        ]
+          .map(function (dismissalType) {
+            return (
+              "." +
+              dismissalTypeFieldClass +
+              " :checked[value='" +
+              dismissalType +
+              "']"
+            );
+          })
+          .join(",")
       ).length;
       if (totalWickets > 0) {
         wickets.querySelector("[value='" + totalWickets + "']").selected = true;
@@ -192,10 +221,10 @@
     }
 
     function enableBattingRowEvent(e) {
-      if (e.target && e.target.classList.contains("scorecard__player-name")) {
+      if (e.target && e.target.classList.contains(playerNameFieldClass)) {
         enableBattingRow(e.target.parentElement.parentElement.parentElement);
       }
-      if (e.target.classList.contains("scorecard__dismissal")) {
+      if (e.target.classList.contains(dismissalTypeFieldClass)) {
         dismissalTypeEnableDetails(
           e.target.parentElement.parentElement.parentElement
         );
@@ -205,34 +234,33 @@
     function blurEvent(e) {
       // Determine whether we want to calculate runs and wickets automatically
 
-      if (e.target.classList.contains("scorecard__total")) {
+      if (e.target.classList.contains(totalRunsFieldClass)) {
         if (e.target.value.trim()) {
           calculateInningsRuns = false;
         }
       }
 
-      if (e.target.classList.contains("scorecard__wickets")) {
+      if (e.target.classList.contains(wicketsFieldClass)) {
         if (e.target.selectedIndex > 0) {
           calculateWickets = false;
         }
       }
 
       if (
-        (e.target.classList.contains("scorecard__runs") ||
-          e.target === total) &&
+        (e.target.classList.contains(runsFieldClass) || e.target === total) &&
         calculateInningsRuns
       ) {
         calculateRuns();
       }
 
       if (
-        e.target.classList.contains("scorecard__dismissal") &&
+        e.target.classList.contains(dismissalTypeFieldClass) &&
         calculateWickets
       ) {
         calculateInningsWickets();
       }
 
-      if (e.target.classList.contains("scorecard__player-name")) {
+      if (e.target.classList.contains(playerNameFieldClass)) {
         showFullNameHint();
       }
     }
@@ -243,7 +271,7 @@
       // then filter again to get one-word names
       const threeOrMoreOneWordNames =
         [].slice
-          .call(document.querySelectorAll(".scorecard__player-name"))
+          .call(document.querySelectorAll("." + playerNameFieldClass))
           .map(function (x) {
             return x.value;
           })
@@ -254,7 +282,7 @@
             return x && x.indexOf(" ") === -1;
           }).length >= 3;
 
-      const hint = document.querySelector(".scorecard__full-name-hint");
+      const hint = document.querySelector("." + enterFullNamesTipClass);
       if (threeOrMoreOneWordNames) {
         hint.classList.remove("d-none");
         hint.classList.add("d-block");
@@ -273,7 +301,7 @@
 
     // Add batter button
     const addBatterTr = document.createElement("tr");
-    addBatterTr.classList.add("batting-scorecard-editor__add-batter");
+    addBatterTr.classList.add(addBatterRowClass);
     const addBatterTd = document.createElement("td");
     addBatterTd.setAttribute("colspan", "6");
     addBatterTr.appendChild(addBatterTd);
@@ -284,11 +312,8 @@
     addBatter.appendChild(document.createTextNode("Add a batter"));
     addBatterTd.appendChild(addBatter);
     editor
-      .querySelector(".scorecard__extras")
-      .parentElement.insertBefore(
-        addBatterTr,
-        editor.querySelector(".scorecard__extras")
-      );
+      .querySelector("." + playerInningsRowClass + ":last-child")
+      .parentElement.appendChild(addBatterTr);
     addBatter.addEventListener("click", function (e) {
       e.preventDefault();
       var lastRow = addBatterTr.previousElementSibling;
@@ -297,11 +322,13 @@
 
       // update the index of the new row
       let newRow = lastRow.nextElementSibling;
-      const fields = newRow.querySelectorAll("input,select");
+      const fields = newRow.querySelectorAll("input,select,label");
+      const attributes = ["name", "for", "id"];
       for (let i = 0; i < fields.length; i++) {
         let ordinal,
-          rowNumber = editor.querySelectorAll("tr[class='scorecard__batter']")
-            .length;
+          rowNumber = editor.querySelectorAll(
+            "tr[class='" + playerInningsRowClass + "']"
+          ).length;
         switch (rowNumber % 10) {
           case 1:
             ordinal = rowNumber === 11 ? rowNumber + "th" : rowNumber + "st";
@@ -316,27 +343,31 @@
             ordinal = rowNumber + "th";
         }
 
-        fields[i].setAttribute(
-          "name",
-          fields[i]
-            .getAttribute("name")
-            .replace(/\[[0-9]+\]/, "[" + (rowNumber - 1) + "]")
-        );
-
-        const ordinalAttributes = ["data-msg-number", "data-msg-min"];
-        for (let j = 0; j < ordinalAttributes.length; j++) {
-          let value = fields[i].getAttribute(ordinalAttributes[j]);
+        for (let j = 0; j < attributes.length; j++) {
+          let value = fields[i].getAttribute(attributes[j]);
           if (value) {
             fields[i].setAttribute(
-              ordinalAttributes[j],
-              value.replace(/\[[0-9]+th\]/, ordinal)
+              attributes[j],
+              value.replace(/\[[0-9]+\]/, "[" + (rowNumber - 1) + "]")
             );
           }
+        }
+
+        if (fields[i].tagName === "LABEL") {
+          fields[i].innerText = fields[i].innerText.replace(
+            /\[[0-9]+th\]/,
+            ordinal
+          );
         }
       }
 
       if (typeof stoolball.autocompletePlayer !== "undefined") {
-        stoolball.autocompletePlayer(fields[0]);
+        const playerNameFields = newRow.querySelectorAll(
+          "." + playerNameFieldClass
+        );
+        for (let i = 0; i < playerNameFields.length; i++) {
+          stoolball.autocompletePlayer(playerNameFields[i]);
+        }
       }
 
       // also need to allow for an extra wicket
@@ -358,7 +389,7 @@
 
     // Run enableBattingRow for every row to setup the fields on page load
     const battingRows = editor.querySelectorAll(
-      "tr[class='scorecard__batter']"
+      "tr[class='" + playerInningsRowClass + "']"
     );
     for (let i = 0; i < battingRows.length; i++) {
       enableBattingRow(battingRows[i]);

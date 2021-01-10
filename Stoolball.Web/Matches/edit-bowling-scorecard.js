@@ -190,7 +190,7 @@
             return x && x.indexOf(" ") === -1;
           }).length >= 3;
 
-      const hint = document.querySelector(".scorecard__full-name-hint");
+      const hint = document.querySelector(".scorecard__full-name-tip");
       if (threeOrMoreOneWordNames) {
         hint.classList.remove("d-none");
         hint.classList.add("d-block");

@@ -134,14 +134,14 @@
 </table>
 <script type="text/x-template" id="innings-template">
     <table>
-        <tr class="scorecard__batter">
+        <tr class="batting-scorecard-editor__player-innings">
             <th scope="row" class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__batter">
                 <label aria-hidden="true" class="batting-scorecard-editor__label batting-scorecard-editor__batter-label" for="CurrentInnings_PlayerInningsSearch_[0]__Batter">[0th] batter</label>
-                <div><input autocomplete="off" data-lpignore="true" class="scorecard__player-name" data-team="@Model.CurrentInnings.MatchInnings.BattingTeam.Team.TeamId.ToString()" name="CurrentInnings.PlayerInningsSearch[0].Batter" type="text" value="" /></div>
+                <div><input autocomplete="off" data-lpignore="true" class="scorecard__player-name" data-team="@Model.CurrentInnings.MatchInnings.BattingTeam.Team.TeamId.ToString()" name="CurrentInnings.PlayerInningsSearch[0].Batter" id="CurrentInnings_PlayerInningsSearch_[0]__Batter" type="text" value="" /></div>
             </th>
             <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__dismissal">
                 <label aria-hidden="true" class="batting-scorecard-editor__label batting-scorecard-editor__dismissal-label" for="CurrentInnings_PlayerInningsSearch_[0]__DismissalType">How out</label>
-                <div><select name="CurrentInnings.PlayerInningsSearch[0].DismissalType" required="required" class="scorecard__dismissal">
+                <div><select name="CurrentInnings.PlayerInningsSearch[0].DismissalType" id="CurrentInnings_PlayerInningsSearch_[0]__DismissalType" required="required" class="scorecard__dismissal">
                     @foreach (var listItem in dismissalTypes)
                     {
                         <option value="@listItem.Value">@listItem.Text</option>
@@ -150,21 +150,21 @@
             </td>
             <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__dismissed-by">
                 <label for="CurrentInnings_PlayerInningsSearch_[0]__DismissedBy" aria-hidden="true" class="batting-scorecard-editor__label batting-scorecard-editor__dismissed-by-label">Caught/ <span class="text-nowrap">run-out by</span></label>
-                <div><input autocomplete="off" data-lpignore="true" class="scorecard__player-name" data-team="@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString()" name="CurrentInnings.PlayerInningsSearch[0].DismissedBy" type="text" value="" /></div>
+                <div><input autocomplete="off" data-lpignore="true" class="scorecard__player-name" data-team="@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString()" name="CurrentInnings.PlayerInningsSearch[0].DismissedBy" id="CurrentInnings_PlayerInningsSearch_[0]__DismissedBy" type="text" value="" /></div>
             </td>
             <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__bowler">
                 <label aria-hidden="true" class="batting-scorecard-editor__label batting-scorecard-editor__bowler-label" for="CurrentInnings_PlayerInningsSearch_[0]__Bowler">Bowler</label>
-                <input autocomplete="off" data-lpignore="true" class="scorecard__player-name" data-team="@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString()" name="CurrentInnings.PlayerInningsSearch[0].Bowler" type="text" value="" />
+                <input autocomplete="off" data-lpignore="true" class="scorecard__player-name" data-team="@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString()" name="CurrentInnings.PlayerInningsSearch[0].Bowler" id="CurrentInnings_PlayerInningsSearch_[0]__Bowler" type="text" value="" />
             </td>
             <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__runs">
                 <label aria-hidden="true" class="batting-scorecard-editor__label batting-scorecard-editor__runs-label" for="CurrentInnings_PlayerInningsSearch_[0]__RunsScored">Runs</label>
-                <input autocomplete="off" class="scorecard__runs" min="0" name="CurrentInnings.PlayerInningsSearch[0].RunsScored" type="number" value="" />
+                <input autocomplete="off" class="scorecard__runs" min="0" name="CurrentInnings.PlayerInningsSearch[0].RunsScored" id="CurrentInnings_PlayerInningsSearch_[0]__RunsScored" type="number" value="" />
             </td>
             <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__balls">
                 <label aria-hidden="true" class="batting-scorecard-editor__label batting-scorecard-editor__balls-label" for="CurrentInnings_PlayerInningsSearch_[0]__BallsFaced">Balls</label>
-                <input autocomplete="off" class="scorecard__balls" min="0" name="CurrentInnings.PlayerInningsSearch[0].BallsFaced" type="number" value="" />
+                <input autocomplete="off" class="scorecard__balls" min="0" name="CurrentInnings.PlayerInningsSearch[0].BallsFaced" id="CurrentInnings_PlayerInningsSearch_[0]__BallsFaced" type="number" value="" />
             </td>
         </tr>
     </table>
 </script>
-<p class="scorecard__full-name-hint d-none alert alert-info alert-tip" role="alert">Full names, if you know them, are better for comparing players.</p>
+<p class="scorecard__full-name-tip d-none alert alert-info alert-tip" role="alert">Full names, if you know them, are better for comparing players.</p>
