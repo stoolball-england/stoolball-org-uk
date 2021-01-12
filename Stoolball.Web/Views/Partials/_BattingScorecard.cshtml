@@ -11,7 +11,7 @@
     var nothingToDisplay = (minimalScorecard && !Model.Runs.HasValue && !Model.Wickets.HasValue);
     if (!nothingToDisplay)
     {
-        <table class="batting-scorecard-base batting-scorecard table-hover table-as-cards table-as-cards-reset-sm">
+        <table class="batting-scorecard table-hover table-as-cards table-as-cards-reset-sm">
             <caption>@Model.BattingTeam.Team.TeamName's batting</caption>
 
             @if (!minimalScorecard)

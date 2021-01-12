@@ -8,8 +8,8 @@
     const wicketsFieldClass = "scorecard__wickets";
     const totalRunsFieldClass = "scorecard__total";
     const ballsFacedFieldClass = "scorecard__balls";
-    const addBatterRowClass = "batting-scorecard-editor__add-batter";
-    const enterFullNamesTipClass = "scorecard__full-name-tip";
+    const addBatterButtonClass = "batting-scorecard-editor__add-batter";
+    const enterFullNamesTipClass = "batting-scorecard__full-name-tip";
 
     function enableBattingRow(tr) {
       const batter = tr.querySelector("." + playerNameFieldClass);
@@ -29,7 +29,7 @@
           nextBatter.removeAttribute("disabled");
         } else {
           editor
-            .querySelector("." + addBatterRowClass + " button")
+            .querySelector("." + addBatterButtonClass)
             .removeAttribute("disabled");
         }
       } else {
@@ -44,7 +44,7 @@
           disableFollowingRows(tr);
         } else {
           editor
-            .querySelector("." + addBatterRowClass + " button")
+            .querySelector("." + addBatterButtonClass)
             .setAttribute("disabled", "disabled");
         }
       }
@@ -301,13 +301,17 @@
 
     // Add batter button
     const addBatterTr = document.createElement("tr");
-    addBatterTr.classList.add(addBatterRowClass);
+    addBatterTr.classList.add(addBatterButtonClass + "-wrapper");
     const addBatterTd = document.createElement("td");
     addBatterTd.setAttribute("colspan", "6");
+    addBatterTd.setAttribute("class", addBatterButtonClass + "-wrapper");
     addBatterTr.appendChild(addBatterTd);
     const addBatter = document.createElement("button");
     addBatter.setAttribute("type", "button");
-    addBatter.setAttribute("class", "btn btn-secondary btn-add");
+    addBatter.setAttribute(
+      "class",
+      "btn btn-secondary btn-add " + addBatterButtonClass
+    );
     addBatter.setAttribute("disabled", "disabled");
     addBatter.appendChild(document.createTextNode("Add a batter"));
     addBatterTd.appendChild(addBatter);

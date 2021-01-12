@@ -127,11 +127,17 @@
     // Add over button
     const addOver = document.createElement("button");
     addOver.setAttribute("type", "button");
-    addOver.setAttribute("class", "btn btn-secondary btn-add");
+    addOver.setAttribute(
+      "class",
+      "btn btn-secondary btn-add bowling-scorecard-editor__add-over"
+    );
     addOver.setAttribute("disabled", "disabled");
     addOver.appendChild(document.createTextNode("Add an over"));
     const addOverContainer = document.createElement("div");
-    addOverContainer.setAttribute("class", "form-group");
+    addOverContainer.setAttribute(
+      "class",
+      "bowling-scorecard-editor__add-over-wrapper"
+    );
     addOverContainer.appendChild(addOver);
     editor.parentElement.insertBefore(
       addOverContainer,
@@ -196,7 +202,7 @@
             return x && x.indexOf(" ") === -1;
           }).length >= 3;
 
-      const hint = document.querySelector(".scorecard__full-name-tip");
+      const hint = document.querySelector(".bowling-scorecard__full-name-tip");
       if (threeOrMoreOneWordNames) {
         hint.classList.remove("d-none");
         hint.classList.add("d-block");
