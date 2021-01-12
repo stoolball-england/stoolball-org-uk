@@ -71,21 +71,23 @@
                                     @Html.HiddenFor(m => Model.Season.PointsRules[i].PointsRuleId)
                                     @Html.HiddenFor(m => Model.Season.PointsRules[i].MatchResultType)
                                 </th>
-                                <td data-label="Points for home team">
+                                <td data-stackable="true">
+                                    @Html.LabelFor(m => Model.Season.PointsRules[i].HomePoints, new { @class = "table-as-cards__label", aria_hidden = "true" })
                                     <div>
                                         @* Extra div ensures the textbox and validation error are a single flex-item when using .table-as-cards *@
-                                    @Html.TextBoxFor(m => Model.Season.PointsRules[i].HomePoints, new { @type = "number", maxlength = "2", data_val_number = "Please type a number", data_val_required = "This field is required", aria_describedby = $"home-points-{i}" })
-                                    @Html.ValidationMessageFor(m => Model.Season.PointsRules[i].HomePoints, null, new { id = $"home-points-{i}" })
-                                </div>
-                            </td>
-                            <td data-label="Points for away team">
-                                <div>
-                                    @Html.TextBoxFor(m => Model.Season.PointsRules[i].AwayPoints, new { @type = "number", maxlength = "2", data_val_number = "Please type a number", data_val_required = "This field is required", aria_describedby = $"away-points-{i}" })
-                                    @Html.ValidationMessageFor(m => Model.Season.PointsRules[i].AwayPoints, null, new { id = $"away-points-{i}" })
-                                </div>
-                            </td>
-                        </tr>
-                    }
+                                        @Html.TextBoxFor(m => Model.Season.PointsRules[i].HomePoints, new { @type = "number", maxlength = "2", data_val_number = "Please type a number", data_val_required = "This field is required", aria_describedby = $"home-points-{i}" })
+                                        @Html.ValidationMessageFor(m => Model.Season.PointsRules[i].HomePoints, null, new { id = $"home-points-{i}" })
+                                    </div>
+                                </td>
+                                <td data-stackable="true">
+                                    @Html.LabelFor(m => Model.Season.PointsRules[i].AwayPoints, new { @class = "table-as-cards__label", aria_hidden = "true" })
+                                    <div>
+                                        @Html.TextBoxFor(m => Model.Season.PointsRules[i].AwayPoints, new { @type = "number", maxlength = "2", data_val_number = "Please type a number", data_val_required = "This field is required", aria_describedby = $"away-points-{i}" })
+                                        @Html.ValidationMessageFor(m => Model.Season.PointsRules[i].AwayPoints, null, new { id = $"away-points-{i}" })
+                                    </div>
+                                </td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </fieldset>

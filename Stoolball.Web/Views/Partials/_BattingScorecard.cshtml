@@ -27,25 +27,27 @@
                 {
                     <tr>
                         <th class="player-name">@playerInnings.PlayerIdentity.PlayerIdentityName</th>
-                        <td data-label="How out">
+                        <td data-stackable="true">
+                            <span class="table-as-cards__label" aria-hidden="true">How out</span>
                             @if (playerInnings.DismissalType == DismissalType.NotOut)
                             {
                                 <strong>@(playerInnings.DismissalType?.Humanize(LetterCasing.LowerCase))</strong>
                             }
                             else
                             {
-                                <div>@* makes the dismissal type and player name a single flex item with .table-as-cards at small sizes *@
-                                    @(playerInnings.DismissalType?.Humanize(LetterCasing.LowerCase).Replace("run out", "run-out") ?? "not known")
-                                    @if ((playerInnings.DismissalType == DismissalType.Caught || playerInnings.DismissalType == DismissalType.RunOut) && playerInnings.DismissedBy != null)
-                                    {
+                                <div>
+                                    @* makes the dismissal type and player name a single flex item with .table-as-cards at small sizes *@
+                                @(playerInnings.DismissalType?.Humanize(LetterCasing.LowerCase).Replace("run out", "run-out") ?? "not known")
+                                @if ((playerInnings.DismissalType == DismissalType.Caught || playerInnings.DismissalType == DismissalType.RunOut) && playerInnings.DismissedBy != null)
+                                {
                                     <span class="player-name dismissed-by">(@playerInnings.DismissedBy.PlayerIdentityName)</span>
-                                    }
-                                </div>
-                            }
+                                }
+                            </div>
+                        }
                         </td>
                         @if (playerInnings.Bowler != null)
                         {
-                            <td class="player-name" data-label="Bowler">@playerInnings.Bowler.PlayerIdentityName</td>
+                            <td class="player-name" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Bowler</span>@playerInnings.Bowler.PlayerIdentityName</td>
                         }
                         else
                         {
@@ -53,7 +55,7 @@
                         }
                         @if (playerInnings.RunsScored.HasValue)
                         {
-                            <td class="numeric-sm runs" data-label="Runs">@playerInnings.RunsScored</td>
+                            <td class="numeric-sm runs" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Runs</span>@playerInnings.RunsScored</td>
                         }
                         else
                         {
@@ -61,7 +63,8 @@
                         }
                         @if (playerInnings.BallsFaced.HasValue)
                         {
-                            <td class="numeric-sm" data-label="Balls">
+                            <td class="numeric-sm" data-stackable="true">
+                                <span class="table-as-cards__label" aria-hidden="true">Balls</span>
                                 <span class="balls-faced">@playerInnings.BallsFaced</span>
                             </td>
                         }

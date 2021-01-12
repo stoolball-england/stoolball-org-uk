@@ -26,11 +26,11 @@
                     }
                     <tr>
                         <th scope="row" class="player-name">@over.PlayerIdentity.PlayerIdentityName</th>
-                        <td class="numeric" data-label="Balls"><span class="scorecard__numeric-value">@over.BallsBowled</span></td>
-                        <td class="numeric" data-label="Wides"><span class="scorecard__numeric-value">@over.Wides</span></td>
-                        <td class="numeric" data-label="No balls"><span class="scorecard__numeric-value">@over.NoBalls</span></td>
-                        <td class="numeric" data-label="Runs"><span class="scorecard__numeric-value">@over.RunsConceded</span></td>
-                        <td class="numeric" data-label="Total"><span class="scorecard__numeric-value">@total</span></td>
+                        <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Balls</span><span class="scorecard__numeric-value">@over.BallsBowled</span></td>
+                        <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Wides</span><span class="scorecard__numeric-value">@over.Wides</span></td>
+                        <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">No balls</span><span class="scorecard__numeric-value">@over.NoBalls</span></td>
+                        <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Runs</span><span class="scorecard__numeric-value">@over.RunsConceded</span></td>
+                        <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Total</span><span class="scorecard__numeric-value">@total</span></td>
                     </tr>
                 }
             }

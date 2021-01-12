@@ -16,20 +16,20 @@ namespace Stoolball.Matches
 
         public int OverNumber { get; set; }
 
-        [Range(1, 12)]
-        [Display(Name = "balls bowled")]
+        [Range(1, 12, ErrorMessage = "Balls bowled must be between 1 and 12")]
+        [Display(Name = "Balls bowled")]
         public int? BallsBowled { get; set; }
 
-        [Display(Name = "no balls")]
-        [Range(0, 1000, ErrorMessage = "The field no balls must be 0 or more.")]
+        [Display(Name = "No balls")]
+        [Range(0, 1000, ErrorMessage = "No balls must be a number, 0 or more.")]
         public int? NoBalls { get; set; }
 
-        [Display(Name = "wides")]
-        [Range(0, 1000, ErrorMessage = "The field wides must be 0 or more.")]
+        [Display(Name = "Wides")]
+        [Range(0, 1000, ErrorMessage = "Wides must be a number, 0 or more.")]
         public int? Wides { get; set; }
 
-        [Display(Name = "over total")]
-        [Range(0, 1000, ErrorMessage = "The field over total must be 0 or more.")]
+        [Display(Name = "Over total")]
+        [Range(0, 1000, ErrorMessage = "Over total must be a number, 0 or more.")]
         public int? RunsConceded { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
         public Uri EntityUri {

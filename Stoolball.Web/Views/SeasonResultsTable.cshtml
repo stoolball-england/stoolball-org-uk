@@ -163,22 +163,22 @@
                             {
                                 <tr>
                                     <th scope="row"><a href="@row.Team.TeamRoute">@row.Team.TeamName</a></th>
-                                    <td data-label="Played" class="numeric"><span class="results-table__numeric-value">@row.Played</span></td>
-                                    <td data-label="Won" class="numeric"><span class="results-table__numeric-value">@row.Won</span></td>
-                                    <td data-label="Lost" class="numeric"><span class="results-table__numeric-value">@row.Lost</span></td>
-                                    <td data-label="Tied" class="numeric"><span class="results-table__numeric-value">@row.Tied</span></td>
-                                    <td data-label="No result" class="numeric"><span class="results-table__numeric-value">@row.NoResult</span></td>
+                                    <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">Played</span><span class="results-table__numeric-value">@row.Played</span></td>
+                                    <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">Won</span><span class="results-table__numeric-value">@row.Won</span></td>
+                                    <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">Lost</span><span class="results-table__numeric-value">@row.Lost</span></td>
+                                    <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">Tied</span><span class="results-table__numeric-value">@row.Tied</span></td>
+                                    <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">No result</span><span class="results-table__numeric-value">@row.NoResult</span></td>
                                     @if (Model.Season.EnableRunsScored)
                                     {
-                                        <td data-label="Runs scored" class="numeric"><span class="results-table__numeric-value">@row.RunsScored</span></td>
+                                        <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">Runs scored</span><span class="results-table__numeric-value">@row.RunsScored</span></td>
                                     }
                                     @if (Model.Season.EnableRunsConceded)
                                     {
-                                        <td data-label="Runs conceded" class="numeric"><span class="results-table__numeric-value">@row.RunsConceded</span></td>
+                                        <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">Runs conceded</span><span class="results-table__numeric-value">@row.RunsConceded</span></td>
                                     }
                                     @if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
                                     {
-                                        <td data-label="Points" class="numeric"><span class="results-table__numeric-value">@row.Points</span></td>
+                                        <td data-stackable="true" class="numeric"><span class="table-as-cards__label" aria-hidden="true">Points</span><span class="results-table__numeric-value">@row.Points</span></td>
                                     }
                                 </tr>
                             }

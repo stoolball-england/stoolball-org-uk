@@ -16,8 +16,8 @@ $space-character-width: .25em;
 }
 
 // The heading labels are all short, so customise the default width used by .table-as-cards and don't let them wrap
-.batting-scorecard [data-label]::before,
-.bowling-scorecard [data-label]::before {
+.batting-scorecard .table-as-cards__label,
+.bowling-scorecard .table-as-cards__label {
     width: 6rem;
 }
 
@@ -89,7 +89,7 @@ $space-character-width: .25em;
 
 // Remove the flex-grow from .table-as-cards. It preserves the right-align of .numeric, but we do that with .scorecard__numeric-value
 // which doesn't send the data so far off to the right away from its label.
-.bowling-scorecard [data-label].numeric::before {
+.bowling-scorecard .numeric .table-as-cards__label {
     flex-grow: initial;
 }
 
@@ -191,7 +191,6 @@ $space-character-width: .25em;
 // padding-right adds space between it and the original cell contents.
 // Set a width that allows the labels to not wrap
 .batting-scorecard-editor__label {
-    content: attr(data-label);
     display: inline-block;
     font-weight: bold;
     width: 50%;
@@ -456,5 +455,122 @@ $space-character-width: .25em;
     // And let all the player-name boxes take advantage of the width
     .batting-scorecard-editor .scorecard__player-name {
         width: 100%;
+    }
+}
+
+.bowling-scorecard-editor th {
+    vertical-align: top;
+}
+.bowling-scorecard-editor small {
+    display: block;
+    margin-top: -3px;
+}
+.bowling-scorecard-editor tbody th {
+    padding-right: $spacer;
+}
+
+
+// Colour the first field in the stack to visually separate each stacked player innings from the next.
+.bowling-scorecard-editor__bowler {
+    background: $table-dark-bg;
+    color: $table-dark-color;
+}
+
+@media (max-width: 424px) {
+    .bowling-scorecard-editor .table-as-cards__label {
+        width: 7em;
+    }
+}
+
+@media (min-width:425px) {
+    // Remove side padding from every cell, because they abut the gutter of .container-xl and don't need to duplicate it
+    .bowling-scorecard-editor__field {
+        padding: $table-cell-padding 0;
+    }
+
+    // The first column can now move out of the stack.
+    // Restore its padding to separate it from the stack, and stack the label instead.
+    .bowling-scorecard-editor__bowler[data-stackable] {
+        @include table-as-cards-reset-stackable;
+        background: none;
+        color: $black;
+        padding-right: $table-cell-padding;
+    }
+
+    .bowling-scorecard-editor__bowler-label {
+        display: block;
+        width: auto;
+    }
+}
+
+@media screen and (min-width: 520px) {
+    .bowling-scorecard-editor .scorecard__player-name {
+        width: 100%;
+        min-width: 10rem;
+        max-width: 15rem;
+    }
+
+    // The second column can now move out of the stack.
+    // Restore its padding to separate it from the stack, and stack the label instead.
+    .bowling-scorecard-editor__balls[data-stackable] {
+        @include table-as-cards-reset-stackable;
+        padding-right: $table-cell-padding;
+    }
+
+    .bowling-scorecard-editor__bowler-label,  .bowling-scorecard-editor__balls-label {
+        display: block;
+        width: auto;
+        min-height: 2.8em;
+    }
+}
+@media screen and (min-width: 630px) {
+    // The third column can now move out of the stack.
+    // Restore its padding to separate it from the stack, and stack the label instead.
+    .bowling-scorecard-editor__wides[data-stackable] {
+        @include table-as-cards-reset-stackable;
+        padding-right: $table-cell-padding;
+    }
+
+    .bowling-scorecard-editor__wides-label {
+        display: block;
+        width: auto;
+        min-height: 2.8em;
+    }
+}
+
+@media screen and (min-width: 655px) {
+    .bowling-scorecard-editor thead {
+        @include table-as-cards-reset-thead;
+    }
+
+    .bowling-scorecard-editor__header {
+        padding-left: 0;
+    }
+
+    .bowling-scorecard-editor__header:first-child {
+        padding-left: $table-cell-padding;
+    }
+
+    // The fourth column can now move out of the stack.
+    // Restore its padding to separate it from the final column.
+    .bowling-scorecard-editor__no-balls[data-stackable] {
+        @include table-as-cards-reset-stackable;
+        padding-right: $table-cell-padding;
+    }
+
+    // Only one column left in the stack, so restore the stack to an ordinary column.
+    .bowling-scorecard-editor__runs[data-stackable] {
+        @include table-as-cards-reset-stackable;
+    }
+
+    .bowling-scorecard-editor .table-as-cards__label {
+        @include table-as-cards-reset-label;
+    }
+}
+
+@media screen and (min-width: 715px) {
+    // There's now enough room to restore the padding
+    .bowling-scorecard-editor__header, .bowling-scorecard-editor__field {
+        padding: $table-cell-padding;
     }
 }

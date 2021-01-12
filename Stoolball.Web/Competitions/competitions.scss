@@ -11,7 +11,7 @@
 
 // Remove the flex-grow from .table-as-cards. It preserves the right-align of .numeric, but we do that with .results-table__numeric-value
 // which doesn't send the data so far off to the right away from its label.
-.results-table [data-label].numeric::before {
+.results-table [data-stackable].numeric::before {
     flex-grow: initial;
 }
 
@@ -38,7 +38,7 @@
     width: 8em;
 }
 
-.edit-results-table [data-label]::before {
+.edit-results-table .table-as-cards__label {
     font-weight: normal;
 }
 

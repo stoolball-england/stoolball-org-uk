@@ -1,29 +1,44 @@
 ﻿@model EditScorecardViewModel
 @using Stoolball.Web.Matches
 @using Humanizer
-
+@using System.Globalization
 @Html.ValidationSummary(false)
 
-<table class="table bowling-scorecard-editor" data-autofocus="@Model.Autofocus.ToString().ToLowerInvariant()">
+<table class="table-as-cards bowling-scorecard-editor" data-autofocus="@Model.Autofocus.ToString().ToLowerInvariant()">
     <caption>@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamName's bowling, over-by-over</caption>
     <thead>
         <tr>
-            <th scope="col">Bowler</th>
-            <th scope="col" class="numeric">Balls bowled <small>(excluding extras)</small></th>
-            <th scope="col" class="numeric">Wides</th>
-            <th scope="col" class="numeric">No balls</th>
-            <th scope="col" class="numeric">Over total</th>
+            <th scope="col" class="bowling-scorecard-editor__header">Bowler</th>
+            <th scope="col" class="bowling-scorecard-editor__header">Balls bowled <small class="text-nowrap">(excluding extras)</small></th>
+            <th scope="col" class="bowling-scorecard-editor__header">Wides</th>
+            <th scope="col" class="bowling-scorecard-editor__header">No balls</th>
+            <th scope="col" class="bowling-scorecard-editor__header">Over total</th>
         </tr>
     </thead>
     <tbody>
         @for (var i = 0; i < (Model.CurrentInnings.MatchInnings.Overs); i++)
         {
             <tr>
-                <th scope="row">@Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].Bowler, new { autocomplete = "off", data_lpignore = "true", @class = "scorecard__player-name", data_team = Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString() })</th>
-                <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].BallsBowled, new { autocomplete = "off", type = "number", data_val_number = $"The balls bowled for the {(i + 1).Ordinalize()} over must be a number.", min = "1", data_msg_min = $"The balls bowled for the {(i + 1).Ordinalize()} over must be a number between 1 and 12", max = "12", data_msg_max = $"The balls bowled for the {(i + 1).Ordinalize()} over must be a number between 1 and 12", @class = "scorecard__balls" })</td>
-                <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].Wides, new { autocomplete = "off", type = "number", data_val_number = $"The wides for the {(i + 1).Ordinalize()} over must be a number.", min = "0", data_msg_min = $"The wides for the {(i + 1).Ordinalize()} over must be a number, 0 or more", @class = "scorecard__wides" })</td>
-                <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].NoBalls, new { autocomplete = "off", type = "number", data_val_number = $"The no balls for the {(i + 1).Ordinalize()} over must be a number.", min = "0", data_msg_min = $"The no balls for the {(i + 1).Ordinalize()} over must be a number, 0 or more", @class = "scorecard__no-balls" })</td>
-                <td>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].RunsConceded, new { autocomplete = "off", type = "number", data_val_number = $"The over total for the {(i + 1).Ordinalize()} over must be a number.", min = "0", data_msg_min = $"The over total for the {(i + 1).Ordinalize()} over must be a number, 0 or more", @class = "scorecard__runs" })</td>
+                <th scope="row" data-stackable="true" class="bowling-scorecard-editor__field bowling-scorecard-editor__bowler">
+                    @Html.LabelFor(m => Model.CurrentInnings.OversBowledSearch[i].Bowler, $"{(i + 1).Ordinalize(CultureInfo.CurrentCulture)} bowler", new { @class = "table-as-cards__label bowling-scorecard-editor__bowler-label" })
+                    @Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].Bowler, new { autocomplete = "off", data_lpignore = "true", @class = "scorecard__player-name", data_team = Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString() })
+                </th>
+                <td data-stackable="true" class="bowling-scorecard-editor__field bowling-scorecard-editor__balls">
+                    <label for="CurrentInnings_OversBowledSearch_@(i)__BallsBowled" class="table-as-cards__label bowling-scorecard-editor__balls-label">Balls bowled <small class="text-nowrap">(excluding extras)</small></label>
+                    <span>@Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].BallsBowled, new { autocomplete = "off", type = "number", min = "1", max = "12", @class = "scorecard__balls" })</span>
+                </td>
+                <td data-stackable="true" class="bowling-scorecard-editor__field bowling-scorecard-editor__wides">
+                    @Html.LabelFor(m => Model.CurrentInnings.OversBowledSearch[i].Wides, new { @class = "table-as-cards__label bowling-scorecard-editor__wides-label" })
+                    @Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].Wides, new { autocomplete = "off", type = "number", min = "0", @class = "scorecard__wides" })
+                </td>
+                <td data-stackable="true" class="bowling-scorecard-editor__field bowling-scorecard-editor__no-balls">
+                    @Html.LabelFor(m => Model.CurrentInnings.OversBowledSearch[i].NoBalls, new { @class = "table-as-cards__label bowling-scorecard-editor__no-balls-label text-nowrap" })
+                    @Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].NoBalls, new { autocomplete = "off", type = "number", min = "0", @class = "scorecard__no-balls" })
+                </td>
+                <td data-stackable="true" class="bowling-scorecard-editor__field bowling-scorecard-editor__runs">
+                    @Html.LabelFor(m => Model.CurrentInnings.OversBowledSearch[i].RunsConceded, new { @class = "table-as-cards__label bowling-scorecard-editor__runs-label text-nowrap" })
+                    @Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].RunsConceded, new { autocomplete = "off", type = "number", min = "0", @class = "scorecard__runs" })
+                </td>
             </tr>
         }
     </tbody>
@@ -31,11 +46,26 @@
 <script type="text/x-template" id="over-template">
     <table>
         <tr>
-            <th scope="row"><input autocomplete="off" data-lpignore="true" class="scorecard__player-name" data-team="@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString()" name="CurrentInnings.OversBowledSearch[0].Bowler" type="text" value="" /></th>
-            <td><input autocomplete="off" class="scorecard__balls" data-val="true" data-msg-number="The balls bowled for the [0th] over must be a number." min="1" data-msg-min="The balls bowled for the [0th] over must be a number between 1 and 12" max="12" data-msg-max="The balls bowled for the [0th] over must be a number between 1 and 12" name="CurrentInnings.OversBowledSearch[0].BallsBowled" type="number" value="" /></td>
-            <td><input autocomplete="off" class="scorecard__wides" data-val="true" data-msg-number="The wides for the [0th] over must be a number." min="0" data-msg-min="The wides for the [0th] over must be a number, 0 or more" name="CurrentInnings.OversBowledSearch[0].Wides" type="number" value="" /></td>
-            <td><input autocomplete="off" class="scorecard__no-balls" data-val="true" data-msg-number="The no balls for the [0th] over must be a number." data-msg-min="The no balls for the [0th] over must be a number, 0 or more" min="0" name="CurrentInnings.OversBowledSearch[0].NoBalls" type="number" value="" /></td>
-            <td><input autocomplete="off" class="scorecard__runs" data-val="true" data-msg-number="The over total for the [0th] over must be a number." data-msg-min="The over total for the [0th] over must be a number, 0 or more" min="0" name="CurrentInnings.OversBowledSearch[0].RunsConceded" type="number" value="" /></td>
+            <th scope="row" data-stackable="true" class="bowling-scorecard-editor__field bowling-scorecard-editor__bowler">
+                <label class="table-as-cards__label bowling-scorecard-editor__bowler-label" for="CurrentInnings_OversBowledSearch_[0]__Bowler">[0th] bowler</label>
+                <input autocomplete="off" data-lpignore="true" class="scorecard__player-name" data-team="@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString()" name="CurrentInnings.OversBowledSearch[0].Bowler" id="CurrentInnings_OversBowledSearch_[0]__Bowler" type="text" value="" />
+            </th>
+            <td data-stackable="true" class="bowling-scorecard-editor__field bowling-scorecard-editor__balls">
+                <label for="CurrentInnings_OversBowledSearch_[0]__BallsBowled" class="table-as-cards__label bowling-scorecard-editor__balls-label">Balls bowled <small class="text-nowrap">(excluding extras)</small></label>
+                <span><input autocomplete="off" class="scorecard__balls" min="1" max="12" name="CurrentInnings.OversBowledSearch[0].BallsBowled" id="CurrentInnings_OversBowledSearch_[0]__BallsBowled" type="number" value="" /></span>
+            </td>
+            <td data-stackable="true" class="bowling-scorecard-editor__field bowling-scorecard-editor__wides">
+                <label class="table-as-cards__label bowling-scorecard-editor__wides-label" for="CurrentInnings_OversBowledSearch_[0]__Wides">Wides</label>
+                <input autocomplete="off" class="scorecard__wides" min="0" name="CurrentInnings.OversBowledSearch[0].Wides" id="CurrentInnings_OversBowledSearch_[0]__Wides" type="number" value="" />
+            </td>
+            <td data-stackable="true" class="bowling-scorecard-editor__field bowling-scorecard-editor__no-balls">
+                <label class="table-as-cards__label bowling-scorecard-editor__no-balls-label text-nowrap" for="CurrentInnings_OversBowledSearch_[0]__NoBalls">No balls</label>
+                <input autocomplete="off" class="scorecard__no-balls" min="0" name="CurrentInnings.OversBowledSearch[0].NoBalls" id="CurrentInnings_OversBowledSearch_[0]__NoBalls" type="number" value="" />
+            </td>
+            <td data-stackable="true" class="bowling-scorecard-editor__field bowling-scorecard-editor__runs">
+                <label class="table-as-cards__label bowling-scorecard-editor__runs-label text-nowrap" for="CurrentInnings_OversBowledSearch_[0]__RunsConceded">Over total</label>
+                <input autocomplete="off" class="scorecard__runs" min="0" name="CurrentInnings.OversBowledSearch[0].RunsConceded" id="CurrentInnings_OversBowledSearch_[0]__RunsConceded" type="number" value="" />
+            </td>
         </tr>
     </table>
 </script>

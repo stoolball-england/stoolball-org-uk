@@ -127,10 +127,16 @@
     // Add over button
     const addOver = document.createElement("button");
     addOver.setAttribute("type", "button");
-    addOver.setAttribute("class", "btn btn-secondary");
+    addOver.setAttribute("class", "btn btn-secondary btn-add");
     addOver.setAttribute("disabled", "disabled");
     addOver.appendChild(document.createTextNode("Add an over"));
-    editor.parentElement.insertBefore(addOver, editor.nextElementSibling);
+    const addOverContainer = document.createElement("div");
+    addOverContainer.setAttribute("class", "form-group");
+    addOverContainer.appendChild(addOver);
+    editor.parentElement.insertBefore(
+      addOverContainer,
+      editor.nextElementSibling
+    );
 
     function enableOverEvent(e) {
       if (e.target && e.target.classList.contains("scorecard__player-name")) {
@@ -230,8 +236,9 @@
 
       // update the index of the new row
       let newRow = rows[rows.length - 1].nextElementSibling;
-      const inputs = newRow.querySelectorAll("input");
-      for (let i = 0; i < inputs.length; i++) {
+      const fields = newRow.querySelectorAll("input,select,label");
+      const attributes = ["name", "for", "id"];
+      for (let i = 0; i < fields.length; i++) {
         let ordinal,
           rowNumber = rows.length + 1;
         switch (rowNumber % 10) {
@@ -248,36 +255,31 @@
             ordinal = rowNumber + "th";
         }
 
-        inputs[i].setAttribute(
-          "name",
-          inputs[i]
-            .getAttribute("name")
-            .replace(/\[[0-9]+\]/, "[" + rows.length + "]")
-        );
-
-        const ordinalAttributes = [
-          "data-msg-number",
-          "data-msg-min",
-          "data-msg-max",
-        ];
-        for (let j = 0; j < ordinalAttributes.length; j++) {
-          let value = inputs[i].getAttribute(ordinalAttributes[j]);
+        for (let j = 0; j < attributes.length; j++) {
+          let value = fields[i].getAttribute(attributes[j]);
           if (value) {
-            inputs[i].setAttribute(
-              ordinalAttributes[j],
-              value.replace(/\[[0-9]+th\]/, ordinal)
+            fields[i].setAttribute(
+              attributes[j],
+              value.replace(/\[[0-9]+\]/, "[" + (rowNumber - 1) + "]")
             );
           }
+        }
+
+        if (fields[i].tagName === "LABEL") {
+          fields[i].innerText = fields[i].innerText.replace(
+            /\[[0-9]+th\]/,
+            ordinal
+          );
         }
       }
       enableOver(newRow);
 
       if (typeof stoolball.autocompletePlayer !== "undefined") {
-        stoolball.autocompletePlayer(inputs[0]);
+        stoolball.autocompletePlayer(fields[0]);
       }
 
       // focus the first field
-      inputs[0].focus();
+      fields[0].focus();
     });
   });
 })();

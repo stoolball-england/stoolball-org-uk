@@ -21,12 +21,12 @@
     position: static; // undo .sr-only
 }
 
-@mixin table-as-cards-reset-label {
+@mixin table-as-cards-reset-stackable {
     display: table-cell;
 }
 
-@mixin table-as-cards-reset-before {
-    content: none;
+@mixin table-as-cards-reset-label {
+    display: none;
 }
 
 @mixin numeric-value {
