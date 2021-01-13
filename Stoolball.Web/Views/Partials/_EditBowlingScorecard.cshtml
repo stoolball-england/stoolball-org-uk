@@ -5,7 +5,7 @@
 @Html.ValidationSummary(false)
 
 <table class="table-as-cards bowling-scorecard-editor" data-autofocus="@Model.Autofocus.ToString().ToLowerInvariant()">
-    <caption>@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamName's bowling, over-by-over</caption>
+    <caption>@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamName's bowling, <span class="text-nowrap">over-by-over</span></caption>
     <thead>
         <tr>
             <th scope="col" class="bowling-scorecard-editor__header">Bowler</th>
