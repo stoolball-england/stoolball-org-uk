@@ -111,7 +111,7 @@ namespace Stoolball.Web.Account
                 else
                 {
                     // Some other validation error, such as password not strong enough
-                    TempData["Error"] = errorMessage;
+                    ModelState.AddModelError(string.Empty, errorMessage);
                     return baseResult;
                 }
             }

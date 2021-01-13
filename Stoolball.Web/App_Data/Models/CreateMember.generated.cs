@@ -101,6 +101,13 @@ namespace Umbraco.Web.PublishedModels
 		public string PasswordHelp => this.Value<string>("passwordHelp");
 
 		///<summary>
+		/// Privacy notice: The member should have the opportunity to review the privacy notice before creating an account.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.9.1")]
+		[ImplementPropertyType("privacyNotice")]
+		public global::System.Web.IHtmlString PrivacyNotice => this.Value<global::System.Web.IHtmlString>("privacyNotice");
+
+		///<summary>
 		/// Header photo: The photo which appears across the site header. Leave blank to use the one from the parent page.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.9.1")]

@@ -26,6 +26,18 @@
       "SortOrder": 0,
       "PropertyTypes": [
         {
+          "Key": "3c7de124-6bdd-45dc-89d9-7e2b11cb0e33",
+          "Alias": "privacyNotice",
+          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+          "Description": "The member should have the opportunity to review the privacy notice before creating an account.",
+          "Mandatory": false,
+          "Name": "Privacy notice",
+          "SortOrder": 2,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
           "Key": "3dd4bf33-4601-4630-8501-794909252831",
           "Alias": "memberCreatedSuccessfully",
           "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
@@ -44,7 +56,7 @@
           "Description": "Advice on minimum password complexity requirements.",
           "Mandatory": false,
           "Name": "Password help",
-          "SortOrder": 2,
+          "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
@@ -180,5 +192,5 @@
   "Name": "Create Member",
   "Alias": "createMember",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.4"
+  "__version": "3.5.3"
 }
