@@ -45,6 +45,13 @@ namespace Umbraco.Web.PublishedModels
 		// properties
 
 		///<summary>
+		/// 'Go back to Home' button: Label for the button which appears after the 'Logged out' message.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.9.1")]
+		[ImplementPropertyType("homeButton")]
+		public string HomeButton => this.Value<string>("homeButton");
+
+		///<summary>
 		/// Logged in: Displays when a member is still logged in. You can use {{NAME}} to insert the member's name.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.9.1")]

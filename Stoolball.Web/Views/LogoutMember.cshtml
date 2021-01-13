@@ -11,5 +11,6 @@
     else
     {
         @Html.ProtectEmailAddresses(Model.LoggedOut)
+        <p><a href="/" class="btn btn-primary">@Model.HomeButton</a></p>
     }
 </div>

@@ -50,6 +50,18 @@
           "VariesBySegment": false
         },
         {
+          "Key": "94e53313-90aa-4754-8cc2-5487ef8a0e97",
+          "Alias": "homeButton",
+          "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+          "Description": "Label for the button which appears after the 'Logged out' message.",
+          "Mandatory": true,
+          "Name": "'Go back to Home' button",
+          "SortOrder": 3,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
           "Key": "db6f85d4-7f03-42d3-8b37-d552b772060b",
           "Alias": "logoutButton",
           "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
@@ -101,5 +113,5 @@
   "Name": "Logout Member",
   "Alias": "logoutMember",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.4"
+  "__version": "3.5.3"
 }
