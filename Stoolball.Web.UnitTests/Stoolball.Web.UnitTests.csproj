@@ -131,18 +131,18 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.3.1</Version>
+      <Version>3.3.2</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Moq">
-      <Version>4.15.1</Version>
+      <Version>4.15.2</Version>
     </PackageReference>
     <PackageReference Include="Our.Umbraco.Community.Tests">
-      <Version>8.9.1</Version>
+      <Version>8.10.1</Version>
     </PackageReference>
     <PackageReference Include="UmbracoCms.Web">
-      <Version>8.9.1</Version>
+      <Version>8.10.1</Version>
     </PackageReference>
     <PackageReference Include="UmbracoForms.Core">
       <Version>8.6.0</Version>
