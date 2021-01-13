@@ -12,6 +12,7 @@
     Html.EnableUnobtrusiveJavaScript();
     Html.RequiresJs("~/scripts/jquery.validate.min.js");
     Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+    Html.RequiresCss("~/account/account.min.css");
 }
 <div class="container-xl">
     <h1>@Model.Name</h1>
@@ -35,13 +36,9 @@
 
                 <div class="form-group">
                     <p class="form-label">Account picture</p>
-                    <div class="form-row">
-                        <div class="col gravatar">
-                            <img src="@gravatar.Url" alt="Your account picture from gravatar.com" width="@gravatar.Size" height="@gravatar.Size" />
-                        </div>
-                        <div class="col">
-                            @Html.ProtectEmailAddresses(Model.Value<IHtmlString>("gravatar"))
-                        </div>
+                    <div class="gravatar">
+                        <img src="@gravatar.Url" alt="Your account picture from gravatar.com" width="@gravatar.Size" height="@gravatar.Size" />
+                        <div>@Html.ProtectEmailAddresses(Model.Value<IHtmlString>("gravatar"))</div>
                     </div>
                 </div>
 

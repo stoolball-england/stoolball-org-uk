@@ -343,6 +343,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Account\account.css">
+      <DependentUpon>account.scss</DependentUpon>
+    </Content>
+    <Content Include="Account\account.min.css">
+      <DependentUpon>account.css</DependentUpon>
+    </Content>
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Lang\da-DK.xml" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Lang\en-GB.xml" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\Lang\en-US.xml" />
@@ -382,6 +388,7 @@
     <Content Include="App_Plugins\Stoolball.DataMigration\dataMigrationDashboardController.js" />
     <Content Include="App_Plugins\Stoolball.BlockEditors\package.manifest" />
     <Content Include="App_Plugins\Skybrud.Umbraco.Redirects\package.manifest" />
+    <Content Include="Account\account.scss" />
     <None Include="App_Plugins\Stoolball.DataMigration\data-migration.scss" />
     <Content Include="App_Plugins\Stoolball.DataMigration\DataMigrationDashboard.html" />
     <Content Include="App_Plugins\Stoolball.DataMigration\Dialogs\DeleteCompetitions.html" />

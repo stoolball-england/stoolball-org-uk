@@ -21,6 +21,8 @@
     Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
     Html.RequiresJs("/js/tinymce.js");
 
+    Html.RequiresCss("~/account/account.min.css");
+
     Html.RequiresCss("~/matches/scorecards.min.css");
     Html.RequiresCss("~/css/steps.min.css");
 
@@ -232,11 +234,9 @@
         </div>
         <div class="form-group">
             <p class="form-label">Account picture</p>
-            <div class="form-row">
-                <div class="col gravatar">
-                    <img src="https://s.gravatar.com/avatar/e3b84da4a85b8b6e897d5e04eb8b66ec?s=50" alt="Your account picture from gravatar.com" width="50" height="50" />
-                </div>
-                <div class="col">
+            <div class="gravatar">
+                <img src="https://s.gravatar.com/avatar/e3b84da4a85b8b6e897d5e04eb8b66ec?s=50" alt="Your account picture from gravatar.com" width="50" height="50" />
+                <div>
                     <p>This is how a gravatar is displayed during editing.</p>
                 </div>
             </div>

@@ -86,15 +86,5 @@ img {
 /* Required for footer */
 @import "_footer.scss";
 
-/* Display a Gravatar next to its content 
-
-    <div class="form-row">
-        <div class="col gravatar"><img /></div>
-        <div class="col">content</div>
-    </div>
-*/
-.gravatar { flex: 0 0 60px; }
-.gravatar > img { border-radius: 50%; }
-
 /* For Umbraco editing */
 @import "_blocks.scss";

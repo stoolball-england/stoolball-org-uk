@@ -62,5 +62,9 @@
   {
     "outputFile": "HomePage/home.css",
     "inputFile": "HomePage/home.scss"
+  },
+  {
+    "outputFile": "Account/account.css",
+    "inputFile": "Account/account.scss"
   }
 ]
