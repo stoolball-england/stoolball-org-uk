@@ -72,6 +72,7 @@ namespace Stoolball.Web.Account
                 return Redirect(model.RedirectUrl);
             }
 
+            // If this was a page demanding permissions, return to that page. Otherwise return the base result to the standard login page.
             if (CurrentPage.GetType() == typeof(StoolballRouter))
             {
                 return ReturnToStoolballRouterPage();
