@@ -73,6 +73,13 @@ namespace Umbraco.Web.PublishedModels
 		public string CreateMemberSubject => this.Value<string>("createMemberSubject");
 
 		///<summary>
+		/// 'Go back to Home' button: Label for the button which appears after the password reset is complete.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.10.1")]
+		[ImplementPropertyType("homeButton")]
+		public string HomeButton => this.Value<string>("homeButton");
+
+		///<summary>
 		/// Logged in: Displays instead of the form when a member is logged in. You can use {{NAME}} to insert the member's name.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.10.1")]

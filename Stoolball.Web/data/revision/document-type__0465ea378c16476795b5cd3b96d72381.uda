@@ -1,6 +1,7 @@
 {
-  "DefaultTemplate": "umb://template/eef6ed69b8c84ceabfffe07544ca64f6",
+  "DefaultTemplate": "umb://template/4072232af3ee4ffc9d2204bd3f9dcb11",
   "AllowedTemplates": [
+    "umb://template/4072232af3ee4ffc9d2204bd3f9dcb11",
     "umb://template/eef6ed69b8c84ceabfffe07544ca64f6"
   ],
   "Icon": "icon-lock color-blue",
@@ -186,6 +187,18 @@
           "VariesBySegment": false
         },
         {
+          "Key": "a8e15c9b-78d5-496a-9044-79fb6963e7f1",
+          "Alias": "homeButton",
+          "DataType": "umb://data-type/0cc0eba1996042c9bf9b60e150b429ae",
+          "Description": "Label for the button which appears after the password reset is complete.",
+          "Mandatory": true,
+          "Name": "'Go back to Home' button",
+          "SortOrder": 5,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
           "Key": "cf21a651-86d0-4d51-9afe-cab8e1010196",
           "Alias": "passwordResetFailed",
           "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
@@ -258,6 +271,11 @@
       "Mode": 0
     },
     {
+      "Udi": "umb://template/4072232af3ee4ffc9d2204bd3f9dcb11",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
       "Udi": "umb://template/eef6ed69b8c84ceabfffe07544ca64f6",
       "Ordering": true,
       "Mode": 0
@@ -266,5 +284,5 @@
   "Name": "Reset Password",
   "Alias": "resetPassword",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.4"
+  "__version": "3.5.3"
 }

@@ -44,17 +44,17 @@ namespace Stoolball.Web.Account
             {
                 model.PasswordResetToken = ReadPasswordResetToken();
 
-                // Show a message saying the reset was successful
-                if (PasswordResetSuccessful())
-                {
-                    TempData["PasswordResetSuccessful"] = true;
-                    return CurrentTemplate(model);
-                }
-
                 // If there's no token, show the form to request a password reset
                 if (string.IsNullOrEmpty(model.PasswordResetToken))
                 {
-                    return CurrentTemplate(model);
+                    return View("ResetPasswordRequest", model);
+                }
+
+                // Show a message saying the reset was successful
+                if (PasswordResetSuccessful())
+                {
+                    model.ShowPasswordResetSuccessful = true;
+                    return View("ResetPassword", model);
                 }
 
                 var memberId = _verificationToken.ExtractId(model.PasswordResetToken);
@@ -65,10 +65,7 @@ namespace Stoolball.Web.Account
                 if (member.GetValue("passwordResetToken").ToString() == model.PasswordResetToken && !_verificationToken.HasExpired(member.GetValue<DateTime>("passwordResetTokenExpires")))
                 {
                     // Show the set a new password form
-                    memberService.Save(member);
-
                     model.PasswordResetTokenValid = true;
-                    model.MemberName = member.Name;
                 }
                 else
                 {
@@ -83,31 +80,7 @@ namespace Stoolball.Web.Account
                 Logger.Info(GetType(), $"Password reset token invalid {model.PasswordResetToken}");
                 model.PasswordResetTokenValid = false;
             }
-            return CurrentTemplate(model);
-        }
-
-        /// <summary>
-        /// This method fires after <see cref="ResetPasswordSurfaceController"/> handles form submissions, if it doesn't redirect.
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult ResetPassword(ContentModel contentModel)
-        {
-            // Record the presence of a token. This informs the view whether 
-            // the password reset request or password update form was submitted.
-            // Assume it's valid and this will be checked later, but this is used in the view when 
-            // routing an invalid password update form submission.
-            var model = new ResetPassword(contentModel?.Content);
-            model.Metadata = new ViewMetadata
-            {
-                PageTitle = model.Name,
-                Description = model.Description
-            };
-            model.PasswordResetToken = ReadPasswordResetToken();
-            model.PasswordResetTokenValid = true;
-            return CurrentTemplate(model);
+            return View("ResetPassword", model);
         }
     }
 }

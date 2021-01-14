@@ -19,9 +19,19 @@ namespace Umbraco.Web.PublishedModels
         public bool PasswordResetTokenValid { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the newly-approved member
+        /// Gets or sets whether the request was received successfully and an email was sent
         /// </summary>
-        public string MemberName { get; set; }
+        public bool ShowPasswordResetRequested { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the password reset process has completed successfully
+        /// </summary>
+        public bool? ShowPasswordResetSuccessful { get; set; }
+
+        /// <summary>
+        /// Gets or sets the email address the password reset is requested for
+        /// </summary>
+        public string Email { get; set; }
 
         /// <summary>
         /// Gets the metadata for a view

@@ -1486,6 +1486,7 @@
     <Content Include="Views\Partials\_AddMatchMenu.cshtml" />
     <Content Include="Views\Partials\_ContactDetailsMissing.cshtml" />
     <Content Include="Views\Partials\_SeasonListExpandable.cshtml" />
+    <Content Include="Views\ResetPasswordRequest.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

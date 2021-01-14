@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using Stoolball.Metadata;
 using Stoolball.Security;
 using Stoolball.Web.Email;
 using Stoolball.Web.Security;
@@ -10,6 +11,7 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
+using Umbraco.Web.PublishedModels;
 using Umbraco.Web.Security;
 using static Stoolball.Constants;
 
@@ -37,14 +39,19 @@ namespace Stoolball.Web.Account
         [ContentSecurityPolicy(Forms = true)]
         public ActionResult RequestPasswordReset([Bind(Prefix = "resetPasswordRequest")] ResetPasswordRequest model)
         {
+            var contentModel = new ResetPassword(CurrentPage);
+            contentModel.Metadata = new ViewMetadata
+            {
+                PageTitle = contentModel.Name,
+                Description = contentModel.Description
+            };
+            contentModel.Email = model?.Email;
+
             if (!ModelState.IsValid || model == null)
             {
                 ModelState.AddModelError("Email", "Please enter a valid email address.");
-                return CurrentUmbracoPage();
+                return View("ResetPasswordRequest", contentModel);
             }
-
-            // Put the entered email address in TempData so that it can be accessed in the view
-            TempData["Email"] = model.Email;
 
             // Get the matching member, if there is one
             var memberService = Services.MemberService;
@@ -92,8 +99,8 @@ namespace Stoolball.Web.Account
 
                 Logger.Info(typeof(Umbraco.Core.Security.UmbracoMembershipProviderBase), LoggingTemplates.MemberPasswordResetRequested, member.Username, member.Key, GetType(), nameof(RequestPasswordReset));
 
-                TempData["PasswordResetRequested"] = true;
-                return CurrentUmbracoPage();
+                contentModel.ShowPasswordResetRequested = true;
+                return View("ResetPasswordRequest", contentModel);
             }
             else
             {
@@ -109,11 +116,14 @@ namespace Stoolball.Web.Account
                     });
                 _emailSender.SendEmail(model.Email, sender, body);
 
-                TempData["PasswordResetRequested"] = true;
-                return CurrentUmbracoPage();
+                contentModel.ShowPasswordResetRequested = true;
+                return View("ResetPasswordRequest", contentModel);
             }
 
         }
+
+        // Gets the password reset token from the querystring in a way that can be overridden for testing
+        protected virtual string ReadPasswordResetToken() => Request.QueryString["token"];
 
         /// <summary>
         /// Gets the authority segment of the request URL
@@ -127,14 +137,26 @@ namespace Stoolball.Web.Account
         [ContentSecurityPolicy(Forms = true)]
         public ActionResult UpdatePassword([Bind(Prefix = "resetPasswordUpdate")] ResetPasswordUpdate model)
         {
+            var contentModel = new ResetPassword(CurrentPage);
+            contentModel.Metadata = new ViewMetadata
+            {
+                PageTitle = contentModel.Name,
+                Description = contentModel.Description
+            };
+
+            // Assume the token is valid and this will be checked later
+            contentModel.PasswordResetToken = ReadPasswordResetToken();
+            contentModel.PasswordResetTokenValid = true;
+
             if (!ModelState.IsValid || model == null)
             {
-                return CurrentUmbracoPage();
+                contentModel.ShowPasswordResetSuccessful = false;
+                return View("ResetPassword", contentModel);
             }
 
             try
             {
-                var memberId = _verificationToken.ExtractId(model.PasswordResetToken);
+                var memberId = _verificationToken.ExtractId(contentModel.PasswordResetToken);
 
                 var memberService = Services.MemberService;
                 var member = memberService.GetById(memberId);
@@ -167,22 +189,22 @@ namespace Stoolball.Web.Account
                     else
                     {
                         Logger.Info(GetType(), $"Password reset token invalid {model.PasswordResetToken}");
-                        TempData["PasswordResetSuccessful"] = false;
-                        return CurrentUmbracoPage();
+                        contentModel.ShowPasswordResetSuccessful = false;
+                        return View("ResetPassword", contentModel);
                     }
                 }
                 else
                 {
                     Logger.Info(GetType(), $"Password reset token invalid {model.PasswordResetToken}");
-                    TempData["PasswordResetSuccessful"] = false;
-                    return CurrentUmbracoPage();
+                    contentModel.ShowPasswordResetSuccessful = false;
+                    return View("ResetPassword", contentModel);
                 }
             }
             catch (FormatException)
             {
                 Logger.Info(GetType(), $"Password reset token invalid {model.PasswordResetToken}");
-                TempData["PasswordResetSuccessful"] = false;
-                return CurrentUmbracoPage();
+                contentModel.ShowPasswordResetSuccessful = false;
+                return View("ResetPassword", contentModel);
             }
         }
     }
