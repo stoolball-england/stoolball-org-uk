@@ -68,8 +68,7 @@
                 }
                 @if (Model.Match.Awards.Count > 0)
                 {
-                    var awardWinners = Model.Match.Awards.Select(x => x.PlayerIdentity);
-                    <li>remove @("player award".ToQuantity(Model.Match.Awards.Count)) from @awardWinners.Humanize(x => x.PlayerIdentityName)'s statistics</li>
+                    <li>remove @("player award".ToQuantity(Model.Match.Awards.Count)) from @awards.Humanize(x => x.PlayerIdentityName)'s statistics</li>
                 }
                 else
                 {

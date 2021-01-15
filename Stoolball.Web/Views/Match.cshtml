@@ -85,16 +85,14 @@
         <p>Where: <a href="@Model.Match.MatchLocation.MatchLocationRoute">@Model.Match.MatchLocation.NameAndLocalityOrTown()</a></p>
     }
 
-    @{
-        if (Model.Match.StartTime <= DateTime.UtcNow)
-        {
-            <p class="match-result"><strong>Result: @ResultDescription()</strong></p>
+    @if (Model.Match.StartTime <= DateTime.UtcNow)
+    {
+        <p class="match-result"><strong>Result: @ResultDescription()</strong></p>
 
-            var resultRequired = !Model.Match.MatchResultType.HasValue || !Model.Match.HasCompleteScorecard();
-            <div class="update-result">
-                <a class="btn btn-secondary@(resultRequired ? " btn-lg" : null)" href="@Model.Match.MatchRoute/edit/start-of-play">Edit result</a>
-            </div>
-        }
+        var resultRequired = !Model.Match.MatchResultType.HasValue || !Model.Match.HasCompleteScorecard();
+        <div class="update-result">
+            <a class="btn btn-secondary@(resultRequired ? " btn-lg" : null)" href="@Model.Match.MatchRoute/edit/start-of-play">Edit result</a>
+        </div>
 
         var tossWinners = Model.Match.Teams.FirstOrDefault(x => x.WonToss.HasValue && x.WonToss.Value);
         if (tossWinners != null)
@@ -129,10 +127,32 @@
             }
         }
 
-        if (!string.IsNullOrWhiteSpace(Model.Match.MatchNotes))
+        if (Model.Match.Awards.Any())
         {
-            <h2>Notes</h2>
-            @Html.Raw(Model.Match.MatchNotes)
+            var currentAwardName = string.Empty;
+            <dl class="list-results__detail award-list">
+                @foreach (var award in Model.Match.Awards)
+                {
+                    if (award.Award.AwardName != currentAwardName)
+                    {
+                        <dt>@award.Award.AwardName</dt>
+                        currentAwardName = award.Award.AwardName;
+                    }
+                    <dd>
+                        @award.PlayerIdentity.PlayerIdentityName (@Model.Match.Teams.First(x => x.Team.TeamId == award.PlayerIdentity.Team.TeamId).Team.TeamName)
+                        @if (!string.IsNullOrWhiteSpace(award.Reason))
+                        {
+                            @: – @award.Reason.Humanize(LetterCasing.Sentence)
+                        }
+                    </dd>
+                }
+            </dl>
         }
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.Match.MatchNotes))
+    {
+        <h2>Notes</h2>
+        @Html.Raw(Model.Match.MatchNotes)
     }
 </div>

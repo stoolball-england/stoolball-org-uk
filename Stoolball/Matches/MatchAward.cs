@@ -1,6 +1,6 @@
-﻿using Stoolball.Awards;
+﻿using System;
+using Stoolball.Awards;
 using Stoolball.Teams;
-using System;
 
 namespace Stoolball.Matches
 {
@@ -9,5 +9,6 @@ namespace Stoolball.Matches
         public Guid? MatchAwardId { get; set; }
         public Award Award { get; set; }
         public PlayerIdentity PlayerIdentity { get; set; }
+        public string Reason { get; set; }
     }
 }

@@ -17,3 +17,8 @@
 .update-result {
     margin: 0 0 $spacer*2;
 }
+
+// Add some extra separation between multiple award types: larger than that between recipients of the same award.
+.award-list dd + dt {
+    margin-top: $spacer;
+}

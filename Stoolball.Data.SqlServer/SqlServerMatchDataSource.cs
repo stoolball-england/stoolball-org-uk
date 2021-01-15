@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Stoolball.Awards;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
@@ -172,18 +173,22 @@ namespace Stoolball.Data.SqlServer
                     }
 
                     // Add awards - player of the match etc - to the match
-                    matchToReturn.Awards = (await connection.QueryAsync<MatchAward, PlayerIdentity, MatchAward>(
-                        $@"SELECT ma.MatchAwardId, p.PlayerIdentityId, p.PlayerIdentityName, p.TotalMatches 
+                    matchToReturn.Awards = (await connection.QueryAsync<MatchAward, Award, PlayerIdentity, Team, MatchAward>(
+                        $@"SELECT ma.Reason, a.AwardName, p.PlayerIdentityId, p.PlayerIdentityName, p.TotalMatches, p.TeamId
                                FROM {Tables.MatchAward} ma
+                               INNER JOIN {Tables.Award} a ON ma.AwardId = a.AwardId
                                INNER JOIN {Tables.PlayerIdentity} p ON ma.PlayerIdentityId = p.PlayerIdentityId
-                               WHERE MatchId = @MatchId",
-                        (award, playerIdentity) =>
+                               WHERE ma.MatchId = @MatchId
+                               ORDER BY a.AwardName",
+                        (matchAward, award, playerIdentity, team) =>
                         {
-                            award.PlayerIdentity = playerIdentity;
-                            return award;
+                            matchAward.Award = award;
+                            matchAward.PlayerIdentity = playerIdentity;
+                            matchAward.PlayerIdentity.Team = team;
+                            return matchAward;
                         },
                         new { matchToReturn.MatchId },
-                        splitOn: "PlayerIdentityId").ConfigureAwait(false)).ToList();
+                        splitOn: "AwardName, PlayerIdentityId, TeamId").ConfigureAwait(false)).ToList();
                 }
 
                 return matchToReturn;
