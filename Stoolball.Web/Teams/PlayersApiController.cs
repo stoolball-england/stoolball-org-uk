@@ -58,15 +58,22 @@ namespace Stoolball.Web.Teams
             {
                 suggestions = players.Select(x => new AutocompleteResult
                 {
-                    value = BuildReturnValue(x, playerQuery.TeamIds.Count != 1),
-                    data = x.PlayerIdentityId.ToString()
+                    value = x.PlayerIdentityName,
+                    data = new
+                    {
+                        playerIdentityId = x.PlayerIdentityId.ToString(),
+                        playerIdentityName = x.PlayerIdentityName,
+                        playerRecord = BuildPlayerRecord(x, playerQuery.TeamIds.Count != 1),
+                        teamId = x.Team.TeamId,
+                        teamName = x.Team.TeamName
+                    }
                 })
             };
         }
 
-        private string BuildReturnValue(PlayerIdentity playerIdentity, bool showTeam)
+        private static string BuildPlayerRecord(PlayerIdentity playerIdentity, bool showTeam)
         {
-            var value = new StringBuilder(playerIdentity.PlayerIdentityName).Append(" (").Append("match".ToQuantity(playerIdentity.TotalMatches.Value));
+            var value = new StringBuilder("match".ToQuantity(playerIdentity.TotalMatches.Value));
             if (showTeam)
             {
                 value.Append(" for ").Append(playerIdentity.Team.TeamName);
@@ -76,13 +83,12 @@ namespace Stoolball.Web.Teams
             {
                 var firstYear = playerIdentity.FirstPlayed.Value.Year;
                 var lastYear = playerIdentity.LastPlayed.Value.Year;
-                value.Append(" ").Append(firstYear);
+                value.Append(' ').Append(firstYear);
                 if (firstYear != lastYear)
                 {
-                    value.Append("–").Append(lastYear.ToString(CultureInfo.InvariantCulture).Substring(2));
+                    value.Append('–').Append(lastYear.ToString(CultureInfo.InvariantCulture).Substring(2));
                 }
             }
-            value.Append(")");
             return value.ToString();
         }
     }

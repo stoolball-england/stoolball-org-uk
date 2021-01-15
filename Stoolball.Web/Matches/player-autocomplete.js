@@ -2,7 +2,7 @@
   stoolball = {};
 }
 stoolball.autocompletePlayer = function (input) {
-  const thisMatch = " (this match)";
+  const thisMatch = "this match";
 
   // Cache suggestions locally to help recognise any name not already suggested as a new player
   if (!stoolball.autocompletePlayer.cachedSuggestions) {
@@ -61,22 +61,15 @@ stoolball.autocompletePlayer = function (input) {
       // As the result is displayed, separate the value to be selected from the metadata informing its selection.
       // Cache the suggested value so that we can check on blur whether the entered value was one of the suggestions.
       const targetTeam = input.getAttribute("data-team");
-      const divider = suggestion.value.lastIndexOf("(") - 1;
-      if (divider !== -2) {
-        const playerName = suggestion.value.substring(0, divider);
-        const metadata = suggestion.value.substr(divider);
-        suggestion.value = playerName;
-        if (metadata !== thisMatch) {
-          cacheSuggestedPlayer(targetTeam, suggestion);
-        }
-        return (
-          $.Autocomplete.defaults.formatResult(suggestion, currentValue) +
-          metadata
-        );
-      } else {
+      if (suggestion.data.playerRecord !== thisMatch) {
         cacheSuggestedPlayer(targetTeam, suggestion);
-        return $.Autocomplete.defaults.formatResult(suggestion, currentValue);
       }
+      return (
+        $.Autocomplete.defaults.formatResult(suggestion, currentValue) +
+        " (" +
+        suggestion.data.playerRecord +
+        ")"
+      );
     },
     transformResult: function (response, originalQuery) {
       response = JSON.parse(response);
@@ -103,8 +96,10 @@ stoolball.autocompletePlayer = function (input) {
       // Add any matching new players to the start of the suggestions list.
       for (let i = 0; i < newPlayerSuggestions.length; i++) {
         response.suggestions.unshift({
-          value: newPlayerSuggestions[i] + thisMatch,
-          data: null,
+          value: newPlayerSuggestions[i],
+          data: {
+            playerRecord: thisMatch,
+          },
         });
       }
       return response;

@@ -3,6 +3,6 @@
     public class AutocompleteResult
     {
         public string value { get; set; }
-        public string data { get; set; }
+        public object data { get; set; }
     }
 }

@@ -11,6 +11,9 @@ namespace Stoolball.Web.Matches
         public EditCloseOfPlayViewModel(IPublishedContent contentModel, IUserService userService) : base(contentModel, userService)
         {
         }
+
+        public EditCloseOfPlayFormData FormData { get; set; } = new EditCloseOfPlayFormData();
+
         public Match Match { get; set; }
 
         public IDateTimeFormatter DateFormatter { get; set; }

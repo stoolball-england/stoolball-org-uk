@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Dates;
@@ -78,6 +79,14 @@ namespace Stoolball.Web.Matches
                 }
 
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
+
+                model.FormData.MatchResultType = model.Match.MatchResultType;
+                model.FormData.Awards = model.Match.Awards.Select(x => new MatchAwardViewModel
+                {
+                    MatchAwardId = x.MatchAwardId,
+                    PlayerSearch = x.PlayerIdentity.PlayerIdentityName,
+                    TeamId = model.Match.Teams.First(team => team.Team.TeamId == x.PlayerIdentity.Team.TeamId).Team.TeamId
+                }).ToList();
 
                 if (!model.Match.MatchResultType.HasValue)
                 {

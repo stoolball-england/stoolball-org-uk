@@ -1,4 +1,59 @@
-﻿(function () {
+﻿"use strict";
+
+// For Jest tests
+if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
+  module.exports = createRelatedItemsManager;
+}
+
+function createRelatedItemsManager() {
+  return {
+    populateTemplate: function (template, suggestion) {
+      const uuid = this.uuidv4();
+      return template.replace(/{{\s*([a-z.]+)\s*}}/gi, function (match, token) {
+        if (token === "value") {
+          return suggestion.value;
+        }
+        if (token === "data") {
+          return suggestion.data && suggestion.data.hasOwnProperty("data")
+            ? suggestion.data.data
+            : suggestion.data;
+        }
+        if (token.indexOf("data.") === 0) {
+          const prop = token.substring(5);
+          if (suggestion.data.hasOwnProperty(prop)) {
+            return suggestion.data[prop];
+          }
+        }
+        if (token === "create") {
+          return suggestion.data && suggestion.data.hasOwnProperty("create")
+            ? suggestion.data.create
+              ? "Yes"
+              : "No"
+            : "";
+        }
+        if (token === "id") {
+          return uuid;
+        }
+        return match;
+      });
+    },
+
+    /* Creates a new GUID https://stackoverflow.com/questions/105034/how-to-create-guid-uuid */
+    uuidv4: function () {
+      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+        /[xy]/g,
+        function (c) {
+          var r = (Math.random() * 16) | 0,
+            v = c == "x" ? r : (r & 0x3) | 0x8;
+          return v.toString(16);
+        }
+      );
+    },
+  };
+}
+(function () {
+  const manager = createRelatedItemsManager();
+
   function resetIndexes(selectedItem) {
     /* Reset the indexes on the remaining fields so that ASP.NET model binding reads them all */
     const remainingData = selectedItem.parentNode.querySelectorAll(
@@ -122,18 +177,6 @@
       const selectedItem = searchField.parentNode.parentNode;
       const params = resetAutocompleteParams(selectedItem);
 
-      /* Creates a new GUID https://stackoverflow.com/questions/105034/how-to-create-guid-uuid */
-      function uuidv4() {
-        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-          /[xy]/g,
-          function (c) {
-            var r = (Math.random() * 16) | 0,
-              v = c == "x" ? r : (r & 0x3) | 0x8;
-            return v.toString(16);
-          }
-        );
-      }
-
       $(searchField).autocomplete({
         serviceUrl: url,
         params: params,
@@ -141,22 +184,7 @@
         onSelect: function (suggestion) {
           selectedItem.insertAdjacentHTML(
             "beforebegin",
-            template
-              .replace(/{{value}}/g, suggestion.value)
-              .replace(
-                /{{data}}/g,
-                suggestion.data.hasOwnProperty("data")
-                  ? suggestion.data.data
-                  : suggestion.data
-              )
-              .replace(
-                /{{create}}/g,
-                suggestion.data.hasOwnProperty("create")
-                  ? suggestion.data.create
-                    ? "Yes"
-                    : "No"
-                  : ""
-              )
+            manager.populateTemplate(template, suggestion)
           );
 
           /* Create an alert for assistive technology */
@@ -213,11 +241,31 @@
               data: {
                 create: true,
                 category: "Add a new " + itemType,
-                data: uuidv4(),
+                data: manager.uuidv4(),
               },
             });
           }
+
+          const valueTemplate = searchField.getAttribute("data-value-template");
+          if (valueTemplate) {
+            response.suggestions = response.suggestions.map(function (x) {
+              return {
+                value: manager.populateTemplate(valueTemplate, x),
+                data: x.data,
+              };
+            });
+          }
+
           return response;
+        },
+        formatResult: function (suggestion, currentValue) {
+          const suggestionTemplate = searchField.getAttribute(
+            "data-suggestion-template"
+          );
+          if (suggestionTemplate) {
+            return manager.populateTemplate(suggestionTemplate, suggestion);
+          }
+          return $.Autocomplete.defaults.formatResult(suggestion, currentValue);
         },
       });
     }

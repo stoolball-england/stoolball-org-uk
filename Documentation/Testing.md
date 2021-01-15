@@ -43,10 +43,8 @@ To get started, open a PowerShell prompt at the root of this repository and run:
 
 ```pwsh
 npm install
-jest
+npx jest
 ```
-
-If Windows can't find `jest`, add the `node_modules\.bin` folder to your `PATH` environment variable. For example if you work in `c:\src`, add `c:\src\node_modules\.bin` to your `PATH`.
 
 ## UI testing with Cypress
 

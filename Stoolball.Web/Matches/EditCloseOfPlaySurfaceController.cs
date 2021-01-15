@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Dates;
@@ -37,11 +38,11 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> UpdateMatch([Bind(Prefix = "Match", Include = "MatchResultType")] Match postedMatch)
+        public async Task<ActionResult> UpdateMatch([Bind(Prefix = "FormData")] EditCloseOfPlayFormData postedData)
         {
-            if (postedMatch is null)
+            if (postedData is null)
             {
-                throw new ArgumentNullException(nameof(postedMatch));
+                throw new ArgumentNullException(nameof(postedData));
             }
 
             var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false);
@@ -53,12 +54,16 @@ namespace Stoolball.Web.Matches
 
             var model = new EditCloseOfPlayViewModel(CurrentPage, Services.UserService)
             {
-                Match = postedMatch,
+                Match = beforeUpdate,
+                FormData = postedData,
                 DateFormatter = _dateTimeFormatter
             };
-            model.Match.MatchId = beforeUpdate.MatchId;
-            model.Match.StartTime = beforeUpdate.StartTime;
-            model.Match.MatchRoute = beforeUpdate.MatchRoute;
+            model.Match.MatchResultType = model.FormData.MatchResultType;
+            model.Match.Awards = model.FormData.Awards.Select(x => new MatchAward
+            {
+                MatchAwardId = x.MatchAwardId
+            }).ToList();
+
             model.Match.UpdateMatchNameAutomatically = beforeUpdate.UpdateMatchNameAutomatically;
             model.Match.Teams = beforeUpdate.Teams;
 

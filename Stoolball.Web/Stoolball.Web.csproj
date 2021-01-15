@@ -1217,6 +1217,8 @@
     <Compile Include="HtmlHelpers\RequiredFieldStatus.cs" />
     <Compile Include="Logging\UmbracoLogWrapper.cs" />
     <Compile Include="Matches\AddMatchMenuViewModel.cs" />
+    <Compile Include="Matches\EditCloseOfPlayFormData.cs" />
+    <Compile Include="Matches\MatchAwardViewModel.cs" />
     <Compile Include="Matches\MatchInningsViewModel.cs" />
     <Compile Include="Matches\OverViewModel.cs" />
     <Compile Include="Matches\PlayerInningsViewModel.cs" />
