@@ -57,6 +57,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="SeasonAwardAddTable.cs" />
+    <Compile Include="TournamentAwardAddTable.cs" />
+    <Compile Include="SeasonAwardTableInitialSchema.cs" />
+    <Compile Include="TournamentAwardTableInitialSchema.cs" />
     <Compile Include="NotificationSubscriptionAddTable.cs" />
     <Compile Include="NotificationSubscriptionTableInitialSchema.cs" />
     <Compile Include="BowlingAddTable.cs" />

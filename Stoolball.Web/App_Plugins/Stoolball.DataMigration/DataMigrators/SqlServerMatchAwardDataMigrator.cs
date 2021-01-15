@@ -3,6 +3,7 @@ using System.Data;
 using System.Threading.Tasks;
 using Dapper;
 using Newtonsoft.Json;
+using Stoolball.Awards;
 using Stoolball.Data.SqlServer;
 using Stoolball.Logging;
 using static Stoolball.Constants;
@@ -76,7 +77,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     if (migratedMatchAward.PlayerOfTheMatchHomeId != null)
                     {
                         migratedMatchAward.MatchAwardId = Guid.NewGuid();
-                        migratedMatchAward.AwardId = await CreateOrGetMatchAwardTypeId("Player of the match (home)", transaction).ConfigureAwait(false);
+                        migratedMatchAward.AwardId = await CreateOrGetMatchAwardTypeId("Player of the match", transaction).ConfigureAwait(false);
                         migratedMatchAward.MatchId = await GetMatchId(migratedMatchAward.MigratedMatchId, transaction).ConfigureAwait(false);
                         migratedMatchAward.PlayerIdentityId = await GetPlayerIdentityId(migratedMatchAward.PlayerOfTheMatchHomeId.Value, transaction).ConfigureAwait(false);
                         await CreateMatchAward(migratedMatchAward, transaction).ConfigureAwait(false);
@@ -84,7 +85,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     if (migratedMatchAward.PlayerOfTheMatchAwayId != null)
                     {
                         migratedMatchAward.MatchAwardId = Guid.NewGuid();
-                        migratedMatchAward.AwardId = await CreateOrGetMatchAwardTypeId("Player of the match (away)", transaction).ConfigureAwait(false);
+                        migratedMatchAward.AwardId = await CreateOrGetMatchAwardTypeId("Player of the match", transaction).ConfigureAwait(false);
                         migratedMatchAward.MatchId = await GetMatchId(migratedMatchAward.MigratedMatchId, transaction).ConfigureAwait(false);
                         migratedMatchAward.PlayerIdentityId = await GetPlayerIdentityId(migratedMatchAward.PlayerOfTheMatchAwayId.Value, transaction).ConfigureAwait(false);
                         await CreateMatchAward(migratedMatchAward, transaction).ConfigureAwait(false);
@@ -160,32 +161,16 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             var awardId = await transaction.Connection.ExecuteScalarAsync<Guid?>($"SELECT AwardId FROM {Tables.Award} WHERE AwardName = @awardName", new { awardName }, transaction).ConfigureAwait(false);
             if (awardId == null)
             {
-                var equivalentAwardSet = await transaction.Connection.ExecuteScalarAsync<Guid?>($"SELECT TOP 1 EquivalentAwardSet FROM {Tables.Award}", null, transaction).ConfigureAwait(false);
-                if (!equivalentAwardSet.HasValue)
-                {
-                    equivalentAwardSet = Guid.NewGuid();
-                }
-
-                Guid? awardSet = null;
-                if (awardName.Contains("(home)") || awardName.Contains("away"))
-                {
-                    awardSet = await transaction.Connection.ExecuteScalarAsync<Guid?>($"SELECT TOP 1 AwardSet FROM {Tables.Award} WHERE AwardSet IS NOT NULL", null, transaction).ConfigureAwait(false);
-                    if (!awardSet.HasValue)
-                    {
-                        awardSet = Guid.NewGuid();
-                    }
-                }
-
                 awardId = Guid.NewGuid();
                 await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.Award} 
-                            (AwardId, AwardName, AwardSet, EquivalentAwardSet)
-						    VALUES (@AwardId, @AwardName, @AwardSet, @EquivalentAwardSet)",
+                            (AwardId, AwardName, AwardScope, AlwaysAsk)
+						    VALUES (@AwardId, @AwardName, @AwardScope, @AlwaysAsk)",
                             new
                             {
                                 AwardId = awardId,
                                 AwardName = awardName,
-                                AwardSet = awardSet,
-                                EquivalentAwardSet = equivalentAwardSet
+                                AwardScope = AwardScope.Match.ToString(),
+                                AlwaysAsk = true
                             },
                             transaction).ConfigureAwait(false);
             }

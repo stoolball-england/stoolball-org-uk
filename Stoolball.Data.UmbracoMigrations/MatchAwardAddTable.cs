@@ -1,11 +1,10 @@
-﻿using Stoolball.Data.SqlServer;
-using Umbraco.Core.Logging;
+﻿using Umbraco.Core.Logging;
 using Umbraco.Core.Migrations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
     /// <summary>
-    /// Adds a table for recording awards for performances in stoolball matches and tournaments
+    /// Adds a table for recording awards for performances in stoolball matches
     /// </summary>
     public partial class MatchAwardAddTable : MigrationBase
     {

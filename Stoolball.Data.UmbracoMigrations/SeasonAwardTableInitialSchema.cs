@@ -4,19 +4,19 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
-    [TableName(Constants.Tables.MatchAward)]
-    [PrimaryKey(nameof(MatchAwardId), AutoIncrement = false)]
+    [TableName(Constants.Tables.SeasonAward)]
+    [PrimaryKey(nameof(SeasonAwardId), AutoIncrement = false)]
     [ExplicitColumns]
-    public class MatchAwardTableInitialSchema
+    public class SeasonAwardTableInitialSchema
     {
         [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
-        [Column(nameof(MatchAwardId))]
-        public Guid MatchAwardId { get; set; }
+        [Column(nameof(SeasonAwardId))]
+        public Guid SeasonAwardId { get; set; }
 
-        [ForeignKey(typeof(MatchTableInitialSchema), Column = nameof(MatchTableInitialSchema.MatchId))]
+        [ForeignKey(typeof(SeasonTableInitialSchema), Column = nameof(SeasonTableInitialSchema.SeasonId))]
         [Index(IndexTypes.Clustered)]
-        [Column(nameof(MatchId))]
-        public Guid MatchId { get; set; }
+        [Column(nameof(SeasonId))]
+        public Guid SeasonId { get; set; }
 
         [ForeignKey(typeof(AwardTableInitialSchema), Column = nameof(AwardTableInitialSchema.AwardId))]
         [Index(IndexTypes.NonClustered)]

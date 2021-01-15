@@ -1,6 +1,5 @@
 ﻿using System;
 using NPoco;
-using Stoolball.Data.SqlServer;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
@@ -17,12 +16,11 @@ namespace Stoolball.Data.UmbracoMigrations
         [Column(nameof(AwardName))]
         public string AwardName { get; set; }
 
-        [Column(nameof(AwardSet))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public Guid? AwardSet { get; set; }
+        [Column(nameof(AwardScope))]
+        [Index(IndexTypes.NonClustered)]
+        public string AwardScope { get; set; }
 
-        [Column(nameof(EquivalentAwardSet))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public Guid? EquivalentAwardSet { get; set; }
+        [Column(nameof(AlwaysAsk))]
+        public bool AlwaysAsk { get; set; }
     }
 }
