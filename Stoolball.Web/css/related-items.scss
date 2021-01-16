@@ -54,6 +54,10 @@
     @include sr-only();
 }
 
+.related-items__empty thead {
+    position: static; // undo .sr-only
+}
+
 .related-items-as-cards [data-stackable] {
     display: flex;
 }
@@ -138,12 +142,13 @@
     padding: 0;
 }
 
-// padding allows the focus border on an input to show, without being cut off by overflow: hidden
+// padding/margin trick allows the focus border on an input to show, without being cut off by overflow: hidden or changing the position
 .related-item__animate {
     transition: height .5s;
     overflow: hidden;
     width: 100%;
     padding: 3px;
+    margin: -3px;
 }
 
 .related-item__deleted .related-item__animate {
@@ -178,6 +183,9 @@
     border-color: $table-dark-border-color;
 }
 
+.related-items__empty .related-items__if-not-empty {
+    visibility: hidden;
+}
 
 
 /* For reduced motion, instead of animating the row strike out the text and remove the delete button */

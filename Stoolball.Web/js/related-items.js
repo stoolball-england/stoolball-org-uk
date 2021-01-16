@@ -2,10 +2,10 @@
 
 // For Jest tests
 if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
-  module.exports = createRelatedItemsManager;
+  module.exports = createRelatedItemsEditor;
 }
 
-function createRelatedItemsManager() {
+function createRelatedItemsEditor() {
   return {
     populateTemplate: function (template, suggestion) {
       const uuid = this.uuidv4();
@@ -49,10 +49,19 @@ function createRelatedItemsManager() {
         }
       );
     },
+
+    resetEmpty: function (editor) {
+      const selectedItems = editor.querySelectorAll(".related-item__selected");
+      if (selectedItems.length) {
+        editor.classList.remove("related-items__empty");
+      } else {
+        editor.classList.add("related-items__empty");
+      }
+    },
   };
 }
 (function () {
-  const manager = createRelatedItemsManager();
+  const editorUtilities = createRelatedItemsEditor();
 
   function resetIndexes(selectedItem) {
     /* Reset the indexes on the remaining fields so that ASP.NET model binding reads them all */
@@ -117,6 +126,7 @@ function createRelatedItemsManager() {
     const relatedItems = document.querySelectorAll(".related-items");
     for (let i = 0; i < relatedItems.length; i++) {
       let thisEditor = relatedItems[i];
+      editorUtilities.resetEmpty(thisEditor);
       thisEditor.addEventListener("click", function (e) {
         /* Get a consistent target of the selected item container element, or null if it wasn't the delete button clicked */
         const selectedItem = findSelectedItemForDelete(e.target);
@@ -149,6 +159,7 @@ function createRelatedItemsManager() {
           selectedItem.addEventListener("transitionend", function () {
             selectedItem.parentNode &&
               selectedItem.parentNode.removeChild(selectedItem);
+            editorUtilities.resetEmpty(thisEditor);
           });
 
           /* Create an alert for assistive technology */
@@ -186,7 +197,7 @@ function createRelatedItemsManager() {
         onSelect: function (suggestion) {
           selectedItem.insertAdjacentHTML(
             "beforebegin",
-            manager.populateTemplate(template, suggestion)
+            editorUtilities.populateTemplate(template, suggestion)
           );
 
           /* Create an alert for assistive technology */
@@ -209,6 +220,7 @@ function createRelatedItemsManager() {
           }
           document.body.appendChild(alert);
 
+          resetEmpty(thisEditor);
           resetIndexes(selectedItem);
 
           /* Reset autocomplete options to the added team is excluded from further suggestions */
@@ -243,7 +255,7 @@ function createRelatedItemsManager() {
               data: {
                 create: true,
                 category: "Add a new " + itemType,
-                data: manager.uuidv4(),
+                data: editorUtilities.uuidv4(),
               },
             });
           }
@@ -252,7 +264,7 @@ function createRelatedItemsManager() {
           if (valueTemplate) {
             response.suggestions = response.suggestions.map(function (x) {
               return {
-                value: manager.populateTemplate(valueTemplate, x),
+                value: editorUtilities.populateTemplate(valueTemplate, x),
                 data: x.data,
               };
             });
@@ -265,7 +277,10 @@ function createRelatedItemsManager() {
             "data-suggestion-template"
           );
           if (suggestionTemplate) {
-            return manager.populateTemplate(suggestionTemplate, suggestion);
+            return editorUtilities.populateTemplate(
+              suggestionTemplate,
+              suggestion
+            );
           }
           return $.Autocomplete.defaults.formatResult(suggestion, currentValue);
         },

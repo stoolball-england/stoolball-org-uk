@@ -20,6 +20,8 @@
     Html.RequiresJs("~/js/related-items.js");
 
     Html.RequiresCss("~/css/steps.min.css");
+
+    Html.RequiresCss("~/matches/match.min.css");
 }
 <div class="container-xl">
     <h1>Edit @Model.Match.MatchFullName(x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
@@ -82,7 +84,7 @@
 
             <table class="table table-hover related-items related-items-as-cards related-items-as-cards-reset-md">
                 <thead class="thead-dark">
-                    <tr><th scope="col">Player of the match</th><th scope="col">Team</th><th scope="col" colspan="2">Reason</th></tr>
+                    <tr><th scope="col" class="award-editor-award">Player of the match</th><th scope="col" class="award-editor-team"><span class="related-items__if-not-empty">Team</span></th><th scope="col" colspan="2"><span class="related-items__if-not-empty">Reason</span></th></tr>
                 </thead>
                 <tbody>
                     @for (var i = 0; i < Model.FormData.Awards.Count; i++)

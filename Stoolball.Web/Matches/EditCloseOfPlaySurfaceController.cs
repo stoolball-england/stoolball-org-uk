@@ -52,8 +52,6 @@ namespace Stoolball.Web.Matches
                 return new HttpNotFoundResult();
             }
 
-            ModelState.AddModelError("", "Just being unreasonable");
-
             var model = new EditCloseOfPlayViewModel(CurrentPage, Services.UserService)
             {
                 Match = beforeUpdate,
