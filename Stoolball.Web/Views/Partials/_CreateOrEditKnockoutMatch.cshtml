@@ -52,7 +52,7 @@ else
     @Html.LabelFor(m => Model.MatchLocationName, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @if (Model.MatchLocationId.HasValue)
     {
-        <div class="related-item__selected">
+        <div class="single-related-item__selected">
             <div class="related-item__selected__section">
                 @Html.TextBoxFor(m => Model.MatchLocationName, new { @class = "form-control", @readonly = "readonly" })
             </div>
@@ -89,7 +89,7 @@ else
     }
 </div>
 <script type="text/x-template" id="location-template">
-    <div class="related-item__selected">
+    <div class="single-related-item__selected">
         <div class="related-item__selected__section">
             <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="MatchLocationName" name="MatchLocationName" />
         </div>

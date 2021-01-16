@@ -80,15 +80,32 @@
                 @Html.ValidationMessageFor(m => Model.FormData.MatchResultType, null, new { id = "result-type-validation" })
             </fieldset>
 
-            <table class="table table-hover related-items">
+            <table class="table table-hover related-items related-items-as-cards related-items-as-cards-reset-md">
                 <thead class="thead-dark">
-                    <tr><th scope="col" colspan="2">Player of the match</th></tr>
+                    <tr><th scope="col">Player of the match</th><th scope="col">Team</th><th scope="col" colspan="2">Reason</th></tr>
                 </thead>
                 <tbody>
                     @for (var i = 0; i < Model.FormData.Awards.Count; i++)
                     {
                         <tr class="related-item__selected">
-                            <td class="related-item__selected__section"><div class="related-item__animate">@Model.FormData.Awards[i].PlayerSearch (@Model.Match.Teams.First(team => team.Team.TeamId == Model.FormData.Awards[i].TeamId).Team.TeamName)</div></td>
+                            <td class="related-item__selected__section" data-stackable="true">
+                                <div class="related-item__animate">
+                                    <span class="related-items-as-cards__label" aria-hidden="true">Player of the match</span>
+                                    @Model.FormData.Awards[i].PlayerSearch
+                                </div>
+                            </td>
+                            <td class="related-item__selected__section" data-stackable="true">
+                                <div class="related-item__animate">
+                                    <span class="related-items-as-cards__label" aria-hidden="true">Team</span>
+                                    @Model.Match.Teams.First(team => team.Team.TeamId == Model.FormData.Awards[i].TeamId).Team.TeamName
+                                </div>
+                            </td>
+                            <td class="related-item__selected__section" data-stackable="true">
+                                <div class="related-item__animate">
+                                    @Html.LabelFor(m => Model.FormData.Awards[i].Reason, new { @class = "related-items-as-cards__label", aria_hidden="true" })
+                                    @Html.TextBoxFor(m => Model.FormData.Awards[i].Reason, new { @class="form-control related-item__data", data_item=Model.FormData.Awards[i].MatchAwardId })
+                                </div>
+                            </td>
                             <td class="related-item__delete related-item__selected__section">
                                 <div class="related-item__animate">
                                     @Html.HiddenFor(m => Model.FormData.Awards[i].MatchAwardId, new { @class = "related-item__data related-item__id", data_item = Model.FormData.Awards[i].MatchAwardId })
@@ -100,12 +117,12 @@
                         </tr>
                     }
                     <tr>
-                        <td colspan="2">
-                            @Html.Label("award-autocomplete", "Add a player", new { @class = "sr-only" })
+                        <td colspan="4">
+                            @Html.Label("award-autocomplete", "Add a player of the match", new { @class = "sr-only" })
                             @Html.TextBox("award-autocomplete", string.Empty, new
                             {
                                 @class = "form-control related-item__search",
-                                placeholder = "Add a player",
+                                placeholder = "Add a player of the match",
                                 autocomplete = "off",
                                 data_lpignore = "true",
                                 type = "search",
@@ -122,12 +139,29 @@
             <script type="text/x-template" id="award-template">
                 <table>
                     <tr class="related-item__selected">
-                        <td class="related-item__selected__section"><div class="related-item__animate">{{data.playerIdentityName}} ({{data.teamName}})</div></td>
+                        <td class="related-item__selected__section" data-stackable="true">
+                            <div class="related-item__animate">
+                                <span class="related-items-as-cards__label" aria-hidden="true">Player of the match</span>
+                                {{data.playerIdentityName}}
+                            </div>
+                        </td>
+                        <td class="related-item__selected__section" data-stackable="true">
+                            <div class="related-item__animate">
+                                <span class="related-items-as-cards__label" aria-hidden="true">Team</span>
+                                {{data.teamName}}
+                            </div>
+                        </td>
+                        <td class="related-item__selected__section" data-stackable="true">
+                            <div class="related-item__animate">
+                                <label aria-hidden="true" class="related-items-as-cards__label" data-item="{{id}}" for="FormData_Awards_[0]__Reason">Reason</label>
+                                <input class="form-control related-item__data" data-item="{{id}}" id="FormData_Awards_[0]__Reason" name="FormData.Awards[0].Reason" type="text" value="">
+                            </div>
+                        </td>
                         <td class="related-item__delete related-item__selected__section">
                             <div class="related-item__animate">
-                                <input class="related-item__data related-item__id" data-item="{{id}}" id="FormData_Awards_[0]__MatchAwardId" name="FormData.Awards[0].MatchAwardId" type="hidden" value="{{id}}">
-                                <input class="related-item__data" data-item="{{id}}" id="FormData_Awards_[0]__PlayerSearch" name="FormData.Awards[0].PlayerSearch" type="hidden" value="{{data.playerIdentityName}}">
-                                <input class="related-item__data" data-item="{{id}}" id="FormData_Awards_[0]__TeamId" name="FormData.Awards[0].TeamId" type="hidden" value="{{data.teamId}}">
+                                <input class="related-item__data related-item__id" data-item="{{id}}" name="FormData.Awards[0].MatchAwardId" type="hidden" value="{{id}}">
+                                <input class="related-item__data" data-item="{{id}}" name="FormData.Awards[0].PlayerSearch" type="hidden" value="{{data.playerIdentityName}}">
+                                <input class="related-item__data" data-item="{{id}}" name="FormData.Awards[0].TeamId" type="hidden" value="{{data.teamId}}">
                                 <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove the player of the match award for {{data.playerIdentityName}}")</button>
                             </div>
                         </td>

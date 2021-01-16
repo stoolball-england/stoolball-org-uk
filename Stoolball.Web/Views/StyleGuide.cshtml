@@ -355,11 +355,12 @@
         </table>
         <table class="table table-hover related-items related-items__create" data-related-item="team">
             <thead class="thead-dark">
-                <tr><th scope="col" colspan="2">Multiple related items, with add option</th></tr>
+                <tr><th scope="col">Multiple related items, with add option</th><th scope="col" colspan="2">Extra column</th></tr>
             </thead>
             <tbody>
                 <tr class="related-item__selected">
                     <td class="related-item__selected__section"><div class="related-item__animate">Selected item</div></td>
+                    <td class="related-item__selected__section"><div class="related-item__animate"><input type="text" placeholder="Extra input to show layout, not wired up" class="form-control" /></div></td>
                     <td class="related-item__delete related-item__selected__section">
                         <div class="related-item__animate">
                             <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove item")</button>
@@ -367,7 +368,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2">
+                    <td colspan="3">
                         @Html.Label("team-autocomplete", "Add a team", new { @class = "sr-only" })
                         @Html.TextBox("team-autocomplete", string.Empty, new
                         {
@@ -387,6 +388,7 @@
         <table>
             <tr class="related-item__selected">
                 <td class="related-item__selected__section"><div class="related-item__animate">{{value}}</div></td>
+                <td class="related-item__selected__section"><div class="related-item__animate">Extra column</div></td>
                 <td class="related-item__delete related-item__selected__section">
                     <div class="related-item__animate">
                         <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}}")</button>
@@ -409,7 +411,7 @@
           })
         </div>
         <script type="text/x-template" id="location-template">
-        <div class="related-item__selected">
+        <div class="single-related-item__selected">
             <div class="related-item__selected__section">
                 <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="Match_MatchLocation_PrimaryAddressableObjectName" />
             </div>

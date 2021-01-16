@@ -85,7 +85,8 @@ namespace Stoolball.Web.Matches
                 {
                     MatchAwardId = x.MatchAwardId,
                     PlayerSearch = x.PlayerIdentity.PlayerIdentityName,
-                    TeamId = model.Match.Teams.First(team => team.Team.TeamId == x.PlayerIdentity.Team.TeamId).Team.TeamId
+                    TeamId = model.Match.Teams.First(team => team.Team.TeamId == x.PlayerIdentity.Team.TeamId).Team.TeamId,
+                    Reason = x.Reason
                 }).ToList();
 
                 if (!model.Match.MatchResultType.HasValue)

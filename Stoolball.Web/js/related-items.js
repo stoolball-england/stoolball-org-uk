@@ -57,7 +57,7 @@ function createRelatedItemsManager() {
   function resetIndexes(selectedItem) {
     /* Reset the indexes on the remaining fields so that ASP.NET model binding reads them all */
     const remainingData = selectedItem.parentNode.querySelectorAll(
-      ".related-item__data"
+      ".related-item__data, .related-items-as-cards__label"
     );
 
     let index = -1;
@@ -69,6 +69,8 @@ function createRelatedItemsManager() {
       }
 
       replaceIndex(remainingData[i], "name", index);
+      replaceIndex(remainingData[i], "for", index);
+      replaceIndex(remainingData[i], "id", index);
       replaceIndex(remainingData[i], "aria-describedby", index);
 
       const validator = remainingData[i].parentNode.querySelector(

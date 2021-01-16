@@ -12,5 +12,6 @@ namespace Stoolball.Web.Matches
         public string PlayerSearch { get; set; }
 
         public Guid? TeamId { get; set; }
+        public string Reason { get; set; }
     }
 }

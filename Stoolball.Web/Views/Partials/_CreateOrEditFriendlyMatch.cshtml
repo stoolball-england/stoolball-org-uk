@@ -23,7 +23,7 @@ else
         @Html.LabelFor(m => Model.Match.Season.SeasonId)
         @if (Model.Match.Season != null)
         {
-            <div class="related-item__selected">
+            <div class="single-related-item__selected">
                 <div class="related-item__selected__section">
                     @Html.TextBoxFor(m => Model.SeasonFullName, new { @class = "form-control", @readonly = "readonly" })
                 </div>
@@ -60,7 +60,7 @@ else
         }
     </div>
     <script type="text/x-template" id="season-template">
-        <div class="related-item__selected">
+        <div class="single-related-item__selected">
             <div class="related-item__selected__section">
                 <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="SeasonFullName" name="SeasonFullName" />
             </div>
@@ -89,7 +89,7 @@ else
     <p class="form-text" id="home-team-or"><small>If you're still arranging the match you can fill in one team and leave the other blank.</small></p>
     @if (Model.HomeTeamId.HasValue)
     {
-        <div class="related-item__selected">
+        <div class="single-related-item__selected">
             <div class="related-item__selected__section">
                 @Html.TextBoxFor(m => Model.HomeTeamName, new { @class = "form-control", @readonly = "readonly", aria_describedby = "home-team-or home-team" })
             </div>
@@ -127,7 +127,7 @@ else
     @Html.ValidationMessageFor(m => Model.HomeTeamId, null, new { id = "home-team" })
 </div>
 <script type="text/x-template" id="home-team-template">
-    <div class="related-item__selected">
+    <div class="single-related-item__selected">
         <div class="related-item__selected__section">
             <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="HomeTeamName" name="HomeTeamName" aria-describedby="home-team-or home-team" />
         </div>
@@ -143,7 +143,7 @@ else
     <p class="form-text" id="away-team-or"><small>If you're still arranging the match you can fill in one team and leave the other blank.</small></p>
     @if (Model.AwayTeamId.HasValue)
     {
-        <div class="related-item__selected">
+        <div class="single-related-item__selected">
             <div class="related-item__selected__section">
                 @Html.TextBoxFor(m => Model.AwayTeamName, new { @class = "form-control", @readonly = "readonly", aria_describedby = "away-team-or" })
             </div>
@@ -181,7 +181,7 @@ else
     @Html.ValidationMessageFor(m => Model.AwayTeamId, null, new { id = "away-team" })
 </div>
 <script type="text/x-template" id="away-team-template">
-    <div class="related-item__selected">
+    <div class="single-related-item__selected">
         <div class="related-item__selected__section">
             <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="AwayTeamName" name="AwayTeamName" aria-describedby="away-team-or away-team" />
         </div>
@@ -196,7 +196,7 @@ else
     @Html.LabelFor(m => Model.MatchLocationName, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     @if (Model.MatchLocationId.HasValue)
     {
-        <div class="related-item__selected">
+        <div class="single-related-item__selected">
             <div class="related-item__selected__section">
                 @Html.TextBoxFor(m => Model.MatchLocationName, new { @class = "form-control", @readonly = "readonly" })
             </div>
@@ -233,7 +233,7 @@ else
     }
 </div>
 <script type="text/x-template" id="location-template">
-    <div class="related-item__selected">
+    <div class="single-related-item__selected">
         <div class="related-item__selected__section">
             <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="MatchLocationName" name="MatchLocationName" />
         </div>

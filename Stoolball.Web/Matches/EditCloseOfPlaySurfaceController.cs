@@ -52,6 +52,8 @@ namespace Stoolball.Web.Matches
                 return new HttpNotFoundResult();
             }
 
+            ModelState.AddModelError("", "Just being unreasonable");
+
             var model = new EditCloseOfPlayViewModel(CurrentPage, Services.UserService)
             {
                 Match = beforeUpdate,
@@ -61,7 +63,8 @@ namespace Stoolball.Web.Matches
             model.Match.MatchResultType = model.FormData.MatchResultType;
             model.Match.Awards = model.FormData.Awards.Select(x => new MatchAward
             {
-                MatchAwardId = x.MatchAwardId
+                MatchAwardId = x.MatchAwardId,
+                Reason = x.Reason
             }).ToList();
 
             model.Match.UpdateMatchNameAutomatically = beforeUpdate.UpdateMatchNameAutomatically;

@@ -49,14 +49,75 @@
     </script>
 */
 
+
+.related-items-as-cards thead {
+    @include sr-only();
+}
+
+.related-items-as-cards [data-stackable] {
+    display: flex;
+}
+.related-items-as-cards__label {
+    display: block;
+    font-weight: bold;
+}
+// Make space in the first field for the absolutely-positioned delete button
+.related-items-as-cards .related-item__selected__section:first-child {
+    background: $table-dark-bg;
+    color: $table-dark-color;
+    padding-right: 80px;
+}
+
+.related-items-as-cards .related-item__delete {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: $white;
+    border-radius: $border-radius;
+    margin: $spacer/2;
+    text-align: center;
+}
+
+@include media-breakpoint-up(md) {
+    .related-items-as-cards-reset-md thead {
+        position: static; // undo .sr-only
+    }
+
+    .related-items-as-cards-reset-md .related-items-as-cards__label {
+        display: none;
+    }
+
+    .related-items-as-cards-reset-md .related-item__selected__section:first-child {
+        background: none;
+        color: $table-color;
+    }
+
+    .related-items-as-cards-reset-md [data-stackable] {
+        display: table-cell;
+    }
+
+    .related-items-as-cards-reset-md .related-item__delete {
+        position: static;
+        text-align: right;
+        margin: 0;
+        background: none;
+    }
+}
+
+
 /* .related-item the single item version, which is not in a table */
 .related-item {
     width: 100%;
 }
 
-.related-item__selected {
+.single-related-item__selected {
     display: flex;
     align-items: center;
+}
+
+// A single item in .related-items. Set as a positioning context to position the delete button when using .related-items-as-cards.
+.related-item__selected {
+    position: relative;
 }
 
 .related-item__selected__section:first-child {
@@ -67,13 +128,22 @@
     transition: padding .5s;
 }
 
+// When there's an extra input, everything needs to line up. Specificity required to override Bootstrap.
+.related-items .related-item__selected__section {
+    vertical-align: middle;
+}
+
+
 .related-item__deleted > .related-item__selected__section {
     padding: 0;
 }
 
+// padding allows the focus border on an input to show, without being cut off by overflow: hidden
 .related-item__animate {
     transition: height .5s;
     overflow: hidden;
+    width: 100%;
+    padding: 3px;
 }
 
 .related-item__deleted .related-item__animate {
@@ -85,6 +155,11 @@
     width: 35px;
     text-align: right;
     box-sizing: content-box;
+}
+
+// Centres the icon
+.related-item__delete .related-item__animate {
+    width: auto;
 }
 
 .related-item__delete button {
