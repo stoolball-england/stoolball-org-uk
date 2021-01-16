@@ -230,6 +230,15 @@ function createRelatedItemsEditor() {
 
           /* Clear the search field */
           this.value = "";
+
+          // If there's a field within the new row, set the focus there
+          const rows = thisEditor.querySelectorAll(".related-item__selected");
+          const fieldsInNewRow = rows[rows.length - 1].querySelectorAll(
+            "input[type=text],input[type=number],select"
+          );
+          if (fieldsInNewRow && fieldsInNewRow.length) {
+            fieldsInNewRow[0].focus();
+          }
         },
         groupBy: thisEditor.classList.contains("related-items__create")
           ? "category"

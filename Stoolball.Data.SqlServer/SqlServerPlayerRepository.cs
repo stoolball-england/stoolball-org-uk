@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -43,7 +44,7 @@ namespace Stoolball.Data.SqlServer
         /// Finds an existing player identity or creates it if it is not found
         /// </summary>
         /// <returns>The <see cref="PlayerIdentity.PlayerIdentityId"/> of the created or matched player identity</returns>
-        public async Task<Guid> CreateOrMatchPlayerIdentity(PlayerIdentity playerIdentity, Guid memberKey, string memberName)
+        public async Task<Guid> CreateOrMatchPlayerIdentity(PlayerIdentity playerIdentity, Guid memberKey, string memberName, IDbTransaction transaction)
         {
             if (playerIdentity is null)
             {
@@ -65,95 +66,90 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            Player player;
-            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            if (transaction is null)
             {
-                connection.Open();
+                throw new ArgumentNullException(nameof(transaction));
+            }
 
-                var matchedPlayer = await connection.ExecuteScalarAsync<Guid?>(
-                        $"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityComparableName = @PlayerIdentityComparableName AND TeamId = @TeamId",
-                        new
-                        {
-                            PlayerIdentityComparableName = playerIdentity.ComparableName(),
-                            playerIdentity.Team.TeamId
-                        }).ConfigureAwait(false);
+            Player player;
+            var matchedPlayer = await transaction.Connection.ExecuteScalarAsync<Guid?>(
+                    $"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityComparableName = @PlayerIdentityComparableName AND TeamId = @TeamId",
+                    new
+                    {
+                        PlayerIdentityComparableName = playerIdentity.ComparableName(),
+                        playerIdentity.Team.TeamId
+                    }, transaction).ConfigureAwait(false);
 
-                if (matchedPlayer.HasValue)
+            if (matchedPlayer.HasValue)
+            {
+                return matchedPlayer.Value;
+            }
+
+            var auditablePlayerIdentity = CreateAuditableCopy(playerIdentity);
+
+            auditablePlayerIdentity.PlayerIdentityId = Guid.NewGuid();
+            auditablePlayerIdentity.PlayerIdentityName = CapitaliseName(auditablePlayerIdentity.PlayerIdentityName);
+            auditablePlayerIdentity.TotalMatches = 1;
+
+            player = new Player
+            {
+                PlayerId = Guid.NewGuid(),
+                PlayerName = auditablePlayerIdentity.PlayerIdentityName,
+                PlayerRoute = _routeGenerator.GenerateRoute($"/players", auditablePlayerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute)
+            };
+            player.PlayerIdentities.Add(auditablePlayerIdentity);
+
+            int count;
+            do
+            {
+                count = await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { player.PlayerRoute }, transaction).ConfigureAwait(false);
+                if (count > 0)
                 {
-                    return matchedPlayer.Value;
+                    player.PlayerRoute = _routeGenerator.IncrementRoute(player.PlayerRoute);
                 }
+            }
+            while (count > 0);
 
-                var auditablePlayerIdentity = CreateAuditableCopy(playerIdentity);
-
-                using (var transaction = connection.BeginTransaction())
-                {
-                    auditablePlayerIdentity.PlayerIdentityId = Guid.NewGuid();
-                    auditablePlayerIdentity.PlayerIdentityName = CapitaliseName(auditablePlayerIdentity.PlayerIdentityName);
-                    auditablePlayerIdentity.TotalMatches = 1;
-
-                    player = new Player
-                    {
-                        PlayerId = Guid.NewGuid(),
-                        PlayerName = auditablePlayerIdentity.PlayerIdentityName,
-                        PlayerRoute = _routeGenerator.GenerateRoute($"/players", auditablePlayerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute)
-                    };
-                    player.PlayerIdentities.Add(auditablePlayerIdentity);
-
-                    int count;
-                    do
-                    {
-                        count = await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { player.PlayerRoute }, transaction).ConfigureAwait(false);
-                        if (count > 0)
-                        {
-                            player.PlayerRoute = _routeGenerator.IncrementRoute(player.PlayerRoute);
-                        }
-                    }
-                    while (count > 0);
-
-                    await transaction.Connection.ExecuteAsync(
-                          $@"INSERT INTO {Tables.Player} 
+            await transaction.Connection.ExecuteAsync(
+                  $@"INSERT INTO {Tables.Player} 
                                                (PlayerId, PlayerName, PlayerRoute) 
                                                VALUES 
                                                (@PlayerId, @PlayerName, @PlayerRoute)",
-                          new
-                          {
-                              player.PlayerId,
-                              player.PlayerName,
-                              player.PlayerRoute
-                          }, transaction).ConfigureAwait(false);
+                  new
+                  {
+                      player.PlayerId,
+                      player.PlayerName,
+                      player.PlayerRoute
+                  }, transaction).ConfigureAwait(false);
 
-                    await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerIdentity} 
+            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerIdentity} 
                                 (PlayerIdentityId, PlayerId, PlayerIdentityName, PlayerIdentityComparableName, TeamId, TotalMatches) 
                                 VALUES (@PlayerIdentityId, @PlayerId, @PlayerIdentityName, @PlayerIdentityComparableName, @TeamId, @TotalMatches)",
-                           new
-                           {
-                               auditablePlayerIdentity.PlayerIdentityId,
-                               player.PlayerId,
-                               auditablePlayerIdentity.PlayerIdentityName,
-                               PlayerIdentityComparableName = auditablePlayerIdentity.ComparableName(),
-                               auditablePlayerIdentity.Team.TeamId,
-                               auditablePlayerIdentity.TotalMatches
-                           }, transaction).ConfigureAwait(false);
+                   new
+                   {
+                       auditablePlayerIdentity.PlayerIdentityId,
+                       player.PlayerId,
+                       auditablePlayerIdentity.PlayerIdentityName,
+                       PlayerIdentityComparableName = auditablePlayerIdentity.ComparableName(),
+                       auditablePlayerIdentity.Team.TeamId,
+                       auditablePlayerIdentity.TotalMatches
+                   }, transaction).ConfigureAwait(false);
 
-                    var serialisedPlayer = JsonConvert.SerializeObject(player);
-                    await _auditRepository.CreateAudit(new AuditRecord
-                    {
-                        Action = AuditAction.Create,
-                        MemberKey = memberKey,
-                        ActorName = memberName,
-                        EntityUri = player.EntityUri,
-                        State = serialisedPlayer,
-                        RedactedState = serialisedPlayer,
-                        AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+            var serialisedPlayer = JsonConvert.SerializeObject(player);
+            await _auditRepository.CreateAudit(new AuditRecord
+            {
+                Action = AuditAction.Create,
+                MemberKey = memberKey,
+                ActorName = memberName,
+                EntityUri = player.EntityUri,
+                State = serialisedPlayer,
+                RedactedState = serialisedPlayer,
+                AuditDate = DateTime.UtcNow
+            }, transaction).ConfigureAwait(false);
 
-                    transaction.Commit();
+            _logger.Info(GetType(), LoggingTemplates.Created, player, memberName, memberKey, GetType(), nameof(SqlServerPlayerRepository.CreateOrMatchPlayerIdentity));
 
-                    _logger.Info(GetType(), LoggingTemplates.Created, player, memberName, memberKey, GetType(), nameof(SqlServerPlayerRepository.CreateOrMatchPlayerIdentity));
-                }
-
-                return auditablePlayerIdentity.PlayerIdentityId.Value;
-            }
+            return auditablePlayerIdentity.PlayerIdentityId.Value;
         }
 
         private static string CapitaliseName(string playerIdentityName)

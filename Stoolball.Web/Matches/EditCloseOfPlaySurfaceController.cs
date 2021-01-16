@@ -6,6 +6,7 @@ using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
+using Stoolball.Teams;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -62,6 +63,14 @@ namespace Stoolball.Web.Matches
             model.Match.Awards = model.FormData.Awards.Select(x => new MatchAward
             {
                 MatchAwardId = x.MatchAwardId,
+                PlayerIdentity = new PlayerIdentity
+                {
+                    PlayerIdentityName = x.PlayerSearch,
+                    Team = new Team
+                    {
+                        TeamId = x.TeamId
+                    }
+                },
                 Reason = x.Reason
             }).ToList();
 

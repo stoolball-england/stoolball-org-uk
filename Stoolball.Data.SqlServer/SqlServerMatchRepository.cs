@@ -89,6 +89,7 @@ namespace Stoolball.Data.SqlServer
                 LastPlayerBatsOn = match.LastPlayerBatsOn,
                 EnableBonusOrPenaltyRuns = match.EnableBonusOrPenaltyRuns,
                 MatchInnings = match.MatchInnings.Select(x => CreateAuditableCopy(x)).ToList(),
+                Awards = match.Awards.Select(x => CreateAuditableCopy(x)).ToList(),
                 MatchNotes = match.MatchNotes,
                 MatchRoute = match.MatchRoute
             };
@@ -128,9 +129,9 @@ namespace Stoolball.Data.SqlServer
                 PlayerInnings = innings.PlayerInnings.Select(x => new PlayerInnings
                 {
                     PlayerInningsId = x.PlayerInningsId,
-                    PlayerIdentity = new PlayerIdentity { PlayerIdentityId = x.PlayerIdentity.PlayerIdentityId, PlayerIdentityName = x.PlayerIdentity.PlayerIdentityName },
-                    DismissedBy = x.DismissedBy != null ? new PlayerIdentity { PlayerIdentityId = x.DismissedBy.PlayerIdentityId, PlayerIdentityName = x.DismissedBy.PlayerIdentityName } : null,
-                    Bowler = x.Bowler != null ? new PlayerIdentity { PlayerIdentityId = x.Bowler.PlayerIdentityId, PlayerIdentityName = x.Bowler.PlayerIdentityName } : null,
+                    PlayerIdentity = CreateAuditableCopy(x.PlayerIdentity),
+                    DismissedBy = x.DismissedBy != null ? CreateAuditableCopy(x.DismissedBy) : null,
+                    Bowler = x.Bowler != null ? CreateAuditableCopy(x.Bowler) : null,
                     DismissalType = x.DismissalType,
                     RunsScored = x.RunsScored,
                     BallsFaced = x.BallsFaced
@@ -138,7 +139,7 @@ namespace Stoolball.Data.SqlServer
                 OversBowled = innings.OversBowled.Select(x => new Over
                 {
                     OverId = x.OverId,
-                    PlayerIdentity = new PlayerIdentity { PlayerIdentityId = x.PlayerIdentity.PlayerIdentityId, PlayerIdentityName = x.PlayerIdentity.PlayerIdentityName },
+                    PlayerIdentity = CreateAuditableCopy(x.PlayerIdentity),
                     BallsBowled = x.BallsBowled,
                     NoBalls = x.NoBalls,
                     Wides = x.Wides,
@@ -153,6 +154,30 @@ namespace Stoolball.Data.SqlServer
                 BonusOrPenaltyRuns = innings.BonusOrPenaltyRuns,
                 Runs = innings.Runs,
                 Wickets = innings.Wickets
+            };
+        }
+
+        private static MatchAward CreateAuditableCopy(MatchAward award)
+        {
+            return new MatchAward
+            {
+                MatchAwardId = award.MatchAwardId,
+                Award = award.Award,
+                PlayerIdentity = CreateAuditableCopy(award.PlayerIdentity),
+                Reason = award.Reason
+            };
+        }
+
+        private static PlayerIdentity CreateAuditableCopy(PlayerIdentity playerIdentity)
+        {
+            return new PlayerIdentity
+            {
+                PlayerIdentityId = playerIdentity.PlayerIdentityId,
+                PlayerIdentityName = playerIdentity.PlayerIdentityName,
+                Team = new Team
+                {
+                    TeamId = playerIdentity.Team?.TeamId
+                }
             };
         }
 
@@ -740,18 +765,18 @@ namespace Stoolball.Data.SqlServer
                     foreach (var playerInnings in comparison.PlayerInningsAdded)
                     {
                         playerInnings.PlayerIdentity.Team = auditableInnings.BattingTeam.Team;
-                        playerInnings.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.PlayerIdentity, memberKey, memberName).ConfigureAwait(false);
+                        playerInnings.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.PlayerIdentity, memberKey, memberName, transaction).ConfigureAwait(false);
 
                         if (playerInnings.DismissedBy != null)
                         {
                             playerInnings.DismissedBy.Team = auditableInnings.BowlingTeam.Team;
-                            playerInnings.DismissedBy.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.DismissedBy, memberKey, memberName).ConfigureAwait(false);
+                            playerInnings.DismissedBy.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.DismissedBy, memberKey, memberName, transaction).ConfigureAwait(false);
                         }
 
                         if (playerInnings.Bowler != null)
                         {
                             playerInnings.Bowler.Team = auditableInnings.BowlingTeam.Team;
-                            playerInnings.Bowler.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.Bowler, memberKey, memberName).ConfigureAwait(false);
+                            playerInnings.Bowler.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
                         }
 
                         playerInnings.PlayerInningsId = Guid.NewGuid();
@@ -777,18 +802,18 @@ namespace Stoolball.Data.SqlServer
                     foreach (var (before, after) in comparison.PlayerInningsChanged)
                     {
                         after.PlayerIdentity.Team = auditableInnings.BattingTeam.Team;
-                        after.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.PlayerIdentity, memberKey, memberName).ConfigureAwait(false);
+                        after.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.PlayerIdentity, memberKey, memberName, transaction).ConfigureAwait(false);
 
                         if (after.DismissedBy != null)
                         {
                             after.DismissedBy.Team = auditableInnings.BowlingTeam.Team;
-                            after.DismissedBy.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.DismissedBy, memberKey, memberName).ConfigureAwait(false);
+                            after.DismissedBy.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.DismissedBy, memberKey, memberName, transaction).ConfigureAwait(false);
                         }
 
                         if (after.Bowler != null)
                         {
                             after.Bowler.Team = auditableInnings.BowlingTeam.Team;
-                            after.Bowler.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.Bowler, memberKey, memberName).ConfigureAwait(false);
+                            after.Bowler.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
                         }
 
                         after.PlayerInningsId = before.PlayerInningsId;
@@ -925,7 +950,7 @@ namespace Stoolball.Data.SqlServer
                     {
                         over.OverId = Guid.NewGuid();
                         over.PlayerIdentity.Team = auditableInnings.BowlingTeam.Team;
-                        over.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(over.PlayerIdentity, memberKey, memberName).ConfigureAwait(false);
+                        over.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(over.PlayerIdentity, memberKey, memberName, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($@"INSERT INTO {Tables.Over} 
                                 (OverId, OverNumber, MatchInningsId, PlayerIdentityId, BallsBowled, NoBalls, Wides, RunsConceded) 
                                 VALUES 
@@ -948,7 +973,7 @@ namespace Stoolball.Data.SqlServer
                     {
                         after.OverId = before.OverId;
                         after.PlayerIdentity.Team = auditableInnings.BowlingTeam.Team;
-                        after.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.PlayerIdentity, memberKey, memberName).ConfigureAwait(false);
+                        after.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.PlayerIdentity, memberKey, memberName, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($@"UPDATE {Tables.Over} SET 
                                 PlayerIdentityId = @PlayerIdentityId,
                                 BallsBowled = @BallsBowled,
@@ -1044,6 +1069,48 @@ namespace Stoolball.Data.SqlServer
                             auditableMatch.MatchId
                         },
                         transaction).ConfigureAwait(false);
+
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.MatchAward} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+                    var awardId = await connection.QuerySingleAsync<Guid>($"SELECT AwardId FROM {Tables.Award} WHERE AwardName = 'Player of the match'", null, transaction).ConfigureAwait(false);
+                    foreach (var award in auditableMatch.Awards)
+                    {
+                        if (!award.MatchAwardId.HasValue)
+                        {
+                            award.MatchAwardId = Guid.NewGuid();
+                        }
+
+                        if (award.PlayerIdentity == null)
+                        {
+                            throw new ArgumentException($"{nameof(award.PlayerIdentity)} cannot be null in a {typeof(MatchAward)}");
+                        }
+
+                        if (award.PlayerIdentity.Team == null)
+                        {
+                            throw new ArgumentException($"{nameof(award.PlayerIdentity.Team)} cannot be null in a {typeof(MatchAward)}");
+                        }
+
+                        if (!award.PlayerIdentity.Team.TeamId.HasValue)
+                        {
+                            throw new ArgumentException($"{nameof(award.PlayerIdentity.Team.TeamId)} cannot be null in a {typeof(MatchAward)}");
+                        }
+
+                        if (!award.PlayerIdentity.PlayerIdentityId.HasValue)
+                        {
+                            award.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(award.PlayerIdentity, memberKey, memberName, transaction).ConfigureAwait(false);
+                        }
+
+                        await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchAward} 
+                                (MatchAwardId, MatchId, AwardId, PlayerIdentityId, Reason)
+                                VALUES (@MatchAwardId, @MatchId, '{awardId}', @PlayerIdentityId, @Reason)",
+                                new
+                                {
+                                    award.MatchAwardId,
+                                    auditableMatch.MatchId,
+                                    award.PlayerIdentity.PlayerIdentityId,
+                                    award.Reason
+                                },
+                                transaction).ConfigureAwait(false);
+                    }
 
                     var redacted = CreateRedactedCopy(auditableMatch);
                     await _auditRepository.CreateAudit(new AuditRecord

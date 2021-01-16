@@ -73,7 +73,7 @@ namespace Stoolball.Web.Teams
 
         private static string BuildPlayerRecord(PlayerIdentity playerIdentity, bool showTeam)
         {
-            var value = new StringBuilder("match".ToQuantity(playerIdentity.TotalMatches.Value));
+            var value = new StringBuilder("match".ToQuantity(playerIdentity.TotalMatches.HasValue ? playerIdentity.TotalMatches.Value : 0));
             if (showTeam)
             {
                 value.Append(" for ").Append(playerIdentity.Team.TeamName);

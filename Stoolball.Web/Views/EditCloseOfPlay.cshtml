@@ -92,19 +92,19 @@
                         <tr class="related-item__selected">
                             <td class="related-item__selected__section" data-stackable="true">
                                 <div class="related-item__animate">
-                                    <span class="related-items-as-cards__label" aria-hidden="true">Player of the match</span>
+                                    <span class="related-items-as-cards__label" aria-hidden="true" data-item="@Model.FormData.Awards[i].MatchAwardId">Player of the match</span>
                                     @Model.FormData.Awards[i].PlayerSearch
                                 </div>
                             </td>
                             <td class="related-item__selected__section" data-stackable="true">
                                 <div class="related-item__animate">
-                                    <span class="related-items-as-cards__label" aria-hidden="true">Team</span>
+                                    <span class="related-items-as-cards__label" aria-hidden="true" data-item="@Model.FormData.Awards[i].MatchAwardId">Team</span>
                                     @Model.Match.Teams.First(team => team.Team.TeamId == Model.FormData.Awards[i].TeamId).Team.TeamName
                                 </div>
                             </td>
                             <td class="related-item__selected__section" data-stackable="true">
                                 <div class="related-item__animate">
-                                    @Html.LabelFor(m => Model.FormData.Awards[i].Reason, new { @class = "related-items-as-cards__label", aria_hidden="true" })
+                                    @Html.LabelFor(m => Model.FormData.Awards[i].Reason, new { @class = "related-items-as-cards__label", aria_hidden="true", data_item = Model.FormData.Awards[i].MatchAwardId })
                                     @Html.TextBoxFor(m => Model.FormData.Awards[i].Reason, new { @class="form-control related-item__data", data_item=Model.FormData.Awards[i].MatchAwardId })
                                 </div>
                             </td>
@@ -143,13 +143,13 @@
                     <tr class="related-item__selected">
                         <td class="related-item__selected__section" data-stackable="true">
                             <div class="related-item__animate">
-                                <span class="related-items-as-cards__label" aria-hidden="true">Player of the match</span>
+                                <span class="related-items-as-cards__label" aria-hidden="true" data-item="{{id}}">Player of the match</span>
                                 {{data.playerIdentityName}}
                             </div>
                         </td>
                         <td class="related-item__selected__section" data-stackable="true">
                             <div class="related-item__animate">
-                                <span class="related-items-as-cards__label" aria-hidden="true">Team</span>
+                                <span class="related-items-as-cards__label" aria-hidden="true" data-item="{{id}}">Team</span>
                                 {{data.teamName}}
                             </div>
                         </td>
