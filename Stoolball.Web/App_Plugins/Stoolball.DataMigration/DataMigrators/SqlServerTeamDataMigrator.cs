@@ -114,11 +114,11 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     }
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.Team}
-						(TeamId, MigratedTeamId, ClubId, SchoolId, TeamType, PlayerType, Introduction, AgeRangeLower, AgeRangeUpper, 
+						(TeamId, MigratedTeamId, ClubId, ClubMark, SchoolId, TeamType, PlayerType, Introduction, AgeRangeLower, AgeRangeUpper, 
 						 UntilYear, Twitter, Facebook, Instagram, Website, PublicContactDetails, PrivateContactDetails, PlayingTimes, Cost,
 						 MemberGroupKey, MemberGroupName, TeamRoute)
 						VALUES 
-                        (@TeamId, @MigratedTeamId, @ClubId, @SchoolId, @TeamType, @PlayerType, @Introduction, @AgeRangeLower, @AgeRangeUpper, 
+                        (@TeamId, @MigratedTeamId, @ClubId, @ClubMark, @SchoolId, @TeamType, @PlayerType, @Introduction, @AgeRangeLower, @AgeRangeUpper, 
                          @UntilYear, @Twitter, @Facebook, @Instagram, @Website, @PublicContactDetails, @PrivateContactDetails, @PlayingTimes, @Cost, 
                          @MemberGroupKey, @MemberGroupName, @TeamRoute)",
                      new
@@ -126,6 +126,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                          migratedTeam.TeamId,
                          migratedTeam.MigratedTeamId,
                          migratedTeam.ClubId,
+                         migratedTeam.ClubMark,
                          migratedTeam.SchoolId,
                          TeamType = migratedTeam.TeamType.ToString(),
                          PlayerType = migratedTeam.PlayerType.ToString(),
@@ -211,6 +212,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 TeamId = team.TeamId,
                 MigratedTeamId = team.MigratedTeamId,
                 TeamName = team.TeamName,
+                ClubMark = team.ClubMark,
                 MigratedClubId = team.MigratedClubId,
                 MigratedSchoolId = team.MigratedSchoolId,
                 MigratedMatchLocationId = team.MigratedMatchLocationId,

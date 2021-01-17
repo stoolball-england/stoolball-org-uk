@@ -220,7 +220,7 @@ function createRelatedItemsEditor() {
           }
           document.body.appendChild(alert);
 
-          resetEmpty(thisEditor);
+          editorUtilities.resetEmpty(thisEditor);
           resetIndexes(selectedItem);
 
           /* Reset autocomplete options to the added team is excluded from further suggestions */

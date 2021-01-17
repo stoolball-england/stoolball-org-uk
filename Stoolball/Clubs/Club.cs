@@ -16,7 +16,6 @@ namespace Stoolball.Clubs
         public string ClubName { get; set; }
         public List<Team> Teams { get; internal set; } = new List<Team>();
 
-        public bool ClubMark { get; set; }
         public Guid? MemberGroupKey { get; set; }
         public string MemberGroupName { get; set; }
         public string ClubRoute { get; set; }

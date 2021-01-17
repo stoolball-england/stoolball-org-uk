@@ -88,7 +88,7 @@
         @Html.Partial("_ContactDetailsMissing", "team")
     }
 
-    @if (Model.Team.Club != null && Model.Team.Club.ClubMark)
+    @if (Model.Team.ClubMark)
     {
         @Html.Partial("_ClubMark")
     }

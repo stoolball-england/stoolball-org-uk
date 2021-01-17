@@ -38,7 +38,6 @@ namespace Stoolball.Data.SqlServer
                 ClubId = club.ClubId,
                 ClubName = club.ClubName,
                 Teams = club.Teams.Select(x => new Team { TeamId = x.TeamId }).ToList(),
-                ClubMark = club.ClubMark,
                 ClubRoute = club.ClubRoute,
                 MemberGroupKey = club.MemberGroupKey,
                 MemberGroupName = club.MemberGroupName
@@ -81,12 +80,11 @@ namespace Stoolball.Data.SqlServer
                     while (count > 0);
 
                     await connection.ExecuteAsync(
-                        $@"INSERT INTO {Tables.Club} (ClubId, ClubMark, ClubRoute, MemberGroupKey, MemberGroupName) 
-                                VALUES (@ClubId, @ClubMark, @ClubRoute, @MemberGroupKey, @MemberGroupName)",
+                        $@"INSERT INTO {Tables.Club} (ClubId, ClubRoute, MemberGroupKey, MemberGroupName) 
+                                VALUES (@ClubId, @ClubRoute, @MemberGroupKey, @MemberGroupName)",
                         new
                         {
                             auditableClub.ClubId,
-                            auditableClub.ClubMark,
                             auditableClub.ClubRoute,
                             auditableClub.MemberGroupKey,
                             auditableClub.MemberGroupName
@@ -168,12 +166,10 @@ namespace Stoolball.Data.SqlServer
 
                     await connection.ExecuteAsync(
                         $@"UPDATE {Tables.Club} SET
-                                ClubMark = @ClubMark,
                                 ClubRoute = @ClubRoute
 						        WHERE ClubId = @ClubId",
                         new
                         {
-                            auditableClub.ClubMark,
                             auditableClub.ClubRoute,
                             auditableClub.ClubId
                         }, transaction).ConfigureAwait(false);
@@ -192,10 +188,20 @@ namespace Stoolball.Data.SqlServer
                             }, transaction).ConfigureAwait(false);
                     }
 
-                    await connection.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = NULL WHERE ClubId = @ClubId AND TeamId NOT IN @TeamIds", new { auditableClub.ClubId, TeamIds = auditableClub.Teams.Select(x => x.TeamId) }, transaction).ConfigureAwait(false);
+                    // Add any newly-assigned teams to this club, and set ClubMark = 1 if any other team in this club has ClubMark = 1 (therefore removing teams has to come later)
+                    // Check for ClubId IS NULL, otherwise the owner of Club B can edit Club A by reassigning its team.
+                    await connection.ExecuteAsync($@"UPDATE {Tables.Team} SET 
+                        ClubId = @ClubId,
+                        ClubMark = (SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END FROM {Tables.Team} WHERE ClubId = @ClubId AND ClubMark = 1)
+                        WHERE TeamId IN @TeamIds AND ClubId IS NULL",
+                        new
+                        {
+                            auditableClub.ClubId,
+                            TeamIds = auditableClub.Teams.Select(x => x.TeamId)
+                        },
+                        transaction).ConfigureAwait(false);
 
-                    // Check for ClubId IS NULL, otherwise the owner of Club B can edit Club A by reassigning its team
-                    await connection.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = @ClubId WHERE TeamId IN @TeamIds AND ClubId IS NULL", new { auditableClub.ClubId, TeamIds = auditableClub.Teams.Select(x => x.TeamId) }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = NULL, ClubMark = 0 WHERE ClubId = @ClubId AND TeamId NOT IN @TeamIds", new { auditableClub.ClubId, TeamIds = auditableClub.Teams.Select(x => x.TeamId) }, transaction).ConfigureAwait(false);
 
                     if (club.ClubRoute != auditableClub.ClubRoute)
                     {
@@ -238,7 +244,7 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    await connection.ExecuteAsync($@"UPDATE {Tables.Team} SET ClubId = NULL WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($@"UPDATE {Tables.Team} SET ClubId = NULL, ClubMark = 0 WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.ClubName} WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.Club} WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
 

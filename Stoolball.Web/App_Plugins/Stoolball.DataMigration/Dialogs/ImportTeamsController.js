@@ -6,6 +6,7 @@ function teamResource() {
       return {
         MigratedTeamId: team.teamId,
         TeamName: team.name,
+        ClubMark: team.clubmarkAccredited,
         MigratedClubId: team.clubId,
         MigratedSchoolId: team.schoolId,
         MigratedMatchLocationId: team.groundId,

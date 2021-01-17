@@ -24,9 +24,9 @@
                 @if (Model.Club.Teams.Count > 0)
                 {
                     <li>remove the connection between @Model.Club.Teams.Humanize(x => x.TeamName)</li>
-                    if (Model.Club.ClubMark)
+                    if (Model.Club.Teams.Any(x => x.ClubMark))
                     {
-                        <li>remove the ClubMark status from @Model.Club.Teams.Humanize(x => x.TeamName)</li>
+                        <li>remove the ClubMark status from @Model.Club.Teams.Where(x => x.ClubMark).Humanize(x => x.TeamName)</li>
                     }
                 }
                 else

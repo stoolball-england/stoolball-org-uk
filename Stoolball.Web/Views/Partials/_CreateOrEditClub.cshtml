@@ -8,10 +8,6 @@
     @Html.TextBoxFor(m => Model.Club.ClubName, new { @class = "form-control", required = "required", aria_describedby = "club-name" })
     @Html.ValidationMessageFor(m => Model.Club.ClubName, null, new { id = "club-name" })
 </div>
-<div class="form-group custom-control custom-checkbox">
-    @Html.CheckBoxFor(m => Model.Club.ClubMark, new { @class = "custom-control-input" })
-    @Html.LabelFor(m => Model.Club.ClubMark, "ClubMark accredited", new { @class = "custom-control-label" })
-</div>
 <table class="table table-hover related-items">
     <thead class="thead-dark">
         <tr><th scope="col" colspan="2">Teams</th></tr>

@@ -67,7 +67,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 ClubId = Guid.NewGuid(),
                 MigratedClubId = club.MigratedClubId,
                 ClubName = club.ClubName,
-                ClubMark = club.ClubMark,
                 MemberGroupKey = club.MemberGroupKey,
                 MemberGroupName = club.MemberGroupName,
             };
@@ -92,13 +91,12 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     _auditHistoryBuilder.BuildInitialAuditHistory(club, migratedClub, nameof(SqlServerClubDataMigrator), x => x);
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.Club}
-						(ClubId, MigratedClubId, ClubMark, MemberGroupKey, MemberGroupName, ClubRoute)
-						VALUES (@ClubId, @MigratedClubId, @ClubMark, @MemberGroupKey, @MemberGroupName, @ClubRoute)",
+						(ClubId, MigratedClubId, MemberGroupKey, MemberGroupName, ClubRoute)
+						VALUES (@ClubId, @MigratedClubId, @MemberGroupKey, @MemberGroupName, @ClubRoute)",
                         new
                         {
                             migratedClub.ClubId,
                             migratedClub.MigratedClubId,
-                            migratedClub.ClubMark,
                             migratedClub.MemberGroupKey,
                             migratedClub.MemberGroupName,
                             migratedClub.ClubRoute

@@ -35,8 +35,8 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var clubs = await connection.QueryAsync<Club, Team, Club>(
-                    $@"SELECT c.ClubId, cn.ClubName, c.ClubMark, c.MemberGroupKey, c.MemberGroupName, c.ClubRoute,
-                            t.TeamId, tn.TeamName, t.TeamRoute, t.UntilYear
+                    $@"SELECT c.ClubId, cn.ClubName, c.MemberGroupKey, c.MemberGroupName, c.ClubRoute,
+                            t.TeamId, tn.TeamName, t.TeamRoute, t.UntilYear, t.ClubMark
                             FROM {Tables.Club} AS c 
                             INNER JOIN {Tables.ClubName} AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
                             LEFT JOIN {Tables.Team} AS t ON c.ClubId = t.ClubId

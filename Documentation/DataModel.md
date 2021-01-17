@@ -14,7 +14,7 @@ One special type of `Team` is a `TransientTeam`, which exists only for one `Matc
 
 A `Club` represents a real-world stoolball club. A stoolball club might have several teams (for example, ladies, mixed and junior teams).
 
-There are many things that happen in at club level in a stoolball club, but in the data model most of these are recorded at `Team` level. This is because the difference between `Clubs` and `Teams` is not easy to explain in the user interface, so `Clubs` are deliberately de-emphasised and are little more than a way to group `Teams` together.
+There are many things that happen in at club level in a stoolball club, but in the data model these are recorded at `Team` level. This is because the difference between `Clubs` and `Teams` is not easy to explain in the user interface, so `Clubs` are deliberately de-emphasised and are only a way to group `Teams` together.
 
 ## Schools
 
@@ -51,8 +51,6 @@ A real-world player might play for several teams, and might play under different
 A `Player` is therefore represented by one or more `PlayerIdentities`, so that we can manage the different names and teams but also recognise which ones belong to the same person.
 
 `PlayerIdentities` are created automatically from scorecards entered for `Matches`.
-
-Each `Team` also has four special `PlayerIdentities` representing no-balls, wides, byes and bonus runs.
 
 ## PlayerInnings, Overs and MatchAwards
 

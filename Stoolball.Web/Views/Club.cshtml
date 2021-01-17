@@ -31,7 +31,7 @@
         <p>No active teams have been added to @Model.Club.ClubName.</p>
     }
 
-    @if (Model.Club.ClubMark)
+    @if (Model.Club.Teams.Any(x => x.ClubMark))
     {
         @Html.Partial("_ClubMark")
     }

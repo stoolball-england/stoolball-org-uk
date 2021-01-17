@@ -35,7 +35,7 @@ namespace Stoolball.Web.Clubs
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> UpdateClub([Bind(Prefix = "Club", Include = "ClubName,ClubMark,Teams")] Club club)
+        public async Task<ActionResult> UpdateClub([Bind(Prefix = "Club", Include = "ClubName,Teams")] Club club)
         {
             if (club is null)
             {

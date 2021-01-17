@@ -82,6 +82,7 @@ namespace Stoolball.Teams
         }
 
         public Club Club { get; set; }
+        public bool ClubMark { get; set; }
         public School School { get; set; }
 
         public List<MatchLocation> MatchLocations { get; internal set; } = new List<MatchLocation>();

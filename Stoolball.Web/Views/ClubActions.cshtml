@@ -13,7 +13,7 @@
             @if (Model.IsAuthorized[AuthorizedAction.EditClub])
             {
                 <dt><a href="@Model.Club.ClubRoute/edit/club">Edit @Model.Club.ClubName</a></dt>
-                <dd>Add or remove teams in the club and set the ClubMark status.</dd>
+                <dd>Add or remove teams in the club.</dd>
             }
             @if (Model.IsAuthorized[AuthorizedAction.DeleteClub])
             {

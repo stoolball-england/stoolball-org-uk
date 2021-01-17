@@ -1,6 +1,5 @@
 ﻿using System;
 using NPoco;
-using Stoolball.Data.SqlServer;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
@@ -22,6 +21,9 @@ namespace Stoolball.Data.UmbracoMigrations
         [ForeignKey(typeof(ClubTableInitialSchema), Column = nameof(ClubTableInitialSchema.ClubId))]
         [NullSetting(NullSetting = NullSettings.Null)]
         public Guid? ClubId { get; set; }
+
+        [Column(nameof(ClubMark))]
+        public bool ClubMark { get; set; }
 
         [Column(nameof(SchoolId))]
         [ForeignKey(typeof(SchoolTableInitialSchema), Column = nameof(SchoolTableInitialSchema.SchoolId))]
