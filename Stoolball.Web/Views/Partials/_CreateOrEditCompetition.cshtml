@@ -63,7 +63,7 @@
 
 <div class="form-group">
     @Html.LabelFor(m => Model.Competition.PublicContactDetails, RequiredFieldStatus.Recommended, new { @class = "has-form-text" })
-    <p class="form-text" id="public-help"><small>Publish a phone number and email so new teams and players can get in touch. Don't include your home address.</small></p>
+    <p class="form-text" id="public-help"><small>Publish a phone number and email so new teams and players can get in touch. Don't include your home address. Make sure you have consent to share any personal details and read our <a href="/privacy/privacy-notice-public-and-private-contact-details" target="_blank">privacy notice</a>.</small></p>
     @Html.TextAreaFor(m => Model.Competition.PublicContactDetails, new { @class = "form-control", aria_describedby = "public-validation public-help" })
     @Html.ValidationMessageFor(m => Model.Competition.PublicContactDetails, null, new { id = "public-validation" })
 </div>
@@ -96,7 +96,7 @@
 
 <div class="form-group">
     @Html.LabelFor(m => Model.Competition.PrivateContactDetails, RequiredFieldStatus.Recommended, new { @class = "has-form-text" })
-    <p class="form-text" id="private-help"><small>Please provide a phone number and email, if different from above. We won't share this with anyone else.</small></p>
+    <p class="form-text" id="private-help"><small>Please provide a phone number and email, if different from above. We won't share this with anyone else. Make sure you have consent to share any personal details and read our <a href="/privacy/privacy-notice-public-and-private-contact-details" target="_blank">privacy notice</a>.</small></p>
     @Html.TextAreaFor(m => Model.Competition.PrivateContactDetails, new { @class = "form-control", aria_describedby = "private-validation private-help" })
     @Html.ValidationMessageFor(m => Model.Competition.PrivateContactDetails, null, new { id = "private-validation" })
 </div>

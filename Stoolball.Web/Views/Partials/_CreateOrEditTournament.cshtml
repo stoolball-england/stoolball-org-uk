@@ -132,7 +132,7 @@
 
 <div class="form-group">
     @Html.LabelFor(m => Model.Tournament.TournamentNotes, RequiredFieldStatus.Recommended, new { @class = "has-form-text" })
-    <p class="form-text" id="notes-help"><small>Remember to include contact details.</small></p>
+    <p class="form-text" id="notes-help"><small>Publish a phone number and email so teams can get in touch. Make sure you have consent to share any personal details and read our <a href="/privacy/privacy-notice-public-and-private-contact-details" target="_blank">privacy notice</a>.</small></p>
     @Html.TextAreaFor(m => Model.Tournament.TournamentNotes, new { @class = "form-control", aria_describedby = "notes-help notes-validation" })
     @Html.ValidationMessageFor(m => Model.Tournament.TournamentNotes, null, new { id = "notes-validation" })
 </div>
