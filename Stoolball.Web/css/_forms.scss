@@ -131,6 +131,14 @@ svg {
     padding-left: .5em;
 }
 
+.btn-back::before {
+    content: '❮';
+    padding-right: .5em;
+}
+.btn-back::after {
+    display: none;
+}
+
 .btn-add {
     background-image: url(/images/icons/add-white-24dp.svg);
     background-repeat: no-repeat;

@@ -148,22 +148,24 @@ namespace Stoolball.Data.SqlServer
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var seasons = await connection.QueryAsync<Season, Competition, TeamInSeason, Team, string, Season>(
+                var seasons = await connection.QueryAsync<Season, Competition, Season, TeamInSeason, Team, string, Season>(
                     $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Introduction, s.PlayersPerTeam, s.Overs, s.EnableTournaments, s.ResultsTableType, 
                             s.EnableLastPlayerBatsOn, s.EnableBonusOrPenaltyRuns, s.EnableRunsScored, s.EnableRunsConceded, s.Results, s.SeasonRoute,
                             co.CompetitionName, co.PlayerType, co.Introduction, co.UntilYear, co.PublicContactDetails, co.Website, co.CompetitionRoute, co.MemberGroupName,
+                            s2.SeasonId, s2.FromYear, s2.UntilYear, s2.SeasonRoute,
                             st.WithdrawnDate,
                             t.TeamId, tn.TeamName, t.TeamRoute,
                             mt.MatchType
                             FROM {Tables.Season} AS s 
                             INNER JOIN {Tables.Competition} AS co ON co.CompetitionId = s.CompetitionId
+                            LEFT JOIN {Tables.Season} AS s2 ON co.CompetitionId = s2.CompetitionId AND NOT s2.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.SeasonTeam} AS st ON st.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.Team} AS t ON t.TeamId = st.TeamId
                             LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
                             WHERE LOWER(s.SeasonRoute) = @Route
-                            ORDER BY tn.TeamName",
-                    (season, competition, teamInSeason, team, matchType) =>
+                            ORDER BY s2.FromYear DESC, s2.UntilYear ASC",
+                    (season, competition, anotherSeasonInTheCompetition, teamInSeason, team, matchType) =>
                     {
                         if (season != null)
                         {
@@ -172,6 +174,10 @@ namespace Stoolball.Data.SqlServer
                             {
                                 season.MatchTypes.Add((MatchType)Enum.Parse(typeof(MatchType), matchType));
                             }
+                        }
+                        if (anotherSeasonInTheCompetition != null)
+                        {
+                            season.Competition.Seasons.Add(anotherSeasonInTheCompetition);
                         }
                         if (team != null)
                         {
@@ -185,7 +191,7 @@ namespace Stoolball.Data.SqlServer
                         return season;
                     },
                     new { Route = normalisedRoute },
-                    splitOn: "CompetitionName, WithdrawnDate, TeamId, MatchType").ConfigureAwait(false);
+                    splitOn: "CompetitionName, SeasonId, WithdrawnDate, TeamId, MatchType").ConfigureAwait(false);
 
                 var seasonToReturn = seasons.FirstOrDefault(); // get an example with the properties that are the same for every row
                 if (seasonToReturn != null)
@@ -195,11 +201,17 @@ namespace Stoolball.Data.SqlServer
                         .OfType<MatchType>()
                         .Distinct()
                         .ToList();
+                    seasonToReturn.Competition.Seasons = seasons.Select(season => season.Competition.Seasons.SingleOrDefault())
+                        .GroupBy(season => season?.SeasonId)
+                        .Select(duplicateSeasons => duplicateSeasons.First())
+                        .OfType<Season>()
+                        .ToList();
                     seasonToReturn.Teams = seasons
                         .Select(season => season.Teams.SingleOrDefault())
                         .GroupBy(teamInSeason => teamInSeason?.Team.TeamId)
                         .Select(duplicateTeamInSeason => duplicateTeamInSeason.First())
                         .OfType<TeamInSeason>()
+                        .OrderBy(team => team.Team.TeamName)
                         .ToList();
                 }
 
