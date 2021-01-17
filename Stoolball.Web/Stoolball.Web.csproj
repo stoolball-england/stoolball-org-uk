@@ -1297,6 +1297,7 @@
     <Compile Include="Routing\StoolballRouteTypeMapper.cs" />
     <Compile Include="Security\ContentSecurityPolicyAttribute.cs" />
     <Compile Include="Security\DelegatedContentSecurityPolicyAttribute.cs" />
+    <Compile Include="Security\DisableMemberDelete.cs" />
     <Compile Include="Security\MemberGroupHelper.cs" />
     <Compile Include="Teams\CreateTeamSurfaceController.cs" />
     <Compile Include="Teams\CreateTeamController.cs" />
