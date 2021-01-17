@@ -11,6 +11,7 @@ using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Security;
 using Stoolball.SocialMedia;
+using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Stoolball.Web.Clubs;
@@ -58,6 +59,7 @@ namespace Stoolball.Web
             composition.Register<IYouTubeUrlNormaliser, YouTubeUrlNormaliser>(Lifetime.Singleton);
             composition.Register<IDataRedactor, DataRedactor>(Lifetime.Singleton);
             composition.Register<IPostSaveRedirector, PostSaveRedirector>(Lifetime.Singleton);
+            composition.Register<IBowlingFiguresCalculator, BowlingFiguresCalculator>(Lifetime.Singleton);
 
             // Data migration from the old Stoolball England website
             composition.Register<IAuditHistoryBuilder, AuditHistoryBuilder>(Lifetime.Singleton);
