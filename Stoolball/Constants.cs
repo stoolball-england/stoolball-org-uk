@@ -67,7 +67,7 @@ namespace Stoolball
 
             public const string PlayerInnings = _tablePrefix + "PlayerInnings";
             public const string Over = _tablePrefix + "Over";
-            public const string Bowling = _tablePrefix + "Bowling";
+            public const string BowlingFigures = _tablePrefix + "BowlingFigures";
             public const string FallOfWicket = _tablePrefix + "FallOfWicket";
             public const string Club = _tablePrefix + "Club";
             public const string ClubName = _tablePrefix + "ClubName";

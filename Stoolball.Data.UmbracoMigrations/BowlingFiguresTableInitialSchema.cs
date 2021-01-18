@@ -1,14 +1,13 @@
 ﻿using System;
 using NPoco;
-using Stoolball.Data.SqlServer;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
-    [TableName(Constants.Tables.Bowling)]
+    [TableName(Constants.Tables.BowlingFigures)]
     [PrimaryKey(nameof(BowlingId), AutoIncrement = false)]
     [ExplicitColumns]
-    public class BowlingTableInitialSchema
+    public class BowlingFiguresTableInitialSchema
     {
         [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
         [Column(nameof(BowlingId))]
@@ -22,6 +21,9 @@ namespace Stoolball.Data.UmbracoMigrations
         [Column(nameof(PlayerIdentityId))]
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId))]
         public Guid PlayerIdentityId { get; set; }
+
+        [Column(nameof(BowlingOrder))]
+        public int BowlingOrder { get; set; }
 
         [Column(nameof(Overs))]
         [NullSetting(NullSetting = NullSettings.Null)]
@@ -38,5 +40,8 @@ namespace Stoolball.Data.UmbracoMigrations
         [Column(nameof(Wickets))]
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? Wickets { get; set; }
+
+        [Column(nameof(IsFromOversBowled))]
+        public bool IsFromOversBowled { get; set; }
     }
 }
