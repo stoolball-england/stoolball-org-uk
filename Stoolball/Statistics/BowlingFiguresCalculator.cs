@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Stoolball.Matches;
-using Stoolball.Teams;
 
 namespace Stoolball.Statistics
 {
@@ -14,7 +13,7 @@ namespace Stoolball.Statistics
         /// <summary>
         /// Calculate bowling figures (overs, maidens, runs, wickets) from data in a <see cref="MatchInnings"/>.
         /// </summary>
-        public IList<BowlingFigures> CalculateBowlingFigures(MatchInnings innings)
+        public List<BowlingFigures> CalculateBowlingFigures(MatchInnings innings)
         {
             if (innings is null)
             {
@@ -22,15 +21,19 @@ namespace Stoolball.Statistics
             }
 
             // Get all bowlers who bowled, in the order they bowled
-            var bowlers = innings.OversBowled.OrderBy(x => x.OverNumber).Select(x => x.PlayerIdentity.PlayerIdentityId).Distinct().ToList();
+            var bowlerNames = innings.OversBowled.OrderBy(x => x.OverNumber).Select(x => x.PlayerIdentity.PlayerIdentityName).Distinct().ToList();
+            var bowlers = bowlerNames.Select(name => innings.OversBowled.First(over => over.PlayerIdentity.PlayerIdentityName == name).PlayerIdentity).ToList();
 
             // Add unexpected bowlers who are recorded as taking wickets but not bowling
-            bowlers.AddRange(innings.PlayerInnings
-                .Where(x => x.DismissalType.HasValue
-                            && x.Bowler != null
-                            && !bowlers.Contains(x.Bowler.PlayerIdentityId)
-                            && StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Contains(x.DismissalType.Value))
-                .Select(x => x.Bowler.PlayerIdentityId));
+            foreach (var bowlerOnBattingCard in innings.PlayerInnings
+                                                .Where(x => x.DismissalType.HasValue
+                                                            && x.Bowler != null
+                                                            && !bowlerNames.Contains(x.Bowler.PlayerIdentityName)
+                                                            && StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Contains(x.DismissalType.Value))
+                                                .Select(x => x.Bowler))
+            {
+                bowlers.Add(bowlerOnBattingCard);
+            }
 
             // For each bowler, add their figures
             var bowlingFigures = new List<BowlingFigures>();
@@ -40,7 +43,7 @@ namespace Stoolball.Statistics
                 double? overs = null;
                 int? maidens = null, runsConceded = null;
 
-                var oversByThisBowler = innings.OversBowled.Where(x => x.PlayerIdentity.PlayerIdentityId == bowler);
+                var oversByThisBowler = innings.OversBowled.Where(x => x.PlayerIdentity.PlayerIdentityName == bowler.PlayerIdentityName);
 
                 if (oversByThisBowler.Any())
                 {
@@ -66,14 +69,11 @@ namespace Stoolball.Statistics
                 var wickets = innings.PlayerInnings.Count(x => x.DismissalType.HasValue
                                                                && x.Bowler != null
                                                                && StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Contains(x.DismissalType.Value)
-                                                               && x.Bowler.PlayerIdentityId == bowler);
+                                                               && (x.Bowler.PlayerIdentityName == bowler.PlayerIdentityName));
 
                 bowlingFigures.Add(new BowlingFigures
                 {
-                    Bowler = new PlayerIdentity
-                    {
-                        PlayerIdentityId = bowler
-                    },
+                    Bowler = bowler,
                     Overs = overs,
                     Maidens = maidens,
                     RunsConceded = runsConceded,

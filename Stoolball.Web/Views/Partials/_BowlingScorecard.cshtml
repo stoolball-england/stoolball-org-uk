@@ -1,9 +1,35 @@
 ﻿@model MatchInnings
 @using Stoolball.Matches
-@using Humanizer 
+@if (Model.BowlingFigures.Count > 0)
+{
+    <table class="bowling-scorecard bowling-figures table-hover table-as-cards table-as-cards-reset-sm">
+        <caption>@Model.BowlingTeam.Team.TeamName's bowling</caption>
+        <thead>
+            <tr>
+                <th scope="col">Bowler</th>
+                <th scope="col" class="numeric">Overs</th>
+                <th scope="col" class="numeric">Maidens</th>
+                <th scope="col" class="numeric">Runs</th>
+                <th scope="col" class="numeric">Wickets</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var bowler in Model.BowlingFigures)
+            {
+                <tr>
+                    <th scope="row" class="player-name">@bowler.Bowler.PlayerIdentityName</th>
+                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Overs</span><span class="scorecard__numeric-value">@bowler.Overs</span></td>
+                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Maidens</span><span class="scorecard__numeric-value">@bowler.Maidens</span></td>
+                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Runs</span><span class="scorecard__numeric-value">@bowler.RunsConceded</span></td>
+                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Wickets</span><span class="scorecard__numeric-value">@bowler.Wickets</span></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 @if (Model.OversBowled.Count > 0)
 {
-    <table class="bowling-scorecard table-hover table-as-cards table-as-cards-reset-sm">
+    <table class="bowling-scorecard overs table-hover table-as-cards table-as-cards-reset-sm">
         <caption>@Model.BowlingTeam.Team.TeamName's bowling, over-by-over</caption>
         <thead>
             <tr>

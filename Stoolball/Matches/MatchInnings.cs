@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Stoolball.Statistics;
 
 namespace Stoolball.Matches
 {
@@ -40,5 +41,7 @@ namespace Stoolball.Matches
         public Uri EntityUri {
             get { return new Uri($"https://www.stoolball.org.uk/id/match-innings/{MatchInningsId}"); }
         }
+
+        public List<BowlingFigures> BowlingFigures { get; internal set; } = new List<BowlingFigures>();
     }
 }

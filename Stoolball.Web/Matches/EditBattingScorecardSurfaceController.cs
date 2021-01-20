@@ -9,6 +9,7 @@ using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
+using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -28,10 +29,12 @@ namespace Stoolball.Web.Matches
         private readonly IDateTimeFormatter _dateTimeFormatter;
         private readonly IMatchInningsUrlParser _matchInningsUrlParser;
         private readonly IPlayerInningsScaffolder _playerInningsScaffolder;
+        private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
 
         public EditBattingScorecardSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchDataSource matchDataSource, IMatchRepository matchRepository,
-            IAuthorizationPolicy<Stoolball.Matches.Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IMatchInningsUrlParser matchInningsUrlParser, IPlayerInningsScaffolder playerInningsScaffolder)
+            IAuthorizationPolicy<Stoolball.Matches.Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IMatchInningsUrlParser matchInningsUrlParser,
+            IPlayerInningsScaffolder playerInningsScaffolder, IBowlingFiguresCalculator bowlingFiguresCalculator)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
@@ -40,6 +43,7 @@ namespace Stoolball.Web.Matches
             _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
             _matchInningsUrlParser = matchInningsUrlParser ?? throw new ArgumentNullException(nameof(matchInningsUrlParser));
             _playerInningsScaffolder = playerInningsScaffolder ?? throw new ArgumentNullException(nameof(playerInningsScaffolder));
+            _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
         }
 
         [HttpPost]
@@ -133,16 +137,19 @@ namespace Stoolball.Web.Matches
             {
                 PlayerIdentity = new PlayerIdentity
                 {
-                    PlayerIdentityName = x.Batter.Trim()
+                    PlayerIdentityName = x.Batter.Trim(),
+                    Team = model.CurrentInnings.MatchInnings.BattingTeam.Team
                 },
                 DismissalType = x.DismissalType,
                 DismissedBy = string.IsNullOrWhiteSpace(x.DismissedBy) ? null : new PlayerIdentity
                 {
-                    PlayerIdentityName = x.DismissedBy.Trim()
+                    PlayerIdentityName = x.DismissedBy.Trim(),
+                    Team = model.CurrentInnings.MatchInnings.BowlingTeam.Team
                 },
                 Bowler = string.IsNullOrWhiteSpace(x.Bowler) ? null : new PlayerIdentity
                 {
-                    PlayerIdentityName = x.Bowler.Trim()
+                    PlayerIdentityName = x.Bowler.Trim(),
+                    Team = model.CurrentInnings.MatchInnings.BowlingTeam.Team
                 },
                 RunsScored = x.RunsScored,
                 BallsFaced = x.BallsFaced
@@ -155,6 +162,7 @@ namespace Stoolball.Web.Matches
             model.CurrentInnings.MatchInnings.Runs = postedData.MatchInnings.Runs;
             model.CurrentInnings.MatchInnings.Wickets = postedData.MatchInnings.Wickets;
 
+
             if (!model.Match.PlayersPerTeam.HasValue)
             {
                 model.Match.PlayersPerTeam = model.Match.Tournament != null ? 8 : 11;
@@ -164,6 +172,8 @@ namespace Stoolball.Web.Matches
                 model.Match.PlayersPerTeam = postedData.MatchInnings.PlayerInnings.Count;
             }
             _playerInningsScaffolder.ScaffoldPlayerInnings(model.CurrentInnings.MatchInnings.PlayerInnings, model.Match.PlayersPerTeam.Value);
+
+            model.CurrentInnings.MatchInnings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(model.CurrentInnings.MatchInnings);
 
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 

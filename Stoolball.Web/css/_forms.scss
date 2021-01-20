@@ -160,6 +160,11 @@ svg {
     padding-left: 35px;
 }
 
+// Show some lower-priority content which is initially hidden within a page.
+.btn-show {
+    margin-bottom: $spacer;
+}
+
 @media print {
     .btn {
         color: $black!important;

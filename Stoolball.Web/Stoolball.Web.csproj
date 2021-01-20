@@ -677,6 +677,7 @@
       <DependentUpon>rules.page.css</DependentUpon>
     </Content>
     <Content Include="Matches\close-of-play.js" />
+    <Content Include="Matches\match.js" />
     <Content Include="Matches\scorecards.css">
       <DependentUpon>scorecards.scss</DependentUpon>
     </Content>
@@ -798,13 +799,6 @@
     <Content Include="Matches\match.min.css">
       <DependentUpon>match.css</DependentUpon>
     </Content>
-    <Content Include="Teams\team.css">
-      <DependentUpon>team.scss</DependentUpon>
-    </Content>
-    <Content Include="Teams\team.min.css">
-      <DependentUpon>team.css</DependentUpon>
-    </Content>
-    <Content Include="Teams\team.scss" />
     <None Include="css\tinymce.scss" />
     <Content Include="css\tinymce.css">
       <DependentUpon>tinymce.scss</DependentUpon>

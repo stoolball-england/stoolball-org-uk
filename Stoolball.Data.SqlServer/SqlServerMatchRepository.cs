@@ -13,6 +13,7 @@ using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Security;
+using Stoolball.Statistics;
 using Stoolball.Teams;
 using static Stoolball.Constants;
 
@@ -35,10 +36,12 @@ namespace Stoolball.Data.SqlServer
         private readonly IBattingScorecardComparer _battingScorecardComparer;
         private readonly IPlayerRepository _playerRepository;
         private readonly IDataRedactor _dataRedactor;
+        private readonly IStatisticsRepository _statisticsRepository;
 
         public SqlServerMatchRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
             IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser, IMatchNameBuilder matchNameBuilder, IPlayerTypeSelector playerTypeSelector,
-            IBowlingScorecardComparer bowlingScorecardComparer, IBattingScorecardComparer battingScorecardComparer, IPlayerRepository playerRepository, IDataRedactor dataRedactor)
+            IBowlingScorecardComparer bowlingScorecardComparer, IBattingScorecardComparer battingScorecardComparer, IPlayerRepository playerRepository, IDataRedactor dataRedactor,
+            IStatisticsRepository statisticsRepository)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
@@ -52,7 +55,7 @@ namespace Stoolball.Data.SqlServer
             _battingScorecardComparer = battingScorecardComparer ?? throw new ArgumentNullException(nameof(battingScorecardComparer));
             _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
             _dataRedactor = dataRedactor ?? throw new ArgumentNullException(nameof(dataRedactor));
-
+            _statisticsRepository = statisticsRepository ?? throw new ArgumentNullException(nameof(statisticsRepository));
             _htmlSanitiser.AllowedTags.Clear();
             _htmlSanitiser.AllowedTags.Add("p");
             _htmlSanitiser.AllowedTags.Add("h2");
@@ -144,6 +147,14 @@ namespace Stoolball.Data.SqlServer
                     NoBalls = x.NoBalls,
                     Wides = x.Wides,
                     RunsConceded = x.RunsConceded
+                }).ToList(),
+                BowlingFigures = innings.BowlingFigures.Select(x => new BowlingFigures
+                {
+                    Bowler = CreateAuditableCopy(x.Bowler),
+                    Overs = x.Overs,
+                    Maidens = x.Maidens,
+                    RunsConceded = x.RunsConceded,
+                    Wickets = x.Wickets
                 }).ToList(),
                 BattingTeam = innings.BattingTeam != null ? CreateAuditableCopy(innings.BattingTeam) : null,
                 BowlingTeam = innings.BowlingTeam != null ? CreateAuditableCopy(innings.BowlingTeam) : null,
@@ -874,6 +885,8 @@ namespace Stoolball.Data.SqlServer
                         },
                         transaction).ConfigureAwait(false);
 
+                    await _statisticsRepository.UpdateBowlingFigures(auditableInnings, memberKey, memberName, transaction).ConfigureAwait(false);
+
                     var serialisedInnings = JsonConvert.SerializeObject(auditableInnings);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
@@ -997,6 +1010,8 @@ namespace Stoolball.Data.SqlServer
 
                     // Update the number of overs
                     await connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET Overs = @Overs WHERE MatchInningsId = @MatchInningsId", new { auditableInnings.Overs, auditableInnings.MatchInningsId }, transaction).ConfigureAwait(false);
+
+                    await _statisticsRepository.UpdateBowlingFigures(auditableInnings, memberKey, memberName, transaction).ConfigureAwait(false);
 
                     var serialisedInnings = JsonConvert.SerializeObject(auditableInnings);
                     await _auditRepository.CreateAudit(new AuditRecord

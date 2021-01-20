@@ -26,3 +26,8 @@
 .award-editor-award, .award-editor-team {
     width: 20%;
 }
+
+// Bring .btn-show up to the table it relates to
+.bowling-scorecard + .btn-show {
+    margin: -$spacer 0 $spacer*2;
+}

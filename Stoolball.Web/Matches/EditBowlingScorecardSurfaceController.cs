@@ -9,6 +9,7 @@ using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
+using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -27,10 +28,12 @@ namespace Stoolball.Web.Matches
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateTimeFormatter;
         private readonly IMatchInningsUrlParser _matchInningsUrlParser;
+        private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
 
         public EditBowlingScorecardSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchDataSource matchDataSource,
-            IMatchRepository matchRepository, IAuthorizationPolicy<Stoolball.Matches.Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IMatchInningsUrlParser matchInningsUrlParser)
+            IMatchRepository matchRepository, IAuthorizationPolicy<Stoolball.Matches.Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter,
+            IMatchInningsUrlParser matchInningsUrlParser, IBowlingFiguresCalculator bowlingFiguresCalculator)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
@@ -38,6 +41,7 @@ namespace Stoolball.Web.Matches
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
             _matchInningsUrlParser = matchInningsUrlParser ?? throw new ArgumentNullException(nameof(matchInningsUrlParser));
+            _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
         }
 
         [HttpPost]
@@ -92,7 +96,8 @@ namespace Stoolball.Web.Matches
             {
                 PlayerIdentity = new PlayerIdentity
                 {
-                    PlayerIdentityName = x.Bowler.Trim()
+                    PlayerIdentityName = x.Bowler.Trim(),
+                    Team = model.CurrentInnings.MatchInnings.BowlingTeam.Team
                 },
                 BallsBowled = x.BallsBowled,
                 Wides = x.Wides,
@@ -108,6 +113,8 @@ namespace Stoolball.Web.Matches
             {
                 model.CurrentInnings.MatchInnings.Overs = postedData.OversBowledSearch.Count;
             }
+
+            model.CurrentInnings.MatchInnings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(model.CurrentInnings.MatchInnings);
 
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
 

@@ -9,8 +9,8 @@
     );
     showAllCompetitions.classList.add("btn");
     showAllCompetitions.classList.add("btn-secondary");
+    showAllCompetitions.classList.add("btn-show");
     showAllCompetitions.classList.add("d-print-none");
-    showAllCompetitions.classList.add("season-list__show-all");
 
     showAllCompetitions.addEventListener("click", function () {
       allCompetitions.classList.remove("d-none");

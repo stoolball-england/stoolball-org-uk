@@ -25,6 +25,7 @@ namespace Stoolball.Web.Teams
 
         public PlayersApiController(IGlobalSettings globalSettings, IUmbracoContextAccessor umbracoContextAccessor, ISqlContext sqlContext, ServiceContext serviceContext,
             AppCaches appCaches, IProfilingLogger profilingLogger, IRuntimeState runtimeState, UmbracoHelper umbracoHelper, UmbracoMapper umbracoMapper, IPlayerDataSource playerDataSource) :
+
             base(globalSettings, umbracoContextAccessor, sqlContext, serviceContext, appCaches, profilingLogger, runtimeState, umbracoHelper, umbracoMapper)
         {
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));

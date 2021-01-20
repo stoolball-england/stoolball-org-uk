@@ -7,7 +7,6 @@
 @{ 
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam];
     Html.RequiresJs("/teams/team.js");
-    Html.RequiresCss("/teams/team.min.css");
 }
 <div class="container-xl">
     <h1>@Model.Team.TeamNameLocationAndPlayerType()</h1>

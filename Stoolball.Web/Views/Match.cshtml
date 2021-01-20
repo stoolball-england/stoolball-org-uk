@@ -7,6 +7,7 @@
 @{
     Html.RequiresCss("~/matches/match.min.css");
     Html.RequiresCss("~/matches/scorecards.min.css");
+    Html.RequiresJs("~/matches/match.js");
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditMatch] || Model.IsAuthorized[AuthorizedAction.DeleteMatch];
 }
 @functions{

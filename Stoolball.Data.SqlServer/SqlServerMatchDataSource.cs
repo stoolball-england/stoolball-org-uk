@@ -7,6 +7,7 @@ using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
+using Stoolball.Statistics;
 using Stoolball.Teams;
 using static Stoolball.Constants;
 
@@ -136,23 +137,25 @@ namespace Stoolball.Data.SqlServer
                     }).OrderBy(x => x.InningsOrderInMatch).ToList();
 
                     // We now have the match innings. Get the overs recorded for them.
-                    var unprocessedInningsWithOvers = await connection.QueryAsync<MatchInnings, Over, PlayerIdentity, MatchInnings>(
+                    var unprocessedInningsWithOvers = await connection.QueryAsync<MatchInnings, Over, PlayerIdentity, Team, MatchInnings>(
                              $@"SELECT i.MatchInningsId,
                                     o.OverNumber, o.BallsBowled, o.NoBalls, o.Wides, o.RunsConceded,
-                                    pi.PlayerIdentityId, pi.PlayerIdentityName, pi.TotalMatches
+                                    pi.PlayerIdentityId, pi.PlayerIdentityName, pi.TotalMatches, 
+                                    pi.TeamId
                                     FROM {Tables.MatchInnings} i 
                                     INNER JOIN {Tables.Over} o ON i.MatchInningsId = o.MatchInningsId
                                     INNER JOIN {Tables.PlayerIdentity} pi ON o.PlayerIdentityId = pi.PlayerIdentityId
                                     WHERE i.MatchId = @MatchId
                                     ORDER BY i.InningsOrderInMatch, o.OverNumber",
-                             (innings, over, bowler) =>
+                             (innings, over, bowler, team) =>
                              {
                                  over.PlayerIdentity = bowler;
+                                 over.PlayerIdentity.Team = team;
                                  innings.OversBowled.Add(over);
                                  return innings;
                              },
                              new { matchToReturn.MatchId },
-                             splitOn: "OverNumber, PlayerIdentityId")
+                             splitOn: "OverNumber, PlayerIdentityId, TeamId")
                              .ConfigureAwait(false);
 
                     // Add those overs to the existing instances of the match innings.
@@ -170,6 +173,29 @@ namespace Stoolball.Data.SqlServer
                         {
                             innings.OversBowled = overs;
                         }
+                    }
+
+                    // Add bowling figures
+                    var bowlingFigures = await connection.QueryAsync<BowlingFigures, MatchInnings, PlayerIdentity, BowlingFigures>
+                        ($@"SELECT bf.Overs, bf.Maidens, bf.RunsConceded, bf.Wickets,
+                            bf.MatchInningsId,
+                            pi.PlayerIdentityName
+                            FROM {Tables.BowlingFigures} bf
+                            INNER JOIN {Tables.PlayerIdentity} pi ON bf.PlayerIdentityId = pi.PlayerIdentityId
+                            WHERE bf.MatchInningsId IN @MatchInningsIds
+                            ORDER BY bf.MatchInningsId, bf.BowlingOrder",
+                            (bowling, innings, bowler) =>
+                            {
+                                bowling.MatchInnings = innings;
+                                bowling.Bowler = bowler;
+                                return bowling;
+                            },
+                            new { MatchInningsIds = matchToReturn.MatchInnings.Select(x => x.MatchInningsId) },
+                            splitOn: "MatchInningsId, PlayerIdentityName").ConfigureAwait(false);
+
+                    foreach (var innings in matchToReturn.MatchInnings)
+                    {
+                        innings.BowlingFigures.AddRange(bowlingFigures.Where(x => x.MatchInnings.MatchInningsId == innings.MatchInningsId));
                     }
 
                     // Add awards - player of the match etc - to the match

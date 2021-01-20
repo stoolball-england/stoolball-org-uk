@@ -161,6 +161,7 @@ namespace Stoolball.Web
             composition.Register<IMatchRepository, SqlServerMatchRepository>(Lifetime.Singleton);
             composition.Register<ITournamentDataSource, SqlServerTournamentDataSource>(Lifetime.Singleton);
             composition.Register<ITournamentRepository, SqlServerTournamentRepository>(Lifetime.Singleton);
+            composition.Register<IStatisticsRepository, SqlServerStatisticsRepository>(Lifetime.Singleton);
 
             // Security checks
             composition.Register<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>(Lifetime.Request);

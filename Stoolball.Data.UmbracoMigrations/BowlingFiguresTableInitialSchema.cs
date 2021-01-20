@@ -5,25 +5,25 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 namespace Stoolball.Data.UmbracoMigrations
 {
     [TableName(Constants.Tables.BowlingFigures)]
-    [PrimaryKey(nameof(BowlingId), AutoIncrement = false)]
+    [PrimaryKey(nameof(BowlingFiguresId), AutoIncrement = false)]
     [ExplicitColumns]
     public class BowlingFiguresTableInitialSchema
     {
         [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
-        [Column(nameof(BowlingId))]
-        public Guid BowlingId { get; set; }
+        [Column(nameof(BowlingFiguresId))]
+        public Guid BowlingFiguresId { get; set; }
 
         [Column(nameof(MatchInningsId))]
         [ForeignKey(typeof(MatchInningsTableInitialSchema), Column = nameof(MatchInningsTableInitialSchema.MatchInningsId))]
         [Index(IndexTypes.Clustered)]
         public Guid MatchInningsId { get; set; }
 
+        [Column(nameof(BowlingOrder))]
+        public int BowlingOrder { get; set; }
+
         [Column(nameof(PlayerIdentityId))]
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId))]
         public Guid PlayerIdentityId { get; set; }
-
-        [Column(nameof(BowlingOrder))]
-        public int BowlingOrder { get; set; }
 
         [Column(nameof(Overs))]
         [NullSetting(NullSetting = NullSettings.Null)]

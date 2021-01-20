@@ -5,6 +5,6 @@ namespace Stoolball.Statistics
 {
     public interface IBowlingFiguresCalculator
     {
-        IList<BowlingFigures> CalculateBowlingFigures(MatchInnings innings);
+        List<BowlingFigures> CalculateBowlingFigures(MatchInnings innings);
     }
 }

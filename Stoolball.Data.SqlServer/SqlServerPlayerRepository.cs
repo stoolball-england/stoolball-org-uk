@@ -51,6 +51,11 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(playerIdentity));
             }
 
+            if (playerIdentity.PlayerIdentityId.HasValue)
+            {
+                return playerIdentity.PlayerIdentityId.Value;
+            }
+
             if (string.IsNullOrWhiteSpace(playerIdentity.PlayerIdentityName))
             {
                 throw new ArgumentException($"'{nameof(playerIdentity)}.PlayerIdentityName' cannot be null or whitespace", nameof(playerIdentity));
