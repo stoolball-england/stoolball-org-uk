@@ -72,12 +72,12 @@ namespace Stoolball.UnitTests.Statistics
 
             if (creditedToBowler)
             {
-                Assert.Equal(1, result.Count);
+                Assert.Single(result);
                 Assert.Equal(result[0].Bowler.PlayerIdentityName, bowler);
             }
             else
             {
-                Assert.Equal(0, result.Count);
+                Assert.Empty(result);
             }
         }
 
@@ -97,7 +97,7 @@ namespace Stoolball.UnitTests.Statistics
 
             var result = calculator.CalculateBowlingFigures(innings);
 
-            Assert.Equal(0, result.Count);
+            Assert.Empty(result);
         }
 
         [Fact]
