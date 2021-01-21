@@ -44,10 +44,6 @@
     "inputFile": "css/shop.page.scss"
   },
   {
-    "outputFile": "Teams/team.css",
-    "inputFile": "Teams/team.scss"
-  },
-  {
     "outputFile": "Matches/match.css",
     "inputFile": "Matches/match.scss"
   },

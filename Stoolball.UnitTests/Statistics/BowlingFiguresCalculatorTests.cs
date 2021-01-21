@@ -128,7 +128,7 @@ namespace Stoolball.UnitTests.Statistics
 
             Assert.Null(result.Single(x => x.Bowler.PlayerIdentityName == firstBowler).Overs); // from wickets only, no bowling
             Assert.Equal(2, result.Single(x => x.Bowler.PlayerIdentityName == secondBowler).Overs); // whole overs only
-            Assert.Equal(1.4, result.Single(x => x.Bowler.PlayerIdentityName == thirdBowler).Overs); // with partial over
+            Assert.Equal((decimal)1.4, result.Single(x => x.Bowler.PlayerIdentityName == thirdBowler).Overs); // with partial over
         }
 
         [Fact]
@@ -150,7 +150,7 @@ namespace Stoolball.UnitTests.Statistics
 
             var result = calculator.CalculateBowlingFigures(innings);
 
-            Assert.Equal(2.2, result.Single(x => x.Bowler.PlayerIdentityName == bowler).Overs);
+            Assert.Equal((decimal)2.2, result.Single(x => x.Bowler.PlayerIdentityName == bowler).Overs);
         }
 
         [Fact]

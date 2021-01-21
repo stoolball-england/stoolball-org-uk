@@ -40,7 +40,7 @@ namespace Stoolball.Statistics
 
             foreach (var bowler in bowlers)
             {
-                double? overs = null;
+                decimal? overs = null;
                 int? maidens = null, runsConceded = null;
 
                 var oversByThisBowler = innings.OversBowled.Where(x => x.PlayerIdentity.PlayerIdentityName == bowler.PlayerIdentityName);
@@ -54,9 +54,9 @@ namespace Stoolball.Statistics
 
                     if (ballsBowled.HasValue)
                     {
-                        var completedOvers = Math.Floor((double)(ballsBowled.Value / StatisticsConstants.BALLS_PER_OVER));
-                        var additionalBalls = Math.Floor((double)(ballsBowled.Value % StatisticsConstants.BALLS_PER_OVER));
-                        overs = completedOvers + (additionalBalls * .1);
+                        var completedOvers = Math.Floor((decimal)(ballsBowled.Value / StatisticsConstants.BALLS_PER_OVER));
+                        var additionalBalls = Math.Floor((decimal)(ballsBowled.Value % StatisticsConstants.BALLS_PER_OVER));
+                        overs = completedOvers + (additionalBalls * (decimal).1);
                     }
 
                     // Only completed overs count as maidens

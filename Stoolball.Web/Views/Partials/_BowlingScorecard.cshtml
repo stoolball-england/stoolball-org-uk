@@ -11,6 +11,9 @@
                 <th scope="col" class="numeric">Maidens</th>
                 <th scope="col" class="numeric">Runs</th>
                 <th scope="col" class="numeric">Wickets</th>
+                <th scope="col" class="numeric">Economy</th>
+                <th scope="col" class="numeric">Average</th>
+                <th scope="col" class="numeric">Strike rate</th>
             </tr>
         </thead>
         <tbody>
@@ -22,6 +25,9 @@
                     <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Maidens</span><span class="scorecard__numeric-value">@bowler.Maidens</span></td>
                     <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Runs</span><span class="scorecard__numeric-value">@bowler.RunsConceded</span></td>
                     <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Wickets</span><span class="scorecard__numeric-value">@bowler.Wickets</span></td>
+                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Economy</span><span class="scorecard__numeric-value">@(bowler.BowlingEconomy()?.ToString() ?? "–")</span></td>
+                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Average</span><span class="scorecard__numeric-value">@(bowler.BowlingAverage()?.ToString() ?? "–")</span></td>
+                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Strike rate</span><span class="scorecard__numeric-value">@(bowler.BowlingStrikeRate()?.ToString() ?? "–")</span></td>
                 </tr>
             }
         </tbody>
