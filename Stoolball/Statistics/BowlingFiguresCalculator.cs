@@ -21,14 +21,14 @@ namespace Stoolball.Statistics
             }
 
             // Get all bowlers who bowled, in the order they bowled
-            var bowlerNames = innings.OversBowled.OrderBy(x => x.OverNumber).Select(x => x.PlayerIdentity.PlayerIdentityName).Distinct().ToList();
-            var bowlers = bowlerNames.Select(name => innings.OversBowled.First(over => over.PlayerIdentity.PlayerIdentityName == name).PlayerIdentity).ToList();
+            var bowlerNames = innings.OversBowled.OrderBy(x => x.OverNumber).Select(x => x.PlayerIdentity.ComparableName()).Distinct().ToList();
+            var bowlers = bowlerNames.Select(name => innings.OversBowled.First(over => over.PlayerIdentity.ComparableName() == name).PlayerIdentity).ToList();
 
             // Add unexpected bowlers who are recorded as taking wickets but not bowling
             foreach (var bowlerOnBattingCard in innings.PlayerInnings
                                                 .Where(x => x.DismissalType.HasValue
                                                             && x.Bowler != null
-                                                            && !bowlerNames.Contains(x.Bowler.PlayerIdentityName)
+                                                            && !bowlerNames.Contains(x.Bowler.ComparableName())
                                                             && StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Contains(x.DismissalType.Value))
                                                 .Select(x => x.Bowler))
             {
@@ -43,7 +43,7 @@ namespace Stoolball.Statistics
                 decimal? overs = null;
                 int? maidens = null, runsConceded = null;
 
-                var oversByThisBowler = innings.OversBowled.Where(x => x.PlayerIdentity.PlayerIdentityName == bowler.PlayerIdentityName);
+                var oversByThisBowler = innings.OversBowled.Where(x => x.PlayerIdentity.ComparableName() == bowler.ComparableName());
 
                 if (oversByThisBowler.Any())
                 {
@@ -69,7 +69,7 @@ namespace Stoolball.Statistics
                 var wickets = innings.PlayerInnings.Count(x => x.DismissalType.HasValue
                                                                && x.Bowler != null
                                                                && StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Contains(x.DismissalType.Value)
-                                                               && (x.Bowler.PlayerIdentityName == bowler.PlayerIdentityName));
+                                                               && (x.Bowler.ComparableName() == bowler.ComparableName()));
 
                 bowlingFigures.Add(new BowlingFigures
                 {
