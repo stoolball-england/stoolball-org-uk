@@ -861,6 +861,7 @@
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="js\progress.js" />
     <Content Include="Status\410.html" />
     <Content Include="Status\offline.html" />
     <Content Include="Status\500.html" />
@@ -1050,6 +1051,7 @@
     <Content Include="Views\NewsStory.cshtml" />
     <Content Include="Views\Partials\BlockList\BlockList.cshtml" />
     <Content Include="Views\EditSeasonResultsTable.cshtml" />
+    <Content Include="Views\EditStatistics.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -1293,6 +1295,12 @@
     <Compile Include="Security\DelegatedContentSecurityPolicyAttribute.cs" />
     <Compile Include="Security\DisableMemberDelete.cs" />
     <Compile Include="Security\MemberGroupHelper.cs" />
+    <Compile Include="Statistics\MemoryCacheBackgroundTaskTracker.cs" />
+    <Compile Include="Statistics\EditStatisticsSurfaceController.cs" />
+    <Compile Include="Statistics\IBackgroundTaskTracker.cs" />
+    <Compile Include="Statistics\StatisticsViewModel.cs" />
+    <Compile Include="Statistics\EditStatisticsController.cs" />
+    <Compile Include="Statistics\EditStatisticsApiController.cs" />
     <Compile Include="Teams\CreateTeamSurfaceController.cs" />
     <Compile Include="Teams\CreateTeamController.cs" />
     <Compile Include="Teams\DeleteTeamSurfaceController.cs" />
@@ -1306,6 +1314,7 @@
     <Compile Include="Teams\TeamAuthorizationPolicy.cs" />
     <Compile Include="Teams\PlayersApiController.cs" />
     <Compile Include="UmbracoDatabaseConnectionFactory.cs" />
+    <Compile Include="WebApi\ProgressResult.cs" />
     <Compile Include="WebApi\AutocompleteResult.cs" />
     <Compile Include="WebApi\AutocompleteResultSet.cs" />
     <Compile Include="WebApi\WebApiComposer.cs" />

@@ -22,6 +22,7 @@ using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
+using Stoolball.Web.Statistics;
 using Stoolball.Web.Teams;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
@@ -60,6 +61,7 @@ namespace Stoolball.Web
             composition.Register<IDataRedactor, DataRedactor>(Lifetime.Singleton);
             composition.Register<IPostSaveRedirector, PostSaveRedirector>(Lifetime.Singleton);
             composition.Register<IBowlingFiguresCalculator, BowlingFiguresCalculator>(Lifetime.Singleton);
+            composition.Register<IBackgroundTaskTracker, MemoryCacheBackgroundTaskTracker>(Lifetime.Singleton);
 
             // Data migration from the old Stoolball England website
             composition.Register<IAuditHistoryBuilder, AuditHistoryBuilder>(Lifetime.Singleton);
@@ -137,6 +139,7 @@ namespace Stoolball.Web
             composition.Register<CreateCompetitionController>(Lifetime.Request);
             composition.Register<EditCompetitionController>(Lifetime.Request);
             composition.Register<DeleteCompetitionController>(Lifetime.Request);
+            composition.Register<EditStatisticsController>(Lifetime.Request);
 
             // Data sources for stoolball data.
             composition.Register<IDatabaseConnectionFactory, UmbracoDatabaseConnectionFactory>(Lifetime.Singleton);

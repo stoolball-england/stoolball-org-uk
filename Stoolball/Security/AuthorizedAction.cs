@@ -20,6 +20,7 @@
         DeleteTeam,
         CreateMatchLocation,
         EditMatchLocation,
-        DeleteMatchLocation
+        DeleteMatchLocation,
+        EditStatistics
     }
 }

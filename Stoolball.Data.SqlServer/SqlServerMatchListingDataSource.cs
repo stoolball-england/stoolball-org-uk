@@ -243,6 +243,12 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@FromDate", matchQuery.FromDate.Value);
             }
 
+            if (matchQuery.UntilDate != null)
+            {
+                where.Add("m.StartTime <= @UntilDate");
+                parameters.Add("@UntilDate", matchQuery.UntilDate.Value);
+            }
+
             if (matchQuery.IncludeTournamentMatches == false)
             {
                 where.Add("m.TournamentId IS NULL");

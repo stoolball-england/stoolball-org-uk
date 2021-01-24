@@ -15,10 +15,12 @@ namespace Stoolball.Data.SqlServer
     /// </summary>
     public class SqlServerStatisticsRepository : IStatisticsRepository
     {
+        private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IPlayerRepository _playerRepository;
 
-        public SqlServerStatisticsRepository(IPlayerRepository playerRepository)
+        public SqlServerStatisticsRepository(IDatabaseConnectionFactory databaseConnectionFactory, IPlayerRepository playerRepository)
         {
+            _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
         }
 

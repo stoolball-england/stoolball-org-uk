@@ -60,6 +60,7 @@
         CreateTournament,
         EditTournament,
         EditTournamentTeams,
-        DeleteTournament
+        DeleteTournament,
+        EditStatistics
     }
 }

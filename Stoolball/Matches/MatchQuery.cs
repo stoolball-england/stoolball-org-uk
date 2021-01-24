@@ -14,6 +14,7 @@ namespace Stoolball.Matches
         public bool IncludeTournamentMatches { get; set; }
         public bool IncludeTournaments { get; set; } = true;
         public DateTimeOffset? FromDate { get; set; }
+        public DateTimeOffset? UntilDate { get; set; }
         public Guid? TournamentId { get; set; }
         public List<Guid> MatchLocationIds { get; internal set; } = new List<Guid>();
     }

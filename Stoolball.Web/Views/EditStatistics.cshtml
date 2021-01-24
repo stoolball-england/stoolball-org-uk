@@ -1,0 +1,32 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel>
+@using Stoolball.Web.Statistics
+@using Stoolball.Security
+@using ClientDependency.Core.Mvc
+@{ 
+    Html.RequiresJs("~/js/progress.js");
+}
+<div class="container-xl">
+    <h1>Update statistics</h1>
+    @if (Model.IsAuthorized[AuthorizedAction.EditStatistics])
+    {
+        if (Model.BackgroundTaskId.HasValue)
+        {
+            <p class="while-progress">Updating all matches…</p>
+            <progress max="100" value="0" data-url="/api/statistics/progress?taskid=@Model.BackgroundTaskId">0</progress>
+            <p><a href="/" class="btn btn-primary btn-back">Back to the home page</a></p>
+        }
+        else
+        {
+            using (Html.BeginUmbracoForm<EditStatisticsSurfaceController>
+                ("UpdateStatistics"))
+            {
+                @Html.AntiForgeryToken()
+                <button class="btn btn-primary">Update statistics for all matches</button>
+            }
+        }
+    }
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

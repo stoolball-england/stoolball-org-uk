@@ -51,6 +51,25 @@ option {
     font-family: $options-font-family;
 }
 
+// Style progress bars in theme colours, and make the report at the end big
+progress {
+    width: 100%;
+    height: 2rem;
+    background: #eee;
+    margin-bottom: $spacer;
+}
+progress::-webkit-progress-bar {
+    background: #eee;
+}
+
+progress::-webkit-progress-value {
+    background: theme-color("primary");
+}
+
+progress::-moz-progress-bar {
+    background: theme-color("primary");
+}
+
 /* A simple search form with an input field and button. Apply as <form class="form-inline form-search">. */
 .form-search {
     flex-wrap: nowrap;
