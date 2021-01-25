@@ -52,6 +52,13 @@ namespace Umbraco.Web.PublishedModels
 		public global::Umbraco.Core.Models.Blocks.BlockListModel BlockList => this.Value<global::Umbraco.Core.Models.Blocks.BlockListModel>("blockList");
 
 		///<summary>
+		/// Form
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.10.1")]
+		[ImplementPropertyType("blockListForm")]
+		public global::Umbraco.Core.Models.Blocks.BlockListModel BlockListForm => this.Value<global::Umbraco.Core.Models.Blocks.BlockListModel>("blockListForm");
+
+		///<summary>
 		/// Don't show this in menus
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.10.1")]

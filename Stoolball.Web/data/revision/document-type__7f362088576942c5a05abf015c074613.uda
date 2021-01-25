@@ -1,6 +1,8 @@
 {
   "DefaultTemplate": "umb://template/edb47a3c34b0473b8473a2ebcbf05a00",
   "AllowedTemplates": [
+    "umb://template/17703d50f4ae454a9dc50c961eae0205",
+    "umb://template/d9f8ca54c4ac40e2aeb9505e59299c82",
     "umb://template/edb47a3c34b0473b8473a2ebcbf05a00"
   ],
   "Icon": "icon-palette color-purple",
@@ -54,6 +56,18 @@
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
+        },
+        {
+          "Key": "76f2921d-b66e-4f4d-9948-88fecaa3619c",
+          "Alias": "blockListForm",
+          "DataType": "umb://data-type/82d9929f1c7b454f9ccee8d473698e88",
+          "Description": null,
+          "Mandatory": false,
+          "Name": "Form",
+          "SortOrder": 1,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
         }
       ]
     }
@@ -77,6 +91,16 @@
       "Mode": 0
     },
     {
+      "Udi": "umb://template/17703d50f4ae454a9dc50c961eae0205",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/d9f8ca54c4ac40e2aeb9505e59299c82",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
       "Udi": "umb://template/edb47a3c34b0473b8473a2ebcbf05a00",
       "Ordering": true,
       "Mode": 0
@@ -85,5 +109,5 @@
   "Name": "Style guide",
   "Alias": "styleGuide",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.5"
+  "__version": "3.5.3"
 }

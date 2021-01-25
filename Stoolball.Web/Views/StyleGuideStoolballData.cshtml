@@ -1,0 +1,264 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.StyleGuide>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using ClientDependency.Core.Mvc;
+@using Stoolball.Teams
+@using Stoolball.Competitions
+@using Stoolball.Matches
+@using Stoolball.Web.Matches
+@using Stoolball.Web.Competitions
+@{
+    Html.RequiresJs("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey, 50);
+    Html.RequiresJs("/js/maps.js", 90);
+    Html.RequiresJs("/matchlocations/match-location.js");
+
+    Html.RequiresJs("~/js/libs/jquery.autocomplete.min.js", 50);
+    Html.RequiresCss("~/css/autocomplete.min.css");
+
+    Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
+    Html.RequiresJs("/js/tinymce.js");
+
+    Html.RequiresCss("~/matches/scorecards.min.css");
+    Html.RequiresCss("~/css/steps.min.css");
+
+    Html.RequiresJs("~/matches/player-autocomplete.js", 70);
+    Html.RequiresJs("~/matches/edit-batting-scorecard.js");
+    Html.RequiresJs("~/matches/edit-bowling-scorecard.js");
+}
+<div class="container-xl">
+    <h1 data-show-consent="true">@Model.Name</h1>
+    <ul class="nav nav-tabs nav-tabs-has-add nav-tabs-has-edit">
+        <li class="nav-item">
+            <a class="nav-link" href="@Request.Url.AbsolutePath">Umbraco content</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Request.Url.AbsolutePath?alttemplate=styleguideforms">Forms</a>
+        </li>
+        <li class="nav-item">
+            <em class="nav-link active">Stoolball data</em>
+        </li>
+    </ul>
+    <table class="table">
+        <caption>Table with edit options</caption>
+        <thead><tr><th>Example</th><th>Date</th><th>Number</th></tr></thead>
+        <tbody>
+            <tr>
+                <th scope="row">Unvalidated</th>
+                <td><input class="related-item__data" data-item="3040d68b-bc9e-4bad-a8fe-354b72f214c1" id="Season_Teams_0__WithdrawnDate" name="Season.Teams[0].WithdrawnDate" type="date" value=""></td>
+                <td>
+                    <input data-val="true" data-val-number="The field Points for away team must be a number." data-val-required="The Points for away team field is required." id="Season_PointsRules_0__AwayPoints" maxlength="2" name="Season.PointsRules[0].AwayPoints" type="number" value="2">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">Valid</th>
+                <td>
+                    <input class="form-control valid" data-val="true" data-val-required="The Match date field is required." id="valid-date-field-in-table" name="valid-date-field-in-table" required="required" type="date" value="" aria-invalid="false">
+                </td>
+                <td>
+                    <input data-val="true" data-val-number="The field Points for home team must be a number." data-val-required="The Points for home team field is required." id="Season_PointsRules_0__HomePoints" maxlength="2" name="Season.PointsRules[0].HomePoints" type="number" value="0" aria-describedby="Season_PointsRules_0__HomePoints-error" class="valid" aria-invalid="false">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">Invalid</th>
+                <td>Not applicable</td>
+                <td>
+                    <input data-val="true" data-val-number="The field Points for away team must be a number." data-val-required="The Points for away team field is required." id="Season_PointsRules_0__AwayPoints" maxlength="2" name="Season.PointsRules[0].AwayPoints" type="number" value="2" class="input-validation-error" aria-describedby="Season_PointsRules_0__AwayPoints-error" aria-invalid="true">
+                    <span class="field-validation-error" data-valmsg-for="Season.PointsRules[0].AwayPoints" data-valmsg-replace="true"><span id="Season_PointsRules_0__AwayPoints-error" class="">The Points for away team field is required.</span></span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p>A paragraph following a Bootstrap table.</p>
+    <table class="table table-as-cards table-as-cards-reset-md">
+        <caption>League table caption. Table displays as cards on mobile.</caption>
+        <thead>
+            <tr>
+                <th scope="col">Team</th>
+                <th scope="col">Played</th>
+                <th scope="col">Won</th>
+                <th scope="col">Lost</th>
+                <th scope="col">Tied</th>
+                <th scope="col">No result</th>
+                <th>Runs scored</th>
+                <th>Runs conceded</th>
+                <th>Points</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row"><a href="https://example.org">Team A</a></th>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Played</span>12</td>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Won</span>9</td>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Lost</span>3</td>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Tied</span>0</td>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">No result</span>0</td>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Runs scored</span>0</td>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Runs conceded</span>0</td>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Points</span>18</td>
+            </tr>
+            <tr>
+                <th scope="row"><a href="https://example.org">Team B</a></th>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Played</span>12</td>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Won</span>8</td>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Lost</span>3</td>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Tied</span>1</td>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">No result</span>0</td>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Runs scored</span>0</td>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Runs conceded</span>0</td>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Points</span>17</td>
+            </tr>
+            <tr class="text-muted">
+                <th scope="row"><a href="https://example.org">Team C</a></th>
+                <td colspan="8">Withdrawn from league</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>Steps in a process</h2>
+    <ol class="steps">
+        <li class="steps__completed"><span class="sr-only">First step</span></li>
+        <li aria-current="step"><em class="sr-only">Second step</em></li>
+        <li><span class="sr-only">Third step</span></li>
+        <li><span class="sr-only">Fourth step</span></li>
+        <li><span class="sr-only">Fifth step</span></li>
+        <li><span class="sr-only">Sixth step</span></li>
+    </ol>
+    <div class="alert alert-info">
+        <p>A paragraph within an informational alert, including a <a href="https://example.org">link</a>.</p>
+    </div>
+    <div class="alert alert-info">
+        <p>Two alerts together.</p>
+    </div>
+    <h2>Stoolball listings</h2>
+    <p>This is a list of teams.</p>
+    @Html.Partial("_TeamList", new List<Team> {
+        new Team { TeamName = "Team A", TeamRoute = "/teams/team-a" },
+        new Team { TeamName = "Team B", TeamRoute = "/teams/team-b" }
+    })
+    <p>This is a list of matches.</p>
+    @{
+        var matchListing = new MatchListingViewModel
+        {
+            DateTimeFormatter = new Stoolball.Dates.DateTimeFormatter()
+        };
+        matchListing.MatchTypesToLabel.Add(MatchType.FriendlyMatch);
+        matchListing.Matches.AddRange(new[] {
+    new MatchListing {
+        MatchName = "Team A v Team B",
+        MatchRoute = "/matches/team-a-v-team-b",
+        MatchType = MatchType.LeagueMatch,
+        StartTime = DateTime.UtcNow.AddMonths(-1)
+        },
+    new MatchListing {
+        MatchName = "Team A v Team B",
+        MatchRoute = "/matches/team-a-v-team-b",
+        MatchType = MatchType.FriendlyMatch,
+        StartTime = DateTime.UtcNow
+        },
+    new MatchListing {
+        MatchName = "Team A tournament",
+        MatchRoute = "/tournaments/team-a-tournament",
+        PlayerType = PlayerType.Mixed,
+        SpacesInTournament = 5,
+        StartTime = DateTime.UtcNow.AddMonths(1)
+    }
+    });
+    }
+    @Html.Partial("_MatchList", matchListing)
+
+    <p>This is a list of seasons.</p>
+    @{
+        var seasonList = new SeasonListViewModel
+        {
+            ShowCompetitionHeading = true
+        };
+        var competition = new Competition { CompetitionName = "Example competition" };
+        competition.Seasons.Add(new Season { FromYear = 2020, UntilYear = 2020, SeasonRoute = "/competitions/example/2020" });
+        competition.Seasons.Add(new Season { FromYear = 2020, UntilYear = 2021, SeasonRoute = "/competitions/example/2020-21" });
+
+        seasonList.Competitions.Add(competition);
+    }
+    @Html.Partial("_SeasonList", seasonList)
+    <div id="location-map" data-latitude="50.995715487915" data-longitude="0.088866949081421" data-precision="exact" data-title="Maresfield Recreation Ground, Maresfield">
+        <p><a href="https://maps.google.co.uk/?z=16&amp;q=Maresfield+Recreation+Ground%2c+Maresfield@50.995715487915,0.088866949081421&amp;ll=50.995715487915,0.088866949081421">Map of Maresfield Recreation Ground, Maresfield on Google Maps</a></p>
+    </div>
+    <h2>Scorecards</h2>
+    @{
+        var innings = new EditScorecardViewModel(Model, Services.UserService)
+        {
+            Match = new Match
+            {
+                PlayersPerTeam = 2
+            },
+            CurrentInnings = new MatchInningsViewModel
+            {
+                MatchInnings = new MatchInnings
+                {
+                    BattingTeam = new TeamInMatch { Team = new Team { TeamName = "The batting team" } },
+                    BowlingTeam = new TeamInMatch { Team = new Team { TeamName = "The bowling team" } },
+                    Byes = 2,
+                    Wides = 4,
+                    NoBalls = 6,
+                    BonusOrPenaltyRuns = 8,
+                    Overs = 1,
+                    Runs = 100,
+                    Wickets = 1
+                }
+            }
+        };
+        innings.CurrentInnings.MatchInnings.PlayerInnings.Add(new PlayerInnings
+        {
+            PlayerIdentity = new PlayerIdentity { PlayerIdentityName = "Player One" },
+            DismissalType = DismissalType.Caught,
+            DismissedBy = new PlayerIdentity { PlayerIdentityName = "Player Two" },
+            Bowler = new PlayerIdentity { PlayerIdentityName = "Player Three" },
+            RunsScored = 50,
+            BallsFaced = 60
+        });
+        innings.CurrentInnings.MatchInnings.PlayerInnings.Add(new PlayerInnings
+        {
+            PlayerIdentity = new PlayerIdentity { PlayerIdentityName = "Player Four" },
+            DismissalType = DismissalType.BodyBeforeWicket,
+            Bowler = new PlayerIdentity { PlayerIdentityName = "Player Three" },
+            RunsScored = 10,
+            BallsFaced = 10
+        });
+        innings.CurrentInnings.PlayerInningsSearch.Add(new PlayerInningsViewModel
+        {
+            Batter = "Player One",
+            DismissalType = DismissalType.Caught,
+            DismissedBy = "Player Two",
+            Bowler = "Player Three",
+            RunsScored = 50,
+            BallsFaced = 60
+        });
+        innings.CurrentInnings.PlayerInningsSearch.Add(new PlayerInningsViewModel
+        {
+            Batter = "Player Four",
+            DismissalType = DismissalType.BodyBeforeWicket,
+            Bowler = "Player Three",
+            RunsScored = 10,
+            BallsFaced = 10
+        });
+        innings.CurrentInnings.MatchInnings.OversBowled.Add(new Over
+        {
+            PlayerIdentity = new PlayerIdentity { PlayerIdentityName = "Player Two" },
+            BallsBowled = 8,
+            Wides = 2,
+            NoBalls = 4,
+            RunsConceded = 8
+        });
+        innings.CurrentInnings.OversBowledSearch.Add(new OverViewModel
+        {
+            Bowler = "Player Two",
+            BallsBowled = 8,
+            Wides = 2,
+            NoBalls = 4,
+            RunsConceded = 8
+        });
+    }
+
+
+    @Html.Partial("_BattingScorecard", innings.CurrentInnings.MatchInnings)
+    @Html.Partial("_BowlingScorecard", innings.CurrentInnings.MatchInnings)
+    @Html.Partial("_EditBattingScorecard", innings)
+    @Html.Partial("_EditBowlingScorecard", innings)
+</div>

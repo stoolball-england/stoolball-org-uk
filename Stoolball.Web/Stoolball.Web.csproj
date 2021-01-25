@@ -1495,6 +1495,8 @@
     <Content Include="Views\ResetPasswordRequest.cshtml" />
     <Content Include="Views\Partials\_SocialMedia.cshtml" />
     <Content Include="Views\Partials\_CompetitionContactDetails.cshtml" />
+    <Content Include="Views\StyleGuideForms.cshtml" />
+    <Content Include="Views\StyleGuideStoolballData.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
