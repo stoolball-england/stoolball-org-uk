@@ -46,6 +46,18 @@
       "SortOrder": 1,
       "PropertyTypes": [
         {
+          "Key": "036e1447-e6fd-4791-b750-e38c4fb72572",
+          "Alias": "cookiesBlockList",
+          "DataType": "umb://data-type/b9a93649aff4442688e7dd2249b53e7d",
+          "Description": null,
+          "Mandatory": false,
+          "Name": "Cookies",
+          "SortOrder": 2,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
+        },
+        {
           "Key": "1e7a31b3-6c5a-4c3f-b5c3-b1e8e91d3866",
           "Alias": "blockList",
           "DataType": "umb://data-type/82d9929f1c7b454f9ccee8d473698e88",
@@ -82,6 +94,11 @@
     },
     {
       "Udi": "umb://data-type/92897bc6a5f34ffeae27f2e7e33dda49",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://data-type/b9a93649aff4442688e7dd2249b53e7d",
       "Ordering": true,
       "Mode": 0
     },

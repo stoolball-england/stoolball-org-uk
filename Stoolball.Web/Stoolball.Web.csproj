@@ -806,12 +806,6 @@
     <Content Include="css\tinymce.min.css">
       <DependentUpon>tinymce.css</DependentUpon>
     </Content>
-    <Content Include="css\_footer.css">
-      <DependentUpon>_footer.scss</DependentUpon>
-    </Content>
-    <Content Include="css\_footer.min.css">
-      <DependentUpon>_footer.css</DependentUpon>
-    </Content>
     <Content Include="favicon.ico" />
     <Content Include="Forms\scroll-to-form.js" />
     <Content Include="images\icons\add-grey-24dp.svg" />

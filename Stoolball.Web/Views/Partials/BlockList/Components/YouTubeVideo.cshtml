@@ -8,5 +8,5 @@
 }
 @if (content != null && normaliser.TryNormaliseUrl(content.VideoUrl, out var normalisedUrl))
 {
-    <iframe width="560" height="315" src="@normalisedUrl" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="allowfullscreen"></iframe>
+    <iframe src="@normalisedUrl" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="allowfullscreen" class="block__youtube"></iframe>
 }

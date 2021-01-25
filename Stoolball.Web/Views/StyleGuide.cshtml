@@ -1,6 +1,9 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.StyleGuide>
 @using ContentModels = Umbraco.Web.PublishedModels;
 @using ClientDependency.Core.Mvc;
+@{
+    Html.RequiresCss("~/css/news.min.css");
+}
 <div class="container-xl">
     <h1 data-show-consent="true">@Model.Name</h1>
     <h2>Heading above tabs</h2>
@@ -100,4 +103,27 @@
         <dd>Definition list detail.</dd>
     </dl>
     @Html.GetBlockListHtml(Model, "blockList")
+    @Html.GetBlockListHtml(Model, "cookiesBlockList")
+    <article>
+        <h2><a href="#">News story (listing)</a></h2>
+        <p class="news__date">Monday 7 December 2020</p>
+        <div class="umb-block-list">
+            <p>Stoolball England’s aim is to develop a team of freelance Coaching Trainers who will deliver exciting, creative and inclusive stoolball sessions. The training programme will enable Coaching Trainers to deliver course content in a classroom environment as well as practical coaching on the ground. Coaches will develop and deliver stoolball sessions at their own pace and fitting-in with their work-life balance. Coaches’ own continuing professional development (CPD) will be expected and encouraged by Stoolball England. Coaching Trainers will help develop this exciting, new programme.</p>
+        </div>
+    </article>
+    <article>
+        <h2><a href="#">News story (next listing)</a></h2>
+        <p class="news__date">Monday 7 December 2020</p>
+        <div class="umb-block-list">
+            <p>Stoolball England’s aim is to develop a team of freelance Coaching Trainers who will deliver exciting, creative and inclusive stoolball sessions. The training programme will enable Coaching Trainers to deliver course content in a classroom environment as well as practical coaching on the ground. Coaches will develop and deliver stoolball sessions at their own pace and fitting-in with their work-life balance. Coaches’ own continuing professional development (CPD) will be expected and encouraged by Stoolball England. Coaching Trainers will help develop this exciting, new programme.</p>
+        </div>
+    </article>
+
+    <h1>News story (full page)</h1>
+    <p class="news__date">Monday 7 December 2020</p>
+    <div class="umb-block-list">
+        <p>Stoolball England’s aim is to develop a team of freelance Coaching Trainers who will deliver exciting, creative and inclusive stoolball sessions. The training programme will enable Coaching Trainers to deliver course content in a classroom environment as well as practical coaching on the ground. Coaches will develop and deliver stoolball sessions at their own pace and fitting-in with their work-life balance. Coaches’ own continuing professional development (CPD) will be expected and encouraged by Stoolball England. Coaching Trainers will help develop this exciting, new programme.</p>
+    </div>
+
+
 </div>

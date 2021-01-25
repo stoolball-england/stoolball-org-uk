@@ -75,16 +75,11 @@
 /* Tiles layout base classes */
 @import "_tiles.scss";
 
-/* Images - don't let them have that odd gap or overflow their container */
-img {
-    max-width: 100%;
-}
-
 /* Required to use boxed content using alert styles */
 @import "_alerts.scss";
 
+/* Media, and Umbraco editable content */
+@import "_blocks.scss";
+
 /* Required for footer */
 @import "_footer.scss";
-
-/* For Umbraco editing */
-@import "_blocks.scss";
