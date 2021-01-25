@@ -1,0 +1,23 @@
+﻿@model Stoolball.SocialMedia.SocialMedia
+@if (Model.HasSocialMedia())
+{
+    @:
+    <ul class="list-unstyled list-inline social-media">
+        @if (!string.IsNullOrWhiteSpace(Model.Facebook))
+        {
+            <li class="list-inline-item"><a href="@Model.Facebook"><img src="~/images/icons/iconmonstr-facebook-6-green.svg" alt="Follow @Model.DisplayName on Facebook" width="30" height="30" /></a></li>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.Twitter))
+        {
+            <li class="list-inline-item"><a href="https://twitter.com/@(Model.Twitter.TrimStart("@"))"><img src="~/images/icons/iconmonstr-twitter-1-green.svg" alt="Follow @Model.DisplayName on Twitter" width="30" height="30" /></a></li>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.Instagram))
+        {
+            <li class="list-inline-item"><a href="https://instagram.com/@(Model.Instagram.TrimStart("@"))"><img src="~/images/icons/iconmonstr-instagram-11-green.svg" alt="Follow @Model.DisplayName on Instagram" width="30" height="30" /></a></li>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.YouTube))
+        {
+            <li class="list-inline-item"><a href="@Model.YouTube"><img src="~/images/icons/iconmonstr-youtube-6-green.svg" alt="Follow @Model.DisplayName on YouTube" width="30" height="30" /></a></li>
+        }
+    </ul>
+}

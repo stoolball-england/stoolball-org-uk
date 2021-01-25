@@ -2,9 +2,10 @@
 @using Stoolball.Teams
 @using Stoolball.Web.Competitions
 @using Stoolball.Security
+@using Stoolball.SocialMedia
 @using Humanizer
 @using ClientDependency.Core.Mvc
-@{ 
+@{
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam];
     Html.RequiresJs("/teams/team.js");
 }
@@ -72,56 +73,35 @@
     }
 
     <h2>Contact details</h2>
-    @if (!string.IsNullOrWhiteSpace(Model.Team.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Team.Website))
-    {
-        @Html.Raw(Model.Team.PublicContactDetails)
-
-        if (!string.IsNullOrWhiteSpace(Model.Team.Website))
+    @{
+        var socialMedia = new SocialMedia
         {
-            <p>Visit <a href="@Model.Team.Website">@Model.Team.TeamName's website</a>.</p>
+            DisplayName = Model.Team.TeamName,
+            Facebook = Model.Team.Facebook,
+            Twitter = Model.Team.Twitter,
+            Instagram = Model.Team.Instagram,
+            YouTube = Model.Team.YouTube
+        };
+        if (!string.IsNullOrWhiteSpace(Model.Team.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Team.Website) || socialMedia.HasSocialMedia())
+        {
+            @Html.Raw(Model.Team.PublicContactDetails)
+
+            if (!string.IsNullOrWhiteSpace(Model.Team.Website))
+            {
+                <p>Visit <a href="@Model.Team.Website">@Model.Team.TeamName's website</a>.</p>
+            }
+
+            @Html.Partial("_SocialMedia", socialMedia)
         }
-    }
-    else if (Model.Team.TeamType != TeamType.Representative)
-    {
-        // Prompt for more contact information, unless it's a representative team when we don't expect it
-        @Html.Partial("_ContactDetailsMissing", "team")
+        else if (Model.Team.TeamType != TeamType.Representative)
+        {
+            // Prompt for more contact information, unless it's a representative team when we don't expect it
+            @Html.Partial("_ContactDetailsMissing", "team")
+        }
     }
 
     @if (Model.Team.ClubMark)
     {
         @Html.Partial("_ClubMark")
     }
-
-    @*
-        $club = $this->team->GetClub();
-        if ($club and ($club->GetFacebookUrl() or $club->GetTwitterAccount() or $club->GetInstagramAccount())) {
-            ?>
-            <div class="social screen">
-            <?php
-            if ($club->GetFacebookUrl())
-            {
-            ?>
-                <a href="<?php echo Html::Encode($club->GetFacebookUrl()); ?>" class="facebook-group"><img src="/images/play/find-us-on-facebook.png" alt="Find us on Facebook" width="137" height="22" /></a>
-            <?php
-            }
-            if ($club->GetTwitterAccount()) {
-                ?>
-                <a href="https://twitter.com/<?php echo Html::Encode(substr($club->GetTwitterAccount(), 1)); ?>" class="twitter-follow-button">Follow <?php echo Html::Encode($this->team->GetClub()->GetTwitterAccount()); ?></a>
-                <script src="https://platform.twitter.com/widgets.js"></script>
-                <?php
-            }
-            if ($club->GetInstagramAccount()) {
-                ?>
-                <a href="https://www.instagram.com/<?php echo Html::Encode(trim($club->GetInstagramAccount(),'@')); ?>/?ref=badge" class="instagram"><img src="//badges.instagram.com/static/images/ig-badge-view-24.png" alt="Instagram" /></a>
-                <?php
-            }
-            ?>
-            </div>
-            <?php
-        } else {
-            $this->ShowSocial();
-        }
-
-        ?>
-    *@
 </div>

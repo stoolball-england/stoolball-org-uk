@@ -48,20 +48,7 @@
         @Html.Partial("_TeamList", Model.Season.Teams.Select(x => x.Team).ToList())
     }
 
-    <h2>Contact details</h2>
-    @if (!string.IsNullOrWhiteSpace(Model.Season.Competition.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Season.Competition.Website))
-    {
-        @Html.Raw(Model.Season.Competition.PublicContactDetails)
-
-        if (!string.IsNullOrWhiteSpace(Model.Season.Competition.Website))
-        {
-            <p>Visit the <a href="@Model.Season.Competition.Website">@Model.Season.Competition.CompetitionName's website</a>.</p>
-        }
-    }
-    else
-    {
-        @Html.Partial("_ContactDetailsMissing", "competition")
-    }
+    @Html.Partial("_CompetitionContactDetails", Model.Season.Competition)
 
     @if (Model.Season.Competition.Seasons.Count > 1)
     {

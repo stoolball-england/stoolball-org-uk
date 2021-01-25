@@ -1,4 +1,5 @@
-﻿<footer>
+﻿@using Stoolball.SocialMedia
+<footer>
 <div class="container-xl">
     <div class="row">
         <div class="col-sm">
@@ -7,12 +8,13 @@
                 <li><a href="/privacy">Privacy</a></li>
                 <li><a href="/contact">Contact us</a></li>
             </ul>
-            <ul class="list-unstyled list-inline footer__social-media">
-                <li class="list-inline-item"><a href="https://facebook.com/stoolball"><img src="~/images/icons/iconmonstr-facebook-6-green.svg" alt="Follow Stoolball England on Facebook" width="30" height="30"/></a></li>
-                <li class="list-inline-item"><a href="https://twitter.com/stoolball"><img src="~/images/icons/iconmonstr-twitter-1-green.svg" alt="Follow Stoolball England on Twitter" width="30" height="30" /></a></li>
-                <li class="list-inline-item"><a href="https://instagram.com/stoolball"><img src="~/images/icons/iconmonstr-instagram-11-green.svg" alt="Follow Stoolball England on Instagram" width="30" height="30" /></a></li>
-                <li class="list-inline-item"><a href="https://youtube.com/stoolballengland"><img src="~/images/icons/iconmonstr-youtube-6-green.svg" alt="Follow Stoolball England on YouTube" width="30" height="30" /></a></li>
-            </ul>
+            @Html.Partial("_SocialMedia", new SocialMedia {
+               DisplayName = "Stoolball England",
+               Facebook = "https://facebook.com/stoolball",
+               Twitter = "@stoolball",
+               Instagram = "@stoolball",
+               YouTube = "https://youtube.com/stoolballengland"
+           })
         </div>
         <div class="col-sm">
             <p class="footer__recognised">Recognised by <a href="https://www.sportengland.org/"><img src="~/images/logos/sport-england.svg" width="120" height="36" alt="Sport England" /></a></p>

@@ -1493,6 +1493,8 @@
     <Content Include="Views\Partials\_ContactDetailsMissing.cshtml" />
     <Content Include="Views\Partials\_SeasonListExpandable.cshtml" />
     <Content Include="Views\ResetPasswordRequest.cshtml" />
+    <Content Include="Views\Partials\_SocialMedia.cshtml" />
+    <Content Include="Views\Partials\_CompetitionContactDetails.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

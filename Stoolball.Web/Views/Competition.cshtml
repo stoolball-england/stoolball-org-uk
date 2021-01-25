@@ -49,19 +49,5 @@
         }
     }
 
-
-    <h2>Contact details</h2>
-    @if (!string.IsNullOrWhiteSpace(Model.Competition.PublicContactDetails) || !string.IsNullOrWhiteSpace(Model.Competition.Website))
-    {
-        @Html.Raw(Model.Competition.PublicContactDetails)
-
-        if (!string.IsNullOrWhiteSpace(Model.Competition.Website))
-        {
-            <p>Visit the <a href="@Model.Competition.Website">@Model.Competition.CompetitionName's website</a>.</p>
-        }
-    }
-    else
-    {
-        @Html.Partial("_ContactDetailsMissing", "competition")
-    }
+    @Html.Partial("_CompetitionContactDetails", Model.Competition)
 </div>

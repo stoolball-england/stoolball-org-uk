@@ -151,7 +151,8 @@ namespace Stoolball.Data.SqlServer
                 var seasons = await connection.QueryAsync<Season, Competition, Season, TeamInSeason, Team, string, Season>(
                     $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Introduction, s.PlayersPerTeam, s.Overs, s.EnableTournaments, s.ResultsTableType, 
                             s.EnableLastPlayerBatsOn, s.EnableBonusOrPenaltyRuns, s.EnableRunsScored, s.EnableRunsConceded, s.Results, s.SeasonRoute,
-                            co.CompetitionName, co.PlayerType, co.Introduction, co.UntilYear, co.PublicContactDetails, co.Website, co.CompetitionRoute, co.MemberGroupName,
+                            co.CompetitionName, co.PlayerType, co.Introduction, co.UntilYear, co.PublicContactDetails, co.Website, 
+                            co.Facebook, co.Twitter, co.Instagram, co.YouTube, co.CompetitionRoute, co.MemberGroupName,
                             s2.SeasonId, s2.FromYear, s2.UntilYear, s2.SeasonRoute,
                             st.WithdrawnDate,
                             t.TeamId, tn.TeamName, t.TeamRoute,

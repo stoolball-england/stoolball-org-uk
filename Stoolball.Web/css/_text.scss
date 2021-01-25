@@ -123,3 +123,16 @@ li {
         margin-left: -15px;
     }
 }
+
+// Remove the underline from social media icons,
+// and expand the clickable area to (almost) 44px
+.social-media a {
+    @include remove-link-underline;
+    display: inline-block;
+    padding: 8px;
+}
+
+// Add the default link focus indicator as a hover effect too
+.social-media a:hover {
+    @include link-focus;
+}
