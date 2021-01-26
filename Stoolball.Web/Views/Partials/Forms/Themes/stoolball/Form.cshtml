@@ -85,35 +85,25 @@
             {
                 if (!Model.IsFirstPage)
                 {
-                    <input 
-                        class="btn prev cancel" 
-                        type="submit" 
-                        value="@Model.PreviousCaption" 
-                        name="__prev" />
+                    <input class="btn "
+                           type="submit"
+                           value="@Model.PreviousCaption"
+                           name="__prev" />
                 }
 
                 if (!Model.IsLastPage)
                 {
-                    <input type="submit" 
-                           class="btn next" 
-                           value="@Model.NextCaption" 
-                           name="__next" />
+                    <button class="btn btn-secondary next" name="__next">@Model.NextCaption</button>
                 }
 
                 if (Model.IsLastPage)
                 {
-                    <input type="submit" 
-                           class="btn btn-primary" 
-                           value="@Model.SubmitCaption" 
-                           name="__next" />
+                    <button class="btn btn-primary" name="__next">@Model.SubmitCaption</button>
                 }
             }
             else
             {
-                <input type="submit" 
-                       class="btn btn-primary" 
-                       value="@Model.SubmitCaption" 
-                       name="__next" />
+                <button class="btn btn-primary" name="__next">@Model.SubmitCaption</button>
             }
         </div>
     </div>
