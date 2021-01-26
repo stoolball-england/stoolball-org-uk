@@ -251,3 +251,24 @@ img {
         height: 334px;
     }
 }
+
+@include media-breakpoint-up(md) {
+    .block__youtube {
+        width: 723px;
+        height: 406px;
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    .block__youtube {
+        width: 948px;
+        height: 533px;
+    }
+}
+
+@include media-breakpoint-up(xl) {
+    .block__youtube {
+        width: 1110px;
+        height: 624px;
+    }
+}
