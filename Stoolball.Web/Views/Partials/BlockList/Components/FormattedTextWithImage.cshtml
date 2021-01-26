@@ -12,10 +12,18 @@
     html = emailProtector.ProtectEmailAddresses(html, User.Identity.IsAuthenticated);
 
     var imagePosition = content.ImagePosition?.ToLowerInvariant() ?? "left";
+
+    var imageWidth = content.Image.Value<int>("umbracoWidth");
+    var widthClass = "extra-small";
+    if (imageWidth > 200) { widthClass = "small"; }
+    if (imageWidth > 400) { widthClass = "medium"; }
+    if (imageWidth > 600) { widthClass = "large"; }
+    if (imageWidth > 800) { widthClass = "extra-large"; }
+
 }
 @if (content != null && ((content.Text != null && !string.IsNullOrEmpty(content.Text.ToHtmlString())) || content.Image != null))
 {
-    <div class="block__text-with-image block__text-with-image__@imagePosition">
+    <div class="block__text-with-image block__text-with-image__@imagePosition block__text-with-image__@widthClass">
         <div class="block__text">@Html.Raw(html)</div>
         <figure class="block__image">
             @if (content.Image != null)
@@ -24,7 +32,10 @@
                      @content.Image.MediaUrl()?width=300&height=300&mode=max&upscale=false 768w,
                      @content.Image.MediaUrl()?width=400&height=400&mode=max&upscale=false 992w,
                      @content.Image.MediaUrl()?width=500&height=500&mode=max&upscale=false 1200w"
-                     sizes="100vw" src="@content.Image.MediaUrl()?width=500&height=500&mode=max&upscale=false" alt="@content.Image.Name" />
+                     src="@content.Image.MediaUrl()?width=500&height=500&mode=max&upscale=false"
+                     sizes="100vw"
+                     alt="@content.Image.Name"
+                     width="@(imageWidth)" height="@(content.Image.Value<int>("umbracoHeight"))" />
                 if (content.ShowCaption)
                 {
                     <figcaption>@content.Image.Name</figcaption>

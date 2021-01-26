@@ -66,6 +66,13 @@ namespace Umbraco.Web.PublishedModels
 		public global::Umbraco.Core.Models.Blocks.BlockListModel CookiesBlockList => this.Value<global::Umbraco.Core.Models.Blocks.BlockListModel>("cookiesBlockList");
 
 		///<summary>
+		/// Products
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.10.1")]
+		[ImplementPropertyType("productBlockList")]
+		public global::Umbraco.Core.Models.Blocks.BlockListModel ProductBlockList => this.Value<global::Umbraco.Core.Models.Blocks.BlockListModel>("productBlockList");
+
+		///<summary>
 		/// Don't show this in menus
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.10.1")]

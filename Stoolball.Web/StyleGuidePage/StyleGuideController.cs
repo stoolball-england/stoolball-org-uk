@@ -35,5 +35,19 @@ namespace Stoolball.Web.StyleGuidePage
 
             return CurrentTemplate(model);
         }
+
+        /* This action is triggered when an Umbraco Forms form is submitted without a separate 'thank you' page.
+         * The method name matches the name of the template the page is rendered with. */
+        [HttpPost]
+        public ActionResult StyleGuideForms(ContentModel contentModel)
+        {
+            var model = new StyleGuide(contentModel?.Content)
+            {
+                Metadata = new ViewMetadata { PageTitle = contentModel.Content.Name },
+                GoogleMapsApiKey = _apiKeyProvider.GetApiKey("GoogleMaps")
+            };
+
+            return CurrentTemplate(model);
+        }
     }
 }

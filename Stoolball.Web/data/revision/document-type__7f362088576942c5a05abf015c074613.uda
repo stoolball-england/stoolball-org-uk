@@ -80,6 +80,18 @@
           "Validation": null,
           "VariesByCulture": false,
           "VariesBySegment": false
+        },
+        {
+          "Key": "af4ba67b-9d93-4782-880c-70fa4b03a765",
+          "Alias": "productBlockList",
+          "DataType": "umb://data-type/212ad3db330d4c8db1a40131338f479c",
+          "Description": null,
+          "Mandatory": false,
+          "Name": "Products",
+          "SortOrder": 3,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false
         }
       ]
     }
@@ -87,6 +99,11 @@
   "PropertyTypes": [],
   "Udi": "umb://document-type/7f362088576942c5a05abf015c074613",
   "Dependencies": [
+    {
+      "Udi": "umb://data-type/212ad3db330d4c8db1a40131338f479c",
+      "Ordering": true,
+      "Mode": 0
+    },
     {
       "Udi": "umb://data-type/82d9929f1c7b454f9ccee8d473698e88",
       "Ordering": true,

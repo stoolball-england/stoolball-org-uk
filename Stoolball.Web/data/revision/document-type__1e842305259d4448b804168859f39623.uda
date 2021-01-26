@@ -24,7 +24,7 @@
           "Key": "0bb66bf1-f7cd-4cfb-bd3c-926cfe79903b",
           "Alias": "imagePosition",
           "DataType": "umb://data-type/ec5d8595aa1741369007b14788bab6d3",
-          "Description": null,
+          "Description": "When there's room to show them side-by-side. It goes below the text otherwise.",
           "Mandatory": false,
           "Name": "Image position",
           "SortOrder": 2,
@@ -103,5 +103,5 @@
   "Name": "Formatted text with image",
   "Alias": "FormattedTextWithImage",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.5"
+  "__version": "3.5.3"
 }

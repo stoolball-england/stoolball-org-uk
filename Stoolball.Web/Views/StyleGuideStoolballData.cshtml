@@ -28,10 +28,10 @@
     <h1 data-show-consent="true">@Model.Name</h1>
     <ul class="nav nav-tabs nav-tabs-has-add nav-tabs-has-edit">
         <li class="nav-item">
-            <a class="nav-link" href="@Request.Url.AbsolutePath">Umbraco content</a>
+            <a class="nav-link" href="@Umbraco.AssignedContentItem.Url()">Umbraco content</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="@Request.Url.AbsolutePath?alttemplate=styleguideforms">Forms</a>
+            <a class="nav-link" href="@Umbraco.AssignedContentItem.Url()?alttemplate=styleguideforms">Forms</a>
         </li>
         <li class="nav-item">
             <em class="nav-link active">Stoolball data</em>

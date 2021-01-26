@@ -23,47 +23,127 @@
     max-width: 400px;
 }
 
-/* Formatted text with image block */
-.block__text-with-image {
-    display: flex;
-    margin-bottom: $spacer;
-}
-
-.block__text-with-image__left .block__image {
-    margin-right: $spacer;
-    order: 1;
-}
-
-.block__text-with-image__left .block__text {
-    order: 2;
-}
-
-.block__text-with-image__right .block__image {
-    margin-left: $spacer;
-}
-
-.block__text-with-image img[src] {
-    border: 2px solid black;
-    border-radius: 5px;
-}
-
-@include media-breakpoint-up(md) {
-    .block__image {
-        flex-basis: 33.3%;
-    }
-
-    .block__text {
-        flex-basis: 66.6%;
-    }
-}
-
 /* Images - don't let them overflow their container */
 img {
     max-width: 100%;
 }
 
+/* Formatted text with image block */
+.block__text-with-image {
+    margin-bottom: $spacer;
+}
+
+.block__image {
+    width: 100%;
+    height: auto;
+}
+
+.block__text-with-image__extra-small .block__image,
+.block__text-with-image__small .block__image {
+    width: 70%;
+}
+
+
+@include media-breakpoint-up(sm) {
+    .block__text-with-image__extra-small, .block__text-with-image__small {
+        display: flex;
+    }
+
+    .block__text-with-image__left .block__image {
+        order: 1;
+    }
+
+    .block__text-with-image__left .block__text {
+        order: 2;
+    }
+
+    .block__text-with-image__left.block__text-with-image__extra-small .block__image,
+    .block__text-with-image__left.block__text-with-image__small .block__image {
+        margin-right: $spacer*2;
+    }
+
+    .block__text-with-image__right.block__text-with-image__extra-small .block__image,
+    .block__text-with-image__right.block__text-with-image__small .block__image {
+        margin-left: $spacer*2;
+    }
+
+    .block__text-with-image__extra-small .block__image,
+    .block__text-with-image__small .block__image {
+        width: 100%;
+        flex-basis: 33.3%;
+    }
+
+    .block__text-with-image__extra-small .block__text {
+        flex-basis: 66.6%;
+    }
+
+    .block__text-with-image__small .block__text {
+        flex-basis: 66.6%;
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .block__text-with-image__medium {
+        display: flex;
+    }
+
+    .block__text-with-image__left.block__text-with-image__medium .block__image {
+        margin-right: $spacer*2;
+    }
+
+    .block__text-with-image__right.block__text-with-image__large .block__image {
+        margin-left: $spacer*2;
+    }
+
+    .block__text-with-image__extra-small .block__image {
+        flex-basis: 25%;
+    }
+
+    .block__text-with-image__extra-small .block__text {
+        flex-basis: 75%;
+    }
+
+    .block__text-with-image__medium .block__image,
+    .block__text-with-image__medium .block__text {
+        flex-basis: 50%;
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    .block__text-with-image__large, .block__text-with-image__extra-large {
+        display: flex;
+    }
+
+    .block__text-with-image__left.block__text-with-image__large .block__image,
+    .block__text-with-image__left.block__text-with-image__extra-large .block__image {
+        margin-right: $spacer*2;
+    }
+
+    .block__text-with-image__right.block__text-with-image__medium .block__image,
+    .block__text-with-image__right.block__text-with-image__extra-large .block__image {
+        margin-left: $spacer*2;
+    }
+
+    .block__text-with-image__large .block__text {
+        flex-basis: 33.3%;
+    }
+
+    .block__text-with-image__large .block__image {
+        flex-basis: 66.6%;
+    }
+
+    .block__text-with-image__extra-large .block__text {
+        flex-basis: 25%;
+    }
+
+    .block__text-with-image__extra-large .block__image {
+        flex-basis: 75%;
+    }
+}
+
+
 // Common caption style for image and Getty blocks - similar to table headers for cross-site consistency
-.block__images > figcaption, .block__getty > figcaption {
+.block__image > figcaption, .block__images > figcaption, .block__getty > figcaption {
     background: $table-dark-bg;
     color: $table-dark-color;
     padding: $spacer;
@@ -91,7 +171,7 @@ img {
     }
 }
 
-.block__images img[src] {
+.block__image img[src], .block__images img[src] {
     display: block;
     border: 2px solid black;
     border-radius: 5px;
@@ -102,7 +182,7 @@ img {
 
 // inline-block caption because we don't know the width of an image.
 // The image above does not know if it has the optional caption following, so offset its bottom margin instead.
-.block__images > figcaption {
+.block__image > figcaption, .block__images > figcaption {
     margin-top: -$spacer;
 }
 

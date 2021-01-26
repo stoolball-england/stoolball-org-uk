@@ -3,6 +3,7 @@
 @using ClientDependency.Core.Mvc;
 @{
     Html.RequiresCss("~/css/news.min.css");
+    Html.RequiresCss("~/css/shop.page.min.css");
 }
 <div class="container-xl">
     <h1 data-show-consent="true">@Model.Name</h1>
@@ -12,10 +13,10 @@
             <em class="nav-link active">Umbraco content</em>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="@Request.Url.AbsolutePath?alttemplate=styleguideforms">Forms</a>
+            <a class="nav-link" href="@Umbraco.AssignedContentItem.Url()?alttemplate=styleguideforms">Forms</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="@Request.Url.AbsolutePath?alttemplate=styleguidestoolballdata">Stoolball data</a>
+            <a class="nav-link" href="@Umbraco.AssignedContentItem.Url()?alttemplate=styleguidestoolballdata">Stoolball data</a>
         </li>
         <li class="nav-item nav-item-admin">
             <div class="dropdown">
@@ -36,44 +37,8 @@
         </li>
     </ul>
     <p>Text below tabs.</p>
-    <h2>Typography</h2>
-    <p>This is a paragraph following an h2, with <strong>bold</strong> and <em>italic</em> formatting.</p>
-    <p>Two consecutive paragraphs.</p>
-    <p><img src="/images/logos/clubmark.png" alt="Clubmark accredited" width="150" height="29" /></p>
-    <p>This is a <a href="https://example.org">link</a> in a paragraph, below an image in its own paragraph.</p>
-    <ul>
-        <li>An unordered list</li>
-        <li>An unordered list</li>
-        <li>An unordered list</li>
-    </ul>
-    <p>A paragraph before and after lists, and another list:</p>
-    <ol>
-        <li>An ordered list between paragraphs</li>
-        <li>
-            An ordered list between paragraphs
-            <ol>
-                <li>
-                    With a nested list
-                    <ol>
-                        <li>
-                            And another
-                            <ol>
-                                <li>
-                                    And another
-                                    <ol>
-                                        <li>And another</li>
-                                    </ol>
-                                </li>
-                            </ol>
-                        </li>
-                    </ol>
-                </li>
-            </ol>
-        </li>
-    </ol>
-    <p>A paragraph after the ordered list.</p>
-    <h3>A third heading level</h3>
-    <p>Followed by a paragraph and a table.</p>
+    @Html.GetBlockListHtml(Model, "blockList")
+    <p>A paragraph followed by a table.</p>
     <table>
         <thead>
             <tr>
@@ -102,8 +67,6 @@
         <dt><a href="https://example.org">Definition list title</a> @Html.Partial("_AdminOnly")</dt>
         <dd>Definition list detail.</dd>
     </dl>
-    @Html.GetBlockListHtml(Model, "blockList")
-    @Html.GetBlockListHtml(Model, "cookiesBlockList")
     <article>
         <h2><a href="#">News story (listing)</a></h2>
         <p class="news__date">Monday 7 December 2020</p>
@@ -124,6 +87,10 @@
     <div class="umb-block-list">
         <p>Stoolball England’s aim is to develop a team of freelance Coaching Trainers who will deliver exciting, creative and inclusive stoolball sessions. The training programme will enable Coaching Trainers to deliver course content in a classroom environment as well as practical coaching on the ground. Coaches will develop and deliver stoolball sessions at their own pace and fitting-in with their work-life balance. Coaches’ own continuing professional development (CPD) will be expected and encouraged by Stoolball England. Coaching Trainers will help develop this exciting, new programme.</p>
     </div>
+    <ul class="tiles product-list">
+        @Html.GetBlockListHtml(Model, "productBlockList", "BlockList")
+    </ul>
+    @Html.GetBlockListHtml(Model, "cookiesBlockList")
 
 
 </div>

@@ -5,6 +5,9 @@
     Html.RequiresJs("~/js/libs/jquery.autocomplete.min.js", 50);
     Html.RequiresCss("~/css/autocomplete.min.css");
 
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+
     Html.RequiresCss("~/css/related-items.min.css");
     Html.RequiresJs("~/js/related-item.js");
     Html.RequiresJs("~/js/related-items.js");
@@ -18,16 +21,17 @@
     <h1 data-show-consent="true">@Model.Name</h1>
     <ul class="nav nav-tabs nav-tabs-has-add nav-tabs-has-edit">
         <li class="nav-item">
-            <a class="nav-link" href="@Request.Url.AbsolutePath">Umbraco content</a>
+            <a class="nav-link" href="@Umbraco.AssignedContentItem.Url()">Umbraco content</a>
         </li>
         <li class="nav-item">
             <em class="nav-link active">Forms</em>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="@Request.Url.AbsolutePath?alttemplate=styleguidestoolballdata">Stoolball data</a>
+            <a class="nav-link" href="@Umbraco.AssignedContentItem.Url()?alttemplate=styleguidestoolballdata">Stoolball data</a>
         </li>
     </ul>
-    <h2>Forms (and a heading below tabs)</h2>
+    @Html.GetBlockListHtml(Model, "blockListForm")
+    <h2>Custom forms</h2>
     <form>
         <div class="validation-summary-errors">
             <ul>
@@ -257,5 +261,4 @@
         <button class="btn btn-danger btn-delete" disabled="disabled">Delete button (disabled)</button>
     </form>
     <p>Paragraph below a button (outside the form).</p>
-    @Html.GetBlockListHtml(Model, "blockListForm")
 </div>
