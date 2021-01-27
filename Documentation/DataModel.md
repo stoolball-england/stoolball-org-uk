@@ -64,12 +64,4 @@ A `Player` is therefore represented by one or more `PlayerIdentities`, so that w
 
 ## Awards
 
-`Awards` like player of the match or player of the season are awarded to `PlayerIdentities`. They might be common awards like player of the match, which we want to compare across all matches, or they might be scoped to a team or competition (for example, a team might present the Jane Smith award at the end of a season).
-
-The scope of an `Award` is described by three things:
-
-- `AwardForScope` describes when the award is presented, which must be at the end of a `Match`, `Tournament` or `Season`.
-- `AwardByScope` describes which type of entity presents the award. This is `null` for common awards, and `Season`, `Club`, `Team` or `Tournament` for the more unique awards.
-- `AwardBy` links the more unique `Awards` to the `Season`, `Club`, `Team` or `Tournament` that presents it.
-
-When the award is presented to a `PlayerIdentity` it's treated as a `SeasonAward`, `TournamentAward` or `MatchAward` and its `AwardBy` scope is recorded along with the `PlayerIdentity` it is `AwardedTo`.
+`Awards` like player of the match or player of the season are awarded to a `PlayerIdentity` at the end of a `Match`, `Tournament` or `Season`.

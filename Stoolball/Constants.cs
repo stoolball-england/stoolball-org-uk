@@ -95,7 +95,6 @@ namespace Stoolball
             public const string TeamMatchLocation = _tablePrefix + "TeamMatchLocation";
             public const string Award = _tablePrefix + "Award";
             public const string AwardedTo = _tablePrefix + "AwardedTo";
-            public const string AwardBy = _tablePrefix + "AwardBy";
             public const string NotificationSubscription = _tablePrefix + "NotificationSubscription";
             public const string StatisticsPlayerMatch = _tablePrefix + _statisticsPrefix + "PlayerMatch";
         }

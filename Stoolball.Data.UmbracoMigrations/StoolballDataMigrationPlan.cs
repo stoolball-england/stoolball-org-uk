@@ -35,7 +35,6 @@ namespace Stoolball.Data.UmbracoMigrations
                 .To<MatchAddTable>(typeof(MatchAddTable).ToString())
                 .To<MatchTeamAddTable>(typeof(MatchTeamAddTable).ToString())
                 .To<MatchInningsAddTable>(typeof(MatchInningsAddTable).ToString())
-                .To<AwardByAddTable>(typeof(AwardByAddTable).ToString())
                 .To<AwardedToAddTable>(typeof(AwardedToAddTable).ToString())
                 .To<PlayerInningsAddTable>(typeof(PlayerInningsAddTable).ToString())
                 .To<FallOfWicketAddTable>(typeof(FallOfWicketAddTable).ToString())

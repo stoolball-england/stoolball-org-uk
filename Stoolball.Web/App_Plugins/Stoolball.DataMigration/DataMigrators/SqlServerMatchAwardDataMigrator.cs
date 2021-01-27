@@ -163,13 +163,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             {
                 awardId = Guid.NewGuid();
                 await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.Award} 
-                            (AwardId, AwardName, AwardForScope)
-						    VALUES (@AwardId, @AwardName, @AwardForScope)",
+                            (AwardId, AwardName, AwardScope)
+						    VALUES (@AwardId, @AwardName, @AwardScope)",
                             new
                             {
                                 AwardId = awardId,
                                 AwardName = awardName,
-                                AwardForScope = AwardForScope.Match.ToString()
+                                AwardScope = AwardScope.Match.ToString()
                             },
                             transaction).ConfigureAwait(false);
             }

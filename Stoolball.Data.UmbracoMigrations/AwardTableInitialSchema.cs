@@ -16,13 +16,8 @@ namespace Stoolball.Data.UmbracoMigrations
         [Column(nameof(AwardName))]
         public string AwardName { get; set; }
 
-        [Column(nameof(AwardForScope))]
+        [Column(nameof(AwardScope))]
         [Index(IndexTypes.NonClustered)]
-        public string AwardForScope { get; set; }
-
-        [Column(nameof(AwardByScope))]
-        [Index(IndexTypes.NonClustered)]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public string AwardByScope { get; set; }
+        public string AwardScope { get; set; }
     }
 }

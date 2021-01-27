@@ -1,9 +1,8 @@
 ﻿namespace Stoolball.Awards
 {
-    public enum AwardByScope
+    public enum AwardScope
     {
-        Club,
-        Team,
+        Match,
         Tournament,
         Season
     }

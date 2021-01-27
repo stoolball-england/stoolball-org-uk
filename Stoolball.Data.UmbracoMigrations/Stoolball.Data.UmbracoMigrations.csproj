@@ -57,8 +57,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="AwardByAddTable.cs" />
-    <Compile Include="AwardByTableInitialSchema.cs" />
     <Compile Include="NotificationSubscriptionAddTable.cs" />
     <Compile Include="NotificationSubscriptionTableInitialSchema.cs" />
     <Compile Include="BowlingFiguresAddTable.cs" />
