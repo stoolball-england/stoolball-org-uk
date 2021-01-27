@@ -35,7 +35,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    await connection.ExecuteAsync($@"DELETE FROM {Tables.MatchAward}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($@"DELETE FROM {Tables.AwardedTo}", null, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.Award}", null, transaction).ConfigureAwait(false);
 
                     transaction.Commit();
@@ -68,7 +68,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
                     if (migratedMatchAward.PlayerOfTheMatchId != null)
                     {
-                        migratedMatchAward.MatchAwardId = Guid.NewGuid();
+                        migratedMatchAward.AwardedToId = Guid.NewGuid();
                         migratedMatchAward.AwardId = await CreateOrGetMatchAwardTypeId("Player of the match", transaction).ConfigureAwait(false);
                         migratedMatchAward.MatchId = await GetMatchId(migratedMatchAward.MigratedMatchId, transaction).ConfigureAwait(false);
                         migratedMatchAward.PlayerIdentityId = await GetPlayerIdentityId(migratedMatchAward.PlayerOfTheMatchId.Value, transaction).ConfigureAwait(false);
@@ -76,7 +76,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     }
                     if (migratedMatchAward.PlayerOfTheMatchHomeId != null)
                     {
-                        migratedMatchAward.MatchAwardId = Guid.NewGuid();
+                        migratedMatchAward.AwardedToId = Guid.NewGuid();
                         migratedMatchAward.AwardId = await CreateOrGetMatchAwardTypeId("Player of the match", transaction).ConfigureAwait(false);
                         migratedMatchAward.MatchId = await GetMatchId(migratedMatchAward.MigratedMatchId, transaction).ConfigureAwait(false);
                         migratedMatchAward.PlayerIdentityId = await GetPlayerIdentityId(migratedMatchAward.PlayerOfTheMatchHomeId.Value, transaction).ConfigureAwait(false);
@@ -84,7 +84,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     }
                     if (migratedMatchAward.PlayerOfTheMatchAwayId != null)
                     {
-                        migratedMatchAward.MatchAwardId = Guid.NewGuid();
+                        migratedMatchAward.AwardedToId = Guid.NewGuid();
                         migratedMatchAward.AwardId = await CreateOrGetMatchAwardTypeId("Player of the match", transaction).ConfigureAwait(false);
                         migratedMatchAward.MatchId = await GetMatchId(migratedMatchAward.MigratedMatchId, transaction).ConfigureAwait(false);
                         migratedMatchAward.PlayerIdentityId = await GetPlayerIdentityId(migratedMatchAward.PlayerOfTheMatchAwayId.Value, transaction).ConfigureAwait(false);
@@ -128,12 +128,12 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 throw new ArgumentNullException(nameof(transaction));
             }
 
-            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.MatchAward} 
-                            (MatchAwardId, MatchId, AwardId, PlayerIdentityId)
-						    VALUES (@MatchAwardId, @MatchId, @AwardId, @PlayerIdentityId)",
+            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.AwardedTo} 
+                            (AwardedToId, MatchId, AwardId, PlayerIdentityId)
+						    VALUES (@AwardedToId, @MatchId, @AwardId, @PlayerIdentityId)",
                         new
                         {
-                            migratedMatchAward.MatchAwardId,
+                            migratedMatchAward.AwardedToId,
                             migratedMatchAward.MatchId,
                             migratedMatchAward.AwardId,
                             migratedMatchAward.PlayerIdentityId
@@ -163,14 +163,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             {
                 awardId = Guid.NewGuid();
                 await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.Award} 
-                            (AwardId, AwardName, AwardScope, AlwaysAsk)
-						    VALUES (@AwardId, @AwardName, @AwardScope, @AlwaysAsk)",
+                            (AwardId, AwardName, AwardForScope)
+						    VALUES (@AwardId, @AwardName, @AwardForScope)",
                             new
                             {
                                 AwardId = awardId,
                                 AwardName = awardName,
-                                AwardScope = AwardScope.Match.ToString(),
-                                AlwaysAsk = true
+                                AwardForScope = AwardForScope.Match.ToString()
                             },
                             transaction).ConfigureAwait(false);
             }

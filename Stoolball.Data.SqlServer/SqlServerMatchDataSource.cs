@@ -200,8 +200,8 @@ namespace Stoolball.Data.SqlServer
 
                     // Add awards - player of the match etc - to the match
                     matchToReturn.Awards = (await connection.QueryAsync<MatchAward, Award, PlayerIdentity, Team, MatchAward>(
-                        $@"SELECT ma.MatchAwardId, ma.Reason, a.AwardName, p.PlayerIdentityId, p.PlayerIdentityName, p.TotalMatches, p.TeamId
-                               FROM {Tables.MatchAward} ma
+                        $@"SELECT ma.AwardedToId, ma.Reason, a.AwardName, p.PlayerIdentityId, p.PlayerIdentityName, p.TotalMatches, p.TeamId
+                               FROM {Tables.AwardedTo} ma
                                INNER JOIN {Tables.Award} a ON ma.AwardId = a.AwardId
                                INNER JOIN {Tables.PlayerIdentity} p ON ma.PlayerIdentityId = p.PlayerIdentityId
                                WHERE ma.MatchId = @MatchId

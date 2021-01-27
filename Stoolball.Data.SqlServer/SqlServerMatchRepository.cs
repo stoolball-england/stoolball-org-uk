@@ -172,7 +172,7 @@ namespace Stoolball.Data.SqlServer
         {
             return new MatchAward
             {
-                MatchAwardId = award.MatchAwardId,
+                AwardedToId = award.AwardedToId,
                 Award = award.Award,
                 PlayerIdentity = CreateAuditableCopy(award.PlayerIdentity),
                 Reason = award.Reason
@@ -1085,13 +1085,13 @@ namespace Stoolball.Data.SqlServer
                         },
                         transaction).ConfigureAwait(false);
 
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.MatchAward} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.AwardedTo} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
                     var awardId = await connection.QuerySingleAsync<Guid>($"SELECT AwardId FROM {Tables.Award} WHERE AwardName = 'Player of the match'", null, transaction).ConfigureAwait(false);
                     foreach (var award in auditableMatch.Awards)
                     {
-                        if (!award.MatchAwardId.HasValue)
+                        if (!award.AwardedToId.HasValue)
                         {
-                            award.MatchAwardId = Guid.NewGuid();
+                            award.AwardedToId = Guid.NewGuid();
                         }
 
                         if (award.PlayerIdentity == null)
@@ -1114,12 +1114,12 @@ namespace Stoolball.Data.SqlServer
                             award.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(award.PlayerIdentity, memberKey, memberName, transaction).ConfigureAwait(false);
                         }
 
-                        await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchAward} 
-                                (MatchAwardId, MatchId, AwardId, PlayerIdentityId, Reason)
-                                VALUES (@MatchAwardId, @MatchId, '{awardId}', @PlayerIdentityId, @Reason)",
+                        await connection.ExecuteAsync($@"INSERT INTO {Tables.AwardedTo} 
+                                (AwardedToId, MatchId, AwardId, PlayerIdentityId, Reason)
+                                VALUES (@AwardedToId, @MatchId, '{awardId}', @PlayerIdentityId, @Reason)",
                                 new
                                 {
-                                    award.MatchAwardId,
+                                    award.AwardedToId,
                                     auditableMatch.MatchId,
                                     award.PlayerIdentity.PlayerIdentityId,
                                     award.Reason
@@ -1249,7 +1249,7 @@ namespace Stoolball.Data.SqlServer
                     await connection.ExecuteAsync($"DELETE FROM {Tables.MatchInnings} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.MatchComment} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.MatchAward} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.AwardedTo} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.Match} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
 
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableMatch.MatchRoute, transaction).ConfigureAwait(false);

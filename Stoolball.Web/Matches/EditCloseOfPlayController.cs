@@ -83,7 +83,7 @@ namespace Stoolball.Web.Matches
                 model.FormData.MatchResultType = model.Match.MatchResultType;
                 model.FormData.Awards = model.Match.Awards.Select(x => new MatchAwardViewModel
                 {
-                    MatchAwardId = x.MatchAwardId,
+                    MatchAwardId = x.AwardedToId,
                     PlayerSearch = x.PlayerIdentity.PlayerIdentityName,
                     TeamId = model.Match.Teams.First(team => team.Team.TeamId == x.PlayerIdentity.Team.TeamId).Team.TeamId,
                     Reason = x.Reason

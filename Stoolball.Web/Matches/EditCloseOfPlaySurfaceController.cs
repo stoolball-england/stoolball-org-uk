@@ -62,7 +62,7 @@ namespace Stoolball.Web.Matches
             model.Match.MatchResultType = model.FormData.MatchResultType;
             model.Match.Awards = model.FormData.Awards.Select(x => new MatchAward
             {
-                MatchAwardId = x.MatchAwardId,
+                AwardedToId = x.MatchAwardId,
                 PlayerIdentity = new PlayerIdentity
                 {
                     PlayerIdentityName = x.PlayerSearch,

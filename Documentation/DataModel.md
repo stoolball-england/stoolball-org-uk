@@ -52,7 +52,7 @@ A `Player` is therefore represented by one or more `PlayerIdentities`, so that w
 
 `PlayerIdentities` are created automatically from scorecards entered for `Matches`.
 
-## PlayerInnings, Overs and MatchAwards
+## PlayerInnings and Overs
 
 `PlayerIdentities` are created automatically from scorecards entered for `Matches`. Scorecards are linked to `PlayerIdentities` in the following ways.
 
@@ -62,4 +62,14 @@ A `Player` is therefore represented by one or more `PlayerIdentities`, so that w
 
 - An `Over` records the bowling figures for a single over in a `MatchInnings` bowled by a `PlayerIdentity`. Together the `Overs` in a `MatchInnings` make up the bowling scorecard.
 
-- An `MatchAward` is given to a `PlayerIdentity` as part of a `Match`. This is typically, but not always, a form of player of the match award.
+## Awards
+
+`Awards` like player of the match or player of the season are awarded to `PlayerIdentities`. They might be common awards like player of the match, which we want to compare across all matches, or they might be scoped to a team or competition (for example, a team might present the Jane Smith award at the end of a season).
+
+The scope of an `Award` is described by three things:
+
+- `AwardForScope` describes when the award is presented, which must be at the end of a `Match`, `Tournament` or `Season`.
+- `AwardByScope` describes which type of entity presents the award. This is `null` for common awards, and `Season`, `Club`, `Team` or `Tournament` for the more unique awards.
+- `AwardBy` links the more unique `Awards` to the `Season`, `Club`, `Team` or `Tournament` that presents it.
+
+When the award is presented to a `PlayerIdentity` it's treated as a `SeasonAward`, `TournamentAward` or `MatchAward` and its `AwardBy` scope is recorded along with the `PlayerIdentity` it is `AwardedTo`.

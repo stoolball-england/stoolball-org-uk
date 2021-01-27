@@ -57,10 +57,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="SeasonAwardAddTable.cs" />
-    <Compile Include="TournamentAwardAddTable.cs" />
-    <Compile Include="SeasonAwardTableInitialSchema.cs" />
-    <Compile Include="TournamentAwardTableInitialSchema.cs" />
+    <Compile Include="AwardByAddTable.cs" />
+    <Compile Include="AwardByTableInitialSchema.cs" />
     <Compile Include="NotificationSubscriptionAddTable.cs" />
     <Compile Include="NotificationSubscriptionTableInitialSchema.cs" />
     <Compile Include="BowlingFiguresAddTable.cs" />
@@ -86,8 +84,8 @@
     <Compile Include="CompetitionAddTable.cs" />
     <Compile Include="CompetitionTableInitialSchema.cs" />
     <Compile Include="MatchAddTable.cs" />
-    <Compile Include="MatchAwardAddTable.cs" />
-    <Compile Include="MatchAwardTableInitialSchema.cs" />
+    <Compile Include="AwardedToAddTable.cs" />
+    <Compile Include="AwardedToTableInitialSchema.cs" />
     <Compile Include="AwardAddTable.cs" />
     <Compile Include="AwardTableInitialSchema.cs" />
     <Compile Include="MatchCommentAddTable.cs" />

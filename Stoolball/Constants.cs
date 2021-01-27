@@ -77,13 +77,10 @@ namespace Stoolball
             public const string MatchLocation = _tablePrefix + "MatchLocation";
             public const string MatchTeam = _tablePrefix + "MatchTeam";
             public const string MatchInnings = _tablePrefix + "MatchInnings";
-            public const string MatchAward = _tablePrefix + "MatchAward";
-            public const string Award = _tablePrefix + "Award";
             public const string Tournament = _tablePrefix + "Tournament";
             public const string TournamentTeam = _tablePrefix + "TournamentTeam";
             public const string TournamentSeason = _tablePrefix + "TournamentSeason";
             public const string TournamentComment = _tablePrefix + "TournamentComment";
-            public const string TournamentAward = _tablePrefix + "TournamentAward";
             public const string Player = _tablePrefix + "Player";
             public const string PlayerIdentity = _tablePrefix + "PlayerIdentity";
             public const string School = _tablePrefix + "School";
@@ -93,10 +90,12 @@ namespace Stoolball
             public const string SeasonPointsAdjustment = _tablePrefix + "SeasonPointsAdjustment";
             public const string SeasonPointsRule = _tablePrefix + "SeasonPointsRule";
             public const string SeasonTeam = _tablePrefix + "SeasonTeam";
-            public const string SeasonAward = _tablePrefix + "SeasonAward";
             public const string Team = _tablePrefix + "Team";
             public const string TeamName = _tablePrefix + "TeamName";
             public const string TeamMatchLocation = _tablePrefix + "TeamMatchLocation";
+            public const string Award = _tablePrefix + "Award";
+            public const string AwardedTo = _tablePrefix + "AwardedTo";
+            public const string AwardBy = _tablePrefix + "AwardBy";
             public const string NotificationSubscription = _tablePrefix + "NotificationSubscription";
             public const string StatisticsPlayerMatch = _tablePrefix + _statisticsPrefix + "PlayerMatch";
         }
