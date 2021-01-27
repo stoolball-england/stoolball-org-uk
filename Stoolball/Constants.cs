@@ -73,14 +73,13 @@ namespace Stoolball
             public const string ClubName = _tablePrefix + "ClubName";
             public const string Competition = _tablePrefix + "Competition";
             public const string Match = _tablePrefix + "Match";
-            public const string MatchComment = _tablePrefix + "MatchComment";
             public const string MatchLocation = _tablePrefix + "MatchLocation";
             public const string MatchTeam = _tablePrefix + "MatchTeam";
             public const string MatchInnings = _tablePrefix + "MatchInnings";
             public const string Tournament = _tablePrefix + "Tournament";
             public const string TournamentTeam = _tablePrefix + "TournamentTeam";
             public const string TournamentSeason = _tablePrefix + "TournamentSeason";
-            public const string TournamentComment = _tablePrefix + "TournamentComment";
+            public const string Comment = _tablePrefix + "Comment";
             public const string Player = _tablePrefix + "Player";
             public const string PlayerIdentity = _tablePrefix + "PlayerIdentity";
             public const string School = _tablePrefix + "School";

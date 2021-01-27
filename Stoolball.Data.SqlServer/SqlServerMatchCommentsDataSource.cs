@@ -26,7 +26,7 @@ namespace Stoolball.Data.SqlServer
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                return await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.MatchComment} WHERE MatchId = @MatchId", new { MatchId = entityId }).ConfigureAwait(false);
+                return await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Comment} WHERE MatchId = @MatchId", new { MatchId = entityId }).ConfigureAwait(false);
             }
         }
     }

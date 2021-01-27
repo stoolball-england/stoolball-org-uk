@@ -4,7 +4,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
     public class MigratedMatchComment
     {
-        public Guid? MatchCommentId { get; set; }
+        public Guid? CommentId { get; set; }
         public Guid? MatchId { get; set; }
         public int MigratedMatchId { get; set; }
         public Guid? MemberKey { get; set; }

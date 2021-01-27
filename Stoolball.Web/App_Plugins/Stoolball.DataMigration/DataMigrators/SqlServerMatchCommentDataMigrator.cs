@@ -37,8 +37,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    await connection.ExecuteAsync($@"DELETE FROM {Tables.TournamentComment}", null, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($@"DELETE FROM {Tables.MatchComment}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($@"DELETE FROM {Tables.Comment}", null, transaction).ConfigureAwait(false);
 
                     transaction.Commit();
                 }
@@ -57,7 +56,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
             var migratedMatchComment = new MigratedMatchComment
             {
-                MatchCommentId = Guid.NewGuid(),
+                CommentId = Guid.NewGuid(),
                 MigratedMatchId = comment.MigratedMatchId,
                 MigratedMemberId = comment.MigratedMemberId,
                 MigratedMemberEmail = comment.MigratedMemberEmail,
@@ -134,12 +133,12 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 throw new ArgumentNullException(nameof(transaction));
             }
 
-            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.MatchComment} 
-                            (MatchCommentId, MatchId, MemberKey, MemberName, Comment, CommentDate)
-						    VALUES (@MatchCommentId, @MatchId, @MemberKey, @MemberName, @Comment, @CommentDate)",
+            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.Comment} 
+                            (CommentId, MatchId, MemberKey, MemberName, Comment, CommentDate)
+						    VALUES (@CommentId, @MatchId, @MemberKey, @MemberName, @Comment, @CommentDate)",
                 new
                 {
-                    migratedMatchComment.MatchCommentId,
+                    migratedMatchComment.CommentId,
                     migratedMatchComment.MatchId,
                     migratedMatchComment.MemberKey,
                     migratedMatchComment.MemberName,
@@ -154,7 +153,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 MemberKey = migratedMatchComment.MemberKey,
                 ActorName = migratedMatchComment.MemberName,
                 AuditDate = migratedMatchComment.CommentDate,
-                EntityUri = new Uri($"https://www.stoolball.org.uk/id/match-comment/{migratedMatchComment.MatchCommentId}"),
+                EntityUri = new Uri($"https://www.stoolball.org.uk/id/comment/{migratedMatchComment.CommentId}"),
                 State = JsonConvert.SerializeObject(migratedMatchComment),
                 RedactedState = JsonConvert.SerializeObject(migratedMatchComment)
             }, transaction).ConfigureAwait(false);
@@ -167,12 +166,12 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 throw new ArgumentNullException(nameof(transaction));
             }
 
-            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.TournamentComment} 
-                (TournamentCommentId, TournamentId, MemberKey, MemberName, Comment, CommentDate)
-				VALUES (@TournamentCommentId, @TournamentId, @MemberKey, @MemberName, @Comment, @CommentDate)",
+            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.Comment} 
+                (CommentId, TournamentId, MemberKey, MemberName, Comment, CommentDate)
+				VALUES (@CommentId, @TournamentId, @MemberKey, @MemberName, @Comment, @CommentDate)",
                 new
                 {
-                    TournamentCommentId = migratedMatchComment.MatchCommentId,
+                    migratedMatchComment.CommentId,
                     TournamentId = migratedMatchComment.MatchId,
                     migratedMatchComment.MemberKey,
                     migratedMatchComment.MemberName,
@@ -187,7 +186,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 MemberKey = migratedMatchComment.MemberKey,
                 ActorName = migratedMatchComment.MemberName,
                 AuditDate = migratedMatchComment.CommentDate,
-                EntityUri = new Uri($"https://www.stoolball.org.uk/id/tournament-comment/{migratedMatchComment.MatchCommentId}"),
+                EntityUri = new Uri($"https://www.stoolball.org.uk/id/comment/{migratedMatchComment.CommentId}"),
                 State = JsonConvert.SerializeObject(migratedMatchComment),
                 RedactedState = JsonConvert.SerializeObject(migratedMatchComment)
             }, transaction).ConfigureAwait(false);

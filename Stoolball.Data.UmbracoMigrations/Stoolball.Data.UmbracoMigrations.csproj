@@ -63,8 +63,6 @@
     <Compile Include="BowlingFiguresTableInitialSchema.cs" />
     <Compile Include="PlayerAddTable.cs" />
     <Compile Include="PlayerTableInitialSchema.cs" />
-    <Compile Include="TournamentCommentTableInitialSchema.cs" />
-    <Compile Include="TournamentCommentAddTable.cs" />
     <Compile Include="FallOfWicketAddTable.cs" />
     <Compile Include="FallOfWicketTableInitialSchema.cs" />
     <Compile Include="TournamentTeamTableInitialSchema.cs" />
@@ -86,8 +84,8 @@
     <Compile Include="AwardedToTableInitialSchema.cs" />
     <Compile Include="AwardAddTable.cs" />
     <Compile Include="AwardTableInitialSchema.cs" />
-    <Compile Include="MatchCommentAddTable.cs" />
-    <Compile Include="MatchCommentTableInitialSchema.cs" />
+    <Compile Include="CommentAddTable.cs" />
+    <Compile Include="CommentTableInitialSchema.cs" />
     <Compile Include="MatchInningsAddTable.cs" />
     <Compile Include="MatchInningsTableInitialSchema.cs" />
     <Compile Include="MatchLocationAddTable.cs" />

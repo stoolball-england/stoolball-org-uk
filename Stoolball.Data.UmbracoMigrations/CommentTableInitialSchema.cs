@@ -1,21 +1,27 @@
 ﻿using System;
 using NPoco;
-using Stoolball.Data.SqlServer;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
-    [TableName(Constants.Tables.TournamentComment)]
-    [PrimaryKey(nameof(TournamentCommentId), AutoIncrement = false)]
+    [TableName(Constants.Tables.Comment)]
+    [PrimaryKey(nameof(CommentId), AutoIncrement = false)]
     [ExplicitColumns]
-    public class TournamentCommentTableInitialSchema
+    public class CommentTableInitialSchema
     {
         [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
-        [Column(nameof(TournamentCommentId))]
-        public Guid TournamentCommentId { get; set; }
+        [Column(nameof(CommentId))]
+        public Guid CommentId { get; set; }
+
+        [ForeignKey(typeof(MatchTableInitialSchema), Column = nameof(MatchTableInitialSchema.MatchId))]
+        [Index(IndexTypes.Clustered)]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        [Column(nameof(MatchId))]
+        public Guid MatchId { get; set; }
 
         [ForeignKey(typeof(TournamentTableInitialSchema), Column = nameof(TournamentTableInitialSchema.TournamentId))]
-        [Index(IndexTypes.Clustered)]
+        [Index(IndexTypes.NonClustered)]
+        [NullSetting(NullSetting = NullSettings.Null)]
         [Column(nameof(TournamentId))]
         public Guid TournamentId { get; set; }
 
