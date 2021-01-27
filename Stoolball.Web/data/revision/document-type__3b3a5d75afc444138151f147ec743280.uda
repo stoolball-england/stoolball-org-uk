@@ -1,8 +1,6 @@
 {
-  "DefaultTemplate": "umb://template/0cd0c6dc936845019b6b1265c313f822",
-  "AllowedTemplates": [
-    "umb://template/0cd0c6dc936845019b6b1265c313f822"
-  ],
+  "DefaultTemplate": null,
+  "AllowedTemplates": [],
   "Icon": "icon-lightbulb-active color-black",
   "Thumbnail": "folder.png",
   "Description": null,
@@ -49,15 +47,10 @@
       "Udi": "umb://document-type-container/5be42d3707a847e7b9b7d51af38bdac2",
       "Ordering": true,
       "Mode": 0
-    },
-    {
-      "Udi": "umb://template/0cd0c6dc936845019b6b1265c313f822",
-      "Ordering": true,
-      "Mode": 0
     }
   ],
   "Name": "Tip",
   "Alias": "tip",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.5"
+  "__version": "3.5.3"
 }

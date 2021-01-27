@@ -1,77 +1,66 @@
-[
+﻿[
   {
     "outputFile": "css/base.css",
-    "inputFile": "css/base.scss",
-    "sourceMap": false
+    "inputFile": "css/base.scss"
   },
   {
     "outputFile": "App_Plugins/Stoolball.DataMigration/data-migration.css",
-    "inputFile": "App_Plugins/Stoolball.DataMigration/data-migration.scss",
-    "sourceMap": false
+    "inputFile": "App_Plugins/Stoolball.DataMigration/data-migration.scss"
   },
   {
     "outputFile": "css/related-items.css",
-    "inputFile": "css/related-items.scss",
-    "sourceMap": false
+    "inputFile": "css/related-items.scss"
   },
   {
     "outputFile": "css/autocomplete.css",
-    "inputFile": "css/autocomplete.scss",
-    "sourceMap": false
+    "inputFile": "css/autocomplete.scss"
   },
   {
     "outputFile": "css/tinymce.css",
-    "inputFile": "css/tinymce.scss",
-    "sourceMap": false
+    "inputFile": "css/tinymce.scss"
   },
   {
     "outputFile": "css/steps.css",
-    "inputFile": "css/steps.scss",
-    "sourceMap": false
+    "inputFile": "css/steps.scss"
   },
   {
     "outputFile": "css/rules.page.css",
-    "inputFile": "css/rules.page.scss",
-    "sourceMap": false
+    "inputFile": "css/rules.page.scss"
   },
   {
     "outputFile": "css/cookies.page.css",
-    "inputFile": "css/cookies.page.scss",
-    "sourceMap": false
+    "inputFile": "css/cookies.page.scss"
   },
   {
     "outputFile": "css/news.css",
-    "inputFile": "css/news.scss",
-    "sourceMap": false
+    "inputFile": "css/news.scss"
   },
   {
     "outputFile": "css/shop.page.css",
-    "inputFile": "css/shop.page.scss",
-    "sourceMap": false
+    "inputFile": "css/shop.page.scss"
   },
   {
     "outputFile": "Matches/match.css",
-    "inputFile": "Matches/match.scss",
-    "sourceMap": false
+    "inputFile": "Matches/match.scss"
   },
   {
     "outputFile": "Matches/scorecards.css",
-    "inputFile": "Matches/scorecards.scss",
-    "sourceMap": false
+    "inputFile": "Matches/scorecards.scss"
   },
   {
     "outputFile": "Competitions/competitions.css",
-    "inputFile": "Competitions/competitions.scss",
-    "sourceMap": false
+    "inputFile": "Competitions/competitions.scss"
   },
   {
     "outputFile": "HomePage/home.css",
-    "inputFile": "HomePage/home.scss",
-    "sourceMap": false
+    "inputFile": "HomePage/home.scss"
   },
   {
     "outputFile": "Account/account.css",
-    "inputFile": "Account/account.scss",
-    "sourceMap": false
+    "inputFile": "Account/account.scss"
+  },
+  {
+    "outputFile": "css/who-are-stoolball-england.page.css",
+    "inputFile": "css/who-are-stoolball-england.page.scss"
   }
 ]

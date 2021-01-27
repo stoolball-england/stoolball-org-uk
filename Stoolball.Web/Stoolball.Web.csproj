@@ -632,6 +632,12 @@
     <Content Include="css\cookies.page.min.css">
       <DependentUpon>cookies.page.css</DependentUpon>
     </Content>
+    <Content Include="css\who-are-stoolball-england.page.css">
+      <DependentUpon>who-are-stoolball-england.page.scss</DependentUpon>
+    </Content>
+    <Content Include="css\who-are-stoolball-england.page.min.css">
+      <DependentUpon>who-are-stoolball-england.page.css</DependentUpon>
+    </Content>
     <Content Include="Global.asax" />
     <Content Include="HomePage\home.css">
       <DependentUpon>home.scss</DependentUpon>
@@ -944,6 +950,7 @@
     <Content Include="fonts\dancing-script-v15-latin-700.woff" />
     <Content Include="fonts\dancing-script-v15-latin-700.woff2" />
     <Content Include="Media\Web.config" />
+    <Content Include="css\who-are-stoolball-england.page.scss" />
     <None Include="Status\offline.json" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
