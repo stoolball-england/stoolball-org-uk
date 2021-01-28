@@ -21,6 +21,11 @@
     padding-left: $spacer/4; // Update Bootstrap padding to reflect change to display value above.
 }
 
+// Override Bootstrap again in a fix that goes with display: block above.
+.breadcrumb-item + .breadcrumb-item::before {
+    float: none;
+}
+
 .breadcrumb a[href] {
     @include remove-link-underline;
     color: $grey;
