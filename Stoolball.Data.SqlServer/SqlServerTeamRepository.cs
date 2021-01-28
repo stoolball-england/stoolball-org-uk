@@ -211,7 +211,7 @@ namespace Stoolball.Data.SqlServer
                     auditableTeam.AgeRangeUpper,
                     auditableTeam.FromYear,
                     auditableTeam.UntilYear,
-                    auditableTeam.PlayerType,
+                    PlayerType = auditableTeam.PlayerType.ToString(),
                     auditableTeam.Introduction,
                     auditableTeam.PlayingTimes,
                     auditableTeam.Cost,
@@ -239,13 +239,14 @@ namespace Stoolball.Data.SqlServer
 
             foreach (var location in auditableTeam.MatchLocations)
             {
-                await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} (TeamMatchLocationId, TeamId, MatchLocationId)
-                                VALUES (@TeamMatchLocationId, @TeamId, @MatchLocationId)",
+                await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} (TeamMatchLocationId, TeamId, MatchLocationId, FromDate)
+                                VALUES (@TeamMatchLocationId, @TeamId, @MatchLocationId, @FromDate)",
                     new
                     {
                         TeamMatchLocationId = Guid.NewGuid(),
                         auditableTeam.TeamId,
-                        location.MatchLocationId
+                        location.MatchLocationId,
+                        FromDate = DateTime.UtcNow.Date
                     }, transaction).ConfigureAwait(false);
             }
 
@@ -328,7 +329,7 @@ namespace Stoolball.Data.SqlServer
                             auditableTeam.AgeRangeUpper,
                             auditableTeam.FromYear,
                             auditableTeam.UntilYear,
-                            auditableTeam.PlayerType,
+                            PlayerType = auditableTeam.PlayerType.ToString(),
                             auditableTeam.Introduction,
                             auditableTeam.PlayingTimes,
                             auditableTeam.Cost,
@@ -357,21 +358,22 @@ namespace Stoolball.Data.SqlServer
                                                         }, transaction).ConfigureAwait(false);
                     }
 
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.TeamMatchLocation} WHERE TeamId = @TeamId AND MatchLocationId NOT IN @MatchLocationIds", new { auditableTeam.TeamId, MatchLocationIds = auditableTeam.MatchLocations.Select(x => x.MatchLocationId) }, transaction).ConfigureAwait(false);
-                    var currentLocations = (await connection.QueryAsync<Guid>($"SELECT MatchLocationId FROM {Tables.TeamMatchLocation} WHERE TeamId = @TeamId", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false)).ToList();
+                    await connection.ExecuteAsync($"UPDATE {Tables.TeamMatchLocation} SET UntilDate = @UntilDate WHERE TeamId = @TeamId AND UntilDate IS NULL AND MatchLocationId NOT IN @MatchLocationIds", new { UntilDate = DateTime.UtcNow.Date.AddDays(1), auditableTeam.TeamId, MatchLocationIds = auditableTeam.MatchLocations.Select(x => x.MatchLocationId) }, transaction).ConfigureAwait(false);
+                    var currentLocations = (await connection.QueryAsync<Guid>($"SELECT MatchLocationId FROM {Tables.TeamMatchLocation} tml WHERE TeamId = @TeamId AND tml.UntilDate IS NULL", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false)).ToList();
                     foreach (var location in auditableTeam.MatchLocations)
                     {
                         if (!currentLocations.Contains(location.MatchLocationId.Value))
                         {
                             await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} 
-                                    (TeamMatchLocationId, TeamId, MatchLocationId)
+                                    (TeamMatchLocationId, TeamId, MatchLocationId, FromDate)
                                     VALUES 
-                                    (@TeamMatchLocationId, @TeamId, @MatchLocationId)",
+                                    (@TeamMatchLocationId, @TeamId, @MatchLocationId, @FromDate)",
                                 new
                                 {
                                     TeamMatchLocationId = Guid.NewGuid(),
                                     auditableTeam.TeamId,
-                                    location.MatchLocationId
+                                    location.MatchLocationId,
+                                    FromDate = DateTime.UtcNow.Date
                                 },
                                 transaction).ConfigureAwait(false);
                         }
@@ -471,7 +473,7 @@ namespace Stoolball.Data.SqlServer
                         {
                             auditableTeam.AgeRangeLower,
                             auditableTeam.AgeRangeUpper,
-                            auditableTeam.PlayerType,
+                            PlayerType = auditableTeam.PlayerType.ToString(),
                             auditableTeam.Introduction,
                             auditableTeam.Cost,
                             auditableTeam.PublicContactDetails,

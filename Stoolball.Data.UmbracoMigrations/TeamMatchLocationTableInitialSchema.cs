@@ -1,6 +1,5 @@
 ﻿using System;
 using NPoco;
-using Stoolball.Data.SqlServer;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
@@ -23,5 +22,14 @@ namespace Stoolball.Data.UmbracoMigrations
         [Index(IndexTypes.NonClustered)]
         [Column(nameof(MatchLocationId))]
         public Guid MatchLocationId { get; set; }
+
+        [Column(nameof(FromDate))]
+        [Index(IndexTypes.NonClustered)]
+        public DateTime FromDate { get; set; }
+
+        [Column(nameof(UntilDate))]
+        [Index(IndexTypes.NonClustered)]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public DateTime? UntilDate { get; set; }
     }
 }

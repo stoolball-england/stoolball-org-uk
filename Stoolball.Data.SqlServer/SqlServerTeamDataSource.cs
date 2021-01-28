@@ -103,7 +103,7 @@ namespace Stoolball.Data.SqlServer
                             INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             LEFT JOIN {Tables.Club} AS c ON t.ClubId = c.ClubId
                             LEFT JOIN {Tables.ClubName} AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
-                            LEFT JOIN {Tables.TeamMatchLocation} AS tml ON tml.TeamId = t.TeamId 
+                            LEFT JOIN {Tables.TeamMatchLocation} AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL 
                             LEFT JOIN {Tables.MatchLocation} AS ml ON ml.MatchLocationId = tml.MatchLocationId 
                             LEFT JOIN {Tables.SeasonTeam} AS st ON t.TeamId = st.TeamId
                             LEFT JOIN {Tables.Season} AS s ON st.SeasonId = s.SeasonId
@@ -173,7 +173,7 @@ namespace Stoolball.Data.SqlServer
                             ml.Locality, ml.Town
                             FROM {Tables.Team} AS t 
                             INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
-                            LEFT JOIN {Tables.TeamMatchLocation} AS tml ON tml.TeamId = t.TeamId
+                            LEFT JOIN {Tables.TeamMatchLocation} AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL
                             LEFT JOIN {Tables.MatchLocation} AS ml ON ml.MatchLocationId = tml.MatchLocationId 
                             <<JOIN>>
                             <<WHERE>>

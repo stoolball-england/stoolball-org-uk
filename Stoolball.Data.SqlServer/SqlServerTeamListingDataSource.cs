@@ -45,7 +45,7 @@ namespace Stoolball.Data.SqlServer
                                     SELECT t.TeamId AS TeamListingId
                                     FROM { Tables.Team } AS t
                                     INNER JOIN { Tables.TeamName } AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
-                                    LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = t.TeamId
+                                    LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL
                                     LEFT JOIN { Tables.MatchLocation } AS ml ON ml.MatchLocationId = tml.MatchLocationId
                                     {teamWhere}
                                     UNION 
@@ -53,7 +53,7 @@ namespace Stoolball.Data.SqlServer
                                     FROM { Tables.Club } AS c
                                     INNER JOIN { Tables.ClubName } AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
                                     LEFT JOIN { Tables.Team } AS ct ON c.ClubId = ct.ClubId AND ct.UntilYear IS NULL
-                                    LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = ct.TeamId
+                                    LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = ct.TeamId AND tml.UntilDate IS NULL
                                     LEFT JOIN { Tables.MatchLocation } AS ml ON ml.MatchLocationId = tml.MatchLocationId
                                     {clubWhere}
                                 ) as Total", new DynamicParameters(parameters)).ConfigureAwait(false);
@@ -98,7 +98,7 @@ namespace Stoolball.Data.SqlServer
                                                 SELECT t.TeamId AS TeamListingId, tn.TeamName AS ClubOrTeamName, CASE WHEN UntilYear IS NULL THEN 1 ELSE 0 END AS Active
                                                 FROM { Tables.Team } AS t
                                                 INNER JOIN { Tables.TeamName } AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
-                                                LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = t.TeamId
+                                                LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL
                                                 LEFT JOIN { Tables.MatchLocation } AS ml ON ml.MatchLocationId = tml.MatchLocationId
                                                 {teamWhere}
                                                 UNION
@@ -107,7 +107,7 @@ namespace Stoolball.Data.SqlServer
                                                 FROM { Tables.Club } AS c
                                                 INNER JOIN { Tables.ClubName } AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
                                                 LEFT JOIN { Tables.Team } AS ct ON c.ClubId = ct.ClubId AND ct.UntilYear IS NULL
-                                                LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = ct.TeamId
+                                                LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = ct.TeamId AND tml.UntilDate IS NULL
                                                 LEFT JOIN { Tables.MatchLocation } AS ml ON ml.MatchLocationId = tml.MatchLocationId
                                                 {clubWhere}
                                             ) AS MatchingRecords
@@ -121,7 +121,7 @@ namespace Stoolball.Data.SqlServer
                                 ml.Locality, ml.Town, ml.MatchLocationRoute
                                 FROM { Tables.Team } AS t 
                                 INNER JOIN { Tables.TeamName } AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
-                                LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = t.TeamId
+                                LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL
                                 LEFT JOIN { Tables.MatchLocation } AS ml ON ml.MatchLocationId = tml.MatchLocationId 
                                 WHERE t.TeamId IN ({innerQuery})
                                 UNION
@@ -132,7 +132,7 @@ namespace Stoolball.Data.SqlServer
                                 FROM { Tables.Club } AS c 
                                 INNER JOIN { Tables.ClubName } AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
                                 LEFT JOIN { Tables.Team } AS ct ON c.ClubId = ct.ClubId AND ct.UntilYear IS NULL
-                                LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = ct.TeamId
+                                LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = ct.TeamId AND tml.UntilDate IS NULL
                                 LEFT JOIN { Tables.MatchLocation } AS ml ON ml.MatchLocationId = tml.MatchLocationId 
                                 WHERE c.ClubId IN ({innerQuery})
                                 ORDER BY Active DESC, ClubOrTeamName";

@@ -64,7 +64,7 @@ namespace Stoolball.Data.SqlServer
                             ml.Latitude, ml.Longitude, ml.GeoPrecision,
                             t.TeamId, tn.TeamName, t.TeamRoute
                             FROM {Tables.MatchLocation} AS ml
-                            LEFT JOIN {Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId 
+                            LEFT JOIN {Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId AND tml.UntilDate IS NULL
                             LEFT JOIN {Tables.Team} AS t ON tml.TeamId = t.TeamId AND t.UntilYear IS NULL AND NOT t.TeamType = '{TeamType.Transient}'
                             LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
                             WHERE LOWER(ml.MatchLocationRoute) = @Route
@@ -118,7 +118,7 @@ namespace Stoolball.Data.SqlServer
                             ml2.SecondaryAddressableObjectName, ml2.PrimaryAddressableObjectName, ml2.Locality, ml2.Town,
                             t2.PlayerType
                             FROM {Tables.MatchLocation} AS ml2
-                            LEFT JOIN {Tables.TeamMatchLocation} AS tml2 ON ml2.MatchLocationId = tml2.MatchLocationId 
+                            LEFT JOIN {Tables.TeamMatchLocation} AS tml2 ON ml2.MatchLocationId = tml2.MatchLocationId AND tml2.UntilDate IS NULL
                             LEFT JOIN {Tables.Team} AS t2 ON tml2.TeamId = t2.TeamId AND t2.UntilYear IS NULL
                             WHERE ml2.MatchLocationId IN (
                                 SELECT ml.MatchLocationId
@@ -127,7 +127,7 @@ namespace Stoolball.Data.SqlServer
                                 ORDER BY 
                                     CASE WHEN (
                                         SELECT COUNT(t.TeamId) FROM {Tables.TeamMatchLocation} AS tml 
-                                        INNER JOIN StoolballTeam AS t ON tml.TeamId = t.TeamId AND t.UntilYear IS NULL 
+                                        INNER JOIN {Tables.Team} AS t ON tml.TeamId = t.TeamId AND t.UntilYear IS NULL AND tml.UntilDate IS NULL
                                         WHERE ml.MatchLocationId = tml.MatchLocationId 
                                     ) > 0 THEN 0 ELSE 1 END,
                                 ml.SortName
@@ -135,7 +135,7 @@ namespace Stoolball.Data.SqlServer
                             ORDER BY 
                                 CASE WHEN (
                                     SELECT COUNT(t3.TeamId) FROM {Tables.TeamMatchLocation} AS tml3 
-                                    INNER JOIN {Tables.Team} AS t3 ON tml3.TeamId = t3.TeamId AND t3.UntilYear IS NULL 
+                                    INNER JOIN {Tables.Team} AS t3 ON tml3.TeamId = t3.TeamId AND t3.UntilYear IS NULL AND tml3.UntilDate IS NULL 
                                     WHERE ml2.MatchLocationId = tml3.MatchLocationId 
                                 ) > 0 THEN 0 ELSE 1 END,
                             ml2.SortName";

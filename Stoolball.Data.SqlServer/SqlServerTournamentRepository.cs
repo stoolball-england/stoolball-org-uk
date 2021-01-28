@@ -316,13 +316,14 @@ namespace Stoolball.Data.SqlServer
                             foreach (var transientTeam in transientTeamIds)
                             {
                                 await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} 
-                                        (TeamMatchLocationId, TeamId, MatchLocationId) 
-                                        VALUES (@TeamMatchLocationId, @TeamId, @MatchLocationId)",
+                                        (TeamMatchLocationId, TeamId, MatchLocationId, FromDate) 
+                                        VALUES (@TeamMatchLocationId, @TeamId, @MatchLocationId, @FromDate)",
                                     new
                                     {
                                         TeamMatchLocationId = Guid.NewGuid(),
                                         TeamId = transientTeam,
-                                        auditableTournament.TournamentLocation.MatchLocationId
+                                        auditableTournament.TournamentLocation.MatchLocationId,
+                                        auditableTournament.StartTime.UtcDateTime.Date
                                     }, transaction).ConfigureAwait(false);
                             }
                         }

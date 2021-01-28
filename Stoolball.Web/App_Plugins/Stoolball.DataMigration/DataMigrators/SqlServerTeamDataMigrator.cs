@@ -163,12 +163,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     if (migratedTeam.MatchLocationId.HasValue)
                     {
                         await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} 
-							(TeamMatchLocationId, TeamId, MatchLocationId) VALUES (@TeamMatchLocationId, @TeamId, @MatchLocationId)",
+							(TeamMatchLocationId, TeamId, MatchLocationId, FromDate) VALUES (@TeamMatchLocationId, @TeamId, @MatchLocationId, @FromDate)",
                         new
                         {
                             TeamMatchLocationId = Guid.NewGuid(),
                             migratedTeam.TeamId,
-                            migratedTeam.MatchLocationId
+                            migratedTeam.MatchLocationId,
+                            FromDate = migratedTeam.History[0].AuditDate
                         },
                         transaction).ConfigureAwait(false);
                     }
