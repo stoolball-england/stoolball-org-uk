@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.SqlTypes;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -88,8 +89,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     if (migratedMatch.MigratedTeams.Count > 0)
                     {
                         var teamsWithNames = await connection.QueryAsync<MigratedTeamInMatch, Team, MigratedTeamInMatch>(
-                                                                         $@"SELECT t.MigratedTeamId, t.TeamId, tn.TeamName FROM {Tables.Team} t
-                                                                             INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL 
+                                                                         $@"SELECT t.MigratedTeamId, t.TeamId, tn.TeamName 
+                                                                             FROM {Tables.Team} t
+                                                                             INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId
+                                                                             AND tn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                                                              WHERE t.MigratedTeamId IN @MigratedTeamIds",
                                                                          (migratedTeam, team) =>
                                                                          {

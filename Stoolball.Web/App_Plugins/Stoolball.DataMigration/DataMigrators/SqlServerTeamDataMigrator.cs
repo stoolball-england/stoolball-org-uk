@@ -115,11 +115,11 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.Team}
 						(TeamId, MigratedTeamId, ClubId, ClubMark, SchoolId, TeamType, PlayerType, Introduction, AgeRangeLower, AgeRangeUpper, 
-						 UntilYear, Twitter, Facebook, Instagram, Website, PublicContactDetails, PrivateContactDetails, PlayingTimes, Cost,
+						 Twitter, Facebook, Instagram, Website, PublicContactDetails, PrivateContactDetails, PlayingTimes, Cost,
 						 MemberGroupKey, MemberGroupName, TeamRoute)
 						VALUES 
                         (@TeamId, @MigratedTeamId, @ClubId, @ClubMark, @SchoolId, @TeamType, @PlayerType, @Introduction, @AgeRangeLower, @AgeRangeUpper, 
-                         @UntilYear, @Twitter, @Facebook, @Instagram, @Website, @PublicContactDetails, @PrivateContactDetails, @PlayingTimes, @Cost, 
+                         @Twitter, @Facebook, @Instagram, @Website, @PublicContactDetails, @PrivateContactDetails, @PlayingTimes, @Cost, 
                          @MemberGroupKey, @MemberGroupName, @TeamRoute)",
                      new
                      {
@@ -133,7 +133,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                          migratedTeam.Introduction,
                          migratedTeam.AgeRangeLower,
                          migratedTeam.AgeRangeUpper,
-                         migratedTeam.UntilYear,
                          migratedTeam.Twitter,
                          migratedTeam.Facebook,
                          migratedTeam.Instagram,
@@ -149,14 +148,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                      transaction).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamName} 
-							(TeamNameId, TeamId, TeamName, TeamComparableName, FromDate) VALUES (@TeamNameId, @TeamId, @TeamName, @TeamComparableName, @FromDate)",
+							(TeamNameId, TeamId, TeamName, TeamComparableName, FromDate, UntilDate) VALUES (@TeamNameId, @TeamId, @TeamName, @TeamComparableName, @FromDate, @UntilDate)",
                         new
                         {
                             TeamNameId = Guid.NewGuid(),
                             migratedTeam.TeamId,
                             migratedTeam.TeamName,
                             TeamComparableName = migratedTeam.ComparableName(),
-                            FromDate = migratedTeam.History[0].AuditDate
+                            FromDate = migratedTeam.History[0].AuditDate,
+                            UntilDate = migratedTeam.UntilYear.HasValue ? new DateTime(migratedTeam.UntilYear.Value, 12, 31) : (DateTime?)null
                         },
                         transaction).ConfigureAwait(false);
 

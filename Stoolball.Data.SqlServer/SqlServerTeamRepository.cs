@@ -198,9 +198,9 @@ namespace Stoolball.Data.SqlServer
             }
 
             await transaction.Connection.ExecuteAsync(
-                $@"INSERT INTO {Tables.Team} (TeamId, TeamType, AgeRangeLower, AgeRangeUpper, UntilYear, PlayerType, Introduction, 
+                $@"INSERT INTO {Tables.Team} (TeamId, TeamType, AgeRangeLower, AgeRangeUpper, PlayerType, Introduction, 
                                 PlayingTimes, Cost, PublicContactDetails, PrivateContactDetails, Facebook, Twitter, Instagram, YouTube, Website, TeamRoute, MemberGroupKey, MemberGroupName) 
-                                VALUES (@TeamId, @TeamType, @AgeRangeLower, @AgeRangeUpper, @UntilYear, @PlayerType, @Introduction, @PlayingTimes, @Cost, 
+                                VALUES (@TeamId, @TeamType, @AgeRangeLower, @AgeRangeUpper, @PlayerType, @Introduction, @PlayingTimes, @Cost, 
                                 @PublicContactDetails, @PrivateContactDetails, @Facebook, @Twitter, @Instagram, @YouTube, @Website, @TeamRoute, @MemberGroupKey, @MemberGroupName)",
                 new
                 {
@@ -208,7 +208,6 @@ namespace Stoolball.Data.SqlServer
                     TeamType = auditableTeam.TeamType.ToString(),
                     auditableTeam.AgeRangeLower,
                     auditableTeam.AgeRangeUpper,
-                    auditableTeam.UntilYear,
                     PlayerType = auditableTeam.PlayerType.ToString(),
                     auditableTeam.Introduction,
                     auditableTeam.PlayingTimes,
@@ -226,14 +225,15 @@ namespace Stoolball.Data.SqlServer
                 }, transaction).ConfigureAwait(false);
 
             await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.TeamName} 
-                                (TeamNameId, TeamId, TeamName, TeamComparableName, FromDate) VALUES (@TeamNameId, @TeamId, @TeamName, @TeamComparableName, @FromDate)",
+                                (TeamNameId, TeamId, TeamName, TeamComparableName, FromDate, UntilDate) VALUES (@TeamNameId, @TeamId, @TeamName, @TeamComparableName, @FromDate, @UntilDate)",
                 new
                 {
                     TeamNameId = Guid.NewGuid(),
                     auditableTeam.TeamId,
                     auditableTeam.TeamName,
                     TeamComparableName = auditableTeam.ComparableName(),
-                    FromDate = DateTime.UtcNow.Date
+                    FromDate = DateTime.UtcNow.Date,
+                    UntilDate = auditableTeam.UntilYear.HasValue ? new DateTime(auditableTeam.UntilYear.Value, 12, 31) : (DateTime?)null
                 }, transaction).ConfigureAwait(false);
 
             foreach (var location in auditableTeam.MatchLocations)
@@ -306,7 +306,6 @@ namespace Stoolball.Data.SqlServer
                                 TeamType = @TeamType, 
                                 AgeRangeLower = @AgeRangeLower, 
                                 AgeRangeUpper = @AgeRangeUpper, 
-                                UntilYear = @UntilYear, 
                                 PlayerType = @PlayerType, 
                                 Introduction = @Introduction, 
                                 PlayingTimes = @PlayingTimes, 
@@ -325,7 +324,6 @@ namespace Stoolball.Data.SqlServer
                             TeamType = auditableTeam.TeamType.ToString(),
                             auditableTeam.AgeRangeLower,
                             auditableTeam.AgeRangeUpper,
-                            auditableTeam.UntilYear,
                             PlayerType = auditableTeam.PlayerType.ToString(),
                             auditableTeam.Introduction,
                             auditableTeam.PlayingTimes,
@@ -341,20 +339,15 @@ namespace Stoolball.Data.SqlServer
                             auditableTeam.TeamId
                         }, transaction).ConfigureAwait(false);
 
-                    var currentName = await connection.ExecuteScalarAsync<string>($"SELECT TeamName FROM {Tables.TeamName} WHERE TeamId = @TeamId AND UntilDate IS NULL", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
-                    if (auditableTeam.TeamName?.Trim() != currentName?.Trim())
-                    {
-                        await connection.ExecuteAsync($"UPDATE {Tables.TeamName} SET UntilDate = @UntilDate WHERE TeamId = @TeamId AND UntilDate IS NULL", new { UntilDate = DateTime.UtcNow.Date.AddDays(1), auditableTeam.TeamId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamName} 
-                                (TeamNameId, TeamId, TeamName, FromDate) VALUES (@TeamNameId, @TeamId, @TeamName, @FromDate)",
-                                                        new
-                                                        {
-                                                            TeamNameId = Guid.NewGuid(),
-                                                            auditableTeam.TeamId,
-                                                            auditableTeam.TeamName,
-                                                            FromDate = DateTime.UtcNow.Date
-                                                        }, transaction).ConfigureAwait(false);
-                    }
+                    await connection.ExecuteAsync($"UPDATE {Tables.TeamName} SET TeamName = @TeamName, TeamComparableName = @TeamComparableName, UntilDate = @UntilDate WHERE TeamId = @TeamId",
+                        new
+                        {
+                            auditableTeam.TeamName,
+                            TeamComparableName = auditableTeam.ComparableName(),
+                            UntilDate = auditableTeam.UntilYear.HasValue ? new DateTime(auditableTeam.UntilYear.Value, 12, 31) : (DateTime?)null,
+                            auditableTeam.TeamId
+                        },
+                        transaction).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($"UPDATE {Tables.TeamMatchLocation} SET UntilDate = @UntilDate WHERE TeamId = @TeamId AND UntilDate IS NULL AND MatchLocationId NOT IN @MatchLocationIds", new { UntilDate = DateTime.UtcNow.Date.AddDays(1), auditableTeam.TeamId, MatchLocationIds = auditableTeam.MatchLocations.Select(x => x.MatchLocationId) }, transaction).ConfigureAwait(false);
                     var currentLocations = (await connection.QueryAsync<Guid>($"SELECT MatchLocationId FROM {Tables.TeamMatchLocation} tml WHERE TeamId = @TeamId AND tml.UntilDate IS NULL", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false)).ToList();

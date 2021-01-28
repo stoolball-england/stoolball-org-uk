@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data.SqlTypes;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -59,11 +61,12 @@ namespace Stoolball.Data.SqlServer
                             LEFT JOIN {Tables.Tournament} AS tourney ON m.TournamentId = tourney.TournamentId
                             LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
                             LEFT JOIN {Tables.Team} AS t ON mt.TeamId = t.TeamId
-                            LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
+                            LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId
                             LEFT JOIN {Tables.MatchLocation} AS ml ON m.MatchLocationId = ml.MatchLocationId
                             LEFT JOIN {Tables.Season} AS s ON m.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.Competition} AS co ON s.CompetitionId = co.CompetitionId
-                            WHERE LOWER(m.MatchRoute) = @Route",
+                            WHERE LOWER(m.MatchRoute) = @Route
+                            AND tn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)",
                     (match, tournament, teamInMatch, team, matchLocation, season, competition) =>
                     {
                         match.Tournament = tournament;

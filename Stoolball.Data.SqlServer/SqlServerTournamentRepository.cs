@@ -298,14 +298,21 @@ namespace Stoolball.Data.SqlServer
                     {
                         await connection.ExecuteAsync($@"UPDATE {Tables.Team} SET
                                 PlayerType = @PlayerType,
-                                UntilYear = @Year,
-                                TeamRoute = CONCAT(@TournamentRoute, SUBSTRING(TeamRoute, {tournament.TournamentRoute.Length + 1}, LEN(TeamRoute)-{tournament.TournamentRoute.Length})) 
+                                TeamRoute = CONCAT(@TournamentRoute, SUBSTRING(TeamRoute, {auditableTournament.TournamentRoute.Length + 1}, LEN(TeamRoute)-{auditableTournament.TournamentRoute.Length})) 
                                 WHERE TeamId IN @transientTeamIds",
                             new
                             {
                                 auditableTournament.PlayerType,
-                                auditableTournament.StartTime.Year,
                                 auditableTournament.TournamentRoute,
+                                transientTeamIds
+                            }, transaction).ConfigureAwait(false);
+
+                        await connection.ExecuteAsync($@"UPDATE {Tables.TeamName} SET
+                                UntilDate = @UntilDate
+                                WHERE TeamId IN @transientTeamIds",
+                            new
+                            {
+                                UntilDate = new DateTime(tournament.StartTime.Year, 12, 31),
                                 transientTeamIds
                             }, transaction).ConfigureAwait(false);
 

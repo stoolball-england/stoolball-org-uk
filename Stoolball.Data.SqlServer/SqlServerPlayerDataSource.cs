@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -32,8 +34,9 @@ namespace Stoolball.Data.SqlServer
                             t.TeamId, tn.TeamName
                             FROM {Tables.PlayerIdentity} AS p 
                             INNER JOIN {Tables.Team} AS t ON p.TeamId = t.TeamId
-                            INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
+                            INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId
                             <<WHERE>>
+                            AND tn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                             ORDER BY t.TeamId ASC, p.Probability DESC, p.PlayerIdentityName ASC";
 
                 var where = new List<string>();
@@ -51,7 +54,7 @@ namespace Stoolball.Data.SqlServer
                     parameters.Add("@TeamIds", playerQuery.TeamIds.Select(x => x.ToString()));
                 }
 
-                sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
+                sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : "WHERE 1=1"); // Ensure there's always a WHERE clause so that it can be appended to
 
                 return (await connection.QueryAsync<PlayerIdentity, Team, PlayerIdentity>(sql,
                     (player, team) =>

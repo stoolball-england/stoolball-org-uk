@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlTypes;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -1212,8 +1213,9 @@ namespace Stoolball.Data.SqlServer
             if (match.Teams.Count > 0)
             {
                 var teamsWithNames = await transaction.Connection.QueryAsync<Team>($@"SELECT t.TeamId, t.PlayerType, tn.TeamName 
-                                                                                    FROM {Tables.Team} AS t INNER JOIN {Tables.TeamName} tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL 
-                                                                                    WHERE t.TeamId IN @TeamIds",
+                                                                                    FROM {Tables.Team} AS t INNER JOIN {Tables.TeamName} tn ON t.TeamId = tn.TeamId
+                                                                                    WHERE t.TeamId IN @TeamIds
+                                                                                    AND tn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)",
                                                                     new { TeamIds = match.Teams.Select(x => x.Team.TeamId).ToList() },
                                                                     transaction
                                                                 ).ConfigureAwait(false);

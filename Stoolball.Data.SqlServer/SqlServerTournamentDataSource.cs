@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data.SqlTypes;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -36,8 +38,7 @@ namespace Stoolball.Data.SqlServer
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var tournaments = await connection.QueryAsync<Tournament, TeamInTournament, Team, MatchLocation, Season, Competition, Tournament>(
-                    $@"SELECT tourney.TournamentId, tourney.TournamentName, tourney.PlayerType, tourney.StartTime, tourney.StartTimeIsKnown, 
+                var sql = $@"SELECT tourney.TournamentId, tourney.TournamentName, tourney.PlayerType, tourney.StartTime, tourney.StartTimeIsKnown, 
                             tourney.OversPerInningsDefault, tourney.PlayersPerTeam, tourney.QualificationType, tourney.MaximumTeamsInTournament, 
                             tourney.SpacesInTournament, tourney.TournamentNotes, tourney.TournamentRoute, tourney.MemberKey,
                             tt.TeamRole,
@@ -49,12 +50,15 @@ namespace Stoolball.Data.SqlServer
                             FROM {Tables.Tournament} AS tourney
                             LEFT JOIN {Tables.TournamentTeam} AS tt ON tourney.TournamentId = tt.TournamentId
                             LEFT JOIN {Tables.Team} AS t ON tt.TeamId = t.TeamId
-                            LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
+                            LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId
                             LEFT JOIN {Tables.MatchLocation} AS ml ON tourney.MatchLocationId = ml.MatchLocationId
                             LEFT JOIN {Tables.TournamentSeason} AS ts ON tourney.TournamentId = ts.TournamentId
                             LEFT JOIN {Tables.Season} AS s ON ts.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.Competition} AS co ON s.CompetitionId = co.CompetitionId
-                            WHERE LOWER(tourney.TournamentRoute) = @Route",
+                            WHERE LOWER(tourney.TournamentRoute) = @Route
+                            AND tn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)";
+
+                var tournaments = await connection.QueryAsync<Tournament, TeamInTournament, Team, MatchLocation, Season, Competition, Tournament>(sql,
                     (tournament, teamInTournament, team, tournamentLocation, season, competition) =>
                     {
                         if (team != null)

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -162,9 +164,10 @@ namespace Stoolball.Data.SqlServer
                             LEFT JOIN {Tables.Season} AS s2 ON co.CompetitionId = s2.CompetitionId AND NOT s2.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.SeasonTeam} AS st ON st.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.Team} AS t ON t.TeamId = st.TeamId
-                            LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId AND tn.UntilDate IS NULL
+                            LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId
                             LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
                             WHERE LOWER(s.SeasonRoute) = @Route
+                            AND tn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                             ORDER BY s2.FromYear DESC, s2.UntilYear ASC",
                     (season, competition, anotherSeasonInTheCompetition, teamInSeason, team, matchType) =>
                     {
@@ -246,8 +249,9 @@ namespace Stoolball.Data.SqlServer
                 return await connection.QueryAsync<PointsAdjustment, Team, PointsAdjustment>(
                     $@"SELECT spa.Points, spa.Reason, tn.TeamId, tn.TeamName
                             FROM {Tables.SeasonPointsAdjustment} AS spa 
-                            INNER JOIN {Tables.TeamName} tn ON spa.TeamId = tn.TeamId AND tn.UntilDate IS NULL
-                            WHERE spa.SeasonId = @SeasonId",
+                            INNER JOIN {Tables.TeamName} tn ON spa.TeamId = tn.TeamId
+                            WHERE spa.SeasonId = @SeasonId
+                            AND tn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = spa.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)",
                     (pointsAdjustment, team) =>
                     {
                         pointsAdjustment.Team = team;

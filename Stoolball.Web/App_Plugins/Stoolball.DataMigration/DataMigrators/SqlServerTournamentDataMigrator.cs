@@ -165,8 +165,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     }
 
                     await connection.ExecuteAsync($@"UPDATE {Tables.Team} SET 
-							TeamRoute = CONCAT(@TournamentRoute, SUBSTRING(TeamRoute, 6, LEN(TeamRoute)-5)),
-							UntilYear = @Year
+							TeamRoute = CONCAT(@TournamentRoute, SUBSTRING(TeamRoute, 6, LEN(TeamRoute)-5))
 							WHERE TeamType = 'Transient' 
 							AND TeamRoute NOT LIKE '/tournaments%'
 							AND TeamId IN (
@@ -175,10 +174,23 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         new
                         {
                             migratedTournament.TournamentRoute,
-                            migratedTournament.StartTime.Year,
                             migratedTournament.TournamentId
                         },
                         transaction).ConfigureAwait(false);
+
+                    await connection.ExecuteAsync($@"UPDATE {Tables.TeamName} SET 
+							UntilDate = @UntilDate,
+                            TeamComparableName = CONCAT(@TournamentRoute, SUBSTRING(TeamComparableName, 6, LEN(TeamComparableName)-5))
+							WHERE TeamId IN (
+								SELECT t.TeamId FROM {Tables.Team} t INNER JOIN {Tables.TournamentTeam} tt ON t.TeamId = tt.TeamId WHERE t.TeamType = 'Transient' AND tt.TournamentId = @TournamentId
+							)",
+                    new
+                    {
+                        UntilDate = new DateTime(migratedTournament.StartTime.Year, 12, 31),
+                        TournamentRoute = migratedTournament.TournamentRoute.ToUpperInvariant(),
+                        migratedTournament.TournamentId
+                    },
+                    transaction).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($@"UPDATE SkybrudRedirects SET 
 							DestinationUrl = CONCAT(@TournamentRoute, SUBSTRING(DestinationUrl, 6, LEN(DestinationUrl)-5))
