@@ -323,7 +323,7 @@ namespace Stoolball.Data.SqlServer
                                         TeamMatchLocationId = Guid.NewGuid(),
                                         TeamId = transientTeam,
                                         auditableTournament.TournamentLocation.MatchLocationId,
-                                        auditableTournament.StartTime.UtcDateTime.Date
+                                        FromDate = auditableTournament.StartTime.UtcDateTime.Date
                                     }, transaction).ConfigureAwait(false);
                             }
                         }

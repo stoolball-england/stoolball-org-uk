@@ -91,12 +91,13 @@ namespace Stoolball.Data.SqlServer
                         }, transaction).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
-                                (ClubNameId, ClubId, ClubName, FromDate) VALUES (@ClubNameId, @ClubId, @ClubName, GETUTCDATE())",
+                                (ClubNameId, ClubId, ClubName, FromDate) VALUES (@ClubNameId, @ClubId, @ClubName, @FromDate)",
                         new
                         {
                             ClubNameId = Guid.NewGuid(),
                             auditableClub.ClubId,
-                            auditableClub.ClubName
+                            auditableClub.ClubName,
+                            FromDate = DateTime.UtcNow.Date
                         }, transaction).ConfigureAwait(false);
 
                     // Check for ClubId IS NULL, otherwise the owner of Club B can edit Club A by reassigning its team
@@ -177,14 +178,15 @@ namespace Stoolball.Data.SqlServer
                     var currentName = await connection.ExecuteScalarAsync<string>($"SELECT ClubName FROM {Tables.ClubName} WHERE ClubId = @ClubId AND UntilDate IS NULL", new { auditableClub.ClubId }, transaction).ConfigureAwait(false);
                     if (auditableClub.ClubName?.Trim() != currentName?.Trim())
                     {
-                        await connection.ExecuteAsync($"UPDATE {Tables.ClubName} SET UntilDate = GETUTCDATE() WHERE ClubId = @ClubId AND UntilDate IS NULL", new { auditableClub.ClubId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"UPDATE {Tables.ClubName} SET UntilDate = @UntilDate WHERE ClubId = @ClubId AND UntilDate IS NULL", new { UntilDate = DateTime.UtcNow.Date.AddDays(1), auditableClub.ClubId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
-                                (ClubNameId, ClubId, ClubName, FromDate) VALUES (@ClubNameId, @ClubId, @ClubName, GETUTCDATE())",
+                                (ClubNameId, ClubId, ClubName, FromDate) VALUES (@ClubNameId, @ClubId, @ClubName, @FromDate)",
                             new
                             {
                                 ClubNameId = Guid.NewGuid(),
                                 auditableClub.ClubId,
-                                auditableClub.ClubName
+                                auditableClub.ClubName,
+                                FromDate = DateTime.UtcNow.Date
                             }, transaction).ConfigureAwait(false);
                     }
 

@@ -228,13 +228,14 @@ namespace Stoolball.Data.SqlServer
                 }, transaction).ConfigureAwait(false);
 
             await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.TeamName} 
-                                (TeamNameId, TeamId, TeamName, TeamComparableName, FromDate) VALUES (@TeamNameId, @TeamId, @TeamName, @TeamComparableName, GETUTCDATE())",
+                                (TeamNameId, TeamId, TeamName, TeamComparableName, FromDate) VALUES (@TeamNameId, @TeamId, @TeamName, @TeamComparableName, @FromDate)",
                 new
                 {
                     TeamNameId = Guid.NewGuid(),
                     auditableTeam.TeamId,
                     auditableTeam.TeamName,
-                    TeamComparableName = auditableTeam.ComparableName()
+                    TeamComparableName = auditableTeam.ComparableName(),
+                    FromDate = DateTime.UtcNow.Date
                 }, transaction).ConfigureAwait(false);
 
             foreach (var location in auditableTeam.MatchLocations)
@@ -347,14 +348,15 @@ namespace Stoolball.Data.SqlServer
                     var currentName = await connection.ExecuteScalarAsync<string>($"SELECT TeamName FROM {Tables.TeamName} WHERE TeamId = @TeamId AND UntilDate IS NULL", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
                     if (auditableTeam.TeamName?.Trim() != currentName?.Trim())
                     {
-                        await connection.ExecuteAsync($"UPDATE {Tables.TeamName} SET UntilDate = GETUTCDATE() WHERE TeamId = @TeamId AND UntilDate IS NULL", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"UPDATE {Tables.TeamName} SET UntilDate = @UntilDate WHERE TeamId = @TeamId AND UntilDate IS NULL", new { UntilDate = DateTime.UtcNow.Date.AddDays(1), auditableTeam.TeamId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamName} 
-                                (TeamNameId, TeamId, TeamName, FromDate) VALUES (@TeamNameId, @TeamId, @TeamName, GETUTCDATE())",
+                                (TeamNameId, TeamId, TeamName, FromDate) VALUES (@TeamNameId, @TeamId, @TeamName, @FromDate)",
                                                         new
                                                         {
                                                             TeamNameId = Guid.NewGuid(),
                                                             auditableTeam.TeamId,
-                                                            auditableTeam.TeamName
+                                                            auditableTeam.TeamName,
+                                                            FromDate = DateTime.UtcNow.Date
                                                         }, transaction).ConfigureAwait(false);
                     }
 
