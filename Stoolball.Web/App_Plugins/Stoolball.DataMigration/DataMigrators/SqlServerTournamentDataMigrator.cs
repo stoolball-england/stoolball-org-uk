@@ -166,7 +166,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
                     await connection.ExecuteAsync($@"UPDATE {Tables.Team} SET 
 							TeamRoute = CONCAT(@TournamentRoute, SUBSTRING(TeamRoute, 6, LEN(TeamRoute)-5)),
-							FromYear = @Year,
 							UntilYear = @Year
 							WHERE TeamType = 'Transient' 
 							AND TeamRoute NOT LIKE '/tournaments%'

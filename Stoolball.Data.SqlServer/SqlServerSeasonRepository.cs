@@ -123,7 +123,7 @@ namespace Stoolball.Data.SqlServer
 
                     // Get the most recent season, if any, to copy existing settings as defaults
                     var previousSeason = await connection.QuerySingleOrDefaultAsync<Season>(
-                        "SELECT TOP 1 SeasonId, ResultsTableType, EnableRunsScored, EnableRunsConceded FROM StoolballSeason WHERE CompetitionId = @CompetitionId AND FromYear < @FromYear ORDER BY FromYear DESC",
+                        $"SELECT TOP 1 SeasonId, ResultsTableType, EnableRunsScored, EnableRunsConceded FROM {Tables.Season} WHERE CompetitionId = @CompetitionId AND FromYear < @FromYear ORDER BY FromYear DESC",
                         new
                         {
                             auditableSeason.Competition.CompetitionId,

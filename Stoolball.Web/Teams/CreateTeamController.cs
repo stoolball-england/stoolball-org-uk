@@ -46,7 +46,6 @@ namespace Stoolball.Web.Teams
                 {
                     TeamType = TeamType.Regular,
                     PlayerType = PlayerType.Mixed,
-                    FromYear = DateTime.UtcNow.Year,
                     AgeRangeLower = 11
                 }
             };

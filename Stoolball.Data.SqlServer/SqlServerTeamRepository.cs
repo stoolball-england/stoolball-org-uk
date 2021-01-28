@@ -65,7 +65,6 @@ namespace Stoolball.Data.SqlServer
                 TeamType = team.TeamType,
                 AgeRangeLower = team.AgeRangeLower,
                 AgeRangeUpper = team.AgeRangeUpper,
-                FromYear = team.FromYear,
                 UntilYear = team.UntilYear,
                 PlayerType = team.PlayerType,
                 Introduction = team.Introduction,
@@ -199,9 +198,9 @@ namespace Stoolball.Data.SqlServer
             }
 
             await transaction.Connection.ExecuteAsync(
-                $@"INSERT INTO {Tables.Team} (TeamId, TeamType, AgeRangeLower, AgeRangeUpper, FromYear, UntilYear, PlayerType, Introduction, 
+                $@"INSERT INTO {Tables.Team} (TeamId, TeamType, AgeRangeLower, AgeRangeUpper, UntilYear, PlayerType, Introduction, 
                                 PlayingTimes, Cost, PublicContactDetails, PrivateContactDetails, Facebook, Twitter, Instagram, YouTube, Website, TeamRoute, MemberGroupKey, MemberGroupName) 
-                                VALUES (@TeamId, @TeamType, @AgeRangeLower, @AgeRangeUpper, @FromYear, @UntilYear, @PlayerType, @Introduction, @PlayingTimes, @Cost, 
+                                VALUES (@TeamId, @TeamType, @AgeRangeLower, @AgeRangeUpper, @UntilYear, @PlayerType, @Introduction, @PlayingTimes, @Cost, 
                                 @PublicContactDetails, @PrivateContactDetails, @Facebook, @Twitter, @Instagram, @YouTube, @Website, @TeamRoute, @MemberGroupKey, @MemberGroupName)",
                 new
                 {
@@ -209,7 +208,6 @@ namespace Stoolball.Data.SqlServer
                     TeamType = auditableTeam.TeamType.ToString(),
                     auditableTeam.AgeRangeLower,
                     auditableTeam.AgeRangeUpper,
-                    auditableTeam.FromYear,
                     auditableTeam.UntilYear,
                     PlayerType = auditableTeam.PlayerType.ToString(),
                     auditableTeam.Introduction,
@@ -308,7 +306,6 @@ namespace Stoolball.Data.SqlServer
                                 TeamType = @TeamType, 
                                 AgeRangeLower = @AgeRangeLower, 
                                 AgeRangeUpper = @AgeRangeUpper, 
-                                FromYear = @FromYear, 
                                 UntilYear = @UntilYear, 
                                 PlayerType = @PlayerType, 
                                 Introduction = @Introduction, 
@@ -328,7 +325,6 @@ namespace Stoolball.Data.SqlServer
                             TeamType = auditableTeam.TeamType.ToString(),
                             auditableTeam.AgeRangeLower,
                             auditableTeam.AgeRangeUpper,
-                            auditableTeam.FromYear,
                             auditableTeam.UntilYear,
                             PlayerType = auditableTeam.PlayerType.ToString(),
                             auditableTeam.Introduction,

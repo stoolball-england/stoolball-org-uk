@@ -107,9 +107,6 @@ namespace Stoolball.Teams
         [Display(Name = "Maximum age for players")]
         public int? AgeRangeUpper { get; set; }
 
-        [Display(Name = "What year was this team formed?")]
-        public int? FromYear { get; set; }
-
         [Display(Name = "If no longer active, when was the last year they played?")]
         public int? UntilYear { get; set; }
 

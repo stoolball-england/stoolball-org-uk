@@ -51,11 +51,6 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? AgeRangeUpper { get; set; }
 
-        [Column(nameof(FromYear))]
-        [Index(IndexTypes.NonClustered)]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public int? FromYear { get; set; }
-
         [Column(nameof(UntilYear))]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]

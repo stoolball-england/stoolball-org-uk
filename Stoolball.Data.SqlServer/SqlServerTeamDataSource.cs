@@ -92,7 +92,7 @@ namespace Stoolball.Data.SqlServer
                 var teams = await connection.QueryAsync<Team, Club, MatchLocation, Season, Competition, string, Team>(
                     $@"SELECT t.TeamId, tn.TeamName, t.TeamType, t.PlayerType, t.Introduction, t.AgeRangeLower, t.AgeRangeUpper, t.ClubMark,
                             t.Facebook, t.Twitter, t.Instagram, t.YouTube, t.Website, t.PublicContactDetails, t.PrivateContactDetails, 
-                            t.PlayingTimes, t.Cost, t.TeamRoute, t.FromYear, t.UntilYear, t.MemberGroupKey, t.MemberGroupName,
+                            t.PlayingTimes, t.Cost, t.TeamRoute, t.UntilYear, t.MemberGroupKey, t.MemberGroupName,
                             cn.ClubName, c.ClubRoute, 
                             ml.MatchLocationId, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, 
                             ml.Town, ml.AdministrativeArea, ml.MatchLocationRoute,
