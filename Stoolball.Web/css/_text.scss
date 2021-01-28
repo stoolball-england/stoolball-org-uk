@@ -93,6 +93,10 @@ li {
     list-style: disc;
 }
 
+.match-list-minimal p {
+    margin-bottom: 0;
+}
+
 // .match-list__match identifies each match in a list (not using .match-list-minimal) 
 // and resets it to an inert container for .list-results__title and .list-results__detail
 .match-list__match {
