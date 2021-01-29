@@ -90,11 +90,11 @@ namespace Stoolball.Data.SqlServer
                             auditableClub.MemberGroupName
                         }, transaction).ConfigureAwait(false);
 
-                    await connection.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
-                                (ClubNameId, ClubId, ClubName, FromDate) VALUES (@ClubNameId, @ClubId, @ClubName, @FromDate)",
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.ClubVersion} 
+                                (ClubVersionId, ClubId, ClubName, FromDate) VALUES (@ClubVersionId, @ClubId, @ClubName, @FromDate)",
                         new
                         {
-                            ClubNameId = Guid.NewGuid(),
+                            ClubVersionId = Guid.NewGuid(),
                             auditableClub.ClubId,
                             auditableClub.ClubName,
                             FromDate = DateTime.UtcNow.Date
@@ -175,15 +175,15 @@ namespace Stoolball.Data.SqlServer
                             auditableClub.ClubId
                         }, transaction).ConfigureAwait(false);
 
-                    var currentName = await connection.ExecuteScalarAsync<string>($"SELECT ClubName FROM {Tables.ClubName} WHERE ClubId = @ClubId AND UntilDate IS NULL", new { auditableClub.ClubId }, transaction).ConfigureAwait(false);
+                    var currentName = await connection.ExecuteScalarAsync<string>($"SELECT ClubName FROM {Tables.ClubVersion} WHERE ClubId = @ClubId AND UntilDate IS NULL", new { auditableClub.ClubId }, transaction).ConfigureAwait(false);
                     if (auditableClub.ClubName?.Trim() != currentName?.Trim())
                     {
-                        await connection.ExecuteAsync($"UPDATE {Tables.ClubName} SET UntilDate = @UntilDate WHERE ClubId = @ClubId AND UntilDate IS NULL", new { UntilDate = DateTime.UtcNow.Date.AddDays(1), auditableClub.ClubId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
-                                (ClubNameId, ClubId, ClubName, FromDate) VALUES (@ClubNameId, @ClubId, @ClubName, @FromDate)",
+                        await connection.ExecuteAsync($"UPDATE {Tables.ClubVersion} SET UntilDate = @UntilDate WHERE ClubId = @ClubId AND UntilDate IS NULL", new { UntilDate = DateTime.UtcNow.Date.AddDays(1), auditableClub.ClubId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($@"INSERT INTO {Tables.ClubVersion} 
+                                (ClubVersionId, ClubId, ClubName, FromDate) VALUES (@ClubVersionId, @ClubId, @ClubName, @FromDate)",
                             new
                             {
-                                ClubNameId = Guid.NewGuid(),
+                                ClubVersionId = Guid.NewGuid(),
                                 auditableClub.ClubId,
                                 auditableClub.ClubName,
                                 FromDate = DateTime.UtcNow.Date
@@ -248,7 +248,7 @@ namespace Stoolball.Data.SqlServer
                 {
                     await connection.ExecuteAsync($@"UPDATE {Tables.Team} SET ClubId = NULL, ClubMark = 0 WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.AwardedTo} WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($@"DELETE FROM {Tables.ClubName} WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($@"DELETE FROM {Tables.ClubVersion} WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.Club} WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
 
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix(club.ClubRoute, transaction).ConfigureAwait(false);

@@ -39,7 +39,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 using (var transaction = connection.BeginTransaction())
                 {
                     await transaction.Connection.ExecuteAsync($"UPDATE {Tables.Team} SET SchoolId = NULL", null, transaction).ConfigureAwait(false);
-                    await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SchoolName}", null, transaction).ConfigureAwait(false);
+                    await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SchoolVersion}", null, transaction).ConfigureAwait(false);
                     await transaction.Connection.ExecuteAsync($@"DELETE FROM {Tables.School}", null, transaction).ConfigureAwait(false);
 
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/schools/", transaction).ConfigureAwait(false);
@@ -95,11 +95,11 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     },
                     transaction).ConfigureAwait(false);
 
-                    await connection.ExecuteAsync($@"INSERT INTO {Tables.SchoolName} 
-							(SchoolNameId, SchoolId, SchoolName, FromDate) VALUES (@SchoolNameId, @SchoolId, @SchoolName, @FromDate)",
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.SchoolVersion} 
+							(SchoolVersionId, SchoolId, SchoolName, FromDate) VALUES (@SchoolVersionId, @SchoolId, @SchoolName, @FromDate)",
                         new
                         {
-                            SchoolNameId = Guid.NewGuid(),
+                            SchoolVersionId = Guid.NewGuid(),
                             migratedSchool.SchoolId,
                             migratedSchool.SchoolName,
                             FromDate = migratedSchool.History[0].AuditDate

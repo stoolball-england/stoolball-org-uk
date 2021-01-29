@@ -178,7 +178,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         },
                         transaction).ConfigureAwait(false);
 
-                    await connection.ExecuteAsync($@"UPDATE {Tables.TeamName} SET 
+                    await connection.ExecuteAsync($@"UPDATE {Tables.TeamVersion} SET 
 							UntilDate = @UntilDate,
                             TeamComparableName = CONCAT(@TournamentRoute, SUBSTRING(TeamComparableName, 6, LEN(TeamComparableName)-5))
 							WHERE TeamId IN (

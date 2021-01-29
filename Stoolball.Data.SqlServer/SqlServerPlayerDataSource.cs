@@ -34,9 +34,9 @@ namespace Stoolball.Data.SqlServer
                             t.TeamId, tn.TeamName
                             FROM {Tables.PlayerIdentity} AS p 
                             INNER JOIN {Tables.Team} AS t ON p.TeamId = t.TeamId
-                            INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId
+                            INNER JOIN {Tables.TeamVersion} AS tn ON t.TeamId = tn.TeamId
                             <<WHERE>>
-                            AND tn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                            AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                             ORDER BY t.TeamId ASC, p.Probability DESC, p.PlayerIdentityName ASC";
 
                 var where = new List<string>();

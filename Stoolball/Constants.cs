@@ -70,7 +70,7 @@ namespace Stoolball
             public const string BowlingFigures = _tablePrefix + "BowlingFigures";
             public const string FallOfWicket = _tablePrefix + "FallOfWicket";
             public const string Club = _tablePrefix + "Club";
-            public const string ClubName = _tablePrefix + "ClubName";
+            public const string ClubVersion = _tablePrefix + "ClubVersion";
             public const string Competition = _tablePrefix + "Competition";
             public const string Match = _tablePrefix + "Match";
             public const string MatchLocation = _tablePrefix + "MatchLocation";
@@ -83,14 +83,14 @@ namespace Stoolball
             public const string Player = _tablePrefix + "Player";
             public const string PlayerIdentity = _tablePrefix + "PlayerIdentity";
             public const string School = _tablePrefix + "School";
-            public const string SchoolName = _tablePrefix + "SchoolName";
+            public const string SchoolVersion = _tablePrefix + "SchoolVersion";
             public const string Season = _tablePrefix + "Season";
             public const string SeasonMatchType = _tablePrefix + "SeasonMatchType";
             public const string SeasonPointsAdjustment = _tablePrefix + "SeasonPointsAdjustment";
             public const string SeasonPointsRule = _tablePrefix + "SeasonPointsRule";
             public const string SeasonTeam = _tablePrefix + "SeasonTeam";
             public const string Team = _tablePrefix + "Team";
-            public const string TeamName = _tablePrefix + "TeamName";
+            public const string TeamVersion = _tablePrefix + "TeamVersion";
             public const string TeamMatchLocation = _tablePrefix + "TeamMatchLocation";
             public const string Award = _tablePrefix + "Award";
             public const string AwardedTo = _tablePrefix + "AwardedTo";

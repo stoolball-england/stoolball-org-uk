@@ -40,12 +40,12 @@ namespace Stoolball.Data.SqlServer
                     $@"SELECT c.ClubId, cn.ClubName, c.MemberGroupKey, c.MemberGroupName, c.ClubRoute,
                             t.TeamId, tn.TeamName, t.TeamRoute, YEAR(tn.UntilDate) AS UntilYear, t.ClubMark
                             FROM {Tables.Club} AS c 
-                            INNER JOIN {Tables.ClubName} AS cn ON c.ClubId = cn.ClubId
+                            INNER JOIN {Tables.ClubVersion} AS cn ON c.ClubId = cn.ClubId
                             LEFT JOIN {Tables.Team} AS t ON c.ClubId = t.ClubId
-                            LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId
+                            LEFT JOIN {Tables.TeamVersion} AS tn ON t.TeamId = tn.TeamId
                             WHERE LOWER(c.ClubRoute) = @Route
-                            AND cn.ClubNameId = (SELECT TOP 1 ClubNameId FROM {Tables.ClubName} WHERE ClubId = c.ClubId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
-                            AND tn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                            AND cn.ClubVersionId = (SELECT TOP 1 ClubVersionId FROM {Tables.ClubVersion} WHERE ClubId = c.ClubId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                            AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                             ORDER BY CASE WHEN tn.UntilDate IS NULL THEN 0 ELSE 1 END, tn.TeamName",
                     (club, team) =>
                     {

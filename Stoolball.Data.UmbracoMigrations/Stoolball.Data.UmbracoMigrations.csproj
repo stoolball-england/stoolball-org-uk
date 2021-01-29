@@ -74,8 +74,8 @@
     <Compile Include="OverAddTable.cs" />
     <Compile Include="OverTableInitialSchema.cs" />
     <Compile Include="ClubAddTable.cs" />
-    <Compile Include="ClubNameAddTable.cs" />
-    <Compile Include="ClubNameTableInitialSchema.cs" />
+    <Compile Include="ClubVersionAddTable.cs" />
+    <Compile Include="ClubVersionTableInitialSchema.cs" />
     <Compile Include="ClubTableInitialSchema.cs" />
     <Compile Include="CompetitionAddTable.cs" />
     <Compile Include="CompetitionTableInitialSchema.cs" />
@@ -98,8 +98,8 @@
     <Compile Include="StatisticsPlayerMatchAddTable.cs" />
     <Compile Include="StatisticsPlayerMatchTableInitialSchema.cs" />
     <Compile Include="SchoolAddTable.cs" />
-    <Compile Include="SchoolNameAddTable.cs" />
-    <Compile Include="SchoolNameTableInitialSchema.cs" />
+    <Compile Include="SchoolVersionAddTable.cs" />
+    <Compile Include="SchoolVersionTableInitialSchema.cs" />
     <Compile Include="SchoolTableInitialSchema.cs" />
     <Compile Include="SeasonAddTable.cs" />
     <Compile Include="TournamentSeasonAddTable.cs" />
@@ -120,9 +120,9 @@
     <Compile Include="TeamMatchLocationAddTable.cs" />
     <Compile Include="TeamMatchLocationTableInitialSchema.cs" />
     <Compile Include="AuditAddTable.cs" />
-    <Compile Include="TeamNameAddTable.cs" />
+    <Compile Include="TeamVersionAddTable.cs" />
     <Compile Include="AuditTableInitialSchema.cs" />
-    <Compile Include="TeamNameTableInitialSchema.cs" />
+    <Compile Include="TeamVersionTableInitialSchema.cs" />
     <Compile Include="TeamTableInitialSchema.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

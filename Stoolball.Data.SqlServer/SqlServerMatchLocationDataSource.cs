@@ -68,10 +68,10 @@ namespace Stoolball.Data.SqlServer
                             FROM {Tables.MatchLocation} AS ml
                             LEFT JOIN {Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId
                             LEFT JOIN {Tables.Team} AS t ON tml.TeamId = t.TeamId AND NOT t.TeamType = '{TeamType.Transient}'
-                            LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId
+                            LEFT JOIN {Tables.TeamVersion} AS tn ON t.TeamId = tn.TeamId
                             WHERE LOWER(ml.MatchLocationRoute) = @Route
                             AND tml.UntilDate IS NULL                            
-                            AND tn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                            AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                             ORDER BY CASE WHEN tn.UntilDate IS NULL THEN 0 ELSE 1 END, tn.TeamName",
                     (matchLocation, team) =>
                     {
@@ -124,9 +124,9 @@ namespace Stoolball.Data.SqlServer
                             FROM {Tables.MatchLocation} AS ml2
                             LEFT JOIN {Tables.TeamMatchLocation} AS tml2 ON ml2.MatchLocationId = tml2.MatchLocationId
                             LEFT JOIN {Tables.Team} AS t2 ON tml2.TeamId = t2.TeamId 
-                            LEFT JOIN {Tables.TeamName} AS tn2 ON t2.TeamId = tn2.TeamId
+                            LEFT JOIN {Tables.TeamVersion} AS tn2 ON t2.TeamId = tn2.TeamId
                             WHERE tml2.UntilDate IS NULL
-                            AND tn2.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = t2.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                            AND tn2.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t2.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                             AND ml2.MatchLocationId IN (
                                 SELECT ml.MatchLocationId
                                 FROM {Tables.MatchLocation} AS ml 
@@ -135,9 +135,9 @@ namespace Stoolball.Data.SqlServer
                                     CASE WHEN (
                                         SELECT COUNT(t.TeamId) FROM {Tables.TeamMatchLocation} AS tml 
                                         INNER JOIN {Tables.Team} AS t ON tml.TeamId = t.TeamId
-                                        INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId
+                                        INNER JOIN {Tables.TeamVersion} AS tn ON t.TeamId = tn.TeamId
                                         WHERE ml.MatchLocationId = tml.MatchLocationId 
-                                        AND tn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                                        AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                         AND tml.UntilDate IS NULL
                                     ) > 0 THEN 0 ELSE 1 END,
                                 ml.SortName
@@ -146,9 +146,9 @@ namespace Stoolball.Data.SqlServer
                                 CASE WHEN (
                                     SELECT COUNT(t3.TeamId) FROM {Tables.TeamMatchLocation} AS tml3 
                                     INNER JOIN {Tables.Team} AS t3 ON tml3.TeamId = t3.TeamId
-                                    INNER JOIN {Tables.TeamName} AS tn3 ON t3.TeamId = tn3.TeamId
+                                    INNER JOIN {Tables.TeamVersion} AS tn3 ON t3.TeamId = tn3.TeamId
                                     WHERE ml2.MatchLocationId = tml3.MatchLocationId 
-                                    AND tn3.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = t3.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                                    AND tn3.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t3.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                     AND tml3.UntilDate IS NULL 
                                 ) > 0 THEN 0 ELSE 1 END,
                             ml2.SortName";

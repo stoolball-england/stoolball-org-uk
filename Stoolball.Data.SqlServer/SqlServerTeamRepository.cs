@@ -224,11 +224,11 @@ namespace Stoolball.Data.SqlServer
                     auditableTeam.MemberGroupName
                 }, transaction).ConfigureAwait(false);
 
-            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.TeamName} 
-                                (TeamNameId, TeamId, TeamName, TeamComparableName, FromDate, UntilDate) VALUES (@TeamNameId, @TeamId, @TeamName, @TeamComparableName, @FromDate, @UntilDate)",
+            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.TeamVersion} 
+                                (TeamVersionId, TeamId, TeamName, TeamComparableName, FromDate, UntilDate) VALUES (@TeamVersionId, @TeamId, @TeamName, @TeamComparableName, @FromDate, @UntilDate)",
                 new
                 {
-                    TeamNameId = Guid.NewGuid(),
+                    TeamVersionId = Guid.NewGuid(),
                     auditableTeam.TeamId,
                     auditableTeam.TeamName,
                     TeamComparableName = auditableTeam.ComparableName(),
@@ -339,7 +339,7 @@ namespace Stoolball.Data.SqlServer
                             auditableTeam.TeamId
                         }, transaction).ConfigureAwait(false);
 
-                    await connection.ExecuteAsync($"UPDATE {Tables.TeamName} SET TeamName = @TeamName, TeamComparableName = @TeamComparableName, UntilDate = @UntilDate WHERE TeamId = @TeamId",
+                    await connection.ExecuteAsync($"UPDATE {Tables.TeamVersion} SET TeamName = @TeamName, TeamComparableName = @TeamComparableName, UntilDate = @UntilDate WHERE TeamId = @TeamId",
                         new
                         {
                             auditableTeam.TeamName,
@@ -479,7 +479,7 @@ namespace Stoolball.Data.SqlServer
                         }, transaction).ConfigureAwait(false);
 
                     // No need to support changes of name when the team only lasts for a day
-                    await connection.ExecuteAsync($"UPDATE {Tables.TeamName} SET TeamName = @TeamName WHERE TeamId = @TeamId", new { auditableTeam.TeamId, auditableTeam.TeamName }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"UPDATE {Tables.TeamVersion} SET TeamName = @TeamName WHERE TeamId = @TeamId", new { auditableTeam.TeamId, auditableTeam.TeamName }, transaction).ConfigureAwait(false);
 
                     if (team.TeamRoute != auditableTeam.TeamRoute)
                     {
@@ -546,7 +546,7 @@ namespace Stoolball.Data.SqlServer
                     await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsAdjustment} WHERE TeamId = @TeamId", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam} WHERE TeamId = @TeamId", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.TeamMatchLocation} WHERE TeamId = @TeamId", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.TeamName} WHERE TeamId = @TeamId", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.TeamVersion} WHERE TeamId = @TeamId", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.Team} WHERE TeamId = @TeamId", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
 
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableTeam.TeamRoute, transaction).ConfigureAwait(false);

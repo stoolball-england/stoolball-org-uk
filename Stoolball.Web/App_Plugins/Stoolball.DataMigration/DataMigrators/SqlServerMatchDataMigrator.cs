@@ -91,8 +91,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         var teamsWithNames = await connection.QueryAsync<MigratedTeamInMatch, Team, MigratedTeamInMatch>(
                                                                          $@"SELECT t.MigratedTeamId, t.TeamId, tn.TeamName 
                                                                              FROM {Tables.Team} t
-                                                                             INNER JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId
-                                                                             AND tn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                                                                             INNER JOIN {Tables.TeamVersion} AS tn ON t.TeamId = tn.TeamId
+                                                                             AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                                                              WHERE t.MigratedTeamId IN @MigratedTeamIds",
                                                                          (migratedTeam, team) =>
                                                                          {

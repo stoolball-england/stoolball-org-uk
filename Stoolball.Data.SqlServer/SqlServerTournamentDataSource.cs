@@ -50,13 +50,13 @@ namespace Stoolball.Data.SqlServer
                             FROM {Tables.Tournament} AS tourney
                             LEFT JOIN {Tables.TournamentTeam} AS tt ON tourney.TournamentId = tt.TournamentId
                             LEFT JOIN {Tables.Team} AS t ON tt.TeamId = t.TeamId
-                            LEFT JOIN {Tables.TeamName} AS tn ON t.TeamId = tn.TeamId
+                            LEFT JOIN {Tables.TeamVersion} AS tn ON t.TeamId = tn.TeamId
                             LEFT JOIN {Tables.MatchLocation} AS ml ON tourney.MatchLocationId = ml.MatchLocationId
                             LEFT JOIN {Tables.TournamentSeason} AS ts ON tourney.TournamentId = ts.TournamentId
                             LEFT JOIN {Tables.Season} AS s ON ts.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.Competition} AS co ON s.CompetitionId = co.CompetitionId
                             WHERE LOWER(tourney.TournamentRoute) = @Route
-                            AND tn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)";
+                            AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)";
 
                 var tournaments = await connection.QueryAsync<Tournament, TeamInTournament, Team, MatchLocation, Season, Competition, Tournament>(sql,
                     (tournament, teamInTournament, team, tournamentLocation, season, competition) =>

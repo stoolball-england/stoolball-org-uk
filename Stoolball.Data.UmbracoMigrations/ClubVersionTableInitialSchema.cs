@@ -1,18 +1,17 @@
 ﻿using System;
 using NPoco;
-using Stoolball.Data.SqlServer;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
-    [TableName(Constants.Tables.ClubName)]
-    [PrimaryKey(nameof(ClubNameId), AutoIncrement = false)]
+    [TableName(Constants.Tables.ClubVersion)]
+    [PrimaryKey(nameof(ClubVersionId), AutoIncrement = false)]
     [ExplicitColumns]
-    public class ClubNameTableInitialSchema
+    public class ClubVersionTableInitialSchema
     {
         [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
-        [Column(nameof(ClubNameId))]
-        public Guid ClubNameId { get; set; }
+        [Column(nameof(ClubVersionId))]
+        public Guid ClubVersionId { get; set; }
 
         [Column(nameof(ClubId))]
         [ForeignKey(typeof(ClubTableInitialSchema), Column = nameof(ClubTableInitialSchema.ClubId))]

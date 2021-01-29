@@ -51,7 +51,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     await connection.ExecuteAsync($"DELETE FROM {Tables.Player}", null, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerIdentity}", null, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.TeamMatchLocation}", null, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.TeamName}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.TeamVersion}", null, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.Team}", null, transaction).ConfigureAwait(false);
 
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/teams/", transaction).ConfigureAwait(false);
@@ -147,11 +147,11 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                      },
                      transaction).ConfigureAwait(false);
 
-                    await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamName} 
-							(TeamNameId, TeamId, TeamName, TeamComparableName, FromDate, UntilDate) VALUES (@TeamNameId, @TeamId, @TeamName, @TeamComparableName, @FromDate, @UntilDate)",
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamVersion} 
+							(TeamVersionId, TeamId, TeamName, TeamComparableName, FromDate, UntilDate) VALUES (@TeamVersionId, @TeamId, @TeamName, @TeamComparableName, @FromDate, @UntilDate)",
                         new
                         {
-                            TeamNameId = Guid.NewGuid(),
+                            TeamVersionId = Guid.NewGuid(),
                             migratedTeam.TeamId,
                             migratedTeam.TeamName,
                             TeamComparableName = migratedTeam.ComparableName(),

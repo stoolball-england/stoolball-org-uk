@@ -46,22 +46,22 @@ namespace Stoolball.Data.SqlServer
                 return await connection.ExecuteScalarAsync<int>($@"SELECT COUNT(TeamListingId) FROM (           
                                     SELECT t.TeamId AS TeamListingId
                                     FROM { Tables.Team } AS t
-                                    INNER JOIN { Tables.TeamName } AS tn ON t.TeamId = tn.TeamId
+                                    INNER JOIN { Tables.TeamVersion } AS tn ON t.TeamId = tn.TeamId
                                     LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL
                                     LEFT JOIN { Tables.MatchLocation } AS ml ON ml.MatchLocationId = tml.MatchLocationId
                                     {teamWhere}
-                                    AND tn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                                    AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                     UNION 
                                     SELECT c.ClubId AS TeamListingId
                                     FROM { Tables.Club } AS c
-                                    INNER JOIN { Tables.ClubName } AS cn ON c.ClubId = cn.ClubId
+                                    INNER JOIN { Tables.ClubVersion } AS cn ON c.ClubId = cn.ClubId
                                     LEFT JOIN { Tables.Team } AS ct ON c.ClubId = ct.ClubId
-                                    LEFT JOIN { Tables.TeamName } AS ctn ON ct.TeamId = ctn.TeamId
+                                    LEFT JOIN { Tables.TeamVersion } AS ctn ON ct.TeamId = ctn.TeamId
                                     LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = ct.TeamId AND tml.UntilDate IS NULL
                                     LEFT JOIN { Tables.MatchLocation } AS ml ON ml.MatchLocationId = tml.MatchLocationId
                                     {clubWhere}
-                                    AND cn.ClubNameId = (SELECT TOP 1 ClubNameId FROM {Tables.ClubName} WHERE ClubId = c.ClubId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
-                                    AND ctn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = ct.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                                    AND cn.ClubVersionId = (SELECT TOP 1 ClubVersionId FROM {Tables.ClubVersion} WHERE ClubId = c.ClubId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                                    AND ctn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = ct.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                 ) as Total", new DynamicParameters(parameters)).ConfigureAwait(false);
             }
         }
@@ -103,23 +103,23 @@ namespace Stoolball.Data.SqlServer
                                             (SELECT TeamListingId, ClubOrTeamName, Active FROM (
                                                 SELECT t.TeamId AS TeamListingId, tn.TeamName AS ClubOrTeamName, CASE WHEN tn.UntilDate IS NULL THEN 1 ELSE 0 END AS Active
                                                 FROM { Tables.Team } AS t
-                                                INNER JOIN { Tables.TeamName } AS tn ON t.TeamId = tn.TeamId
+                                                INNER JOIN { Tables.TeamVersion } AS tn ON t.TeamId = tn.TeamId
                                                 LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL
                                                 LEFT JOIN { Tables.MatchLocation } AS ml ON ml.MatchLocationId = tml.MatchLocationId
                                                 {teamWhere}
-                                                AND tn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                                                AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                                 UNION
                                                 SELECT c.ClubId AS TeamListingId, cn.ClubName AS ClubOrTeamName,
-                                                CASE WHEN(SELECT COUNT(t2.TeamId) FROM { Tables.Team } t2 INNER JOIN { Tables.TeamName } tn2 ON t2.TeamId = tn2.TeamId WHERE ClubId = c.ClubId AND tn2.UntilDate IS NULL) > 0 THEN 1 ELSE 0 END AS Active
+                                                CASE WHEN(SELECT COUNT(t2.TeamId) FROM { Tables.Team } t2 INNER JOIN { Tables.TeamVersion } tn2 ON t2.TeamId = tn2.TeamId WHERE ClubId = c.ClubId AND tn2.UntilDate IS NULL) > 0 THEN 1 ELSE 0 END AS Active
                                                 FROM { Tables.Club } AS c
-                                                INNER JOIN { Tables.ClubName } AS cn ON c.ClubId = cn.ClubId
+                                                INNER JOIN { Tables.ClubVersion } AS cn ON c.ClubId = cn.ClubId
                                                 LEFT JOIN { Tables.Team } AS ct ON c.ClubId = ct.ClubId
-                                                LEFT JOIN { Tables.TeamName } AS ctn ON ct.TeamId = ctn.TeamId
+                                                LEFT JOIN { Tables.TeamVersion } AS ctn ON ct.TeamId = ctn.TeamId
                                                 LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = ct.TeamId AND tml.UntilDate IS NULL
                                                 LEFT JOIN { Tables.MatchLocation } AS ml ON ml.MatchLocationId = tml.MatchLocationId
                                                 {clubWhere}
-                                                AND cn.ClubNameId = (SELECT TOP 1 ClubNameId FROM {Tables.ClubName} WHERE ClubId = c.ClubId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
-                                                AND ctn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = ct.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                                                AND cn.ClubVersionId = (SELECT TOP 1 ClubVersionId FROM {Tables.ClubVersion} WHERE ClubId = c.ClubId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                                                AND ctn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = ct.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                             ) AS MatchingRecords
                                         ORDER BY Active DESC, ClubOrTeamName
                                         OFFSET {(teamQuery.PageNumber - 1) * teamQuery.PageSize} ROWS FETCH NEXT {teamQuery.PageSize} ROWS ONLY) AS MatchingIds";
@@ -130,25 +130,25 @@ namespace Stoolball.Data.SqlServer
                                 t.PlayerType, 
                                 ml.Locality, ml.Town, ml.MatchLocationRoute
                                 FROM { Tables.Team } AS t 
-                                INNER JOIN { Tables.TeamName } AS tn ON t.TeamId = tn.TeamId
+                                INNER JOIN { Tables.TeamVersion } AS tn ON t.TeamId = tn.TeamId
                                 LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL
                                 LEFT JOIN { Tables.MatchLocation } AS ml ON ml.MatchLocationId = tml.MatchLocationId 
                                 WHERE t.TeamId IN ({innerQuery})
-                                AND tn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                                AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                 UNION
                                 SELECT c.ClubId AS TeamListingId, cn.ClubName AS ClubOrTeamName, NULL AS TeamType, c.ClubRoute AS ClubOrTeamRoute, 
-                                CASE WHEN (SELECT COUNT(t2.TeamId) FROM { Tables.Team } t2 INNER JOIN { Tables.TeamName } tn2 ON t2.TeamId = tn2.TeamId WHERE ClubId = c.ClubId AND tn2.UntilDate IS NULL) > 0 THEN 1 ELSE 0 END AS Active,
+                                CASE WHEN (SELECT COUNT(t2.TeamId) FROM { Tables.Team } t2 INNER JOIN { Tables.TeamVersion } tn2 ON t2.TeamId = tn2.TeamId WHERE ClubId = c.ClubId AND tn2.UntilDate IS NULL) > 0 THEN 1 ELSE 0 END AS Active,
                                 ct.PlayerType,
                                 ml.Locality, ml.Town, ml.MatchLocationRoute
                                 FROM { Tables.Club } AS c 
-                                INNER JOIN { Tables.ClubName } AS cn ON c.ClubId = cn.ClubId 
+                                INNER JOIN { Tables.ClubVersion } AS cn ON c.ClubId = cn.ClubId 
                                 LEFT JOIN { Tables.Team } AS ct ON c.ClubId = ct.ClubId
-                                LEFT JOIN { Tables.TeamName } AS ctn ON ct.TeamId = ctn.TeamId
+                                LEFT JOIN { Tables.TeamVersion } AS ctn ON ct.TeamId = ctn.TeamId
                                 LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = ct.TeamId AND tml.UntilDate IS NULL
                                 LEFT JOIN { Tables.MatchLocation } AS ml ON ml.MatchLocationId = tml.MatchLocationId 
                                 WHERE c.ClubId IN ({innerQuery})
-                                AND cn.ClubNameId = (SELECT TOP 1 ClubNameId FROM {Tables.ClubName} WHERE ClubId = c.ClubId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
-                                AND ctn.TeamNameId = (SELECT TOP 1 TeamNameId FROM {Tables.TeamName} WHERE TeamId = ct.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                                AND cn.ClubVersionId = (SELECT TOP 1 ClubVersionId FROM {Tables.ClubVersion} WHERE ClubId = c.ClubId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                                AND ctn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = ct.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                 ORDER BY Active DESC, ClubOrTeamName";
 
                 var teamListings = await connection.QueryAsync<TeamListing, string, MatchLocation, TeamListing>(outerQuery,
@@ -199,7 +199,7 @@ namespace Stoolball.Data.SqlServer
             // For listings, clubs with one active team are treated like a team without a club, so that the team is returned
             if (teamQuery != null && !teamQuery.IncludeClubTeams)
             {
-                where.Add($"(t.ClubId IS NULL OR (SELECT COUNT({Tables.Team}.TeamId) FROM {Tables.Team} INNER JOIN {Tables.TeamName} ON {Tables.Team}.TeamId = {Tables.TeamName}.TeamId WHERE ClubId = t.ClubId AND {Tables.TeamName}.UntilDate IS NULL) = 1)");
+                where.Add($"(t.ClubId IS NULL OR (SELECT COUNT({Tables.Team}.TeamId) FROM {Tables.Team} INNER JOIN {Tables.TeamVersion} ON {Tables.Team}.TeamId = {Tables.TeamVersion}.TeamId WHERE ClubId = t.ClubId AND {Tables.TeamVersion}.UntilDate IS NULL) = 1)");
             }
 
             return (where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : "WHERE 1=1", parameters); // Always have a where clause so that it can be appended to
@@ -225,7 +225,7 @@ namespace Stoolball.Data.SqlServer
             // For listings, clubs with one active team are treated like a team without a club, so that the team is returned
             if (teamQuery != null && !teamQuery.IncludeClubTeams)
             {
-                where.Add($"(SELECT COUNT({Tables.Team}.TeamId) FROM {Tables.Team} INNER JOIN {Tables.TeamName} ON {Tables.Team}.TeamId = {Tables.TeamName}.TeamId WHERE ClubId = c.ClubId AND {Tables.TeamName}.UntilDate IS NULL) != 1");
+                where.Add($"(SELECT COUNT({Tables.Team}.TeamId) FROM {Tables.Team} INNER JOIN {Tables.TeamVersion} ON {Tables.Team}.TeamId = {Tables.TeamVersion}.TeamId WHERE ClubId = c.ClubId AND {Tables.TeamVersion}.UntilDate IS NULL) != 1");
             }
 
             return (where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : "WHERE 1=1", parameters); // Always have a where clause so that it can be appended to

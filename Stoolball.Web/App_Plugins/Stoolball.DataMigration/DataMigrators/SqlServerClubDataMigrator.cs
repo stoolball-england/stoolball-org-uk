@@ -42,7 +42,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 using (var transaction = connection.BeginTransaction())
                 {
                     await connection.ExecuteAsync($"UPDATE {Tables.Team} SET ClubId = NULL", null, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.ClubName}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.ClubVersion}", null, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.Club}", null, transaction).ConfigureAwait(false);
 
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/clubs/", transaction).ConfigureAwait(false);
@@ -103,11 +103,11 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         },
                         transaction).ConfigureAwait(false);
 
-                    await connection.ExecuteAsync($@"INSERT INTO {Tables.ClubName} 
-						(ClubNameId, ClubId, ClubName, FromDate) VALUES (@ClubNameId, @ClubId, @ClubName, @FromDate)",
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.ClubVersion} 
+						(ClubVersionId, ClubId, ClubName, FromDate) VALUES (@ClubVersionId, @ClubId, @ClubName, @FromDate)",
                         new
                         {
-                            ClubNameId = Guid.NewGuid(),
+                            ClubVersionId = Guid.NewGuid(),
                             migratedClub.ClubId,
                             migratedClub.ClubName,
                             FromDate = migratedClub.History[0].AuditDate
