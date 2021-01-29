@@ -148,13 +148,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                      transaction).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamVersion} 
-							(TeamVersionId, TeamId, TeamName, TeamComparableName, FromDate, UntilDate) VALUES (@TeamVersionId, @TeamId, @TeamName, @TeamComparableName, @FromDate, @UntilDate)",
+							(TeamVersionId, TeamId, TeamName, ComparableName, FromDate, UntilDate) VALUES (@TeamVersionId, @TeamId, @TeamName, @ComparableName, @FromDate, @UntilDate)",
                         new
                         {
                             TeamVersionId = Guid.NewGuid(),
                             migratedTeam.TeamId,
                             migratedTeam.TeamName,
-                            TeamComparableName = migratedTeam.ComparableName(),
+                            ComparableName = migratedTeam.ComparableName(),
                             FromDate = migratedTeam.History[0].AuditDate,
                             UntilDate = migratedTeam.UntilYear.HasValue ? new DateTime(migratedTeam.UntilYear.Value, 12, 31) : (DateTime?)null
                         },

@@ -22,12 +22,14 @@ namespace Stoolball.Teams
         public string TeamName { get; set; }
 
         /// <summary>
-        /// Gets the version of the team's name used to match them for updates
+        /// Gets the version of the team's name used to sort
         /// </summary>
         /// <returns></returns>
         public string ComparableName()
         {
-            return (TeamRoute + Regex.Replace(TeamNameAndPlayerType(), "[^A-Z0-9]", string.Empty, RegexOptions.IgnoreCase)).ToUpperInvariant();
+            var comparable = TeamNameAndPlayerType()?.ToUpperInvariant() ?? string.Empty;
+            if (comparable.StartsWith("THE ", StringComparison.Ordinal)) { comparable = comparable.Substring(4); }
+            return (Regex.Replace(comparable, "[^A-Z0-9]", string.Empty));
         }
 
         /// <summary>

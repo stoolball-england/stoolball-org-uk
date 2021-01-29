@@ -96,12 +96,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     transaction).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.SchoolVersion} 
-							(SchoolVersionId, SchoolId, SchoolName, FromDate) VALUES (@SchoolVersionId, @SchoolId, @SchoolName, @FromDate)",
+							(SchoolVersionId, SchoolId, SchoolName, ComparableName, FromDate) VALUES (@SchoolVersionId, @SchoolId, @SchoolName, @ComparableName, @FromDate)",
                         new
                         {
                             SchoolVersionId = Guid.NewGuid(),
                             migratedSchool.SchoolId,
                             migratedSchool.SchoolName,
+                            ComparableName = migratedSchool.ComparableName(),
                             FromDate = migratedSchool.History[0].AuditDate
                         },
                         transaction).ConfigureAwait(false);

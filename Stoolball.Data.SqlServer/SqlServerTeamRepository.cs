@@ -225,13 +225,13 @@ namespace Stoolball.Data.SqlServer
                 }, transaction).ConfigureAwait(false);
 
             await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.TeamVersion} 
-                                (TeamVersionId, TeamId, TeamName, TeamComparableName, FromDate, UntilDate) VALUES (@TeamVersionId, @TeamId, @TeamName, @TeamComparableName, @FromDate, @UntilDate)",
+                                (TeamVersionId, TeamId, TeamName, ComparableName, FromDate, UntilDate) VALUES (@TeamVersionId, @TeamId, @TeamName, @ComparableName, @FromDate, @UntilDate)",
                 new
                 {
                     TeamVersionId = Guid.NewGuid(),
                     auditableTeam.TeamId,
                     auditableTeam.TeamName,
-                    TeamComparableName = auditableTeam.ComparableName(),
+                    ComparableName = auditableTeam.ComparableName(),
                     FromDate = DateTime.UtcNow.Date,
                     UntilDate = auditableTeam.UntilYear.HasValue ? new DateTime(auditableTeam.UntilYear.Value, 12, 31) : (DateTime?)null
                 }, transaction).ConfigureAwait(false);
@@ -339,11 +339,11 @@ namespace Stoolball.Data.SqlServer
                             auditableTeam.TeamId
                         }, transaction).ConfigureAwait(false);
 
-                    await connection.ExecuteAsync($"UPDATE {Tables.TeamVersion} SET TeamName = @TeamName, TeamComparableName = @TeamComparableName, UntilDate = @UntilDate WHERE TeamId = @TeamId",
+                    await connection.ExecuteAsync($"UPDATE {Tables.TeamVersion} SET TeamName = @TeamName, ComparableName = @ComparableName, UntilDate = @UntilDate WHERE TeamId = @TeamId",
                         new
                         {
                             auditableTeam.TeamName,
-                            TeamComparableName = auditableTeam.ComparableName(),
+                            ComparableName = auditableTeam.ComparableName(),
                             UntilDate = auditableTeam.UntilYear.HasValue ? new DateTime(auditableTeam.UntilYear.Value, 12, 31) : (DateTime?)null,
                             auditableTeam.TeamId
                         },

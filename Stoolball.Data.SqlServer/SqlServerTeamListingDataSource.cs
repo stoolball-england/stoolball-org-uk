@@ -100,8 +100,8 @@ namespace Stoolball.Data.SqlServer
                 //    putting this paging on the inner level doesn't work
                 // 3. inner level selects fields which are later used for sorting by the outer query
                 var innerQuery = $@"SELECT TeamListingId FROM 
-                                            (SELECT TeamListingId, ClubOrTeamName, Active FROM (
-                                                SELECT t.TeamId AS TeamListingId, tn.TeamName AS ClubOrTeamName, CASE WHEN tn.UntilDate IS NULL THEN 1 ELSE 0 END AS Active
+                                            (SELECT TeamListingId, ClubOrTeamName, ComparableName, Active FROM (
+                                                SELECT t.TeamId AS TeamListingId, tn.TeamName AS ClubOrTeamName, tn.ComparableName, CASE WHEN tn.UntilDate IS NULL THEN 1 ELSE 0 END AS Active
                                                 FROM { Tables.Team } AS t
                                                 INNER JOIN { Tables.TeamVersion } AS tn ON t.TeamId = tn.TeamId
                                                 LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL
@@ -109,7 +109,7 @@ namespace Stoolball.Data.SqlServer
                                                 {teamWhere}
                                                 AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                                 UNION
-                                                SELECT c.ClubId AS TeamListingId, cn.ClubName AS ClubOrTeamName,
+                                                SELECT c.ClubId AS TeamListingId, cn.ClubName AS ClubOrTeamName, cn.ComparableName,
                                                 CASE WHEN(SELECT COUNT(t2.TeamId) FROM { Tables.Team } t2 INNER JOIN { Tables.TeamVersion } tn2 ON t2.TeamId = tn2.TeamId WHERE ClubId = c.ClubId AND tn2.UntilDate IS NULL) > 0 THEN 1 ELSE 0 END AS Active
                                                 FROM { Tables.Club } AS c
                                                 INNER JOIN { Tables.ClubVersion } AS cn ON c.ClubId = cn.ClubId
@@ -121,12 +121,12 @@ namespace Stoolball.Data.SqlServer
                                                 AND cn.ClubVersionId = (SELECT TOP 1 ClubVersionId FROM {Tables.ClubVersion} WHERE ClubId = c.ClubId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                                 AND ctn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = ct.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                             ) AS MatchingRecords
-                                        ORDER BY Active DESC, ClubOrTeamName
+                                        ORDER BY Active DESC, ComparableName
                                         OFFSET {(teamQuery.PageNumber - 1) * teamQuery.PageSize} ROWS FETCH NEXT {teamQuery.PageSize} ROWS ONLY) AS MatchingIds";
 
                 // Now that the inner query can select just the paged ids we need, the outer query can use them to select complete data sets including multiple rows
                 // based on the matching ids rather than directly on the paging criteria
-                var outerQuery = $@"SELECT t.TeamId AS TeamListingId, tn.TeamName AS ClubOrTeamName, t.TeamType, t.TeamRoute AS ClubOrTeamRoute, CASE WHEN tn.UntilDate IS NULL THEN 1 ELSE 0 END AS Active,
+                var outerQuery = $@"SELECT t.TeamId AS TeamListingId, tn.TeamName AS ClubOrTeamName, tn.ComparableName, t.TeamType, t.TeamRoute AS ClubOrTeamRoute, CASE WHEN tn.UntilDate IS NULL THEN 1 ELSE 0 END AS Active,
                                 t.PlayerType, 
                                 ml.Locality, ml.Town, ml.MatchLocationRoute
                                 FROM { Tables.Team } AS t 
@@ -136,7 +136,7 @@ namespace Stoolball.Data.SqlServer
                                 WHERE t.TeamId IN ({innerQuery})
                                 AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                 UNION
-                                SELECT c.ClubId AS TeamListingId, cn.ClubName AS ClubOrTeamName, NULL AS TeamType, c.ClubRoute AS ClubOrTeamRoute, 
+                                SELECT c.ClubId AS TeamListingId, cn.ClubName AS ClubOrTeamName, cn.ComparableName, NULL AS TeamType, c.ClubRoute AS ClubOrTeamRoute, 
                                 CASE WHEN (SELECT COUNT(t2.TeamId) FROM { Tables.Team } t2 INNER JOIN { Tables.TeamVersion } tn2 ON t2.TeamId = tn2.TeamId WHERE ClubId = c.ClubId AND tn2.UntilDate IS NULL) > 0 THEN 1 ELSE 0 END AS Active,
                                 ct.PlayerType,
                                 ml.Locality, ml.Town, ml.MatchLocationRoute
@@ -149,7 +149,7 @@ namespace Stoolball.Data.SqlServer
                                 WHERE c.ClubId IN ({innerQuery})
                                 AND cn.ClubVersionId = (SELECT TOP 1 ClubVersionId FROM {Tables.ClubVersion} WHERE ClubId = c.ClubId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                 AND ctn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = ct.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
-                                ORDER BY Active DESC, ClubOrTeamName";
+                                ORDER BY Active DESC, ComparableName";
 
                 var teamListings = await connection.QueryAsync<TeamListing, string, MatchLocation, TeamListing>(outerQuery,
                     (teamListing, playerType, matchLocation) =>

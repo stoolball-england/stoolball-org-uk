@@ -179,15 +179,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         transaction).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($@"UPDATE {Tables.TeamVersion} SET 
-							UntilDate = @UntilDate,
-                            TeamComparableName = CONCAT(@TournamentRoute, SUBSTRING(TeamComparableName, 6, LEN(TeamComparableName)-5))
+							UntilDate = @UntilDate
 							WHERE TeamId IN (
 								SELECT t.TeamId FROM {Tables.Team} t INNER JOIN {Tables.TournamentTeam} tt ON t.TeamId = tt.TeamId WHERE t.TeamType = 'Transient' AND tt.TournamentId = @TournamentId
 							)",
                     new
                     {
                         UntilDate = new DateTime(migratedTournament.StartTime.Year, 12, 31),
-                        TournamentRoute = migratedTournament.TournamentRoute.ToUpperInvariant(),
                         migratedTournament.TournamentId
                     },
                     transaction).ConfigureAwait(false);

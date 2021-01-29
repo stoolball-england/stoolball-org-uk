@@ -104,12 +104,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         transaction).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.ClubVersion} 
-						(ClubVersionId, ClubId, ClubName, FromDate) VALUES (@ClubVersionId, @ClubId, @ClubName, @FromDate)",
+						(ClubVersionId, ClubId, ClubName, ComparableName, FromDate) VALUES (@ClubVersionId, @ClubId, @ClubName, @ComparableName, @FromDate)",
                         new
                         {
                             ClubVersionId = Guid.NewGuid(),
                             migratedClub.ClubId,
                             migratedClub.ClubName,
+                            ComparableName = migratedClub.ComparableName(),
                             FromDate = migratedClub.History[0].AuditDate
                         },
                         transaction).ConfigureAwait(false);

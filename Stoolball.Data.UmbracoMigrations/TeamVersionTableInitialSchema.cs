@@ -21,8 +21,8 @@ namespace Stoolball.Data.UmbracoMigrations
         [Column(nameof(TeamName))]
         public string TeamName { get; set; }
 
-        [Column(nameof(TeamComparableName))]
-        public string TeamComparableName { get; set; }
+        [Column(nameof(ComparableName))]
+        public string ComparableName { get; set; }
 
         [Column(nameof(FromDate))]
         [Index(IndexTypes.NonClustered)]

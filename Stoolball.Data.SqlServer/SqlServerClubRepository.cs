@@ -91,12 +91,13 @@ namespace Stoolball.Data.SqlServer
                         }, transaction).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.ClubVersion} 
-                                (ClubVersionId, ClubId, ClubName, FromDate) VALUES (@ClubVersionId, @ClubId, @ClubName, @FromDate)",
+                                (ClubVersionId, ClubId, ClubName, ComparableName, FromDate) VALUES (@ClubVersionId, @ClubId, @ClubName, @ComparableName, @FromDate)",
                         new
                         {
                             ClubVersionId = Guid.NewGuid(),
                             auditableClub.ClubId,
                             auditableClub.ClubName,
+                            ComparableName = auditableClub.ComparableName(),
                             FromDate = DateTime.UtcNow.Date
                         }, transaction).ConfigureAwait(false);
 
@@ -175,20 +176,14 @@ namespace Stoolball.Data.SqlServer
                             auditableClub.ClubId
                         }, transaction).ConfigureAwait(false);
 
-                    var currentName = await connection.ExecuteScalarAsync<string>($"SELECT ClubName FROM {Tables.ClubVersion} WHERE ClubId = @ClubId AND UntilDate IS NULL", new { auditableClub.ClubId }, transaction).ConfigureAwait(false);
-                    if (auditableClub.ClubName?.Trim() != currentName?.Trim())
-                    {
-                        await connection.ExecuteAsync($"UPDATE {Tables.ClubVersion} SET UntilDate = @UntilDate WHERE ClubId = @ClubId AND UntilDate IS NULL", new { UntilDate = DateTime.UtcNow.Date.AddDays(1), auditableClub.ClubId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($@"INSERT INTO {Tables.ClubVersion} 
-                                (ClubVersionId, ClubId, ClubName, FromDate) VALUES (@ClubVersionId, @ClubId, @ClubName, @FromDate)",
-                            new
-                            {
-                                ClubVersionId = Guid.NewGuid(),
-                                auditableClub.ClubId,
-                                auditableClub.ClubName,
-                                FromDate = DateTime.UtcNow.Date
-                            }, transaction).ConfigureAwait(false);
-                    }
+                    await connection.ExecuteAsync($"UPDATE {Tables.ClubVersion} SET ClubName = @ClubName, ComparableName = @ComparableName WHERE ClubId = @ClubId",
+                        new
+                        {
+                            auditableClub.ClubName,
+                            ComparableName = auditableClub.ComparableName(),
+                            auditableClub.ClubId
+                        },
+                        transaction).ConfigureAwait(false);
 
                     // Add any newly-assigned teams to this club, and set ClubMark = 1 if any other team in this club has ClubMark = 1 (therefore removing teams has to come later)
                     // Check for ClubId IS NULL, otherwise the owner of Club B can edit Club A by reassigning its team.
