@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Transactions;
 using Dapper;
 using Moq;
 using Stoolball.Clubs;
@@ -11,15 +10,14 @@ using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
 {
-    public class SqlServerClubRepositoryTests : IDisposable
+    [Collection(IntegrationTestConstants.IntegrationTestCollection)]
+    public class SqlServerClubRepositoryTests
     {
-        private TransactionScope _testScope;
-        private IDatabaseConnectionFactory _connectionFactory;
+        private readonly DatabaseFixture _databaseFixture;
 
-        public SqlServerClubRepositoryTests()
+        public SqlServerClubRepositoryTests(DatabaseFixture databaseFixture)
         {
-            _testScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            _connectionFactory = new IntegrationTestsDatabaseConnectionFactory();
+            _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
 
         [Fact]
@@ -35,22 +33,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
             var routeGenerator = new Mock<IRouteGenerator>();
             routeGenerator.Setup(x => x.GenerateRoute("/clubs", club.ClubName, NoiseWords.ClubRoute)).Returns("/clubs/" + Guid.NewGuid());
 
-            var repo = new SqlServerClubRepository(_connectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger>(), routeGenerator.Object, Mock.Of<IRedirectsRepository>());
+            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger>(), routeGenerator.Object, Mock.Of<IRedirectsRepository>());
             var memberKey = Guid.NewGuid();
             var memberName = "Person 1";
 
-            var createdClub = await repo.CreateClub(club, memberKey, memberName);
+            var createdClub = await repo.CreateClub(club, memberKey, memberName).ConfigureAwait(false);
 
-            using (var connection = _connectionFactory.CreateDatabaseConnection())
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
                 var result = await connection.QuerySingleOrDefaultAsync<Club>($"SELECT ClubId FROM {Tables.Club} WHERE ClubId = @ClubId", new { createdClub.ClubId }).ConfigureAwait(false);
                 Assert.NotNull(result);
             }
-        }
-
-        public void Dispose()
-        {
-            _testScope.Dispose();
         }
     }
 }

@@ -4,9 +4,9 @@ namespace Stoolball.Data.UmbracoMigrations
 {
     // Create a migration plan for the stoolball schema
     // Each latest migration state/step is tracked for this project/feature
-    public class StoolballMigrationPlan : MigrationPlan
+    public class StoolballDataMigrationPlan : MigrationPlan
     {
-        public StoolballMigrationPlan() : base("StoolballData")
+        public StoolballDataMigrationPlan() : base("StoolballData")
         {
             // This is the steps we need to take
             // Each step in the migration adds a unique value

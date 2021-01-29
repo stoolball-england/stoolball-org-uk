@@ -8,7 +8,7 @@ using Umbraco.Core.Services;
 namespace Stoolball.Data.UmbracoMigrations
 {
     /// <summary>
-    /// Component which is loaded by <see cref="StoolballDataComposer"/> on startup, and kicks off the <see cref="StoolballMigrationPlan"/>
+    /// Component which is loaded by <see cref="StoolballDataComposer"/> on startup, and kicks off the <see cref="StoolballDataMigrationPlan"/>
     /// </summary>
     public class StoolballDataComponent : IComponent
     {
@@ -29,7 +29,7 @@ namespace Stoolball.Data.UmbracoMigrations
         {
             // Go and upgrade our site (Will check if it needs to do the work or not)
             // Based on the current/latest step
-            var upgrader = new Upgrader(new StoolballMigrationPlan());
+            var upgrader = new Upgrader(new StoolballDataMigrationPlan());
             upgrader.Execute(_scopeProvider, _migrationBuilder, _keyValueService, _logger);
         }
 
