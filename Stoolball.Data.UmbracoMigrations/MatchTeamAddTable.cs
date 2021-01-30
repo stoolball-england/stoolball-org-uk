@@ -17,13 +17,13 @@ namespace Stoolball.Data.UmbracoMigrations
         {
             Logger.Debug<MatchTeamAddTable>("Running migration {MigrationStep}", typeof(MatchTeamAddTable).Name);
 
-            if (TableExists(Constants.Tables.MatchTeam) == false)
+            if (TableExists(Tables.MatchTeam) == false)
             {
                 Create.Table<MatchTeamTableInitialSchema>().Do();
             }
             else
             {
-                Logger.Debug<MatchTeamAddTable>("The database table {DbTable} already exists, skipping", Constants.Tables.MatchTeam);
+                Logger.Debug<MatchTeamAddTable>("The database table {DbTable} already exists, skipping", Tables.MatchTeam);
             }
         }
     }

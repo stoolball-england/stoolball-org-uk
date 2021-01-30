@@ -1,4 +1,5 @@
-﻿using Umbraco.Core.Logging;
+﻿using Stoolball.Data.SqlServer;
+using Umbraco.Core.Logging;
 using Umbraco.Core.Migrations;
 
 namespace Stoolball.Data.UmbracoMigrations
@@ -16,13 +17,13 @@ namespace Stoolball.Data.UmbracoMigrations
         {
             Logger.Debug<AwardedToAddTable>("Running migration {MigrationStep}", typeof(AwardedToAddTable).Name);
 
-            if (TableExists(Constants.Tables.AwardedTo) == false)
+            if (TableExists(Tables.AwardedTo) == false)
             {
                 Create.Table<AwardedToTableInitialSchema>().Do();
             }
             else
             {
-                Logger.Debug<AwardedToAddTable>("The database table {DbTable} already exists, skipping", Constants.Tables.AwardedTo);
+                Logger.Debug<AwardedToAddTable>("The database table {DbTable} already exists, skipping", Tables.AwardedTo);
             }
         }
     }

@@ -6,7 +6,7 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
-    [TableName(Constants.Tables.School)]
+    [TableName(Tables.School)]
     [PrimaryKey(nameof(SchoolId), AutoIncrement = false)]
     [ExplicitColumns]
     public class SchoolTableInitialSchema

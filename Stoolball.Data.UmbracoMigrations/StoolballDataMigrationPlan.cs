@@ -18,6 +18,7 @@ namespace Stoolball.Data.UmbracoMigrations
                 .To<SchoolVersionAddTable>(typeof(SchoolVersionAddTable).ToString())
                 .To<MatchLocationAddTable>(typeof(MatchLocationAddTable).ToString())
                 .To<CompetitionAddTable>(typeof(CompetitionAddTable).ToString())
+                .To<CompetitionVersionAddTable>(typeof(CompetitionVersionAddTable).ToString())
                 .To<SeasonAddTable>(typeof(SeasonAddTable).ToString())
                 .To<SeasonMatchTypeAddTable>(typeof(SeasonMatchTypeAddTable).ToString())
                 .To<SeasonPointsRuleAddTable>(typeof(SeasonPointsRuleAddTable).ToString())

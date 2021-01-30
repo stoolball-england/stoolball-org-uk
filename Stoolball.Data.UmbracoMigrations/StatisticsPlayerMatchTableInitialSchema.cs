@@ -5,7 +5,7 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
-    [TableName(Constants.Tables.StatisticsPlayerMatch)]
+    [TableName(Tables.StatisticsPlayerMatch)]
     [PrimaryKey(nameof(PlayerMatchStatisticsId), AutoIncrement = true)]
     [ExplicitColumns]
     public class StatisticsPlayerMatchTableInitialSchema

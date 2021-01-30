@@ -11,7 +11,6 @@ using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer
 {
@@ -100,7 +99,7 @@ namespace Stoolball.Data.SqlServer
                             ml.MatchLocationId, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, 
                             ml.Town, ml.AdministrativeArea, ml.MatchLocationRoute,
                             s.SeasonId, s.FromYear, s.UntilYear, s.SeasonRoute,
-                            co.CompetitionId, co.CompetitionName,
+                            co.CompetitionId, cv.CompetitionName,
                             mt.MatchType
                             FROM {Tables.Team} AS t 
                             INNER JOIN {Tables.TeamVersion} AS tn ON t.TeamId = tn.TeamId 
@@ -111,10 +110,12 @@ namespace Stoolball.Data.SqlServer
                             LEFT JOIN {Tables.SeasonTeam} AS st ON t.TeamId = st.TeamId
                             LEFT JOIN {Tables.Season} AS s ON st.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.Competition} AS co ON co.CompetitionId = s.CompetitionId
+                            LEFT JOIN {Tables.CompetitionVersion} AS cv ON co.CompetitionId = cv.CompetitionId
                             LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
                             WHERE LOWER(t.TeamRoute) = @Route
                             AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
-                            ORDER BY co.CompetitionName, s.FromYear DESC, s.UntilYear ASC",
+                            AND (cv.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = co.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR cv.CompetitionVersionId IS NULL)
+                            ORDER BY cv.ComparableName, s.FromYear DESC, s.UntilYear ASC",
                     (team, club, matchLocation, season, competition, matchType) =>
                     {
                         team.Club = club;

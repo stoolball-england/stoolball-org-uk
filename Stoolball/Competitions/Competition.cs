@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Humanizer;
 using Stoolball.Logging;
@@ -15,6 +16,17 @@ namespace Stoolball.Competitions
         [Display(Name = "Competition name")]
         [Required]
         public string CompetitionName { get; set; }
+
+        /// <summary>
+        /// Gets the version of the competition's name used to sort
+        /// </summary>
+        /// <returns></returns>
+        public string ComparableName()
+        {
+            var comparable = CompetitionName?.ToUpperInvariant() ?? string.Empty;
+            if (comparable.StartsWith("THE ", StringComparison.Ordinal)) { comparable = comparable.Substring(4); }
+            return (Regex.Replace(comparable, "[^A-Z0-9]", string.Empty));
+        }
 
         /// <summary>
         /// Gets the name of the competition and the type of players (if not stated in the name)

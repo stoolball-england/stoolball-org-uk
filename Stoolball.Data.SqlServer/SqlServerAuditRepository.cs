@@ -28,7 +28,7 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(transaction));
             }
 
-            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Constants.Tables.Audit} 
+            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.Audit} 
                         ([AuditId], [MemberKey], [ActorName], [Action], [EntityUri], [State], [RedactedState], [AuditDate]) 
                         VALUES (@AuditId, @MemberKey, @ActorName, @Action, @EntityUri, @State, @RedactedState, @AuditDate)",
                 new

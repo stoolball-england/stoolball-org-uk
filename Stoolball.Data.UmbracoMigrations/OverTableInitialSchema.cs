@@ -5,7 +5,7 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
-    [TableName(Constants.Tables.Over)]
+    [TableName(Tables.Over)]
     [PrimaryKey(nameof(OverId), AutoIncrement = false)]
     [ExplicitColumns]
     public class OverTableInitialSchema

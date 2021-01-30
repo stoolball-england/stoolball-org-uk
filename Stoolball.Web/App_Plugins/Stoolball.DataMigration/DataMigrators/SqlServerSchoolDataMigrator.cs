@@ -6,7 +6,7 @@ using Stoolball.Logging;
 using Stoolball.Routing;
 using Stoolball.Schools;
 using static Stoolball.Constants;
-using Tables = Stoolball.Constants.Tables;
+
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {

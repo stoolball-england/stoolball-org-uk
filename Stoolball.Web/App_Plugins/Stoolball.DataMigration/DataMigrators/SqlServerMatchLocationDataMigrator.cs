@@ -7,7 +7,6 @@ using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Security;
 using static Stoolball.Constants;
-using Tables = Stoolball.Constants.Tables;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {

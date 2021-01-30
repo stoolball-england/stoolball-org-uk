@@ -23,10 +23,10 @@ To update the stoolball data schema, such as to add, remove or change tables or 
 2. Copy any file called `*AddTable.cs` and update the copy to your needs. If you're changing a table rather than adding one then other methods are available. For example, to add a column:
 
    ```csharp
-   if (ColumnExists(Constants.Tables.Example, "ExampleColumn") == false) {
+   if (ColumnExists(Tables.Example, "ExampleColumn") == false) {
 
        Create.Column("ExampleColumn")
-       .OnTable(Constants.Tables.Example)
+       .OnTable(Tables.Example)
        .AsInt32().Do();
    }
    ```

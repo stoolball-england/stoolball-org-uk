@@ -5,7 +5,7 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
-    [TableName(Constants.Tables.MatchLocation)]
+    [TableName(Tables.MatchLocation)]
     [PrimaryKey(nameof(MatchLocationId), AutoIncrement = false)]
     [ExplicitColumns]
     public class MatchLocationTableInitialSchema

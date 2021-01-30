@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -7,7 +9,6 @@ using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer
 {
@@ -37,15 +38,17 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var competitions = await connection.QueryAsync<Competition, Season, string, Competition>(
-                    $@"SELECT co.CompetitionId, co.CompetitionName, co.PlayerType, co.Introduction, co.FromYear, co.UntilYear, 
+                    $@"SELECT co.CompetitionId, cv.CompetitionName, co.PlayerType, co.Introduction, co.FromYear, co.UntilYear, 
                             co.PublicContactDetails, co.PrivateContactDetails, co.Facebook, co.Twitter, co.Instagram, co.YouTube, co.Website, co.CompetitionRoute, 
                             co.MemberGroupKey, co.MemberGroupName,
                             s.SeasonRoute, s.FromYear, s.UntilYear, s.PlayersPerTeam, s.Overs, s.EnableTournaments, s.EnableLastPlayerBatsOn, s.EnableBonusOrPenaltyRuns,
                             mt.MatchType
                             FROM {Tables.Competition} AS co
+                            INNER JOIN {Tables.CompetitionVersion} AS cv ON co.CompetitionId = cv.CompetitionId
                             LEFT JOIN {Tables.Season} AS s ON co.CompetitionId = s.CompetitionId
                             LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
                             WHERE LOWER(co.CompetitionRoute) = @Route
+                            AND cv.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = co.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                             ORDER BY s.FromYear DESC, s.UntilYear DESC",
                     (competition, season, matchType) =>
                     {
@@ -107,10 +110,11 @@ namespace Stoolball.Data.SqlServer
             {
                 var (where, parameters) = BuildWhereClause(competitionQuery);
 
-                var sql = $@"SELECT co2.CompetitionId, co2.CompetitionName, co2.CompetitionRoute, co2.UntilYear, co2.PlayerType,
+                var sql = $@"SELECT co2.CompetitionId, cv2.CompetitionName, co2.CompetitionRoute, co2.UntilYear, co2.PlayerType,
                             s2.SeasonRoute,
                             st2.TeamId
                             FROM {Tables.Competition} AS co2
+                            INNER JOIN {Tables.CompetitionVersion} AS cv2 ON co2.CompetitionId = cv2.CompetitionId
                             LEFT JOIN {Tables.Season} AS s2 ON co2.CompetitionId = s2.CompetitionId
                             LEFT JOIN {Tables.SeasonTeam} AS st2 ON s2.SeasonId = st2.SeasonId
                             WHERE co2.CompetitionId IN(
@@ -118,12 +122,13 @@ namespace Stoolball.Data.SqlServer
                                 FROM {Tables.Competition} AS co
                                 {where}
                                 ORDER BY CASE WHEN co.UntilYear IS NULL THEN 0
-                                          WHEN co.UntilYear IS NOT NULL THEN 1 END, co.CompetitionName
+                                          WHEN co.UntilYear IS NOT NULL THEN 1 END, cv2.ComparableName
                                 OFFSET {(competitionQuery.PageNumber - 1) * competitionQuery.PageSize} ROWS FETCH NEXT {competitionQuery.PageSize} ROWS ONLY
                             )
+                            AND cv2.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = co2.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                             AND(s2.FromYear = (SELECT MAX(FromYear) FROM {Tables.Season} WHERE CompetitionId = co2.CompetitionId) OR s2.FromYear IS NULL)
                             ORDER BY CASE WHEN co2.UntilYear IS NULL THEN 0
-                                          WHEN co2.UntilYear IS NOT NULL THEN 1 END, co2.CompetitionName";
+                                          WHEN co2.UntilYear IS NOT NULL THEN 1 END, cv2.ComparableName";
 
                 var competitions = await connection.QueryAsync<Competition, Season, Team, Competition>(sql,
                     (competition, season, team) =>
@@ -165,7 +170,7 @@ namespace Stoolball.Data.SqlServer
 
             if (!string.IsNullOrEmpty(competitionQuery?.Query))
             {
-                where.Add("(co.CompetitionName LIKE @Query OR co.PlayerType LIKE @Query)");
+                where.Add("(cv.CompetitionName LIKE @Query OR co.PlayerType LIKE @Query)");
                 parameters.Add("@Query", $"%{competitionQuery.Query}%");
             }
 

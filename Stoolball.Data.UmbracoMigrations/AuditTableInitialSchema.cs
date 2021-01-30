@@ -1,10 +1,11 @@
 ﻿using System;
 using NPoco;
+using Stoolball.Data.SqlServer;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
-    [TableName(Constants.Tables.Audit)]
+    [TableName(Tables.Audit)]
     [PrimaryKey(nameof(AuditId), AutoIncrement = false)]
     [ExplicitColumns]
     public class AuditTableInitialSchema

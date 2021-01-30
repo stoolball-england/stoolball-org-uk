@@ -5,7 +5,7 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
-    [TableName(Constants.Tables.SeasonMatchType)]
+    [TableName(Tables.SeasonMatchType)]
     [PrimaryKey(nameof(SeasonMatchTypeId), AutoIncrement = false)]
     [ExplicitColumns]
     public class SeasonMatchTypeTableInitialSchema

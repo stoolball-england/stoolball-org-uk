@@ -5,7 +5,7 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
-    [TableName(Constants.Tables.Competition)]
+    [TableName(Tables.Competition)]
     [PrimaryKey(nameof(CompetitionId), AutoIncrement = false)]
     [ExplicitColumns]
     public class CompetitionTableInitialSchema
@@ -17,9 +17,6 @@ namespace Stoolball.Data.UmbracoMigrations
         [Column(nameof(MigratedCompetitionId))]
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? MigratedCompetitionId { get; set; }
-
-        [Column(nameof(CompetitionName))]
-        public string CompetitionName { get; set; }
 
         [Column(nameof(Introduction))]
         [NullSetting(NullSetting = NullSettings.Null)]

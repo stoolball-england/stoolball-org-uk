@@ -12,7 +12,7 @@ using Stoolball.Routing;
 using Stoolball.Security;
 using Stoolball.Teams;
 using static Stoolball.Constants;
-using Tables = Stoolball.Constants.Tables;
+
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
@@ -51,7 +51,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 {
                     await DeleteSeasons(transaction).ConfigureAwait(false);
 
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.Competition}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"TRUNCATE TABLE {Tables.CompetitionVersion}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"TRUNCATE TABLE {Tables.Competition}", null, transaction).ConfigureAwait(false);
 
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/competitions/", transaction).ConfigureAwait(false);
 
@@ -94,16 +95,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     migratedCompetition.FromYear = competition.History[0].AuditDate.Year;
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.Competition}
-						(CompetitionId, MigratedCompetitionId, CompetitionName, Introduction, Twitter, Facebook, Instagram, PublicContactDetails, Website, 
+						(CompetitionId, MigratedCompetitionId, Introduction, Twitter, Facebook, Instagram, PublicContactDetails, Website, 
 						 PlayerType, FromYear, UntilYear, MemberGroupKey, MemberGroupName, CompetitionRoute)
 						VALUES 
-                        (@CompetitionId, @MigratedCompetitionId, @CompetitionName, @Introduction, @Twitter, @Facebook, @Instagram, @PublicContactDetails, 
+                        (@CompetitionId, @MigratedCompetitionId, @Introduction, @Twitter, @Facebook, @Instagram, @PublicContactDetails, 
                         @Website, @PlayerType, @FromYear, @UntilYear, @MemberGroupKey, @MemberGroupName, @CompetitionRoute)",
                     new
                     {
                         migratedCompetition.CompetitionId,
                         migratedCompetition.MigratedCompetitionId,
-                        migratedCompetition.CompetitionName,
                         migratedCompetition.Introduction,
                         migratedCompetition.Twitter,
                         migratedCompetition.Facebook,
@@ -118,6 +118,18 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         migratedCompetition.CompetitionRoute
                     },
                     transaction).ConfigureAwait(false);
+
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.CompetitionVersion} 
+						(CompetitionVersionId, CompetitionId, CompetitionName, ComparableName, FromDate) VALUES (@CompetitionVersionId, @CompetitionId, @CompetitionName, @ComparableName, @FromDate)",
+                        new
+                        {
+                            CompetitionVersionId = Guid.NewGuid(),
+                            migratedCompetition.CompetitionId,
+                            migratedCompetition.CompetitionName,
+                            ComparableName = migratedCompetition.ComparableName(),
+                            FromDate = migratedCompetition.History[0].AuditDate
+                        },
+                        transaction).ConfigureAwait(false);
 
                     await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, migratedCompetition.CompetitionRoute, string.Empty, transaction).ConfigureAwait(false);
                     await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, migratedCompetition.CompetitionRoute, "/statistics", transaction).ConfigureAwait(false);

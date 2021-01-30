@@ -65,6 +65,8 @@
     <Compile Include="PlayerTableInitialSchema.cs" />
     <Compile Include="FallOfWicketAddTable.cs" />
     <Compile Include="FallOfWicketTableInitialSchema.cs" />
+    <Compile Include="CompetitionVersionAddTable.cs" />
+    <Compile Include="CompetitionVersionTableInitialSchema.cs" />
     <Compile Include="TournamentTeamTableInitialSchema.cs" />
     <Compile Include="TournamentTeamAddTable.cs" />
     <Compile Include="TournamentTableInitialSchema.cs" />

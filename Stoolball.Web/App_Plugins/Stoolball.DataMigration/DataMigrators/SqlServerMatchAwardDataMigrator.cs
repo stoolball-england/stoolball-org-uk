@@ -7,7 +7,7 @@ using Stoolball.Awards;
 using Stoolball.Data.SqlServer;
 using Stoolball.Logging;
 using static Stoolball.Constants;
-using Tables = Stoolball.Constants.Tables;
+
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {

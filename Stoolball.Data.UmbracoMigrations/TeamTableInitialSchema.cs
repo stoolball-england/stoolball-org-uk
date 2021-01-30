@@ -1,10 +1,11 @@
 ﻿using System;
 using NPoco;
+using Stoolball.Data.SqlServer;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
-    [TableName(Constants.Tables.Team)]
+    [TableName(Tables.Team)]
     [PrimaryKey(nameof(TeamId), AutoIncrement = false)]
     [ExplicitColumns]
     public class TeamTableInitialSchema

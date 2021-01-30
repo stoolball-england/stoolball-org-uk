@@ -17,13 +17,13 @@ namespace Stoolball.Data.UmbracoMigrations
         {
             Logger.Debug<FallOfWicketAddTable>("Running migration {MigrationStep}", typeof(FallOfWicketAddTable).Name);
 
-            if (TableExists(Constants.Tables.FallOfWicket) == false)
+            if (TableExists(Tables.FallOfWicket) == false)
             {
                 Create.Table<FallOfWicketTableInitialSchema>().Do();
             }
             else
             {
-                Logger.Debug<FallOfWicketAddTable>("The database table {DbTable} already exists, skipping", Constants.Tables.FallOfWicket);
+                Logger.Debug<FallOfWicketAddTable>("The database table {DbTable} already exists, skipping", Tables.FallOfWicket);
             }
         }
     }

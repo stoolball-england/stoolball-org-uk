@@ -5,22 +5,22 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
-    [TableName(Tables.SchoolVersion)]
-    [PrimaryKey(nameof(SchoolVersionId), AutoIncrement = false)]
+    [TableName(Tables.CompetitionVersion)]
+    [PrimaryKey(nameof(CompetitionVersionId), AutoIncrement = false)]
     [ExplicitColumns]
-    public class SchoolVersionTableInitialSchema
+    public class CompetitionVersionTableInitialSchema
     {
         [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
-        [Column(nameof(SchoolVersionId))]
-        public Guid SchoolVersionId { get; set; }
+        [Column(nameof(CompetitionVersionId))]
+        public Guid CompetitionVersionId { get; set; }
 
-        [Column(nameof(SchoolId))]
-        [ForeignKey(typeof(SchoolTableInitialSchema), Column = nameof(SchoolTableInitialSchema.SchoolId))]
+        [Column(nameof(CompetitionId))]
+        [ForeignKey(typeof(CompetitionTableInitialSchema), Column = nameof(CompetitionTableInitialSchema.CompetitionId))]
         [Index(IndexTypes.Clustered)]
-        public Guid SchoolId { get; set; }
+        public Guid CompetitionId { get; set; }
 
-        [Column(nameof(SchoolName))]
-        public string SchoolName { get; set; }
+        [Column(nameof(CompetitionName))]
+        public string CompetitionName { get; set; }
 
         [Column(nameof(ComparableName))]
         public string ComparableName { get; set; }

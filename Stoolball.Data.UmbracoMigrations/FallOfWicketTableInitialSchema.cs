@@ -5,7 +5,7 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
-    [TableName(Constants.Tables.FallOfWicket)]
+    [TableName(Tables.FallOfWicket)]
     [PrimaryKey(nameof(FallOfWicketId), AutoIncrement = false)]
     [ExplicitColumns]
     public class FallOfWicketTableInitialSchema

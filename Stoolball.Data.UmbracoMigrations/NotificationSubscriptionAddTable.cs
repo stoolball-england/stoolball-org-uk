@@ -17,13 +17,13 @@ namespace Stoolball.Data.UmbracoMigrations
         {
             Logger.Debug<NotificationSubscriptionAddTable>("Running migration {MigrationStep}", typeof(NotificationSubscriptionAddTable).Name);
 
-            if (TableExists(Constants.Tables.NotificationSubscription) == false)
+            if (TableExists(Tables.NotificationSubscription) == false)
             {
                 Create.Table<NotificationSubscriptionTableInitialSchema>().Do();
             }
             else
             {
-                Logger.Debug<NotificationSubscriptionAddTable>("The database table {DbTable} already exists, skipping", Constants.Tables.NotificationSubscription);
+                Logger.Debug<NotificationSubscriptionAddTable>("The database table {DbTable} already exists, skipping", Tables.NotificationSubscription);
             }
         }
     }

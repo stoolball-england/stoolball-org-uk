@@ -9,7 +9,6 @@ using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer
 {
@@ -46,7 +45,7 @@ namespace Stoolball.Data.SqlServer
                             ml.MatchLocationId, ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
                             ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
                             s.SeasonRoute, s.FromYear, s.UntilYear,
-                            co.CompetitionName
+                            cv.CompetitionName
                             FROM {Tables.Tournament} AS tourney
                             LEFT JOIN {Tables.TournamentTeam} AS tt ON tourney.TournamentId = tt.TournamentId
                             LEFT JOIN {Tables.Team} AS t ON tt.TeamId = t.TeamId
@@ -54,9 +53,10 @@ namespace Stoolball.Data.SqlServer
                             LEFT JOIN {Tables.MatchLocation} AS ml ON tourney.MatchLocationId = ml.MatchLocationId
                             LEFT JOIN {Tables.TournamentSeason} AS ts ON tourney.TournamentId = ts.TournamentId
                             LEFT JOIN {Tables.Season} AS s ON ts.SeasonId = s.SeasonId
-                            LEFT JOIN {Tables.Competition} AS co ON s.CompetitionId = co.CompetitionId
+                            LEFT JOIN {Tables.CompetitionVersion} AS cv ON s.CompetitionId = cv.CompetitionId
                             WHERE LOWER(tourney.TournamentRoute) = @Route
-                            AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)";
+                            AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                            AND cv.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = s.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)";
 
                 var tournaments = await connection.QueryAsync<Tournament, TeamInTournament, Team, MatchLocation, Season, Competition, Tournament>(sql,
                     (tournament, teamInTournament, team, tournamentLocation, season, competition) =>
@@ -81,12 +81,12 @@ namespace Stoolball.Data.SqlServer
                     tournamentToReturn.Teams = tournaments.Select(match => match.Teams.SingleOrDefault())
                         .OfType<TeamInTournament>()
                         .Distinct(new TeamInTournamentEqualityComparer())
-                        .OrderBy(x => x.Team.TeamName)
+                        .OrderBy(x => x.Team.ComparableName())
                         .ToList();
                     tournamentToReturn.Seasons = tournaments.Select(tournament => tournament.Seasons.SingleOrDefault())
                         .OfType<Season>()
                         .Distinct(new SeasonEqualityComparer())
-                        .OrderBy(x => x.Competition.CompetitionName)
+                        .OrderBy(x => x.Competition.ComparableName())
                         .ToList();
                 }
 

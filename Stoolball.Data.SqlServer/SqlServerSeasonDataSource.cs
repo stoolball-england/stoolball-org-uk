@@ -9,7 +9,6 @@ using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer
 {
@@ -42,22 +41,25 @@ namespace Stoolball.Data.SqlServer
             {
                 var (where, parameters) = BuildWhereClause(competitionQuery);
 
-                //LEFT JOIN {Tables.SeasonTeam} AS st2 ON s2.SeasonId = st2.SeasonId
                 var sql = $@"SELECT s2.SeasonId, s2.FromYear, s2.UntilYear,
-                            co2.CompetitionName
+                            cv2.CompetitionName
                             FROM {Tables.Season} AS s2 
                             INNER JOIN {Tables.Competition} AS co2 ON co2.CompetitionId = s2.CompetitionId
+                            INNER JOIN {Tables.CompetitionVersion} AS cv2 ON cv2.CompetitionId = s2.CompetitionId
                             WHERE s2.SeasonId IN(
                                 SELECT s.SeasonId
                                 FROM {Tables.Season} AS s
                                 INNER JOIN {Tables.Competition} AS co ON co.CompetitionId = s.CompetitionId
+                                INNER JOIN {Tables.CompetitionVersion} cv ON co.CompetitionId = cv.CompetitionId
                                 {where}
+                                AND cv.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = co.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                 ORDER BY CASE WHEN co.UntilYear IS NULL THEN 0
-                                          WHEN co.UntilYear IS NOT NULL THEN 1 END, s.FromYear DESC, s.UntilYear DESC, co.CompetitionName
+                                          WHEN co.UntilYear IS NOT NULL THEN 1 END, s.FromYear DESC, s.UntilYear DESC, cv.ComparableName
                                 OFFSET {(competitionQuery.PageNumber - 1) * competitionQuery.PageSize} ROWS FETCH NEXT {competitionQuery.PageSize} ROWS ONLY
                             )
+                            AND cv2.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = s2.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                             ORDER BY CASE WHEN co2.UntilYear IS NULL THEN 0
-                                          WHEN co2.UntilYear IS NOT NULL THEN 1 END, s2.FromYear DESC, s2.UntilYear DESC, co2.CompetitionName";
+                                          WHEN co2.UntilYear IS NOT NULL THEN 1 END, s2.FromYear DESC, s2.UntilYear DESC, cv2.ComparableName";
 
                 var seasons = await connection.QueryAsync<Season, Competition, Season>(sql,
                     (season, competition) =>
@@ -89,7 +91,7 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@MatchTypes", competitionQuery.MatchTypes.Select(x => x.ToString()));
             }
 
-            return (where.Count > 0 ? $@"WHERE " + string.Join(" AND ", where) : string.Empty, parameters);
+            return (where.Count > 0 ? $@"WHERE " + string.Join(" AND ", where) : "WHERE 1=1", parameters); // There must always be a WHERE clause so it can be appended to
         }
 
         /// <summary>
@@ -111,12 +113,14 @@ namespace Stoolball.Data.SqlServer
             {
                 var seasons = await connection.QueryAsync<Season, Competition, string, Season>(
                     $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Results, s.SeasonRoute, s.EnableTournaments, s.PlayersPerTeam, s.Overs,
-                            co.CompetitionName, co.PlayerType, co.UntilYear, co.CompetitionRoute, co.MemberGroupName,
+                            cv.CompetitionName, co.PlayerType, co.UntilYear, co.CompetitionRoute, co.MemberGroupName,
                             smt.MatchType
                             FROM {Tables.Season} AS s 
                             INNER JOIN {Tables.Competition} AS co ON co.CompetitionId = s.CompetitionId
+                            INNER JOIN {Tables.CompetitionVersion} AS cv ON co.CompetitionId = cv.CompetitionId
                             LEFT JOIN {Tables.SeasonMatchType} AS smt ON s.SeasonId = smt.SeasonId
-                            WHERE LOWER(s.SeasonRoute) = @Route",
+                            WHERE LOWER(s.SeasonRoute) = @Route
+                            AND cv.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = co.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)",
                     (season, competition, matchType) =>
                     {
                         season.Competition = competition;
@@ -153,7 +157,7 @@ namespace Stoolball.Data.SqlServer
                 var seasons = await connection.QueryAsync<Season, Competition, Season, TeamInSeason, Team, string, Season>(
                     $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Introduction, s.PlayersPerTeam, s.Overs, s.EnableTournaments, s.ResultsTableType, 
                             s.EnableLastPlayerBatsOn, s.EnableBonusOrPenaltyRuns, s.EnableRunsScored, s.EnableRunsConceded, s.Results, s.SeasonRoute,
-                            co.CompetitionName, co.PlayerType, co.Introduction, co.UntilYear, co.PublicContactDetails, co.Website, 
+                            cv.CompetitionName, co.PlayerType, co.Introduction, co.UntilYear, co.PublicContactDetails, co.Website, 
                             co.Facebook, co.Twitter, co.Instagram, co.YouTube, co.CompetitionRoute, co.MemberGroupName,
                             s2.SeasonId, s2.FromYear, s2.UntilYear, s2.SeasonRoute,
                             st.WithdrawnDate,
@@ -161,6 +165,7 @@ namespace Stoolball.Data.SqlServer
                             mt.MatchType
                             FROM {Tables.Season} AS s 
                             INNER JOIN {Tables.Competition} AS co ON co.CompetitionId = s.CompetitionId
+                            INNER JOIN {Tables.CompetitionVersion} cv ON co.CompetitionId = cv.CompetitionId
                             LEFT JOIN {Tables.Season} AS s2 ON co.CompetitionId = s2.CompetitionId AND NOT s2.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.SeasonTeam} AS st ON st.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.Team} AS t ON t.TeamId = st.TeamId
@@ -168,6 +173,7 @@ namespace Stoolball.Data.SqlServer
                             LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
                             WHERE LOWER(s.SeasonRoute) = @Route
                             AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                            AND cv.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = co.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                             ORDER BY s2.FromYear DESC, s2.UntilYear ASC",
                     (season, competition, anotherSeasonInTheCompetition, teamInSeason, team, matchType) =>
                     {
@@ -215,7 +221,7 @@ namespace Stoolball.Data.SqlServer
                         .GroupBy(teamInSeason => teamInSeason?.Team.TeamId)
                         .Select(duplicateTeamInSeason => duplicateTeamInSeason.First())
                         .OfType<TeamInSeason>()
-                        .OrderBy(team => team.Team.TeamName)
+                        .OrderBy(team => team.Team.ComparableName())
                         .ToList();
                 }
 

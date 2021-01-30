@@ -128,16 +128,15 @@ namespace Stoolball.Data.SqlServer
                     while (count > 0);
 
                     await connection.ExecuteAsync(
-                        $@"INSERT INTO {Tables.Competition} (CompetitionId, CompetitionName, FromYear, UntilYear, PlayerType, 
+                        $@"INSERT INTO {Tables.Competition} (CompetitionId, FromYear, UntilYear, PlayerType, 
                                 Introduction, PublicContactDetails, PrivateContactDetails, Facebook, Twitter, Instagram, YouTube, Website, CompetitionRoute, 
                                 MemberGroupKey, MemberGroupName) 
-                                VALUES (@CompetitionId, @CompetitionName, @FromYear, @UntilYear, @PlayerType, @Introduction, 
+                                VALUES (@CompetitionId, @FromYear, @UntilYear, @PlayerType, @Introduction, 
                                 @PublicContactDetails, @PrivateContactDetails, @Facebook, @Twitter, @Instagram, @YouTube, @Website, @CompetitionRoute, 
                                 @MemberGroupKey, @MemberGroupName)",
                         new
                         {
                             auditableCompetition.CompetitionId,
-                            auditableCompetition.CompetitionName,
                             auditableCompetition.FromYear,
                             auditableCompetition.UntilYear,
                             auditableCompetition.PlayerType,
@@ -153,6 +152,17 @@ namespace Stoolball.Data.SqlServer
                             auditableCompetition.MemberGroupKey,
                             auditableCompetition.MemberGroupName
                         }, transaction).ConfigureAwait(false);
+
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.CompetitionVersion} 
+                                (CompetitionVersionId, CompetitionId, CompetitionName, ComparableName, FromDate) VALUES (@CompetitionVersionId, @CompetitionId, @CompetitionName, @ComparableName, @FromDate)",
+                       new
+                       {
+                           CompetitionVersionId = Guid.NewGuid(),
+                           auditableCompetition.CompetitionId,
+                           auditableCompetition.CompetitionName,
+                           ComparableName = auditableCompetition.ComparableName(),
+                           FromDate = DateTime.UtcNow.Date
+                       }, transaction).ConfigureAwait(false);
 
                     var redacted = CreateRedactedCopy(auditableCompetition);
                     await _auditRepository.CreateAudit(new AuditRecord
@@ -224,7 +234,6 @@ namespace Stoolball.Data.SqlServer
 
                     await connection.ExecuteAsync(
                         $@"UPDATE {Tables.Competition} SET
-                                CompetitionName = @CompetitionName,
                                 FromYear = @FromYear,
                                 UntilYear = @UntilYear,
                                 PlayerType = @PlayerType, 
@@ -240,7 +249,6 @@ namespace Stoolball.Data.SqlServer
 						        WHERE CompetitionId = @CompetitionId",
                         new
                         {
-                            auditableCompetition.CompetitionName,
                             auditableCompetition.FromYear,
                             auditableCompetition.UntilYear,
                             auditableCompetition.PlayerType,
@@ -255,6 +263,15 @@ namespace Stoolball.Data.SqlServer
                             auditableCompetition.CompetitionRoute,
                             auditableCompetition.CompetitionId
                         }, transaction).ConfigureAwait(false);
+
+                    await connection.ExecuteAsync($"UPDATE {Tables.CompetitionVersion} SET CompetitionName = @CompetitionName, ComparableName = @ComparableName WHERE CompetitionId = @CompetitionId",
+                        new
+                        {
+                            auditableCompetition.CompetitionName,
+                            ComparableName = auditableCompetition.ComparableName(),
+                            auditableCompetition.CompetitionId
+                        },
+                        transaction).ConfigureAwait(false);
 
                     if (competition.CompetitionRoute != auditableCompetition.CompetitionRoute)
                     {

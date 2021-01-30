@@ -5,7 +5,7 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
-    [TableName(Constants.Tables.NotificationSubscription)]
+    [TableName(Tables.NotificationSubscription)]
     [PrimaryKey(nameof(NotificationSubscriptionId), AutoIncrement = false)]
     [ExplicitColumns]
     public class NotificationSubscriptionTableInitialSchema
