@@ -54,7 +54,8 @@
 
 <div class="form-group">
     @Html.LabelFor(m => Model.Team.AgeRangeUpper, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
-    @Html.TextBoxFor(m => Model.Team.AgeRangeUpper, new { @class = "form-control", aria_describedby = "age-upper", @type = "number" })
+    <p class="form-text" id="age-upper-help"><small>For junior teams or teams representing an age group. For most adult teams, leave this blank.</small></p>
+    @Html.TextBoxFor(m => Model.Team.AgeRangeUpper, new { @class = "form-control", aria_describedby = "age-upper age-upper-help", @type = "number" })
     @Html.ValidationMessageFor(m => Model.Team.AgeRangeUpper, null, new { id = "age-upper" })
 </div>
 
