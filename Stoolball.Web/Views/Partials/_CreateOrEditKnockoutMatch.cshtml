@@ -20,7 +20,7 @@ else
 <div class="form-group">
     @Html.LabelFor(m => Model.MatchName, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     <p class="form-text" id="match-name-help"><small>For 'Semi-final', 'Cup final' or similar matches. For most matches, leave this blank.</small></p>
-    @Html.TextBoxFor(m => Model.MatchName, new { @class = "form-control", aria_describedby = "match-name match-name-help" })
+    @Html.TextBox(nameof(Model.MatchDate), Model.MatchDate.HasValue ? Model.MatchDate.Value.LocalDateTime.ToString("yyyy-MM-dd") : string.Empty, new { @class = "form-control", aria_describedby = "match-name match-name-help" })
     @Html.ValidationMessageFor(m => Model.MatchName, null, new { id = "match-name" })
 </div>
 

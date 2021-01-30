@@ -14,7 +14,7 @@
 
 <div class="form-group">
     @Html.LabelFor(m => Model.TournamentDate)
-    @Html.TextBoxFor(m => Model.TournamentDate, "{0:yyyy-MM-dd}", new { @type = "date", @class = "form-control", required = "required", aria_describedby = "match-date" })
+    @Html.TextBox(nameof(Model.TournamentDate), Model.TournamentDate.HasValue ? Model.TournamentDate.Value.LocalDateTime.ToString("yyyy-MM-dd") : string.Empty, new { @type = "date", @class = "form-control", required = "required", aria_describedby = "match-date" })
     @Html.ValidationMessageFor(m => Model.TournamentDate, null, new { id = "match-date" })
 </div>
 
