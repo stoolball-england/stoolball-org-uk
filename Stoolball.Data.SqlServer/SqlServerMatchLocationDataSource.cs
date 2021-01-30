@@ -8,7 +8,6 @@ using Dapper;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Teams;
-using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer
 {
@@ -71,7 +70,7 @@ namespace Stoolball.Data.SqlServer
                             LEFT JOIN {Tables.TeamVersion} AS tn ON t.TeamId = tn.TeamId
                             WHERE LOWER(ml.MatchLocationRoute) = @Route
                             AND tml.UntilDate IS NULL                            
-                            AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                            AND (tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR tn.TeamVersionId IS NULL)
                             ORDER BY CASE WHEN tn.UntilDate IS NULL THEN 0 ELSE 1 END, tn.TeamName",
                     (matchLocation, team) =>
                     {
