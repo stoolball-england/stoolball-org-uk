@@ -128,17 +128,13 @@ namespace Stoolball.Data.SqlServer
                     while (count > 0);
 
                     await connection.ExecuteAsync(
-                        $@"INSERT INTO {Tables.Competition} (CompetitionId, FromYear, UntilYear, PlayerType, 
-                                Introduction, PublicContactDetails, PrivateContactDetails, Facebook, Twitter, Instagram, YouTube, Website, CompetitionRoute, 
-                                MemberGroupKey, MemberGroupName) 
-                                VALUES (@CompetitionId, @FromYear, @UntilYear, @PlayerType, @Introduction, 
-                                @PublicContactDetails, @PrivateContactDetails, @Facebook, @Twitter, @Instagram, @YouTube, @Website, @CompetitionRoute, 
-                                @MemberGroupKey, @MemberGroupName)",
+                        $@"INSERT INTO {Tables.Competition} (CompetitionId, PlayerType, Introduction, PublicContactDetails, PrivateContactDetails, 
+                                Facebook, Twitter, Instagram, YouTube, Website, CompetitionRoute, MemberGroupKey, MemberGroupName) 
+                                VALUES (@CompetitionId, @PlayerType, @Introduction, @PublicContactDetails, @PrivateContactDetails, 
+                                @Facebook, @Twitter, @Instagram, @YouTube, @Website, @CompetitionRoute, @MemberGroupKey, @MemberGroupName)",
                         new
                         {
                             auditableCompetition.CompetitionId,
-                            auditableCompetition.FromYear,
-                            auditableCompetition.UntilYear,
                             auditableCompetition.PlayerType,
                             auditableCompetition.Introduction,
                             auditableCompetition.PublicContactDetails,
@@ -154,14 +150,16 @@ namespace Stoolball.Data.SqlServer
                         }, transaction).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.CompetitionVersion} 
-                                (CompetitionVersionId, CompetitionId, CompetitionName, ComparableName, FromDate) VALUES (@CompetitionVersionId, @CompetitionId, @CompetitionName, @ComparableName, @FromDate)",
+                                (CompetitionVersionId, CompetitionId, CompetitionName, ComparableName, FromDate, UntilDate) 
+                                VALUES (@CompetitionVersionId, @CompetitionId, @CompetitionName, @ComparableName, @FromDate, @UntilDate)",
                        new
                        {
                            CompetitionVersionId = Guid.NewGuid(),
                            auditableCompetition.CompetitionId,
                            auditableCompetition.CompetitionName,
                            ComparableName = auditableCompetition.ComparableName(),
-                           FromDate = DateTime.UtcNow.Date
+                           FromDate = DateTime.UtcNow.Date,
+                           UntilDate = auditableCompetition.UntilYear.HasValue ? new DateTime(auditableCompetition.UntilYear.Value, 12, 31) : (DateTime?)null
                        }, transaction).ConfigureAwait(false);
 
                     var redacted = CreateRedactedCopy(auditableCompetition);
@@ -234,8 +232,6 @@ namespace Stoolball.Data.SqlServer
 
                     await connection.ExecuteAsync(
                         $@"UPDATE {Tables.Competition} SET
-                                FromYear = @FromYear,
-                                UntilYear = @UntilYear,
                                 PlayerType = @PlayerType, 
                                 Introduction = @Introduction, 
                                 PublicContactDetails = @PublicContactDetails, 
@@ -249,8 +245,6 @@ namespace Stoolball.Data.SqlServer
 						        WHERE CompetitionId = @CompetitionId",
                         new
                         {
-                            auditableCompetition.FromYear,
-                            auditableCompetition.UntilYear,
                             auditableCompetition.PlayerType,
                             auditableCompetition.Introduction,
                             auditableCompetition.PublicContactDetails,
@@ -264,11 +258,16 @@ namespace Stoolball.Data.SqlServer
                             auditableCompetition.CompetitionId
                         }, transaction).ConfigureAwait(false);
 
-                    await connection.ExecuteAsync($"UPDATE {Tables.CompetitionVersion} SET CompetitionName = @CompetitionName, ComparableName = @ComparableName WHERE CompetitionId = @CompetitionId",
+                    await connection.ExecuteAsync($@"UPDATE {Tables.CompetitionVersion} SET 
+                            CompetitionName = @CompetitionName, 
+                            ComparableName = @ComparableName,
+                            UntilDate = @UntilDate
+                            WHERE CompetitionId = @CompetitionId",
                         new
                         {
                             auditableCompetition.CompetitionName,
                             ComparableName = auditableCompetition.ComparableName(),
+                            UntilDate = auditableCompetition.UntilYear.HasValue ? new DateTime(auditableCompetition.UntilYear.Value, 12, 31) : (DateTime?)null,
                             auditableCompetition.CompetitionId
                         },
                         transaction).ConfigureAwait(false);

@@ -215,15 +215,18 @@ namespace Stoolball.Data.SqlServer
                     if (previousSeason != null)
                     {
                         var teamIds = await connection.QueryAsync<Guid>(
-                            $@"SELECT t.TeamId FROM { Tables.SeasonTeam } st INNER JOIN { Tables.Team } t ON st.TeamId = t.TeamId 
+                            $@"SELECT DISTINCT t.TeamId 
+                                FROM { Tables.SeasonTeam } st 
+                                INNER JOIN { Tables.Team } t ON st.TeamId = t.TeamId 
+                                INNER JOIN { Tables.TeamVersion } tv ON t.TeamId = tv.TeamId
                                 WHERE st.SeasonId = @SeasonId
                                 AND 
                                 st.WithdrawnDate IS NULL
-                                AND (t.UntilYear IS NULL OR t.UntilYear <= @FromYear)",
+                                AND (tv.UntilDate IS NULL OR tv.UntilDate <= @FromDate)",
                             new
                             {
                                 previousSeason.SeasonId,
-                                auditableSeason.FromYear
+                                FromDate = new DateTime(auditableSeason.FromYear, 12, 31)
                             },
                             transaction).ConfigureAwait(false);
 

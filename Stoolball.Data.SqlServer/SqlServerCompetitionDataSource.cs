@@ -38,7 +38,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var competitions = await connection.QueryAsync<Competition, Season, string, Competition>(
-                    $@"SELECT co.CompetitionId, cv.CompetitionName, co.PlayerType, co.Introduction, co.FromYear, co.UntilYear, 
+                    $@"SELECT co.CompetitionId, cv.CompetitionName, co.PlayerType, co.Introduction, YEAR(cv.UntilDate) AS UntilYear, 
                             co.PublicContactDetails, co.PrivateContactDetails, co.Facebook, co.Twitter, co.Instagram, co.YouTube, co.Website, co.CompetitionRoute, 
                             co.MemberGroupKey, co.MemberGroupName,
                             s.SeasonRoute, s.FromYear, s.UntilYear, s.PlayersPerTeam, s.Overs, s.EnableTournaments, s.EnableLastPlayerBatsOn, s.EnableBonusOrPenaltyRuns,
@@ -110,7 +110,7 @@ namespace Stoolball.Data.SqlServer
             {
                 var (where, parameters) = BuildWhereClause(competitionQuery);
 
-                var sql = $@"SELECT co2.CompetitionId, cv2.CompetitionName, co2.CompetitionRoute, co2.UntilYear, co2.PlayerType,
+                var sql = $@"SELECT co2.CompetitionId, cv2.CompetitionName, co2.CompetitionRoute, YEAR(cv2.UntilDate) AS UntilYear, co2.PlayerType,
                             s2.SeasonRoute,
                             st2.TeamId
                             FROM {Tables.Competition} AS co2
@@ -120,15 +120,17 @@ namespace Stoolball.Data.SqlServer
                             WHERE co2.CompetitionId IN(
                                 SELECT co.CompetitionId
                                 FROM {Tables.Competition} AS co
+                                INNER JOIN {Tables.CompetitionVersion} AS cv ON co.CompetitionId = cv.CompetitionId
                                 {where}
-                                ORDER BY CASE WHEN co.UntilYear IS NULL THEN 0
-                                          WHEN co.UntilYear IS NOT NULL THEN 1 END, cv2.ComparableName
+                                AND cv.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = co.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                                ORDER BY CASE WHEN cv.UntilDate IS NULL THEN 0
+                                          WHEN cv.UntilDate IS NOT NULL THEN 1 END, cv2.ComparableName
                                 OFFSET {(competitionQuery.PageNumber - 1) * competitionQuery.PageSize} ROWS FETCH NEXT {competitionQuery.PageSize} ROWS ONLY
                             )
                             AND cv2.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = co2.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
-                            AND(s2.FromYear = (SELECT MAX(FromYear) FROM {Tables.Season} WHERE CompetitionId = co2.CompetitionId) OR s2.FromYear IS NULL)
-                            ORDER BY CASE WHEN co2.UntilYear IS NULL THEN 0
-                                          WHEN co2.UntilYear IS NOT NULL THEN 1 END, cv2.ComparableName";
+                            AND (s2.FromYear = (SELECT MAX(FromYear) FROM {Tables.Season} WHERE CompetitionId = co2.CompetitionId) OR s2.FromYear IS NULL)
+                            ORDER BY CASE WHEN cv2.UntilDate IS NULL THEN 0
+                                          WHEN cv2.UntilDate IS NOT NULL THEN 1 END, cv2.ComparableName";
 
                 var competitions = await connection.QueryAsync<Competition, Season, Team, Competition>(sql,
                     (competition, season, team) =>
@@ -174,7 +176,7 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@Query", $"%{competitionQuery.Query}%");
             }
 
-            return (where.Count > 0 ? $@"WHERE " + string.Join(" AND ", where) : string.Empty, parameters);
+            return (where.Count > 0 ? $@"WHERE " + string.Join(" AND ", where) : "WHERE 1=1", parameters); // Ensure there's always a WHERE clause so that it can be appended to
         }
     }
 }

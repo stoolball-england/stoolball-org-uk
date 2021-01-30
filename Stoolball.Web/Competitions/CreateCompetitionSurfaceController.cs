@@ -37,7 +37,7 @@ namespace Stoolball.Web.Competitions
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
-        public async Task<ActionResult> CreateCompetition([Bind(Prefix = "Competition", Include = "CompetitionName,FromYear,UntilYear,PlayerType,Facebook,Twitter,Instagram,YouTube,Website")] Competition competition)
+        public async Task<ActionResult> CreateCompetition([Bind(Prefix = "Competition", Include = "CompetitionName,UntilYear,PlayerType,Facebook,Twitter,Instagram,YouTube,Website")] Competition competition)
         {
             if (competition is null)
             {

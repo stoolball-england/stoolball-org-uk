@@ -51,8 +51,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 {
                     await DeleteSeasons(transaction).ConfigureAwait(false);
 
-                    await connection.ExecuteAsync($"TRUNCATE TABLE {Tables.CompetitionVersion}", null, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"TRUNCATE TABLE {Tables.Competition}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.CompetitionVersion}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.Competition}", null, transaction).ConfigureAwait(false);
 
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/competitions/", transaction).ConfigureAwait(false);
 
@@ -92,14 +92,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     while (count > 0);
 
                     _auditHistoryBuilder.BuildInitialAuditHistory(competition, migratedCompetition, nameof(SqlServerCompetitionDataMigrator), CreateRedactedCopyOfCompetition);
-                    migratedCompetition.FromYear = competition.History[0].AuditDate.Year;
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.Competition}
 						(CompetitionId, MigratedCompetitionId, Introduction, Twitter, Facebook, Instagram, PublicContactDetails, Website, 
-						 PlayerType, FromYear, UntilYear, MemberGroupKey, MemberGroupName, CompetitionRoute)
+						 PlayerType, MemberGroupKey, MemberGroupName, CompetitionRoute)
 						VALUES 
                         (@CompetitionId, @MigratedCompetitionId, @Introduction, @Twitter, @Facebook, @Instagram, @PublicContactDetails, 
-                        @Website, @PlayerType, @FromYear, @UntilYear, @MemberGroupKey, @MemberGroupName, @CompetitionRoute)",
+                        @Website, @PlayerType, @MemberGroupKey, @MemberGroupName, @CompetitionRoute)",
                     new
                     {
                         migratedCompetition.CompetitionId,
@@ -111,8 +110,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         migratedCompetition.PublicContactDetails,
                         migratedCompetition.Website,
                         PlayerType = migratedCompetition.PlayerType.ToString(),
-                        migratedCompetition.FromYear,
-                        migratedCompetition.UntilYear,
                         migratedCompetition.MemberGroupKey,
                         migratedCompetition.MemberGroupName,
                         migratedCompetition.CompetitionRoute
@@ -120,14 +117,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     transaction).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.CompetitionVersion} 
-						(CompetitionVersionId, CompetitionId, CompetitionName, ComparableName, FromDate) VALUES (@CompetitionVersionId, @CompetitionId, @CompetitionName, @ComparableName, @FromDate)",
+						(CompetitionVersionId, CompetitionId, CompetitionName, ComparableName, FromDate, UntilDate) VALUES (@CompetitionVersionId, @CompetitionId, @CompetitionName, @ComparableName, @FromDate, @UntilDate)",
                         new
                         {
                             CompetitionVersionId = Guid.NewGuid(),
                             migratedCompetition.CompetitionId,
                             migratedCompetition.CompetitionName,
                             ComparableName = migratedCompetition.ComparableName(),
-                            FromDate = migratedCompetition.History[0].AuditDate
+                            FromDate = migratedCompetition.History[0].AuditDate,
+                            UntilDate = migratedCompetition.UntilYear.HasValue ? new DateTime(migratedCompetition.UntilYear.Value, 12, 31) : (DateTime?)null
                         },
                         transaction).ConfigureAwait(false);
 

@@ -53,13 +53,13 @@ namespace Stoolball.Data.SqlServer
                                 INNER JOIN {Tables.CompetitionVersion} cv ON co.CompetitionId = cv.CompetitionId
                                 {where}
                                 AND cv.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = co.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
-                                ORDER BY CASE WHEN co.UntilYear IS NULL THEN 0
-                                          WHEN co.UntilYear IS NOT NULL THEN 1 END, s.FromYear DESC, s.UntilYear DESC, cv.ComparableName
+                                ORDER BY CASE WHEN cv.UntilDate IS NULL THEN 0
+                                          WHEN cv.UntilDate IS NOT NULL THEN 1 END, s.FromYear DESC, s.UntilYear DESC, cv.ComparableName
                                 OFFSET {(competitionQuery.PageNumber - 1) * competitionQuery.PageSize} ROWS FETCH NEXT {competitionQuery.PageSize} ROWS ONLY
                             )
                             AND cv2.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = s2.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
-                            ORDER BY CASE WHEN co2.UntilYear IS NULL THEN 0
-                                          WHEN co2.UntilYear IS NOT NULL THEN 1 END, s2.FromYear DESC, s2.UntilYear DESC, cv2.ComparableName";
+                            ORDER BY CASE WHEN cv2.UntilDate IS NULL THEN 0
+                                          WHEN cv2.UntilDate IS NOT NULL THEN 1 END, s2.FromYear DESC, s2.UntilYear DESC, cv2.ComparableName";
 
                 var seasons = await connection.QueryAsync<Season, Competition, Season>(sql,
                     (season, competition) =>
@@ -113,7 +113,7 @@ namespace Stoolball.Data.SqlServer
             {
                 var seasons = await connection.QueryAsync<Season, Competition, string, Season>(
                     $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Results, s.SeasonRoute, s.EnableTournaments, s.PlayersPerTeam, s.Overs,
-                            cv.CompetitionName, co.PlayerType, co.UntilYear, co.CompetitionRoute, co.MemberGroupName,
+                            cv.CompetitionName, co.PlayerType, YEAR(cv.UntilDate) AS UntilYear, co.CompetitionRoute, co.MemberGroupName,
                             smt.MatchType
                             FROM {Tables.Season} AS s 
                             INNER JOIN {Tables.Competition} AS co ON co.CompetitionId = s.CompetitionId
@@ -157,7 +157,7 @@ namespace Stoolball.Data.SqlServer
                 var seasons = await connection.QueryAsync<Season, Competition, Season, TeamInSeason, Team, string, Season>(
                     $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Introduction, s.PlayersPerTeam, s.Overs, s.EnableTournaments, s.ResultsTableType, 
                             s.EnableLastPlayerBatsOn, s.EnableBonusOrPenaltyRuns, s.EnableRunsScored, s.EnableRunsConceded, s.Results, s.SeasonRoute,
-                            cv.CompetitionName, co.PlayerType, co.Introduction, co.UntilYear, co.PublicContactDetails, co.Website, 
+                            cv.CompetitionName, co.PlayerType, co.Introduction, YEAR(cv.UntilDate) AS UntilYear, co.PublicContactDetails, co.Website, 
                             co.Facebook, co.Twitter, co.Instagram, co.YouTube, co.CompetitionRoute, co.MemberGroupName,
                             s2.SeasonId, s2.FromYear, s2.UntilYear, s2.SeasonRoute,
                             st.WithdrawnDate,

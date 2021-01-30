@@ -13,13 +13,6 @@
 </div>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.Competition.FromYear, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
-    <p class="form-text" id="from-help"><small>If you're not sure, an estimate is fine.</small></p>
-    @Html.TextBoxFor(m => Model.Competition.FromYear, new { @class = "form-control", aria_describedby = "from-year from-help", @type = "number" })
-    @Html.ValidationMessageFor(m => Model.Competition.FromYear, null, new { id = "from-year" })
-</div>
-
-<div class="form-group">
     @Html.LabelFor(m => Model.Competition.UntilYear, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     <p class="form-text" id="until-help"><small>If you're not sure, an estimate is fine.</small></p>
     @Html.TextBoxFor(m => Model.Competition.UntilYear, new { @class = "form-control", aria_describedby = "until-year until-help", @type = "number" })

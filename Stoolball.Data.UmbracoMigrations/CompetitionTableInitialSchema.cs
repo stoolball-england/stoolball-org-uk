@@ -53,16 +53,6 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public string YouTube { get; set; }
 
-        [Column(nameof(FromYear))]
-        [Index(IndexTypes.NonClustered)]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public int? FromYear { get; set; }
-
-        [Column(nameof(UntilYear))]
-        [Index(IndexTypes.NonClustered)]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public int? UntilYear { get; set; }
-
         [Column(nameof(PlayerType))]
         [Index(IndexTypes.NonClustered)]
         public string PlayerType { get; set; }
