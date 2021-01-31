@@ -1,5 +1,5 @@
-﻿using Stoolball.Teams;
-using System;
+﻿using System;
+using Stoolball.Teams;
 
 namespace Stoolball.Matches
 {
@@ -13,5 +13,6 @@ namespace Stoolball.Matches
 
         public bool? WonToss { get; set; }
         public bool? BattedFirst { get; set; }
+        public string PlayingAsTeamName { get; set; }
     }
 }

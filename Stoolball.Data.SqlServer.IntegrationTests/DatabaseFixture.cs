@@ -1,9 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Dapper;
-using static Stoolball.Constants;
+using Stoolball.Awards;
+using Stoolball.Clubs;
+using Stoolball.Competitions;
+using Stoolball.Matches;
+using Stoolball.MatchLocations;
+using Stoolball.Teams;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests
 {
@@ -13,6 +20,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         private readonly string _databaseLogPath;
 
         public IDatabaseConnectionFactory ConnectionFactory { get; private set; }
+
+        public Match MatchInThePastWithMinimalDetails { get; private set; }
+
+        public Match MatchInThePastWithFullDetails { get; private set; }
+        public Competition CompetitionWithMinimalDetails { get; private set; }
+        public MatchLocation MatchLocationWithMinimalDetails { get; private set; }
+        public Club ClubWithMinimalDetails { get; private set; }
+        public Team TeamWithMinimalDetails { get; private set; }
+
+        public List<Match> Matches { get; internal set; } = new List<Match>();
+        public List<Team> Teams { get; internal set; } = new List<Team>();
 
         public DatabaseFixture()
         {
@@ -24,7 +42,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
             try
             {
-
                 File.Copy(databaseToCopy, _databasePath);
             }
             catch (IOException)
@@ -35,56 +52,511 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             // Create a connection factory that connects to the database, and is accessible via a protected property by classes being tested
             ConnectionFactory = new IntegrationTestsDatabaseConnectionFactory(_databasePath);
 
-            // Clear down any existing stoolball data so that there's a consistent baseline for each test run
+            // Clear down any existing stoolball data and populate seed data so that there's a consistent baseline for each test run
+            SeedDatabase();
+        }
+
+        private void SeedDatabase()
+        {
+            var seedDataGenerator = new SeedDataGenerator();
             using (var connection = ConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
                 ClearStoolballData(connection);
+
+                CompetitionWithMinimalDetails = seedDataGenerator.CreateCompetitionWithMinimalDetails();
+
+                MatchLocationWithMinimalDetails = seedDataGenerator.CreateMatchLocationWithMinimalDetails();
+
+                ClubWithMinimalDetails = seedDataGenerator.CreateClubWithMinimalDetails();
+                CreateClubInDatabase(ClubWithMinimalDetails, connection);
+
+                TeamWithMinimalDetails = seedDataGenerator.CreateTeamWithMinimalDetails("Team minimal");
+                CreateTeamInDatabase(TeamWithMinimalDetails, connection);
+
+                MatchInThePastWithMinimalDetails = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
+                CreateMatchInDatabase(MatchInThePastWithMinimalDetails, connection);
+
+                MatchInThePastWithFullDetails = seedDataGenerator.CreateMatchInThePastWithFullDetails();
+                CreateMatchInDatabase(MatchInThePastWithFullDetails, connection);
+
+                Teams.AddRange(new[] { TeamWithMinimalDetails });
+                Matches.AddRange(new[] { MatchInThePastWithMinimalDetails, MatchInThePastWithFullDetails });
             }
         }
 
         private static void ClearStoolballData(IDbConnection connection)
         {
-            // This is the opposite of the order they're created in StoolballDataMigrationPlan
-            var tablesInDependencyOrder = new string[] {
+            // Only those which are not referenced as FK from another table can use TRUNCATE
+            var truncatableTables = new string[] {
                         Tables.NotificationSubscription,
                         Tables.Audit,
                         Tables.StatisticsPlayerMatch,
                         Tables.Comment,
                         Tables.BowlingFigures,
                         Tables.Over,
+                        Tables.OverSet,
                         Tables.FallOfWicket,
                         Tables.PlayerInnings,
                         Tables.AwardedTo,
+                        Tables.TournamentSeason,
+                        Tables.TournamentTeam,
+                        Tables.SeasonPointsAdjustment,
+                        Tables.SeasonTeam,
+                        Tables.TeamMatchLocation,
+                        Tables.TeamVersion,
+                        Tables.SeasonPointsRule,
+                        Tables.SeasonMatchType,
+                        Tables.CompetitionVersion,
+                        Tables.SchoolVersion,
+                        Tables.ClubVersion,
+                    };
+
+            foreach (var table in truncatableTables)
+            {
+                connection.Execute($"TRUNCATE TABLE {table}", commandTimeout: 60 * 10);
+            }
+
+            // For the remaining tables this is the opposite of the order they're created in StoolballDataMigrationPlan
+            var remainingTablesInDependencyOrder = new string[] {
                         Tables.MatchInnings,
                         Tables.MatchTeam,
                         Tables.Match,
-                        Tables.TournamentSeason,
-                        Tables.TournamentTeam,
                         Tables.Tournament,
-                        Tables.SeasonPointsAdjustment,
-                        Tables.SeasonTeam,
                         Tables.PlayerIdentity,
                         Tables.Player,
-                        Tables.TeamMatchLocation,
                         Tables.TeamVersion,
                         Tables.Team,
-                        Tables.SeasonPointsRule,
-                        Tables.SeasonMatchType,
                         Tables.Season,
                         Tables.Competition,
                         Tables.MatchLocation,
-                        Tables.SchoolVersion,
                         Tables.School,
-                        Tables.ClubVersion,
                         Tables.Club,
                         Tables.Award
                     };
 
-            foreach (var table in tablesInDependencyOrder)
+            foreach (var table in remainingTablesInDependencyOrder)
             {
-                connection.ExecuteAsync($"TRUNCATE TABLE {table}");
+                connection.Execute($"DELETE FROM {table}", commandTimeout: 60 * 10);
             }
+        }
+
+        private static void CreateClubInDatabase(Club club, IDbConnection connection)
+        {
+            connection.Execute($@"INSERT INTO {Tables.Club} 
+                    (ClubId, MemberGroupKey, MemberGroupName, ClubRoute)
+                    VALUES
+                    (@ClubId, @MemberGroupKey, @MemberGroupName, @ClubRoute)",
+                   new
+                   {
+                       club.ClubId,
+                       club.MemberGroupKey,
+                       club.MemberGroupName,
+                       club.ClubRoute
+                   });
+
+            connection.Execute($@"INSERT INTO {Tables.ClubVersion}
+                    (ClubVersionId, ClubId, ClubName, ComparableName, FromDate, UntilDate)
+                    VALUES
+                    (@ClubVersionId, @ClubId, @ClubName, @ComparableName, @FromDate, @UntilDate)",
+                    new
+                    {
+                        ClubVersionId = Guid.NewGuid(),
+                        club.ClubId,
+                        club.ClubName,
+                        ComparableName = club.ComparableName(),
+                        FromDate = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero),
+                        UntilDate = (DateTimeOffset?)null
+                    });
+        }
+
+        private static void CreateMatchInDatabase(Match match, IDbConnection connection)
+        {
+            if (match.MatchLocation != null)
+            {
+                CreateMatchLocationInDatabase(match.MatchLocation, connection);
+            }
+
+            if (match.Season != null)
+            {
+                CreateSeasonInDatabase(match.Season, connection);
+            }
+
+
+            connection.Execute($@"INSERT INTO {Tables.Match} 
+                    (MatchId, MatchName, UpdateMatchNameAutomatically, MatchType, PlayerType, StartTime, StartTimeIsKnown, MatchRoute, MatchLocationId, PlayersPerTeam, 
+                     EnableBonusOrPenaltyRuns, LastPlayerBatsOn, InningsOrderIsKnown, MatchResultType, MatchNotes, SeasonId, TournamentId, OrderInTournament, MemberKey)
+                    VALUES
+                    (@MatchId, @MatchName, @UpdateMatchNameAutomatically, @MatchType, @PlayerType, @StartTime, @StartTimeIsKnown, @MatchRoute, @MatchLocationId, @PlayersPerTeam, 
+                     @EnableBonusOrPenaltyRuns, @LastPlayerBatsOn, @InningsOrderIsKnown, @MatchResultType, @MatchNotes, @SeasonId, @TournamentId, @OrderInTournament, @MemberKey)", new
+            {
+
+                match.MatchId,
+                match.MatchName,
+                match.UpdateMatchNameAutomatically,
+                MatchType = match.MatchType.ToString(),
+                PlayerType = match.PlayerType.ToString(),
+                match.StartTime,
+                match.StartTimeIsKnown,
+                match.MatchRoute,
+                match.MatchLocation?.MatchLocationId,
+                match.PlayersPerTeam,
+                match.EnableBonusOrPenaltyRuns,
+                match.LastPlayerBatsOn,
+                match.InningsOrderIsKnown,
+                MatchResultType = match.MatchResultType?.ToString(),
+                match.MatchNotes,
+                match.Season?.SeasonId,
+                match.Tournament?.TournamentId,
+                match.OrderInTournament,
+                match.MemberKey
+            });
+
+            foreach (var teamInMatch in match.Teams)
+            {
+                CreateTeamInDatabase(teamInMatch.Team, connection);
+
+                connection.Execute($@"INSERT INTO {Tables.MatchTeam} 
+                    (MatchTeamId, TeamId, PlayingAsTeamName, MatchId, TeamRole, WonToss)
+                    VALUES
+                    (@MatchTeamId, @TeamId, @PlayingAsTeamName, @MatchId, @TeamRole, @WonToss)",
+                   new
+                   {
+                       teamInMatch.MatchTeamId,
+                       teamInMatch.Team.TeamId,
+                       teamInMatch.PlayingAsTeamName,
+                       match.MatchId,
+                       TeamRole = teamInMatch.TeamRole.ToString(),
+                       teamInMatch.WonToss
+                   });
+            }
+
+            foreach (var innings in match.MatchInnings)
+            {
+                connection.Execute($@"INSERT INTO {Tables.MatchInnings} 
+                    (MatchInningsId, MatchId, InningsOrderInMatch, BattingMatchTeamId, BowlingMatchTeamId, Byes, Wides, NoBalls, BonusOrPenaltyRuns, Runs, Wickets)
+                    VALUES
+                    (@MatchInningsId, @MatchId, @InningsOrderInMatch, @BattingMatchTeamId, @BowlingMatchTeamId, @Byes, @Wides, @NoBalls, @BonusOrPenaltyRuns, @Runs, @Wickets)",
+                    new
+                    {
+                        innings.MatchInningsId,
+                        match.MatchId,
+                        innings.InningsOrderInMatch,
+                        innings.BattingMatchTeamId,
+                        innings.BowlingMatchTeamId,
+                        innings.Byes,
+                        innings.Wides,
+                        innings.NoBalls,
+                        innings.BonusOrPenaltyRuns,
+                        innings.Runs,
+                        innings.Wickets
+                    });
+            }
+
+            var playerIdentities = new List<PlayerIdentity>();
+            playerIdentities.AddRange(match.Awards.Select(x => x.PlayerIdentity));
+            foreach (var innings in match.MatchInnings)
+            {
+                playerIdentities.AddRange(innings.PlayerInnings.Select(x => x.PlayerIdentity));
+                playerIdentities.AddRange(innings.PlayerInnings.Select(x => x.DismissedBy).OfType<PlayerIdentity>());
+                playerIdentities.AddRange(innings.PlayerInnings.Select(x => x.Bowler).OfType<PlayerIdentity>());
+                playerIdentities.AddRange(innings.OversBowled.Select(x => x.PlayerIdentity));
+                playerIdentities.AddRange(innings.BowlingFigures.Select(x => x.Bowler));
+            }
+            foreach (var playerIdentity in playerIdentities.Distinct(new PlayerIdentityEqualityComparer()))
+            {
+                CreatePlayerIdentityInDatabase(playerIdentity, connection);
+            }
+
+            foreach (var award in match.Awards)
+            {
+                connection.Execute($@"INSERT INTO {Tables.Award} 
+                    (AwardId, AwardName, AwardScope)
+                    VALUES
+                    (@AwardId, @AwardName, @AwardScope)",
+                  new
+                  {
+                      award.Award.AwardId,
+                      award.Award.AwardName,
+                      AwardScope = AwardScope.Match
+                  });
+
+                connection.Execute($@"INSERT INTO {Tables.AwardedTo} 
+                    (AwardedToId, AwardId, PlayerIdentityId, MatchId, Reason)
+                    VALUES
+                    (@AwardedToId, @AwardId, @PlayerIdentityId, @MatchId, @Reason)",
+                  new
+                  {
+                      award.AwardedToId,
+                      award.Award.AwardId,
+                      award.PlayerIdentity.PlayerIdentityId,
+                      match.MatchId,
+                      award.Reason
+                  });
+            }
+
+            foreach (var innings in match.MatchInnings)
+            {
+                foreach (var playerInnings in innings.PlayerInnings)
+                {
+                    connection.Execute($@"INSERT INTO {Tables.PlayerInnings} 
+                    (PlayerInningsId, MatchInningsId, PlayerIdentityId, BattingPosition, DismissalType, DismissedById, BowlerId, RunsScored, BallsFaced)
+                    VALUES
+                    (@PlayerInningsId, @MatchInningsId, @PlayerIdentityId, @BattingPosition, @DismissalType, @DismissedById, @BowlerId, @RunsScored, @BallsFaced)",
+                  new
+                  {
+                      playerInnings.PlayerInningsId,
+                      innings.MatchInningsId,
+                      playerInnings.PlayerIdentity.PlayerIdentityId,
+                      playerInnings.BattingPosition,
+                      DismissalType = playerInnings.DismissalType.ToString(),
+                      DismissedById = playerInnings.DismissedBy?.PlayerIdentityId,
+                      BowlerId = playerInnings.Bowler?.PlayerIdentityId,
+                      playerInnings.RunsScored,
+                      playerInnings.BallsFaced
+                  });
+                }
+
+                foreach (var overSet in innings.OverSets)
+                {
+                    connection.Execute($@"INSERT INTO {Tables.OverSet} 
+                    (OverSetId, MatchInningsId, OverSetNumber, Overs, BallsPerOver)
+                    VALUES
+                    (@OverSetId, @MatchInningsId, @OverSetNumber, @Overs, @BallsPerOver)",
+                    new
+                    {
+                        overSet.OverSetId,
+                        innings.MatchInningsId,
+                        overSet.OverSetNumber,
+                        overSet.Overs,
+                        overSet.BallsPerOver
+                    });
+                }
+
+                foreach (var overBowled in innings.OversBowled)
+                {
+                    connection.Execute($@"INSERT INTO {Tables.Over} 
+                    (OverId, MatchInningsId, PlayerIdentityId, OverNumber, BallsPerOver, BallsBowled, NoBalls, Wides, RunsConceded)
+                    VALUES
+                    (@OverId, @MatchInningsId, @PlayerIdentityId, @OverNumber, @BallsPerOver, @BallsBowled, @NoBalls, @Wides, @RunsConceded)",
+                  new
+                  {
+                      overBowled.OverId,
+                      innings.MatchInningsId,
+                      overBowled.PlayerIdentity.PlayerIdentityId,
+                      overBowled.OverNumber,
+                      overBowled.BallsPerOver,
+                      overBowled.BallsBowled,
+                      overBowled.NoBalls,
+                      overBowled.Wides,
+                      overBowled.RunsConceded
+                  });
+                }
+
+                var i = 1;
+                foreach (var bowlingFigures in innings.BowlingFigures)
+                {
+                    connection.Execute($@"INSERT INTO {Tables.BowlingFigures} 
+                    (BowlingFiguresId, MatchInningsId, BowlingOrder, PlayerIdentityId, Overs, Maidens, RunsConceded, Wickets, IsFromOversBowled)
+                    VALUES
+                    (@BowlingFiguresId, @MatchInningsId, @BowlingOrder, @PlayerIdentityId, @Overs, @Maidens, @RunsConceded, @Wickets, @IsFromOversBowled)",
+                  new
+                  {
+                      bowlingFigures.BowlingFiguresId,
+                      innings.MatchInningsId,
+                      BowlingOrder = 1,
+                      bowlingFigures.Bowler.PlayerIdentityId,
+                      bowlingFigures.Overs,
+                      bowlingFigures.Maidens,
+                      bowlingFigures.RunsConceded,
+                      bowlingFigures.Wickets,
+                      IsFromOversBowled = true
+                  });
+                    i++;
+                }
+            }
+        }
+
+        private static void CreatePlayerIdentityInDatabase(PlayerIdentity playerIdentity, IDbConnection connection)
+        {
+            var playerId = Guid.NewGuid();
+            connection.Execute($@"INSERT INTO {Tables.Player} 
+                    (PlayerId, PlayerName, PlayerRoute)
+                    VALUES
+                    (@PlayerId, @PlayerName, @PlayerRoute)",
+                   new
+                   {
+                       PlayerId = playerId,
+                       PlayerName = playerIdentity.PlayerIdentityName,
+                       PlayerRoute = "/players/" + playerId
+                   });
+
+            connection.Execute($@"INSERT INTO {Tables.PlayerIdentity} 
+                    (PlayerIdentityId, PlayerId, TeamId, PlayerIdentityName, PlayerIdentityComparableName, FirstPlayed, LastPlayed, TotalMatches, MissedMatches, Probability)
+                    VALUES
+                    (@PlayerIdentityId, @PlayerId, @TeamId, @PlayerIdentityName, @PlayerIdentityComparableName, @FirstPlayed, @LastPlayed, @TotalMatches, @MissedMatches, @Probability)",
+                   new
+                   {
+                       playerIdentity.PlayerIdentityId,
+                       PlayerId = playerId,
+                       playerIdentity.Team.TeamId,
+                       playerIdentity.PlayerIdentityName,
+                       PlayerIdentityComparableName = playerIdentity.ComparableName(),
+                       playerIdentity.FirstPlayed,
+                       playerIdentity.LastPlayed,
+                       playerIdentity.TotalMatches,
+                       playerIdentity.MissedMatches,
+                       playerIdentity.Probability
+                   });
+        }
+
+        private static void CreateMatchLocationInDatabase(MatchLocation matchLocation, IDbConnection connection)
+        {
+            connection.Execute($@"INSERT INTO {Tables.MatchLocation} 
+                    (MatchLocationId, SortName, SecondaryAddressableObjectName, PrimaryAddressableObjectName, StreetDescription, Locality, Town, AdministrativeArea, Postcode,
+                    Latitude, Longitude, GeoPrecision, MatchLocationNotes, MemberGroupKey, MemberGroupName, MatchLocationRoute)
+                    VALUES
+                    (@MatchLocationId, @SortName, @SecondaryAddressableObjectName, @PrimaryAddressableObjectName, @StreetDescription, @Locality, @Town, @AdministrativeArea, @Postcode,
+                    @Latitude, @Longitude, @GeoPrecision, @MatchLocationNotes, @MemberGroupKey, @MemberGroupName, @MatchLocationRoute)",
+                    new
+                    {
+                        matchLocation.MatchLocationId,
+                        SortName = matchLocation.SortName(),
+                        matchLocation.SecondaryAddressableObjectName,
+                        matchLocation.PrimaryAddressableObjectName,
+                        matchLocation.StreetDescription,
+                        matchLocation.Locality,
+                        matchLocation.Town,
+                        matchLocation.AdministrativeArea,
+                        matchLocation.Postcode,
+                        matchLocation.Latitude,
+                        matchLocation.Longitude,
+                        matchLocation.GeoPrecision,
+                        matchLocation.MatchLocationNotes,
+                        matchLocation.MemberGroupKey,
+                        matchLocation.MemberGroupName,
+                        matchLocation.MatchLocationRoute
+                    }
+                    );
+        }
+
+        private static void CreateTeamInDatabase(Team team, IDbConnection connection)
+        {
+            connection.Execute($@"INSERT INTO {Tables.Team} 
+                    (TeamId, ClubId, ClubMark, SchoolId, TeamType, PlayerType, Introduction, AgeRangeLower, AgeRangeUpper, Website, Twitter, Facebook, Instagram, YouTube, 
+                     PublicContactDetails, PrivateContactDetails, PlayingTimes, Cost, MemberGroupKey, MemberGroupName, TeamRoute)
+                    VALUES
+                    (@TeamId, @ClubId, @ClubMark, @SchoolId, @TeamType, @PlayerType, @Introduction, @AgeRangeLower, @AgeRangeUpper, @Website, @Twitter, @Facebook, @Instagram, @YouTube, 
+                     @PublicContactDetails, @PrivateContactDetails, @PlayingTimes, @Cost, @MemberGroupKey, @MemberGroupName, @TeamRoute)",
+                  new
+                  {
+                      team.TeamId,
+                      team.Club?.ClubId,
+                      team.ClubMark,
+                      team.School?.SchoolId,
+                      TeamType = team.TeamType.ToString(),
+                      PlayerType = team.PlayerType.ToString(),
+                      team.Introduction,
+                      team.AgeRangeLower,
+                      team.AgeRangeUpper,
+                      team.Website,
+                      team.Twitter,
+                      team.Facebook,
+                      team.Instagram,
+                      team.YouTube,
+                      team.PublicContactDetails,
+                      team.PrivateContactDetails,
+                      team.PlayingTimes,
+                      team.Cost,
+                      team.MemberGroupKey,
+                      team.MemberGroupName,
+                      team.TeamRoute
+                  });
+
+            connection.Execute($@"INSERT INTO {Tables.TeamVersion}
+                    (TeamVersionId, TeamId, TeamName, ComparableName, FromDate, UntilDate)
+                    VALUES
+                    (@TeamVersionId, @TeamId, @TeamName, @ComparableName, @FromDate, @UntilDate)",
+                    new
+                    {
+                        TeamVersionId = Guid.NewGuid(),
+                        team.TeamId,
+                        team.TeamName,
+                        ComparableName = team.ComparableName(),
+                        FromDate = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero),
+                        UntilDate = (DateTimeOffset?)null
+                    });
+        }
+
+        private static void CreateCompetitionInDatabase(Competition competition, IDbConnection connection)
+        {
+            connection.Execute($@"INSERT INTO {Tables.Competition} 
+                    (CompetitionId, Introduction, PublicContactDetails, PrivateContactDetails, Website, Twitter,
+                    Facebook, Instagram, YouTube, PlayerType, MemberGroupKey, MemberGroupName, CompetitionRoute)
+                    VALUES
+                    (@CompetitionId, @Introduction, @PublicContactDetails, @PrivateContactDetails, @Website, @Twitter,
+                    @Facebook, @Instagram, @YouTube, @PlayerType, @MemberGroupKey, @MemberGroupName, @CompetitionRoute)",
+                    new
+                    {
+                        competition.CompetitionId,
+                        competition.Introduction,
+                        competition.PublicContactDetails,
+                        competition.PrivateContactDetails,
+                        competition.Website,
+                        competition.Twitter,
+                        competition.Facebook,
+                        competition.Instagram,
+                        competition.YouTube,
+                        PlayerType = competition.PlayerType.ToString(),
+                        competition.MemberGroupKey,
+                        competition.MemberGroupName,
+                        competition.CompetitionRoute
+                    }
+                    );
+
+            connection.Execute($@"INSERT INTO {Tables.CompetitionVersion}
+                    (CompetitionVersionId, CompetitionId, CompetitionName, ComparableName, FromDate, UntilDate)
+                    VALUES
+                    (@CompetitionVersionId, @CompetitionId, @CompetitionName, @ComparableName, @FromDate, @UntilDate)",
+                  new
+                  {
+                      CompetitionVersionId = Guid.NewGuid(),
+                      competition.CompetitionId,
+                      competition.CompetitionName,
+                      ComparableName = competition.ComparableName(),
+                      FromDate = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero),
+                      UntilDate = (DateTimeOffset?)null
+                  });
+        }
+
+        private static void CreateSeasonInDatabase(Season season, IDbConnection connection)
+        {
+            CreateCompetitionInDatabase(season.Competition, connection);
+
+            connection.Execute($@"INSERT INTO {Tables.Season} 
+                    (SeasonId, CompetitionId, FromYear, UntilYear, Introduction, Results, PlayersPerTeam, EnableTournaments, EnableBonusOrPenaltyRuns,
+                    ResultsTableType, EnableRunsScored, EnableRunsConceded, EnableLastPlayerBatsOn, SeasonRoute)
+                    VALUES
+                    (@SeasonId, @CompetitionId, @FromYear, @UntilYear, @Introduction, @Results, @PlayersPerTeam, @EnableTournaments, @EnableBonusOrPenaltyRuns,
+                    @ResultsTableType, @EnableRunsScored, @EnableRunsConceded, @EnableLastPlayerBatsOn, @SeasonRoute)",
+                    new
+                    {
+                        season.SeasonId,
+                        season.Competition.CompetitionId,
+                        season.FromYear,
+                        season.UntilYear,
+                        season.Introduction,
+                        season.Results,
+                        season.PlayersPerTeam,
+                        season.EnableTournaments,
+                        season.EnableBonusOrPenaltyRuns,
+                        ResultsTableType = season.ResultsTableType.ToString(),
+                        season.EnableRunsScored,
+                        season.EnableRunsConceded,
+                        season.EnableLastPlayerBatsOn,
+                        season.SeasonRoute
+                    }
+                    );
         }
 
         public void Dispose()

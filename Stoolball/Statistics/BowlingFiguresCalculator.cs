@@ -73,6 +73,7 @@ namespace Stoolball.Statistics
 
                 bowlingFigures.Add(new BowlingFigures
                 {
+                    BowlingFiguresId = Guid.NewGuid(),
                     Bowler = bowler,
                     Overs = overs,
                     Maidens = maidens,
