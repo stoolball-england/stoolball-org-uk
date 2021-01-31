@@ -77,8 +77,7 @@ namespace Stoolball.Matches
         public TournamentQualificationType? QualificationType { get; set; }
         public List<TeamInTournament> Teams { get; internal set; } = new List<TeamInTournament>();
 
-        [Display(Name = "Overs per innings")]
-        public int? OversPerInningsDefault { get; set; }
+        public List<OverSet> DefaultOverSets { get; internal set; } = new List<OverSet>();
 
         [Display(Name = "How many teams do you have room for?")]
         [Range(3, 10000, ErrorMessage = "Tournaments must have at least 3 teams")] // Minimum 3, no real maximum

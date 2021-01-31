@@ -83,11 +83,11 @@ namespace Stoolball.Web.Matches
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
 
                 model.CurrentInnings.MatchInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
-                if (!model.CurrentInnings.MatchInnings.Overs.HasValue)
+                if (!model.CurrentInnings.MatchInnings.OverSets.Any())
                 {
-                    model.CurrentInnings.MatchInnings.Overs = model.Match.Tournament != null ? 6 : 12;
+                    model.CurrentInnings.MatchInnings.OverSets.Add(new OverSet { Overs = model.Match.Tournament != null ? 6 : 12, BallsPerOver = 8 });
                 }
-                while (model.CurrentInnings.MatchInnings.OversBowled.Count < model.CurrentInnings.MatchInnings.Overs)
+                while (model.CurrentInnings.MatchInnings.OversBowled.Count < model.CurrentInnings.MatchInnings.OverSets.Sum(x => x.Overs))
                 {
                     model.CurrentInnings.MatchInnings.OversBowled.Add(new Over());
                 }

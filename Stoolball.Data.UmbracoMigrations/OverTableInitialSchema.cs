@@ -26,6 +26,9 @@ namespace Stoolball.Data.UmbracoMigrations
         [Column(nameof(OverNumber))]
         public int OverNumber { get; set; }
 
+        [Column(nameof(BallsPerOver))]
+        public int BallsPerOver { get; set; }
+
         [Column(nameof(BallsBowled))]
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? BallsBowled { get; set; }

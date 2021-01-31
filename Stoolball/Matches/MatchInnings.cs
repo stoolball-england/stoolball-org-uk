@@ -15,7 +15,7 @@ namespace Stoolball.Matches
         public TeamInMatch BattingTeam { get; set; }
         public TeamInMatch BowlingTeam { get; set; }
 
-        public int? Overs { get; set; }
+        public List<OverSet> OverSets { get; internal set; } = new List<OverSet>();
 
         public List<PlayerInnings> PlayerInnings { get; internal set; } = new List<PlayerInnings>();
         public List<Over> OversBowled { get; internal set; } = new List<Over>();

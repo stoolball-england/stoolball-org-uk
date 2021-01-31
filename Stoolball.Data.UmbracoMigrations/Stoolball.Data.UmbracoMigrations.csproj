@@ -61,6 +61,8 @@
     <Compile Include="NotificationSubscriptionTableInitialSchema.cs" />
     <Compile Include="BowlingFiguresAddTable.cs" />
     <Compile Include="BowlingFiguresTableInitialSchema.cs" />
+    <Compile Include="OverSetAddTable.cs" />
+    <Compile Include="OverSetTableInitialSchema.cs" />
     <Compile Include="PlayerAddTable.cs" />
     <Compile Include="PlayerTableInitialSchema.cs" />
     <Compile Include="FallOfWicketAddTable.cs" />

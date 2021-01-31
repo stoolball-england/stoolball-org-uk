@@ -49,6 +49,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 using (var transaction = connection.BeginTransaction())
                 {
                     await connection.ExecuteAsync($"DELETE FROM {Tables.Comment} WHERE TournamentId IS NOT NULL", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE TournamentId IS NOT NULL", null, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason}", null, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.TournamentTeam}", null, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.Tournament}", null, transaction).ConfigureAwait(false);
@@ -102,10 +103,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     }
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.Tournament}
-						(TournamentId, MigratedTournamentId, TournamentName, MatchLocationId, QualificationType, PlayerType, PlayersPerTeam, OversPerInningsDefault, 
+						(TournamentId, MigratedTournamentId, TournamentName, MatchLocationId, QualificationType, PlayerType, PlayersPerTeam, 
                          MaximumTeamsInTournament, SpacesInTournament, StartTime, StartTimeIsKnown, TournamentNotes, TournamentRoute, MemberKey)
 						VALUES 
-                        (@TournamentId, @MigratedTournamentId, @TournamentName, @MatchLocationId, @QualificationType, @PlayerType, @PlayersPerTeam, @OversPerInningsDefault, 
+                        (@TournamentId, @MigratedTournamentId, @TournamentName, @MatchLocationId, @QualificationType, @PlayerType, @PlayersPerTeam, 
                          @MaximumTeamsInTournament, @SpacesInTournament, @StartTime, @StartTimeIsKnown, @TournamentNotes, @TournamentRoute, @MemberKey)",
                      new
                      {
@@ -116,7 +117,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                          QualificationType = migratedTournament.QualificationType?.ToString(),
                          PlayerType = migratedTournament.PlayerType.ToString(),
                          migratedTournament.PlayersPerTeam,
-                         migratedTournament.OversPerInningsDefault,
                          migratedTournament.MaximumTeamsInTournament,
                          migratedTournament.SpacesInTournament,
                          migratedTournament.StartTime,
@@ -126,6 +126,20 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                          migratedTournament.MemberKey
                      },
                     transaction).ConfigureAwait(false);
+
+                    if (migratedTournament.OversPerInningsDefault.HasValue)
+                    {
+                        await transaction.Connection.ExecuteAsync($"INSERT INTO {Tables.OverSet} (OverSetId, TournamentId, OverSetNumber, Overs, BallsPerOver) VALUES (@OverSetId, @TournamentId, @OverSetNumber, @Overs, @BallsPerOver)",
+                            new
+                            {
+                                OverSetId = Guid.NewGuid(),
+                                migratedTournament.TournamentId,
+                                OverSetNumber = 1,
+                                Overs = migratedTournament.OversPerInningsDefault,
+                                BallsPerOver = 8
+                            },
+                            transaction).ConfigureAwait(false);
+                    }
 
                     foreach (var team in migratedTournament.MigratedTeams)
                     {

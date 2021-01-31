@@ -36,13 +36,14 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true, TinyMCE = true)]
-        public async Task<ActionResult> CreateTournament([Bind(Prefix = "Tournament", Include = "TournamentName,QualificationType,PlayerType,PlayersPerTeam,OversPerInningsDefault")] Tournament postedTournament)
+        public async Task<ActionResult> CreateTournament([Bind(Prefix = "Tournament", Include = "TournamentName,QualificationType,PlayerType,PlayersPerTeam,DefaultOverSets")] Tournament postedTournament)
         {
             if (postedTournament is null)
             {
                 throw new ArgumentNullException(nameof(postedTournament));
             }
 
+            postedTournament.DefaultOverSets.RemoveAll(x => !x.Overs.HasValue);
             var model = new EditTournamentViewModel(CurrentPage, Services.UserService) { Tournament = postedTournament };
             // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
             model.Tournament.TournamentNotes = Request.Unvalidated.Form["Tournament.TournamentNotes"];

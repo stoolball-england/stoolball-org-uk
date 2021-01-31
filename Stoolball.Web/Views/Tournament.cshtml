@@ -39,9 +39,9 @@
         <p>Where: <a href="@Model.Tournament.TournamentLocation.MatchLocationRoute">@Model.Tournament.TournamentLocation.NameAndLocalityOrTown()</a></p>
     }
 
-    @if (Model.Tournament.OversPerInningsDefault.HasValue)
+    @if (Model.Tournament.DefaultOverSets.Any())
     {
-        <p>Matches are @Model.Tournament.OversPerInningsDefault overs.</p>
+        <p>Matches are @Model.Tournament.DefaultOverSets.Sum(x =>x.Overs) overs.</p>
     }
     @{
         var showSpacesLeft = (Model.Tournament.SpacesInTournament.HasValue &&

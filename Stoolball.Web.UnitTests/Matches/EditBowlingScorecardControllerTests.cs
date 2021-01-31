@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -197,7 +198,7 @@ namespace Stoolball.Web.Tests.Matches
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Equal(12, ((EditScorecardViewModel)((ViewResult)result).Model).CurrentInnings.MatchInnings.Overs);
+                Assert.Equal(12, ((EditScorecardViewModel)((ViewResult)result).Model).CurrentInnings.MatchInnings.OverSets.Sum(x => x.Overs));
             }
         }
 
@@ -224,7 +225,7 @@ namespace Stoolball.Web.Tests.Matches
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Equal(6, ((EditScorecardViewModel)((ViewResult)result).Model).CurrentInnings.MatchInnings.Overs);
+                Assert.Equal(6, ((EditScorecardViewModel)((ViewResult)result).Model).CurrentInnings.MatchInnings.OverSets.Sum(x => x.Overs));
             }
         }
 
@@ -238,7 +239,7 @@ namespace Stoolball.Web.Tests.Matches
                 Season = new Season(),
                 MatchResultType = MatchResultType.HomeWin,
                 MatchInnings = new List<MatchInnings> {
-                    new MatchInnings{ InningsOrderInMatch = 1, Overs = 9, OversBowled = new List<Over>() }
+                    new MatchInnings{ InningsOrderInMatch = 1, OverSets = new List<OverSet>{ new OverSet { Overs = 9 } }, OversBowled = new List<Over>() }
                 },
                 MatchRoute = "/matches/example",
             });

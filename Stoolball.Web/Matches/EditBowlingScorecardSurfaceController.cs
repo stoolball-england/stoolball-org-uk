@@ -105,13 +105,14 @@ namespace Stoolball.Web.Matches
                 RunsConceded = x.RunsConceded
             }).ToList();
             model.CurrentInnings.OversBowledSearch = postedData.OversBowledSearch;
-            if (!model.CurrentInnings.MatchInnings.Overs.HasValue)
+            if (!model.CurrentInnings.MatchInnings.OverSets.Any())
             {
-                model.CurrentInnings.MatchInnings.Overs = model.Match.Tournament != null ? 6 : 12;
+                model.CurrentInnings.MatchInnings.OverSets.Add(new OverSet { Overs = model.Match.Tournament != null ? 6 : 12, BallsPerOver = 8 });
             }
-            if (model.CurrentInnings.MatchInnings.Overs.Value < postedData.OversBowledSearch.Count)
+            if (model.CurrentInnings.MatchInnings.OverSets.Sum(x => x.Overs) < postedData.OversBowledSearch.Count)
             {
-                model.CurrentInnings.MatchInnings.Overs = postedData.OversBowledSearch.Count;
+                // Assume extra overs are the same format as the last known over
+                model.CurrentInnings.MatchInnings.OverSets[model.CurrentInnings.MatchInnings.OverSets.Count - 1].Overs += (postedData.OversBowledSearch.Count - model.CurrentInnings.MatchInnings.OverSets.Sum(x => x.Overs));
             }
 
             model.CurrentInnings.MatchInnings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(model.CurrentInnings.MatchInnings);
@@ -136,7 +137,7 @@ namespace Stoolball.Web.Matches
 
             model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
-            while (model.CurrentInnings.MatchInnings.OversBowled.Count < model.CurrentInnings.MatchInnings.Overs)
+            while (model.CurrentInnings.MatchInnings.OversBowled.Count < model.CurrentInnings.MatchInnings.OverSets.Sum(x => x.Overs))
             {
                 model.CurrentInnings.MatchInnings.OversBowled.Add(new Over());
             }

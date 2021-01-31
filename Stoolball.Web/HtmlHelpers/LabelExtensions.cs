@@ -18,12 +18,23 @@ namespace Stoolball.Web.HtmlHelpers
         {
             return LabelFor(html, expression, required, new RouteValueDictionary(htmlAttributes));
         }
+
+        public static MvcHtmlString LabelFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, string labelText, RequiredFieldStatus required, object htmlAttributes)
+        {
+            return LabelFor(html, expression, labelText, required, new RouteValueDictionary(htmlAttributes));
+        }
+
         public static MvcHtmlString LabelFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, RequiredFieldStatus required, IDictionary<string, object> htmlAttributes)
+        {
+            return LabelFor(html, expression, null, required, htmlAttributes);
+        }
+
+        public static MvcHtmlString LabelFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, string labelText, RequiredFieldStatus required, IDictionary<string, object> htmlAttributes)
         {
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
             string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
-            string labelText = metadata.DisplayName ?? metadata.PropertyName ?? htmlFieldName.Split('.').Last();
-            if (String.IsNullOrEmpty(labelText))
+            string finalLabelText = labelText ?? metadata.DisplayName ?? metadata.PropertyName ?? htmlFieldName.Split('.').Last();
+            if (String.IsNullOrEmpty(finalLabelText))
             {
                 return MvcHtmlString.Empty;
             }
@@ -31,13 +42,13 @@ namespace Stoolball.Web.HtmlHelpers
             TagBuilder tag = new TagBuilder("label");
             tag.MergeAttributes(htmlAttributes);
             tag.Attributes.Add("for", html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldId(htmlFieldName));
-            tag.InnerHtml = labelText;
+            tag.InnerHtml = finalLabelText;
 
             if (required != RequiredFieldStatus.Required)
             {
                 TagBuilder small = new TagBuilder("small");
                 small.SetInnerText($"({required.ToString().ToLower(CultureInfo.CurrentCulture)})");
-                tag.InnerHtml = labelText + " " + small.ToString(TagRenderMode.Normal);
+                tag.InnerHtml = finalLabelText + " " + small.ToString(TagRenderMode.Normal);
             }
 
             return MvcHtmlString.Create(tag.ToString(TagRenderMode.Normal));

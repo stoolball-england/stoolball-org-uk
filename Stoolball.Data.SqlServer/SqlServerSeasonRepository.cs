@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -69,7 +70,7 @@ namespace Stoolball.Data.SqlServer
                 EnableTournaments = season.EnableTournaments,
                 EnableBonusOrPenaltyRuns = season.EnableBonusOrPenaltyRuns,
                 PlayersPerTeam = season.PlayersPerTeam,
-                Overs = season.Overs,
+                DefaultOverSets = season.DefaultOverSets,
                 EnableLastPlayerBatsOn = season.EnableLastPlayerBatsOn,
                 PointsRules = season.PointsRules,
                 ResultsTableType = season.ResultsTableType,
@@ -132,10 +133,10 @@ namespace Stoolball.Data.SqlServer
 
                     await connection.ExecuteAsync(
                         $@"INSERT INTO {Tables.Season} (SeasonId, CompetitionId, FromYear, UntilYear, Introduction, EnableTournaments, EnableBonusOrPenaltyRuns,
-                                PlayersPerTeam, Overs, EnableLastPlayerBatsOn, ResultsTableType, EnableRunsScored, EnableRunsConceded, Results, SeasonRoute) 
+                                PlayersPerTeam, EnableLastPlayerBatsOn, ResultsTableType, EnableRunsScored, EnableRunsConceded, Results, SeasonRoute) 
                                 VALUES 
-                                (@SeasonId, @CompetitionId, @FromYear, @UntilYear, @Introduction, @EnableTournaments, @EnableBonusOrPenaltyRuns, @PlayersPerTeam, @Overs,
-                                 @EnableLastPlayerBatsOn, @ResultsTableType, @EnableRunsScored, @EnableRunsConceded, @Results, @SeasonRoute)",
+                                (@SeasonId, @CompetitionId, @FromYear, @UntilYear, @Introduction, @EnableTournaments, @EnableBonusOrPenaltyRuns, 
+                                 @PlayersPerTeam, @EnableLastPlayerBatsOn, @ResultsTableType, @EnableRunsScored, @EnableRunsConceded, @Results, @SeasonRoute)",
                         new
                         {
                             auditableSeason.SeasonId,
@@ -146,7 +147,6 @@ namespace Stoolball.Data.SqlServer
                             auditableSeason.EnableTournaments,
                             auditableSeason.EnableBonusOrPenaltyRuns,
                             auditableSeason.PlayersPerTeam,
-                            auditableSeason.Overs,
                             auditableSeason.EnableLastPlayerBatsOn,
                             ResultsTableType = previousSeason?.ResultsTableType.ToString() ?? ResultsTableType.None.ToString(),
                             EnableRunsScored = previousSeason?.EnableRunsScored ?? false,
@@ -154,6 +154,8 @@ namespace Stoolball.Data.SqlServer
                             auditableSeason.Results,
                             auditableSeason.SeasonRoute
                         }, transaction).ConfigureAwait(false);
+
+                    await InsertOverSets(auditableSeason, transaction).ConfigureAwait(false);
 
                     foreach (var matchType in auditableSeason.MatchTypes)
                     {
@@ -267,6 +269,24 @@ namespace Stoolball.Data.SqlServer
             return auditableSeason;
         }
 
+        private static async Task InsertOverSets(Season auditableSeason, IDbTransaction transaction)
+        {
+            for (var i = 0; i < auditableSeason.DefaultOverSets.Count; i++)
+            {
+                auditableSeason.DefaultOverSets[i].OverSetId = Guid.NewGuid();
+                await transaction.Connection.ExecuteAsync($"INSERT INTO {Tables.OverSet} (OverSetId, SeasonId, OverSetNumber, Overs, BallsPerOver) VALUES (@OverSetId, @SeasonId, @OverSetNumber, @Overs, @BallsPerOver)",
+                    new
+                    {
+                        auditableSeason.DefaultOverSets[i].OverSetId,
+                        auditableSeason.SeasonId,
+                        OverSetNumber = i + 1,
+                        auditableSeason.DefaultOverSets[i].Overs,
+                        auditableSeason.DefaultOverSets[i].BallsPerOver
+                    },
+                    transaction).ConfigureAwait(false);
+            }
+        }
+
 
         /// <summary>
         /// Updates a stoolball season
@@ -298,7 +318,6 @@ namespace Stoolball.Data.SqlServer
                                 Introduction = @Introduction,
                                 EnableTournaments = @EnableTournaments,
                                 PlayersPerTeam = @PlayersPerTeam,
-                                Overs = @Overs,
                                 EnableLastPlayerBatsOn = @EnableLastPlayerBatsOn,
                                 EnableBonusOrPenaltyRuns = @EnableBonusOrPenaltyRuns,
                                 Results = @Results
@@ -308,12 +327,14 @@ namespace Stoolball.Data.SqlServer
                             auditableSeason.Introduction,
                             auditableSeason.EnableTournaments,
                             auditableSeason.PlayersPerTeam,
-                            auditableSeason.Overs,
                             auditableSeason.EnableLastPlayerBatsOn,
                             auditableSeason.EnableBonusOrPenaltyRuns,
                             auditableSeason.Results,
                             auditableSeason.SeasonId
                         }, transaction).ConfigureAwait(false);
+
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
+                    await InsertOverSets(auditableSeason, transaction).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.SeasonMatchType} WHERE SeasonId = @SeasonId AND MatchType NOT IN @MatchTypes",
                         new
@@ -514,6 +535,7 @@ namespace Stoolball.Data.SqlServer
                     await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam} WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsRule} WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsAdjustment} WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonMatchType} WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.AwardedTo} WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"UPDATE {Tables.Match} SET SeasonId = NULL WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);

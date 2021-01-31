@@ -38,10 +38,11 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var sql = $@"SELECT tourney.TournamentId, tourney.TournamentName, tourney.PlayerType, tourney.StartTime, tourney.StartTimeIsKnown, 
-                            tourney.OversPerInningsDefault, tourney.PlayersPerTeam, tourney.QualificationType, tourney.MaximumTeamsInTournament, 
+                            tourney.PlayersPerTeam, tourney.QualificationType, tourney.MaximumTeamsInTournament, 
                             tourney.SpacesInTournament, tourney.TournamentNotes, tourney.TournamentRoute, tourney.MemberKey,
                             tt.TeamRole,
                             t.TeamId, t.TeamRoute, t.TeamType, tn.TeamName,
+                            os.OverSetId, os.Overs, os.BallsPerOver,
                             ml.MatchLocationId, ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
                             ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
                             s.SeasonRoute, s.FromYear, s.UntilYear,
@@ -50,21 +51,27 @@ namespace Stoolball.Data.SqlServer
                             LEFT JOIN {Tables.TournamentTeam} AS tt ON tourney.TournamentId = tt.TournamentId
                             LEFT JOIN {Tables.Team} AS t ON tt.TeamId = t.TeamId
                             LEFT JOIN {Tables.TeamVersion} AS tn ON t.TeamId = tn.TeamId
+                            LEFT JOIN {Tables.OverSet} os ON tourney.TournamentId = os.TournamentId
                             LEFT JOIN {Tables.MatchLocation} AS ml ON tourney.MatchLocationId = ml.MatchLocationId
                             LEFT JOIN {Tables.TournamentSeason} AS ts ON tourney.TournamentId = ts.TournamentId
                             LEFT JOIN {Tables.Season} AS s ON ts.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.CompetitionVersion} AS cv ON s.CompetitionId = cv.CompetitionId
                             WHERE LOWER(tourney.TournamentRoute) = @Route
                             AND (tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR tn.TeamVersionId IS NULL)
-                            AND (cv.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = s.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR cv.CompetitionVersionId IS NULL)";
+                            AND (cv.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = s.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR cv.CompetitionVersionId IS NULL)
+                            ORDER BY os.OverSetNumber";
 
-                var tournaments = await connection.QueryAsync<Tournament, TeamInTournament, Team, MatchLocation, Season, Competition, Tournament>(sql,
-                    (tournament, teamInTournament, team, tournamentLocation, season, competition) =>
+                var tournaments = await connection.QueryAsync<Tournament, TeamInTournament, Team, OverSet, MatchLocation, Season, Competition, Tournament>(sql,
+                    (tournament, teamInTournament, team, overSet, tournamentLocation, season, competition) =>
                     {
                         if (team != null)
                         {
                             teamInTournament.Team = team;
                             tournament.Teams.Add(teamInTournament);
+                        }
+                        if (overSet != null)
+                        {
+                            tournament.DefaultOverSets.Add(overSet);
                         }
                         tournament.TournamentLocation = tournamentLocation;
                         if (season != null) { season.Competition = competition; }
@@ -72,7 +79,7 @@ namespace Stoolball.Data.SqlServer
                         return tournament;
                     },
                     new { Route = normalisedRoute },
-                    splitOn: "TeamRole, TeamId, MatchLocationId, SeasonRoute, CompetitionName")
+                    splitOn: "TeamRole, TeamId, OverSetId, MatchLocationId, SeasonRoute, CompetitionName")
                     .ConfigureAwait(false);
 
                 var tournamentToReturn = tournaments.FirstOrDefault(); // get an example with the properties that are the same for every row
@@ -82,6 +89,10 @@ namespace Stoolball.Data.SqlServer
                         .OfType<TeamInTournament>()
                         .Distinct(new TeamInTournamentEqualityComparer())
                         .OrderBy(x => x.Team.ComparableName())
+                        .ToList();
+                    tournamentToReturn.DefaultOverSets = tournaments.Select(tournament => tournament.DefaultOverSets.SingleOrDefault())
+                        .OfType<OverSet>()
+                        .Distinct(new OverSetEqualityComparer())
                         .ToList();
                     tournamentToReturn.Seasons = tournaments.Select(tournament => tournament.Seasons.SingleOrDefault())
                         .OfType<Season>()

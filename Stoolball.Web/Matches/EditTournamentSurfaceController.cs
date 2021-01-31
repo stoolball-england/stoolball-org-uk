@@ -38,7 +38,7 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true, TinyMCE = true)]
-        public async Task<ActionResult> UpdateTournament([Bind(Prefix = "Tournament", Include = "TournamentName,QualificationType,PlayerType,PlayersPerTeam,OversPerInningsDefault")] Tournament postedTournament)
+        public async Task<ActionResult> UpdateTournament([Bind(Prefix = "Tournament", Include = "TournamentName,QualificationType,PlayerType,PlayersPerTeam,DefaultOverSets")] Tournament postedTournament)
         {
             if (postedTournament is null)
             {
@@ -47,6 +47,7 @@ namespace Stoolball.Web.Matches
 
             var beforeUpdate = await _tournamentDataSource.ReadTournamentByRoute(Request.RawUrl).ConfigureAwait(false);
 
+            postedTournament.DefaultOverSets.RemoveAll(x => !x.Overs.HasValue);
             var model = new EditTournamentViewModel(CurrentPage, Services.UserService)
             {
                 Tournament = postedTournament,

@@ -112,7 +112,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var seasons = await connection.QueryAsync<Season, Competition, string, Season>(
-                    $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Results, s.SeasonRoute, s.EnableTournaments, s.PlayersPerTeam, s.Overs,
+                    $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Results, s.SeasonRoute, s.EnableTournaments, s.PlayersPerTeam, 
                             cv.CompetitionName, co.PlayerType, YEAR(cv.UntilDate) AS UntilYear, co.CompetitionRoute, co.MemberGroupName,
                             smt.MatchType
                             FROM {Tables.Season} AS s 
@@ -154,14 +154,15 @@ namespace Stoolball.Data.SqlServer
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var seasons = await connection.QueryAsync<Season, Competition, Season, TeamInSeason, Team, string, Season>(
-                    $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Introduction, s.PlayersPerTeam, s.Overs, s.EnableTournaments, s.ResultsTableType, 
+                var seasons = await connection.QueryAsync<Season, Competition, Season, TeamInSeason, Team, OverSet, string, Season>(
+                    $@"SELECT s.SeasonId, s.FromYear, s.UntilYear, s.Introduction, s.PlayersPerTeam, s.EnableTournaments, s.ResultsTableType, 
                             s.EnableLastPlayerBatsOn, s.EnableBonusOrPenaltyRuns, s.EnableRunsScored, s.EnableRunsConceded, s.Results, s.SeasonRoute,
                             cv.CompetitionName, co.PlayerType, co.Introduction, YEAR(cv.UntilDate) AS UntilYear, co.PublicContactDetails, co.Website, 
                             co.Facebook, co.Twitter, co.Instagram, co.YouTube, co.CompetitionRoute, co.MemberGroupName,
                             s2.SeasonId, s2.FromYear, s2.UntilYear, s2.SeasonRoute,
                             st.WithdrawnDate,
                             t.TeamId, tn.TeamName, t.TeamRoute,
+                            os.OverSetId, os.OverSetNumber, os.Overs, os.BallsPerOver,
                             mt.MatchType
                             FROM {Tables.Season} AS s 
                             INNER JOIN {Tables.Competition} AS co ON co.CompetitionId = s.CompetitionId
@@ -170,12 +171,13 @@ namespace Stoolball.Data.SqlServer
                             LEFT JOIN {Tables.SeasonTeam} AS st ON st.SeasonId = s.SeasonId
                             LEFT JOIN {Tables.Team} AS t ON t.TeamId = st.TeamId
                             LEFT JOIN {Tables.TeamVersion} AS tn ON t.TeamId = tn.TeamId
+                            LEFT JOIN {Tables.OverSet} os ON s.SeasonId = os.SeasonId
                             LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
                             WHERE LOWER(s.SeasonRoute) = @Route
                             AND (tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR tn.TeamVersionId IS NULL)
                             AND cv.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = co.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                             ORDER BY s2.FromYear DESC, s2.UntilYear ASC",
-                    (season, competition, anotherSeasonInTheCompetition, teamInSeason, team, matchType) =>
+                    (season, competition, anotherSeasonInTheCompetition, teamInSeason, team, overSet, matchType) =>
                     {
                         if (season != null)
                         {
@@ -198,10 +200,14 @@ namespace Stoolball.Data.SqlServer
                                 WithdrawnDate = teamInSeason?.WithdrawnDate
                             });
                         }
+                        if (overSet != null)
+                        {
+                            season.DefaultOverSets.Add(overSet);
+                        }
                         return season;
                     },
                     new { Route = normalisedRoute },
-                    splitOn: "CompetitionName, SeasonId, WithdrawnDate, TeamId, MatchType").ConfigureAwait(false);
+                    splitOn: "CompetitionName, SeasonId, WithdrawnDate, TeamId, OverSetId, MatchType").ConfigureAwait(false);
 
                 var seasonToReturn = seasons.FirstOrDefault(); // get an example with the properties that are the same for every row
                 if (seasonToReturn != null)
@@ -222,6 +228,12 @@ namespace Stoolball.Data.SqlServer
                         .Select(duplicateTeamInSeason => duplicateTeamInSeason.First())
                         .OfType<TeamInSeason>()
                         .OrderBy(team => team.Team.ComparableName())
+                        .ToList();
+                    seasonToReturn.DefaultOverSets = seasons
+                        .Select(season => season.DefaultOverSets.FirstOrDefault())
+                        .OfType<OverSet>()
+                        .Distinct(new OverSetEqualityComparer())
+                        .OrderBy(overSet => overSet.OverSetNumber)
                         .ToList();
                 }
 

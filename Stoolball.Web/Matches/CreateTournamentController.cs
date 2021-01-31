@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -53,7 +54,7 @@ namespace Stoolball.Web.Matches
                     QualificationType = TournamentQualificationType.OpenTournament,
                     PlayerType = PlayerType.Mixed,
                     PlayersPerTeam = 8,
-                    OversPerInningsDefault = 4,
+                    DefaultOverSets = new List<OverSet> { new OverSet { Overs = 4, BallsPerOver = 8 } },
                     TournamentLocation = new MatchLocation()
                 }
             };

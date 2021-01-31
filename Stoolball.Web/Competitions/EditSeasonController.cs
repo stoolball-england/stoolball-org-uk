@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
+using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Web.Routing;
@@ -56,6 +58,11 @@ namespace Stoolball.Web.Competitions
             else
             {
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Season.Competition);
+
+                if (!model.Season.DefaultOverSets.Any())
+                {
+                    model.Season.DefaultOverSets.Add(new OverSet());
+                }
 
                 model.Metadata.PageTitle = "Edit " + model.Season.SeasonFullNameAndPlayerType();
 

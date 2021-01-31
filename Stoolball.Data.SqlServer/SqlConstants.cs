@@ -9,6 +9,7 @@
         public const string Audit = _tablePrefix + "Audit";
         public const string PlayerInnings = _tablePrefix + "PlayerInnings";
         public const string Over = _tablePrefix + "Over";
+        public const string OverSet = _tablePrefix + "OverSet";
         public const string BowlingFigures = _tablePrefix + "BowlingFigures";
         public const string FallOfWicket = _tablePrefix + "FallOfWicket";
         public const string Club = _tablePrefix + "Club";

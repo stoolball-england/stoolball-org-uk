@@ -125,9 +125,9 @@
 </div>
 
 <div class="form-group">
-    @Html.LabelFor(m => Model.Tournament.OversPerInningsDefault, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
-    @Html.TextBoxFor(m => Model.Tournament.OversPerInningsDefault, new { @class = "form-control", aria_describedby = "overs", @type = "number" })
-    @Html.ValidationMessageFor(m => Model.Tournament.OversPerInningsDefault, null, new { id = "overs" })
+    @Html.LabelFor(m => Model.Tournament.DefaultOverSets[0].Overs, "Overs per innings", RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+    @Html.TextBoxFor(m => Model.Tournament.DefaultOverSets[0].Overs, new { @class = "form-control", aria_describedby = "overs", @type = "number" })
+    @Html.ValidationMessageFor(m => Model.Tournament.DefaultOverSets[0].Overs, null, new { id = "overs" })
 </div>
 
 <div class="form-group">

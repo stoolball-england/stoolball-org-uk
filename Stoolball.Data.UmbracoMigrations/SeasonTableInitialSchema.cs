@@ -43,10 +43,6 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? PlayersPerTeam { get; set; }
 
-        [Column(nameof(Overs))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public int? Overs { get; set; }
-
         [Column(nameof(EnableTournaments))]
         public bool EnableTournaments { get; set; }
 

@@ -37,12 +37,14 @@ namespace Stoolball.Web.Competitions
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
-        public async Task<ActionResult> CreateSeason([Bind(Prefix = "Season", Include = "FromYear,UntilYear,EnableTournaments,EnableBonusOrPenaltyRuns,PlayersPerTeam,Overs,EnableLastPlayerBatsOn")] Season season)
+        public async Task<ActionResult> CreateSeason([Bind(Prefix = "Season", Include = "FromYear,UntilYear,EnableTournaments,EnableBonusOrPenaltyRuns,PlayersPerTeam,DefaultOverSets,EnableLastPlayerBatsOn")] Season season)
         {
             if (season is null)
             {
                 throw new System.ArgumentNullException(nameof(season));
             }
+
+            season.DefaultOverSets.RemoveAll(x => !x.Overs.HasValue);
 
             // end year is actually populated with the number of years to add to the start year,
             // because that allows the start year to be changed from the default without using JavaScript 

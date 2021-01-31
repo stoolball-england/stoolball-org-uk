@@ -37,7 +37,7 @@ namespace Stoolball.Web.Competitions
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(TinyMCE = true, Forms = true)]
-        public async Task<ActionResult> UpdateSeason([Bind(Prefix = "Season", Include = "EnableTournaments,PlayersPerTeam,Overs,EnableLastPlayerBatsOn,EnableBonusOrPenaltyRuns")] Season season)
+        public async Task<ActionResult> UpdateSeason([Bind(Prefix = "Season", Include = "EnableTournaments,PlayersPerTeam,DefaultOverSets,EnableLastPlayerBatsOn,EnableBonusOrPenaltyRuns")] Season season)
         {
             if (season is null)
             {
@@ -45,6 +45,8 @@ namespace Stoolball.Web.Competitions
             }
 
             var beforeUpdate = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl).ConfigureAwait(false);
+
+            season.DefaultOverSets.RemoveAll(x => !x.Overs.HasValue);
 
             // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
             season.SeasonId = beforeUpdate.SeasonId;

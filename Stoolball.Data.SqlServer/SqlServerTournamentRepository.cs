@@ -67,7 +67,7 @@ namespace Stoolball.Data.SqlServer
                 TournamentLocation = tournament.TournamentLocation != null ? new MatchLocation { MatchLocationId = tournament.TournamentLocation.MatchLocationId } : null,
                 PlayerType = tournament.PlayerType,
                 PlayersPerTeam = tournament.PlayersPerTeam,
-                OversPerInningsDefault = tournament.OversPerInningsDefault,
+                DefaultOverSets = tournament.DefaultOverSets,
                 QualificationType = tournament.QualificationType,
                 SpacesInTournament = tournament.SpacesInTournament,
                 MaximumTeamsInTournament = tournament.MaximumTeamsInTournament,
@@ -123,9 +123,9 @@ namespace Stoolball.Data.SqlServer
                     while (count > 0);
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.Tournament}
-						(TournamentId, TournamentName, MatchLocationId, PlayerType, PlayersPerTeam, OversPerInningsDefault,
+						(TournamentId, TournamentName, MatchLocationId, PlayerType, PlayersPerTeam, 
 						 QualificationType, StartTime, StartTimeIsKnown, TournamentNotes, TournamentRoute, MemberKey)
-						VALUES (@TournamentId, @TournamentName, @MatchLocationId, @PlayerType, @PlayersPerTeam, @OversPerInningsDefault, 
+						VALUES (@TournamentId, @TournamentName, @MatchLocationId, @PlayerType, @PlayersPerTeam, 
                         @QualificationType, @StartTime, @StartTimeIsKnown, @TournamentNotes, @TournamentRoute, @MemberKey)",
                     new
                     {
@@ -134,7 +134,6 @@ namespace Stoolball.Data.SqlServer
                         auditableTournament.TournamentLocation?.MatchLocationId,
                         PlayerType = auditableTournament.PlayerType.ToString(),
                         auditableTournament.PlayersPerTeam,
-                        auditableTournament.OversPerInningsDefault,
                         QualificationType = auditableTournament.QualificationType.ToString(),
                         StartTime = auditableTournament.StartTime.UtcDateTime,
                         auditableTournament.StartTimeIsKnown,
@@ -142,6 +141,8 @@ namespace Stoolball.Data.SqlServer
                         auditableTournament.TournamentRoute,
                         auditableTournament.MemberKey
                     }, transaction).ConfigureAwait(false);
+
+                    await InsertOverSets(auditableTournament, transaction).ConfigureAwait(false);
 
                     foreach (var team in auditableTournament.Teams)
                     {
@@ -193,6 +194,41 @@ namespace Stoolball.Data.SqlServer
             return auditableTournament;
         }
 
+        private static async Task InsertOverSets(Tournament auditableTournament, System.Data.IDbTransaction transaction)
+        {
+            var matchInningsIds = await transaction.Connection.QueryAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} mi INNER JOIN {Tables.Match} m ON mi.MatchId = m.MatchId WHERE m.TournamentId = @TournamentId", new { auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
+
+            for (var i = 0; i < auditableTournament.DefaultOverSets.Count; i++)
+            {
+                auditableTournament.DefaultOverSets[i].OverSetId = Guid.NewGuid();
+                await transaction.Connection.ExecuteAsync($"INSERT INTO {Tables.OverSet} (OverSetId, TournamentId, OverSetNumber, Overs, BallsPerOver) VALUES (@OverSetId, @TournamentId, @OverSetNumber, @Overs, @BallsPerOver)",
+                    new
+                    {
+                        auditableTournament.DefaultOverSets[i].OverSetId,
+                        auditableTournament.TournamentId,
+                        OverSetNumber = i + 1,
+                        auditableTournament.DefaultOverSets[i].Overs,
+                        auditableTournament.DefaultOverSets[i].BallsPerOver
+                    },
+                    transaction).ConfigureAwait(false);
+
+                foreach (var matchInningsId in matchInningsIds)
+                {
+                    await transaction.Connection.ExecuteAsync($"INSERT INTO {Tables.OverSet} (OverSetId, MatchInningsId, OverSetNumber, Overs, BallsPerOver) VALUES (@OverSetId, @MatchInningsId, @OverSetNumber, @Overs, @BallsPerOver)",
+                        new
+                        {
+                            OverSetId = Guid.NewGuid(),
+                            MatchInningsId = matchInningsId,
+                            OverSetNumber = i + 1,
+                            auditableTournament.DefaultOverSets[i].Overs,
+                            auditableTournament.DefaultOverSets[i].BallsPerOver
+                        },
+                        transaction).ConfigureAwait(false);
+                }
+
+            }
+        }
+
 
         /// <summary>
         /// Updates a stoolball tournament
@@ -238,7 +274,6 @@ namespace Stoolball.Data.SqlServer
                             MatchLocationId = @MatchLocationId, 
                             PlayerType = @PlayerType,
                             PlayersPerTeam = @PlayersPerTeam,
-                            OversPerInningsDefault = @OversPerInningsDefault,
 						    QualificationType = @QualificationType, 
                             StartTime = @StartTime, 
                             StartTimeIsKnown = @StartTimeIsKnown, 
@@ -251,7 +286,6 @@ namespace Stoolball.Data.SqlServer
                         auditableTournament.TournamentLocation?.MatchLocationId,
                         PlayerType = auditableTournament.PlayerType.ToString(),
                         auditableTournament.PlayersPerTeam,
-                        auditableTournament.OversPerInningsDefault,
                         QualificationType = auditableTournament.QualificationType.ToString(),
                         StartTime = auditableTournament.StartTime.UtcDateTime,
                         auditableTournament.StartTimeIsKnown,
@@ -259,6 +293,18 @@ namespace Stoolball.Data.SqlServer
                         auditableTournament.TournamentRoute,
                         auditableTournament.TournamentId
                     }, transaction).ConfigureAwait(false);
+
+                    await connection.ExecuteAsync($@"DELETE FROM {Tables.OverSet} WHERE 
+                        TournamentId = @TournamentId OR 
+                        MatchInningsId IN (
+                            SELECT MatchInningsId FROM {Tables.MatchInnings} mi INNER JOIN {Tables.Match} m ON mi.MatchId = m.MatchId WHERE m.TournamentId = @TournamentId
+                        )",
+                        new
+                        {
+                            auditableTournament.TournamentId
+                        },
+                        transaction).ConfigureAwait(false);
+                    await InsertOverSets(auditableTournament, transaction).ConfigureAwait(false);
 
                     // Set approximate start time based on 45 mins per match
                     await connection.ExecuteAsync($@"UPDATE {Tables.Match} SET
@@ -276,17 +322,6 @@ namespace Stoolball.Data.SqlServer
                             auditableTournament.TournamentId
                         },
                         transaction).ConfigureAwait(false);
-
-                    await connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET
-                            Overs = @OversPerInningsDefault
-                            WHERE MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId)",
-                        new
-                        {
-                            auditableTournament.OversPerInningsDefault,
-                            auditableTournament.TournamentId
-                        },
-                        transaction).ConfigureAwait(false);
-
 
                     // Update any transient teams with the amended tournament details
                     var transientTeamIds = await connection.QueryAsync<Guid>($@"SELECT t.TeamId FROM {Tables.TournamentTeam} tt
@@ -543,6 +578,7 @@ namespace Stoolball.Data.SqlServer
                     await connection.ExecuteAsync($"DELETE FROM {Tables.Over} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId))", new { auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.BowlingFigures} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId))", new { auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId))", new { auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE TournamentId = @TournamentId OR MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId))", new { auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.MatchInnings} WHERE MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId)", new { auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam} WHERE MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId)", new { auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.Comment} WHERE MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId)", new { auditableTournament.TournamentId }, transaction).ConfigureAwait(false);

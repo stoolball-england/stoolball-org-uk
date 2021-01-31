@@ -37,20 +37,22 @@ namespace Stoolball.Data.SqlServer
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var competitions = await connection.QueryAsync<Competition, Season, string, Competition>(
+                var competitions = await connection.QueryAsync<Competition, Season, OverSet, string, Competition>(
                     $@"SELECT co.CompetitionId, cv.CompetitionName, co.PlayerType, co.Introduction, YEAR(cv.UntilDate) AS UntilYear, 
                             co.PublicContactDetails, co.PrivateContactDetails, co.Facebook, co.Twitter, co.Instagram, co.YouTube, co.Website, co.CompetitionRoute, 
                             co.MemberGroupKey, co.MemberGroupName,
-                            s.SeasonRoute, s.FromYear, s.UntilYear, s.PlayersPerTeam, s.Overs, s.EnableTournaments, s.EnableLastPlayerBatsOn, s.EnableBonusOrPenaltyRuns,
+                            s.SeasonRoute, s.FromYear, s.UntilYear, s.PlayersPerTeam, s.EnableTournaments, s.EnableLastPlayerBatsOn, s.EnableBonusOrPenaltyRuns,
+                            os.OverSetId, os.OverSetNumber, os.Overs, os.BallsPerOver,
                             mt.MatchType
                             FROM {Tables.Competition} AS co
                             INNER JOIN {Tables.CompetitionVersion} AS cv ON co.CompetitionId = cv.CompetitionId
                             LEFT JOIN {Tables.Season} AS s ON co.CompetitionId = s.CompetitionId
+                            LEFT JOIN {Tables.OverSet} AS os ON s.SeasonId = os.SeasonId
                             LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
                             WHERE LOWER(co.CompetitionRoute) = @Route
                             AND cv.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = co.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                             ORDER BY s.FromYear DESC, s.UntilYear DESC",
-                    (competition, season, matchType) =>
+                    (competition, season, overSet, matchType) =>
                     {
                         if (season != null)
                         {
@@ -58,12 +60,16 @@ namespace Stoolball.Data.SqlServer
                             {
                                 season.MatchTypes.Add((MatchType)Enum.Parse(typeof(MatchType), matchType));
                             }
+                            if (overSet != null)
+                            {
+                                season.DefaultOverSets.Add(overSet);
+                            }
                             competition.Seasons.Add(season);
                         }
                         return competition;
                     },
                     new { Route = normalisedRoute },
-                    splitOn: "SeasonRoute,MatchType").ConfigureAwait(false);
+                    splitOn: "SeasonRoute,OverSetId,MatchType").ConfigureAwait(false);
 
                 var competitionToReturn = competitions.FirstOrDefault(); // get an example with the properties that are the same for every row
                 if (competitionToReturn != null && competitionToReturn.Seasons.Count > 0)
@@ -78,6 +84,12 @@ namespace Stoolball.Data.SqlServer
                         .Select(competition => competition.Seasons.FirstOrDefault()?.MatchTypes.FirstOrDefault())
                         .OfType<MatchType>()
                         .Distinct()
+                        .ToList();
+                    competitionToReturn.Seasons[0].DefaultOverSets = competitions
+                        .Select(competition => competition.Seasons.FirstOrDefault()?.DefaultOverSets.FirstOrDefault())
+                        .OfType<OverSet>()
+                        .Distinct(new OverSetEqualityComparer())
+                        .OrderBy(x => x.OverSetNumber)
                         .ToList();
                 }
 

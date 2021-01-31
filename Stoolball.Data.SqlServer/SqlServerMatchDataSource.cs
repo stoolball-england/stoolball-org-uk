@@ -94,22 +94,28 @@ namespace Stoolball.Data.SqlServer
                 if (matchToReturn != null)
                 {
                     // Add match innings and player innings within that to the match
-                    var unprocessedInningsWithBatting = await connection.QueryAsync<MatchInnings, MatchTeamIds, PlayerInnings, PlayerIdentity, PlayerIdentity, PlayerIdentity, MatchInnings>(
-                        $@"SELECT i.MatchInningsId, i.Overs, i.Byes, i.Wides, i.NoBalls, i.BonusOrPenaltyRuns, i.Runs, i.Wickets, i.InningsOrderInMatch,
+                    var unprocessedInningsWithBatting = await connection.QueryAsync<MatchInnings, OverSet, MatchTeamIds, PlayerInnings, PlayerIdentity, PlayerIdentity, PlayerIdentity, MatchInnings>(
+                        $@"SELECT i.MatchInningsId, i.Byes, i.Wides, i.NoBalls, i.BonusOrPenaltyRuns, i.Runs, i.Wickets, i.InningsOrderInMatch,
+                               os.OverSetId, os.OverSetNumber, os.Overs, os.BallsPerOver,
                                i.BattingMatchTeamId, i.BowlingMatchTeamId,
                                pi.BattingPosition, pi.DismissalType, pi.RunsScored, pi.BallsFaced,
                                bat.PlayerIdentityId, bat.PlayerIdentityName, bat.TotalMatches, 
                                field.PlayerIdentityId, field.PlayerIdentityName, field.TotalMatches,
                                bowl.PlayerIdentityId, bowl.PlayerIdentityName, bowl.TotalMatches
                                FROM {Tables.MatchInnings} i 
+                               LEFT JOIN {Tables.OverSet} os ON i.MatchInningsId = os.MatchInningsId
                                LEFT JOIN {Tables.PlayerInnings} pi ON i.MatchInningsId = pi.MatchInningsId
                                LEFT JOIN {Tables.PlayerIdentity} bat ON pi.PlayerIdentityId = bat.PlayerIdentityId
                                LEFT JOIN {Tables.PlayerIdentity} field ON pi.DismissedById = field.PlayerIdentityId
                                LEFT JOIN {Tables.PlayerIdentity} bowl ON pi.BowlerId = bowl.PlayerIdentityId
                                WHERE i.MatchId = @MatchId
                                ORDER BY i.InningsOrderInMatch, pi.BattingPosition",
-                        (innings, matchTeamIds, batting, batter, dismissedBy, bowledBy) =>
+                        (innings, overSet, matchTeamIds, batting, batter, dismissedBy, bowledBy) =>
                         {
+                            if (overSet != null)
+                            {
+                                innings.OverSets.Add(overSet);
+                            }
                             if (matchTeamIds != null && matchTeamIds.BattingMatchTeamId.HasValue)
                             {
                                 innings.BattingTeam = matchToReturn.Teams.Single(x => x.MatchTeamId == matchTeamIds.BattingMatchTeamId);
@@ -129,13 +135,22 @@ namespace Stoolball.Data.SqlServer
                             return innings;
                         },
                         new { matchToReturn.MatchId },
-                        splitOn: "BattingMatchTeamId, BattingPosition, PlayerIdentityId, PlayerIdentityId, PlayerIdentityId")
+                        splitOn: "OverSetId, BattingMatchTeamId, BattingPosition, PlayerIdentityId, PlayerIdentityId, PlayerIdentityId")
                         .ConfigureAwait(false);
 
                     matchToReturn.MatchInnings = unprocessedInningsWithBatting.GroupBy(x => x.MatchInningsId).Select(inningsRows =>
                     {
                         var innings = inningsRows.First();
-                        innings.PlayerInnings = inningsRows.Select(inningsRow => inningsRow.PlayerInnings.SingleOrDefault()).OfType<PlayerInnings>().ToList();
+                        innings.OverSets = inningsRows
+                                .Select(inningsRow => inningsRow.OverSets.SingleOrDefault())
+                                .OfType<OverSet>()
+                                .Distinct(new OverSetEqualityComparer())
+                                .OrderBy(x => x.OverSetNumber)
+                                .ToList();
+                        innings.PlayerInnings = inningsRows
+                                .Select(inningsRow => inningsRow.PlayerInnings.SingleOrDefault())
+                                .OfType<PlayerInnings>()
+                                .ToList();
                         return innings;
 
                     }).OrderBy(x => x.InningsOrderInMatch).ToList();

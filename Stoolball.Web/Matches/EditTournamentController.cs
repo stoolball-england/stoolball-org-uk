@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Dates;
@@ -68,6 +69,10 @@ namespace Stoolball.Web.Matches
                 }
                 model.TournamentLocationId = model.Tournament.TournamentLocation?.MatchLocationId;
                 model.TournamentLocationName = model.Tournament.TournamentLocation?.NameAndLocalityOrTownIfDifferent();
+                if (!model.Tournament.DefaultOverSets.Any())
+                {
+                    model.Tournament.DefaultOverSets.Add(new OverSet());
+                }
 
                 model.Metadata.PageTitle = "Edit " + model.Tournament.TournamentFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
 

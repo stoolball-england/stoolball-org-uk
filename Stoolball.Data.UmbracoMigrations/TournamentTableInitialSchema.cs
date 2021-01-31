@@ -46,10 +46,6 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public string QualificationType { get; set; }
 
-        [Column(nameof(OversPerInningsDefault))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public int? OversPerInningsDefault { get; set; }
-
         [Column(nameof(MaximumTeamsInTournament))]
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? MaximumTeamsInTournament { get; set; }

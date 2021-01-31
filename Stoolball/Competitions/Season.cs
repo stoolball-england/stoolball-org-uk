@@ -64,8 +64,7 @@ namespace Stoolball.Competitions
         [Display(Name = "How many players on a team?")]
         public int? PlayersPerTeam { get; set; }
 
-        [Display(Name = "How many overs in a match?")]
-        public int? Overs { get; set; }
+        public List<OverSet> DefaultOverSets { get; internal set; } = new List<OverSet>();
 
         [Display(Name = "What happens when only one batter is left?")]
         public bool EnableLastPlayerBatsOn { get; set; }

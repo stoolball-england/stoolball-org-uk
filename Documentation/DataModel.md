@@ -60,7 +60,9 @@ A `Player` is therefore represented by one or more `PlayerIdentities`, so that w
 
   It might also record that they didn't bat, but this is important as it may be the only record of a player's involvement in a `Match`. There might also be more than one `PlayerInnings` for a `PlayerIdentity` in a single `MatchInnings` - in a friendly match, one person might be given two or more chances to bat.
 
-- An `Over` records the bowling figures for a single over in a `MatchInnings` bowled by a `PlayerIdentity`. Together the `Overs` in a `MatchInnings` make up the bowling scorecard.
+- Typically there is just one `OverSet` of 8-ball overs that makes up each `MatchInnings`, but sometimes there are multiple `OverSets`, each with different rules.
+
+- An `Over` records the bowling figures for a single over in an `OverSet` bowled by a `PlayerIdentity`. Together the `Overs` in the `OverSets` of a `MatchInnings` make up the bowling scorecard.
 
 ## Awards
 

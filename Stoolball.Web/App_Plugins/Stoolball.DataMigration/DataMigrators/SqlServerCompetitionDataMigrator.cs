@@ -209,6 +209,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsAdjustment}", null, transaction).ConfigureAwait(false);
             await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsRule}", null, transaction).ConfigureAwait(false);
             await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonMatchType}", null, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE SeasonId IS NOT NULL", null, transaction).ConfigureAwait(false);
             await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason}", null, transaction).ConfigureAwait(false);
             await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam}", null, transaction).ConfigureAwait(false);
             await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.Season}", null, transaction).ConfigureAwait(false);
@@ -274,10 +275,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     migratedSeason.MigratedCompetition.CompetitionId = await connection.ExecuteScalarAsync<Guid>($"SELECT CompetitionId FROM {Tables.Competition} WHERE MigratedCompetitionId = @MigratedCompetitionId", new { season.MigratedCompetition.MigratedCompetitionId }, transaction).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.Season}
-						(SeasonId, MigratedSeasonId, CompetitionId, FromYear, UntilYear, Introduction, Results, PlayersPerTeam, Overs, 
+						(SeasonId, MigratedSeasonId, CompetitionId, FromYear, UntilYear, Introduction, Results, PlayersPerTeam, 
                          EnableLastPlayerBatsOn, EnableBonusOrPenaltyRuns, EnableTournaments, ResultsTableType, EnableRunsScored, EnableRunsConceded, SeasonRoute)
 						VALUES 
-                        (@SeasonId, @MigratedSeasonId, @CompetitionId, @FromYear, @UntilYear, @Introduction, @Results, @PlayersPerTeam, @Overs,
+                        (@SeasonId, @MigratedSeasonId, @CompetitionId, @FromYear, @UntilYear, @Introduction, @Results, @PlayersPerTeam, 
                         @EnableLastPlayerBatsOn, @EnableBonusOrPenaltyRuns, @EnableTournaments, @ResultsTableType, @EnableRunsScored, @EnableRunsConceded, @SeasonRoute)",
                     new
                     {
@@ -289,7 +290,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         migratedSeason.Introduction,
                         migratedSeason.Results,
                         migratedSeason.PlayersPerTeam,
-                        migratedSeason.Overs,
                         migratedSeason.EnableLastPlayerBatsOn,
                         migratedSeason.EnableBonusOrPenaltyRuns,
                         migratedSeason.EnableTournaments,
@@ -299,6 +299,20 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         migratedSeason.SeasonRoute
                     },
                     transaction).ConfigureAwait(false);
+
+                    if (migratedSeason.Overs.HasValue)
+                    {
+                        await transaction.Connection.ExecuteAsync($"INSERT INTO {Tables.OverSet} (OverSetId, SeasonId, OverSetNumber, Overs, BallsPerOver) VALUES (@OverSetId, @SeasonId, @OverSetNumber, @Overs, @BallsPerOver)",
+                            new
+                            {
+                                OverSetId = Guid.NewGuid(),
+                                migratedSeason.SeasonId,
+                                OverSetNumber = 1,
+                                migratedSeason.Overs,
+                                BallsPerOver = 8
+                            },
+                            transaction).ConfigureAwait(false);
+                    }
 
                     foreach (var teamInSeason in migratedSeason.MigratedTeams)
                     {

@@ -52,6 +52,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 using (var transaction = connection.BeginTransaction())
                 {
                     await connection.ExecuteAsync($"DELETE FROM {Tables.Comment} WHERE MatchId IS NOT NULL", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE MatchInningsId IS NOT NULL", null, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.MatchInnings}", null, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam}", null, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.Match}", null, transaction).ConfigureAwait(false);
@@ -221,8 +222,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         innings.BowlingMatchTeamId = (i == 0) ? awayMatchTeamId : homeMatchTeamId;
 
                         await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchInnings} 
-								(MatchInningsId, MatchId, BattingMatchTeamId, BowlingMatchTeamId, InningsOrderInMatch, Overs, Byes, Wides, NoBalls, BonusOrPenaltyRuns, Runs, Wickets)
-								VALUES (@MatchInningsId, @MatchId, @BattingMatchTeamId, @BowlingMatchTeamId, @InningsOrderInMatch, @Overs, @Byes, @Wides, @NoBalls, @BonusOrPenaltyRuns, @Runs, @Wickets)",
+								(MatchInningsId, MatchId, BattingMatchTeamId, BowlingMatchTeamId, InningsOrderInMatch, Byes, Wides, NoBalls, BonusOrPenaltyRuns, Runs, Wickets)
+								VALUES (@MatchInningsId, @MatchId, @BattingMatchTeamId, @BowlingMatchTeamId, @InningsOrderInMatch, @Byes, @Wides, @NoBalls, @BonusOrPenaltyRuns, @Runs, @Wickets)",
                             new
                             {
                                 innings.MatchInningsId,
@@ -230,7 +231,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                                 innings.BattingMatchTeamId,
                                 innings.BowlingMatchTeamId,
                                 innings.InningsOrderInMatch,
-                                innings.Overs,
                                 innings.Byes,
                                 innings.Wides,
                                 innings.NoBalls,
@@ -239,6 +239,21 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                                 innings.Wickets
                             },
                             transaction).ConfigureAwait(false);
+
+                        if (innings.Overs.HasValue)
+                        {
+                            await transaction.Connection.ExecuteAsync($"INSERT INTO {Tables.OverSet} (OverSetId, MatchInningsId, OverSetNumber, Overs, BallsPerOver) VALUES (@OverSetId, @MatchInningsId, @OverSetNumber, @Overs, @BallsPerOver)",
+                                new
+                                {
+                                    OverSetId = Guid.NewGuid(),
+                                    innings.MatchInningsId,
+                                    OverSetNumber = 1,
+                                    innings.Overs,
+                                    BallsPerOver = 8
+                                },
+                                transaction).ConfigureAwait(false);
+                        }
+
                     }
 
                     await _redirectsRepository.InsertRedirect(match.MatchRoute, migratedMatch.MatchRoute, string.Empty, transaction).ConfigureAwait(false);

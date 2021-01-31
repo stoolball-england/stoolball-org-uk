@@ -184,6 +184,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 MigratedTeamId = over.MigratedTeamId,
                 MigratedMatchTeamId = over.MigratedMatchTeamId,
                 OverNumber = over.OverNumber,
+                BallsPerOver = over.BallsPerOver,
                 BallsBowled = over.BallsBowled,
                 NoBalls = over.NoBalls,
                 Wides = over.Wides,
@@ -222,14 +223,15 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         transaction).ConfigureAwait(false));
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.Over}
-						(OverId, MatchInningsId, PlayerIdentityId, OverNumber, BallsBowled, NoBalls, Wides, RunsConceded)
-						VALUES (@OverId, @MatchInningsId, @PlayerIdentityId, @OverNumber, @BallsBowled, @NoBalls, @Wides, @RunsConceded)",
+						(OverId, MatchInningsId, PlayerIdentityId, OverNumber, BallsPerOver, BallsBowled, NoBalls, Wides, RunsConceded)
+						VALUES (@OverId, @MatchInningsId, @PlayerIdentityId, @OverNumber, @BallsPerOver, @BallsBowled, @NoBalls, @Wides, @RunsConceded)",
                     new
                     {
                         migratedOver.OverId,
                         MatchInningsId = inningsId,
                         migratedOver.PlayerIdentity.PlayerIdentityId,
                         migratedOver.OverNumber,
+                        migratedOver.BallsPerOver,
                         migratedOver.BallsBowled,
                         migratedOver.NoBalls,
                         migratedOver.Wides,

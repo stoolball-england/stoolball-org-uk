@@ -1,5 +1,5 @@
-﻿using Stoolball.Matches;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Stoolball.Matches;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 {
@@ -9,5 +9,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
         public int? MigratedTournamentLocationId { get; set; }
         public List<MigratedTeamInMatch> MigratedTeams { get; internal set; } = new List<MigratedTeamInMatch>();
         public List<int> MigratedSeasonIds { get; internal set; } = new List<int>();
+        public int? OversPerInningsDefault { get; set; }
     }
 }

@@ -32,10 +32,6 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public Guid? BowlingMatchTeamId { get; set; }
 
-        [Column(nameof(Overs))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public int? Overs { get; set; }
-
         [Column(nameof(Byes))]
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? Byes { get; set; }
