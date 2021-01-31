@@ -143,7 +143,7 @@ namespace Stoolball.Data.SqlServer
                     teamToReturn.MatchLocations = teams.Select(team => team.MatchLocations.SingleOrDefault())
                         .OfType<MatchLocation>()
                         .Distinct(new MatchLocationEqualityComparer())
-                        .OrderBy(x => x.SortName())
+                        .OrderBy(x => x.ComparableName())
                         .ToList();
                     teamToReturn.Seasons = teams.Select(team => team.Seasons.SingleOrDefault())
                         .OfType<TeamInSeason>()

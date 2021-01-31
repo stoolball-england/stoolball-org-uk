@@ -122,16 +122,16 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     _auditHistoryBuilder.BuildInitialAuditHistory(matchLocation, migratedMatchLocation, nameof(SqlServerMatchLocationDataMigrator), CreateRedactedCopy);
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchLocation}
-						(MatchLocationId, MigratedMatchLocationId, SortName, SecondaryAddressableObjectName, PrimaryAddressableObjectName, StreetDescription, 
+						(MatchLocationId, MigratedMatchLocationId, ComparableName, SecondaryAddressableObjectName, PrimaryAddressableObjectName, StreetDescription, 
 						 Locality, Town, AdministrativeArea, Postcode, Latitude, Longitude, GeoPrecision, MatchLocationNotes, MemberGroupKey, MemberGroupName, MatchLocationRoute)
 						VALUES 
-                        (@MatchLocationId, @MigratedMatchLocationId, @SortName, @SecondaryAddressableObjectName, @PrimaryAddressableObjectName, @StreetDescription, 
+                        (@MatchLocationId, @MigratedMatchLocationId, @ComparableName, @SecondaryAddressableObjectName, @PrimaryAddressableObjectName, @StreetDescription, 
                         @Locality, @Town, @AdministrativeArea, @Postcode, @Latitude, @Longitude, @GeoPrecision, @MatchLocationNotes, @MemberGroupKey, @MemberGroupName, @MatchLocationRoute)",
                     new
                     {
                         migratedMatchLocation.MatchLocationId,
                         migratedMatchLocation.MigratedMatchLocationId,
-                        SortName = migratedMatchLocation.SortName(),
+                        ComparableName = migratedMatchLocation.ComparableName(),
                         migratedMatchLocation.SecondaryAddressableObjectName,
                         migratedMatchLocation.PrimaryAddressableObjectName,
                         migratedMatchLocation.StreetDescription,

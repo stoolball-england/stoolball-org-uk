@@ -112,10 +112,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                       transaction).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerIdentity}
-							(PlayerIdentityId, PlayerId, MigratedPlayerIdentityId, PlayerIdentityName, PlayerIdentityComparableName, TeamId, 
+							(PlayerIdentityId, PlayerId, MigratedPlayerIdentityId, PlayerIdentityName, ComparableName, TeamId, 
 						  	 FirstPlayed, LastPlayed, TotalMatches, MissedMatches, Probability)
 							VALUES 
-                            (@PlayerIdentityId, @PlayerId, @MigratedPlayerIdentityId, @PlayerIdentityName, @PlayerIdentityComparableName, @TeamId, 
+                            (@PlayerIdentityId, @PlayerId, @MigratedPlayerIdentityId, @PlayerIdentityName, @ComparableName, @TeamId, 
                              @FirstPlayed, @LastPlayed, @TotalMatches, @MissedMatches, @Probability)",
                      new
                      {
@@ -123,7 +123,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                          migratedPlayer.PlayerId,
                          migratedPlayerIdentity.MigratedPlayerIdentityId,
                          migratedPlayerIdentity.PlayerIdentityName,
-                         PlayerIdentityComparableName = migratedPlayerIdentity.ComparableName(),
+                         ComparableName = migratedPlayerIdentity.ComparableName(),
                          TeamId = teamId,
                          migratedPlayerIdentity.FirstPlayed,
                          migratedPlayerIdentity.LastPlayed,

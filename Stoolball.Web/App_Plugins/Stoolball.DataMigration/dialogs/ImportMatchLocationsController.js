@@ -34,7 +34,7 @@
           locations,
           (location) => ({
             MigratedMatchLocationId: location.groundId,
-            SortName: location.sortName,
+            ComparableName: location.sortName,
             SecondaryAddressableObjectName: location.saon,
             PrimaryAddressableObjectName: location.paon,
             StreetDescription: location.street,

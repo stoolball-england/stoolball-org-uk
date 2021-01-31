@@ -392,16 +392,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                    });
 
             connection.Execute($@"INSERT INTO {Tables.PlayerIdentity} 
-                    (PlayerIdentityId, PlayerId, TeamId, PlayerIdentityName, PlayerIdentityComparableName, FirstPlayed, LastPlayed, TotalMatches, MissedMatches, Probability)
+                    (PlayerIdentityId, PlayerId, TeamId, PlayerIdentityName, ComparableName, FirstPlayed, LastPlayed, TotalMatches, MissedMatches, Probability)
                     VALUES
-                    (@PlayerIdentityId, @PlayerId, @TeamId, @PlayerIdentityName, @PlayerIdentityComparableName, @FirstPlayed, @LastPlayed, @TotalMatches, @MissedMatches, @Probability)",
+                    (@PlayerIdentityId, @PlayerId, @TeamId, @PlayerIdentityName, @ComparableName, @FirstPlayed, @LastPlayed, @TotalMatches, @MissedMatches, @Probability)",
                    new
                    {
                        playerIdentity.PlayerIdentityId,
                        PlayerId = playerId,
                        playerIdentity.Team.TeamId,
                        playerIdentity.PlayerIdentityName,
-                       PlayerIdentityComparableName = playerIdentity.ComparableName(),
+                       ComparableName = playerIdentity.ComparableName(),
                        playerIdentity.FirstPlayed,
                        playerIdentity.LastPlayed,
                        playerIdentity.TotalMatches,
@@ -413,15 +413,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         private static void CreateMatchLocationInDatabase(MatchLocation matchLocation, IDbConnection connection)
         {
             connection.Execute($@"INSERT INTO {Tables.MatchLocation} 
-                    (MatchLocationId, SortName, SecondaryAddressableObjectName, PrimaryAddressableObjectName, StreetDescription, Locality, Town, AdministrativeArea, Postcode,
+                    (MatchLocationId, ComparableName, SecondaryAddressableObjectName, PrimaryAddressableObjectName, StreetDescription, Locality, Town, AdministrativeArea, Postcode,
                     Latitude, Longitude, GeoPrecision, MatchLocationNotes, MemberGroupKey, MemberGroupName, MatchLocationRoute)
                     VALUES
-                    (@MatchLocationId, @SortName, @SecondaryAddressableObjectName, @PrimaryAddressableObjectName, @StreetDescription, @Locality, @Town, @AdministrativeArea, @Postcode,
+                    (@MatchLocationId, @ComparableName, @SecondaryAddressableObjectName, @PrimaryAddressableObjectName, @StreetDescription, @Locality, @Town, @AdministrativeArea, @Postcode,
                     @Latitude, @Longitude, @GeoPrecision, @MatchLocationNotes, @MemberGroupKey, @MemberGroupName, @MatchLocationRoute)",
                     new
                     {
                         matchLocation.MatchLocationId,
-                        SortName = matchLocation.SortName(),
+                        ComparableName = matchLocation.ComparableName(),
                         matchLocation.SecondaryAddressableObjectName,
                         matchLocation.PrimaryAddressableObjectName,
                         matchLocation.StreetDescription,

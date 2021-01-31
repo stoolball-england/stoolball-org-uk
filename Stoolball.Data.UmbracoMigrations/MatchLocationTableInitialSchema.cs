@@ -18,9 +18,9 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? MigratedMatchLocationId { get; set; }
 
-        [Column(nameof(SortName))]
+        [Column(nameof(ComparableName))]
         [Index(IndexTypes.Clustered)]
-        public string SortName { get; set; }
+        public string ComparableName { get; set; }
 
         [Column(nameof(SecondaryAddressableObjectName))]
         [NullSetting(NullSetting = NullSettings.Null)]

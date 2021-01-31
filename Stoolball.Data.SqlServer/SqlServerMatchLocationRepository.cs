@@ -117,9 +117,9 @@ namespace Stoolball.Data.SqlServer
 
                     await connection.ExecuteAsync(
                         $@"INSERT INTO {Tables.MatchLocation} (MatchLocationId, SecondaryAddressableObjectName, PrimaryAddressableObjectName, StreetDescription, Locality, Town,
-                                AdministrativeArea, Postcode, SortName, GeoPrecision, Latitude, Longitude, MatchLocationNotes, MatchLocationRoute, MemberGroupKey, MemberGroupName) 
+                                AdministrativeArea, Postcode, ComparableName, GeoPrecision, Latitude, Longitude, MatchLocationNotes, MatchLocationRoute, MemberGroupKey, MemberGroupName) 
                                 VALUES (@MatchLocationId, @SecondaryAddressableObjectName, @PrimaryAddressableObjectName, @StreetDescription, @Locality, @Town, @AdministrativeArea, 
-                                @Postcode, @SortName, @GeoPrecision, @Latitude, @Longitude, @MatchLocationNotes, @MatchLocationRoute, @MemberGroupKey, @MemberGroupName)",
+                                @Postcode, @ComparableName, @GeoPrecision, @Latitude, @Longitude, @MatchLocationNotes, @MatchLocationRoute, @MemberGroupKey, @MemberGroupName)",
                         new
                         {
                             auditableMatchLocation.MatchLocationId,
@@ -130,7 +130,7 @@ namespace Stoolball.Data.SqlServer
                             auditableMatchLocation.Town,
                             auditableMatchLocation.AdministrativeArea,
                             auditableMatchLocation.Postcode,
-                            SortName = auditableMatchLocation.SortName(),
+                            ComparableName = auditableMatchLocation.ComparableName(),
                             GeoPrecision = auditableMatchLocation.GeoPrecision?.ToString(),
                             auditableMatchLocation.Latitude,
                             auditableMatchLocation.Longitude,

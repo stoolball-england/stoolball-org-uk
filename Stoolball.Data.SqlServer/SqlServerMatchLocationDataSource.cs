@@ -139,7 +139,7 @@ namespace Stoolball.Data.SqlServer
                                         AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                         AND tml.UntilDate IS NULL
                                     ) > 0 THEN 0 ELSE 1 END,
-                                ml.SortName
+                                ml.ComparableName
                                 OFFSET {(matchLocationQuery.PageNumber - 1) * matchLocationQuery.PageSize} ROWS FETCH NEXT {matchLocationQuery.PageSize} ROWS ONLY)
                             ORDER BY 
                                 CASE WHEN (
@@ -150,7 +150,7 @@ namespace Stoolball.Data.SqlServer
                                     AND tn3.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t3.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                     AND tml3.UntilDate IS NULL 
                                 ) > 0 THEN 0 ELSE 1 END,
-                            ml2.SortName";
+                            ml2.ComparableName";
 
                 var locations = await connection.QueryAsync<MatchLocation, Team, MatchLocation>(sql,
                     (location, team) =>

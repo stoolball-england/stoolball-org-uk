@@ -30,8 +30,8 @@ namespace Stoolball.Data.UmbracoMigrations
         [Column(nameof(PlayerIdentityName))]
         public string PlayerIdentityName { get; set; }
 
-        [Column(nameof(PlayerIdentityComparableName))]
-        public string PlayerIdentityComparableName { get; set; }
+        [Column(nameof(ComparableName))]
+        public string ComparableName { get; set; }
 
         [Column(nameof(FirstPlayed))]
         [NullSetting(NullSetting = NullSettings.Null)]

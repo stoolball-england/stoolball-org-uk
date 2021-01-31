@@ -44,7 +44,7 @@ namespace Stoolball.MatchLocations
         /// <summary>
         /// Gets a concatenated version of the address which can be used for sorting addresses
         /// </summary>
-        public string SortName()
+        public string ComparableName()
         {
             return $" {PrimaryAddressableObjectName} {Town} {SecondaryAddressableObjectName}".ToUpperInvariant().Replace(" THE ", string.Empty).TrimStart();
         }

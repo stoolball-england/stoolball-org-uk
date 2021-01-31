@@ -78,10 +78,10 @@ namespace Stoolball.Data.SqlServer
 
             Player player;
             var matchedPlayer = await transaction.Connection.ExecuteScalarAsync<Guid?>(
-                    $"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE PlayerIdentityComparableName = @PlayerIdentityComparableName AND TeamId = @TeamId",
+                    $"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE ComparableName = @ComparableName AND TeamId = @TeamId",
                     new
                     {
-                        PlayerIdentityComparableName = playerIdentity.ComparableName(),
+                        ComparableName = playerIdentity.ComparableName(),
                         playerIdentity.Team.TeamId
                     }, transaction).ConfigureAwait(false);
 
@@ -128,14 +128,14 @@ namespace Stoolball.Data.SqlServer
                   }, transaction).ConfigureAwait(false);
 
             await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerIdentity} 
-                                (PlayerIdentityId, PlayerId, PlayerIdentityName, PlayerIdentityComparableName, TeamId, TotalMatches) 
-                                VALUES (@PlayerIdentityId, @PlayerId, @PlayerIdentityName, @PlayerIdentityComparableName, @TeamId, @TotalMatches)",
+                                (PlayerIdentityId, PlayerId, PlayerIdentityName, ComparableName, TeamId, TotalMatches) 
+                                VALUES (@PlayerIdentityId, @PlayerId, @PlayerIdentityName, @ComparableName, @TeamId, @TotalMatches)",
                    new
                    {
                        auditablePlayerIdentity.PlayerIdentityId,
                        player.PlayerId,
                        auditablePlayerIdentity.PlayerIdentityName,
-                       PlayerIdentityComparableName = auditablePlayerIdentity.ComparableName(),
+                       ComparableName = auditablePlayerIdentity.ComparableName(),
                        auditablePlayerIdentity.Team.TeamId,
                        auditablePlayerIdentity.TotalMatches
                    }, transaction).ConfigureAwait(false);
