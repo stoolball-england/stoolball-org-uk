@@ -18,11 +18,40 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             return new Club
             {
                 ClubId = Guid.NewGuid(),
-                ClubName = "Club A",
-                ClubRoute = "/clubs/club-a",
+                ClubName = "Club minimal",
+                ClubRoute = "/clubs/club-minimal",
                 MemberGroupKey = Guid.NewGuid(),
-                MemberGroupName = "Club A owners"
+                MemberGroupName = "Club minimal owners"
             };
+        }
+
+        public Club CreateClubWithTeams()
+        {
+            var club = new Club
+            {
+                ClubId = Guid.NewGuid(),
+                ClubName = "Club with teams",
+                ClubRoute = "/clubs/club-with-teams",
+                MemberGroupKey = Guid.NewGuid(),
+                MemberGroupName = "Club with teams owners",
+            };
+
+            var inactiveAlphabeticallyFirst = CreateTeamWithMinimalDetails("Inactive team");
+            inactiveAlphabeticallyFirst.Club = club;
+            inactiveAlphabeticallyFirst.UntilYear = 2019;
+
+            var activeAlphabeticallySecond = CreateTeamWithMinimalDetails("Sort me first in club");
+            activeAlphabeticallySecond.Club = club;
+
+            var activeAlphabeticallyThird = CreateTeamWithMinimalDetails("Sort me second in club");
+            activeAlphabeticallyThird.Club = club;
+
+            // Teams should come back with active sorted before inactive, alphabetically within those groups
+            club.Teams.Add(activeAlphabeticallySecond);
+            club.Teams.Add(activeAlphabeticallyThird);
+            club.Teams.Add(inactiveAlphabeticallyFirst);
+
+            return club;
         }
 
         public Competition CreateCompetitionWithMinimalDetails()
@@ -81,16 +110,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     new MatchInnings { MatchInningsId = Guid.NewGuid(), InningsOrderInMatch = 2 }
                 },
                 MatchRoute = "/matches/minimal-match",
-                StartTime = new DateTimeOffset(2020, 6, 6, 18, 30, 0, TimeSpan.Zero)
+                StartTime = new DateTimeOffset(2020, 6, 6, 18, 30, 0, TimeSpan.FromHours(1))
             };
         }
 
         public Match CreateMatchInThePastWithFullDetails()
         {
+            // Note: Team names would sort the away team first alphabetically
             var homeTeam = new TeamInMatch
             {
                 MatchTeamId = Guid.NewGuid(),
-                Team = CreateTeamWithMinimalDetails("Team A"),
+                Team = CreateTeamWithMinimalDetails("Home team"),
                 WonToss = true,
                 BattedFirst = true,
                 TeamRole = TeamRole.Home
@@ -99,7 +129,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             var awayTeam = new TeamInMatch
             {
                 MatchTeamId = Guid.NewGuid(),
-                Team = CreateTeamWithMinimalDetails("Team B"),
+                Team = CreateTeamWithMinimalDetails("Away team"),
                 WonToss = false,
                 BattedFirst = false,
                 TeamRole = TeamRole.Away
@@ -111,7 +141,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 homePlayers[i] = new PlayerIdentity
                 {
                     PlayerIdentityId = Guid.NewGuid(),
-                    PlayerIdentityName = "Player " + i + 1,
+                    PlayerIdentityName = "Player " + (i + 1),
                     Team = homeTeam.Team
                 };
             };
@@ -122,7 +152,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 awayPlayers[i] = new PlayerIdentity
                 {
                     PlayerIdentityId = Guid.NewGuid(),
-                    PlayerIdentityName = "Player " + i + 12,
+                    PlayerIdentityName = "Player " + (i + 12),
                     Team = awayTeam.Team
                 };
             };
@@ -134,19 +164,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 PlayerType = PlayerType.Ladies,
                 MatchName = "Team A beat Team B",
                 UpdateMatchNameAutomatically = true,
-                StartTime = new DateTimeOffset(2020, 7, 1, 19, 00, 00, TimeSpan.Zero),
+                StartTime = new DateTimeOffset(2020, 7, 1, 19, 00, 00, TimeSpan.FromHours(1)),
                 StartTimeIsKnown = true,
                 Awards = new List<MatchAward> {
-                    new MatchAward {
-                        AwardedToId = Guid.NewGuid(),
-                        Award = new Award
-                        {
-                            AwardId = Guid.NewGuid(),
-                            AwardName = "Player of the match"
-                        },
-                        PlayerIdentity = homePlayers[2],
-                        Reason = "Taking wickets"
-                    },
+                    // Arranged alphabetically by award name to match the data that should be returned
                     new MatchAward
                     {
                         AwardedToId = Guid.NewGuid(),
@@ -157,6 +178,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         },
                         PlayerIdentity = awayPlayers[4],
                         Reason = "Amazing catch"
+                    },
+                    new MatchAward {
+                        AwardedToId = Guid.NewGuid(),
+                        Award = new Award
+                        {
+                            AwardId = Guid.NewGuid(),
+                            AwardName = "Player of the match"
+                        },
+                        PlayerIdentity = homePlayers[2],
+                        Reason = "Taking wickets"
                     }
                 },
                 EnableBonusOrPenaltyRuns = true,

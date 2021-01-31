@@ -233,7 +233,7 @@ namespace Stoolball.Data.SqlServer
                             return matchAward;
                         },
                         new { matchToReturn.MatchId },
-                        splitOn: "AwardName, PlayerIdentityId, TeamId").ConfigureAwait(false)).ToList();
+                        splitOn: "AwardName, PlayerIdentityId, TeamId").ConfigureAwait(false)).OrderBy(x => x.Award.AwardName).ToList();
                 }
 
                 return matchToReturn;

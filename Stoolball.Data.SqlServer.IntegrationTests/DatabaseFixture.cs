@@ -27,6 +27,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public Competition CompetitionWithMinimalDetails { get; private set; }
         public MatchLocation MatchLocationWithMinimalDetails { get; private set; }
         public Club ClubWithMinimalDetails { get; private set; }
+        public Club ClubWithTeams { get; private set; }
         public Team TeamWithMinimalDetails { get; private set; }
 
         public List<Match> Matches { get; internal set; } = new List<Match>();
@@ -70,6 +71,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 ClubWithMinimalDetails = seedDataGenerator.CreateClubWithMinimalDetails();
                 CreateClubInDatabase(ClubWithMinimalDetails, connection);
+
+                ClubWithTeams = seedDataGenerator.CreateClubWithTeams();
+                CreateClubInDatabase(ClubWithTeams, connection);
 
                 TeamWithMinimalDetails = seedDataGenerator.CreateTeamWithMinimalDetails("Team minimal");
                 CreateTeamInDatabase(TeamWithMinimalDetails, connection);
@@ -166,8 +170,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         club.ClubName,
                         ComparableName = club.ComparableName(),
                         FromDate = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero),
-                        UntilDate = (DateTimeOffset?)null
+                        UntilDate = club.UntilDate
                     });
+
+            foreach (var team in club.Teams)
+            {
+                CreateTeamInDatabase(team, connection);
+            }
         }
 
         private static void CreateMatchInDatabase(Match match, IDbConnection connection)
@@ -484,7 +493,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         team.TeamName,
                         ComparableName = team.ComparableName(),
                         FromDate = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero),
-                        UntilDate = (DateTimeOffset?)null
+                        UntilDate = team.UntilYear.HasValue ? new DateTimeOffset(team.UntilYear.Value, 12, 31, 23, 59, 59, TimeSpan.Zero) : (DateTimeOffset?)null
                     });
         }
 
@@ -525,7 +534,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                       competition.CompetitionName,
                       ComparableName = competition.ComparableName(),
                       FromDate = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero),
-                      UntilDate = (DateTimeOffset?)null
+                      UntilDate = competition.UntilYear.HasValue ? new DateTimeOffset(competition.UntilYear.Value, 12, 31, 23, 59, 59, TimeSpan.Zero) : (DateTimeOffset?)null
                   });
         }
 

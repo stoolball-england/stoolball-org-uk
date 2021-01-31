@@ -38,6 +38,8 @@ namespace Stoolball.Clubs
             get { return new Uri($"https://www.stoolball.org.uk/id/club/{ClubId}"); }
         }
 
+        public DateTimeOffset? UntilDate { get; set; }
+
         /// <summary>
         /// Gets a description of the club suitable for including in metadata or search results
         /// </summary>
