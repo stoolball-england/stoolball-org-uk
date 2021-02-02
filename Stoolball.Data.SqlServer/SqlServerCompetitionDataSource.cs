@@ -106,9 +106,12 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var (where, parameters) = BuildWhereClause(competitionQuery);
-                return await connection.ExecuteScalarAsync<int>($@"SELECT COUNT(CompetitionId)
+                return await connection.ExecuteScalarAsync<int>($@"SELECT COUNT(co.CompetitionId)
                             FROM {Tables.Competition} AS co
-                            {where}", new DynamicParameters(parameters)).ConfigureAwait(false);
+                            INNER JOIN {Tables.CompetitionVersion} AS cv ON co.CompetitionId = cv.CompetitionId
+                            {where}
+                            AND cv.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = co.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)",
+                            new DynamicParameters(parameters)).ConfigureAwait(false);
             }
         }
 
