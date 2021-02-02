@@ -957,19 +957,21 @@ namespace Stoolball.Data.SqlServer
                 using (var transaction = connection.BeginTransaction())
                 {
                     // Select existing overs and work out which ones have changed.
-                    var oversBefore = await connection.QueryAsync<Over, PlayerIdentity, Over>(
+                    var oversBefore = await connection.QueryAsync<Over, OverSet, PlayerIdentity, Over>(
                         $@"SELECT o.OverId, o.OverNumber, o.BallsBowled, o.NoBalls, o.Wides, o.RunsConceded,
+                               o.OverSetId,
                                p.PlayerIdentityName
                                FROM {Tables.Over} o INNER JOIN {Tables.PlayerIdentity} p ON o.PlayerIdentityId = p.PlayerIdentityId
                                WHERE o.MatchInningsId = @MatchInningsId",
-                        (over, playerIdentity) =>
+                        (over, overSet, playerIdentity) =>
                         {
+                            over.OverSet = overSet;
                             over.PlayerIdentity = playerIdentity;
                             return over;
                         },
                            new { auditableInnings.MatchInningsId },
                            transaction,
-                           splitOn: "PlayerIdentityName").ConfigureAwait(false);
+                           splitOn: "OverSetId, PlayerIdentityName").ConfigureAwait(false);
 
                     for (var i = 0; i < auditableInnings.OversBowled.Count; i++)
                     {
@@ -985,21 +987,25 @@ namespace Stoolball.Data.SqlServer
                     // - deleted overs
                     // - affected players from the new/changed/deleted lists
 
+                    var previousOverSetIds = (await connection.QueryAsync<Guid>($"SELECT OverSetId FROM {Tables.OverSet} WHERE MatchInningsId = @MatchInningsId", new { auditableInnings.MatchInningsId }, transaction).ConfigureAwait(false)).ToList();
+                    await InsertOverSets(auditableInnings, transaction).ConfigureAwait(false);
+
                     foreach (var over in comparison.OversAdded)
                     {
                         over.OverId = Guid.NewGuid();
                         over.PlayerIdentity.Team = auditableInnings.BowlingTeam.Team;
                         over.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(over.PlayerIdentity, memberKey, memberName, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($@"INSERT INTO {Tables.Over} 
-                                (OverId, OverNumber, MatchInningsId, PlayerIdentityId, BallsBowled, NoBalls, Wides, RunsConceded) 
+                                (OverId, OverNumber, MatchInningsId, PlayerIdentityId, OverSetId, BallsBowled, NoBalls, Wides, RunsConceded) 
                                 VALUES 
-                                (@OverId, @OverNumber, @MatchInningsId, @PlayerIdentityId, @BallsBowled, @NoBalls, @Wides, @RunsConceded)",
+                                (@OverId, @OverNumber, @MatchInningsId, @PlayerIdentityId, @OverSetId, @BallsBowled, @NoBalls, @Wides, @RunsConceded)",
                             new
                             {
                                 over.OverId,
                                 over.OverNumber,
                                 auditableInnings.MatchInningsId,
                                 over.PlayerIdentity.PlayerIdentityId,
+                                OverSet.ForOver(auditableInnings.OverSets, over.OverNumber)?.OverSetId,
                                 over.BallsBowled,
                                 over.NoBalls,
                                 over.Wides,
@@ -1015,6 +1021,7 @@ namespace Stoolball.Data.SqlServer
                         after.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.PlayerIdentity, memberKey, memberName, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($@"UPDATE {Tables.Over} SET 
                                 PlayerIdentityId = @PlayerIdentityId,
+                                OverSetId = @OverSetId,
                                 BallsBowled = @BallsBowled,
                                 NoBalls = @NoBalls,
                                 Wides = @Wides,
@@ -1023,6 +1030,7 @@ namespace Stoolball.Data.SqlServer
                             new
                             {
                                 after.PlayerIdentity.PlayerIdentityId,
+                                OverSet.ForOver(auditableInnings.OverSets, after.OverNumber)?.OverSetId,
                                 after.BallsBowled,
                                 after.NoBalls,
                                 after.Wides,
@@ -1034,8 +1042,18 @@ namespace Stoolball.Data.SqlServer
 
                     await connection.ExecuteAsync($"DELETE FROM {Tables.Over} WHERE OverId IN @OverIds", new { OverIds = comparison.OversRemoved.Select(x => x.OverId) }, transaction).ConfigureAwait(false);
 
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE MatchInningsId = @MatchInningsId", new { auditableInnings.MatchInningsId }, transaction).ConfigureAwait(false);
-                    await InsertOverSets(auditableInnings, transaction).ConfigureAwait(false);
+                    // What about unchanged overs? They may have an OverSetId but we've just recreated the OverSets, so it needs to be updated
+                    foreach (var over in comparison.OversUnchanged)
+                    {
+                        await connection.ExecuteAsync($"UPDATE {Tables.Over} SET OverSetId = @OverSetId WHERE OverId = @OverId", new { OverSet.ForOver(auditableInnings.OverSets, over.OverNumber)?.OverSetId, over.OverId }, transaction).ConfigureAwait(false);
+                    }
+
+                    // Now the previous over sets can be removed, because the references from Tables.Over should be gone
+                    if (previousOverSetIds.Count > 0)
+                    {
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE OverSetId IN @previousOverSetIds", new { previousOverSetIds }, transaction).ConfigureAwait(false);
+                    }
+
 
                     await _statisticsRepository.UpdateBowlingFigures(auditableInnings, memberKey, memberName, transaction).ConfigureAwait(false);
 

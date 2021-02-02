@@ -1,7 +1,7 @@
 ﻿using Stoolball.Email;
 using Xunit;
 
-namespace Stoolball.Tests.Emails
+namespace Stoolball.UnitTests.Emails
 {
     public class EmailProtectorTests
     {

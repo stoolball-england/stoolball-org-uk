@@ -2,7 +2,7 @@
 using System;
 using Xunit;
 
-namespace Stoolball.Tests.Dates
+namespace Stoolball.UnitTests.Dates
 {
     public class DateTimeFormatterTests
     {

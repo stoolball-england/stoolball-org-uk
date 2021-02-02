@@ -157,6 +157,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 };
             };
 
+            var firstInningsOverSets = new List<OverSet> { new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } };
+            var secondInningsOverSets = new List<OverSet> { new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } };
+            var thirdInningsOverSets = new List<OverSet> { new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } };
+            var fourthInningsOverSets = new List<OverSet> { new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } };
+
             var match = new Match
             {
                 MatchId = Guid.NewGuid(),
@@ -222,8 +227,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         Runs = 200,
                         Wickets = 2,
                         PlayerInnings = CreateBattingScorecard(homePlayers, awayPlayers),
-                        OverSets = new List<OverSet>{ new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } },
-                        OversBowled = CreateOversBowled(awayPlayers)
+                        OverSets = firstInningsOverSets,
+                        OversBowled = CreateOversBowled(awayPlayers, firstInningsOverSets)
                     },
                     new MatchInnings
                     {
@@ -240,8 +245,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         Runs = 230,
                         Wickets = 7,
                         PlayerInnings = CreateBattingScorecard(awayPlayers, homePlayers),
-                        OverSets = new List<OverSet>{ new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } },
-                        OversBowled = CreateOversBowled(homePlayers)
+                        OverSets = secondInningsOverSets,
+                        OversBowled = CreateOversBowled(homePlayers, secondInningsOverSets)
                     },
                     new MatchInnings
                     {
@@ -258,8 +263,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         Runs = 150,
                         Wickets = 10,
                         PlayerInnings = CreateBattingScorecard(homePlayers, awayPlayers),
-                        OverSets = new List<OverSet>{ new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } },
-                        OversBowled = CreateOversBowled(awayPlayers)
+                        OverSets = thirdInningsOverSets,
+                        OversBowled = CreateOversBowled(awayPlayers, thirdInningsOverSets)
                     },
                     new MatchInnings
                     {
@@ -276,8 +281,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         Runs = 210,
                         Wickets = 4,
                         PlayerInnings = CreateBattingScorecard(awayPlayers, homePlayers),
-                        OverSets = new List<OverSet>{ new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } },
-                        OversBowled = CreateOversBowled(homePlayers)
+                        OverSets = fourthInningsOverSets,
+                        OversBowled = CreateOversBowled(homePlayers, fourthInningsOverSets)
                     }
                 },
                 MatchLocation = CreateMatchLocationWithMinimalDetails(),
@@ -389,7 +394,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         };
         }
 
-        private static List<Over> CreateOversBowled(PlayerIdentity[] bowlingTeam)
+        private static List<Over> CreateOversBowled(PlayerIdentity[] bowlingTeam, IEnumerable<OverSet> overSets)
         {
             var oversBowled = new List<Over>();
             for (var i = 0; i < 15; i++)
@@ -397,14 +402,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 oversBowled.Add(new Over
                 {
                     OverId = Guid.NewGuid(),
+                    OverSet = OverSet.ForOver(overSets, i + 1),
                     OverNumber = i + 1,
                     PlayerIdentity = (i % 2 == 0) ? bowlingTeam[5] : bowlingTeam[3],
-                    BallsPerOver = 8,
                     BallsBowled = 8,
                     NoBalls = 1,
                     Wides = 0,
                     RunsConceded = 10
-                });
+                }); ;
             }
             return oversBowled;
         }

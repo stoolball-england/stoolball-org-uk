@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Stoolball.Tests
+namespace Stoolball.UnitTests
 {
     public abstract class ValidationBaseTest
     {

@@ -2,7 +2,7 @@
 using Stoolball.Routing;
 using Xunit;
 
-namespace Stoolball.Tests.Routing
+namespace Stoolball.UnitTests.Routing
 {
     public class RouteGeneratorTests
     {

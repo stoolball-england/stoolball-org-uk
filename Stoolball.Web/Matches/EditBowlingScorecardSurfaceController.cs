@@ -29,11 +29,12 @@ namespace Stoolball.Web.Matches
         private readonly IDateTimeFormatter _dateTimeFormatter;
         private readonly IMatchInningsUrlParser _matchInningsUrlParser;
         private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
+        private readonly IOverSetScaffolder _overSetScaffolder;
 
         public EditBowlingScorecardSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchDataSource matchDataSource,
             IMatchRepository matchRepository, IAuthorizationPolicy<Stoolball.Matches.Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter,
-            IMatchInningsUrlParser matchInningsUrlParser, IBowlingFiguresCalculator bowlingFiguresCalculator)
+            IMatchInningsUrlParser matchInningsUrlParser, IBowlingFiguresCalculator bowlingFiguresCalculator, IOverSetScaffolder overSetScaffolder)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
@@ -42,6 +43,7 @@ namespace Stoolball.Web.Matches
             _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
             _matchInningsUrlParser = matchInningsUrlParser ?? throw new ArgumentNullException(nameof(matchInningsUrlParser));
             _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
+            _overSetScaffolder = overSetScaffolder ?? throw new ArgumentNullException(nameof(overSetScaffolder));
         }
 
         [HttpPost]
@@ -92,28 +94,23 @@ namespace Stoolball.Web.Matches
                 Autofocus = true
             };
             model.CurrentInnings.MatchInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
-            model.CurrentInnings.MatchInnings.OversBowled = postedData.OversBowledSearch.Where(x => x.Bowler?.Trim().Length > 0).Select(x => new Over
+            model.CurrentInnings.MatchInnings.OversBowled = postedData.OversBowledSearch.Where(x => x.Bowler?.Trim().Length > 0).Select((x, index) => new Over
             {
                 PlayerIdentity = new PlayerIdentity
                 {
                     PlayerIdentityName = x.Bowler.Trim(),
                     Team = model.CurrentInnings.MatchInnings.BowlingTeam.Team
                 },
+                OverNumber = index + 1,
                 BallsBowled = x.BallsBowled,
                 Wides = x.Wides,
                 NoBalls = x.NoBalls,
                 RunsConceded = x.RunsConceded
             }).ToList();
+
             model.CurrentInnings.OversBowledSearch = postedData.OversBowledSearch;
-            if (!model.CurrentInnings.MatchInnings.OverSets.Any())
-            {
-                model.CurrentInnings.MatchInnings.OverSets.Add(new OverSet { Overs = model.Match.Tournament != null ? 6 : 12, BallsPerOver = 8 });
-            }
-            if (model.CurrentInnings.MatchInnings.OverSets.Sum(x => x.Overs) < postedData.OversBowledSearch.Count)
-            {
-                // Assume extra overs are the same format as the last known over
-                model.CurrentInnings.MatchInnings.OverSets[model.CurrentInnings.MatchInnings.OverSets.Count - 1].Overs += (postedData.OversBowledSearch.Count - model.CurrentInnings.MatchInnings.OverSets.Sum(x => x.Overs));
-            }
+
+            _overSetScaffolder.ScaffoldOverSets(model.CurrentInnings.MatchInnings.OverSets, model.Match.Tournament != null ? 6 : 12, model.CurrentInnings.MatchInnings.OversBowled);
 
             model.CurrentInnings.MatchInnings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(model.CurrentInnings.MatchInnings);
 

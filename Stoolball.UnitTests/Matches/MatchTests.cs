@@ -3,7 +3,7 @@ using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Xunit;
 
-namespace Stoolball.Tests.Matches
+namespace Stoolball.UnitTests.Matches
 {
     public class MatchTests
     {

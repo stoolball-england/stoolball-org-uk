@@ -2,7 +2,7 @@
 using Stoolball.SocialMedia;
 using Xunit;
 
-namespace Stoolball.Tests.SocialMedia
+namespace Stoolball.UnitTests.SocialMedia
 {
     public class YouTubeUrlNormaliserTests
     {

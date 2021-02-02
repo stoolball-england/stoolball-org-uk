@@ -4,7 +4,7 @@ using System.Text;
 using Stoolball.MatchLocations;
 using Xunit;
 
-namespace Stoolball.Tests.MatchLocations
+namespace Stoolball.UnitTests.MatchLocations
 {
     public class MatchLocationTests : ValidationBaseTest
     {

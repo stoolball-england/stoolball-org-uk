@@ -312,16 +312,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 foreach (var overBowled in innings.OversBowled)
                 {
                     connection.Execute($@"INSERT INTO {Tables.Over} 
-                    (OverId, MatchInningsId, PlayerIdentityId, OverNumber, BallsPerOver, BallsBowled, NoBalls, Wides, RunsConceded)
+                    (OverId, MatchInningsId, OverSetId, PlayerIdentityId, OverNumber, BallsBowled, NoBalls, Wides, RunsConceded)
                     VALUES
-                    (@OverId, @MatchInningsId, @PlayerIdentityId, @OverNumber, @BallsPerOver, @BallsBowled, @NoBalls, @Wides, @RunsConceded)",
+                    (@OverId, @MatchInningsId, @OverSetId, @PlayerIdentityId, @OverNumber, @BallsBowled, @NoBalls, @Wides, @RunsConceded)",
                   new
                   {
                       overBowled.OverId,
                       innings.MatchInningsId,
+                      overBowled.OverSet.OverSetId,
                       overBowled.PlayerIdentity.PlayerIdentityId,
                       overBowled.OverNumber,
-                      overBowled.BallsPerOver,
                       overBowled.BallsBowled,
                       overBowled.NoBalls,
                       overBowled.Wides,

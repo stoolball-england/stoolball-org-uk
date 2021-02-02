@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace Stoolball.Tests
+namespace Stoolball.UnitTests
 {
     public class HumanizerCollectionGrammarTests
     {

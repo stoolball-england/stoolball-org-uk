@@ -4,7 +4,7 @@ using Stoolball.Matches;
 using Stoolball.Teams;
 using Xunit;
 
-namespace Stoolball.Tests.Matches
+namespace Stoolball.UnitTests.Matches
 {
     public class BowlingScorecardComparerTests
     {

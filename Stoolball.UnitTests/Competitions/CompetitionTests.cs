@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace Stoolball.Tests.Competitions
+namespace Stoolball.UnitTests.Competitions
 {
     public class CompetitionTests : ValidationBaseTest
     {

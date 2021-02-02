@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Xunit;
 
-namespace Stoolball.Tests.Matches
+namespace Stoolball.UnitTests.Matches
 {
     public class TournamentTests
     {

@@ -62,6 +62,7 @@ namespace Stoolball.Web
             composition.Register<IPostSaveRedirector, PostSaveRedirector>();
             composition.Register<IBowlingFiguresCalculator, BowlingFiguresCalculator>();
             composition.Register<IBackgroundTaskTracker, MemoryCacheBackgroundTaskTracker>();
+            composition.Register<IOverSetScaffolder, OverSetScaffolder>();
 
             // Data migration from the old Stoolball England website
             composition.Register<IAuditHistoryBuilder, AuditHistoryBuilder>();

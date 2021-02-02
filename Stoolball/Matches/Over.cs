@@ -14,8 +14,6 @@ namespace Stoolball.Matches
 
         public int OverNumber { get; set; }
 
-        public int? BallsPerOver { get; set; } = 8;
-
         [Range(1, 12, ErrorMessage = "Balls bowled must be between 1 and 12")]
         [Display(Name = "Balls bowled")]
         public int? BallsBowled { get; set; }
@@ -35,5 +33,7 @@ namespace Stoolball.Matches
         public Uri EntityUri {
             get { return new Uri($"https://www.stoolball.org.uk/id/over/{OverId}"); }
         }
+
+        public OverSet OverSet { get; set; }
     }
 }

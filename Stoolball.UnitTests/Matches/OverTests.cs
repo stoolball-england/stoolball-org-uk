@@ -3,7 +3,7 @@ using System.Linq;
 using Stoolball.Matches;
 using Xunit;
 
-namespace Stoolball.Tests.Matches
+namespace Stoolball.UnitTests.Matches
 {
     public class OverTests : ValidationBaseTest
     {

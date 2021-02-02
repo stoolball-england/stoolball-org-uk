@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Stoolball.Tests.Routing
+namespace Stoolball.UnitTests.Routing
 {
     public class RouteNormaliserTests
     {

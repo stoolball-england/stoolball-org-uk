@@ -26,8 +26,10 @@ namespace Stoolball.Data.UmbracoMigrations
         [Column(nameof(OverNumber))]
         public int OverNumber { get; set; }
 
-        [Column(nameof(BallsPerOver))]
-        public int BallsPerOver { get; set; }
+        [Column(nameof(OverSetId))]
+        [ForeignKey(typeof(OverSetTableInitialSchema), Column = nameof(OverSetTableInitialSchema.OverSetId))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public Guid? OverSetId { get; set; }
 
         [Column(nameof(BallsBowled))]
         [NullSetting(NullSetting = NullSettings.Null)]
