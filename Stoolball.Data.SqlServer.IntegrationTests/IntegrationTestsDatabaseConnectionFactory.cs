@@ -6,22 +6,21 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 {
     internal class IntegrationTestsDatabaseConnectionFactory : IDatabaseConnectionFactory
     {
-        private readonly string _pathToDatabase;
+        private readonly string _connectionString;
 
-        public IntegrationTestsDatabaseConnectionFactory(string pathToDatabase)
+        public IntegrationTestsDatabaseConnectionFactory(string connectionString)
         {
-            if (string.IsNullOrWhiteSpace(pathToDatabase))
+            if (string.IsNullOrWhiteSpace(connectionString))
             {
-                throw new ArgumentException($"'{nameof(pathToDatabase)}' cannot be null or whitespace", nameof(pathToDatabase));
+                throw new ArgumentException($"'{nameof(connectionString)}' cannot be null or whitespace", nameof(connectionString));
             }
 
-            _pathToDatabase = pathToDatabase;
+            _connectionString = connectionString;
         }
 
         public IDbConnection CreateDatabaseConnection()
         {
-            //var pathToDatabase = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Umbraco\Umbraco.mdf"));
-            return new SqlConnection($@"Server=(LocalDB)\MSSQLLocalDB;Integrated Security=true;AttachDbFileName={_pathToDatabase}");
+            return new SqlConnection(_connectionString);
         }
     }
 }
