@@ -46,6 +46,7 @@
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/ImportCompetitionSubscriptionsController.js",
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/DeleteCompetitionSubscriptionsController.js",
     "~/App_Plugins/Stoolball.DataMigration/Dialogs/EnsureRedirectsController.js",
+    "~/App_Plugins/Stoolball.DataMigration/Dialogs/RecreateUmbracoForms.js",
     "~/App_Plugins/Stoolball.DataMigration/stoolballResource.js"
   ],
   "css": [

@@ -638,6 +638,7 @@
     <Content Include="css\who-are-stoolball-england.page.min.css">
       <DependentUpon>who-are-stoolball-england.page.css</DependentUpon>
     </Content>
+    <Content Include="Forms\RecreateUmbracoForms.sql" />
     <Content Include="Global.asax" />
     <Content Include="HomePage\home.css">
       <DependentUpon>home.scss</DependentUpon>
@@ -1105,9 +1106,11 @@
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\MatchCommentSubscriptionMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\MatchCommentMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\MatchAwardMigrationController.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\Apis\RecreateUmbracoFormsMigrationController.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\ICompetitionSubscriptionDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IMatchCommentSubscriptionDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IMatchCommentDataMigrator.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\IUmbracoFormsDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedCompetitionSubscription.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedMatchCommentSubscription.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedMatchComment.cs" />
@@ -1152,6 +1155,7 @@
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedTeamInMatch.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedTeamInSeason.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\MigratedTournament.cs" />
+    <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\UmbracoFormsDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SkybrudRedirectsDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerCompetitionDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerCompetitionSubscriptionDataMigrator.cs" />
