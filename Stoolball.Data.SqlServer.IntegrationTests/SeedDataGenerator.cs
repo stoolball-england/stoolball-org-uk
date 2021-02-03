@@ -60,7 +60,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             {
                 CompetitionId = Guid.NewGuid(),
                 CompetitionName = "Example league",
-                CompetitionRoute = "/competitions/example-league",
+                CompetitionRoute = "/competitions/example-league-" + Guid.NewGuid(),
                 MemberGroupKey = Guid.NewGuid(),
                 MemberGroupName = "Example league owners"
             };
@@ -72,7 +72,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             {
                 TeamId = Guid.NewGuid(),
                 TeamName = teamName,
-                TeamRoute = "/teams/" + teamName.Kebaberize(),
+                TeamRoute = "/teams/" + teamName.Kebaberize() + "-" + Guid.NewGuid(),
                 MemberGroupKey = Guid.NewGuid(),
                 MemberGroupName = teamName + " owners"
             };
@@ -90,7 +90,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 Town = "Our town",
                 AdministrativeArea = "Our county",
                 Postcode = "AB1 2CD",
-                MatchLocationRoute = "/locations/our-ground",
+                MatchLocationRoute = "/locations/our-ground-" + Guid.NewGuid(),
                 GeoPrecision = GeoPrecision.Postcode,
                 MemberGroupKey = Guid.NewGuid(),
                 MemberGroupName = "Our ground owners"
@@ -109,7 +109,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     new MatchInnings { MatchInningsId = Guid.NewGuid(), InningsOrderInMatch = 1 },
                     new MatchInnings { MatchInningsId = Guid.NewGuid(), InningsOrderInMatch = 2 }
                 },
-                MatchRoute = "/matches/minimal-match",
+                MatchRoute = "/matches/minimal-match-" + Guid.NewGuid(),
                 StartTime = new DateTimeOffset(2020, 6, 6, 18, 30, 0, TimeSpan.FromHours(1))
             };
         }
@@ -162,6 +162,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             var thirdInningsOverSets = new List<OverSet> { new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } };
             var fourthInningsOverSets = new List<OverSet> { new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } };
 
+            var competition = CreateCompetitionWithMinimalDetails();
+
             var match = new Match
             {
                 MatchId = Guid.NewGuid(),
@@ -208,8 +210,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     SeasonId = Guid.NewGuid(),
                     FromYear = 2020,
                     UntilYear = 2020,
-                    Competition = CreateCompetitionWithMinimalDetails(),
-                    SeasonRoute = "/competitions/example-league/2020"
+                    Competition = competition,
+                    SeasonRoute = competition.CompetitionRoute + "/2020"
                 },
                 MatchInnings = new List<MatchInnings> {
                     new MatchInnings
@@ -288,7 +290,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 MatchLocation = CreateMatchLocationWithMinimalDetails(),
                 MatchResultType = MatchResultType.HomeWin,
                 MatchNotes = "<p>This is a test match, not a Test Match.</p>",
-                MatchRoute = "/matches/team-a-vs-team-b-1jul2020",
+                MatchRoute = "/matches/team-a-vs-team-b-1jul2020-" + Guid.NewGuid(),
                 MemberKey = Guid.NewGuid(),
             };
 
@@ -300,6 +302,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             return match;
         }
 
+        public Tournament CreateTournamentInThePastWithMinimalDetails()
+        {
+            return new Tournament
+            {
+                TournamentId = Guid.NewGuid(),
+                StartTime = new DateTimeOffset(2020, 8, 10, 10, 00, 00, TimeSpan.FromHours(1)),
+                TournamentName = "Example tournament",
+                TournamentRoute = "/tournaments/example-tournament-" + Guid.NewGuid(),
+                MemberKey = Guid.NewGuid()
+            };
+        }
 
         private static List<PlayerInnings> CreateBattingScorecard(PlayerIdentity[] battingTeam, PlayerIdentity[] bowlingTeam)
         {

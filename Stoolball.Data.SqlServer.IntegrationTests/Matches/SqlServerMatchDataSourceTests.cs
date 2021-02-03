@@ -18,13 +18,25 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         }
 
         [Fact]
-        public async Task Read_minimal_match_by_route_succeeds()
+        public async Task Read_match_by_route_reads_minimal_match_in_the_past()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.MatchInThePastWithMinimalDetails.MatchRoute, "matches")).Returns(_databaseFixture.MatchInThePastWithMinimalDetails.MatchRoute);
             var matchDataSource = new SqlServerMatchDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
             var result = await matchDataSource.ReadMatchByRoute(_databaseFixture.MatchInThePastWithMinimalDetails.MatchRoute).ConfigureAwait(false);
+
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task Read_match_by_route_reads_minimal_match_in_the_future()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.MatchInTheFutureWithMinimalDetails.MatchRoute, "matches")).Returns(_databaseFixture.MatchInTheFutureWithMinimalDetails.MatchRoute);
+            var matchDataSource = new SqlServerMatchDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await matchDataSource.ReadMatchByRoute(_databaseFixture.MatchInTheFutureWithMinimalDetails.MatchRoute).ConfigureAwait(false);
 
             Assert.NotNull(result);
         }
@@ -187,6 +199,20 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.Awards[award].PlayerIdentity.PlayerIdentityName, result.Awards[award].PlayerIdentity.PlayerIdentityName);
                 Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.Awards[award].Reason, result.Awards[award].Reason);
             }
+        }
+
+        [Fact]
+        public async Task Read_match_by_route_returns_tournament()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchRoute, "matches")).Returns(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchRoute);
+            var matchDataSource = new SqlServerMatchDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await matchDataSource.ReadMatchByRoute(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchRoute).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.Tournament.TournamentName, result.Tournament.TournamentName);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.Tournament.TournamentRoute, result.Tournament.TournamentRoute);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.Tournament.MemberKey, result.Tournament.MemberKey);
         }
     }
 }

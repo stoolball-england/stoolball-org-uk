@@ -27,8 +27,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public IDatabaseConnectionFactory ConnectionFactory { get; private set; }
 
         public Match MatchInThePastWithMinimalDetails { get; private set; }
+        public Match MatchInTheFutureWithMinimalDetails { get; private set; }
 
         public Match MatchInThePastWithFullDetails { get; private set; }
+        public Match MatchInThePastWithFullDetailsAndTournament { get; private set; }
+        public Tournament TournamentInThePastWithMinimalDetails { get; private set; }
         public Competition CompetitionWithMinimalDetails { get; private set; }
         public MatchLocation MatchLocationWithMinimalDetails { get; private set; }
         public Club ClubWithMinimalDetails { get; private set; }
@@ -100,8 +103,19 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 MatchInThePastWithMinimalDetails = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
                 CreateMatchInDatabase(MatchInThePastWithMinimalDetails, connection);
 
+                MatchInTheFutureWithMinimalDetails = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
+                MatchInTheFutureWithMinimalDetails.StartTime = DateTime.UtcNow.AddMonths(1);
+                CreateMatchInDatabase(MatchInTheFutureWithMinimalDetails, connection);
+
                 MatchInThePastWithFullDetails = seedDataGenerator.CreateMatchInThePastWithFullDetails();
                 CreateMatchInDatabase(MatchInThePastWithFullDetails, connection);
+
+                TournamentInThePastWithMinimalDetails = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
+                CreateTournamentInDatabase(TournamentInThePastWithMinimalDetails, connection);
+
+                MatchInThePastWithFullDetailsAndTournament = seedDataGenerator.CreateMatchInThePastWithFullDetails();
+                MatchInThePastWithFullDetailsAndTournament.Tournament = TournamentInThePastWithMinimalDetails;
+                CreateMatchInDatabase(MatchInThePastWithFullDetailsAndTournament, connection);
 
                 CompetitionWithMinimalDetails = MatchInThePastWithFullDetails.Season.Competition;
 
@@ -110,6 +124,30 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 Teams.AddRange(new[] { TeamWithMinimalDetails });
                 Matches.AddRange(new[] { MatchInThePastWithMinimalDetails, MatchInThePastWithFullDetails });
             }
+        }
+
+        private void CreateTournamentInDatabase(Tournament tournament, IDbConnection connection)
+        {
+            connection.Execute($@"INSERT INTO {Tables.Tournament} 
+                    (TournamentId, TournamentName, MatchLocationId, StartTime, StartTimeIsKnown, PlayerType, PlayersPerTeam, QualificationType, MaximumTeamsInTournament, SpacesInTournament, TournamentNotes, TournamentRoute, MemberKey)
+                    VALUES
+                    (@TournamentId, @TournamentName, @MatchLocationId, @StartTime, @StartTimeIsKnown, @PlayerType, @PlayersPerTeam, @QualificationType, @MaximumTeamsInTournament, @SpacesInTournament, @TournamentNotes, @TournamentRoute, @MemberKey)",
+                   new
+                   {
+                       tournament.TournamentId,
+                       tournament.TournamentName,
+                       MatchLocationId = tournament.TournamentLocation?.MatchLocationId,
+                       tournament.StartTime,
+                       tournament.StartTimeIsKnown,
+                       PlayerType = tournament.PlayerType.ToString(),
+                       tournament.PlayersPerTeam,
+                       tournament.QualificationType,
+                       tournament.MaximumTeamsInTournament,
+                       tournament.SpacesInTournament,
+                       tournament.TournamentNotes,
+                       tournament.TournamentRoute,
+                       tournament.MemberKey
+                   });
         }
 
         private static void CreateClubInDatabase(Club club, IDbConnection connection)
