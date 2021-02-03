@@ -59,10 +59,62 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             return new Competition
             {
                 CompetitionId = Guid.NewGuid(),
-                CompetitionName = "Example league",
-                CompetitionRoute = "/competitions/example-league-" + Guid.NewGuid(),
+                CompetitionName = "Minimal league",
+                CompetitionRoute = "/competitions/minimal-league-" + Guid.NewGuid(),
                 MemberGroupKey = Guid.NewGuid(),
-                MemberGroupName = "Example league owners"
+                MemberGroupName = "Minimal league owners"
+            };
+        }
+
+        public Competition CreateCompetitionWithFullDetails()
+        {
+            var competitionRoute = "/competitions/example-league-" + Guid.NewGuid();
+            return new Competition
+            {
+                CompetitionId = Guid.NewGuid(),
+                CompetitionName = "Example league",
+                PlayerType = PlayerType.JuniorMixed,
+                Introduction = "Introduction to the competition",
+                UntilYear = 2020,
+                PublicContactDetails = "Public contact details",
+                PrivateContactDetails = "Private contact details",
+                Facebook = "https://facebook.com/example-league",
+                Twitter = "@exampleleague",
+                Instagram = "@examplephotos",
+                YouTube = "https://youtube.com/exampleleague",
+                Website = "https://example.org",
+                CompetitionRoute = competitionRoute,
+                MemberGroupKey = Guid.NewGuid(),
+                MemberGroupName = "Example league owners",
+                Seasons = new List<Season> {
+                    new Season
+                    {
+                        SeasonId = Guid.NewGuid(),
+                        FromYear = 2020,
+                        UntilYear = 2020,
+                        SeasonRoute = competitionRoute + "/2020",
+                        DefaultOverSets = CreateOverSets(),
+                        MatchTypes = new List<MatchType>{ MatchType.LeagueMatch, MatchType.FriendlyMatch }
+                    },
+                    new Season
+                    {
+                        SeasonId = Guid.NewGuid(),
+                        FromYear = 2019,
+                        UntilYear = 2020,
+                        SeasonRoute = competitionRoute + "/2019-20",
+                        DefaultOverSets = CreateOverSets(),
+                        MatchTypes = new List<MatchType>{ MatchType.LeagueMatch, MatchType.FriendlyMatch }
+                    },
+                    new Season
+                    {
+                        SeasonId = Guid.NewGuid(),
+                        FromYear = 2019,
+                        UntilYear = 2019,
+                        SeasonRoute = competitionRoute + "/2019",
+                        DefaultOverSets = CreateOverSets(),
+                        MatchTypes = new List<MatchType>{ MatchType.LeagueMatch, MatchType.FriendlyMatch }
+                    }
+                }
             };
         }
 
@@ -157,12 +209,21 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 };
             };
 
-            var firstInningsOverSets = new List<OverSet> { new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } };
-            var secondInningsOverSets = new List<OverSet> { new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } };
-            var thirdInningsOverSets = new List<OverSet> { new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } };
-            var fourthInningsOverSets = new List<OverSet> { new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } };
+            var firstInningsOverSets = CreateOverSets();
+            var secondInningsOverSets = CreateOverSets();
+            var thirdInningsOverSets = CreateOverSets();
+            var fourthInningsOverSets = CreateOverSets();
 
             var competition = CreateCompetitionWithMinimalDetails();
+            var season = new Season
+            {
+                SeasonId = Guid.NewGuid(),
+                FromYear = 2020,
+                UntilYear = 2020,
+                Competition = competition,
+                SeasonRoute = competition.CompetitionRoute + "/2020"
+            };
+            competition.Seasons.Add(season);
 
             var match = new Match
             {
@@ -205,14 +266,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     homeTeam,
                     awayTeam
                 },
-                Season = new Season
-                {
-                    SeasonId = Guid.NewGuid(),
-                    FromYear = 2020,
-                    UntilYear = 2020,
-                    Competition = competition,
-                    SeasonRoute = competition.CompetitionRoute + "/2020"
-                },
+                Season = season,
                 MatchInnings = new List<MatchInnings> {
                     new MatchInnings
                     {
@@ -300,6 +354,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 innings.BowlingFigures = bowlingFigures.CalculateBowlingFigures(innings);
             }
             return match;
+        }
+
+        private static List<OverSet> CreateOverSets()
+        {
+            return new List<OverSet> { new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } };
         }
 
         public Tournament CreateTournamentInThePastWithMinimalDetails()

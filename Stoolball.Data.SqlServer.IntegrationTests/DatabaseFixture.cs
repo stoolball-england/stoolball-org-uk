@@ -33,11 +33,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public Match MatchInThePastWithFullDetailsAndTournament { get; private set; }
         public Tournament TournamentInThePastWithMinimalDetails { get; private set; }
         public Competition CompetitionWithMinimalDetails { get; private set; }
+        public Competition CompetitionWithFullDetails { get; private set; }
         public MatchLocation MatchLocationWithMinimalDetails { get; private set; }
         public Club ClubWithMinimalDetails { get; private set; }
         public Club ClubWithTeams { get; private set; }
         public Team TeamWithMinimalDetails { get; private set; }
-
+        public List<Competition> Competitions { get; internal set; } = new List<Competition>();
         public List<Match> Matches { get; internal set; } = new List<Match>();
         public List<Team> Teams { get; internal set; } = new List<Team>();
 
@@ -117,10 +118,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 MatchInThePastWithFullDetailsAndTournament.Tournament = TournamentInThePastWithMinimalDetails;
                 CreateMatchInDatabase(MatchInThePastWithFullDetailsAndTournament, connection);
 
-                CompetitionWithMinimalDetails = MatchInThePastWithFullDetails.Season.Competition;
+                CompetitionWithMinimalDetails = seedDataGenerator.CreateCompetitionWithMinimalDetails();
+                CreateCompetitionInDatabase(CompetitionWithMinimalDetails, connection);
+
+                CompetitionWithFullDetails = seedDataGenerator.CreateCompetitionWithFullDetails();
+                CreateCompetitionInDatabase(CompetitionWithFullDetails, connection);
 
                 MatchLocationWithMinimalDetails = MatchInThePastWithFullDetails.MatchLocation;
 
+                Competitions.AddRange(new[] { CompetitionWithMinimalDetails, CompetitionWithFullDetails, MatchInThePastWithFullDetails.Season.Competition, MatchInThePastWithFullDetailsAndTournament.Season.Competition });
                 Teams.AddRange(new[] { TeamWithMinimalDetails });
                 Matches.AddRange(new[] { MatchInThePastWithMinimalDetails, MatchInThePastWithFullDetails });
             }
@@ -193,9 +199,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
             if (match.Season != null)
             {
-                CreateSeasonInDatabase(match.Season, connection);
+                CreateCompetitionInDatabase(match.Season.Competition, connection);
             }
-
 
             connection.Execute($@"INSERT INTO {Tables.Match} 
                     (MatchId, MatchName, UpdateMatchNameAutomatically, MatchType, PlayerType, StartTime, StartTimeIsKnown, MatchRoute, MatchLocationId, PlayersPerTeam, 
@@ -333,18 +338,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 foreach (var overSet in innings.OverSets)
                 {
-                    connection.Execute($@"INSERT INTO {Tables.OverSet} 
-                    (OverSetId, MatchInningsId, OverSetNumber, Overs, BallsPerOver)
-                    VALUES
-                    (@OverSetId, @MatchInningsId, @OverSetNumber, @Overs, @BallsPerOver)",
-                    new
-                    {
-                        overSet.OverSetId,
-                        innings.MatchInningsId,
-                        overSet.OverSetNumber,
-                        overSet.Overs,
-                        overSet.BallsPerOver
-                    });
+                    CreateOverSetInDatabase(overSet, innings.MatchInningsId, null, connection);
                 }
 
                 foreach (var overBowled in innings.OversBowled)
@@ -389,6 +383,23 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     i++;
                 }
             }
+        }
+
+        private static void CreateOverSetInDatabase(OverSet overSet, Guid? matchInningsId, Guid? seasonId, IDbConnection connection)
+        {
+            connection.Execute($@"INSERT INTO {Tables.OverSet} 
+                    (OverSetId, MatchInningsId, SeasonId, OverSetNumber, Overs, BallsPerOver)
+                    VALUES
+                    (@OverSetId, @MatchInningsId, @SeasonId, @OverSetNumber, @Overs, @BallsPerOver)",
+            new
+            {
+                overSet.OverSetId,
+                MatchInningsId = matchInningsId,
+                SeasonId = seasonId,
+                overSet.OverSetNumber,
+                overSet.Overs,
+                overSet.BallsPerOver
+            });
         }
 
         private static void CreatePlayerIdentityInDatabase(PlayerIdentity playerIdentity, IDbConnection connection)
@@ -541,12 +552,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                       FromDate = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero),
                       UntilDate = competition.UntilYear.HasValue ? new DateTimeOffset(competition.UntilYear.Value, 12, 31, 23, 59, 59, TimeSpan.Zero) : (DateTimeOffset?)null
                   });
+
+            foreach (var season in competition.Seasons)
+            {
+                CreateSeasonInDatabase(season, competition.CompetitionId.Value, connection);
+            }
         }
 
-        private static void CreateSeasonInDatabase(Season season, IDbConnection connection)
+        private static void CreateSeasonInDatabase(Season season, Guid competitionId, IDbConnection connection)
         {
-            CreateCompetitionInDatabase(season.Competition, connection);
-
             connection.Execute($@"INSERT INTO {Tables.Season} 
                     (SeasonId, CompetitionId, FromYear, UntilYear, Introduction, Results, PlayersPerTeam, EnableTournaments, EnableBonusOrPenaltyRuns,
                     ResultsTableType, EnableRunsScored, EnableRunsConceded, EnableLastPlayerBatsOn, SeasonRoute)
@@ -556,7 +570,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     new
                     {
                         season.SeasonId,
-                        season.Competition.CompetitionId,
+                        CompetitionId = competitionId,
                         season.FromYear,
                         season.UntilYear,
                         season.Introduction,
@@ -571,6 +585,25 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         season.SeasonRoute
                     }
                     );
+
+            foreach (var matchType in season.MatchTypes)
+            {
+                connection.Execute($@"INSERT INTO {Tables.SeasonMatchType}
+                    (SeasonMatchTypeId, SeasonId, MatchType)
+                    VALUES
+                    (@SeasonMatchTypeId, @SeasonId, @MatchType)",
+                  new
+                  {
+                      SeasonMatchTypeId = Guid.NewGuid(),
+                      season.SeasonId,
+                      MatchType = matchType.ToString()
+                  });
+            }
+
+            foreach (var overSet in season.DefaultOverSets)
+            {
+                CreateOverSetInDatabase(overSet, null, season.SeasonId, connection);
+            }
         }
         public void Dispose()
         {

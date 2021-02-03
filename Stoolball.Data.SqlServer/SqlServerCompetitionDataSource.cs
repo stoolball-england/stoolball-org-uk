@@ -41,7 +41,7 @@ namespace Stoolball.Data.SqlServer
                     $@"SELECT co.CompetitionId, cv.CompetitionName, co.PlayerType, co.Introduction, YEAR(cv.UntilDate) AS UntilYear, 
                             co.PublicContactDetails, co.PrivateContactDetails, co.Facebook, co.Twitter, co.Instagram, co.YouTube, co.Website, co.CompetitionRoute, 
                             co.MemberGroupKey, co.MemberGroupName,
-                            s.SeasonRoute, s.FromYear, s.UntilYear, s.PlayersPerTeam, s.EnableTournaments, s.EnableLastPlayerBatsOn, s.EnableBonusOrPenaltyRuns,
+                            s.SeasonId, s.SeasonRoute, s.FromYear, s.UntilYear, s.PlayersPerTeam, s.EnableTournaments, s.EnableLastPlayerBatsOn, s.EnableBonusOrPenaltyRuns,
                             os.OverSetId, os.OverSetNumber, os.Overs, os.BallsPerOver,
                             mt.MatchType
                             FROM {Tables.Competition} AS co
@@ -69,7 +69,7 @@ namespace Stoolball.Data.SqlServer
                         return competition;
                     },
                     new { Route = normalisedRoute },
-                    splitOn: "SeasonRoute,OverSetId,MatchType").ConfigureAwait(false);
+                    splitOn: "SeasonId,OverSetId,MatchType").ConfigureAwait(false);
 
                 var competitionToReturn = competitions.FirstOrDefault(); // get an example with the properties that are the same for every row
                 if (competitionToReturn != null && competitionToReturn.Seasons.Count > 0)
@@ -79,18 +79,20 @@ namespace Stoolball.Data.SqlServer
                                                     .Distinct(new SeasonEqualityComparer())
                                                     .ToList();
 
-
-                    competitionToReturn.Seasons[0].MatchTypes = competitions
-                        .Select(competition => competition.Seasons.FirstOrDefault()?.MatchTypes.FirstOrDefault())
-                        .OfType<MatchType>()
-                        .Distinct()
-                        .ToList();
-                    competitionToReturn.Seasons[0].DefaultOverSets = competitions
-                        .Select(competition => competition.Seasons.FirstOrDefault()?.DefaultOverSets.FirstOrDefault())
-                        .OfType<OverSet>()
-                        .Distinct(new OverSetEqualityComparer())
-                        .OrderBy(x => x.OverSetNumber)
-                        .ToList();
+                    foreach (var season in competitionToReturn.Seasons)
+                    {
+                        season.MatchTypes = competitions
+                            .SelectMany(competition => competition.Seasons.Where(x => x.SeasonId == season.SeasonId).SelectMany(x => x.MatchTypes))
+                            .OfType<MatchType>()
+                            .Distinct()
+                            .ToList();
+                        season.DefaultOverSets = competitions
+                            .SelectMany(competition => competition.Seasons.Where(x => x.SeasonId == season.SeasonId).SelectMany(x => x.DefaultOverSets))
+                            .OfType<OverSet>()
+                            .Distinct(new OverSetEqualityComparer())
+                            .OrderBy(x => x.OverSetNumber)
+                            .ToList();
+                    }
                 }
 
                 return competitionToReturn;
@@ -121,12 +123,14 @@ namespace Stoolball.Data.SqlServer
         /// <returns>A list of <see cref="Competition"/> objects. An empty list if no competitions are found.</returns>
         public async Task<List<Competition>> ReadCompetitions(CompetitionQuery competitionQuery)
         {
+            if (competitionQuery == null) { competitionQuery = new CompetitionQuery(); }
+
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var (where, parameters) = BuildWhereClause(competitionQuery);
 
                 var sql = $@"SELECT co2.CompetitionId, cv2.CompetitionName, co2.CompetitionRoute, YEAR(cv2.UntilDate) AS UntilYear, co2.PlayerType,
-                            s2.SeasonRoute,
+                            s2.SeasonId, s2.SeasonRoute,
                             st2.TeamId
                             FROM {Tables.Competition} AS co2
                             INNER JOIN {Tables.CompetitionVersion} AS cv2 ON co2.CompetitionId = cv2.CompetitionId
@@ -162,7 +166,7 @@ namespace Stoolball.Data.SqlServer
                         return competition;
                     },
                     new DynamicParameters(parameters),
-                    splitOn: "SeasonRoute,TeamId").ConfigureAwait(false);
+                    splitOn: "SeasonId,TeamId").ConfigureAwait(false);
 
                 var resolvedCompetitions = competitions.GroupBy(competition => competition.CompetitionId).Select(copiesOfCompetition =>
                 {
