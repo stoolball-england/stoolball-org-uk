@@ -255,5 +255,36 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                 Assert.NotNull(result.Single(x => x.CompetitionId == competition.CompetitionId));
             }
         }
+
+        [Fact]
+        public async Task Read_competitions_sorts_by_most_recently_active_then_no_seasons_then_inactive()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var competitionDataSource = new SqlServerCompetitionDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await competitionDataSource.ReadCompetitions(null).ConfigureAwait(false);
+
+            var expectedActiveStatus = true;
+            var hasSeasonsIfActive = true;
+            foreach (var competition in result)
+            {
+                // The first time an active competition with no seasons is seen, set a flag to say they must all have no seasons if active
+                if (hasSeasonsIfActive && !competition.UntilYear.HasValue && competition.Seasons.Count == 0)
+                {
+                    hasSeasonsIfActive = false;
+                }
+                if (!competition.UntilYear.HasValue)
+                {
+                    Assert.Equal(hasSeasonsIfActive, competition.Seasons.Any());
+                }
+
+                // The first time an inactive competition is seen, set a flag to say they must all be inactive
+                if (expectedActiveStatus && competition.UntilYear.HasValue)
+                {
+                    expectedActiveStatus = false;
+                }
+                Assert.Equal(expectedActiveStatus, !competition.UntilYear.HasValue);
+            }
+        }
     }
 }

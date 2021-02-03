@@ -90,26 +90,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     new Season
                     {
                         SeasonId = Guid.NewGuid(),
+                        FromYear = 2021,
+                        UntilYear = 2021,
+                        SeasonRoute = competitionRoute + "/2021",
+                        DefaultOverSets = CreateOverSets(),
+                        MatchTypes = new List<MatchType>{ MatchType.LeagueMatch, MatchType.FriendlyMatch }
+                    },
+                    new Season
+                    {
+                        SeasonId = Guid.NewGuid(),
+                        FromYear = 2020,
+                        UntilYear = 2019,
+                        SeasonRoute = competitionRoute + "/2020-21",
+                        DefaultOverSets = CreateOverSets(),
+                        MatchTypes = new List<MatchType>{ MatchType.LeagueMatch, MatchType.FriendlyMatch }
+                    },
+                    new Season
+                    {
+                        SeasonId = Guid.NewGuid(),
                         FromYear = 2020,
                         UntilYear = 2020,
-                        SeasonRoute = competitionRoute + "/2020",
-                        DefaultOverSets = CreateOverSets(),
-                        MatchTypes = new List<MatchType>{ MatchType.LeagueMatch, MatchType.FriendlyMatch }
-                    },
-                    new Season
-                    {
-                        SeasonId = Guid.NewGuid(),
-                        FromYear = 2019,
-                        UntilYear = 2020,
-                        SeasonRoute = competitionRoute + "/2019-20",
-                        DefaultOverSets = CreateOverSets(),
-                        MatchTypes = new List<MatchType>{ MatchType.LeagueMatch, MatchType.FriendlyMatch }
-                    },
-                    new Season
-                    {
-                        SeasonId = Guid.NewGuid(),
-                        FromYear = 2019,
-                        UntilYear = 2019,
                         SeasonRoute = competitionRoute + "/2019",
                         DefaultOverSets = CreateOverSets(),
                         MatchTypes = new List<MatchType>{ MatchType.LeagueMatch, MatchType.FriendlyMatch }
