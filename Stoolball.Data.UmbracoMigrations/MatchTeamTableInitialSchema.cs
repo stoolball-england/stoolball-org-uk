@@ -38,5 +38,10 @@ namespace Stoolball.Data.UmbracoMigrations
         [Column(nameof(WonToss))]
         [NullSetting(NullSetting = NullSettings.Null)]
         public bool? WonToss { get; set; }
+
+        [Column(nameof(WinnerOfMatchId))]
+        [ForeignKey(typeof(MatchTableInitialSchema), Column = nameof(MatchTableInitialSchema.MatchId), Name = "FK_StoolballMatch_StoolballMatchTeam_WinnerOfMatchId")]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public Guid? WinnerOfMatchId { get; set; }
     }
 }

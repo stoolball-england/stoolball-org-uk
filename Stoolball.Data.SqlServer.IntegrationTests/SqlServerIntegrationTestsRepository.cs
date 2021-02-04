@@ -125,9 +125,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 CreateTeam(teamInMatch.Team);
 
                 _connection.Execute($@"INSERT INTO {Tables.MatchTeam} 
-                    (MatchTeamId, TeamId, PlayingAsTeamName, MatchId, TeamRole, WonToss)
+                    (MatchTeamId, TeamId, PlayingAsTeamName, MatchId, TeamRole, WonToss, WinnerOfMatchId)
                     VALUES
-                    (@MatchTeamId, @TeamId, @PlayingAsTeamName, @MatchId, @TeamRole, @WonToss)",
+                    (@MatchTeamId, @TeamId, @PlayingAsTeamName, @MatchId, @TeamRole, @WonToss, @WinnerOfMatchId)",
                    new
                    {
                        teamInMatch.MatchTeamId,
@@ -135,7 +135,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                        teamInMatch.PlayingAsTeamName,
                        match.MatchId,
                        TeamRole = teamInMatch.TeamRole.ToString(),
-                       teamInMatch.WonToss
+                       teamInMatch.WonToss,
+                       WinnerOfMatchId = (Guid?)null
                    });
             }
 
