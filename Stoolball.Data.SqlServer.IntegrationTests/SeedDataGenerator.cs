@@ -87,34 +87,23 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 MemberGroupKey = Guid.NewGuid(),
                 MemberGroupName = "Example league owners",
                 Seasons = new List<Season> {
-                    new Season
-                    {
-                        SeasonId = Guid.NewGuid(),
-                        FromYear = 2021,
-                        UntilYear = 2021,
-                        SeasonRoute = competitionRoute + "/2021",
-                        DefaultOverSets = CreateOverSets(),
-                        MatchTypes = new List<MatchType>{ MatchType.LeagueMatch, MatchType.FriendlyMatch }
-                    },
-                    new Season
-                    {
-                        SeasonId = Guid.NewGuid(),
-                        FromYear = 2020,
-                        UntilYear = 2021,
-                        SeasonRoute = competitionRoute + "/2020-21",
-                        DefaultOverSets = CreateOverSets(),
-                        MatchTypes = new List<MatchType>{ MatchType.LeagueMatch, MatchType.FriendlyMatch }
-                    },
-                    new Season
-                    {
-                        SeasonId = Guid.NewGuid(),
-                        FromYear = 2020,
-                        UntilYear = 2020,
-                        SeasonRoute = competitionRoute + "/2019",
-                        DefaultOverSets = CreateOverSets(),
-                        MatchTypes = new List<MatchType>{ MatchType.LeagueMatch, MatchType.FriendlyMatch }
-                    }
+                    CreateSeason(competitionRoute,2021,2021),
+                    CreateSeason(competitionRoute,2020,2021),
+                    CreateSeason(competitionRoute,2020,2020)
                 }
+            };
+        }
+
+        private static Season CreateSeason(string competitionRoute, int fromYear, int untilYear)
+        {
+            return new Season
+            {
+                SeasonId = Guid.NewGuid(),
+                FromYear = fromYear,
+                UntilYear = untilYear,
+                SeasonRoute = competitionRoute + "/" + fromYear + "-" + untilYear,
+                DefaultOverSets = CreateOverSets(),
+                MatchTypes = new List<MatchType> { MatchType.LeagueMatch, MatchType.FriendlyMatch }
             };
         }
 
@@ -128,6 +117,55 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 MemberGroupKey = Guid.NewGuid(),
                 MemberGroupName = teamName + " owners"
             };
+        }
+        public Team CreateTeamWithFullDetails()
+        {
+            var competition = CreateCompetitionWithMinimalDetails();
+            var teamName = "Team with full details";
+            var team = new Team
+            {
+                TeamId = Guid.NewGuid(),
+                TeamName = teamName,
+                TeamType = TeamType.Representative,
+                TeamRoute = "/teams/" + teamName.Kebaberize() + "-" + Guid.NewGuid(),
+                PlayerType = PlayerType.Ladies,
+                Introduction = "Introduction to the team",
+                AgeRangeLower = 11,
+                AgeRangeUpper = 21,
+                ClubMark = true,
+                Facebook = "https://www.facebook.com/example-team",
+                Twitter = "@teamtweets",
+                Instagram = "@teamphotos",
+                YouTube = "https://youtube.com/exampleteam",
+                Website = "https://www.example.org",
+                PlayingTimes = "Info on when this team plays",
+                Cost = "Membership costs",
+                UntilYear = 2019,
+                PublicContactDetails = "Public contact details",
+                PrivateContactDetails = "Private contact details",
+                MemberGroupKey = Guid.NewGuid(),
+                MemberGroupName = teamName + " owners",
+                MatchLocations = new List<MatchLocation> {
+                    CreateMatchLocationWithMinimalDetails(),
+                    CreateMatchLocationWithMinimalDetails()
+                },
+                Seasons = new List<TeamInSeason> {
+                    new TeamInSeason
+                    {
+                        Season = CreateSeason(competition.CompetitionRoute, 2020, 2020)
+                    },
+                    new TeamInSeason
+                    {
+                        Season = CreateSeason(competition.CompetitionRoute, 2019,2019)
+                    }
+                }
+            };
+            foreach (var season in team.Seasons)
+            {
+                season.Team = team;
+                season.Season.Competition = competition;
+            }
+            return team;
         }
 
         public MatchLocation CreateMatchLocationWithMinimalDetails()

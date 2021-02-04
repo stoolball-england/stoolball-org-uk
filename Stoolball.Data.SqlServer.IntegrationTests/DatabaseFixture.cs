@@ -35,6 +35,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public Club ClubWithMinimalDetails { get; private set; }
         public Club ClubWithTeams { get; private set; }
         public Team TeamWithMinimalDetails { get; private set; }
+        public Team TeamWithFullDetails { get; private set; }
         public List<Competition> Competitions { get; internal set; } = new List<Competition>();
         public List<Match> Matches { get; internal set; } = new List<Match>();
         public List<MatchLocation> MatchLocations { get; internal set; } = new List<MatchLocation>();
@@ -100,6 +101,20 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 TeamWithMinimalDetails = seedDataGenerator.CreateTeamWithMinimalDetails("Team minimal");
                 repo.CreateTeam(TeamWithMinimalDetails);
+
+                TeamWithFullDetails = seedDataGenerator.CreateTeamWithFullDetails();
+                repo.CreateTeam(TeamWithFullDetails);
+                foreach (var matchLocation in TeamWithFullDetails.MatchLocations)
+                {
+                    repo.CreateMatchLocation(matchLocation);
+                    repo.AddTeamToMatchLocation(TeamWithFullDetails, matchLocation);
+                }
+                repo.CreateCompetition(TeamWithFullDetails.Seasons[0].Season.Competition);
+                foreach (var season in TeamWithFullDetails.Seasons)
+                {
+                    repo.CreateSeason(season.Season, season.Season.Competition.CompetitionId.Value);
+                    repo.AddTeamToSeason(season);
+                }
 
                 MatchInThePastWithMinimalDetails = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
                 repo.CreateMatch(MatchInThePastWithMinimalDetails);

@@ -274,6 +274,37 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             }
         }
 
+        public void AddTeamToMatchLocation(Team team, MatchLocation matchLocation)
+        {
+            _connection.Execute($@"INSERT INTO {Tables.TeamMatchLocation} 
+                    (TeamMatchLocationId, MatchLocationId, TeamId, FromDate, UntilDate)
+                    VALUES
+                    (@TeamMatchLocationId, @MatchLocationId, @TeamId, @FromDate, @UntilDate)",
+           new
+           {
+               TeamMatchLocationId = Guid.NewGuid(),
+               matchLocation.MatchLocationId,
+               team.TeamId,
+               FromDate = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero),
+               UntilDate = (DateTimeOffset?)null
+           });
+        }
+
+        public void AddTeamToSeason(TeamInSeason teamInSeason)
+        {
+            _connection.Execute($@"INSERT INTO {Tables.SeasonTeam} 
+                    (SeasonTeamId, SeasonId, TeamId, WithdrawnDate)
+                    VALUES
+                    (@SeasonTeamId, @SeasonId, @TeamId, @WithdrawnDate)",
+            new
+            {
+                SeasonTeamId = Guid.NewGuid(),
+                teamInSeason.Season.SeasonId,
+                teamInSeason.Team.TeamId,
+                teamInSeason.WithdrawnDate
+            });
+        }
+
         public void CreateOverSet(OverSet overSet, Guid? matchInningsId, Guid? seasonId)
         {
             _connection.Execute($@"INSERT INTO {Tables.OverSet} 
