@@ -128,6 +128,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 MatchLocationWithMinimalDetails = MatchInThePastWithFullDetails.MatchLocation;
 
                 Competitions.AddRange(new[] { CompetitionWithMinimalDetails, CompetitionWithFullDetails, MatchInThePastWithFullDetails.Season.Competition, MatchInThePastWithFullDetailsAndTournament.Season.Competition });
+                for (var i = 0; i < 30; i++)
+                {
+                    var competition = seedDataGenerator.CreateCompetitionWithMinimalDetails();
+                    CreateCompetitionInDatabase(competition, connection);
+                    Competitions.Add(competition);
+                }
+
                 Teams.AddRange(new[] { TeamWithMinimalDetails });
                 Matches.AddRange(new[] { MatchInThePastWithMinimalDetails, MatchInThePastWithFullDetails });
             }

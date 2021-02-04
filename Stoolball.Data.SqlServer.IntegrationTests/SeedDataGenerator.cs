@@ -100,7 +100,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     {
                         SeasonId = Guid.NewGuid(),
                         FromYear = 2020,
-                        UntilYear = 2019,
+                        UntilYear = 2021,
                         SeasonRoute = competitionRoute + "/2020-21",
                         DefaultOverSets = CreateOverSets(),
                         MatchTypes = new List<MatchType>{ MatchType.LeagueMatch, MatchType.FriendlyMatch }
