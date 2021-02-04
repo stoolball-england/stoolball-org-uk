@@ -149,6 +149,33 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             };
         }
 
+        public MatchLocation CreateMatchLocationWithFullDetails()
+        {
+            var activeTeam = CreateTeamWithMinimalDetails("Team active");
+            var anotherActiveTeam = CreateTeamWithMinimalDetails("Team that plays");
+            var transientTeam = CreateTeamWithMinimalDetails("Transient team");
+            transientTeam.TeamType = TeamType.Transient;
+            var inactiveTeam = CreateTeamWithMinimalDetails("Inactive but alphabetically first");
+            inactiveTeam.UntilYear = 2019;
+
+            return new MatchLocation
+            {
+                MatchLocationId = Guid.NewGuid(),
+                PrimaryAddressableObjectName = "Primary Pitch 1",
+                SecondaryAddressableObjectName = "Our secondary ground",
+                StreetDescription = "Our street",
+                Locality = "Our locality",
+                Town = "Our town",
+                AdministrativeArea = "Our county",
+                Postcode = "AB1 2CD",
+                MatchLocationRoute = "/locations/our-ground-" + Guid.NewGuid(),
+                GeoPrecision = GeoPrecision.Postcode,
+                MemberGroupKey = Guid.NewGuid(),
+                MemberGroupName = "Our ground owners",
+                Teams = new List<Team> { inactiveTeam, activeTeam, anotherActiveTeam }
+            };
+        }
+
         public Match CreateMatchInThePastWithMinimalDetails()
         {
             return new Match

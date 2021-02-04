@@ -96,6 +96,8 @@ namespace Stoolball.Data.SqlServer
         /// <returns></returns>
         public async Task<int> ReadTotalMatchLocations(MatchLocationQuery matchLocationQuery)
         {
+            if (matchLocationQuery == null) matchLocationQuery = new MatchLocationQuery();
+
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var (where, parameters) = BuildWhereClause(matchLocationQuery);
@@ -111,6 +113,8 @@ namespace Stoolball.Data.SqlServer
         /// <returns>A list of <see cref="MatchLocation"/> objects. An empty list if no match locations are found.</returns>
         public async Task<List<MatchLocation>> ReadMatchLocations(MatchLocationQuery matchLocationQuery)
         {
+            if (matchLocationQuery == null) matchLocationQuery = new MatchLocationQuery();
+
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 // order by clause places locations with active teams above those which have none
@@ -125,7 +129,7 @@ namespace Stoolball.Data.SqlServer
                             LEFT JOIN {Tables.Team} AS t2 ON tml2.TeamId = t2.TeamId 
                             LEFT JOIN {Tables.TeamVersion} AS tn2 ON t2.TeamId = tn2.TeamId
                             WHERE tml2.UntilDate IS NULL
-                            AND tn2.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t2.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                            AND (tn2.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t2.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR tn2.TeamVersionId IS NULL)
                             AND ml2.MatchLocationId IN (
                                 SELECT ml.MatchLocationId
                                 FROM {Tables.MatchLocation} AS ml 
@@ -136,7 +140,7 @@ namespace Stoolball.Data.SqlServer
                                         INNER JOIN {Tables.Team} AS t ON tml.TeamId = t.TeamId
                                         INNER JOIN {Tables.TeamVersion} AS tn ON t.TeamId = tn.TeamId
                                         WHERE ml.MatchLocationId = tml.MatchLocationId 
-                                        AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                                        AND (tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR tn.TeamVersionId IS NULL)
                                         AND tml.UntilDate IS NULL
                                     ) > 0 THEN 0 ELSE 1 END,
                                 ml.ComparableName
@@ -147,7 +151,7 @@ namespace Stoolball.Data.SqlServer
                                     INNER JOIN {Tables.Team} AS t3 ON tml3.TeamId = t3.TeamId
                                     INNER JOIN {Tables.TeamVersion} AS tn3 ON t3.TeamId = tn3.TeamId
                                     WHERE ml2.MatchLocationId = tml3.MatchLocationId 
-                                    AND tn3.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t3.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                                    AND (tn3.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t3.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR tn3.TeamVersionId IS NULL)
                                     AND tml3.UntilDate IS NULL 
                                 ) > 0 THEN 0 ELSE 1 END,
                             ml2.ComparableName";
