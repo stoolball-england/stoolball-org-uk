@@ -101,15 +101,19 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 TeamWithMinimalDetails = seedDataGenerator.CreateTeamWithMinimalDetails("Team minimal");
                 repo.CreateTeam(TeamWithMinimalDetails);
+                Teams.Add(TeamWithMinimalDetails);
 
                 TeamWithFullDetails = seedDataGenerator.CreateTeamWithFullDetails();
                 repo.CreateTeam(TeamWithFullDetails);
+                Teams.Add(TeamWithFullDetails);
                 foreach (var matchLocation in TeamWithFullDetails.MatchLocations)
                 {
                     repo.CreateMatchLocation(matchLocation);
                     repo.AddTeamToMatchLocation(TeamWithFullDetails, matchLocation);
+                    MatchLocations.Add(matchLocation);
                 }
                 repo.CreateCompetition(TeamWithFullDetails.Seasons[0].Season.Competition);
+                Competitions.Add(TeamWithFullDetails.Seasons[0].Season.Competition);
                 foreach (var season in TeamWithFullDetails.Seasons)
                 {
                     repo.CreateSeason(season.Season, season.Season.Competition.CompetitionId.Value);
@@ -139,6 +143,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 CompetitionWithFullDetails = seedDataGenerator.CreateCompetitionWithFullDetails();
                 repo.CreateCompetition(CompetitionWithFullDetails);
+                foreach (var season in CompetitionWithFullDetails.Seasons)
+                {
+                    repo.CreateSeason(season, CompetitionWithFullDetails.CompetitionId.Value);
+                }
 
                 MatchLocationWithMinimalDetails = MatchInThePastWithFullDetails.MatchLocation;
                 MatchLocationWithFullDetails = seedDataGenerator.CreateMatchLocationWithFullDetails();
@@ -158,7 +166,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     MatchLocations.Add(matchLocation);
                 }
 
-                Teams.AddRange(new[] { TeamWithMinimalDetails });
                 Matches.AddRange(new[] { MatchInThePastWithMinimalDetails, MatchInThePastWithFullDetails });
             }
         }

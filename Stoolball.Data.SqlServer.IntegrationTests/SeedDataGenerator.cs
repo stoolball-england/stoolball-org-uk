@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Humanizer;
 using Stoolball.Awards;
 using Stoolball.Clubs;
@@ -160,11 +161,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     }
                 }
             };
+            foreach (var matchLocation in team.MatchLocations)
+            {
+                matchLocation.Teams.Add(team);
+            }
             foreach (var season in team.Seasons)
             {
                 season.Team = team;
                 season.Season.Competition = competition;
             }
+            competition.Seasons.AddRange(team.Seasons.Select(x => x.Season));
             return team;
         }
 
@@ -280,14 +286,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             var fourthInningsOverSets = CreateOverSets();
 
             var competition = CreateCompetitionWithMinimalDetails();
-            var season = new Season
-            {
-                SeasonId = Guid.NewGuid(),
-                FromYear = 2020,
-                UntilYear = 2020,
-                Competition = competition,
-                SeasonRoute = competition.CompetitionRoute + "/2020"
-            };
+            var season = CreateSeason(competition.CompetitionRoute, 2020, 2020);
+            season.Competition = competition;
             competition.Seasons.Add(season);
 
             var match = new Match

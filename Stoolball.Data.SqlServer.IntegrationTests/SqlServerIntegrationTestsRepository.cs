@@ -89,6 +89,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             if (match.Season != null)
             {
                 CreateCompetition(match.Season.Competition);
+                CreateSeason(match.Season, match.Season.Competition.CompetitionId.Value);
             }
 
             _connection.Execute($@"INSERT INTO {Tables.Match} 
@@ -406,6 +407,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
         public void CreateTeam(Team team)
         {
+            var teamId = _connection.QuerySingleOrDefault<Guid?>($"SELECT TeamId FROM {Tables.Team} WHERE TeamId = @TeamId", new { team.TeamId });
+            if (teamId.HasValue) { return; }
+
             _connection.Execute($@"INSERT INTO {Tables.Team} 
                     (TeamId, ClubId, ClubMark, SchoolId, TeamType, PlayerType, Introduction, AgeRangeLower, AgeRangeUpper, Website, Twitter, Facebook, Instagram, YouTube, 
                      PublicContactDetails, PrivateContactDetails, PlayingTimes, Cost, MemberGroupKey, MemberGroupName, TeamRoute)
@@ -491,11 +495,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                       FromDate = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero),
                       UntilDate = competition.UntilYear.HasValue ? new DateTimeOffset(competition.UntilYear.Value, 12, 31, 23, 59, 59, TimeSpan.Zero) : (DateTimeOffset?)null
                   });
-
-            foreach (var season in competition.Seasons)
-            {
-                CreateSeason(season, competition.CompetitionId.Value);
-            }
         }
 
         public void CreateSeason(Season season, Guid competitionId)
