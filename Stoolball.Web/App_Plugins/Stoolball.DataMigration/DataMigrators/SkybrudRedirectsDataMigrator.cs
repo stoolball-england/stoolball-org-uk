@@ -109,6 +109,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     await _redirectsRepository.InsertRedirect("/therules", "/rules/rules-of-stoolball", null, transaction).ConfigureAwait(false);
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/scorers", transaction).ConfigureAwait(false);
                     await _redirectsRepository.InsertRedirect("/scorers", "/rules/how-to-score", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/addteam", transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/addteam", "/teams/add", null, transaction).ConfigureAwait(false);
 
                     transaction.Commit();
                 }
