@@ -38,10 +38,12 @@ namespace Stoolball.Data.SqlServer
             {
                 var sql = $@"SELECT COUNT(DISTINCT t.TeamId)
                         FROM {Tables.Team} AS t
+                        INNER JOIN {Tables.TeamVersion} AS tv ON t.TeamId = tv.TeamId
                         <<JOIN>>
-                        <<WHERE>>";
+                        <<WHERE>>
+                        AND tv.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)";
 
-                var (filteredSql, parameters) = ApplyTeamQuery(teamQuery, sql);
+                var (filteredSql, parameters) = ApplyTeamQuery(teamQuery, sql, Array.Empty<string>());
 
                 return await connection.ExecuteScalarAsync<int>(filteredSql, new DynamicParameters(parameters)).ConfigureAwait(false);
             }
@@ -65,11 +67,11 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var teams = await connection.QueryAsync<Team>(
-                    $@"SELECT t.TeamId, tn.TeamName, t.TeamType, t.TeamRoute, YEAR(tn.UntilDate) AS UntilYear, t.MemberGroupName
+                    $@"SELECT t.TeamId, tv.TeamName, t.TeamType, t.TeamRoute, YEAR(tv.UntilDate) AS UntilYear, t.MemberGroupName
                             FROM {Tables.Team} AS t 
-                            INNER JOIN {Tables.TeamVersion} AS tn ON t.TeamId = tn.TeamId
+                            INNER JOIN {Tables.TeamVersion} AS tv ON t.TeamId = tv.TeamId
                             WHERE LOWER(t.TeamRoute) = @Route
-                            AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)",
+                            AND tv.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)",
                     new { Route = normalisedRoute }).ConfigureAwait(false);
 
                 return teams.FirstOrDefault();
@@ -92,9 +94,9 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var teams = await connection.QueryAsync<Team, Club, MatchLocation, Season, Competition, string, Team>(
-                    $@"SELECT t.TeamId, tn.TeamName, t.TeamType, t.PlayerType, t.Introduction, t.AgeRangeLower, t.AgeRangeUpper, t.ClubMark,
+                    $@"SELECT t.TeamId, tv.TeamName, t.TeamType, t.PlayerType, t.Introduction, t.AgeRangeLower, t.AgeRangeUpper, t.ClubMark,
                             t.Facebook, t.Twitter, t.Instagram, t.YouTube, t.Website, t.PublicContactDetails, t.PrivateContactDetails, 
-                            t.PlayingTimes, t.Cost, t.TeamRoute, YEAR(tn.UntilDate) AS UntilYear, t.MemberGroupKey, t.MemberGroupName,
+                            t.PlayingTimes, t.Cost, t.TeamRoute, YEAR(tv.UntilDate) AS UntilYear, t.MemberGroupKey, t.MemberGroupName,
                             cn.ClubName, c.ClubRoute, 
                             ml.MatchLocationId, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, 
                             ml.Town, ml.AdministrativeArea, ml.MatchLocationRoute,
@@ -102,7 +104,7 @@ namespace Stoolball.Data.SqlServer
                             co.CompetitionId, cv.CompetitionName,
                             mt.MatchType
                             FROM {Tables.Team} AS t 
-                            INNER JOIN {Tables.TeamVersion} AS tn ON t.TeamId = tn.TeamId 
+                            INNER JOIN {Tables.TeamVersion} AS tv ON t.TeamId = tv.TeamId 
                             LEFT JOIN {Tables.Club} AS c ON t.ClubId = c.ClubId
                             LEFT JOIN {Tables.ClubVersion} AS cn ON c.ClubId = cn.ClubId AND cn.UntilDate IS NULL
                             LEFT JOIN {Tables.TeamMatchLocation} AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL 
@@ -113,7 +115,7 @@ namespace Stoolball.Data.SqlServer
                             LEFT JOIN {Tables.CompetitionVersion} AS cv ON co.CompetitionId = cv.CompetitionId
                             LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
                             WHERE LOWER(t.TeamRoute) = @Route
-                            AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                            AND tv.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                             AND (cv.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = co.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR cv.CompetitionVersionId IS NULL)
                             ORDER BY cv.ComparableName, s.FromYear DESC, s.UntilYear ASC",
                     (team, club, matchLocation, season, competition, matchType) =>
@@ -174,19 +176,19 @@ namespace Stoolball.Data.SqlServer
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var sql = $@"SELECT t.TeamId, tn.TeamName, t.TeamRoute, t.PlayerType, YEAR(tn.UntilDate) AS UntilYear,
-                            ml.Locality, ml.Town
+                var sql = $@"SELECT t.TeamId, tv.TeamName, t.TeamRoute, t.PlayerType, YEAR(tv.UntilDate) AS UntilYear,
+                            ml.MatchLocationId, ml.Locality, ml.Town
                             FROM {Tables.Team} AS t 
-                            INNER JOIN {Tables.TeamVersion} AS tn ON t.TeamId = tn.TeamId
+                            INNER JOIN {Tables.TeamVersion} AS tv ON t.TeamId = tv.TeamId
                             LEFT JOIN {Tables.TeamMatchLocation} AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL
                             LEFT JOIN {Tables.MatchLocation} AS ml ON ml.MatchLocationId = tml.MatchLocationId 
                             <<JOIN>>
                             <<WHERE>>
-                            AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
-                            ORDER BY CASE WHEN tn.UntilDate IS NULL THEN 0 
-                                          WHEN tn.UntilDate IS NOT NULL THEN 1 END, tn.TeamName";
+                            AND tv.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                            ORDER BY CASE WHEN tv.UntilDate IS NULL THEN 0 
+                                          WHEN tv.UntilDate IS NOT NULL THEN 1 END, tv.TeamName";
 
-                var (filteredSql, parameters) = ApplyTeamQuery(teamQuery, sql);
+                var (filteredSql, parameters) = ApplyTeamQuery(teamQuery, sql, new[] { Tables.TeamMatchLocation, Tables.MatchLocation });
 
                 var teams = await connection.QueryAsync<Team, MatchLocation, Team>(filteredSql,
                     (team, matchLocation) =>
@@ -198,12 +200,16 @@ namespace Stoolball.Data.SqlServer
                         return team;
                     },
                     new DynamicParameters(parameters),
-                    splitOn: "Locality").ConfigureAwait(false);
+                    splitOn: "MatchLocationId").ConfigureAwait(false);
 
                 var resolvedTeams = teams.GroupBy(team => team.TeamId).Select(copiesOfTeam =>
                 {
                     var resolvedTeam = copiesOfTeam.First();
-                    resolvedTeam.MatchLocations = copiesOfTeam.Select(club => club.MatchLocations.SingleOrDefault()).OfType<MatchLocation>().ToList();
+                    resolvedTeam.MatchLocations = copiesOfTeam
+                        .Select(team => team.MatchLocations.SingleOrDefault())
+                        .OfType<MatchLocation>()
+                        .Distinct(new MatchLocationEqualityComparer())
+                        .ToList();
                     return resolvedTeam;
                 }).ToList();
 
@@ -211,7 +217,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private static (string filteredSql, Dictionary<string, object> parameters) ApplyTeamQuery(TeamQuery teamQuery, string sql)
+        private static (string filteredSql, Dictionary<string, object> parameters) ApplyTeamQuery(TeamQuery teamQuery, string sql, string[] currentJoinsBeyondTeamVersion)
         {
             var join = new List<string>();
             var where = new List<string>();
@@ -219,14 +225,28 @@ namespace Stoolball.Data.SqlServer
 
             if (!string.IsNullOrEmpty(teamQuery?.Query))
             {
-                where.Add("(tn.TeamName LIKE @Query OR ml.Locality LIKE @Query OR ml.Town LIKE @Query OR ml.AdministrativeArea LIKE @Query)");
+                if (!currentJoinsBeyondTeamVersion.Contains(Tables.TeamMatchLocation))
+                {
+                    join.Add($"LEFT JOIN {Tables.TeamMatchLocation} AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL");
+                }
+                if (!currentJoinsBeyondTeamVersion.Contains(Tables.MatchLocation))
+                {
+                    join.Add($"LEFT JOIN {Tables.MatchLocation} AS ml ON ml.MatchLocationId = tml.MatchLocationId ");
+                }
+                where.Add("(tv.TeamName LIKE @Query OR ml.Locality LIKE @Query OR ml.Town LIKE @Query OR ml.AdministrativeArea LIKE @Query)");
                 parameters.Add("@Query", $"%{teamQuery.Query}%");
             }
 
             if (teamQuery?.CompetitionIds?.Count > 0)
             {
-                join.Add($"INNER JOIN {Tables.SeasonTeam} st ON t.TeamId = st.TeamId");
-                join.Add($"INNER JOIN {Tables.Season} s ON st.SeasonId = s.SeasonId");
+                if (!currentJoinsBeyondTeamVersion.Contains(Tables.SeasonTeam))
+                {
+                    join.Add($"INNER JOIN {Tables.SeasonTeam} st ON t.TeamId = st.TeamId");
+                }
+                if (!currentJoinsBeyondTeamVersion.Contains(Tables.Season))
+                {
+                    join.Add($"INNER JOIN {Tables.Season} s ON st.SeasonId = s.SeasonId");
+                }
 
                 where.Add("s.CompetitionId IN @CompetitionIds");
                 parameters.Add("@CompetitionIds", teamQuery.CompetitionIds);

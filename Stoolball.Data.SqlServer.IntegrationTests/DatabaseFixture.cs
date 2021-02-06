@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using Microsoft.Data.SqlClient;
 using Microsoft.SqlServer.Dac;
@@ -16,7 +17,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
     public sealed class DatabaseFixture : IDisposable
     {
         private const string _INTEGRATION_TESTS_DATABASE = "StoolballIntegrationTests";
-        private const string _SQL_SERVER_INSTANCE = @"(LocalDB)\MSSQLLocalDB";
+        private const string _SQL_SERVER_INSTANCE = @"(LocalDB)\Umbraco";
         private readonly string _umbracoDatabasePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\Stoolball.Web\App_Data\Umbraco.mdf"));
         private readonly string _dacpacPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _INTEGRATION_TESTS_DATABASE + ".dacpac");
 
@@ -98,6 +99,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 ClubWithTeams = seedDataGenerator.CreateClubWithTeams();
                 repo.CreateClub(ClubWithTeams);
+                Teams.AddRange(ClubWithTeams.Teams);
 
                 TeamWithMinimalDetails = seedDataGenerator.CreateTeamWithMinimalDetails("Team minimal");
                 repo.CreateTeam(TeamWithMinimalDetails);
@@ -129,6 +131,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 MatchInThePastWithFullDetails = seedDataGenerator.CreateMatchInThePastWithFullDetails();
                 repo.CreateMatch(MatchInThePastWithFullDetails);
+                Teams.AddRange(MatchInThePastWithFullDetails.Teams.Select(x => x.Team));
 
                 TournamentInThePastWithMinimalDetails = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
                 repo.CreateTournament(TournamentInThePastWithMinimalDetails);
@@ -137,6 +140,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 MatchInThePastWithFullDetailsAndTournament.Tournament = TournamentInThePastWithMinimalDetails;
                 MatchInThePastWithFullDetailsAndTournament.Season.FromYear = MatchInThePastWithFullDetailsAndTournament.Season.UntilYear = 2018;
                 repo.CreateMatch(MatchInThePastWithFullDetailsAndTournament);
+                Teams.AddRange(MatchInThePastWithFullDetailsAndTournament.Teams.Select(x => x.Team));
 
                 CompetitionWithMinimalDetails = seedDataGenerator.CreateCompetitionWithMinimalDetails();
                 repo.CreateCompetition(CompetitionWithMinimalDetails);
@@ -151,6 +155,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 MatchLocationWithMinimalDetails = MatchInThePastWithFullDetails.MatchLocation;
                 MatchLocationWithFullDetails = seedDataGenerator.CreateMatchLocationWithFullDetails();
                 repo.CreateMatchLocation(MatchLocationWithFullDetails);
+                Teams.AddRange(MatchLocationWithFullDetails.Teams);
 
                 Competitions.AddRange(new[] { CompetitionWithMinimalDetails, CompetitionWithFullDetails, MatchInThePastWithFullDetails.Season.Competition, MatchInThePastWithFullDetailsAndTournament.Season.Competition });
                 MatchLocations.AddRange(new[] { MatchInThePastWithFullDetails.MatchLocation, MatchInThePastWithFullDetailsAndTournament.MatchLocation, MatchLocationWithFullDetails });
@@ -172,7 +177,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
         public void Dispose()
         {
-            RemoveIntegrationTestsDatabaseIfExists();
+            //            RemoveIntegrationTestsDatabaseIfExists();
         }
     }
 }

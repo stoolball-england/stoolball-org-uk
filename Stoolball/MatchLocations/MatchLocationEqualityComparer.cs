@@ -6,7 +6,7 @@ namespace Stoolball.MatchLocations
     {
         public override bool Equals(MatchLocation x, MatchLocation y)
         {
-            return x?.MatchLocationRoute == y?.MatchLocationRoute;
+            return x?.MatchLocationId == y?.MatchLocationId;
         }
 
         public override int GetHashCode(MatchLocation obj)

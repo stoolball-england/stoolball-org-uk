@@ -202,7 +202,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             var inactiveTeam = CreateTeamWithMinimalDetails("Inactive but alphabetically first");
             inactiveTeam.UntilYear = 2019;
 
-            return new MatchLocation
+            var matchLocation = new MatchLocation
             {
                 MatchLocationId = Guid.NewGuid(),
                 PrimaryAddressableObjectName = "Primary Pitch 1",
@@ -218,6 +218,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 MemberGroupName = "Our ground owners",
                 Teams = new List<Team> { inactiveTeam, activeTeam, anotherActiveTeam }
             };
+
+            activeTeam.MatchLocations.Add(matchLocation);
+            anotherActiveTeam.MatchLocations.Add(matchLocation);
+            transientTeam.MatchLocations.Add(matchLocation);
+            inactiveTeam.MatchLocations.Add(matchLocation);
+
+            return matchLocation;
         }
 
         public Match CreateMatchInThePastWithMinimalDetails()

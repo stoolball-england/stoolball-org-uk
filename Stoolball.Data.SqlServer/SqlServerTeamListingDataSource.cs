@@ -127,7 +127,7 @@ namespace Stoolball.Data.SqlServer
                 // based on the matching ids rather than directly on the paging criteria
                 var outerQuery = $@"SELECT t.TeamId AS TeamListingId, tn.TeamName AS ClubOrTeamName, tn.ComparableName, t.TeamType, t.TeamRoute AS ClubOrTeamRoute, CASE WHEN tn.UntilDate IS NULL THEN 1 ELSE 0 END AS Active,
                                 t.PlayerType, 
-                                ml.Locality, ml.Town, ml.MatchLocationRoute
+                                ml.MatchLocationId, ml.Locality, ml.Town, ml.MatchLocationRoute
                                 FROM { Tables.Team } AS t 
                                 INNER JOIN { Tables.TeamVersion } AS tn ON t.TeamId = tn.TeamId
                                 LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL
@@ -164,7 +164,7 @@ namespace Stoolball.Data.SqlServer
                         return teamListing;
                     },
                     new DynamicParameters(parameters),
-                    splitOn: "PlayerType, Locality").ConfigureAwait(false);
+                    splitOn: "PlayerType, MatchLocationId").ConfigureAwait(false);
 
                 var resolvedListings = teamListings.GroupBy(team => team.TeamListingId).Select(copiesOfTeam =>
                 {
