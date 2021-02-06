@@ -17,7 +17,7 @@
     Html.RequiresCss("~/matches/scorecards.min.css");
 }
 <div class="container-xl">
-    <h1>Edit @Model.Match.MatchFullName(x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
+    <h1>Edit @Html.MatchFullName(Model.Match, x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.EditMatchResult])
     {

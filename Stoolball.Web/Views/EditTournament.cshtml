@@ -21,7 +21,7 @@
     Html.RequiresJs("/js/tinymce.js");
 }
 <div class="container-xl">
-    <h1>Edit @Model.Tournament.TournamentFullName(x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
+    <h1>Edit @Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.EditTournament])
     {

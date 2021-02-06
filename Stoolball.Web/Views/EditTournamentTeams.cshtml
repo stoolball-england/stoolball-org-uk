@@ -20,7 +20,7 @@
     Html.RequiresJs("~/js/related-items.js");
 }
 <div class="container-xl">
-    <h1>Teams in the @Model.Tournament.TournamentFullName(x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
+    <h1>Teams in the @Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.EditTournament])
     {

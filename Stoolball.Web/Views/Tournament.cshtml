@@ -9,7 +9,7 @@
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTournament] || Model.IsAuthorized[AuthorizedAction.DeleteTournament];
 }
 <div class="container-xl">
-    <h1>@Model.Tournament.TournamentFullNameAndPlayerType(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
+    <h1>@Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
 
     @* authorizedToEdit only needs to protect the last tab, but there's no point having only one tab *@
     @if (authorizedToEdit)

@@ -5,21 +5,21 @@
     <meta name="robots" content="noindex,follow" />
 }
 <div class="container-xl">
-    <h1>Edit @Model.Tournament.TournamentFullNameAndPlayerType(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
+    <h1>Edit @Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.EditTournament] || Model.IsAuthorized[AuthorizedAction.DeleteTournament])
     {
         <dl>
             @if (Model.IsAuthorized[AuthorizedAction.EditTournament])
             {
-                <dt><a href="@Model.Tournament.TournamentRoute/edit/tournament">Edit @Model.Tournament.TournamentFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
+                <dt><a href="@Model.Tournament.TournamentRoute/edit/tournament">Edit @Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
                 <dd>Set the name, date, time and location of the tournament, who can play, the match format and the notes.</dd>
-                <dt><a href="@Model.Tournament.TournamentRoute/edit/teams">Teams in the @Model.Tournament.TournamentFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
+                <dt><a href="@Model.Tournament.TournamentRoute/edit/teams">Teams in the @Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
                 <dd>Set which teams are playing in the tournament.</dd>
             }
             @if (Model.IsAuthorized[AuthorizedAction.DeleteTournament])
             {
-                <dt><a href="@Model.Tournament.TournamentRoute/delete">Delete @Model.Tournament.TournamentFullName(x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
+                <dt><a href="@Model.Tournament.TournamentRoute/delete">Delete @Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
                 <dd>Matches and match statistics will be lost. Players and teams that only feature in this tournament will be deleted.</dd>
             }
         </dl>
