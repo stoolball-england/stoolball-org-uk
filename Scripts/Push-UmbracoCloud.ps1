@@ -6,11 +6,13 @@ robocopy .\Stoolball.Web .\.UmbracoCloud /IF *.dll *.cshtml *.uda *.xdt.config *
 copy .\Stoolball.Web\fonts\Web.config .\.UmbracoCloud\fonts
 copy .\Stoolball.Web\images\Web.config .\.UmbracoCloud\images
 
-# Update ClientDependency.config version
+# Update ClientDependency.config and service worker version
+$version = (Get-Random).ToString();
 $xml = [xml](Select-Xml -Path "$projectRoot\.UmbracoCloud\config\ClientDependency.config" -XPath /).Node; 
 $node = $xml.SelectSingleNode("/clientDependency")
-$node.SetAttribute("version", (Get-Random).ToString())
+$node.SetAttribute("version", $version)
 $xml.Save("$projectRoot\.UmbracoCloud\config\ClientDependency.config")
+(Get-Content "$projectRoot\.UmbracoCloud\service-worker.js") -Replace "version = '1.0.0'", "version = '$version'" | Set-Content "$projectRoot\.UmbracoCloud\service-worker.js"
 
 # Commit and push those changes
 Push-Location .\.UmbracoCloud
