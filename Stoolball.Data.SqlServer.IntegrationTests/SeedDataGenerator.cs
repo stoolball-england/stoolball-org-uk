@@ -69,8 +69,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
         public Competition CreateCompetitionWithFullDetails()
         {
-            var competitionRoute = "/competitions/example-league-" + Guid.NewGuid();
-            return new Competition
+            var competition = new Competition
             {
                 CompetitionId = Guid.NewGuid(),
                 CompetitionName = "Example league",
@@ -84,25 +83,27 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 Instagram = "@examplephotos",
                 YouTube = "https://youtube.com/exampleleague",
                 Website = "https://example.org",
-                CompetitionRoute = competitionRoute,
+                CompetitionRoute = "/competitions/example-league-" + Guid.NewGuid(),
                 MemberGroupKey = Guid.NewGuid(),
                 MemberGroupName = "Example league owners",
-                Seasons = new List<Season> {
-                    CreateSeason(competitionRoute,2021,2021),
-                    CreateSeason(competitionRoute,2020,2021),
-                    CreateSeason(competitionRoute,2020,2020)
-                }
             };
+            competition.Seasons = new List<Season> {
+                    CreateSeason(competition,2021,2021),
+                    CreateSeason(competition,2020,2021),
+                    CreateSeason(competition,2020,2020)
+                };
+            return competition;
         }
 
-        private static Season CreateSeason(string competitionRoute, int fromYear, int untilYear)
+        private static Season CreateSeason(Competition competition, int fromYear, int untilYear)
         {
             return new Season
             {
                 SeasonId = Guid.NewGuid(),
+                Competition = competition,
                 FromYear = fromYear,
                 UntilYear = untilYear,
-                SeasonRoute = competitionRoute + "/" + fromYear + "-" + untilYear,
+                SeasonRoute = competition?.CompetitionRoute + "/" + fromYear + "-" + untilYear,
                 DefaultOverSets = CreateOverSets(),
                 MatchTypes = new List<MatchType> { MatchType.LeagueMatch, MatchType.FriendlyMatch }
             };
@@ -153,11 +154,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 Seasons = new List<TeamInSeason> {
                     new TeamInSeason
                     {
-                        Season = CreateSeason(competition.CompetitionRoute, 2020, 2020)
+                        Season = CreateSeason(competition, 2020, 2020)
                     },
                     new TeamInSeason
                     {
-                        Season = CreateSeason(competition.CompetitionRoute, 2019,2019)
+                        Season = CreateSeason(competition, 2019,2019)
                     }
                 }
             };
@@ -168,7 +169,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             foreach (var season in team.Seasons)
             {
                 season.Team = team;
-                season.Season.Competition = competition;
             }
             competition.Seasons.AddRange(team.Seasons.Select(x => x.Season));
             return team;
@@ -293,8 +293,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             var fourthInningsOverSets = CreateOverSets();
 
             var competition = CreateCompetitionWithMinimalDetails();
-            var season = CreateSeason(competition.CompetitionRoute, 2020, 2020);
-            season.Competition = competition;
+            var season = CreateSeason(competition, 2020, 2020);
             competition.Seasons.Add(season);
 
             var match = new Match
@@ -443,6 +442,50 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 TournamentRoute = "/tournaments/example-tournament-" + Guid.NewGuid(),
                 MemberKey = Guid.NewGuid()
             };
+        }
+
+        public Tournament CreateTournamentInThePastWithFullDetails()
+        {
+            var competition1 = CreateCompetitionWithMinimalDetails();
+            var competition2 = CreateCompetitionWithMinimalDetails();
+            var tournament = new Tournament
+            {
+                TournamentId = Guid.NewGuid(),
+                StartTime = new DateTimeOffset(2020, 8, 10, 10, 00, 00, TimeSpan.FromHours(1)),
+                StartTimeIsKnown = true,
+                TournamentName = "Example tournament",
+                TournamentRoute = "/tournaments/example-tournament-" + Guid.NewGuid(),
+                PlayerType = PlayerType.JuniorGirls,
+                PlayersPerTeam = 10,
+                QualificationType = TournamentQualificationType.ClosedTournament,
+                MaximumTeamsInTournament = 10,
+                SpacesInTournament = 8,
+                TournamentNotes = "Notes about the tournament",
+                MemberKey = Guid.NewGuid(),
+                Teams = new List<TeamInTournament> {
+                    new TeamInTournament {
+                        Team = CreateTeamWithMinimalDetails("Tournament team 1")
+                    },
+                    new TeamInTournament {
+                        Team = CreateTeamWithMinimalDetails("Tournament team 2")
+                    },
+                    new TeamInTournament {
+                        Team = CreateTeamWithMinimalDetails("Tournament team 3")
+                    }
+                },
+                TournamentLocation = CreateMatchLocationWithMinimalDetails(),
+                DefaultOverSets = CreateOverSets(),
+                Seasons = new List<Season>()
+                {
+                    CreateSeason(competition1, 2020, 2020),
+                    CreateSeason(competition2, 2020, 2020)
+                }
+            };
+            foreach (var season in tournament.Seasons)
+            {
+                season.Competition.Seasons.Add(season);
+            }
+            return tournament;
         }
 
         private static List<PlayerInnings> CreateBattingScorecard(PlayerIdentity[] battingTeam, PlayerIdentity[] bowlingTeam)

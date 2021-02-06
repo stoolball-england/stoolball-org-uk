@@ -43,6 +43,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                        tournament.TournamentRoute,
                        tournament.MemberKey
                    });
+
+            foreach (var overSet in tournament.DefaultOverSets)
+            {
+                CreateOverSet(overSet, null, null, tournament.TournamentId);
+            }
         }
 
         public void CreateClub(Club club)
@@ -229,7 +234,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 foreach (var overSet in innings.OverSets)
                 {
-                    CreateOverSet(overSet, innings.MatchInningsId, null);
+                    CreateOverSet(overSet, innings.MatchInningsId, null, null);
                 }
 
                 foreach (var overBowled in innings.OversBowled)
@@ -276,6 +281,36 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             }
         }
 
+        public void AddTournamentToSeason(Tournament tournament, Season season)
+        {
+            _connection.Execute($@"INSERT INTO {Tables.TournamentSeason} 
+                    (TournamentSeasonId, TournamentId, SeasonId)
+                    VALUES
+                    (@TournamentSeasonId, @TournamentId, @SeasonId)",
+          new
+          {
+              TournamentSeasonId = Guid.NewGuid(),
+              tournament.TournamentId,
+              season.SeasonId
+          });
+        }
+
+        public void AddTeamToTournament(TeamInTournament team, Tournament tournament)
+        {
+            _connection.Execute($@"INSERT INTO {Tables.TournamentTeam} 
+                    (TournamentTeamId, TournamentId, TeamId, TeamRole, PlayingAsTeamName)
+                    VALUES
+                    (@TournamentTeamId, @TournamentId, @TeamId, @TeamRole, @PlayingAsTeamName)",
+          new
+          {
+              TournamentTeamId = Guid.NewGuid(),
+              tournament.TournamentId,
+              team.Team.TeamId,
+              team.TeamRole,
+              team.PlayingAsTeamName
+          });
+        }
+
         public void AddTeamToMatchLocation(Team team, MatchLocation matchLocation)
         {
             _connection.Execute($@"INSERT INTO {Tables.TeamMatchLocation} 
@@ -307,17 +342,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             });
         }
 
-        public void CreateOverSet(OverSet overSet, Guid? matchInningsId, Guid? seasonId)
+        public void CreateOverSet(OverSet overSet, Guid? matchInningsId, Guid? seasonId, Guid? tournamentId)
         {
             _connection.Execute($@"INSERT INTO {Tables.OverSet} 
-                    (OverSetId, MatchInningsId, SeasonId, OverSetNumber, Overs, BallsPerOver)
+                    (OverSetId, MatchInningsId, SeasonId, TournamentId, OverSetNumber, Overs, BallsPerOver)
                     VALUES
-                    (@OverSetId, @MatchInningsId, @SeasonId, @OverSetNumber, @Overs, @BallsPerOver)",
+                    (@OverSetId, @MatchInningsId, @SeasonId, @TournamentId, @OverSetNumber, @Overs, @BallsPerOver)",
             new
             {
                 overSet.OverSetId,
                 MatchInningsId = matchInningsId,
                 SeasonId = seasonId,
+                TournamentId = tournamentId,
                 overSet.OverSetNumber,
                 overSet.Overs,
                 overSet.BallsPerOver
@@ -540,7 +576,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
             foreach (var overSet in season.DefaultOverSets)
             {
-                CreateOverSet(overSet, null, season.SeasonId);
+                CreateOverSet(overSet, null, season.SeasonId, null);
             }
         }
     }

@@ -7,5 +7,6 @@ namespace Stoolball.Matches
         public Team Team { get; set; }
 
         public TournamentTeamRole TeamRole { get; set; }
+        public string PlayingAsTeamName { get; set; }
     }
 }

@@ -29,6 +29,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public Match MatchInThePastWithFullDetails { get; private set; }
         public Match MatchInThePastWithFullDetailsAndTournament { get; private set; }
         public Tournament TournamentInThePastWithMinimalDetails { get; private set; }
+        public Tournament TournamentInThePastWithFullDetails { get; private set; }
+        public Tournament TournamentInTheFutureWithMinimalDetails { get; private set; }
         public Competition CompetitionWithMinimalDetails { get; private set; }
         public Competition CompetitionWithFullDetails { get; private set; }
         public MatchLocation MatchLocationWithMinimalDetails { get; private set; }
@@ -135,6 +137,31 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 TournamentInThePastWithMinimalDetails = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
                 repo.CreateTournament(TournamentInThePastWithMinimalDetails);
+
+                TournamentInTheFutureWithMinimalDetails = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
+                TournamentInTheFutureWithMinimalDetails.StartTime = DateTime.UtcNow.AddMonths(1);
+                repo.CreateTournament(TournamentInTheFutureWithMinimalDetails);
+
+                TournamentInThePastWithFullDetails = seedDataGenerator.CreateTournamentInThePastWithFullDetails();
+                Teams.AddRange(TournamentInThePastWithFullDetails.Teams.Select(x => x.Team));
+                foreach (var team in TournamentInThePastWithFullDetails.Teams)
+                {
+                    repo.CreateTeam(team.Team);
+                }
+                MatchLocations.Add(TournamentInThePastWithFullDetails.TournamentLocation);
+                repo.CreateMatchLocation(TournamentInThePastWithFullDetails.TournamentLocation);
+                repo.CreateTournament(TournamentInThePastWithFullDetails);
+                foreach (var team in TournamentInThePastWithFullDetails.Teams)
+                {
+                    repo.AddTeamToTournament(team, TournamentInThePastWithFullDetails);
+                }
+                foreach (var season in TournamentInThePastWithFullDetails.Seasons)
+                {
+                    repo.CreateCompetition(season.Competition);
+                    Competitions.Add(season.Competition);
+                    repo.CreateSeason(season, season.Competition.CompetitionId.Value);
+                    repo.AddTournamentToSeason(TournamentInThePastWithFullDetails, season);
+                }
 
                 MatchInThePastWithFullDetailsAndTournament = seedDataGenerator.CreateMatchInThePastWithFullDetails();
                 MatchInThePastWithFullDetailsAndTournament.Tournament = TournamentInThePastWithMinimalDetails;

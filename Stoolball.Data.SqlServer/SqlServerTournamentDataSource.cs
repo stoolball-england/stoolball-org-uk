@@ -45,7 +45,7 @@ namespace Stoolball.Data.SqlServer
                             os.OverSetId, os.Overs, os.BallsPerOver,
                             ml.MatchLocationId, ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
                             ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
-                            s.SeasonRoute, s.FromYear, s.UntilYear,
+                            s.SeasonId, s.SeasonRoute, s.FromYear, s.UntilYear,
                             cv.CompetitionName
                             FROM {Tables.Tournament} AS tourney
                             LEFT JOIN {Tables.TournamentTeam} AS tt ON tourney.TournamentId = tt.TournamentId
@@ -79,7 +79,7 @@ namespace Stoolball.Data.SqlServer
                         return tournament;
                     },
                     new { Route = normalisedRoute },
-                    splitOn: "TeamRole, TeamId, OverSetId, MatchLocationId, SeasonRoute, CompetitionName")
+                    splitOn: "TeamRole, TeamId, OverSetId, MatchLocationId, SeasonId, CompetitionName")
                     .ConfigureAwait(false);
 
                 var tournamentToReturn = tournaments.FirstOrDefault(); // get an example with the properties that are the same for every row
