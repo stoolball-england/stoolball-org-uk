@@ -138,7 +138,7 @@ namespace Stoolball.Data.SqlServer
                                 SELECT c.ClubId AS TeamListingId, cn.ClubName AS ClubOrTeamName, cn.ComparableName, NULL AS TeamType, c.ClubRoute AS ClubOrTeamRoute, 
                                 CASE WHEN (SELECT COUNT(t2.TeamId) FROM { Tables.Team } t2 INNER JOIN { Tables.TeamVersion } tn2 ON t2.TeamId = tn2.TeamId WHERE ClubId = c.ClubId AND tn2.UntilDate IS NULL) > 0 THEN 1 ELSE 0 END AS Active,
                                 ct.PlayerType,
-                                ml.Locality, ml.Town, ml.MatchLocationRoute
+                                ml.MatchLocationId, ml.Locality, ml.Town, ml.MatchLocationRoute
                                 FROM { Tables.Club } AS c 
                                 INNER JOIN { Tables.ClubVersion } AS cn ON c.ClubId = cn.ClubId 
                                 LEFT JOIN { Tables.Team } AS ct ON c.ClubId = ct.ClubId
