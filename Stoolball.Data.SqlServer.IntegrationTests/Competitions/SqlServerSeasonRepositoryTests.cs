@@ -10,20 +10,20 @@ using Stoolball.Routing;
 using Stoolball.Security;
 using Xunit;
 
-namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
+namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 {
     [Collection(IntegrationTestConstants.RepositoryIntegrationTestCollection)]
-    public class SqlServerMatchLocationRepositoryTests
+    public class SqlServerSeasonRepositoryTests
     {
         private readonly SqlServerRepositoryFixture _databaseFixture;
 
-        public SqlServerMatchLocationRepositoryTests(SqlServerRepositoryFixture databaseFixture)
+        public SqlServerSeasonRepositoryTests(SqlServerRepositoryFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
 
         [Fact]
-        public async Task Delete_match_location_succeeds()
+        public async Task Delete_season_succeeds()
         {
             var sanitizer = new Mock<IHtmlSanitizer>();
             sanitizer.Setup(x => x.AllowedTags).Returns(new HashSet<string>());
@@ -34,20 +34,20 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var memberKey = Guid.NewGuid();
             var memberName = "Dee Leeter";
 
-            var repo = new SqlServerMatchLocationRepository(
+            var seasonRepository = new SqlServerSeasonRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
                 Mock.Of<ILogger>(),
-                Mock.Of<IRouteGenerator>(),
-                Mock.Of<IRedirectsRepository>(),
                 sanitizer.Object,
-                Mock.Of<IDataRedactor>());
+                Mock.Of<IRedirectsRepository>(),
+                Mock.Of<IDataRedactor>()
+                );
 
-            await repo.DeleteMatchLocation(_databaseFixture.MatchLocationWithFullDetailsForDelete, memberKey, memberName).ConfigureAwait(false);
+            await seasonRepository.DeleteSeason(_databaseFixture.SeasonWithFullDetailsForDelete, memberKey, memberName).ConfigureAwait(false);
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
-                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT MatchLocationId FROM {Tables.MatchLocation} WHERE MatchLocationId = @MatchLocationId", _databaseFixture.MatchLocationWithFullDetailsForDelete).ConfigureAwait(false);
+                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT SeasonId FROM {Tables.Season} WHERE SeasonId = @SeasonId", _databaseFixture.SeasonWithFullDetailsForDelete).ConfigureAwait(false);
                 Assert.Null(result);
             }
         }

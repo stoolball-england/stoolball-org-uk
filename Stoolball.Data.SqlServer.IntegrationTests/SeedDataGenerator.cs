@@ -88,14 +88,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 MemberGroupName = "Example league owners",
             };
             competition.Seasons = new List<Season> {
-                    CreateSeason(competition,2021,2021),
-                    CreateSeason(competition,2020,2021),
-                    CreateSeason(competition,2020,2020)
+                    CreateSeasonWithMinimalDetails(competition,2021,2021),
+                    CreateSeasonWithMinimalDetails(competition,2020,2021),
+                    CreateSeasonWithMinimalDetails(competition,2020,2020)
                 };
             return competition;
         }
 
-        private static Season CreateSeason(Competition competition, int fromYear, int untilYear)
+        public static Season CreateSeasonWithMinimalDetails(Competition competition, int fromYear, int untilYear)
         {
             return new Season
             {
@@ -107,6 +107,53 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 DefaultOverSets = CreateOverSets(),
                 MatchTypes = new List<MatchType> { MatchType.LeagueMatch, MatchType.FriendlyMatch }
             };
+        }
+
+        public Season CreateSeasonWithFullDetails(Competition competition, int fromYear, int untilYear)
+        {
+            var team1 = CreateTeamWithMinimalDetails("Team 1 in season");
+            var team2 = CreateTeamWithMinimalDetails("Team 2 in season");
+            var team3 = CreateTeamWithMinimalDetails("Team 3 in season");
+
+            var season = new Season
+            {
+                SeasonId = Guid.NewGuid(),
+                Competition = competition,
+                FromYear = fromYear,
+                UntilYear = untilYear,
+                SeasonRoute = competition?.CompetitionRoute + "/" + fromYear + "-" + untilYear,
+                DefaultOverSets = CreateOverSets(),
+                MatchTypes = new List<MatchType> { MatchType.LeagueMatch, MatchType.FriendlyMatch },
+                EnableBonusOrPenaltyRuns = true,
+                EnableLastPlayerBatsOn = true,
+                EnableRunsConceded = true,
+                EnableRunsScored = true,
+                EnableTournaments = true,
+                Introduction = "Introduction to the season",
+                PlayersPerTeam = 12,
+                Results = "Some description of results",
+                ResultsTableType = ResultsTableType.LeagueTable,
+                Teams = new List<TeamInSeason> {
+                    new TeamInSeason { Team = team1 },
+                    new TeamInSeason { Team = team2 },
+                    new TeamInSeason { Team = team3, WithdrawnDate = new DateTimeOffset(fromYear, 6, 1, 0, 0, 0, TimeSpan.FromHours(1)) }
+                },
+                PointsRules = new List<PointsRule> {
+                    new PointsRule{ PointsRuleId = Guid.NewGuid(), MatchResultType = MatchResultType.HomeWin, HomePoints=2, AwayPoints = 0 },
+                    new PointsRule{ PointsRuleId = Guid.NewGuid(), MatchResultType = MatchResultType.AwayWin, HomePoints=0, AwayPoints = 2 }
+                },
+                PointsAdjustments = new List<PointsAdjustment>
+                {
+                    new PointsAdjustment { PointsAdjustmentId = Guid.NewGuid(), Team = team1, Points = 2, Reason = "Testing" }
+                }
+            };
+
+            foreach (var team in season.Teams)
+            {
+                team.Season = season;
+            }
+
+            return season;
         }
 
         public Team CreateTeamWithMinimalDetails(string teamName)
@@ -154,11 +201,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 Seasons = new List<TeamInSeason> {
                     new TeamInSeason
                     {
-                        Season = CreateSeason(competition, 2020, 2020)
+                        Season = CreateSeasonWithMinimalDetails(competition, 2020, 2020)
                     },
                     new TeamInSeason
                     {
-                        Season = CreateSeason(competition, 2019,2019)
+                        Season = CreateSeasonWithMinimalDetails(competition, 2019,2019)
                     }
                 }
             };
@@ -293,7 +340,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             var fourthInningsOverSets = CreateOverSets();
 
             var competition = CreateCompetitionWithMinimalDetails();
-            var season = CreateSeason(competition, 2020, 2020);
+            var season = CreateSeasonWithMinimalDetails(competition, 2020, 2020);
             competition.Seasons.Add(season);
 
             var match = new Match
@@ -477,8 +524,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 DefaultOverSets = CreateOverSets(),
                 Seasons = new List<Season>()
                 {
-                    CreateSeason(competition1, 2020, 2020),
-                    CreateSeason(competition2, 2020, 2020)
+                    CreateSeasonWithMinimalDetails(competition1, 2020, 2020),
+                    CreateSeasonWithMinimalDetails(competition2, 2020, 2020)
                 }
             };
             foreach (var season in tournament.Seasons)

@@ -12,12 +12,12 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 {
-    [Collection(IntegrationTestConstants.IntegrationTestCollection)]
+    [Collection(IntegrationTestConstants.RepositoryIntegrationTestCollection)]
     public class SqlServerCompetitionRepositoryTests
     {
-        private readonly DatabaseFixture _databaseFixture;
+        private readonly SqlServerRepositoryFixture _databaseFixture;
 
-        public SqlServerCompetitionRepositoryTests(DatabaseFixture databaseFixture)
+        public SqlServerCompetitionRepositoryTests(SqlServerRepositoryFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
@@ -60,8 +60,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                 var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT CompetitionId FROM {Tables.Competition} WHERE CompetitionId = @CompetitionId", _databaseFixture.CompetitionWithFullDetailsForDelete).ConfigureAwait(false);
                 Assert.Null(result);
             }
-
-            _databaseFixture.Competitions.Remove(_databaseFixture.CompetitionWithFullDetailsForDelete);
         }
     }
 }

@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading;
-using Microsoft.Data.SqlClient;
-using Microsoft.SqlServer.Dac;
-using Microsoft.SqlServer.Management.Smo;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Matches;
@@ -14,33 +9,22 @@ using Stoolball.Teams;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests
 {
-    public sealed class DatabaseFixture : IDisposable
+    public sealed class SqlServerDataSourceFixture : BaseSqlServerFixture
     {
-        private const string _INTEGRATION_TESTS_DATABASE = "StoolballIntegrationTests";
-        private const string _SQL_SERVER_INSTANCE = @"(LocalDB)\Umbraco";
-        private readonly string _umbracoDatabasePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\Stoolball.Web\App_Data\Umbraco.mdf"));
-        private readonly string _dacpacPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _INTEGRATION_TESTS_DATABASE + ".dacpac");
-
-        public IDatabaseConnectionFactory ConnectionFactory { get; private set; }
-
         public Match MatchInThePastWithMinimalDetails { get; private set; }
         public Match MatchInTheFutureWithMinimalDetails { get; private set; }
 
         public Match MatchInThePastWithFullDetails { get; private set; }
         public Match MatchInThePastWithFullDetailsAndTournament { get; private set; }
-        public Match MatchInThePastWithFullDetailsForDelete { get; private set; }
         public Tournament TournamentInThePastWithMinimalDetails { get; private set; }
         public Tournament TournamentInThePastWithFullDetails { get; private set; }
         public Tournament TournamentInTheFutureWithMinimalDetails { get; private set; }
         public Competition CompetitionWithMinimalDetails { get; private set; }
         public Competition CompetitionWithFullDetails { get; private set; }
-        public Competition CompetitionWithFullDetailsForDelete { get; private set; }
         public MatchLocation MatchLocationWithMinimalDetails { get; private set; }
         public MatchLocation MatchLocationWithFullDetails { get; private set; }
-        public MatchLocation MatchLocationWithFullDetailsForDelete { get; private set; }
         public Club ClubWithMinimalDetails { get; private set; }
         public Club ClubWithTeams { get; private set; }
-        public Club ClubWithTeamsForDelete { get; private set; }
         public Team TeamWithMinimalDetails { get; private set; }
         public Team TeamWithFullDetails { get; private set; }
         public List<Competition> Competitions { get; internal set; } = new List<Competition>();
@@ -48,50 +32,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public List<MatchLocation> MatchLocations { get; internal set; } = new List<MatchLocation>();
         public List<Team> Teams { get; internal set; } = new List<Team>();
 
-        public DatabaseFixture()
+        public SqlServerDataSourceFixture() : base("StoolballDataSourceIntegrationTests")
         {
-            try
-            {
-                // Clean up from any previous failed test run
-                RemoveIntegrationTestsDatabaseIfExists();
-
-                // Connect to the existing Umbraco database, which is named after its full path, and export it as a DACPAC
-                var ds = new DacServices(new SqlConnectionStringBuilder { DataSource = _SQL_SERVER_INSTANCE, IntegratedSecurity = true, InitialCatalog = _umbracoDatabasePath }.ToString());
-                ds.Extract(_dacpacPath, _umbracoDatabasePath, _INTEGRATION_TESTS_DATABASE, new Version(1, 0, 0));
-
-                // Import the DACPAC with a new name - and all data cleared down ready for testing
-                var dacpac = DacPackage.Load(_dacpacPath);
-                ds.Deploy(dacpac, _INTEGRATION_TESTS_DATABASE, true, null, new CancellationToken());
-            }
-            catch (DacServicesException ex)
-            {
-                throw new InvalidOperationException("IIS Express must be stopped for integration tests to run.", ex);
-            }
-            finally
-            {
-                if (File.Exists(_dacpacPath))
-                {
-                    File.Delete(_dacpacPath);
-                }
-            }
-
-            // Create a connection factory that connects to the database, and is accessible via a protected property by classes being tested
-            ConnectionFactory = new IntegrationTestsDatabaseConnectionFactory(new SqlConnectionStringBuilder { DataSource = _SQL_SERVER_INSTANCE, IntegratedSecurity = true, InitialCatalog = _INTEGRATION_TESTS_DATABASE }.ToString());
-
             // Populate seed data so that there's a consistent baseline for each test run
             SeedDatabase();
         }
 
-        private static void RemoveIntegrationTestsDatabaseIfExists()
-        {
-            var smoServer = new Server(_SQL_SERVER_INSTANCE);
-            if (smoServer.Databases.Contains(_INTEGRATION_TESTS_DATABASE))
-            {
-                smoServer.KillDatabase(_INTEGRATION_TESTS_DATABASE);
-            }
-        }
-
-        private void SeedDatabase()
+        protected override void SeedDatabase()
         {
             var seedDataGenerator = new SeedDataGenerator();
             using (var connection = ConnectionFactory.CreateDatabaseConnection())
@@ -106,10 +53,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 ClubWithTeams = seedDataGenerator.CreateClubWithTeams();
                 repo.CreateClub(ClubWithTeams);
                 Teams.AddRange(ClubWithTeams.Teams);
-
-                ClubWithTeamsForDelete = seedDataGenerator.CreateClubWithTeams();
-                repo.CreateClub(ClubWithTeamsForDelete);
-                Teams.AddRange(ClubWithTeamsForDelete.Teams);
 
                 TeamWithMinimalDetails = seedDataGenerator.CreateTeamWithMinimalDetails("Team minimal");
                 repo.CreateTeam(TeamWithMinimalDetails);
@@ -146,13 +89,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 Competitions.Add(MatchInThePastWithFullDetails.Season.Competition);
                 MatchLocations.Add(MatchInThePastWithFullDetails.MatchLocation);
                 Matches.Add(MatchInThePastWithFullDetails);
-
-                MatchInThePastWithFullDetailsForDelete = seedDataGenerator.CreateMatchInThePastWithFullDetails();
-                repo.CreateMatch(MatchInThePastWithFullDetailsForDelete);
-                Teams.AddRange(MatchInThePastWithFullDetailsForDelete.Teams.Select(x => x.Team));
-                Competitions.Add(MatchInThePastWithFullDetailsForDelete.Season.Competition);
-                MatchLocations.Add(MatchInThePastWithFullDetailsForDelete.MatchLocation);
-                Matches.Add(MatchInThePastWithFullDetailsForDelete);
 
                 TournamentInThePastWithMinimalDetails = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
                 repo.CreateTournament(TournamentInThePastWithMinimalDetails);
@@ -195,11 +131,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 repo.CreateCompetition(CompetitionWithMinimalDetails);
                 Competitions.Add(CompetitionWithMinimalDetails);
 
-                CompetitionWithFullDetails = CreateCompetitionWithFullDetails(seedDataGenerator, repo);
+                CompetitionWithFullDetails = seedDataGenerator.CreateCompetitionWithFullDetails();
+                repo.CreateCompetition(CompetitionWithFullDetails);
+                foreach (var season in CompetitionWithFullDetails.Seasons)
+                {
+                    repo.CreateSeason(season, CompetitionWithFullDetails.CompetitionId.Value);
+                }
                 Competitions.Add(CompetitionWithFullDetails);
-
-                CompetitionWithFullDetailsForDelete = CreateCompetitionWithFullDetails(seedDataGenerator, repo);
-                Competitions.Add(CompetitionWithFullDetailsForDelete);
 
                 MatchLocationWithMinimalDetails = seedDataGenerator.CreateMatchLocationWithMinimalDetails();
                 repo.CreateMatchLocation(MatchLocationWithMinimalDetails);
@@ -209,11 +147,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 repo.CreateMatchLocation(MatchLocationWithFullDetails);
                 Teams.AddRange(MatchLocationWithFullDetails.Teams);
                 MatchLocations.Add(MatchLocationWithFullDetails);
-
-                MatchLocationWithFullDetailsForDelete = seedDataGenerator.CreateMatchLocationWithFullDetails();
-                repo.CreateMatchLocation(MatchLocationWithFullDetailsForDelete);
-                Teams.AddRange(MatchLocationWithFullDetailsForDelete.Teams);
-                MatchLocations.Add(MatchLocationWithFullDetailsForDelete);
 
                 for (var i = 0; i < 30; i++)
                 {
@@ -226,22 +159,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     MatchLocations.Add(matchLocation);
                 }
             }
-        }
-
-        private static Competition CreateCompetitionWithFullDetails(SeedDataGenerator seedDataGenerator, SqlServerIntegrationTestsRepository repo)
-        {
-            var competition = seedDataGenerator.CreateCompetitionWithFullDetails();
-            repo.CreateCompetition(competition);
-            foreach (var season in competition.Seasons)
-            {
-                repo.CreateSeason(season, competition.CompetitionId.Value);
-            }
-            return competition;
-        }
-
-        public void Dispose()
-        {
-            //            RemoveIntegrationTestsDatabaseIfExists();
         }
     }
 }

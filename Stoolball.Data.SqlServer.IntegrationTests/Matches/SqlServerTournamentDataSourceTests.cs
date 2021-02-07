@@ -7,12 +7,12 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 {
-    [Collection(IntegrationTestConstants.IntegrationTestCollection)]
+    [Collection(IntegrationTestConstants.DataSourceIntegrationTestCollection)]
     public class SqlServerTournamentDataSourceTests
     {
-        private readonly DatabaseFixture _databaseFixture;
+        private readonly SqlServerDataSourceFixture _databaseFixture;
 
-        public SqlServerTournamentDataSourceTests(DatabaseFixture databaseFixture)
+        public SqlServerTournamentDataSourceTests(SqlServerDataSourceFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }

@@ -574,6 +574,39 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                   });
             }
 
+
+            foreach (var rule in season.PointsRules)
+            {
+                _connection.Execute($@"INSERT INTO {Tables.SeasonPointsRule}
+                    (SeasonPointsRuleId, SeasonId, MatchResultType, HomePoints, AwayPoints)
+                    VALUES
+                    (@SeasonPointsRuleId, @SeasonId, @MatchResultType, @HomePoints, @AwayPoints)",
+                  new
+                  {
+                      SeasonPointsRuleId = rule.PointsRuleId,
+                      season.SeasonId,
+                      MatchResultType = rule.MatchResultType.ToString(),
+                      rule.HomePoints,
+                      rule.AwayPoints
+                  });
+            }
+
+            foreach (var adjustment in season.PointsAdjustments)
+            {
+                _connection.Execute($@"INSERT INTO {Tables.SeasonPointsAdjustment}
+                    (SeasonPointsAdjustmentId, SeasonId, TeamId, Points, Reason)
+                    VALUES
+                    (@SeasonPointsAdjustmentId, @SeasonId, @TeamId, @Points, @Reason)",
+                  new
+                  {
+                      SeasonPointsAdjustmentId = adjustment.PointsAdjustmentId,
+                      season.SeasonId,
+                      adjustment.Team.TeamId,
+                      adjustment.Points,
+                      adjustment.Reason
+                  });
+            }
+
             foreach (var overSet in season.DefaultOverSets)
             {
                 CreateOverSet(overSet, null, season.SeasonId, null);

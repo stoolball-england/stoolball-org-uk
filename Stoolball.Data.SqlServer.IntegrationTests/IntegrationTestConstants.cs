@@ -2,6 +2,7 @@
 {
     public static class IntegrationTestConstants
     {
-        public const string IntegrationTestCollection = "Database collection";
+        public const string DataSourceIntegrationTestCollection = "SqlServerDataSource";
+        public const string RepositoryIntegrationTestCollection = "SqlServerRepository";
     }
 }

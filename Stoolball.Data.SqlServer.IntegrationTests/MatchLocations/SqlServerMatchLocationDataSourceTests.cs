@@ -10,12 +10,12 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 {
-    [Collection(IntegrationTestConstants.IntegrationTestCollection)]
+    [Collection(IntegrationTestConstants.DataSourceIntegrationTestCollection)]
     public class SqlServerMatchLocationDataSourceTests
     {
-        private readonly DatabaseFixture _databaseFixture;
+        private readonly SqlServerDataSourceFixture _databaseFixture;
 
-        public SqlServerMatchLocationDataSourceTests(DatabaseFixture databaseFixture)
+        public SqlServerMatchLocationDataSourceTests(SqlServerDataSourceFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }

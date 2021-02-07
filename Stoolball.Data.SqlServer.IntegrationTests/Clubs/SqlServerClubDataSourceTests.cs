@@ -6,12 +6,12 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
 {
-    [Collection(IntegrationTestConstants.IntegrationTestCollection)]
+    [Collection(IntegrationTestConstants.DataSourceIntegrationTestCollection)]
     public class SqlServerClubDataSourceTests
     {
-        private readonly DatabaseFixture _databaseFixture;
+        private readonly SqlServerDataSourceFixture _databaseFixture;
 
-        public SqlServerClubDataSourceTests(DatabaseFixture databaseFixture)
+        public SqlServerClubDataSourceTests(SqlServerDataSourceFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }

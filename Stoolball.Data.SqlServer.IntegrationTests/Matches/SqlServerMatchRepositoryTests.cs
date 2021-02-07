@@ -15,12 +15,12 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 {
-    [Collection(IntegrationTestConstants.IntegrationTestCollection)]
+    [Collection(IntegrationTestConstants.RepositoryIntegrationTestCollection)]
     public class SqlServerMatchRepositoryTests
     {
-        private readonly DatabaseFixture _databaseFixture;
+        private readonly SqlServerRepositoryFixture _databaseFixture;
 
-        public SqlServerMatchRepositoryTests(DatabaseFixture databaseFixture)
+        public SqlServerMatchRepositoryTests(SqlServerRepositoryFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
@@ -59,8 +59,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT MatchId FROM {Tables.Match} WHERE MatchId = @MatchId", _databaseFixture.MatchInThePastWithFullDetailsForDelete).ConfigureAwait(false);
                 Assert.Null(result);
             }
-
-            _databaseFixture.Matches.Remove(_databaseFixture.MatchInThePastWithFullDetailsForDelete);
         }
     }
 }

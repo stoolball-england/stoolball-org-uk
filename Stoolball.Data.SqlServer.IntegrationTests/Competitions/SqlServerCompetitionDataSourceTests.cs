@@ -8,12 +8,12 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 {
-    [Collection(IntegrationTestConstants.IntegrationTestCollection)]
+    [Collection(IntegrationTestConstants.DataSourceIntegrationTestCollection)]
     public class SqlServerCompetitionDataSourceTests
     {
-        private readonly DatabaseFixture _databaseFixture;
+        private readonly SqlServerDataSourceFixture _databaseFixture;
 
-        public SqlServerCompetitionDataSourceTests(DatabaseFixture databaseFixture)
+        public SqlServerCompetitionDataSourceTests(SqlServerDataSourceFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }

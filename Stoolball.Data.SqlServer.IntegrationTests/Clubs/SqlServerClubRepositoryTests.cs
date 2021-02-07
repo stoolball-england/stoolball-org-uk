@@ -10,12 +10,12 @@ using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
 {
-    [Collection(IntegrationTestConstants.IntegrationTestCollection)]
+    [Collection(IntegrationTestConstants.RepositoryIntegrationTestCollection)]
     public class SqlServerClubRepositoryTests
     {
-        private readonly DatabaseFixture _databaseFixture;
+        private readonly SqlServerRepositoryFixture _databaseFixture;
 
-        public SqlServerClubRepositoryTests(DatabaseFixture databaseFixture)
+        public SqlServerClubRepositoryTests(SqlServerRepositoryFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
@@ -60,11 +60,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
             {
                 var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT ClubId FROM {Tables.Club} WHERE ClubId = @ClubId", _databaseFixture.ClubWithTeamsForDelete).ConfigureAwait(false);
                 Assert.Null(result);
-            }
-
-            foreach (var team in _databaseFixture.ClubWithTeamsForDelete.Teams)
-            {
-                team.Club = null;
             }
         }
     }
