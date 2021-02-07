@@ -6,27 +6,25 @@ using Dapper;
 using Ganss.XSS;
 using Moq;
 using Stoolball.Logging;
-using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Security;
-using Stoolball.Statistics;
 using Stoolball.Teams;
 using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 {
     [Collection(IntegrationTestConstants.RepositoryIntegrationTestCollection)]
-    public class SqlServerMatchRepositoryTests
+    public class SqlServerTournamentRepositoryTests
     {
         private readonly SqlServerRepositoryFixture _databaseFixture;
 
-        public SqlServerMatchRepositoryTests(SqlServerRepositoryFixture databaseFixture)
+        public SqlServerTournamentRepositoryTests(SqlServerRepositoryFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
 
         [Fact]
-        public async Task Delete_match_succeeds()
+        public async Task Delete_tournament_succeeds()
         {
             var sanitizer = new Mock<IHtmlSanitizer>();
             sanitizer.Setup(x => x.AllowedTags).Returns(new HashSet<string>());
@@ -37,26 +35,21 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             var memberKey = Guid.NewGuid();
             var memberName = "Dee Leeter";
 
-            var repo = new SqlServerMatchRepository(
+            var repo = new SqlServerTournamentRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
                 Mock.Of<ILogger>(),
                 Mock.Of<IRouteGenerator>(),
                 Mock.Of<IRedirectsRepository>(),
+                Mock.Of<ITeamRepository>(),
                 sanitizer.Object,
-                Mock.Of<IMatchNameBuilder>(),
-                Mock.Of<IPlayerTypeSelector>(),
-                Mock.Of<IBowlingScorecardComparer>(),
-                Mock.Of<IBattingScorecardComparer>(),
-                Mock.Of<IPlayerRepository>(),
-                Mock.Of<IDataRedactor>(),
-                Mock.Of<IStatisticsRepository>());
+                Mock.Of<IDataRedactor>());
 
-            await repo.DeleteMatch(_databaseFixture.MatchWithFullDetailsForDelete, memberKey, memberName).ConfigureAwait(false);
+            await repo.DeleteTournament(_databaseFixture.TournamentWithFullDetailsForDelete, memberKey, memberName).ConfigureAwait(false);
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
-                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT MatchId FROM {Tables.Match} WHERE MatchId = @MatchId", _databaseFixture.MatchWithFullDetailsForDelete).ConfigureAwait(false);
+                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT TournamentId FROM {Tables.Tournament} WHERE TournamentId = @TournamentId", _databaseFixture.TournamentWithFullDetailsForDelete).ConfigureAwait(false);
                 Assert.Null(result);
             }
         }

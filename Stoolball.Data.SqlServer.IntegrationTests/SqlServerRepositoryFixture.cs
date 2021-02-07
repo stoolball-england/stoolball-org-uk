@@ -8,7 +8,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 {
     public sealed class SqlServerRepositoryFixture : BaseSqlServerFixture
     {
-        public Match MatchInThePastWithFullDetailsForDelete { get; private set; }
+        public Match MatchWithFullDetailsForDelete { get; private set; }
+        public Tournament TournamentWithFullDetailsForDelete { get; private set; }
         public Competition CompetitionWithFullDetailsForDelete { get; private set; }
         public Season SeasonWithFullDetailsForDelete { get; private set; }
         public MatchLocation MatchLocationWithFullDetailsForDelete { get; private set; }
@@ -47,8 +48,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     repo.AddTeamToSeason(season);
                 }
 
-                MatchInThePastWithFullDetailsForDelete = seedDataGenerator.CreateMatchInThePastWithFullDetails();
-                repo.CreateMatch(MatchInThePastWithFullDetailsForDelete);
+                MatchWithFullDetailsForDelete = seedDataGenerator.CreateMatchInThePastWithFullDetails();
+                repo.CreateMatch(MatchWithFullDetailsForDelete);
+
+                TournamentWithFullDetailsForDelete = seedDataGenerator.CreateTournamentInThePastWithFullDetails();
+                foreach (var team in TournamentWithFullDetailsForDelete.Teams)
+                {
+                    repo.CreateTeam(team.Team);
+                }
+                repo.CreateMatchLocation(TournamentWithFullDetailsForDelete.TournamentLocation);
+                repo.CreateTournament(TournamentWithFullDetailsForDelete);
+                foreach (var team in TournamentWithFullDetailsForDelete.Teams)
+                {
+                    repo.AddTeamToTournament(team, TournamentWithFullDetailsForDelete);
+                }
+                foreach (var season in TournamentWithFullDetailsForDelete.Seasons)
+                {
+                    repo.CreateCompetition(season.Competition);
+                    repo.CreateSeason(season, season.Competition.CompetitionId.Value);
+                    repo.AddTournamentToSeason(TournamentWithFullDetailsForDelete, season);
+                }
 
                 CompetitionWithFullDetailsForDelete = seedDataGenerator.CreateCompetitionWithFullDetails();
                 repo.CreateCompetition(CompetitionWithFullDetailsForDelete);

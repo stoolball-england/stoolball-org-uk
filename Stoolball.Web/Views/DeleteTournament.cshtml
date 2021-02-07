@@ -4,6 +4,7 @@
 @using Stoolball.Web.Matches
 @using Stoolball.Teams
 @using Stoolball.Security
+@using Constants = Stoolball.Constants
 @{
     Html.EnableClientValidation();
     Html.EnableUnobtrusiveJavaScript();
@@ -84,7 +85,8 @@
         else
         {
             <p>@Model.Tournament.TournamentName has been deleted.</p>
-            @*<a class="btn btn-primary" href="/tournaments">Back to tournaments</a>*@
+            @*<p><a class="btn btn-primary btn-back" href="@Constants.Pages.TournamentsUrl">Back to @Constants.Pages.Tournaments</a></p>*@
+            <p><a href="@Constants.Pages.HomeUrl" class="btn btn-primary btn-back">Go back to the home page</a></p>
         }
     }
     else
