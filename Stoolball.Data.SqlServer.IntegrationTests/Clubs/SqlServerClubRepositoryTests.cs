@@ -45,5 +45,27 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
                 Assert.NotNull(result);
             }
         }
+
+        [Fact]
+        public async Task Delete_club_succeeds()
+        {
+            var memberKey = Guid.NewGuid();
+            var memberName = "Dee Leeter";
+
+            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger>(), Mock.Of<IRouteGenerator>(), Mock.Of<IRedirectsRepository>());
+
+            await repo.DeleteClub(_databaseFixture.ClubWithTeamsForDelete, memberKey, memberName).ConfigureAwait(false);
+
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT ClubId FROM {Tables.Club} WHERE ClubId = @ClubId", _databaseFixture.ClubWithTeamsForDelete).ConfigureAwait(false);
+                Assert.Null(result);
+            }
+
+            foreach (var team in _databaseFixture.ClubWithTeamsForDelete.Teams)
+            {
+                team.Club = null;
+            }
+        }
     }
 }

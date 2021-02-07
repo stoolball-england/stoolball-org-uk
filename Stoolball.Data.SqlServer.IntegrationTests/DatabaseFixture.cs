@@ -106,8 +106,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 Teams.AddRange(ClubWithTeams.Teams);
 
                 ClubWithTeamsForDelete = seedDataGenerator.CreateClubWithTeams();
-                repo.CreateClub(ClubWithTeams);
-                Teams.AddRange(ClubWithTeams.Teams);
+                repo.CreateClub(ClubWithTeamsForDelete);
+                Teams.AddRange(ClubWithTeamsForDelete.Teams);
 
                 TeamWithMinimalDetails = seedDataGenerator.CreateTeamWithMinimalDetails("Team minimal");
                 repo.CreateTeam(TeamWithMinimalDetails);

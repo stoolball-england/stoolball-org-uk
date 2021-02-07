@@ -20,7 +20,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             {
                 ClubId = Guid.NewGuid(),
                 ClubName = "Club minimal",
-                ClubRoute = "/clubs/club-minimal",
+                ClubRoute = "/clubs/club-minimal-" + Guid.NewGuid(),
                 MemberGroupKey = Guid.NewGuid(),
                 MemberGroupName = "Club minimal owners"
             };
@@ -32,7 +32,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             {
                 ClubId = Guid.NewGuid(),
                 ClubName = "Club with teams",
-                ClubRoute = "/clubs/club-with-teams",
+                ClubRoute = "/clubs/club-with-teams-" + Guid.NewGuid(),
                 MemberGroupKey = Guid.NewGuid(),
                 MemberGroupName = "Club with teams owners",
             };
