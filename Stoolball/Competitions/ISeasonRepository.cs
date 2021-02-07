@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 
 namespace Stoolball.Competitions
@@ -30,5 +32,10 @@ namespace Stoolball.Competitions
         /// Delete a stoolball season
         /// </summary>
         Task DeleteSeason(Season season, Guid memberKey, string memberName);
+
+        /// <summary>
+        /// Delete multiple stoolball seasons
+        /// </summary>
+        Task DeleteSeasons(IEnumerable<Season> seasons, Guid memberKey, string memberName, IDbTransaction transaction);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
@@ -515,9 +516,7 @@ namespace Stoolball.Data.SqlServer
             return auditableSeason;
         }
 
-        /// <summary>
-        /// Deletes a stoolball season
-        /// </summary>
+        /// <inheritdoc />
         public async Task DeleteSeason(Season season, Guid memberKey, string memberName)
         {
             if (season is null)
@@ -525,41 +524,66 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(season));
             }
 
-            var auditableSeason = CreateAuditableCopy(season);
-
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam} WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsRule} WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsAdjustment} WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.SeasonMatchType} WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.AwardedTo} WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"UPDATE {Tables.Match} SET SeasonId = NULL WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason} WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.Season} WHERE SeasonId = @SeasonId", new { auditableSeason.SeasonId }, transaction).ConfigureAwait(false);
-
-                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableSeason.SeasonRoute, transaction).ConfigureAwait(false);
-
-                    var redacted = CreateRedactedCopy(auditableSeason);
-                    await _auditRepository.CreateAudit(new AuditRecord
-                    {
-                        Action = AuditAction.Delete,
-                        MemberKey = memberKey,
-                        ActorName = memberName,
-                        EntityUri = auditableSeason.EntityUri,
-                        State = JsonConvert.SerializeObject(auditableSeason),
-                        RedactedState = JsonConvert.SerializeObject(redacted),
-                        AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
+                    await DeleteSeasons(new[] { season }, memberKey, memberName, transaction).ConfigureAwait(false);
 
                     transaction.Commit();
-
-                    _logger.Info(GetType(), LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(SqlServerSeasonRepository.DeleteSeason));
                 }
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task DeleteSeasons(IEnumerable<Season> seasons, Guid memberKey, string memberName, IDbTransaction transaction)
+        {
+            if (seasons is null)
+            {
+                throw new ArgumentNullException(nameof(seasons));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentException($"'{nameof(memberName)}' cannot be null or whitespace", nameof(memberName));
+            }
+
+            if (transaction is null)
+            {
+                throw new ArgumentNullException(nameof(transaction));
+            }
+
+            var auditableSeasons = seasons.Select(x => CreateAuditableCopy(x));
+            var seasonIds = auditableSeasons.Select(x => x.SeasonId.Value);
+
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsRule} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsAdjustment} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonMatchType} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.AwardedTo} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"UPDATE {Tables.Match} SET SeasonId = NULL WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.Season} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+
+            foreach (var auditableSeason in auditableSeasons)
+            {
+                await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableSeason.SeasonRoute, transaction).ConfigureAwait(false);
+
+                var redacted = CreateRedactedCopy(auditableSeason);
+                await _auditRepository.CreateAudit(new AuditRecord
+                {
+                    Action = AuditAction.Delete,
+                    MemberKey = memberKey,
+                    ActorName = memberName,
+                    EntityUri = auditableSeason.EntityUri,
+                    State = JsonConvert.SerializeObject(auditableSeason),
+                    RedactedState = JsonConvert.SerializeObject(redacted),
+                    AuditDate = DateTime.UtcNow
+                }, transaction).ConfigureAwait(false);
+
+                _logger.Info(GetType(), LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(DeleteSeason));
             }
         }
     }

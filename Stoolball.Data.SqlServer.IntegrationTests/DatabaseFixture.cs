@@ -33,10 +33,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public Tournament TournamentInTheFutureWithMinimalDetails { get; private set; }
         public Competition CompetitionWithMinimalDetails { get; private set; }
         public Competition CompetitionWithFullDetails { get; private set; }
+        public Competition CompetitionWithFullDetailsForDelete { get; private set; }
         public MatchLocation MatchLocationWithMinimalDetails { get; private set; }
         public MatchLocation MatchLocationWithFullDetails { get; private set; }
         public Club ClubWithMinimalDetails { get; private set; }
         public Club ClubWithTeams { get; private set; }
+        public Club ClubWithTeamsForDelete { get; private set; }
         public Team TeamWithMinimalDetails { get; private set; }
         public Team TeamWithFullDetails { get; private set; }
         public List<Competition> Competitions { get; internal set; } = new List<Competition>();
@@ -100,6 +102,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 repo.CreateClub(ClubWithMinimalDetails);
 
                 ClubWithTeams = seedDataGenerator.CreateClubWithTeams();
+                repo.CreateClub(ClubWithTeams);
+                Teams.AddRange(ClubWithTeams.Teams);
+
+                ClubWithTeamsForDelete = seedDataGenerator.CreateClubWithTeams();
                 repo.CreateClub(ClubWithTeams);
                 Teams.AddRange(ClubWithTeams.Teams);
 
@@ -172,19 +178,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 CompetitionWithMinimalDetails = seedDataGenerator.CreateCompetitionWithMinimalDetails();
                 repo.CreateCompetition(CompetitionWithMinimalDetails);
 
-                CompetitionWithFullDetails = seedDataGenerator.CreateCompetitionWithFullDetails();
-                repo.CreateCompetition(CompetitionWithFullDetails);
-                foreach (var season in CompetitionWithFullDetails.Seasons)
-                {
-                    repo.CreateSeason(season, CompetitionWithFullDetails.CompetitionId.Value);
-                }
+                CompetitionWithFullDetails = CreateCompetitionWithFullDetails(seedDataGenerator, repo);
+                CompetitionWithFullDetailsForDelete = CreateCompetitionWithFullDetails(seedDataGenerator, repo);
 
                 MatchLocationWithMinimalDetails = MatchInThePastWithFullDetails.MatchLocation;
                 MatchLocationWithFullDetails = seedDataGenerator.CreateMatchLocationWithFullDetails();
                 repo.CreateMatchLocation(MatchLocationWithFullDetails);
                 Teams.AddRange(MatchLocationWithFullDetails.Teams);
 
-                Competitions.AddRange(new[] { CompetitionWithMinimalDetails, CompetitionWithFullDetails, MatchInThePastWithFullDetails.Season.Competition, MatchInThePastWithFullDetailsAndTournament.Season.Competition });
+                Competitions.AddRange(new[] { CompetitionWithMinimalDetails, CompetitionWithFullDetails, CompetitionWithFullDetailsForDelete, MatchInThePastWithFullDetails.Season.Competition, MatchInThePastWithFullDetailsAndTournament.Season.Competition });
                 MatchLocations.AddRange(new[] { MatchInThePastWithFullDetails.MatchLocation, MatchInThePastWithFullDetailsAndTournament.MatchLocation, MatchLocationWithFullDetails });
 
                 for (var i = 0; i < 30; i++)
@@ -200,6 +202,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 Matches.AddRange(new[] { MatchInThePastWithMinimalDetails, MatchInThePastWithFullDetails });
             }
+        }
+
+        private static Competition CreateCompetitionWithFullDetails(SeedDataGenerator seedDataGenerator, SqlServerIntegrationTestsRepository repo)
+        {
+            var competition = seedDataGenerator.CreateCompetitionWithFullDetails();
+            repo.CreateCompetition(competition);
+            foreach (var season in competition.Seasons)
+            {
+                repo.CreateSeason(season, competition.CompetitionId.Value);
+            }
+            return competition;
         }
 
         public void Dispose()

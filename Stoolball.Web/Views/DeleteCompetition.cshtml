@@ -1,6 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.DeleteCompetitionViewModel>
 @using Humanizer
 @using ClientDependency.Core.Mvc
+@using Constants = Stoolball.Constants
 @using Stoolball.Web.Competitions
 @using Stoolball.Security
 @{
@@ -60,7 +61,7 @@
         else
         {
             <p>@Model.Competition.CompetitionName has been deleted.</p>
-            <a class="btn btn-primary" href="/competitions">Back to Competitions</a>
+            <a class="btn btn-primary" href="@Constants.Pages.CompetitionsUrl">Back to @Constants.Pages.Competitions</a>
         }
     }
     else
