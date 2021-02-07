@@ -3,6 +3,7 @@
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Teams
 @using Stoolball.Security
+@using Constants = Stoolball.Constants
 @{
     Html.EnableClientValidation();
     Html.EnableUnobtrusiveJavaScript();
@@ -69,7 +70,7 @@
         else
         {
             <p>@Model.Team.TeamName has been deleted.</p>
-            <a class="btn btn-primary" href="/teams">Back to clubs and teams</a>
+            <p><a class="btn btn-primary btn-back" href="@Constants.Pages.TeamsUrl">Back to @Constants.Pages.Teams</a></p>
         }
     }
     else

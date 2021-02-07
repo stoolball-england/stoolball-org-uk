@@ -2,6 +2,7 @@
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
+using Stoolball.Teams;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests
 {
@@ -12,6 +13,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public Season SeasonWithFullDetailsForDelete { get; private set; }
         public MatchLocation MatchLocationWithFullDetailsForDelete { get; private set; }
         public Club ClubWithTeamsForDelete { get; private set; }
+        public Team TeamWithFullDetailsForDelete { get; private set; }
 
         public SqlServerRepositoryFixture() : base("StoolballRepositoryIntegrationTests")
         {
@@ -30,6 +32,20 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 ClubWithTeamsForDelete = seedDataGenerator.CreateClubWithTeams();
                 repo.CreateClub(ClubWithTeamsForDelete);
+
+                TeamWithFullDetailsForDelete = seedDataGenerator.CreateTeamWithFullDetails();
+                repo.CreateTeam(TeamWithFullDetailsForDelete);
+                foreach (var matchLocation in TeamWithFullDetailsForDelete.MatchLocations)
+                {
+                    repo.CreateMatchLocation(matchLocation);
+                    repo.AddTeamToMatchLocation(TeamWithFullDetailsForDelete, matchLocation);
+                }
+                repo.CreateCompetition(TeamWithFullDetailsForDelete.Seasons[0].Season.Competition);
+                foreach (var season in TeamWithFullDetailsForDelete.Seasons)
+                {
+                    repo.CreateSeason(season.Season, season.Season.Competition.CompetitionId.Value);
+                    repo.AddTeamToSeason(season);
+                }
 
                 MatchInThePastWithFullDetailsForDelete = seedDataGenerator.CreateMatchInThePastWithFullDetails();
                 repo.CreateMatch(MatchInThePastWithFullDetailsForDelete);
