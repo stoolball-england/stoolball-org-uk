@@ -59,7 +59,7 @@ namespace Stoolball.Web.MatchLocations
                 model.Metadata.PageTitle = "Edit " + model.MatchLocation.NameAndLocalityOrTown();
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.MatchLocations, Url = new Uri(Constants.Pages.MatchLocationsUrl, UriKind.Relative) });
-                model.Breadcrumbs.Add(new Breadcrumb { Name = model.MatchLocation.NameAndLocalityOrTown(), Url = new Uri(model.MatchLocation.MatchLocationRoute, UriKind.Relative) });
+                model.Breadcrumbs.Add(new Breadcrumb { Name = model.MatchLocation.NameAndLocalityOrTownIfDifferent(), Url = new Uri(model.MatchLocation.MatchLocationRoute, UriKind.Relative) });
 
                 return CurrentTemplate(model);
             }

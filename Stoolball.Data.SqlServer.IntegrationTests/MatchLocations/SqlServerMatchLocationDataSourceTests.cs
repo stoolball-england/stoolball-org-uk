@@ -231,6 +231,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
             var result = await matchLocationDataSource.ReadMatchLocations(new MatchLocationQuery { PageSize = _databaseFixture.MatchLocations.Count }).ConfigureAwait(false);
 
+            Assert.Equal(_databaseFixture.MatchLocations.Count, result.Count);
             foreach (var location in _databaseFixture.MatchLocations)
             {
                 Assert.NotNull(result.Single(x => x.MatchLocationId == location.MatchLocationId));

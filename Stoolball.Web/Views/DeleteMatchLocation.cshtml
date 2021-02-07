@@ -3,6 +3,7 @@
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.MatchLocations
 @using Stoolball.Security
+@using Constants = Stoolball.Constants
 @{
     Html.EnableClientValidation();
     Html.EnableUnobtrusiveJavaScript();
@@ -49,18 +50,18 @@
 
                 @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
                 <div class="form-group">
-                    @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.MatchLocation.Name()}' into this box:")
+                    @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.MatchLocation.NameAndLocalityOrTownIfDifferent()}' into this box:")
                     @Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck = "false" })
                     @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
                 </div>
 
-                <button class="btn btn-danger btn-delete">Delete @Model.MatchLocation.Name()</button>
+                <button class="btn btn-danger btn-delete">Delete @Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</button>
             }
         }
         else
         {
-            <p>@Model.MatchLocation.Name() has been deleted.</p>
-            <a class="btn btn-primary" href="/locations">Back to grounds and sports centres</a>
+            <p>@Model.MatchLocation.NameAndLocalityOrTownIfDifferent() has been deleted.</p>
+            <p><a class="btn btn-primary" href="@Constants.Pages.MatchLocationsUrl">Back to @Constants.Pages.MatchLocations</a></p>
         }
     }
     else

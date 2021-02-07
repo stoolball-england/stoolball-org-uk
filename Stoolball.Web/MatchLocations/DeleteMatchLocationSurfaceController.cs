@@ -78,7 +78,7 @@ namespace Stoolball.Web.MatchLocations
             viewModel.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.MatchLocations, Url = new Uri(Constants.Pages.MatchLocationsUrl, UriKind.Relative) });
             if (!viewModel.Deleted)
             {
-                viewModel.Breadcrumbs.Add(new Breadcrumb { Name = viewModel.MatchLocation.NameAndLocalityOrTown(), Url = new Uri(viewModel.MatchLocation.MatchLocationRoute, UriKind.Relative) });
+                viewModel.Breadcrumbs.Add(new Breadcrumb { Name = viewModel.MatchLocation.NameAndLocalityOrTownIfDifferent(), Url = new Uri(viewModel.MatchLocation.MatchLocationRoute, UriKind.Relative) });
             }
 
             return View("DeleteMatchLocation", viewModel);
