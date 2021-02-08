@@ -41,6 +41,7 @@ namespace Stoolball.Web.Security
             SetupDirectives();
             SetupDefaultPolicy();
             SetupGoogleAnalytics();
+            SetupCloudFlareAnalytics();
 
             if (GoogleMaps)
             {
@@ -85,6 +86,11 @@ namespace Stoolball.Web.Security
             AddSource(SCRIPT_SRC, "https://www.googletagmanager.com");
             AddSource(IMG_SRC, "https://www.google-analytics.com");
             AddSource(CONNECT_SRC, "https://www.google-analytics.com");
+        }
+        private void SetupCloudFlareAnalytics()
+        {
+            AddSource(SCRIPT_SRC, "https://static.cloudflareinsights.com");
+            AddSource(CONNECT_SRC, "https://cloudflareinsights.com");
         }
 
         private void SetupGettyImages()

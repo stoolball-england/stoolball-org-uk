@@ -3,17 +3,82 @@
   var stoolball = {};
 }
 stoolball.consent = {
-  hasFunctionalConsent: function () {
-    return localStorage.getItem("functional_consent") === "true";
+  consentVersion: "v1",
+  hasFeatureConsent: function () {
+    return (
+      localStorage.getItem(
+        "feature_consent_" + stoolball.consent.consentVersion
+      ) === "true"
+    );
   },
-  hasImprovementConsent: function () {
-    return localStorage.getItem("improvement_consent") === "true";
+  hasFeatureDecision: function () {
+    return localStorage.getItem(
+      "feature_consent_" + stoolball.consent.consentVersion
+    );
+  },
+  setFeatureConsent(hasConsent) {
+    localStorage.setItem(
+      "feature_consent_" + stoolball.consent.consentVersion,
+      hasConsent
+    );
+  },
+  hasAnalyticsConsent: function () {
+    return (
+      localStorage.getItem(
+        "analytics_consent_" + stoolball.consent.consentVersion
+      ) === "true"
+    );
+  },
+  hasAnalyticsDecision: function () {
+    return localStorage.getItem(
+      "analytics_consent_" + stoolball.consent.consentVersion
+    );
+  },
+  setAnalyticsConsent(hasConsent) {
+    localStorage.setItem(
+      "analytics_consent_" + stoolball.consent.consentVersion,
+      hasConsent
+    );
+  },
+  hasMapsConsent: function () {
+    return (
+      localStorage.getItem(
+        "maps_consent_" + stoolball.consent.consentVersion
+      ) === "true"
+    );
+  },
+  hasMapsDecision: function () {
+    return localStorage.getItem(
+      "maps_consent_" + stoolball.consent.consentVersion
+    );
+  },
+  setMapsConsent(hasConsent) {
+    localStorage.setItem(
+      "maps_consent_" + stoolball.consent.consentVersion,
+      hasConsent
+    );
   },
   hasTrackingConsent: function () {
-    return localStorage.getItem("tracking_consent") === "true";
+    return (
+      localStorage.getItem(
+        "tracking_consent_" + stoolball.consent.consentVersion
+      ) === "true"
+    );
   },
-  functionalListeners: [],
-  improvementListeners: [],
+  hasTrackingDecision: function () {
+    return localStorage.getItem(
+      "tracking_consent_" + stoolball.consent.consentVersion
+    );
+  },
+  setTrackingConsent(hasConsent) {
+    localStorage.setItem(
+      "tracking_consent_" + stoolball.consent.consentVersion,
+      hasConsent
+    );
+  },
+  featureListeners: [],
+  analyticsListeners: [],
+  mapsListeners: [],
   trackingListeners: [],
 };
 
@@ -23,9 +88,10 @@ stoolball.consent = {
 
   // if consent recorded, true OR false, return without asking again, unless overridden
   if (
-    localStorage.getItem("functional_consent") &&
-    localStorage.getItem("improvement_consent") &&
-    localStorage.getItem("tracking_consent") &&
+    stoolball.consent.hasFeatureDecision() &&
+    stoolball.consent.hasAnalyticsDecision() &&
+    stoolball.consent.hasMapsDecision() &&
+    stoolball.consent.hasTrackingDecision() &&
     !document.querySelector("[data-show-consent]")
   ) {
     return;
@@ -34,18 +100,34 @@ stoolball.consent = {
   document.addEventListener("DOMContentLoaded", createConsentBanner);
 
   function consentControlPage() {
-    setupConsentOption("functional");
-    setupConsentOption("improvement");
-    setupConsentOption("tracking");
+    setupConsentOption(
+      "feature_consent",
+      stoolball.consent.hasFeatureConsent(),
+      stoolball.consent.setFeatureConsent
+    );
+    setupConsentOption(
+      "analytics_consent",
+      stoolball.consent.hasAnalyticsConsent(),
+      stoolball.consent.setAnalyticsConsent
+    );
+    setupConsentOption(
+      "maps_consent",
+      stoolball.consent.hasMapsConsent(),
+      stoolball.consent.setMapsConsent
+    );
+    setupConsentOption(
+      "tracking_consent",
+      stoolball.consent.hasTrackingConsent(),
+      stoolball.consent.setTrackingConsent
+    );
   }
 
-  function setupConsentOption(id) {
-    id = id + "_consent";
-    const checkbox = document.getElementById(id);
+  function setupConsentOption(checkboxId, hasConsent, setConsent) {
+    const checkbox = document.getElementById(checkboxId);
     if (checkbox) {
-      checkbox.checked = localStorage.getItem(id) === "true";
+      checkbox.checked = hasConsent;
       checkbox.addEventListener("change", function () {
-        localStorage.setItem(id, checkbox.checked);
+        setConsent(checkbox.checked);
         if (checkbox.checked) {
           runListeners();
         }
@@ -85,22 +167,31 @@ stoolball.consent = {
 
     const essential = createCheckbox(
       "essential",
-      "Always on – essential features like signing in"
+      "Always on",
+      "Essential features like signing in"
     );
     essential.querySelector("input").setAttribute("checked", "checked");
     essential.querySelector("input").setAttribute("disabled", "disabled");
 
     const functional = createCheckbox(
       "functional",
-      "Optional features – make this site work better, with no tracking"
+      "Features",
+      "Optional features like saving your preferences, with no tracking"
     );
     const improvement = createCheckbox(
       "improvement",
-      "Help to improve this site with anonymous statistics"
+      "Performance",
+      "Help us to improve this site, with anonymous tracking by Google Analytics"
+    );
+    const maps = createCheckbox(
+      "maps",
+      "Maps",
+      "Show where teams are based and matches are played, but Google Maps will track you"
     );
     const tracking = createCheckbox(
       "tracking",
-      "Maps and social media – show maps and better links to services like Facebook and Twitter, but they will track you"
+      "Social media",
+      "Better links to services like Facebook and Twitter, but they will track you"
     );
 
     const linkToCookiePolicy = document.createElement("a");
@@ -116,16 +207,24 @@ stoolball.consent = {
 
     acceptButton.addEventListener("click", function (e) {
       e.preventDefault();
-      saveChoices(true, true, true);
+      stoolball.consent.setFeatureConsent(true);
+      stoolball.consent.setAnalyticsConsent(true);
+      stoolball.consent.setMapsConsent(true);
+      stoolball.consent.setTrackingConsent(true);
       consent.classList.add("d-none");
       runListeners();
     });
 
     acceptSelectedButton.addEventListener("click", function (e) {
       e.preventDefault();
-      saveChoices(
-        functional.querySelector("input").checked,
-        improvement.querySelector("input").checked,
+      stoolball.consent.setFeatureConsent(
+        functional.querySelector("input").checked
+      );
+      stoolball.consent.setAnalyticsConsent(
+        improvement.querySelector("input").checked
+      );
+      stoolball.consent.setMapsConsent(maps.querySelector("input").checked);
+      stoolball.consent.setTrackingConsent(
         tracking.querySelector("input").checked
       );
       consent.classList.add("d-none");
@@ -144,13 +243,17 @@ stoolball.consent = {
 
     rejectButton.addEventListener("click", function (e) {
       e.preventDefault();
-      saveChoices(false, false, false);
+      stoolball.consent.setFeatureConsent(false);
+      stoolball.consent.setAnalyticsConsent(false);
+      stoolball.consent.setMapsConsent(false);
+      stoolball.consent.setTrackingConsent(false);
       consent.classList.add("d-none");
     });
 
     choices.appendChild(essential);
     choices.appendChild(functional);
     choices.appendChild(improvement);
+    choices.appendChild(maps);
     choices.appendChild(tracking);
     choices.appendChild(cookiePara);
 
@@ -174,7 +277,7 @@ stoolball.consent = {
     return button;
   }
 
-  function createCheckbox(id, label) {
+  function createCheckbox(id, category, description) {
     const container = document.createElement("div");
     container.setAttribute("class", "custom-control custom-checkbox");
     const input = document.createElement("input");
@@ -184,30 +287,32 @@ stoolball.consent = {
     const inputLabel = document.createElement("label");
     inputLabel.setAttribute("for", id);
     inputLabel.setAttribute("class", "custom-control-label");
-    inputLabel.appendChild(document.createTextNode(label));
+    const categoryTag = document.createElement("strong");
+    categoryTag.innerText = category;
+    inputLabel.appendChild(categoryTag);
+    inputLabel.appendChild(document.createTextNode(" – " + description));
     container.appendChild(input);
     container.appendChild(inputLabel);
     return container;
   }
 
-  function saveChoices(functional, improvement, tracking) {
-    localStorage.setItem("functional_consent", functional);
-    localStorage.setItem("improvement_consent", improvement);
-    localStorage.setItem("tracking_consent", tracking);
-  }
-
   function runListeners() {
-    if (localStorage.getItem("functional_consent") === "true") {
-      stoolball.consent.functionalListeners.forEach(function (listener) {
+    if (stoolball.consent.hasFeatureConsent()) {
+      stoolball.consent.featureListeners.forEach(function (listener) {
         listener();
       });
     }
-    if (localStorage.getItem("improvement_consent") === "true") {
-      stoolball.consent.improvementListeners.forEach(function (listener) {
+    if (stoolball.consent.hasAnalyticsConsent()) {
+      stoolball.consent.analyticsListeners.forEach(function (listener) {
         listener();
       });
     }
-    if (localStorage.getItem("tracking_consent") === "true") {
+    if (stoolball.consent.hasMapsConsent()) {
+      stoolball.consent.mapsListeners.forEach(function (listener) {
+        listener();
+      });
+    }
+    if (stoolball.consent.hasTrackingConsent()) {
       stoolball.consent.trackingListeners.forEach(function (listener) {
         listener();
       });

@@ -50,5 +50,9 @@
     </main>
     @Html.Partial("_Footer")
     @Html.RenderJsHere()
+    @if (Request.Url.Host != "localhost")
+    {
+        <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "4b73271c7ec547e2a9ccec95f25bed28"}'></script>
+    }
 </body>
 </html>

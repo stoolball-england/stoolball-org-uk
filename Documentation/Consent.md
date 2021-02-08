@@ -14,23 +14,27 @@ stoolball.exampleFeature = {
     console.log("load feature");
   },
 };
-if (stoolball.consent.hasFunctionalConsent()) {
+if (stoolball.consent.hasFeatureConsent()) {
   stoolball.exampleFeature.load();
 } else {
-  stoolball.consent.functionalListeners.push(stoolball.exampleFeature.load);
+  stoolball.consent.featureListeners.push(stoolball.exampleFeature.load);
 }
 ```
 
-There are three consent levels:
+There are four consent levels:
 
-1. **Functional consent**: Optional features that do not track the user.
+1. **Feature consent**: Optional features that do not track the user.
 
-   Use `stoolball.consent.hasFunctionalConsent()` and the `stoolball.consent.functionalListeners` array.
+   Use `stoolball.consent.hasFeatureConsent()` and the `stoolball.consent.featureListeners` array.
 
-2. **Improvement consent**: Anonymous tracking for the improvement of this website.
+2. **Analytics consent**: Anonymous tracking for the improvement of this website.
 
-   Use `stoolball.consent.hasImprovementConsent()` and the `stoolball.consent.improvementListeners` array.
+   Use `stoolball.consent.hasAnalyticsConsent()` and the `stoolball.consent.analyticsListeners` array.
 
-3. **Tracking consent**: Personalised tracking used by services like social media and advertising.
+3. **Maps consent**: Personalised tracking used by Google Maps.
+
+   Use `stoolball.consent.hasMapsConsent()` and the `stoolball.consent.mapsListeners` array.
+
+4. **Tracking consent**: Personalised tracking used by services like social media and advertising.
 
    Use `stoolball.consent.hasTrackingConsent()` and the `stoolball.consent.trackingListeners` array.

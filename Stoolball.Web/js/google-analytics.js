@@ -26,8 +26,8 @@ stoolball.analytics = {
     });
   },
 };
-if (stoolball.consent.hasImprovementConsent()) {
+if (stoolball.consent.hasAnalyticsConsent()) {
   stoolball.analytics.setup();
 } else {
-  stoolball.consent.improvementListeners.push(stoolball.analytics.setup);
+  stoolball.consent.analyticsListeners.push(stoolball.analytics.setup);
 }

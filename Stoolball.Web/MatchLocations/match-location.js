@@ -1,6 +1,6 @@
 ﻿window.addEventListener("DOMContentLoaded", function (event) {
   // Check for consent because Google might track the user
-  if (!stoolball.consent.hasTrackingConsent()) {
+  if (!stoolball.consent.hasMapsConsent()) {
     return;
   }
 
