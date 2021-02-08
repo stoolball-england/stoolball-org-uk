@@ -5,19 +5,14 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
-    [TableName(Tables.SeasonPointsAdjustment)]
-    [PrimaryKey(nameof(SeasonPointsAdjustmentId), AutoIncrement = false)]
+    [TableName(Tables.PointsAdjustment)]
+    [PrimaryKey(nameof(PointsAdjustmentId), AutoIncrement = false)]
     [ExplicitColumns]
-    public class SeasonPointsAdjustmentTableInitialSchema
+    public class PointsAdjustmentTableInitialSchema
     {
         [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
-        [Column(nameof(SeasonPointsAdjustmentId))]
-        public Guid SeasonPointsAdjustmentId { get; set; }
-
-        [Column(nameof(SeasonId))]
-        [ForeignKey(typeof(SeasonTableInitialSchema), Column = nameof(SeasonTableInitialSchema.SeasonId))]
-        [Index(IndexTypes.Clustered)]
-        public Guid SeasonId { get; set; }
+        [Column(nameof(PointsAdjustmentId))]
+        public Guid PointsAdjustmentId { get; set; }
 
         [Column(nameof(TeamId))]
         [ForeignKey(typeof(TeamTableInitialSchema), Column = nameof(TeamTableInitialSchema.TeamId))]
@@ -29,5 +24,10 @@ namespace Stoolball.Data.UmbracoMigrations
 
         [Column(nameof(Reason))]
         public string Reason { get; set; }
+
+        [Column(nameof(SeasonId))]
+        [ForeignKey(typeof(SeasonTableInitialSchema), Column = nameof(SeasonTableInitialSchema.SeasonId))]
+        [Index(IndexTypes.Clustered)]
+        public Guid SeasonId { get; set; }
     }
 }

@@ -110,10 +110,10 @@
     <Compile Include="TournamentSeasonTableInitialSchema.cs" />
     <Compile Include="SeasonMatchTypeAddTable.cs" />
     <Compile Include="SeasonMatchTypeTableInitialSchema.cs" />
-    <Compile Include="SeasonPointsAdjustmentAddTable.cs" />
-    <Compile Include="SeasonPointsAdjustmentTableInitialSchema.cs" />
-    <Compile Include="SeasonPointsRuleAddTable.cs" />
-    <Compile Include="SeasonPointsRuleTableInitialSchema.cs" />
+    <Compile Include="PointsAdjustmentAddTable.cs" />
+    <Compile Include="PointsAdjustmentTableInitialSchema.cs" />
+    <Compile Include="PointsRuleAddTable.cs" />
+    <Compile Include="PointsRuleTableInitialSchema.cs" />
     <Compile Include="SeasonTableInitialSchema.cs" />
     <Compile Include="SeasonTeamAddTable.cs" />
     <Compile Include="SeasonTeamTableInitialSchema.cs" />

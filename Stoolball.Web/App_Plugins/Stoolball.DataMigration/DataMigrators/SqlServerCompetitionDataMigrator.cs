@@ -206,8 +206,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 throw new ArgumentNullException(nameof(transaction));
             }
 
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsAdjustment}", null, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsRule}", null, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.PointsAdjustment}", null, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.PointsRule}", null, transaction).ConfigureAwait(false);
             await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonMatchType}", null, transaction).ConfigureAwait(false);
             await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE SeasonId IS NOT NULL", null, transaction).ConfigureAwait(false);
             await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason}", null, transaction).ConfigureAwait(false);
@@ -347,12 +347,12 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     {
                         rule.PointsRuleId = Guid.NewGuid();
 
-                        await connection.ExecuteAsync($@"INSERT INTO {Tables.SeasonPointsRule}
-								(SeasonPointsRuleId, SeasonId, MatchResultType, HomePoints, AwayPoints) 
-								 VALUES (@SeasonPointsRuleId, @SeasonId, @MatchResultType, @HomePoints, @AwayPoints)",
+                        await connection.ExecuteAsync($@"INSERT INTO {Tables.PointsRule}
+								(PointsRuleId, SeasonId, MatchResultType, HomePoints, AwayPoints) 
+								 VALUES (@PointsRuleId, @SeasonId, @MatchResultType, @HomePoints, @AwayPoints)",
                              new
                              {
-                                 SeasonPointsRuleId = rule.PointsRuleId,
+                                 rule.PointsRuleId,
                                  migratedSeason.SeasonId,
                                  MatchResultType = rule.MatchResultType.ToString(),
                                  rule.HomePoints,
@@ -365,12 +365,12 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     {
                         point.Team = new Team { TeamId = await connection.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @MigratedTeamId", new { point.MigratedTeamId }, transaction).ConfigureAwait(false) };
 
-                        await connection.ExecuteAsync($@"INSERT INTO {Tables.SeasonPointsAdjustment}
-								(SeasonPointsAdjustmentId, SeasonId, TeamId, Points, Reason) 
-								 VALUES (@SeasonPointsAdjustmentId, @SeasonId, @TeamId, @Points, @Reason)",
+                        await connection.ExecuteAsync($@"INSERT INTO {Tables.PointsAdjustment}
+								(PointsAdjustmentId, SeasonId, TeamId, Points, Reason) 
+								 VALUES (@PointsAdjustmentId, @SeasonId, @TeamId, @Points, @Reason)",
                              new
                              {
-                                 SeasonPointsAdjustmentId = Guid.NewGuid(),
+                                 PointsAdjustmentId = Guid.NewGuid(),
                                  migratedSeason.SeasonId,
                                  point.Team.TeamId,
                                  point.Points,

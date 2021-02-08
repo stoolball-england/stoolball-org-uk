@@ -30,8 +30,8 @@
         public const string SchoolVersion = _tablePrefix + "SchoolVersion";
         public const string Season = _tablePrefix + "Season";
         public const string SeasonMatchType = _tablePrefix + "SeasonMatchType";
-        public const string SeasonPointsAdjustment = _tablePrefix + "SeasonPointsAdjustment";
-        public const string SeasonPointsRule = _tablePrefix + "SeasonPointsRule";
+        public const string PointsAdjustment = _tablePrefix + "PointsAdjustment";
+        public const string PointsRule = _tablePrefix + "PointsRule";
         public const string SeasonTeam = _tablePrefix + "SeasonTeam";
         public const string Team = _tablePrefix + "Team";
         public const string TeamVersion = _tablePrefix + "TeamVersion";

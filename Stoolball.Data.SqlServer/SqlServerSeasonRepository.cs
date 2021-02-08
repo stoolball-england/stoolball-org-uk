@@ -175,7 +175,7 @@ namespace Stoolball.Data.SqlServer
                     if (previousSeason != null)
                     {
                         auditableSeason.PointsRules = (await connection.QueryAsync<PointsRule>(
-                            $@"SELECT MatchResultType, HomePoints, AwayPoints FROM { Tables.SeasonPointsRule } WHERE SeasonId = @SeasonId",
+                            $@"SELECT MatchResultType, HomePoints, AwayPoints FROM { Tables.PointsRule } WHERE SeasonId = @SeasonId",
                                 new
                                 {
                                     previousSeason.SeasonId
@@ -200,12 +200,12 @@ namespace Stoolball.Data.SqlServer
                     foreach (var pointsRule in auditableSeason.PointsRules)
                     {
                         pointsRule.PointsRuleId = Guid.NewGuid();
-                        await connection.ExecuteAsync($@"INSERT INTO { Tables.SeasonPointsRule } 
-                                (SeasonPointsRuleId, SeasonId, MatchResultType, HomePoints, AwayPoints)
-                                VALUES (@SeasonPointsRuleId, @SeasonId, @MatchResultType, @HomePoints, @AwayPoints)",
+                        await connection.ExecuteAsync($@"INSERT INTO { Tables.PointsRule } 
+                                (PointsRuleId, SeasonId, MatchResultType, HomePoints, AwayPoints)
+                                VALUES (@PointsRuleId, @SeasonId, @MatchResultType, @HomePoints, @AwayPoints)",
                             new
                             {
-                                SeasonPointsRuleId = pointsRule.PointsRuleId,
+                                pointsRule.PointsRuleId,
                                 auditableSeason.SeasonId,
                                 pointsRule.MatchResultType,
                                 pointsRule.HomePoints,
@@ -422,10 +422,10 @@ namespace Stoolball.Data.SqlServer
 
                     foreach (var rule in auditableSeason.PointsRules)
                     {
-                        await connection.ExecuteAsync($@"UPDATE {Tables.SeasonPointsRule} SET 
+                        await connection.ExecuteAsync($@"UPDATE {Tables.PointsRule} SET 
                                     HomePoints = @HomePoints, 
                                     AwayPoints = @AwayPoints 
-                                    WHERE SeasonPointsRuleId = @PointsRuleId",
+                                    WHERE PointsRuleId = @PointsRuleId",
                                 new
                                 {
                                     rule.HomePoints,
@@ -558,8 +558,8 @@ namespace Stoolball.Data.SqlServer
             var seasonIds = auditableSeasons.Select(x => x.SeasonId.Value);
 
             await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonTeam} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsRule} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonPointsAdjustment} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.PointsRule} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.PointsAdjustment} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
             await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
             await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.SeasonMatchType} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
             await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.AwardedTo} WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);

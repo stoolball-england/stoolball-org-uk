@@ -249,8 +249,8 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 return await connection.QueryAsync<PointsRule>(
-                    $@"SELECT pr.SeasonPointsRuleId AS PointsRuleId, pr.MatchResultType, pr.HomePoints, pr.AwayPoints
-                            FROM {Tables.SeasonPointsRule} AS pr 
+                    $@"SELECT pr.PointsRuleId, pr.MatchResultType, pr.HomePoints, pr.AwayPoints
+                            FROM {Tables.PointsRule} AS pr 
                             WHERE pr.SeasonId = @SeasonId",
                     new { SeasonId = seasonId }).ConfigureAwait(false);
             }
@@ -266,7 +266,7 @@ namespace Stoolball.Data.SqlServer
             {
                 return await connection.QueryAsync<PointsAdjustment, Team, PointsAdjustment>(
                     $@"SELECT spa.Points, spa.Reason, tn.TeamId, tn.TeamName
-                            FROM {Tables.SeasonPointsAdjustment} AS spa 
+                            FROM {Tables.PointsAdjustment} AS spa 
                             INNER JOIN {Tables.TeamVersion} tn ON spa.TeamId = tn.TeamId
                             WHERE spa.SeasonId = @SeasonId
                             AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = spa.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)",

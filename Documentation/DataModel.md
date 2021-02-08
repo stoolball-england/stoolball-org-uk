@@ -40,9 +40,9 @@ A `Competition` is a group of teams that play together in a league, a knockout c
 
 A `Competition` typically goes on for many years, each represented by a `Season`. Things can change between `Seasons`, so the `Teams` and `Matches` that might be thought of as part of a league or competition actually belong to a `Season`.
 
-## Seasons, SeasonPointsRules and SeasonPointsAdjustments
+## Seasons, PointsRules and PointsAdjustments
 
-A `Season` is one year of a `Competition`. It is a group of `Teams` that play in a list of `Matches`. It has `SeasonPointsRules` determining how points are awarded, and `SeasonPointsAdjustments` to award bonus or deduct penalty points.
+A `Season` is one year of a `Competition`. It is a group of `Teams` that play in a list of `Matches`. It has `PointsRules` determining how points are awarded, and `PointsAdjustments` to award bonus or deduct penalty points.
 
 ## Players and PlayerIdentities
 

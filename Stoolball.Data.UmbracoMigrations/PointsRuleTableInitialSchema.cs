@@ -5,19 +5,14 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Stoolball.Data.UmbracoMigrations
 {
-    [TableName(Tables.SeasonPointsRule)]
-    [PrimaryKey(nameof(SeasonPointsRuleId), AutoIncrement = false)]
+    [TableName(Tables.PointsRule)]
+    [PrimaryKey(nameof(PointsRuleId), AutoIncrement = false)]
     [ExplicitColumns]
-    public class SeasonPointsRuleTableInitialSchema
+    public class PointsRuleTableInitialSchema
     {
         [PrimaryKeyColumn(AutoIncrement = false, Clustered = false)]
-        [Column(nameof(SeasonPointsRuleId))]
-        public Guid SeasonPointsRuleId { get; set; }
-
-        [Column(nameof(SeasonId))]
-        [ForeignKey(typeof(SeasonTableInitialSchema), Column = nameof(SeasonTableInitialSchema.SeasonId))]
-        [Index(IndexTypes.Clustered)]
-        public Guid SeasonId { get; set; }
+        [Column(nameof(PointsRuleId))]
+        public Guid PointsRuleId { get; set; }
 
         [Column(nameof(MatchResultType))]
         public string MatchResultType { get; set; }
@@ -27,5 +22,10 @@ namespace Stoolball.Data.UmbracoMigrations
 
         [Column(nameof(AwayPoints))]
         public int AwayPoints { get; set; }
+
+        [Column(nameof(SeasonId))]
+        [ForeignKey(typeof(SeasonTableInitialSchema), Column = nameof(SeasonTableInitialSchema.SeasonId))]
+        [Index(IndexTypes.Clustered)]
+        public Guid SeasonId { get; set; }
     }
 }

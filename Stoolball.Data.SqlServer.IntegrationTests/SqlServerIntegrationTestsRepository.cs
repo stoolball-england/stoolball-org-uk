@@ -577,13 +577,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
             foreach (var rule in season.PointsRules)
             {
-                _connection.Execute($@"INSERT INTO {Tables.SeasonPointsRule}
-                    (SeasonPointsRuleId, SeasonId, MatchResultType, HomePoints, AwayPoints)
+                _connection.Execute($@"INSERT INTO {Tables.PointsRule}
+                    (PointsRuleId, SeasonId, MatchResultType, HomePoints, AwayPoints)
                     VALUES
-                    (@SeasonPointsRuleId, @SeasonId, @MatchResultType, @HomePoints, @AwayPoints)",
+                    (@PointsRuleId, @SeasonId, @MatchResultType, @HomePoints, @AwayPoints)",
                   new
                   {
-                      SeasonPointsRuleId = rule.PointsRuleId,
+                      rule.PointsRuleId,
                       season.SeasonId,
                       MatchResultType = rule.MatchResultType.ToString(),
                       rule.HomePoints,
@@ -593,13 +593,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
             foreach (var adjustment in season.PointsAdjustments)
             {
-                _connection.Execute($@"INSERT INTO {Tables.SeasonPointsAdjustment}
-                    (SeasonPointsAdjustmentId, SeasonId, TeamId, Points, Reason)
+                _connection.Execute($@"INSERT INTO {Tables.PointsAdjustment}
+                    (PointsAdjustmentId, SeasonId, TeamId, Points, Reason)
                     VALUES
-                    (@SeasonPointsAdjustmentId, @SeasonId, @TeamId, @Points, @Reason)",
+                    (@PointsAdjustmentId, @SeasonId, @TeamId, @Points, @Reason)",
                   new
                   {
-                      SeasonPointsAdjustmentId = adjustment.PointsAdjustmentId,
+                      adjustment.PointsAdjustmentId,
                       season.SeasonId,
                       adjustment.Team.TeamId,
                       adjustment.Points,
