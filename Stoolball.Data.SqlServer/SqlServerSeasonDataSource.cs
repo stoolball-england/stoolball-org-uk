@@ -34,7 +34,7 @@ namespace Stoolball.Data.SqlServer
         {
             if (competitionQuery is null)
             {
-                throw new ArgumentNullException(nameof(competitionQuery));
+                competitionQuery = new CompetitionQuery();
             }
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())

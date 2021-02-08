@@ -95,7 +95,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             return competition;
         }
 
-        public static Season CreateSeasonWithMinimalDetails(Competition competition, int fromYear, int untilYear)
+        public Season CreateSeasonWithMinimalDetails(Competition competition, int fromYear, int untilYear)
         {
             return new Season
             {
