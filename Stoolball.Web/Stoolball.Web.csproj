@@ -855,7 +855,6 @@
     <Content Include="images\shop\bat.jpg" />
     <Content Include="images\shop\wicket.jpg" />
     <Content Include="js\consent.js" />
-    <Content Include="js\google-analytics.js" />
     <Content Include="Matches\edit-batting-scorecard.js" />
     <Content Include="Matches\player-autocomplete.js" />
     <Content Include="js\progress.js" />

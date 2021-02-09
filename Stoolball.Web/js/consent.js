@@ -22,24 +22,6 @@ stoolball.consent = {
       hasConsent
     );
   },
-  hasAnalyticsConsent: function () {
-    return (
-      localStorage.getItem(
-        "analytics_consent_" + stoolball.consent.consentVersion
-      ) === "true"
-    );
-  },
-  hasAnalyticsDecision: function () {
-    return localStorage.getItem(
-      "analytics_consent_" + stoolball.consent.consentVersion
-    );
-  },
-  setAnalyticsConsent(hasConsent) {
-    localStorage.setItem(
-      "analytics_consent_" + stoolball.consent.consentVersion,
-      hasConsent
-    );
-  },
   hasMapsConsent: function () {
     return (
       localStorage.getItem(
@@ -77,7 +59,6 @@ stoolball.consent = {
     );
   },
   featureListeners: [],
-  analyticsListeners: [],
   mapsListeners: [],
   trackingListeners: [],
 };
@@ -89,7 +70,6 @@ stoolball.consent = {
   // if consent recorded, true OR false, return without asking again, unless overridden
   if (
     stoolball.consent.hasFeatureDecision() &&
-    stoolball.consent.hasAnalyticsDecision() &&
     stoolball.consent.hasMapsDecision() &&
     stoolball.consent.hasTrackingDecision() &&
     !document.querySelector("[data-show-consent]")
@@ -104,11 +84,6 @@ stoolball.consent = {
       "feature_consent",
       stoolball.consent.hasFeatureConsent(),
       stoolball.consent.setFeatureConsent
-    );
-    setupConsentOption(
-      "analytics_consent",
-      stoolball.consent.hasAnalyticsConsent(),
-      stoolball.consent.setAnalyticsConsent
     );
     setupConsentOption(
       "maps_consent",
@@ -145,21 +120,18 @@ stoolball.consent = {
     request.classList.add("consent__request");
     request.appendChild(
       document.createTextNode(
-        "Our website works better if it can save information on your device. Is that OK?"
+        "Allow features that save information on your device, like maps & social media?"
       )
     );
     consent.appendChild(container);
     container.appendChild(request);
 
-    const acceptButton = createButton(
-      "btn btn-primary",
-      "Accept all and close"
-    );
+    const acceptButton = createButton("btn btn-primary", "Allow all");
     const acceptSelectedButton = createButton(
       "btn btn-primary d-none",
-      "Accept selected"
+      "Allow selected"
     );
-    const rejectButton = createButton("btn btn-danger", "Reject all");
+    const blockButton = createButton("btn btn-danger", "Block all");
     const choicesButton = createButton("btn btn-light", "Show choices");
 
     const choices = document.createElement("div");
@@ -173,25 +145,20 @@ stoolball.consent = {
     essential.querySelector("input").setAttribute("checked", "checked");
     essential.querySelector("input").setAttribute("disabled", "disabled");
 
-    const functional = createCheckbox(
-      "functional",
+    const feature = createCheckbox(
+      "feature",
       "Features",
       "Optional features like saving your preferences, with no tracking"
-    );
-    const improvement = createCheckbox(
-      "improvement",
-      "Performance",
-      "Help us to improve this site, with anonymous tracking by Google Analytics"
     );
     const maps = createCheckbox(
       "maps",
       "Maps",
-      "Show where teams are based and matches are played, but Google Maps will track you"
+      "Show where teams are based and matches are played, but Google Maps will track your visit here"
     );
     const tracking = createCheckbox(
       "tracking",
       "Social media",
-      "Better links to services like Facebook and Twitter, but they will track you"
+      "Better links to services like Facebook and Twitter, but they will track your visit here"
     );
 
     const linkToCookiePolicy = document.createElement("a");
@@ -208,7 +175,6 @@ stoolball.consent = {
     acceptButton.addEventListener("click", function (e) {
       e.preventDefault();
       stoolball.consent.setFeatureConsent(true);
-      stoolball.consent.setAnalyticsConsent(true);
       stoolball.consent.setMapsConsent(true);
       stoolball.consent.setTrackingConsent(true);
       consent.classList.add("d-none");
@@ -218,10 +184,7 @@ stoolball.consent = {
     acceptSelectedButton.addEventListener("click", function (e) {
       e.preventDefault();
       stoolball.consent.setFeatureConsent(
-        functional.querySelector("input").checked
-      );
-      stoolball.consent.setAnalyticsConsent(
-        improvement.querySelector("input").checked
+        feature.querySelector("input").checked
       );
       stoolball.consent.setMapsConsent(maps.querySelector("input").checked);
       stoolball.consent.setTrackingConsent(
@@ -238,21 +201,19 @@ stoolball.consent = {
       acceptSelectedButton.classList.add("d-inline");
       choicesButton.classList.add("d-none");
       consent.classList.add("consent__choices");
-      functional.querySelector("input").focus();
+      feature.querySelector("input").focus();
     });
 
-    rejectButton.addEventListener("click", function (e) {
+    blockButton.addEventListener("click", function (e) {
       e.preventDefault();
       stoolball.consent.setFeatureConsent(false);
-      stoolball.consent.setAnalyticsConsent(false);
       stoolball.consent.setMapsConsent(false);
       stoolball.consent.setTrackingConsent(false);
       consent.classList.add("d-none");
     });
 
     choices.appendChild(essential);
-    choices.appendChild(functional);
-    choices.appendChild(improvement);
+    choices.appendChild(feature);
     choices.appendChild(maps);
     choices.appendChild(tracking);
     choices.appendChild(cookiePara);
@@ -263,7 +224,7 @@ stoolball.consent = {
     buttons.classList.add("consent__buttons");
     buttons.appendChild(acceptButton);
     buttons.appendChild(acceptSelectedButton);
-    buttons.appendChild(rejectButton);
+    buttons.appendChild(blockButton);
     buttons.appendChild(choicesButton);
     container.appendChild(buttons);
 
@@ -299,11 +260,6 @@ stoolball.consent = {
   function runListeners() {
     if (stoolball.consent.hasFeatureConsent()) {
       stoolball.consent.featureListeners.forEach(function (listener) {
-        listener();
-      });
-    }
-    if (stoolball.consent.hasAnalyticsConsent()) {
-      stoolball.consent.analyticsListeners.forEach(function (listener) {
         listener();
       });
     }

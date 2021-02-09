@@ -21,20 +21,16 @@ if (stoolball.consent.hasFeatureConsent()) {
 }
 ```
 
-There are four consent levels:
+There are three consent levels:
 
 1. **Feature consent**: Optional features that do not track the user.
 
    Use `stoolball.consent.hasFeatureConsent()` and the `stoolball.consent.featureListeners` array.
 
-2. **Analytics consent**: Anonymous tracking for the improvement of this website.
-
-   Use `stoolball.consent.hasAnalyticsConsent()` and the `stoolball.consent.analyticsListeners` array.
-
-3. **Maps consent**: Personalised tracking used by Google Maps.
+2. **Maps consent**: Personalised tracking used by Google Maps.
 
    Use `stoolball.consent.hasMapsConsent()` and the `stoolball.consent.mapsListeners` array.
 
-4. **Tracking consent**: Personalised tracking used by services like social media and advertising.
+3. **Tracking consent**: Personalised tracking used by services like social media and advertising.
 
    Use `stoolball.consent.hasTrackingConsent()` and the `stoolball.consent.trackingListeners` array.
