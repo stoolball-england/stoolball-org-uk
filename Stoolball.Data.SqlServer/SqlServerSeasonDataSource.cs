@@ -265,7 +265,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 return await connection.QueryAsync<PointsAdjustment, Team, PointsAdjustment>(
-                    $@"SELECT spa.Points, spa.Reason, tn.TeamId, tn.TeamName
+                    $@"SELECT spa.PointsAdjustmentId, spa.Points, spa.Reason, tn.TeamId, tn.TeamName
                             FROM {Tables.PointsAdjustment} AS spa 
                             INNER JOIN {Tables.TeamVersion} tn ON spa.TeamId = tn.TeamId
                             WHERE spa.SeasonId = @SeasonId

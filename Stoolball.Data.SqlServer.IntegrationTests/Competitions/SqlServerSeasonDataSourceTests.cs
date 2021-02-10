@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using Stoolball.Routing;
@@ -135,7 +136,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
             var result = await seasonDataSource.ReadSeasonByRoute(_databaseFixture.SeasonWithFullDetails.SeasonRoute, true).ConfigureAwait(false);
 
-            throw new NotImplementedException();
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Teams.Count, result.Teams.Count);
+
+            foreach (var teamInSeason in _databaseFixture.SeasonWithFullDetails.Teams)
+            {
+                var resultTeam = result.Teams.SingleOrDefault(x => x.Team.TeamId == teamInSeason.Team.TeamId);
+                Assert.NotNull(resultTeam);
+
+                Assert.Equal(teamInSeason.WithdrawnDate, resultTeam.WithdrawnDate);
+                Assert.Equal(teamInSeason.Team.TeamName, resultTeam.Team.TeamName);
+                Assert.Equal(teamInSeason.Team.TeamRoute, resultTeam.Team.TeamRoute);
+            }
         }
 
         [Fact]
@@ -147,7 +158,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
             var result = await seasonDataSource.ReadSeasonByRoute(_databaseFixture.SeasonWithFullDetails.SeasonRoute, true).ConfigureAwait(false);
 
-            throw new NotImplementedException();
+            for (var set = 0; set < _databaseFixture.SeasonWithFullDetails.DefaultOverSets.Count; set++)
+            {
+                Assert.Equal(_databaseFixture.SeasonWithFullDetails.DefaultOverSets[set].OverSetId, result.DefaultOverSets[set].OverSetId);
+                Assert.Equal(_databaseFixture.SeasonWithFullDetails.DefaultOverSets[set].Overs, result.DefaultOverSets[set].Overs);
+                Assert.Equal(_databaseFixture.SeasonWithFullDetails.DefaultOverSets[set].BallsPerOver, result.DefaultOverSets[set].BallsPerOver);
+            }
         }
 
         [Fact]
@@ -172,20 +188,39 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await seasonDataSource.ReadPointsRules(_databaseFixture.SeasonWithFullDetails.SeasonId.Value).ConfigureAwait(false);
+            var results = await seasonDataSource.ReadPointsRules(_databaseFixture.SeasonWithFullDetails.SeasonId.Value).ConfigureAwait(false);
 
-            throw new NotImplementedException();
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.PointsRules.Count, results.Count());
+            foreach (var adjustment in _databaseFixture.SeasonWithFullDetails.PointsRules)
+            {
+                var result = results.SingleOrDefault(x => x.PointsRuleId == adjustment.PointsRuleId);
+                Assert.NotNull(result);
+
+                Assert.Equal(adjustment.MatchResultType, result.MatchResultType);
+                Assert.Equal(adjustment.HomePoints, result.HomePoints);
+                Assert.Equal(adjustment.AwayPoints, result.AwayPoints);
+            }
         }
 
         [Fact]
-        public async Task Read_points_adjustments_returns_basic_fields()
+        public async Task Read_points_adjustments_returns_adjustment_and_team()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await seasonDataSource.ReadPointsAdjustments(_databaseFixture.SeasonWithFullDetails.SeasonId.Value).ConfigureAwait(false);
+            var results = await seasonDataSource.ReadPointsAdjustments(_databaseFixture.SeasonWithFullDetails.SeasonId.Value).ConfigureAwait(false);
 
-            throw new NotImplementedException();
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.PointsAdjustments.Count, results.Count());
+            foreach (var adjustment in _databaseFixture.SeasonWithFullDetails.PointsAdjustments)
+            {
+                var result = results.SingleOrDefault(x => x.PointsAdjustmentId == adjustment.PointsAdjustmentId);
+                Assert.NotNull(result);
+
+                Assert.Equal(adjustment.Team.TeamId, result.Team.TeamId);
+                Assert.Equal(adjustment.Team.TeamName, result.Team.TeamName);
+                Assert.Equal(adjustment.Points, result.Points);
+                Assert.Equal(adjustment.Reason, result.Reason);
+            }
         }
 
         [Fact]
