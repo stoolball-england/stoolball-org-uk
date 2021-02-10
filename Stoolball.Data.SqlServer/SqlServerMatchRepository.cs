@@ -312,13 +312,15 @@ namespace Stoolball.Data.SqlServer
                             transaction).ConfigureAwait(false);
                     }
 
+                    var defaultOverSets = new List<OverSet> { new OverSet { Overs = 12, BallsPerOver = 8 } }; // default if none provided
+
                     auditableMatch.MatchInnings.Add(new MatchInnings
                     {
                         MatchInningsId = Guid.NewGuid(),
                         BattingMatchTeamId = homeMatchTeamId,
                         BowlingMatchTeamId = awayMatchTeamId,
                         InningsOrderInMatch = 1,
-                        OverSets = auditableMatch.Season?.DefaultOverSets
+                        OverSets = auditableMatch.Tournament?.DefaultOverSets ?? auditableMatch.Season?.DefaultOverSets ?? defaultOverSets
                     });
 
                     auditableMatch.MatchInnings.Add(new MatchInnings
@@ -327,7 +329,7 @@ namespace Stoolball.Data.SqlServer
                         BattingMatchTeamId = awayMatchTeamId,
                         BowlingMatchTeamId = homeMatchTeamId,
                         InningsOrderInMatch = 2,
-                        OverSets = auditableMatch.Season?.DefaultOverSets
+                        OverSets = auditableMatch.Tournament?.DefaultOverSets ?? auditableMatch.Season?.DefaultOverSets ?? defaultOverSets
                     });
 
                     foreach (var innings in auditableMatch.MatchInnings)
