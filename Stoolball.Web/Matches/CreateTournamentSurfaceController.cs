@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data.SqlTypes;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
@@ -52,6 +54,11 @@ namespace Stoolball.Web.Matches
             {
                 model.TournamentDate = parsedDate;
                 model.Tournament.StartTime = model.TournamentDate.Value;
+
+                if (model.TournamentDate < SqlDateTime.MinValue.Value.Date || model.TournamentDate > SqlDateTime.MaxValue.Value.Date)
+                {
+                    ModelState.AddModelError("TournamentDate", $"The tournament date must be between {SqlDateTime.MinValue.Value.Date.ToString("d MMMM yyyy", CultureInfo.CurrentCulture)} and {SqlDateTime.MaxValue.Value.Date.ToString("d MMMM yyyy", CultureInfo.CurrentCulture)}.");
+                }
 
                 if (!string.IsNullOrEmpty(Request.Form["StartTime"]))
                 {
