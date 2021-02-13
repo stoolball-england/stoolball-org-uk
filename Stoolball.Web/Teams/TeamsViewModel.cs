@@ -11,6 +11,7 @@ namespace Stoolball.Web.Teams
         public TeamsViewModel(IPublishedContent contentModel, IUserService userService) : base(contentModel, userService)
         {
         }
+        public string GoogleMapsApiKey { get; set; }
 
         public TeamQuery TeamQuery { get; set; } = new TeamQuery();
         public List<TeamListing> Teams { get; internal set; } = new List<TeamListing>();

@@ -63,6 +63,7 @@ namespace Stoolball.Web.Routing
                 { $"clubs{SLASH}add{OPTIONAL_SLASH}", StoolballRouteType.CreateClub },
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Club },
                 { $"teams{SLASH}add{OPTIONAL_SLASH}", StoolballRouteType.CreateTeam },
+                { $"teams{SLASH}map{OPTIONAL_SLASH}", StoolballRouteType.TeamsMap },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Team},
                 { $"locations{SLASH}add{OPTIONAL_SLASH}", StoolballRouteType.CreateMatchLocation},
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.MatchLocation},

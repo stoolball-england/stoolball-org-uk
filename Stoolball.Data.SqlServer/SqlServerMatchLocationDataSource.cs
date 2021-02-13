@@ -100,10 +100,9 @@ namespace Stoolball.Data.SqlServer
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var (where, parameters) = BuildWhereClause(matchLocationQuery);
-                return await connection.ExecuteScalarAsync<int>($@"SELECT COUNT(MatchLocationId)
-                            FROM {Tables.MatchLocation} AS ml
-                            {where}", new DynamicParameters(parameters)).ConfigureAwait(false);
+                var (sql, parameters) = BuildMatchLocationQuery(matchLocationQuery, $@"SELECT COUNT(DISTINCT ml.MatchLocationId)
+                            FROM {Tables.MatchLocation} AS ml <<JOIN>> <<WHERE>>", Array.Empty<string>());
+                return await connection.ExecuteScalarAsync<int>(sql, new DynamicParameters(parameters)).ConfigureAwait(false);
             }
         }
 
@@ -118,60 +117,77 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 // order by clause places locations with active teams above those which have none
-
-                var (where, parameters) = BuildWhereClause(matchLocationQuery);
-
-                var sql = $@"SELECT ml2.MatchLocationId, ml2.MatchLocationRoute,
+                var sql = $@"SELECT ml2.MatchLocationId, ml2.MatchLocationRoute, ml2.Latitude, ml2.Longitude,
                             ml2.SecondaryAddressableObjectName, ml2.PrimaryAddressableObjectName, ml2.Locality, ml2.Town,
-                            t2.PlayerType
+                            t2.TeamId, tv2.TeamName, t2.TeamRoute, t2.TeamType, t2.PlayerType, YEAR(tv2.UntilDate) AS UntilYear
                             FROM {Tables.MatchLocation} AS ml2
                             LEFT JOIN {Tables.TeamMatchLocation} AS tml2 ON ml2.MatchLocationId = tml2.MatchLocationId
                             LEFT JOIN {Tables.Team} AS t2 ON tml2.TeamId = t2.TeamId 
-                            LEFT JOIN {Tables.TeamVersion} AS tn2 ON t2.TeamId = tn2.TeamId
+                            LEFT JOIN {Tables.TeamVersion} AS tv2 ON t2.TeamId = tv2.TeamId
                             WHERE tml2.UntilDate IS NULL
-                            AND (tn2.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t2.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR tn2.TeamVersionId IS NULL)
+                            AND (tv2.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t2.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR tv2.TeamVersionId IS NULL)
+                            <<WHERE-T2-TYPE>>
                             AND ml2.MatchLocationId IN (
-                                SELECT ml.MatchLocationId
-                                FROM {Tables.MatchLocation} AS ml 
-                                {where}
-                                ORDER BY 
-                                    CASE WHEN (
-                                        SELECT COUNT(t.TeamId) FROM {Tables.TeamMatchLocation} AS tml 
-                                        INNER JOIN {Tables.Team} AS t ON tml.TeamId = t.TeamId
-                                        INNER JOIN {Tables.TeamVersion} AS tn ON t.TeamId = tn.TeamId
-                                        WHERE ml.MatchLocationId = tml.MatchLocationId 
-                                        AND (tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR tn.TeamVersionId IS NULL)
+
+                               SELECT MatchLocationId FROM (
+                                    SELECT DISTINCT ml.MatchLocationId, ml.ComparableName,
+                                        CASE WHEN (
+                                                SELECT COUNT(t4.TeamId) FROM {Tables.TeamMatchLocation} AS tml4
+                                                LEFT JOIN {Tables.Team} AS t4 ON tml4.TeamId = t4.TeamId
+                                                LEFT JOIN {Tables.TeamVersion} AS tv4 ON t4.TeamId = tv4.TeamId
+                                                WHERE tml4.MatchLocationId = ml.MatchLocationId
+                                                AND (tv4.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t4.TeamId ORDER BY ISNULL(UntilDate, '9999-12-31') DESC) OR tv4.TeamVersionId IS NULL)
+                                                AND tv4.UntilDate IS NULL 
+                                                AND tml4.UntilDate IS NULL
+                                                <<WHERE-T4-TYPE>>
+                                            ) > 0 THEN 1 ELSE 0 END AS HasActiveTeams
+                                
+                                        FROM {Tables.MatchLocation} AS ml 
+                                        LEFT JOIN {Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId
+                                        LEFT JOIN {Tables.Team} AS t ON tml.TeamId = t.TeamId
+                                        LEFT JOIN {Tables.TeamVersion} AS tv ON t.TeamId = tv.TeamId
+                                        <<WHERE>>
                                         AND tml.UntilDate IS NULL
-                                    ) > 0 THEN 0 ELSE 1 END,
-                                ml.ComparableName
-                                OFFSET {(matchLocationQuery.PageNumber - 1) * matchLocationQuery.PageSize} ROWS FETCH NEXT {matchLocationQuery.PageSize} ROWS ONLY)
+
+                                ) AS DistinctIdsForPaging 
+                                    ORDER BY HasActiveTeams DESC, ComparableName
+                                    OFFSET {(matchLocationQuery.PageNumber - 1) * matchLocationQuery.PageSize} ROWS FETCH NEXT {matchLocationQuery.PageSize} ROWS ONLY
+                            )
                             ORDER BY 
                                 CASE WHEN (
                                     SELECT COUNT(t3.TeamId) FROM {Tables.TeamMatchLocation} AS tml3 
-                                    INNER JOIN {Tables.Team} AS t3 ON tml3.TeamId = t3.TeamId
-                                    INNER JOIN {Tables.TeamVersion} AS tn3 ON t3.TeamId = tn3.TeamId
-                                    WHERE ml2.MatchLocationId = tml3.MatchLocationId 
-                                    AND (tn3.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t3.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR tn3.TeamVersionId IS NULL)
+                                    LEFT JOIN {Tables.Team} AS t3 ON tml3.TeamId = t3.TeamId
+                                    LEFT JOIN {Tables.TeamVersion} AS tv3 ON t3.TeamId = tv3.TeamId
+                                    WHERE tml3.MatchLocationId = ml2.MatchLocationId
+                                    AND (tv3.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t3.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR tv3.TeamVersionId IS NULL)
+                                    AND tv3.UntilDate IS NULL
                                     AND tml3.UntilDate IS NULL 
-                                ) > 0 THEN 0 ELSE 1 END,
+                                    <<WHERE-T3-TYPE>>
+                                ) > 0 THEN 1 ELSE 0 END DESC,
                             ml2.ComparableName";
 
-                var locations = await connection.QueryAsync<MatchLocation, Team, MatchLocation>(sql,
-                    (location, team) =>
-                    {
-                        if (team != null)
-                        {
-                            location.Teams.Add(team);
-                        }
-                        return location;
-                    },
-                    new DynamicParameters(parameters),
-                    splitOn: "PlayerType").ConfigureAwait(false);
+                var (filteredSql, parameters) = BuildMatchLocationQuery(matchLocationQuery, sql, new[] { Tables.TeamMatchLocation, Tables.Team, Tables.TeamVersion });
+
+                filteredSql = filteredSql.Replace("<<WHERE-T2-TYPE>>", matchLocationQuery.TeamTypes.Count > 0 ? "AND t2.TeamType IN @TeamTypes" : string.Empty);
+                filteredSql = filteredSql.Replace("<<WHERE-T3-TYPE>>", matchLocationQuery.TeamTypes.Count > 0 ? "AND t3.TeamType IN @TeamTypes" : string.Empty);
+                filteredSql = filteredSql.Replace("<<WHERE-T4-TYPE>>", matchLocationQuery.TeamTypes.Count > 0 ? "AND t4.TeamType IN @TeamTypes" : string.Empty);
+
+                var locations = await connection.QueryAsync<MatchLocation, Team, MatchLocation>(filteredSql,
+                              (location, team) =>
+                              {
+                                  if (team != null)
+                                  {
+                                      location.Teams.Add(team);
+                                  }
+                                  return location;
+                              },
+                              new DynamicParameters(parameters),
+                              splitOn: "TeamId").ConfigureAwait(false);
 
                 var resolvedLocations = locations.GroupBy(location => location.MatchLocationId).Select(copiesOfLocation =>
                 {
                     var resolvedLocation = copiesOfLocation.First();
-                    resolvedLocation.Teams = copiesOfLocation.Select(location => location.Teams.SingleOrDefault()).OfType<Team>().ToList();
+                    resolvedLocation.Teams = copiesOfLocation.Select(location => location.Teams.SingleOrDefault()).OfType<Team>().Distinct(new TeamEqualityComparer()).ToList();
                     return resolvedLocation;
                 }).ToList();
 
@@ -179,12 +195,13 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private static (string sql, Dictionary<string, object> parameters) BuildWhereClause(MatchLocationQuery matchLocationQuery)
+        private static (string filteredSql, Dictionary<string, object> parameters) BuildMatchLocationQuery(MatchLocationQuery matchLocationQuery, string sql, string[] currentJoins)
         {
+            var join = new List<string>();
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();
 
-            if (!string.IsNullOrEmpty(matchLocationQuery?.Query))
+            if (!string.IsNullOrEmpty(matchLocationQuery.Query))
             {
                 where.Add(@"(ml.SecondaryAddressableObjectName LIKE @Query OR 
                             ml.PrimaryAddressableObjectName LIKE @Query OR 
@@ -193,13 +210,53 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@Query", $"%{matchLocationQuery.Query}%");
             }
 
-            if (matchLocationQuery?.ExcludeMatchLocationIds?.Count > 0)
+            if (matchLocationQuery.ExcludeMatchLocationIds?.Count > 0)
             {
                 where.Add("ml.MatchLocationId NOT IN @ExcludeMatchLocationIds");
                 parameters.Add("@ExcludeMatchLocationIds", matchLocationQuery.ExcludeMatchLocationIds.Select(x => x.ToString()));
             }
 
-            return (where.Count > 0 ? $@"WHERE " + string.Join(" AND ", where) : string.Empty, parameters);
+            if (matchLocationQuery.HasActiveTeams.HasValue)
+            {
+                if (matchLocationQuery.HasActiveTeams.Value)
+                {
+                    if (!currentJoins.Contains(Tables.TeamMatchLocation))
+                    {
+                        join.Add($"LEFT JOIN {Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId");
+                    }
+                    if (!currentJoins.Contains(Tables.Team))
+                    {
+                        join.Add($"LEFT JOIN {Tables.Team} AS t ON tml.TeamId = t.TeamId");
+                    }
+                    if (!currentJoins.Contains(Tables.TeamVersion))
+                    {
+                        join.Add($"LEFT JOIN {Tables.TeamVersion} AS tv ON t.TeamId = tv.TeamId");
+                    }
+
+                    where.Add("tv.TeamVersionId IS NOT NULL AND tv.UntilDate IS NULL");
+                }
+                else throw new NotImplementedException();
+            }
+
+            if (matchLocationQuery.TeamTypes.Count > 0)
+            {
+                if (!currentJoins.Contains(Tables.TeamMatchLocation))
+                {
+                    join.Add($"LEFT JOIN {Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId");
+                }
+                if (!currentJoins.Contains(Tables.Team))
+                {
+                    join.Add($"LEFT JOIN {Tables.Team} AS t ON tml.TeamId = t.TeamId");
+                }
+
+                where.Add("t.TeamType IN @TeamTypes");
+                parameters.Add("@TeamTypes", matchLocationQuery.TeamTypes.Select(x => x.ToString()));
+            }
+
+            sql = sql.Replace("<<JOIN>>", join.Count > 0 ? string.Join(" ", join) : string.Empty)
+                 .Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : "WHERE 1=1"); // Ensure there's always a WHERE clause we can append to
+
+            return (sql, parameters);
         }
     }
 }

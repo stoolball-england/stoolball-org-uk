@@ -179,6 +179,28 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
         }
 
         [Fact]
+        public async Task Read_total_locations_supports_excluding_locations_with_no_active_teams()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await matchLocationDataSource.ReadTotalMatchLocations(new MatchLocationQuery { HasActiveTeams = true }).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchLocations.Count(x => x.Teams.Any(t => !t.UntilYear.HasValue)), result);
+        }
+
+        [Fact]
+        public async Task Read_total_locations_supports_filter_by_team_type()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await matchLocationDataSource.ReadTotalMatchLocations(new MatchLocationQuery { TeamTypes = new List<TeamType> { TeamType.Regular } }).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchLocations.Count(x => x.Teams.Any(t => t.TeamType == TeamType.Regular)), result);
+        }
+
+        [Fact]
         public async Task Read_match_locations_returns_basic_fields()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
@@ -192,6 +214,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 
                 Assert.NotNull(result);
                 Assert.Equal(location.MatchLocationRoute, result.MatchLocationRoute);
+                Assert.Equal(location.Latitude, result.Latitude);
+                Assert.Equal(location.Longitude, result.Longitude);
                 Assert.Equal(location.SecondaryAddressableObjectName, result.SecondaryAddressableObjectName);
                 Assert.Equal(location.PrimaryAddressableObjectName, result.PrimaryAddressableObjectName);
                 Assert.Equal(location.Locality, result.Locality);
@@ -200,7 +224,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
         }
 
         [Fact]
-        public async Task Read_match_locations_returns_team_player_types()
+        public async Task Read_match_locations_returns_teams()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
@@ -212,15 +236,39 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
                 var result = results.SingleOrDefault(x => x.MatchLocationId == location.MatchLocationId);
                 Assert.NotNull(result);
 
-                var expectedPlayerTypes = location.Teams.Select(x => x.PlayerType).Distinct();
-                var actualPlayerTypes = result.Teams.Select(x => x.PlayerType).Distinct();
-                Assert.Equal(expectedPlayerTypes.Count(), actualPlayerTypes.Count());
-
-                foreach (var expected in expectedPlayerTypes)
+                foreach (var team in location.Teams)
                 {
-                    Assert.Contains(expected, actualPlayerTypes);
+                    var resultTeam = result.Teams.SingleOrDefault(x => x.TeamId == team.TeamId);
+                    Assert.NotNull(resultTeam);
+
+                    Assert.Equal(team.TeamName, resultTeam.TeamName);
+                    Assert.Equal(team.TeamType, resultTeam.TeamType);
+                    Assert.Equal(team.PlayerType, resultTeam.PlayerType);
+                    Assert.Equal(team.TeamRoute, resultTeam.TeamRoute);
+                    Assert.Equal(team.UntilYear, resultTeam.UntilYear);
                 }
             }
+        }
+
+        [Fact]
+        public async Task Read_match_locations_returns_locations_with_active_teams_first()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var results = await matchLocationDataSource.ReadMatchLocations(new MatchLocationQuery { PageSize = _databaseFixture.MatchLocations.Count }).ConfigureAwait(false);
+
+            var expectedActiveStatus = true;
+            foreach (var matchLocation in results)
+            {
+                // The first time no active team is seen, set a flag to say they must all be inactive
+                if (expectedActiveStatus && !matchLocation.Teams.Any(x => !x.UntilYear.HasValue))
+                {
+                    expectedActiveStatus = false;
+                }
+                Assert.Equal(expectedActiveStatus, matchLocation.Teams.Any(x => !x.UntilYear.HasValue));
+            }
+            Assert.False(expectedActiveStatus);
         }
 
         [Fact]
@@ -315,6 +363,41 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             Assert.Equal(_databaseFixture.MatchLocations.Count - 1, result.Count);
         }
 
+        [Fact]
+        public async Task Read_match_locations_supports_excluding_locations_with_no_active_teams()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+            var query = new MatchLocationQuery
+            {
+                PageSize = _databaseFixture.MatchLocations.Count,
+                HasActiveTeams = true
+            };
+
+            var result = await matchLocationDataSource.ReadMatchLocations(query).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchLocations.Count(x => x.Teams.Any(t => !t.UntilYear.HasValue)), result.Count);
+        }
+
+        [Fact]
+        public async Task Read_match_locations_supports_filter_by_team_type()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+            var query = new MatchLocationQuery
+            {
+                PageSize = _databaseFixture.MatchLocations.Count,
+                TeamTypes = new List<TeamType> { TeamType.Regular }
+            };
+
+            var results = await matchLocationDataSource.ReadMatchLocations(query).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchLocations.Count(x => x.Teams.Any(t => t.TeamType == TeamType.Regular)), results.Count);
+            foreach (var result in results)
+            {
+                Assert.Empty(result.Teams.Where(x => x.TeamType != TeamType.Regular));
+            }
+        }
 
         [Fact]
         public async Task Read_match_locations_pages_results()

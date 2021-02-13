@@ -19,6 +19,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.DeleteClub, typeof(DeleteClubController) },
             { StoolballRouteType.MatchesForClub, typeof(MatchesForClubController) },
             { StoolballRouteType.Teams, typeof(TeamsController) },
+            { StoolballRouteType.TeamsMap, typeof(TeamsMapController) },
             { StoolballRouteType.Team, typeof(TeamController) },
             { StoolballRouteType.TeamActions, typeof(TeamActionsController) },
             { StoolballRouteType.CreateTeam, typeof(CreateTeamController) },

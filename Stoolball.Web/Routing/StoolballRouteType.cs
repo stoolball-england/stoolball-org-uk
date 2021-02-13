@@ -23,6 +23,7 @@
         EditTeam,
         EditTransientTeam,
         DeleteTeam,
+        TeamsMap,
         Teams,
         Season,
         SeasonActions,

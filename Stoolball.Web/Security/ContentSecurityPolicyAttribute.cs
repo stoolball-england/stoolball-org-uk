@@ -148,6 +148,8 @@ namespace Stoolball.Web.Security
             AddSource(IMG_SRC, "https://maps.gstatic.com");
             AddSource(IMG_SRC, "https://maps.google.co.uk");
             AddSource(IMG_SRC, "https://maps.googleapis.com");
+            AddSource(IMG_SRC, "https://khms0.googleapis.com");
+            AddSource(IMG_SRC, "https://khms1.googleapis.com");
             AddSource(IMG_SRC, "data:");
             AddSource(FONT_SRC, "https://fonts.gstatic.com");
         }

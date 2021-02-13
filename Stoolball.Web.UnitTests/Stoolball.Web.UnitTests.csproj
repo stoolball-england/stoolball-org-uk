@@ -109,6 +109,7 @@
     <Compile Include="Teams\EditTeamControllerTests.cs" />
     <Compile Include="Teams\TeamActionsControllerTests.cs" />
     <Compile Include="Teams\DeleteTeamControllerTests.cs" />
+    <Compile Include="Teams\TeamsMapControllerTests.cs" />
     <Compile Include="Teams\TeamsControllerTests.cs" />
     <Compile Include="Teams\MatchesForTeamControllerTests.cs" />
     <Compile Include="Teams\TransientTeamControllerTests.cs" />

@@ -1,7 +1,20 @@
-﻿@import "../Content/bootstrap/_variables.scss";
+﻿@import "_theme.scss";
+@import "../Content/bootstrap/_variables.scss";
 
 .google-map {
     height: 500px;
     width: 100%;
     margin-bottom: $spacer*2;
+}
+
+.google-map-info {
+    font-family: $font-family-sans-serif;
+    font-size: $font-size-base;
+    line-height: $line-height-base;
+    padding: $spacer/2 $spacer/2 0;
+}
+
+.google-map-info > h2 {
+    font-size: $font-size-base;
+    font-weight: bold;
 }

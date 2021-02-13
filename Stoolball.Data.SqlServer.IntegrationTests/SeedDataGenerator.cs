@@ -263,7 +263,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 GeoPrecision = GeoPrecision.Postcode,
                 MemberGroupKey = Guid.NewGuid(),
                 MemberGroupName = "Our ground owners",
-                Teams = new List<Team> { inactiveTeam, activeTeam, anotherActiveTeam }
+                Teams = new List<Team> { inactiveTeam, activeTeam, transientTeam, anotherActiveTeam }
             };
 
             activeTeam.MatchLocations.Add(matchLocation);
