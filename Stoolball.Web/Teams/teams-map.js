@@ -1,5 +1,10 @@
 ﻿(function () {
   window.addEventListener("DOMContentLoaded", function () {
+    // Check for consent because Google might track the user
+    if (!stoolball.consent.hasMapsConsent()) {
+      return;
+    }
+
     if (!fetch) {
       return;
     }
