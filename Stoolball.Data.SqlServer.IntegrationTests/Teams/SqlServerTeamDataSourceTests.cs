@@ -307,6 +307,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 }
                 Assert.Equal(expectedActiveStatus, !team.UntilYear.HasValue);
             }
+            Assert.False(expectedActiveStatus);
         }
 
         [Fact]

@@ -42,7 +42,7 @@ namespace Stoolball.Data.SqlServer
                 var (where, parameters) = BuildWhereClause(competitionQuery);
 
                 var sql = $@"SELECT s2.SeasonId, s2.FromYear, s2.UntilYear,
-                            cv2.CompetitionName
+                            cv2.CompetitionName, YEAR(cv2.UntilDate) AS UntilYear
                             FROM {Tables.Season} AS s2 
                             INNER JOIN {Tables.Competition} AS co2 ON co2.CompetitionId = s2.CompetitionId
                             INNER JOIN {Tables.CompetitionVersion} AS cv2 ON cv2.CompetitionId = s2.CompetitionId

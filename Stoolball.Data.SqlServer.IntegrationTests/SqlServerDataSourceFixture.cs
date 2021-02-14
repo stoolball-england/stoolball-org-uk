@@ -29,6 +29,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public Team TeamWithMinimalDetails { get; private set; }
         public Team TeamWithFullDetails { get; private set; }
         public List<Competition> Competitions { get; internal set; } = new List<Competition>();
+        public List<Season> Seasons { get; internal set; } = new List<Season>();
         public List<Match> Matches { get; internal set; } = new List<Match>();
         public List<MatchLocation> MatchLocations { get; internal set; } = new List<MatchLocation>();
         public List<Team> Teams { get; internal set; } = new List<Team>();
@@ -75,6 +76,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 {
                     repo.CreateSeason(season.Season, season.Season.Competition.CompetitionId.Value);
                     repo.AddTeamToSeason(season);
+                    Seasons.Add(season.Season);
                 }
 
                 MatchInThePastWithMinimalDetails = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
@@ -89,6 +91,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 repo.CreateMatch(MatchInThePastWithFullDetails);
                 Teams.AddRange(MatchInThePastWithFullDetails.Teams.Select(x => x.Team));
                 Competitions.Add(MatchInThePastWithFullDetails.Season.Competition);
+                Seasons.Add(MatchInThePastWithFullDetails.Season);
                 MatchLocations.Add(MatchInThePastWithFullDetails.MatchLocation);
                 Matches.Add(MatchInThePastWithFullDetails);
 
@@ -118,6 +121,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     Competitions.Add(season.Competition);
                     repo.CreateSeason(season, season.Competition.CompetitionId.Value);
                     repo.AddTournamentToSeason(TournamentInThePastWithFullDetails, season);
+                    Seasons.Add(season);
                 }
 
                 MatchInThePastWithFullDetailsAndTournament = seedDataGenerator.CreateMatchInThePastWithFullDetails();
@@ -128,6 +132,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 Competitions.Add(MatchInThePastWithFullDetailsAndTournament.Season.Competition);
                 MatchLocations.Add(MatchInThePastWithFullDetailsAndTournament.MatchLocation);
                 Matches.Add(MatchInThePastWithFullDetailsAndTournament);
+                Seasons.Add(MatchInThePastWithFullDetailsAndTournament.Season);
 
                 CompetitionWithMinimalDetails = seedDataGenerator.CreateCompetitionWithMinimalDetails();
                 repo.CreateCompetition(CompetitionWithMinimalDetails);
@@ -138,15 +143,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 foreach (var season in CompetitionWithFullDetails.Seasons)
                 {
                     repo.CreateSeason(season, CompetitionWithFullDetails.CompetitionId.Value);
+                    Seasons.Add(season);
                 }
                 Competitions.Add(CompetitionWithFullDetails);
 
                 var competitionForSeason = seedDataGenerator.CreateCompetitionWithMinimalDetails();
+                competitionForSeason.UntilYear = 2021;
                 SeasonWithMinimalDetails = seedDataGenerator.CreateSeasonWithMinimalDetails(competitionForSeason, 2020, 2020);
                 competitionForSeason.Seasons.Add(SeasonWithMinimalDetails);
                 repo.CreateCompetition(competitionForSeason);
                 repo.CreateSeason(SeasonWithMinimalDetails, competitionForSeason.CompetitionId.Value);
                 Competitions.Add(competitionForSeason);
+                Seasons.Add(SeasonWithMinimalDetails);
 
                 SeasonWithFullDetails = seedDataGenerator.CreateSeasonWithFullDetails(competitionForSeason, 2021, 2021);
                 competitionForSeason.Seasons.Add(SeasonWithFullDetails);
@@ -160,6 +168,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 {
                     repo.AddTeamToSeason(team);
                 }
+                Seasons.Add(SeasonWithFullDetails);
 
                 MatchLocationWithMinimalDetails = seedDataGenerator.CreateMatchLocationWithMinimalDetails();
                 repo.CreateMatchLocation(MatchLocationWithMinimalDetails);

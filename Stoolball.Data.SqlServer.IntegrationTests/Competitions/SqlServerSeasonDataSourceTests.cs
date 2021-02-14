@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Moq;
+using Stoolball.Competitions;
+using Stoolball.Matches;
 using Stoolball.Routing;
+using Stoolball.Teams;
 using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
@@ -124,7 +128,32 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
             var result = await seasonDataSource.ReadSeasonByRoute(_databaseFixture.SeasonWithFullDetails.SeasonRoute, true).ConfigureAwait(false);
 
-            throw new NotImplementedException();
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Competition.Seasons.Count - 1, result.Competition.Seasons.Count); // -1 because it's *other* seasons, not including this one
+            foreach (var season in _databaseFixture.SeasonWithFullDetails.Competition.Seasons)
+            {
+                var resultSeason = result.Competition.Seasons.SingleOrDefault(x => x.SeasonId == season.SeasonId);
+                if (season.SeasonId == _databaseFixture.SeasonWithFullDetails.SeasonId)
+                {
+                    Assert.Null(resultSeason);
+                }
+                else
+                {
+                    Assert.NotNull(resultSeason);
+
+                    Assert.Equal(season.FromYear, resultSeason.FromYear);
+                    Assert.Equal(season.UntilYear, resultSeason.UntilYear);
+                    Assert.Equal(season.SeasonRoute, resultSeason.SeasonRoute);
+                }
+            }
+
+            int previousFromYear = int.MaxValue, previousUntilYear = int.MaxValue;
+            foreach (var season in result.Competition.Seasons)
+            {
+                Assert.True(season.FromYear <= previousFromYear);
+                Assert.True(season.UntilYear <= previousUntilYear);
+                previousFromYear = season.FromYear;
+                previousUntilYear = season.UntilYear;
+            }
         }
 
         [Fact]
@@ -229,9 +258,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await seasonDataSource.ReadSeasons(null).ConfigureAwait(false);
+            var results = await seasonDataSource.ReadSeasons(null).ConfigureAwait(false);
 
-            throw new NotImplementedException();
+            foreach (var season in _databaseFixture.Seasons)
+            {
+                var result = results.SingleOrDefault(x => x.SeasonId == season.SeasonId);
+                Assert.NotNull(result);
+
+                Assert.Equal(season.FromYear, result.FromYear);
+                Assert.Equal(season.UntilYear, result.UntilYear);
+            }
         }
 
         [Fact]
@@ -240,9 +276,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await seasonDataSource.ReadSeasons(null).ConfigureAwait(false);
+            var results = await seasonDataSource.ReadSeasons(null).ConfigureAwait(false);
 
-            throw new NotImplementedException();
+            foreach (var season in _databaseFixture.Seasons)
+            {
+                var result = results.SingleOrDefault(x => x.SeasonId == season.SeasonId);
+                Assert.NotNull(result);
+
+                Assert.Equal(season.Competition.CompetitionName, result.Competition.CompetitionName);
+            }
         }
 
         [Fact]
@@ -251,9 +293,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await seasonDataSource.ReadSeasons(null).ConfigureAwait(false);
+            var results = await seasonDataSource.ReadSeasons(null).ConfigureAwait(false);
 
-            throw new NotImplementedException();
+            var expectedActiveStatus = true;
+            int previousFromYear = int.MaxValue, previousUntilYear = int.MaxValue;
+            foreach (var season in results)
+            {
+                // The first time an inactive competition is seen, set a flag to say they must all be inactive.
+                // Also reset the tracker that says season years must count down from the most recent.
+                if (expectedActiveStatus && season.Competition.UntilYear.HasValue)
+                {
+                    expectedActiveStatus = false;
+                    previousFromYear = previousUntilYear = int.MaxValue;
+                }
+                Assert.Equal(expectedActiveStatus, !season.Competition.UntilYear.HasValue);
+                Assert.True(season.FromYear <= previousFromYear);
+                Assert.True(season.UntilYear <= previousUntilYear);
+                previousFromYear = season.FromYear;
+                previousUntilYear = season.UntilYear;
+            }
+            Assert.False(expectedActiveStatus);
         }
 
         [Fact]
@@ -262,9 +321,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await seasonDataSource.ReadSeasons(null).ConfigureAwait(false);
+            var results = await seasonDataSource.ReadSeasons(null).ConfigureAwait(false);
 
-            throw new NotImplementedException();
+            Assert.Equal(_databaseFixture.Seasons.Count, results.Count);
+            foreach (var season in _databaseFixture.Seasons)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.SeasonId == season.SeasonId));
+            }
         }
 
         [Fact]
@@ -273,9 +336,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await seasonDataSource.ReadSeasons(null).ConfigureAwait(false);
+            var result = await seasonDataSource.ReadSeasons(new CompetitionQuery { Query = " 2021 season" }).ConfigureAwait(false);
 
-            throw new NotImplementedException();
+            var expected = _databaseFixture.Seasons.Where(x => x.FromYear == 2021);
+            Assert.Equal(expected.Count(), result.Count);
+            foreach (var season in expected)
+            {
+                Assert.NotNull(result.SingleOrDefault(x => x.SeasonId == season.SeasonId));
+            }
         }
 
         [Fact]
@@ -284,9 +352,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await seasonDataSource.ReadSeasons(null).ConfigureAwait(false);
+            var result = await seasonDataSource.ReadSeasons(new CompetitionQuery { Query = "2020/21 season" }).ConfigureAwait(false);
 
-            throw new NotImplementedException();
+            var expected = _databaseFixture.Seasons.Where(x => x.FromYear == 2020 && x.UntilYear == 2021);
+            Assert.Equal(expected.Count(), result.Count);
+            foreach (var season in expected)
+            {
+                Assert.NotNull(result.SingleOrDefault(x => x.SeasonId == season.SeasonId));
+            }
         }
 
         [Fact]
@@ -295,9 +368,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await seasonDataSource.ReadSeasons(null).ConfigureAwait(false);
+            var result = await seasonDataSource.ReadSeasons(new CompetitionQuery { Query = "LaDiEs" }).ConfigureAwait(false);
 
-            throw new NotImplementedException();
+            var expected = _databaseFixture.Seasons.Where(x => x.Competition.PlayerType == PlayerType.Ladies);
+            Assert.Equal(expected.Count(), result.Count);
+            foreach (var season in expected)
+            {
+                Assert.NotNull(result.SingleOrDefault(x => x.SeasonId == season.SeasonId));
+            }
         }
 
         [Fact]
@@ -306,9 +384,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await seasonDataSource.ReadSeasons(null).ConfigureAwait(false);
+            var result = await seasonDataSource.ReadSeasons(new CompetitionQuery { MatchTypes = new List<MatchType> { MatchType.LeagueMatch } }).ConfigureAwait(false);
 
-            throw new NotImplementedException();
+            var expected = _databaseFixture.Seasons.Where(x => x.MatchTypes.Contains(MatchType.LeagueMatch));
+            Assert.Equal(expected.Count(), result.Count);
+            foreach (var season in expected)
+            {
+                Assert.NotNull(result.SingleOrDefault(x => x.SeasonId == season.SeasonId));
+            }
         }
     }
 }
