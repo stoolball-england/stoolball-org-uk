@@ -46,6 +46,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         protected override void SeedDatabase()
         {
             var seedDataGenerator = new SeedDataGenerator();
+            var playerIdentityFinder = new PlayerIdentityFinder();
             using (var connection = ConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
@@ -96,7 +97,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 Seasons.Add(MatchInThePastWithFullDetails.Season);
                 MatchLocations.Add(MatchInThePastWithFullDetails.MatchLocation);
                 Matches.Add(MatchInThePastWithFullDetails);
-                PlayerIdentities.AddRange(PlayerIdentitiesInMatch(MatchInThePastWithFullDetails));
+                PlayerIdentities.AddRange(playerIdentityFinder.PlayerIdentitiesInMatch(MatchInThePastWithFullDetails));
 
                 TournamentInThePastWithMinimalDetails = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
                 repo.CreateTournament(TournamentInThePastWithMinimalDetails);
@@ -136,7 +137,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 MatchLocations.Add(MatchInThePastWithFullDetailsAndTournament.MatchLocation);
                 Matches.Add(MatchInThePastWithFullDetailsAndTournament);
                 Seasons.Add(MatchInThePastWithFullDetailsAndTournament.Season);
-                PlayerIdentities.AddRange(PlayerIdentitiesInMatch(MatchInThePastWithFullDetailsAndTournament));
+                PlayerIdentities.AddRange(playerIdentityFinder.PlayerIdentitiesInMatch(MatchInThePastWithFullDetailsAndTournament));
 
                 CompetitionWithMinimalDetails = seedDataGenerator.CreateCompetitionWithMinimalDetails();
                 repo.CreateCompetition(CompetitionWithMinimalDetails);
@@ -194,30 +195,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     MatchLocations.Add(matchLocation);
                 }
             }
-        }
-
-        private static IEnumerable<PlayerIdentity> PlayerIdentitiesInMatch(Match match)
-        {
-            var comparer = new PlayerIdentityEqualityComparer();
-            var playerIdentities = new List<PlayerIdentity>();
-            foreach (var innings in match.MatchInnings)
-            {
-                foreach (var playerInnings in innings.PlayerInnings)
-                {
-                    if (!playerIdentities.Contains(playerInnings.PlayerIdentity, comparer)) { playerIdentities.Add(playerInnings.PlayerIdentity); }
-                    if (playerInnings.DismissedBy != null && !playerIdentities.Contains(playerInnings.DismissedBy, comparer)) { playerIdentities.Add(playerInnings.DismissedBy); }
-                    if (playerInnings.Bowler != null && !playerIdentities.Contains(playerInnings.Bowler, comparer)) { playerIdentities.Add(playerInnings.Bowler); }
-                }
-                foreach (var over in innings.OversBowled)
-                {
-                    if (!playerIdentities.Contains(over.PlayerIdentity, comparer)) { playerIdentities.Add(over.PlayerIdentity); }
-                }
-            }
-            foreach (var award in match.Awards)
-            {
-                if (!playerIdentities.Contains(award.PlayerIdentity, comparer)) { playerIdentities.Add(award.PlayerIdentity); }
-            }
-            return playerIdentities;
         }
     }
 }

@@ -4,7 +4,7 @@
     {
 
         internal const string _tablePrefix = "Stoolball";
-        internal const string _statisticsPrefix = "Statistics";
+        internal const string _statisticsSuffix = "Statistics";
 
         public const string Audit = _tablePrefix + "Audit";
         public const string PlayerInnings = _tablePrefix + "PlayerInnings";
@@ -39,6 +39,6 @@
         public const string Award = _tablePrefix + "Award";
         public const string AwardedTo = _tablePrefix + "AwardedTo";
         public const string NotificationSubscription = _tablePrefix + "NotificationSubscription";
-        public const string StatisticsPlayerMatch = _tablePrefix + _statisticsPrefix + "PlayerMatch";
+        public const string PlayerInMatchStatistics = _tablePrefix + "PlayerInMatch" + _statisticsSuffix;
     }
 }

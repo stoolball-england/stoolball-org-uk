@@ -99,8 +99,8 @@
     <Compile Include="MatchTeamTableInitialSchema.cs" />
     <Compile Include="PlayerIdentityAddTable.cs" />
     <Compile Include="PlayerIdentityTableInitialSchema.cs" />
-    <Compile Include="StatisticsPlayerMatchAddTable.cs" />
-    <Compile Include="StatisticsPlayerMatchTableInitialSchema.cs" />
+    <Compile Include="PlayerInMatchStatisticsAddTable.cs" />
+    <Compile Include="PlayerInMatchStatisticsTableInitialSchema.cs" />
     <Compile Include="SchoolAddTable.cs" />
     <Compile Include="SchoolVersionAddTable.cs" />
     <Compile Include="SchoolVersionTableInitialSchema.cs" />

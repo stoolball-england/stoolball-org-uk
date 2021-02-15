@@ -63,6 +63,8 @@ namespace Stoolball.Web
             composition.Register<IBowlingFiguresCalculator, BowlingFiguresCalculator>();
             composition.Register<IBackgroundTaskTracker, MemoryCacheBackgroundTaskTracker>();
             composition.Register<IOverSetScaffolder, OverSetScaffolder>();
+            composition.Register<IPlayerInMatchStatisticsBuilder, PlayerInMatchStatisticsBuilder>();
+            composition.Register<IPlayerIdentityFinder, PlayerIdentityFinder>();
 
             // Data migration from the old Stoolball England website
             composition.Register<IAuditHistoryBuilder, AuditHistoryBuilder>();
