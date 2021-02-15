@@ -319,6 +319,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             var result = await teamDataSource.ReadTeams(null).ConfigureAwait(false);
 
+            Assert.Equal(_databaseFixture.Teams.Count, result.Count);
             foreach (var team in _databaseFixture.Teams)
             {
                 Assert.NotNull(result.SingleOrDefault(x => x.TeamId == team.TeamId));

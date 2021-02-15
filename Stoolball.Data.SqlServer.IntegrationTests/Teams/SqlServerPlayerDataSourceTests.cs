@@ -1,0 +1,130 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Stoolball.Teams;
+using Xunit;
+
+namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
+{
+    [Collection(IntegrationTestConstants.DataSourceIntegrationTestCollection)]
+    public class SqlServerPlayerDataSourceTests
+    {
+        private readonly SqlServerDataSourceFixture _databaseFixture;
+
+        public SqlServerPlayerDataSourceTests(SqlServerDataSourceFixture databaseFixture)
+        {
+            _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
+        }
+
+        [Fact]
+        public async Task Read_player_identities_returns_basic_fields()
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await playerDataSource.ReadPlayerIdentities(null).ConfigureAwait(false);
+
+            foreach (var identity in _databaseFixture.PlayerIdentities)
+            {
+                var result = results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId);
+                Assert.NotNull(result);
+
+                Assert.Equal(identity.PlayerIdentityName, result.PlayerIdentityName);
+                Assert.Equal(identity.TotalMatches, result.TotalMatches);
+                Assert.Equal(identity.FirstPlayed, result.FirstPlayed);
+                Assert.Equal(identity.LastPlayed, result.LastPlayed);
+            }
+        }
+
+        [Fact]
+        public async Task Read_player_identities_returns_team()
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await playerDataSource.ReadPlayerIdentities(null).ConfigureAwait(false);
+
+            foreach (var identity in _databaseFixture.PlayerIdentities)
+            {
+                var result = results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId);
+                Assert.NotNull(result);
+
+                Assert.Equal(identity.Team.TeamId, result.Team.TeamId);
+                Assert.Equal(identity.Team.TeamName, result.Team.TeamName);
+            }
+        }
+
+        [Fact]
+        public async Task Read_player_identities_supports_no_filter()
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await playerDataSource.ReadPlayerIdentities(null).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.PlayerIdentities.Count, results.Count);
+            foreach (var identity in _databaseFixture.PlayerIdentities)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId));
+            }
+        }
+
+        [Fact]
+        public async Task Read_player_identities_supports_case_insensitive_filter_by_name()
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await playerDataSource.ReadPlayerIdentities(new PlayerIdentityQuery { Query = "PlAyEr 8" }).ConfigureAwait(false);
+
+            var expected = _databaseFixture.PlayerIdentities.Where(x => Regex.IsMatch(x.PlayerIdentityName, "Player.*8", RegexOptions.IgnoreCase));
+            Assert.Equal(expected.Count(), results.Count);
+            foreach (var identity in expected)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId));
+            }
+        }
+
+        [Fact]
+        public async Task Read_player_identities_supports_case_insensitive_filter_by_team_id()
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await playerDataSource.ReadPlayerIdentities(new PlayerIdentityQuery { TeamIds = new List<Guid> { _databaseFixture.PlayerIdentities[0].Team.TeamId.Value } }).ConfigureAwait(false);
+
+            var expected = _databaseFixture.PlayerIdentities.Where(x => x.Team.TeamId == _databaseFixture.PlayerIdentities[0].Team.TeamId.Value);
+            Assert.Equal(expected.Count(), results.Count);
+            foreach (var identity in expected)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId));
+            }
+        }
+
+        [Fact]
+        public async Task Read_player_identities_sorts_by_team_first_then_probability()
+        {
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await playerDataSource.ReadPlayerIdentities(new PlayerIdentityQuery { TeamIds = new List<Guid> { _databaseFixture.PlayerIdentities[0].Team.TeamId.Value } }).ConfigureAwait(false);
+
+            Guid? expectedTeam = null;
+            var previousTeams = new List<Guid>();
+            var previousProbability = int.MaxValue;
+            foreach (var identity in results)
+            {
+                // The first time any team is seen, set a flag to say they must all be that team.
+                // Record the teams already seen so that we can't switch back to a previous one.
+                // Also reset the tracker that says probability must count down for the team.
+                if (identity.Team.TeamId != expectedTeam && !previousTeams.Contains(identity.Team.TeamId.Value))
+                {
+                    expectedTeam = identity.Team.TeamId;
+                    previousTeams.Add(expectedTeam.Value);
+                    previousProbability = int.MaxValue;
+                }
+                Assert.Equal(expectedTeam, identity.Team.TeamId);
+                Assert.True(identity.Probability <= previousProbability);
+                previousProbability = identity.Probability.Value;
+            }
+            Assert.NotNull(expectedTeam);
+            Assert.NotEqual(expectedTeam, previousTeams[0]);
+        }
+    }
+}
