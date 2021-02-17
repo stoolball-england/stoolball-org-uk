@@ -27,11 +27,13 @@ namespace Stoolball.Web.Statistics
         private readonly IMatchDataSource _matchDataSource;
         private readonly IStatisticsRepository _statisticsRepository;
         private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
+        private readonly IPlayerInMatchStatisticsBuilder _playerInMatchStatisticsBuilder;
+        private readonly IPlayerIdentityFinder _playerIdentityFinder;
 
         public EditStatisticsSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IDatabaseConnectionFactory databaseConnectionFactory,
             IBackgroundTaskTracker taskTracker, IMatchListingDataSource matchListingDataSource, IMatchDataSource matchDataSource, IStatisticsRepository statisticsRepository,
-            IBowlingFiguresCalculator bowlingFiguresCalculator)
+            IBowlingFiguresCalculator bowlingFiguresCalculator, IPlayerInMatchStatisticsBuilder playerInMatchStatisticsBuilder, IPlayerIdentityFinder playerIdentityFinder)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
@@ -40,6 +42,8 @@ namespace Stoolball.Web.Statistics
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _statisticsRepository = statisticsRepository ?? throw new ArgumentNullException(nameof(statisticsRepository));
             _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
+            _playerInMatchStatisticsBuilder = playerInMatchStatisticsBuilder ?? throw new ArgumentNullException(nameof(playerInMatchStatisticsBuilder));
+            _playerIdentityFinder = playerIdentityFinder ?? throw new ArgumentNullException(nameof(playerIdentityFinder));
         }
 
         [HttpPost]
@@ -80,7 +84,7 @@ namespace Stoolball.Web.Statistics
                     UntilDate = DateTime.UtcNow
                 }).ConfigureAwait(false));
 
-                _taskTracker.SetTarget(taskId, matchListings.Sum(x => x.MatchInnings.Count));
+                _taskTracker.SetTarget(taskId, matchListings.Sum(x => x.MatchInnings.Count) + matchListings.Count);
 
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
@@ -99,15 +103,23 @@ namespace Stoolball.Web.Statistics
                             var match = await _matchDataSource.ReadMatchByRoute(matchListing.MatchRoute).ConfigureAwait(false);
                             if (match != null)
                             {
-                                foreach (var innings in match.MatchInnings)
+                                using (var transaction = connection.BeginTransaction())
                                 {
-                                    using (var transaction = connection.BeginTransaction())
+                                    foreach (var innings in match.MatchInnings)
                                     {
                                         innings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(innings);
                                         await _statisticsRepository.UpdateBowlingFigures(innings, memberKey, memberName, transaction).ConfigureAwait(false);
-                                        transaction.Commit();
                                         _taskTracker.IncrementCompletedBy(taskId, 1);
                                     }
+
+                                    var hasPlayerData = _playerIdentityFinder.PlayerIdentitiesInMatch(match).Any();
+                                    if (hasPlayerData)
+                                    {
+                                        var statisticsData = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(match);
+                                        await _statisticsRepository.UpdatePlayerStatistics(statisticsData, transaction).ConfigureAwait(false);
+                                    }
+                                    _taskTracker.IncrementCompletedBy(taskId, 1);
+                                    transaction.Commit();
                                 }
                             }
                         }

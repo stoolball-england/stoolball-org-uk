@@ -35,6 +35,15 @@ namespace Stoolball.Data.SqlServer
             public Guid? BowlingMatchTeamId { get; set; }
         }
 
+        private class PlayerDto
+        {
+            public Guid PlayerId { get; set; }
+            public Guid PlayerIdentityId { get; set; }
+            public string PlayerIdentityName { get; set; }
+            public string PlayerRoute { get; set; }
+            public int? TotalMatches { get; set; }
+        }
+
         /// <summary>
         /// Gets a single stoolball match based on its route
         /// </summary>
@@ -49,13 +58,13 @@ namespace Stoolball.Data.SqlServer
                 var matches = await connection.QueryAsync<Match, Tournament, TeamInMatch, Team, MatchLocation, Season, Competition, Match>(
                     $@"SELECT m.MatchId, m.MatchName, m.MatchType, m.StartTime, m.StartTimeIsKnown, m.MatchResultType, m.PlayersPerTeam,
                             m.LastPlayerBatsOn, m.EnableBonusOrPenaltyRuns, m.InningsOrderIsKnown, m.MatchNotes, m.MatchRoute, m.MemberKey, m.UpdateMatchNameAutomatically,
-                            tourney.TournamentRoute, tourney.TournamentName, tourney.MemberKey,
+                            tourney.TournamentId, tourney.TournamentRoute, tourney.TournamentName, tourney.MemberKey,
                             mt.MatchTeamId, mt.TeamRole, mt.WonToss,
                             t.TeamId, t.TeamRoute, tn.TeamName, t.MemberGroupName,
                             ml.MatchLocationId, ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
                             ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
                             s.SeasonId, s.SeasonRoute, s.FromYear, s.UntilYear,
-                            cv.CompetitionName, co.MemberGroupName, co.CompetitionRoute
+                            co.CompetitionId, cv.CompetitionName, co.MemberGroupName, co.CompetitionRoute
                             FROM {Tables.Match} AS m
                             LEFT JOIN {Tables.Tournament} AS tourney ON m.TournamentId = tourney.TournamentId
                             LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
@@ -82,7 +91,7 @@ namespace Stoolball.Data.SqlServer
                         return match;
                     },
                     new { Route = normalisedRoute },
-                    splitOn: "TournamentRoute, MatchTeamId, TeamId, MatchLocationId, SeasonId, CompetitionName")
+                    splitOn: "TournamentId, MatchTeamId, TeamId, MatchLocationId, SeasonId, CompetitionId")
                     .ConfigureAwait(false);
 
                 var matchToReturn = matches.FirstOrDefault(); // get an example with the properties that are the same for every row
@@ -94,20 +103,23 @@ namespace Stoolball.Data.SqlServer
                 if (matchToReturn != null)
                 {
                     // Add match innings and player innings within that to the match
-                    var unprocessedInningsWithBatting = await connection.QueryAsync<MatchInnings, OverSet, MatchTeamIds, PlayerInnings, PlayerIdentity, PlayerIdentity, PlayerIdentity, MatchInnings>(
+                    var unprocessedInningsWithBatting = await connection.QueryAsync<MatchInnings, OverSet, MatchTeamIds, PlayerInnings, PlayerDto, PlayerDto, PlayerDto, MatchInnings>(
                         $@"SELECT i.MatchInningsId, i.Byes, i.Wides, i.NoBalls, i.BonusOrPenaltyRuns, i.Runs, i.Wickets, i.InningsOrderInMatch,
                                os.OverSetId, os.OverSetNumber, os.Overs, os.BallsPerOver,
                                i.BattingMatchTeamId, i.BowlingMatchTeamId,
                                pi.BattingPosition, pi.DismissalType, pi.RunsScored, pi.BallsFaced,
-                               bat.PlayerIdentityId, bat.PlayerIdentityName, bat.TotalMatches, 
-                               field.PlayerIdentityId, field.PlayerIdentityName, field.TotalMatches,
-                               bowl.PlayerIdentityId, bowl.PlayerIdentityName, bowl.TotalMatches
+                               bat.PlayerIdentityId, bat.PlayerIdentityName, bat.TotalMatches, bat2.PlayerId, bat2.PlayerRoute,
+                               field.PlayerIdentityId, field.PlayerIdentityName, field.TotalMatches, field2.PlayerId, field2.PlayerRoute,
+                               bowl.PlayerIdentityId, bowl.PlayerIdentityName, bowl.TotalMatches, bowl2.PlayerId, bowl2.PlayerRoute
                                FROM {Tables.MatchInnings} i 
                                LEFT JOIN {Tables.OverSet} os ON i.MatchInningsId = os.MatchInningsId
                                LEFT JOIN {Tables.PlayerInnings} pi ON i.MatchInningsId = pi.MatchInningsId
                                LEFT JOIN {Tables.PlayerIdentity} bat ON pi.PlayerIdentityId = bat.PlayerIdentityId
+                               LEFT JOIN {Tables.Player} bat2 ON bat.PlayerId = bat2.PlayerId
                                LEFT JOIN {Tables.PlayerIdentity} field ON pi.DismissedById = field.PlayerIdentityId
+                               LEFT JOIN {Tables.Player} field2 ON field.PlayerId = field2.PlayerId
                                LEFT JOIN {Tables.PlayerIdentity} bowl ON pi.BowlerId = bowl.PlayerIdentityId
+                               LEFT JOIN {Tables.Player} bowl2 ON bowl.PlayerId = bowl2.PlayerId
                                WHERE i.MatchId = @MatchId
                                ORDER BY i.InningsOrderInMatch, pi.BattingPosition",
                         (innings, overSet, matchTeamIds, batting, batter, dismissedBy, bowledBy) =>
@@ -127,9 +139,48 @@ namespace Stoolball.Data.SqlServer
                             }
                             if (batting != null)
                             {
-                                batting.PlayerIdentity = batter;
-                                batting.DismissedBy = dismissedBy;
-                                batting.Bowler = bowledBy;
+                                batting.PlayerIdentity = new PlayerIdentity
+                                {
+                                    Player = new Player
+                                    {
+                                        PlayerId = batter.PlayerId,
+                                        PlayerRoute = batter.PlayerRoute
+                                    },
+                                    PlayerIdentityId = batter.PlayerIdentityId,
+                                    PlayerIdentityName = batter.PlayerIdentityName,
+                                    TotalMatches = batter.TotalMatches,
+                                    Team = innings.BattingTeam.Team
+                                };
+                                if (dismissedBy != null)
+                                {
+                                    batting.DismissedBy = new PlayerIdentity
+                                    {
+                                        Player = new Player
+                                        {
+                                            PlayerId = dismissedBy.PlayerId,
+                                            PlayerRoute = dismissedBy.PlayerRoute
+                                        },
+                                        PlayerIdentityId = dismissedBy.PlayerIdentityId,
+                                        PlayerIdentityName = dismissedBy.PlayerIdentityName,
+                                        TotalMatches = dismissedBy.TotalMatches,
+                                        Team = innings.BowlingTeam.Team
+                                    };
+                                }
+                                if (bowledBy != null)
+                                {
+                                    batting.Bowler = new PlayerIdentity
+                                    {
+                                        Player = new Player
+                                        {
+                                            PlayerId = bowledBy.PlayerId,
+                                            PlayerRoute = bowledBy.PlayerRoute
+                                        },
+                                        PlayerIdentityId = bowledBy.PlayerIdentityId,
+                                        PlayerIdentityName = bowledBy.PlayerIdentityName,
+                                        TotalMatches = bowledBy.TotalMatches,
+                                        Team = innings.BowlingTeam.Team
+                                    };
+                                }
                                 innings.PlayerInnings.Add(batting);
                             }
                             return innings;
@@ -156,25 +207,28 @@ namespace Stoolball.Data.SqlServer
                     }).OrderBy(x => x.InningsOrderInMatch).ToList();
 
                     // We now have the match innings. Get the overs recorded for them.
-                    var unprocessedInningsWithOvers = await connection.QueryAsync<MatchInnings, Over, PlayerIdentity, Team, MatchInnings>(
+                    var unprocessedInningsWithOvers = await connection.QueryAsync<MatchInnings, Over, PlayerIdentity, Player, Team, MatchInnings>(
                              $@"SELECT i.MatchInningsId,
                                     o.OverNumber, o.BallsBowled, o.NoBalls, o.Wides, o.RunsConceded,
                                     pi.PlayerIdentityId, pi.PlayerIdentityName, pi.TotalMatches, 
+                                    p.PlayerId, p.PlayerRoute,
                                     pi.TeamId
                                     FROM {Tables.MatchInnings} i 
                                     INNER JOIN {Tables.Over} o ON i.MatchInningsId = o.MatchInningsId
                                     INNER JOIN {Tables.PlayerIdentity} pi ON o.PlayerIdentityId = pi.PlayerIdentityId
+                                    INNER JOIN {Tables.Player} p ON pi.PlayerId = p.PlayerId
                                     WHERE i.MatchId = @MatchId
                                     ORDER BY i.InningsOrderInMatch, o.OverNumber",
-                             (innings, over, bowler, team) =>
+                             (innings, over, bowlerPlayerIdentity, bowlerPlayer, team) =>
                              {
-                                 over.PlayerIdentity = bowler;
+                                 over.PlayerIdentity = bowlerPlayerIdentity;
+                                 over.PlayerIdentity.Player = bowlerPlayer;
                                  over.PlayerIdentity.Team = team;
                                  innings.OversBowled.Add(over);
                                  return innings;
                              },
                              new { matchToReturn.MatchId },
-                             splitOn: "OverNumber, PlayerIdentityId, TeamId")
+                             splitOn: "OverNumber, PlayerIdentityId, PlayerId, TeamId")
                              .ConfigureAwait(false);
 
                     // Add those overs to the existing instances of the match innings.
@@ -195,22 +249,27 @@ namespace Stoolball.Data.SqlServer
                     }
 
                     // Add bowling figures
-                    var bowlingFigures = await connection.QueryAsync<BowlingFigures, MatchInnings, PlayerIdentity, BowlingFigures>
+                    var bowlingFigures = await connection.QueryAsync<BowlingFigures, MatchInnings, PlayerIdentity, Player, Team, BowlingFigures>
                         ($@"SELECT bf.Overs, bf.Maidens, bf.RunsConceded, bf.Wickets,
                             bf.MatchInningsId,
-                            pi.PlayerIdentityName
+                            pi.PlayerIdentityName,
+                            p.PlayerId, p.PlayerRoute,
+                            pi.TeamId
                             FROM {Tables.BowlingFigures} bf
                             INNER JOIN {Tables.PlayerIdentity} pi ON bf.PlayerIdentityId = pi.PlayerIdentityId
+                            INNER JOIN {Tables.Player} p ON pi.PlayerId = p.PlayerId
                             WHERE bf.MatchInningsId IN @MatchInningsIds
                             ORDER BY bf.MatchInningsId, bf.BowlingOrder",
-                            (bowling, innings, bowler) =>
+                            (bowling, innings, bowlerPlayerIdentity, bowlerPlayer, team) =>
                             {
                                 bowling.MatchInnings = innings;
-                                bowling.Bowler = bowler;
+                                bowling.Bowler = bowlerPlayerIdentity;
+                                bowling.Bowler.Player = bowlerPlayer;
+                                bowling.Bowler.Team = team;
                                 return bowling;
                             },
                             new { MatchInningsIds = matchToReturn.MatchInnings.Select(x => x.MatchInningsId) },
-                            splitOn: "MatchInningsId, PlayerIdentityName").ConfigureAwait(false);
+                            splitOn: "MatchInningsId, PlayerIdentityName, PlayerId, TeamId").ConfigureAwait(false);
 
                     foreach (var innings in matchToReturn.MatchInnings)
                     {
@@ -218,22 +277,27 @@ namespace Stoolball.Data.SqlServer
                     }
 
                     // Add awards - player of the match etc - to the match
-                    matchToReturn.Awards = (await connection.QueryAsync<MatchAward, Award, PlayerIdentity, Team, MatchAward>(
-                        $@"SELECT ma.AwardedToId, ma.Reason, a.AwardName, p.PlayerIdentityId, p.PlayerIdentityName, p.TotalMatches, p.TeamId
+                    matchToReturn.Awards = (await connection.QueryAsync<MatchAward, Award, PlayerIdentity, Player, Team, MatchAward>(
+                        $@"SELECT ma.AwardedToId, ma.Reason, a.AwardName, 
+                               pi.PlayerIdentityId, pi.PlayerIdentityName, pi.TotalMatches, 
+                               p.PlayerId, p.PlayerRoute,
+                               pi.TeamId
                                FROM {Tables.AwardedTo} ma
                                INNER JOIN {Tables.Award} a ON ma.AwardId = a.AwardId
-                               INNER JOIN {Tables.PlayerIdentity} p ON ma.PlayerIdentityId = p.PlayerIdentityId
+                               INNER JOIN {Tables.PlayerIdentity} pi ON ma.PlayerIdentityId = pi.PlayerIdentityId
+                               INNER JOIN {Tables.Player} p ON pi.PlayerId = p.PlayerId
                                WHERE ma.MatchId = @MatchId
                                ORDER BY a.AwardName",
-                        (matchAward, award, playerIdentity, team) =>
+                        (matchAward, award, playerIdentity, player, team) =>
                         {
                             matchAward.Award = award;
                             matchAward.PlayerIdentity = playerIdentity;
+                            matchAward.PlayerIdentity.Player = player;
                             matchAward.PlayerIdentity.Team = team;
                             return matchAward;
                         },
                         new { matchToReturn.MatchId },
-                        splitOn: "AwardName, PlayerIdentityId, TeamId").ConfigureAwait(false)).OrderBy(x => x.Award.AwardName).ToList();
+                        splitOn: "AwardName, PlayerIdentityId, PlayerId, TeamId").ConfigureAwait(false)).OrderBy(x => x.Award.AwardName).ToList();
                 }
 
                 return matchToReturn;

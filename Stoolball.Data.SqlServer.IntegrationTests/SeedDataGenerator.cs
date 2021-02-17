@@ -319,8 +319,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             {
                 homePlayers[i] = new PlayerIdentity
                 {
+                    Player = new Player
+                    {
+                        PlayerId = Guid.NewGuid(),
+                        PlayerName = "Home player " + (i + 1),
+                        PlayerRoute = "/players/home-" + (i + 1)
+                    },
                     PlayerIdentityId = Guid.NewGuid(),
-                    PlayerIdentityName = "Player " + (i + 1),
+                    PlayerIdentityName = "Home player identity " + (i + 1),
                     Team = homeTeam.Team
                 };
             };
@@ -330,8 +336,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             {
                 awayPlayers[i] = new PlayerIdentity
                 {
+                    Player = new Player
+                    {
+                        PlayerId = Guid.NewGuid(),
+                        PlayerName = "Away player " + (i + 1),
+                        PlayerRoute = "/players/away-" + (i + 1)
+                    },
                     PlayerIdentityId = Guid.NewGuid(),
-                    PlayerIdentityName = "Player " + (i + 12),
+                    PlayerIdentityName = "Away player identity " + (i + 12),
                     Team = awayTeam.Team
                 };
             };

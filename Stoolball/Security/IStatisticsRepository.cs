@@ -12,5 +12,6 @@ namespace Stoolball.Statistics
         /// Updates the bowling figures for a single innings of a match. Assumes caller will handle auditing and logging.
         /// </summary>
         Task<IList<BowlingFigures>> UpdateBowlingFigures(MatchInnings innings, Guid memberKey, string memberName, IDbTransaction transaction);
+        Task UpdatePlayerStatistics(IEnumerable<PlayerInMatchStatisticsRecord> statisticsData, IDbTransaction transaction);
     }
 }

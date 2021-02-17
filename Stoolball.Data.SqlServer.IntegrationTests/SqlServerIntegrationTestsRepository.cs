@@ -362,16 +362,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
         public void CreatePlayerIdentity(PlayerIdentity playerIdentity)
         {
-            var playerId = Guid.NewGuid();
             _connection.Execute($@"INSERT INTO {Tables.Player} 
                     (PlayerId, PlayerName, PlayerRoute)
                     VALUES
                     (@PlayerId, @PlayerName, @PlayerRoute)",
                    new
                    {
-                       PlayerId = playerId,
-                       PlayerName = playerIdentity.PlayerIdentityName,
-                       PlayerRoute = "/players/" + playerId
+                       PlayerId = playerIdentity.Player.PlayerId,
+                       PlayerName = playerIdentity.Player.PlayerName,
+                       PlayerRoute = playerIdentity.Player.PlayerRoute
                    });
 
             _connection.Execute($@"INSERT INTO {Tables.PlayerIdentity} 
@@ -381,7 +380,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                    new
                    {
                        playerIdentity.PlayerIdentityId,
-                       PlayerId = playerId,
+                       playerIdentity.Player.PlayerId,
                        playerIdentity.Team.TeamId,
                        playerIdentity.PlayerIdentityName,
                        ComparableName = playerIdentity.ComparableName(),

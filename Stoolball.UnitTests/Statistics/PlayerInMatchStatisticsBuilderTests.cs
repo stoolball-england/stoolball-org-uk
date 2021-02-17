@@ -604,6 +604,7 @@ namespace Stoolball.UnitTests.Statistics
                         Assert.Null(playerRecord.Overs);
                         Assert.Null(playerRecord.Maidens);
                         Assert.Null(playerRecord.RunsConceded);
+                        Assert.Null(playerRecord.HasRunsConceded);
                         Assert.Null(playerRecord.Wickets);
                     }
                 }

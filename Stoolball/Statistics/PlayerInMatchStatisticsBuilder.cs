@@ -102,7 +102,7 @@ namespace Stoolball.Statistics
             record.Overs = bowlingFigures?.Overs;
             record.Maidens = bowlingFigures?.Maidens;
             record.RunsConceded = bowlingFigures?.RunsConceded;
-            record.HasRunsConceded = bowlingFigures?.RunsConceded != null;
+            record.HasRunsConceded = bowlingFigures != null ? bowlingFigures.RunsConceded != null : (bool?)null;
             record.Wickets = bowlingFigures?.Wickets;
             record.WicketsWithBowling = (bowlingFigures != null && oversBowled.Any()) ? bowlingFigures.Wickets : (int?)null;
 

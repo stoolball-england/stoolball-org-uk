@@ -112,9 +112,19 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 for (var batter = 0; batter < _databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings.Count; batter++)
                 {
                     Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings[batter].PlayerIdentity.PlayerIdentityName, result.MatchInnings[innings].PlayerInnings[batter].PlayerIdentity.PlayerIdentityName);
+                    Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings[batter].PlayerIdentity.Player.PlayerId, result.MatchInnings[innings].PlayerInnings[batter].PlayerIdentity.Player.PlayerId);
+                    Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings[batter].PlayerIdentity.Player.PlayerRoute, result.MatchInnings[innings].PlayerInnings[batter].PlayerIdentity.Player.PlayerRoute);
+                    Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings[batter].PlayerIdentity.Player.PlayerId, result.MatchInnings[innings].PlayerInnings[batter].PlayerIdentity.Player.PlayerId);
+                    Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings[batter].PlayerIdentity.Team.TeamId, result.MatchInnings[innings].PlayerInnings[batter].PlayerIdentity.Team.TeamId);
                     Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings[batter].DismissalType, result.MatchInnings[innings].PlayerInnings[batter].DismissalType);
                     Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings[batter].DismissedBy?.PlayerIdentityName, result.MatchInnings[innings].PlayerInnings[batter].DismissedBy?.PlayerIdentityName);
+                    Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings[batter].DismissedBy?.Player.PlayerId, result.MatchInnings[innings].PlayerInnings[batter].DismissedBy?.Player.PlayerId);
+                    Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings[batter].DismissedBy?.Player.PlayerRoute, result.MatchInnings[innings].PlayerInnings[batter].DismissedBy?.Player.PlayerRoute);
+                    Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings[batter].DismissedBy?.Team.TeamId, result.MatchInnings[innings].PlayerInnings[batter].DismissedBy?.Team.TeamId);
                     Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings[batter].Bowler?.PlayerIdentityName, result.MatchInnings[innings].PlayerInnings[batter].Bowler?.PlayerIdentityName);
+                    Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings[batter].Bowler?.Player.PlayerId, result.MatchInnings[innings].PlayerInnings[batter].Bowler?.Player.PlayerId);
+                    Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings[batter].Bowler?.Player.PlayerRoute, result.MatchInnings[innings].PlayerInnings[batter].Bowler?.Player.PlayerRoute);
+                    Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings[batter].Bowler?.Team.TeamId, result.MatchInnings[innings].PlayerInnings[batter].Bowler?.Team.TeamId);
                     Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings[batter].RunsScored, result.MatchInnings[innings].PlayerInnings[batter].RunsScored);
                     Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].PlayerInnings[batter].BallsFaced, result.MatchInnings[innings].PlayerInnings[batter].BallsFaced);
                 }
@@ -154,6 +164,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 for (var over = 0; over < _databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].OversBowled.Count; over++)
                 {
                     Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].OversBowled[over].PlayerIdentity.PlayerIdentityName, result.MatchInnings[innings].OversBowled[over].PlayerIdentity.PlayerIdentityName);
+                    Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].OversBowled[over].PlayerIdentity.Player.PlayerId, result.MatchInnings[innings].OversBowled[over].PlayerIdentity.Player.PlayerId);
+                    Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].OversBowled[over].PlayerIdentity.Player.PlayerRoute, result.MatchInnings[innings].OversBowled[over].PlayerIdentity.Player.PlayerRoute);
+                    Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].OversBowled[over].PlayerIdentity.Team.TeamId, result.MatchInnings[innings].OversBowled[over].PlayerIdentity.Team.TeamId);
                     Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].OversBowled[over].BallsBowled, result.MatchInnings[innings].OversBowled[over].BallsBowled);
                     Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].OversBowled[over].NoBalls, result.MatchInnings[innings].OversBowled[over].NoBalls);
                     Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].OversBowled[over].Wides, result.MatchInnings[innings].OversBowled[over].Wides);
@@ -176,6 +189,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 for (var bowler = 0; bowler < _databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].BowlingFigures.Count; bowler++)
                 {
                     Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].BowlingFigures[bowler].Bowler.PlayerIdentityName, result.MatchInnings[innings].BowlingFigures[bowler].Bowler.PlayerIdentityName);
+                    Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].BowlingFigures[bowler].Bowler.Player.PlayerId, result.MatchInnings[innings].BowlingFigures[bowler].Bowler.Player.PlayerId);
+                    Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].BowlingFigures[bowler].Bowler.Player.PlayerRoute, result.MatchInnings[innings].BowlingFigures[bowler].Bowler.Player.PlayerRoute);
+                    Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].BowlingFigures[bowler].Bowler.Team.TeamId, result.MatchInnings[innings].BowlingFigures[bowler].Bowler.Team.TeamId);
                     Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].BowlingFigures[bowler].Overs, result.MatchInnings[innings].BowlingFigures[bowler].Overs);
                     Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].BowlingFigures[bowler].Maidens, result.MatchInnings[innings].BowlingFigures[bowler].Maidens);
                     Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].BowlingFigures[bowler].RunsConceded, result.MatchInnings[innings].BowlingFigures[bowler].RunsConceded);
@@ -197,6 +213,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             for (var award = 0; award < _databaseFixture.MatchInThePastWithFullDetails.Awards.Count; award++)
             {
                 Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.Awards[award].PlayerIdentity.PlayerIdentityName, result.Awards[award].PlayerIdentity.PlayerIdentityName);
+                Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.Awards[award].PlayerIdentity.Player.PlayerId, result.Awards[award].PlayerIdentity.Player.PlayerId);
+                Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.Awards[award].PlayerIdentity.Player.PlayerRoute, result.Awards[award].PlayerIdentity.Player.PlayerRoute);
+                Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.Awards[award].PlayerIdentity.Team.TeamId, result.Awards[award].PlayerIdentity.Team.TeamId);
                 Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.Awards[award].Reason, result.Awards[award].Reason);
             }
         }
@@ -210,9 +229,59 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var result = await matchDataSource.ReadMatchByRoute(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchRoute).ConfigureAwait(false);
 
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.Tournament.TournamentId, result.Tournament.TournamentId);
             Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.Tournament.TournamentName, result.Tournament.TournamentName);
             Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.Tournament.TournamentRoute, result.Tournament.TournamentRoute);
             Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.Tournament.MemberKey, result.Tournament.MemberKey);
+        }
+
+        [Fact]
+        public async Task Read_match_by_route_returns_match_location()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchRoute, "matches")).Returns(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchRoute);
+            var matchDataSource = new SqlServerMatchDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await matchDataSource.ReadMatchByRoute(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchRoute).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchLocation.MatchLocationId, result.MatchLocation.MatchLocationId);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchLocation.MatchLocationRoute, result.MatchLocation.MatchLocationRoute);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchLocation.SecondaryAddressableObjectName, result.MatchLocation.SecondaryAddressableObjectName);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchLocation.PrimaryAddressableObjectName, result.MatchLocation.PrimaryAddressableObjectName);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchLocation.Locality, result.MatchLocation.Locality);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchLocation.Town, result.MatchLocation.Town);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchLocation.Latitude, result.MatchLocation.Latitude);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchLocation.Longitude, result.MatchLocation.Longitude);
+        }
+
+        [Fact]
+        public async Task Read_match_by_route_returns_season()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchRoute, "matches")).Returns(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchRoute);
+            var matchDataSource = new SqlServerMatchDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await matchDataSource.ReadMatchByRoute(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchRoute).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.Season.SeasonId, result.Season.SeasonId);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.Season.SeasonRoute, result.Season.SeasonRoute);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.Season.FromYear, result.Season.FromYear);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.Season.UntilYear, result.Season.UntilYear);
+        }
+
+        [Fact]
+        public async Task Read_match_by_route_returns_competition()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchRoute, "matches")).Returns(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchRoute);
+            var matchDataSource = new SqlServerMatchDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await matchDataSource.ReadMatchByRoute(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchRoute).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.Season.Competition.CompetitionId, result.Season.Competition.CompetitionId);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.Season.Competition.CompetitionName, result.Season.Competition.CompetitionName);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.Season.Competition.MemberGroupName, result.Season.Competition.MemberGroupName);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetailsAndTournament.Season.Competition.CompetitionRoute, result.Season.Competition.CompetitionRoute);
         }
     }
 }
