@@ -11,7 +11,7 @@ namespace Stoolball.UnitTests.Statistics
 {
     public class PlayerInMatchStatisticsBuilderTests : IClassFixture<MatchFixture>
     {
-        private readonly Stoolball.Matches.Match _match;
+        private readonly MatchFixture _matchFixture;
         private List<PlayerIdentity> _playerIdentities = new List<PlayerIdentity>();
 
         public PlayerInMatchStatisticsBuilderTests(MatchFixture matchFixture)
@@ -21,7 +21,7 @@ namespace Stoolball.UnitTests.Statistics
                 throw new System.ArgumentNullException(nameof(matchFixture));
             }
 
-            _match = matchFixture.Match;
+            _matchFixture = matchFixture;
             _playerIdentities.AddRange(matchFixture.HomePlayers);
             _playerIdentities.AddRange(matchFixture.AwayPlayers);
         }
@@ -35,16 +35,16 @@ namespace Stoolball.UnitTests.Statistics
 
         private void AssertMatchFields(PlayerInMatchStatisticsRecord playerRecord)
         {
-            Assert.Equal(_match.MatchId, playerRecord.MatchId);
-            Assert.Equal(_match.MatchName, playerRecord.MatchName);
-            Assert.Equal(_match.MatchType, playerRecord.MatchType);
-            Assert.Equal(_match.PlayerType, playerRecord.MatchPlayerType);
-            Assert.Equal(_match.MatchRoute, playerRecord.MatchRoute);
-            Assert.Equal(_match.StartTime, playerRecord.MatchStartTime);
-            Assert.Equal(_match.Tournament?.TournamentId, playerRecord.TournamentId);
-            Assert.Equal(_match.MatchLocation.MatchLocationId, playerRecord.MatchLocationId);
-            Assert.Equal(_match.Season.SeasonId, playerRecord.SeasonId);
-            Assert.Equal(_match.Season.Competition.CompetitionId, playerRecord.CompetitionId);
+            Assert.Equal(_matchFixture.Match.MatchId, playerRecord.MatchId);
+            Assert.Equal(_matchFixture.Match.MatchName, playerRecord.MatchName);
+            Assert.Equal(_matchFixture.Match.MatchType, playerRecord.MatchType);
+            Assert.Equal(_matchFixture.Match.PlayerType, playerRecord.MatchPlayerType);
+            Assert.Equal(_matchFixture.Match.MatchRoute, playerRecord.MatchRoute);
+            Assert.Equal(_matchFixture.Match.StartTime, playerRecord.MatchStartTime);
+            Assert.Equal(_matchFixture.Match.Tournament?.TournamentId, playerRecord.TournamentId);
+            Assert.Equal(_matchFixture.Match.MatchLocation.MatchLocationId, playerRecord.MatchLocationId);
+            Assert.Equal(_matchFixture.Match.Season.SeasonId, playerRecord.SeasonId);
+            Assert.Equal(_matchFixture.Match.Season.Competition.CompetitionId, playerRecord.CompetitionId);
         }
 
         private void AssertInningsFields(PlayerIdentity batter, MatchInnings innings, PlayerInMatchStatisticsRecord playerRecord)
@@ -61,7 +61,7 @@ namespace Stoolball.UnitTests.Statistics
 
             Assert.Equal(innings.MatchInningsId, playerRecord.MatchInningsId);
             Assert.Equal(innings.InningsOrderInMatch, playerRecord.InningsOrderInMatch);
-            Assert.Equal(_match.InningsOrderIsKnown, playerRecord.InningsOrderIsKnown);
+            Assert.Equal(_matchFixture.Match.InningsOrderIsKnown, playerRecord.InningsOrderIsKnown);
             Assert.Equal(innings.Runs, playerRecord.MatchInningsRuns);
             Assert.Equal(innings.Wickets, playerRecord.MatchInningsWickets);
 
@@ -78,15 +78,15 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Each_batter_should_have_one_record_per_innings_with_player_and_match_data()
         {
-            var batters = _match.MatchInnings.SelectMany(i => i.PlayerInnings.Select(pi => pi.PlayerIdentity));
+            var batters = _matchFixture.Match.MatchInnings.SelectMany(i => i.PlayerInnings.Select(pi => pi.PlayerIdentity));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var batter in batters)
             {
-                foreach (var innings in _match.MatchInnings)
+                foreach (var innings in _matchFixture.Match.MatchInnings)
                 {
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == batter.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId && (x.PlayerInningsInMatchInnings == 1 || x.PlayerInningsInMatchInnings == null));
                     Assert.NotNull(playerRecord);
@@ -100,15 +100,15 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Each_batter_should_have_one_record_per_innings_with_innings_data()
         {
-            var batters = _match.MatchInnings.SelectMany(i => i.PlayerInnings.Select(pi => pi.PlayerIdentity));
+            var batters = _matchFixture.Match.MatchInnings.SelectMany(i => i.PlayerInnings.Select(pi => pi.PlayerIdentity));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var batter in batters)
             {
-                foreach (var innings in _match.MatchInnings)
+                foreach (var innings in _matchFixture.Match.MatchInnings)
                 {
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == batter.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId && (x.PlayerInningsInMatchInnings == 1 || x.PlayerInningsInMatchInnings == null));
                     Assert.NotNull(playerRecord);
@@ -121,15 +121,15 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Each_fielder_should_have_one_record_per_innings_with_player_and_match_data()
         {
-            var fielders = _match.MatchInnings.SelectMany(i => i.PlayerInnings.Where(pi => pi.DismissedBy != null).Select(pi => pi.DismissedBy));
+            var fielders = _matchFixture.Match.MatchInnings.SelectMany(i => i.PlayerInnings.Where(pi => pi.DismissedBy != null).Select(pi => pi.DismissedBy));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in fielders)
             {
-                foreach (var innings in _match.MatchInnings)
+                foreach (var innings in _matchFixture.Match.MatchInnings)
                 {
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId && (x.PlayerInningsInMatchInnings == 1 || x.PlayerInningsInMatchInnings == null));
                     Assert.NotNull(playerRecord);
@@ -143,15 +143,15 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Each_fielder_should_have_one_record_per_innings_with_innings_data()
         {
-            var fielders = _match.MatchInnings.SelectMany(i => i.PlayerInnings.Where(pi => pi.DismissedBy != null).Select(pi => pi.DismissedBy));
+            var fielders = _matchFixture.Match.MatchInnings.SelectMany(i => i.PlayerInnings.Where(pi => pi.DismissedBy != null).Select(pi => pi.DismissedBy));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in fielders)
             {
-                foreach (var innings in _match.MatchInnings)
+                foreach (var innings in _matchFixture.Match.MatchInnings)
                 {
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId && (x.PlayerInningsInMatchInnings == 1 || x.PlayerInningsInMatchInnings == null));
                     Assert.NotNull(playerRecord);
@@ -164,15 +164,15 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Each_wicket_taker_should_have_one_record_per_innings_with_player_and_match_data()
         {
-            var wicketTakers = _match.MatchInnings.SelectMany(i => i.PlayerInnings.Where(pi => pi.Bowler != null).Select(pi => pi.Bowler));
+            var wicketTakers = _matchFixture.Match.MatchInnings.SelectMany(i => i.PlayerInnings.Where(pi => pi.Bowler != null).Select(pi => pi.Bowler));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in wicketTakers)
             {
-                foreach (var innings in _match.MatchInnings)
+                foreach (var innings in _matchFixture.Match.MatchInnings)
                 {
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId && (x.PlayerInningsInMatchInnings == 1 || x.PlayerInningsInMatchInnings == null));
                     Assert.NotNull(playerRecord);
@@ -186,15 +186,15 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Each_wicket_taker_should_have_one_record_per_innings_with_innings_data()
         {
-            var wicketTakers = _match.MatchInnings.SelectMany(i => i.PlayerInnings.Where(pi => pi.Bowler != null).Select(pi => pi.Bowler));
+            var wicketTakers = _matchFixture.Match.MatchInnings.SelectMany(i => i.PlayerInnings.Where(pi => pi.Bowler != null).Select(pi => pi.Bowler));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in wicketTakers)
             {
-                foreach (var innings in _match.MatchInnings)
+                foreach (var innings in _matchFixture.Match.MatchInnings)
                 {
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId && (x.PlayerInningsInMatchInnings == 1 || x.PlayerInningsInMatchInnings == null));
                     Assert.NotNull(playerRecord);
@@ -207,15 +207,15 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Each_bowler_with_figures_should_have_one_record_per_innings_with_player_and_match_data()
         {
-            var bowlers = _match.MatchInnings.SelectMany(i => i.BowlingFigures.Select(pi => pi.Bowler));
+            var bowlers = _matchFixture.Match.MatchInnings.SelectMany(i => i.BowlingFigures.Select(pi => pi.Bowler));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in bowlers)
             {
-                foreach (var innings in _match.MatchInnings)
+                foreach (var innings in _matchFixture.Match.MatchInnings)
                 {
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId && (x.PlayerInningsInMatchInnings == 1 || x.PlayerInningsInMatchInnings == null));
                     Assert.NotNull(playerRecord);
@@ -229,15 +229,15 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Each_bowler_with_figures_should_have_one_record_per_innings_with_innings_data()
         {
-            var bowlers = _match.MatchInnings.SelectMany(i => i.BowlingFigures.Select(pi => pi.Bowler));
+            var bowlers = _matchFixture.Match.MatchInnings.SelectMany(i => i.BowlingFigures.Select(pi => pi.Bowler));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in bowlers)
             {
-                foreach (var innings in _match.MatchInnings)
+                foreach (var innings in _matchFixture.Match.MatchInnings)
                 {
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId && (x.PlayerInningsInMatchInnings == 1 || x.PlayerInningsInMatchInnings == null));
                     Assert.NotNull(playerRecord);
@@ -250,15 +250,15 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Each_bowler_with_overs_should_have_one_record_per_innings_with_player_and_match_data()
         {
-            var bowlers = _match.MatchInnings.SelectMany(i => i.OversBowled.Select(pi => pi.PlayerIdentity));
+            var bowlers = _matchFixture.Match.MatchInnings.SelectMany(i => i.OversBowled.Select(pi => pi.PlayerIdentity));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in bowlers)
             {
-                foreach (var innings in _match.MatchInnings)
+                foreach (var innings in _matchFixture.Match.MatchInnings)
                 {
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId && (x.PlayerInningsInMatchInnings == 1 || x.PlayerInningsInMatchInnings == null));
                     Assert.NotNull(playerRecord);
@@ -272,15 +272,15 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Each_bowler_with_overs_should_have_one_record_per_innings_with_innings_data()
         {
-            var bowlers = _match.MatchInnings.SelectMany(i => i.OversBowled.Select(pi => pi.PlayerIdentity));
+            var bowlers = _matchFixture.Match.MatchInnings.SelectMany(i => i.OversBowled.Select(pi => pi.PlayerIdentity));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in bowlers)
             {
-                foreach (var innings in _match.MatchInnings)
+                foreach (var innings in _matchFixture.Match.MatchInnings)
                 {
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId && (x.PlayerInningsInMatchInnings == 1 || x.PlayerInningsInMatchInnings == null));
                     Assert.NotNull(playerRecord);
@@ -293,15 +293,15 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Each_award_winner_should_have_one_record_per_innings_with_player_and_match_data()
         {
-            var winners = _match.Awards.Select(pi => pi.PlayerIdentity);
+            var winners = _matchFixture.Match.Awards.Select(pi => pi.PlayerIdentity);
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in winners)
             {
-                foreach (var innings in _match.MatchInnings)
+                foreach (var innings in _matchFixture.Match.MatchInnings)
                 {
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId && (x.PlayerInningsInMatchInnings == 1 || x.PlayerInningsInMatchInnings == null));
                     Assert.NotNull(playerRecord);
@@ -315,15 +315,15 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Each_award_winner_should_have_one_record_per_innings_with_innings_data()
         {
-            var winners = _match.Awards.Select(pi => pi.PlayerIdentity);
+            var winners = _matchFixture.Match.Awards.Select(pi => pi.PlayerIdentity);
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in winners)
             {
-                foreach (var innings in _match.MatchInnings)
+                foreach (var innings in _matchFixture.Match.MatchInnings)
                 {
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId && (x.PlayerInningsInMatchInnings == 1 || x.PlayerInningsInMatchInnings == null));
                     Assert.NotNull(playerRecord);
@@ -337,12 +337,12 @@ namespace Stoolball.UnitTests.Statistics
         public void Only_players_who_bat_again_in_an_innings_should_have_multiple_records_for_an_innings()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in _playerIdentities)
             {
-                foreach (var innings in _match.MatchInnings)
+                foreach (var innings in _matchFixture.Match.MatchInnings)
                 {
                     // In the test data, the first batter bats twice in each innings
                     if (identity.PlayerIdentityId == innings.PlayerInnings[0].PlayerIdentity.PlayerIdentityId)
@@ -362,15 +362,15 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Each_batter_in_batting_innings_should_have_position_dismissal_and_score()
         {
-            var batters = _match.MatchInnings.SelectMany(i => i.PlayerInnings.Select(pi => pi.PlayerIdentity));
+            var batters = _matchFixture.Match.MatchInnings.SelectMany(i => i.PlayerInnings.Select(pi => pi.PlayerIdentity));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var batter in batters)
             {
-                foreach (var innings in _match.MatchInnings.Where(x => x.BattingTeam.Team.TeamId == batter.Team.TeamId))
+                foreach (var innings in _matchFixture.Match.MatchInnings.Where(x => x.BattingTeam.Team.TeamId == batter.Team.TeamId))
                 {
                     var expected = innings.PlayerInnings.Where(x => x.PlayerIdentity.PlayerIdentityId == batter.PlayerIdentityId).ToList();
                     var playerRecords = result.Where(x => x.PlayerIdentityId == batter.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId);
@@ -393,16 +393,16 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Batting_team_members_with_no_player_innings_did_not_bat_and_should_have_null_position_and_score()
         {
-            var batters = _match.MatchInnings.SelectMany(i => i.PlayerInnings.Select(pi => pi.PlayerIdentity.PlayerIdentityId.Value)).ToList();
+            var batters = _matchFixture.Match.MatchInnings.SelectMany(i => i.PlayerInnings.Select(pi => pi.PlayerIdentity.PlayerIdentityId.Value)).ToList();
             var missingBatters = _playerIdentities.Where(x => !batters.Contains(x.PlayerIdentityId.Value));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var batter in missingBatters)
             {
-                foreach (var innings in _match.MatchInnings.Where(x => x.BattingTeam.Team.TeamId == batter.Team.TeamId))
+                foreach (var innings in _matchFixture.Match.MatchInnings.Where(x => x.BattingTeam.Team.TeamId == batter.Team.TeamId))
                 {
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == batter.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId);
                     Assert.NotNull(playerRecord);
@@ -420,10 +420,10 @@ namespace Stoolball.UnitTests.Statistics
         public void Each_dismissal_credited_to_a_bowler_should_have_bowler_details()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
-            foreach (var innings in _match.MatchInnings)
+            foreach (var innings in _matchFixture.Match.MatchInnings)
             {
                 var playerInningsCountForPlayers = new Dictionary<Guid, int>();
                 foreach (var playerInnings in innings.PlayerInnings)
@@ -460,10 +460,10 @@ namespace Stoolball.UnitTests.Statistics
         public void Each_caught_dismissal_should_have_catcher_details()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
-            foreach (var innings in _match.MatchInnings)
+            foreach (var innings in _matchFixture.Match.MatchInnings)
             {
                 var playerInningsCountForPlayers = new Dictionary<Guid, int>();
                 foreach (var playerInnings in innings.PlayerInnings)
@@ -506,10 +506,10 @@ namespace Stoolball.UnitTests.Statistics
         public void Each_run_out_dismissal_should_have_fielder_details()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
-            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
-            foreach (var innings in _match.MatchInnings)
+            foreach (var innings in _matchFixture.Match.MatchInnings)
             {
                 var playerInningsCountForPlayers = new Dictionary<Guid, int>();
                 foreach (var playerInnings in innings.PlayerInnings)
@@ -541,8 +541,55 @@ namespace Stoolball.UnitTests.Statistics
                 }
             }
         }
-    }
 
+        [Fact]
+        public void Fielding_team_members_should_have_catches_and_run_outs()
+        {
+            var finder = new Mock<IPlayerIdentityFinder>();
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
+
+            foreach (var innings in _matchFixture.Match.MatchInnings)
+            {
+                var fielders = innings.BattingTeam.Team.TeamId == _matchFixture.Match.Teams.Single(x => x.TeamRole == TeamRole.Home).Team.TeamId ? _matchFixture.AwayPlayers : _matchFixture.HomePlayers;
+
+                foreach (var fielder in fielders)
+                {
+                    var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == fielder.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId);
+                    Assert.NotNull(playerRecord);
+
+                    Assert.Equal(innings.PlayerInnings.Count(x => (x.DismissalType == DismissalType.Caught && x.DismissedBy?.PlayerIdentityId == fielder.PlayerIdentityId) ||
+                                                                  (x.DismissalType == DismissalType.CaughtAndBowled && x.Bowler?.PlayerIdentityId == fielder.PlayerIdentityId)), playerRecord.Catches);
+                    Assert.Equal(innings.PlayerInnings.Count(x => x.DismissalType == DismissalType.RunOut && x.DismissedBy?.PlayerIdentityId == fielder.PlayerIdentityId), playerRecord.RunOuts);
+                }
+            }
+        }
+
+        [Fact]
+        public void Batting_team_members_should_not_have_catches_and_run_outs()
+        {
+            var finder = new Mock<IPlayerIdentityFinder>();
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
+
+            foreach (var innings in _matchFixture.Match.MatchInnings)
+            {
+                var batters = innings.BattingTeam.Team.TeamId == _matchFixture.Match.Teams.Single(x => x.TeamRole == TeamRole.Home).Team.TeamId ? _matchFixture.HomePlayers : _matchFixture.AwayPlayers;
+
+                foreach (var batter in batters)
+                {
+                    var playerRecords = result.Where(x => x.PlayerIdentityId == batter.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId);
+                    Assert.True(playerRecords.Any());
+
+                    foreach (var playerRecord in playerRecords)
+                    {
+                        Assert.Null(playerRecord.Catches);
+                        Assert.Null(playerRecord.RunOuts);
+                    }
+                }
+            }
+        }
+    }
 
     // TODO:
 
@@ -559,8 +606,6 @@ namespace Stoolball.UnitTests.Statistics
     // playerRecord.HasRunsConceded
     // playerRecord.Wickets
     // playerRecord.WicketsWithBowling
-    // playerRecord.Catches
-    // playerRecord.RunOuts
     // playerRecord.WonMatch
     // playerRecord.PlayerOfTheMatch
 }
