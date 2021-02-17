@@ -75,6 +75,8 @@ namespace Stoolball.Statistics
                     record.Catches = innings.PlayerInnings.Count(x => (x.DismissalType == DismissalType.Caught && x.DismissedBy?.PlayerIdentityId == fielder.PlayerIdentityId) ||
                                                                   (x.DismissalType == DismissalType.CaughtAndBowled && x.Bowler?.PlayerIdentityId == fielder.PlayerIdentityId));
                     record.RunOuts = innings.PlayerInnings.Count(x => x.DismissalType == DismissalType.RunOut && x.DismissedBy?.PlayerIdentityId == fielder.PlayerIdentityId);
+                    record.WonMatch = DidThePlayerWinTheMatch(fielder, match);
+                    record.PlayerOfTheMatch = match.Awards.Any(x => x.Award.AwardName.ToUpperInvariant() == StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD && x.PlayerIdentity.PlayerIdentityId == fielder.PlayerIdentityId);
                     records.Add(record);
                 }
             }
@@ -108,7 +110,34 @@ namespace Stoolball.Statistics
                 records[records.Count - 1].PlayerWasDismissed = StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(allPlayerInningsForThisPlayer[i].DismissalType);
             }
 
+            foreach (var playerRecord in records)
+            {
+                playerRecord.WonMatch = DidThePlayerWinTheMatch(batter, match);
+                playerRecord.PlayerOfTheMatch = match.Awards.Any(x => x.Award.AwardName.ToUpperInvariant() == StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD && x.PlayerIdentity.PlayerIdentityId == batter.PlayerIdentityId);
+            }
+
             return records;
+        }
+
+        private static int? DidThePlayerWinTheMatch(PlayerIdentity identity, Match match)
+        {
+            var isHomePlayer = identity.Team.TeamId == match.Teams.Single(x => x.TeamRole == TeamRole.Home).Team.TeamId;
+            if (match.MatchResultType == MatchResultType.HomeWin)
+            {
+                return isHomePlayer ? 1 : -1;
+            }
+            else if (match.MatchResultType == MatchResultType.Tie)
+            {
+                return 0;
+            }
+            else if (match.MatchResultType == MatchResultType.AwayWin)
+            {
+                return isHomePlayer ? -1 : 1;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private static void AddPlayerInningsDataToRecord(PlayerInnings playerInnings, PlayerInMatchStatisticsRecord record)

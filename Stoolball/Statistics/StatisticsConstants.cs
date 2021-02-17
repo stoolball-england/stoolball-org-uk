@@ -14,5 +14,8 @@ namespace Stoolball.Statistics
 
         [SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "It's a constant value that C# can't represent as a constant")]
         public static List<DismissalType?> DISMISSALS_THAT_ARE_OUT = new List<DismissalType?> { DismissalType.Caught, DismissalType.CaughtAndBowled, DismissalType.Bowled, DismissalType.BodyBeforeWicket, DismissalType.HitTheBallTwice, DismissalType.RunOut, DismissalType.TimedOut, null };
+
+        [SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "Except constants")]
+        public const string PLAYER_OF_THE_MATCH_AWARD = "PLAYER OF THE MATCH";
     }
 }

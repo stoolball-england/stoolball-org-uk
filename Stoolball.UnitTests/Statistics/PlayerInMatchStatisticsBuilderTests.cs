@@ -589,11 +589,71 @@ namespace Stoolball.UnitTests.Statistics
                 }
             }
         }
+
+        [Fact]
+        public void Every_record_should_record_whether_the_match_was_won()
+        {
+            var finder = new Mock<IPlayerIdentityFinder>();
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
+
+            foreach (var innings in _matchFixture.Match.MatchInnings)
+            {
+                foreach (var identity in _playerIdentities)
+                {
+                    var playerRecords = result.Where(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId);
+                    Assert.True(playerRecords.Any());
+
+                    foreach (var playerRecord in playerRecords)
+                    {
+                        var isHomePlayer = identity.Team.TeamId == _matchFixture.Match.Teams.Single(x => x.TeamRole == TeamRole.Home).Team.TeamId;
+                        if (_matchFixture.Match.MatchResultType == MatchResultType.HomeWin)
+                        {
+                            Assert.Equal(isHomePlayer ? 1 : -1, playerRecord.WonMatch);
+                        }
+                        else if (_matchFixture.Match.MatchResultType == MatchResultType.Tie)
+                        {
+                            Assert.Equal(0, playerRecord.WonMatch);
+                        }
+                        else if (_matchFixture.Match.MatchResultType == MatchResultType.AwayWin)
+                        {
+                            Assert.Equal(isHomePlayer ? -1 : 1, playerRecord.WonMatch);
+                        }
+                        else
+                        {
+                            Assert.Null(playerRecord.WonMatch);
+                        }
+                    }
+                }
+            }
+        }
+
+        [Fact]
+        public void Every_record_should_record_whether_the_player_was_player_of_the_match()
+        {
+            var finder = new Mock<IPlayerIdentityFinder>();
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_matchFixture.Match);
+
+            foreach (var innings in _matchFixture.Match.MatchInnings)
+            {
+                foreach (var identity in _playerIdentities)
+                {
+                    var playerRecords = result.Where(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId);
+                    Assert.True(playerRecords.Any());
+
+                    foreach (var playerRecord in playerRecords)
+                    {
+                        Assert.Equal(_matchFixture.Match.Awards.Any(x => x.Award.AwardName.ToUpperInvariant() == StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD && x.PlayerIdentity.PlayerIdentityId == identity.PlayerIdentityId), playerRecord.PlayerOfTheMatch);
+                    }
+                }
+            }
+        }
     }
 
     // TODO:
 
-    // Other edge cases?
+    // Other edge cases? Abandoned matches?
 
     // Write tests for other fields not covered
 
@@ -606,6 +666,4 @@ namespace Stoolball.UnitTests.Statistics
     // playerRecord.HasRunsConceded
     // playerRecord.Wickets
     // playerRecord.WicketsWithBowling
-    // playerRecord.WonMatch
-    // playerRecord.PlayerOfTheMatch
 }

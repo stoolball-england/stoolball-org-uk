@@ -111,9 +111,9 @@ namespace Stoolball.Statistics
 
         public int? RunOuts { get; set; }
 
-        public bool? WonMatch { get; set; }
+        public int? WonMatch { get; set; }
 
-        public bool? PlayerOfTheMatch { get; set; }
+        public bool PlayerOfTheMatch { get; set; }
 
     }
 }

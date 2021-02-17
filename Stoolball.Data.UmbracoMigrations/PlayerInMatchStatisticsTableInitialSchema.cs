@@ -253,11 +253,10 @@ namespace Stoolball.Data.UmbracoMigrations
         [Column(nameof(WonMatch))]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public bool? WonMatch { get; set; }
+        public int? WonMatch { get; set; }
 
         [Column(nameof(PlayerOfTheMatch))]
         [Index(IndexTypes.NonClustered)]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public bool? PlayerOfTheMatch { get; set; }
+        public bool PlayerOfTheMatch { get; set; }
     }
 }
