@@ -35,6 +35,7 @@ namespace Stoolball.Data.SqlServer
             public Guid? BowlingMatchTeamId { get; set; }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Dapper uses it.")]
         private class PlayerDto
         {
             public Guid PlayerId { get; set; }

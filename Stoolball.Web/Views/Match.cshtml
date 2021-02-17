@@ -141,7 +141,7 @@
                         currentAwardName = award.Award.AwardName;
                     }
                     <dd>
-                        @award.PlayerIdentity.PlayerIdentityName (@Model.Match.Teams.First(x => x.Team.TeamId == award.PlayerIdentity.Team.TeamId).Team.TeamName)
+                        <a href="@award.PlayerIdentity.Player.PlayerRoute">@award.PlayerIdentity.PlayerIdentityName</a> (@Model.Match.Teams.First(x => x.Team.TeamId == award.PlayerIdentity.Team.TeamId).Team.TeamName)
                         @if (!string.IsNullOrWhiteSpace(award.Reason))
                         {
                             @: – @award.Reason.Humanize(LetterCasing.Sentence)

@@ -5,8 +5,8 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Stoolball.Routing;
 using Stoolball.Teams;
-using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer
 {
@@ -16,10 +16,12 @@ namespace Stoolball.Data.SqlServer
     public class SqlServerPlayerDataSource : IPlayerDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
+        private readonly IRouteNormaliser _routeNormaliser;
 
-        public SqlServerPlayerDataSource(IDatabaseConnectionFactory databaseConnectionFactory)
+        public SqlServerPlayerDataSource(IDatabaseConnectionFactory databaseConnectionFactory, IRouteNormaliser routeNormaliser)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
+            _routeNormaliser = routeNormaliser ?? throw new ArgumentNullException(nameof(routeNormaliser));
         }
 
         /// <summary>
@@ -64,6 +66,41 @@ namespace Stoolball.Data.SqlServer
                     },
                     new DynamicParameters(parameters),
                     splitOn: "TeamId").ConfigureAwait(false)).ToList();
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<Player> ReadPlayerByRoute(string route)
+        {
+            var normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "players");
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                var playerData = await connection.QueryAsync<Player, PlayerIdentity, Team, Player>(
+                    $@"SELECT PlayerId, PlayerIdentityName AS PlayerName,
+                        PlayerIdentityName, COUNT(DISTINCT MatchId) AS TotalMatches, MIN(MatchStartTime) AS FirstPlayed, MAX(MatchStartTime) AS LastPlayed, 
+                        TeamName, TeamRoute
+                        FROM {Tables.PlayerInMatchStatistics} 
+                        WHERE LOWER(PlayerRoute) = @Route
+                        GROUP BY PlayerId, PlayerIdentityName, TeamName, TeamRoute",
+                        (player, playerIdentity, team) =>
+                        {
+                            playerIdentity.Team = team;
+                            player.PlayerIdentities.Add(playerIdentity);
+                            return player;
+                        },
+                        new { Route = normalisedRoute },
+                        splitOn: "PlayerIdentityName, TeamName"
+                        ).ConfigureAwait(false);
+
+                var playerToReturn = playerData.GroupBy(x => x.PlayerId).Select(group =>
+                {
+                    var player = group.First();
+                    player.PlayerIdentities = group.Select(x => x.PlayerIdentities.Single()).OfType<PlayerIdentity>().ToList();
+                    return player;
+                }).FirstOrDefault();
+
+                return playerToReturn;
             }
         }
     }

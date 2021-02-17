@@ -1,4 +1,5 @@
-﻿@import "../Content/bootstrap/_mixins.scss";
+﻿@import "../css/_theme.scss";
+@import "../Content/bootstrap/_mixins.scss";
 @import "../Content/bootstrap/_functions.scss";
 @import "../Content/bootstrap/_variables.scss";
 @import "../css/_mixins.scss";
@@ -117,6 +118,7 @@ $space-character-width: .25em;
     .table-as-cards-reset-sm tbody th:first-child {
         background: none;
         color: inherit;
+        font-weight: normal;
     }
 
     .table-as-cards-reset-sm tbody th:first-child a:link, .table-as-cards-reset-sm tbody th:first-child a:visited {

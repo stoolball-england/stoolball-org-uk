@@ -4,10 +4,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Moq;
-using Stoolball.Email;
-using Stoolball.Security;
 using Stoolball.Teams;
-using Stoolball.Web.Teams;
+using Stoolball.Web.Statistics;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -16,18 +14,18 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Teams
+namespace Stoolball.Web.Tests.Statistics
 {
-    public class TeamControllerTests : UmbracoBaseTest
+    public class PlayerControllerTests : UmbracoBaseTest
     {
-        public TeamControllerTests()
+        public PlayerControllerTests()
         {
             Setup();
         }
 
-        private class TestController : TeamController
+        private class TestController : PlayerController
         {
-            public TestController(ITeamDataSource teamDataSource, UmbracoHelper umbracoHelper)
+            public TestController(IPlayerDataSource playerDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -35,9 +33,7 @@ namespace Stoolball.Web.Tests.Teams
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
-                teamDataSource,
-                Mock.Of<IAuthorizationPolicy<Team>>(),
-                Mock.Of<IEmailProtector>())
+                playerDataSource)
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -53,15 +49,15 @@ namespace Stoolball.Web.Tests.Teams
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("Team", model);
+                return View("Player", model);
             }
         }
 
         [Fact]
-        public async Task Route_not_matching_team_returns_404()
+        public async Task Route_not_matching_player_returns_404()
         {
-            var dataSource = new Mock<ITeamDataSource>();
-            dataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Team>(null));
+            var dataSource = new Mock<IPlayerDataSource>();
+            dataSource.Setup(x => x.ReadPlayerByRoute(It.IsAny<string>())).Returns(Task.FromResult<Player>(null));
 
             using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {
@@ -72,16 +68,16 @@ namespace Stoolball.Web.Tests.Teams
         }
 
         [Fact]
-        public async Task Route_matching_team_returns_TeamViewModel()
+        public async Task Route_matching_player_returns_PlayerViewModel()
         {
-            var dataSource = new Mock<ITeamDataSource>();
-            dataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team());
+            var dataSource = new Mock<IPlayerDataSource>();
+            dataSource.Setup(x => x.ReadPlayerByRoute(It.IsAny<string>())).Returns(Task.FromResult<Player>(new Player()));
 
             using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<TeamViewModel>(((ViewResult)result).Model);
+                Assert.IsType<PlayerViewModel>(((ViewResult)result).Model);
             }
         }
     }

@@ -21,9 +21,9 @@ namespace Stoolball.Teams
 
         public Player Player { get; set; }
 
-        public DateTime? FirstPlayed { get; set; }
+        public DateTimeOffset? FirstPlayed { get; set; }
 
-        public DateTime? LastPlayed { get; set; }
+        public DateTimeOffset? LastPlayed { get; set; }
 
         public int? TotalMatches { get; set; }
 

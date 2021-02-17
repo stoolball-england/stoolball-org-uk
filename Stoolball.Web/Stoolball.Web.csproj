@@ -1302,12 +1302,14 @@
     <Compile Include="Security\DelegatedContentSecurityPolicyAttribute.cs" />
     <Compile Include="Security\DisableMemberDelete.cs" />
     <Compile Include="Security\MemberGroupHelper.cs" />
+    <Compile Include="Statistics\PlayerController.cs" />
     <Compile Include="Statistics\MemoryCacheBackgroundTaskTracker.cs" />
     <Compile Include="Statistics\EditStatisticsSurfaceController.cs" />
     <Compile Include="Statistics\IBackgroundTaskTracker.cs" />
     <Compile Include="Statistics\StatisticsViewModel.cs" />
     <Compile Include="Statistics\EditStatisticsController.cs" />
     <Compile Include="Statistics\EditStatisticsApiController.cs" />
+    <Compile Include="Statistics\PlayerViewModel.cs" />
     <Compile Include="Teams\CreateTeamSurfaceController.cs" />
     <Compile Include="Teams\CreateTeamController.cs" />
     <Compile Include="Teams\DeleteTeamSurfaceController.cs" />
@@ -1508,6 +1510,7 @@
     <Content Include="Views\StyleGuideForms.cshtml" />
     <Content Include="Views\StyleGuideStoolballData.cshtml" />
     <Content Include="Views\TeamsMap.cshtml" />
+    <Content Include="Views\Player.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

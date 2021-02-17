@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Moq;
+using Stoolball.Routing;
 using Stoolball.Teams;
 using Xunit;
 
@@ -21,7 +23,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_player_identities_returns_basic_fields()
         {
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory);
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
             var results = await playerDataSource.ReadPlayerIdentities(null).ConfigureAwait(false);
 
@@ -40,7 +43,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_player_identities_returns_team()
         {
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory);
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
             var results = await playerDataSource.ReadPlayerIdentities(null).ConfigureAwait(false);
 
@@ -57,7 +61,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_player_identities_supports_no_filter()
         {
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory);
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
             var results = await playerDataSource.ReadPlayerIdentities(null).ConfigureAwait(false);
 
@@ -71,7 +76,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_player_identities_supports_case_insensitive_filter_by_name()
         {
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory);
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
             var results = await playerDataSource.ReadPlayerIdentities(new PlayerIdentityQuery { Query = "PlAyEr 8" }).ConfigureAwait(false);
 
@@ -86,7 +92,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_player_identities_supports_case_insensitive_filter_by_team_id()
         {
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory);
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
             var results = await playerDataSource.ReadPlayerIdentities(new PlayerIdentityQuery { TeamIds = new List<Guid> { _databaseFixture.PlayerIdentities[0].Team.TeamId.Value } }).ConfigureAwait(false);
 
@@ -101,7 +108,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_player_identities_sorts_by_team_first_then_probability()
         {
-            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory);
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
             var results = await playerDataSource.ReadPlayerIdentities(new PlayerIdentityQuery { TeamIds = new List<Guid> { _databaseFixture.PlayerIdentities[0].Team.TeamId.Value } }).ConfigureAwait(false);
 
@@ -125,6 +133,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             }
             Assert.NotNull(expectedTeam);
             Assert.NotEqual(expectedTeam, previousTeams[0]);
+        }
+
+        [Fact]
+        public async Task Read_player_by_route_should_be_tested()
+        {
+            throw new NotImplementedException();
         }
     }
 }

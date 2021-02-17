@@ -26,7 +26,7 @@
                 @foreach (var playerInnings in Model.PlayerInnings)
                 {
                     <tr>
-                        <th class="player-name">@playerInnings.PlayerIdentity.PlayerIdentityName</th>
+                        <th class="player-name"><a href="@playerInnings.PlayerIdentity.Player.PlayerRoute">@playerInnings.PlayerIdentity.PlayerIdentityName</a></th>
                         <td data-stackable="true">
                             <span class="table-as-cards__label" aria-hidden="true">How out</span>
                             @if (playerInnings.DismissalType == DismissalType.NotOut)
@@ -40,14 +40,14 @@
                                 @(playerInnings.DismissalType?.Humanize(LetterCasing.LowerCase).Replace("run out", "run-out") ?? "not known")
                                 @if ((playerInnings.DismissalType == DismissalType.Caught || playerInnings.DismissalType == DismissalType.RunOut) && playerInnings.DismissedBy != null)
                                 {
-                                    <span class="player-name dismissed-by">(@playerInnings.DismissedBy.PlayerIdentityName)</span>
+                                    <span class="player-name dismissed-by">(<a href="@playerInnings.DismissedBy.Player.PlayerRoute">@playerInnings.DismissedBy.PlayerIdentityName</a>)</span>
                                 }
                             </div>
                         }
                         </td>
                         @if (playerInnings.Bowler != null)
                         {
-                            <td class="player-name" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Bowler</span>@playerInnings.Bowler.PlayerIdentityName</td>
+                            <td class="player-name" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Bowler</span><a href="@playerInnings.Bowler.Player.PlayerRoute">@playerInnings.Bowler.PlayerIdentityName</a></td>
                         }
                         else
                         {
