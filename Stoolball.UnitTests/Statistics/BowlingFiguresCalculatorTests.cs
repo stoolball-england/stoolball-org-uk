@@ -57,13 +57,24 @@ namespace Stoolball.UnitTests.Statistics
         public void Wicket_takers_with_no_overs_are_included_for_valid_dismissals(DismissalType? dismissalType, bool creditedToBowler)
         {
             var calculator = new BowlingFiguresCalculator();
-            var bowler = "Bowler 1";
+            var bowler1 = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "Bowler 1" };
+            var bowler2 = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "Bowler 2" };
+
             var innings = new MatchInnings
             {
+                // Test for multiple bowlers taking wickets, and multiple wickets per bowler
                 PlayerInnings = new List<PlayerInnings> {
                     new PlayerInnings{
                         DismissalType = dismissalType,
-                        Bowler = new PlayerIdentity { PlayerIdentityName = bowler }
+                        Bowler = bowler1
+                    },
+                    new PlayerInnings{
+                        DismissalType = dismissalType,
+                        Bowler = bowler1
+                    },
+                    new PlayerInnings{
+                        DismissalType = dismissalType,
+                        Bowler = bowler2
                     }
                 }
             };
@@ -72,8 +83,9 @@ namespace Stoolball.UnitTests.Statistics
 
             if (creditedToBowler)
             {
-                Assert.Single(result);
-                Assert.Equal(result[0].Bowler.PlayerIdentityName, bowler);
+                Assert.Equal(2, result.Count);
+                Assert.Equal(result[0].Bowler.PlayerIdentityId, bowler1.PlayerIdentityId);
+                Assert.Equal(result[1].Bowler.PlayerIdentityId, bowler2.PlayerIdentityId);
             }
             else
             {

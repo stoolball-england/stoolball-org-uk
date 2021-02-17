@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Stoolball.Matches;
+using Stoolball.Teams;
 
 namespace Stoolball.Statistics
 {
@@ -30,7 +31,7 @@ namespace Stoolball.Statistics
                                                             && x.Bowler != null
                                                             && !bowlerNames.Contains(x.Bowler.ComparableName())
                                                             && StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Contains(x.DismissalType.Value))
-                                                .Select(x => x.Bowler))
+                                                .Select(x => x.Bowler).Distinct(new PlayerIdentityEqualityComparer()))
             {
                 bowlers.Add(bowlerOnBattingCard);
             }
