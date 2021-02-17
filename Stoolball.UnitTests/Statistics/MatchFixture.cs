@@ -12,6 +12,11 @@ namespace Stoolball.UnitTests.Statistics
 {
     public class MatchFixture
     {
+        public Match Match { get; private set; }
+
+        public List<PlayerIdentity> HomePlayers { get; } = new List<PlayerIdentity>();
+        public List<PlayerIdentity> AwayPlayers { get; } = new List<PlayerIdentity>();
+
         public MatchFixture()
         {
             var homeTeam = new TeamInMatch
@@ -32,26 +37,36 @@ namespace Stoolball.UnitTests.Statistics
                 TeamRole = TeamRole.Away
             };
 
-            var homePlayers = new PlayerIdentity[11];
             for (var i = 0; i < 11; i++)
             {
-                homePlayers[i] = new PlayerIdentity
+                HomePlayers.Add(new PlayerIdentity
                 {
+                    Player = new Player
+                    {
+                        PlayerId = Guid.NewGuid(),
+                        PlayerName = "Home player " + (i + 1),
+                        PlayerRoute = "/players/home-" + (i + 1)
+                    },
                     PlayerIdentityId = Guid.NewGuid(),
-                    PlayerIdentityName = "Player " + (i + 1),
+                    PlayerIdentityName = "Home player identity " + (i + 1),
                     Team = homeTeam.Team
-                };
+                });
             };
 
-            var awayPlayers = new PlayerIdentity[11];
             for (var i = 0; i < 11; i++)
             {
-                awayPlayers[i] = new PlayerIdentity
+                AwayPlayers.Add(new PlayerIdentity
                 {
+                    Player = new Player
+                    {
+                        PlayerId = Guid.NewGuid(),
+                        PlayerName = "Away player " + (i + 1),
+                        PlayerRoute = "/players/away-" + (i + 1)
+                    },
                     PlayerIdentityId = Guid.NewGuid(),
-                    PlayerIdentityName = "Player " + (i + 12),
+                    PlayerIdentityName = "Away player identity " + (i + 12),
                     Team = awayTeam.Team
-                };
+                });
             };
 
             var firstInningsOverSets = CreateOverSets();
@@ -63,7 +78,7 @@ namespace Stoolball.UnitTests.Statistics
             var season = CreateSeasonWithMinimalDetails(competition, 2020, 2020);
             competition.Seasons.Add(season);
 
-            var match = new Match
+            Match = new Match
             {
                 MatchId = Guid.NewGuid(),
                 MatchType = MatchType.LeagueMatch,
@@ -81,7 +96,7 @@ namespace Stoolball.UnitTests.Statistics
                             AwardId = Guid.NewGuid(),
                             AwardName = "Champagne moment"
                         },
-                        PlayerIdentity = awayPlayers[4],
+                        PlayerIdentity = AwayPlayers[4],
                         Reason = "Amazing catch"
                     },
                     new MatchAward {
@@ -91,7 +106,7 @@ namespace Stoolball.UnitTests.Statistics
                             AwardId = Guid.NewGuid(),
                             AwardName = "Player of the match"
                         },
-                        PlayerIdentity = homePlayers[2],
+                        PlayerIdentity = HomePlayers[2],
                         Reason = "Taking wickets"
                     }
                 },
@@ -119,9 +134,9 @@ namespace Stoolball.UnitTests.Statistics
                         BonusOrPenaltyRuns = 5,
                         Runs = 200,
                         Wickets = 2,
-                        PlayerInnings = CreateBattingScorecard(homePlayers, awayPlayers),
+                        PlayerInnings = CreateBattingScorecard(HomePlayers, AwayPlayers),
                         OverSets = firstInningsOverSets,
-                        OversBowled = CreateOversBowled(awayPlayers, firstInningsOverSets)
+                        OversBowled = CreateOversBowled(AwayPlayers, firstInningsOverSets)
                     },
                     new MatchInnings
                     {
@@ -137,9 +152,9 @@ namespace Stoolball.UnitTests.Statistics
                         BonusOrPenaltyRuns = 0,
                         Runs = 230,
                         Wickets = 7,
-                        PlayerInnings = CreateBattingScorecard(awayPlayers, homePlayers),
+                        PlayerInnings = CreateBattingScorecard(AwayPlayers, HomePlayers),
                         OverSets = secondInningsOverSets,
-                        OversBowled = CreateOversBowled(homePlayers, secondInningsOverSets)
+                        OversBowled = CreateOversBowled(HomePlayers, secondInningsOverSets)
                     },
                     new MatchInnings
                     {
@@ -155,9 +170,9 @@ namespace Stoolball.UnitTests.Statistics
                         BonusOrPenaltyRuns = -6,
                         Runs = 150,
                         Wickets = 10,
-                        PlayerInnings = CreateBattingScorecard(homePlayers, awayPlayers),
+                        PlayerInnings = CreateBattingScorecard(HomePlayers, AwayPlayers),
                         OverSets = thirdInningsOverSets,
-                        OversBowled = CreateOversBowled(awayPlayers, thirdInningsOverSets)
+                        OversBowled = CreateOversBowled(AwayPlayers, thirdInningsOverSets)
                     },
                     new MatchInnings
                     {
@@ -173,9 +188,9 @@ namespace Stoolball.UnitTests.Statistics
                         BonusOrPenaltyRuns = 2,
                         Runs = 210,
                         Wickets = 4,
-                        PlayerInnings = CreateBattingScorecard(awayPlayers, homePlayers),
+                        PlayerInnings = CreateBattingScorecard(AwayPlayers, HomePlayers),
                         OverSets = fourthInningsOverSets,
-                        OversBowled = CreateOversBowled(homePlayers, fourthInningsOverSets)
+                        OversBowled = CreateOversBowled(HomePlayers, fourthInningsOverSets)
                     }
                 },
                 MatchLocation = CreateMatchLocationWithMinimalDetails(),
@@ -186,11 +201,21 @@ namespace Stoolball.UnitTests.Statistics
             };
 
             var bowlingFigures = new BowlingFiguresCalculator();
-            foreach (var innings in match.MatchInnings)
+            foreach (var innings in Match.MatchInnings)
             {
                 innings.BowlingFigures = bowlingFigures.CalculateBowlingFigures(innings);
             }
-            Match = match;
+
+            // In the first innings, the first batter had a second go
+            Match.MatchInnings[0].PlayerInnings.Add(new PlayerInnings
+            {
+                PlayerInningsId = Guid.NewGuid(),
+                BattingPosition = 12,
+                PlayerIdentity = Match.MatchInnings[0].PlayerInnings[0].PlayerIdentity,
+                DismissalType = DismissalType.Retired,
+                RunsScored = 10,
+                BallsFaced = 6
+            });
         }
 
         private static List<OverSet> CreateOverSets()
@@ -256,7 +281,7 @@ namespace Stoolball.UnitTests.Statistics
         }
 
 
-        private static List<PlayerInnings> CreateBattingScorecard(PlayerIdentity[] battingTeam, PlayerIdentity[] bowlingTeam)
+        private static List<PlayerInnings> CreateBattingScorecard(List<PlayerIdentity> battingTeam, List<PlayerIdentity> bowlingTeam)
         {
             return new List<PlayerInnings>{
                             new PlayerInnings {
@@ -275,7 +300,7 @@ namespace Stoolball.UnitTests.Statistics
                                 PlayerIdentity = battingTeam[1],
                                 DismissalType = DismissalType.Caught,
                                 DismissedBy = bowlingTeam[9],
-                                Bowler = bowlingTeam[7],
+                                Bowler = bowlingTeam[7], // Not on bowling card
                                 RunsScored = 20,
                                 BallsFaced = 15
                             },
@@ -349,7 +374,7 @@ namespace Stoolball.UnitTests.Statistics
                         };
         }
 
-        private static List<Over> CreateOversBowled(PlayerIdentity[] bowlingTeam, IEnumerable<OverSet> overSets)
+        private static List<Over> CreateOversBowled(List<PlayerIdentity> bowlingTeam, IEnumerable<OverSet> overSets)
         {
             var oversBowled = new List<Over>();
             for (var i = 0; i < 15; i++)
@@ -368,7 +393,5 @@ namespace Stoolball.UnitTests.Statistics
             }
             return oversBowled;
         }
-
-        public Match Match { get; private set; }
     }
 }

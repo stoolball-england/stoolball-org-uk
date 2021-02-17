@@ -42,7 +42,7 @@ namespace Stoolball.Statistics
 
         public string TeamRoute { get; set; }
 
-        public Guid? OppositionTeamId { get; set; }
+        public Guid OppositionTeamId { get; set; }
 
         public string OppositionTeamName { get; set; }
 

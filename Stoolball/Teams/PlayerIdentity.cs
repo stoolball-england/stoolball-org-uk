@@ -19,6 +19,8 @@ namespace Stoolball.Teams
             return string.IsNullOrEmpty(PlayerIdentityName) ? PlayerIdentityName : Regex.Replace(PlayerIdentityName, "[^A-Z0-9]", string.Empty, RegexOptions.IgnoreCase).ToUpperInvariant();
         }
 
+        public Player Player { get; set; }
+
         public DateTime? FirstPlayed { get; set; }
 
         public DateTime? LastPlayed { get; set; }

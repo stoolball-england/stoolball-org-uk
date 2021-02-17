@@ -92,15 +92,12 @@ namespace Stoolball.Data.UmbracoMigrations
         [Column(nameof(OppositionTeamId))]
         [ForeignKey(typeof(TeamTableInitialSchema), Column = nameof(TeamTableInitialSchema.TeamId), Name = "FK_StoolballStatisticsPlayerMatch_StoolballTeam_OppositionTeamId")]
         [Index(IndexTypes.NonClustered)]
-        [NullSetting(NullSetting = NullSettings.Null)]
         public Guid? OppositionTeamId { get; set; }
 
         [Column(nameof(OppositionTeamName))]
-        [NullSetting(NullSetting = NullSettings.Null)]
         public string OppositionTeamName { get; set; }
 
         [Column(nameof(OppositionTeamRoute))]
-        [NullSetting(NullSetting = NullSettings.Null)]
         public string OppositionTeamRoute { get; set; }
 
         [Column(nameof(MatchLocationId))]
