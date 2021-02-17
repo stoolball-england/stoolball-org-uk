@@ -63,11 +63,9 @@ namespace Stoolball.Statistics
 
         public int? BallsBowled { get; set; }
 
-        public decimal? OversBowled { get; set; }
+        public decimal? Overs { get; set; }
 
-        public decimal? OversBowledDecimal { get; set; }
-
-        public int? MaidensBowled { get; set; }
+        public int? Maidens { get; set; }
 
         public int? RunsConceded { get; set; }
 

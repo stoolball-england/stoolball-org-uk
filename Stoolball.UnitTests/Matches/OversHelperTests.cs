@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Stoolball.UnitTests.Matches
 {
-    public class OverSetTests
+    public class OversHelperTests
     {
         [Theory]
         [InlineData(1, 1)]
@@ -13,7 +13,7 @@ namespace Stoolball.UnitTests.Matches
         [InlineData(8, 2)]
         [InlineData(9, 3)]
         [InlineData(10, 3)]
-        public void ForOver_gets_the_right_over(int overNumber, int overSetNumber)
+        public void OverSetForOver_gets_the_right_over(int overNumber, int overSetNumber)
         {
             var sets = new List<OverSet> {
                 new OverSet { OverSetNumber = 1, Overs = 5, BallsPerOver = 8 },
@@ -21,7 +21,7 @@ namespace Stoolball.UnitTests.Matches
                 new OverSet { OverSetNumber = 3, Overs = 2, BallsPerOver = 12 }
             };
 
-            var result = OverSet.ForOver(sets, overNumber);
+            var result = new OversHelper().OverSetForOver(sets, overNumber);
 
             Assert.Equal(overSetNumber, result.OverSetNumber);
         }
@@ -30,13 +30,25 @@ namespace Stoolball.UnitTests.Matches
         [InlineData(-1)]
         [InlineData(0)]
         [InlineData(6)]
-        public void ForOver_returns_null_if_over_not_found(int overNumber)
+        public void OverSetForOver_returns_null_if_over_not_found(int overNumber)
         {
             var sets = new List<OverSet> { new OverSet { OverSetNumber = 1, Overs = 5, BallsPerOver = 8 } };
 
-            var result = OverSet.ForOver(sets, overNumber);
+            var result = new OversHelper().OverSetForOver(sets, overNumber);
 
             Assert.Null(result);
+        }
+
+        [Theory]
+        [InlineData(0.3, 3)]
+        [InlineData(1, 8)]
+        [InlineData(3, 24)]
+        [InlineData(4.5, 37)]
+        public void OversToBallsBowled_is_correct_for_8_ball_overs(decimal overs, int expectedBallsBowled)
+        {
+            var result = new OversHelper().OversToBallsBowled(overs);
+
+            Assert.Equal(expectedBallsBowled, result);
         }
     }
 }

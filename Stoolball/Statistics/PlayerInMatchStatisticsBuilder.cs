@@ -9,10 +9,12 @@ namespace Stoolball.Statistics
     public class PlayerInMatchStatisticsBuilder : IPlayerInMatchStatisticsBuilder
     {
         private readonly IPlayerIdentityFinder _playerIdentityFinder;
+        private readonly IOversHelper _oversHelper;
 
-        public PlayerInMatchStatisticsBuilder(IPlayerIdentityFinder playerIdentityFinder)
+        public PlayerInMatchStatisticsBuilder(IPlayerIdentityFinder playerIdentityFinder, IOversHelper oversHelper)
         {
             _playerIdentityFinder = playerIdentityFinder ?? throw new ArgumentNullException(nameof(playerIdentityFinder));
+            _oversHelper = oversHelper;
         }
 
         public IEnumerable<PlayerInMatchStatisticsRecord> BuildStatisticsForMatch(Match match)
@@ -70,18 +72,43 @@ namespace Stoolball.Statistics
                 foreach (var fielder in fielders)
                 {
                     // Add a record for every fielding team member in this innings
-                    var record = CreateRecordForPlayerInInnings(match, innings, fielder, homeTeamIsBatting ? awayTeam : homeTeam, homeTeamIsBatting ? homeTeam : awayTeam);
-                    record.PlayerInningsInMatchInnings = null;
-                    record.Catches = innings.PlayerInnings.Count(x => (x.DismissalType == DismissalType.Caught && x.DismissedBy?.PlayerIdentityId == fielder.PlayerIdentityId) ||
-                                                                  (x.DismissalType == DismissalType.CaughtAndBowled && x.Bowler?.PlayerIdentityId == fielder.PlayerIdentityId));
-                    record.RunOuts = innings.PlayerInnings.Count(x => x.DismissalType == DismissalType.RunOut && x.DismissedBy?.PlayerIdentityId == fielder.PlayerIdentityId);
-                    record.WonMatch = DidThePlayerWinTheMatch(fielder, match);
-                    record.PlayerOfTheMatch = match.Awards.Any(x => x.Award.AwardName.ToUpperInvariant() == StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD && x.PlayerIdentity.PlayerIdentityId == fielder.PlayerIdentityId);
-                    records.Add(record);
+                    records.Add(CreateInningsRecordForFielder(match, homeTeam, awayTeam, innings, homeTeamIsBatting, fielder));
                 }
             }
 
             return records;
+        }
+
+        private PlayerInMatchStatisticsRecord CreateInningsRecordForFielder(Match match, TeamInMatch homeTeam, TeamInMatch awayTeam, MatchInnings innings, bool homeTeamIsBatting, PlayerIdentity fielder)
+        {
+            var record = CreateRecordForPlayerInInnings(match, innings, fielder, homeTeamIsBatting ? awayTeam : homeTeam, homeTeamIsBatting ? homeTeam : awayTeam);
+            var bowlingFigures = innings.BowlingFigures.SingleOrDefault(x => x.Bowler.PlayerIdentityId == fielder.PlayerIdentityId);
+            var oversBowled = innings.OversBowled.Where(x => x.PlayerIdentity.PlayerIdentityId == fielder.PlayerIdentityId);
+
+            record.PlayerInningsInMatchInnings = null;
+            record.Catches = innings.PlayerInnings.Count(x => (x.DismissalType == DismissalType.Caught && x.DismissedBy?.PlayerIdentityId == fielder.PlayerIdentityId) ||
+                                                          (x.DismissalType == DismissalType.CaughtAndBowled && x.Bowler?.PlayerIdentityId == fielder.PlayerIdentityId));
+            record.RunOuts = innings.PlayerInnings.Count(x => x.DismissalType == DismissalType.RunOut && x.DismissedBy?.PlayerIdentityId == fielder.PlayerIdentityId);
+
+            record.OverNumberOfFirstOverBowled = innings.OversBowled.OrderBy(x => x.OverNumber).FirstOrDefault(x => x.PlayerIdentity.PlayerIdentityId == fielder.PlayerIdentityId)?.OverNumber;
+            if (oversBowled.Any())
+            {
+                record.BallsBowled = oversBowled.Sum(x => x.BallsBowled);
+            }
+            else
+            {
+                record.BallsBowled = bowlingFigures?.Overs != null ? _oversHelper.OversToBallsBowled(bowlingFigures.Overs.Value) : (int?)null;
+            }
+            record.Overs = bowlingFigures?.Overs;
+            record.Maidens = bowlingFigures?.Maidens;
+            record.RunsConceded = bowlingFigures?.RunsConceded;
+            record.HasRunsConceded = bowlingFigures?.RunsConceded != null;
+            record.Wickets = bowlingFigures?.Wickets;
+            record.WicketsWithBowling = (bowlingFigures != null && oversBowled.Any()) ? bowlingFigures.Wickets : (int?)null;
+
+            record.WonMatch = DidThePlayerWinTheMatch(fielder, match);
+            record.PlayerOfTheMatch = match.Awards.Any(x => x.Award.AwardName.ToUpperInvariant() == StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD && x.PlayerIdentity.PlayerIdentityId == fielder.PlayerIdentityId);
+            return record;
         }
 
         private static List<PlayerInMatchStatisticsRecord> CreateInningsRecordsForBatter(Match match, TeamInMatch homeTeam, TeamInMatch awayTeam, MatchInnings innings, bool homeTeamIsBatting, PlayerIdentity batter)

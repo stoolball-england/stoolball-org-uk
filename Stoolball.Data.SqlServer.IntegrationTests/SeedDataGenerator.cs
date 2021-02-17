@@ -14,6 +14,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 {
     public class SeedDataGenerator
     {
+        private readonly OversHelper _oversHelper = new OversHelper();
+
         public Club CreateClubWithMinimalDetails()
         {
             return new Club
@@ -628,7 +630,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         };
         }
 
-        private static List<Over> CreateOversBowled(PlayerIdentity[] bowlingTeam, IEnumerable<OverSet> overSets)
+        private List<Over> CreateOversBowled(PlayerIdentity[] bowlingTeam, IEnumerable<OverSet> overSets)
         {
             var oversBowled = new List<Over>();
             for (var i = 0; i < 15; i++)
@@ -636,7 +638,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 oversBowled.Add(new Over
                 {
                     OverId = Guid.NewGuid(),
-                    OverSet = OverSet.ForOver(overSets, i + 1),
+                    OverSet = _oversHelper.OverSetForOver(overSets, i + 1),
                     OverNumber = i + 1,
                     PlayerIdentity = (i % 2 == 0) ? bowlingTeam[5] : bowlingTeam[3],
                     BallsBowled = 8,

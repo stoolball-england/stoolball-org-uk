@@ -17,6 +17,8 @@ namespace Stoolball.UnitTests.Statistics
         public List<PlayerIdentity> HomePlayers { get; } = new List<PlayerIdentity>();
         public List<PlayerIdentity> AwayPlayers { get; } = new List<PlayerIdentity>();
 
+        private readonly OversHelper _oversHelper = new OversHelper();
+
         public MatchFixture()
         {
             var homeTeam = new TeamInMatch
@@ -205,6 +207,9 @@ namespace Stoolball.UnitTests.Statistics
             {
                 innings.BowlingFigures = bowlingFigures.CalculateBowlingFigures(innings);
             }
+
+            // The last innings will be missing its overs bowled, to simulate bowling figures entered by the user instead of calculated from overs
+            Match.MatchInnings[3].OversBowled.Clear();
         }
 
         private static List<OverSet> CreateOverSets()
@@ -366,7 +371,7 @@ namespace Stoolball.UnitTests.Statistics
                         };
         }
 
-        private static List<Over> CreateOversBowled(List<PlayerIdentity> bowlingTeam, IEnumerable<OverSet> overSets)
+        private List<Over> CreateOversBowled(List<PlayerIdentity> bowlingTeam, IEnumerable<OverSet> overSets)
         {
             var oversBowled = new List<Over>();
             for (var i = 0; i < 15; i++)
@@ -374,7 +379,7 @@ namespace Stoolball.UnitTests.Statistics
                 oversBowled.Add(new Over
                 {
                     OverId = Guid.NewGuid(),
-                    OverSet = OverSet.ForOver(overSets, i + 1),
+                    OverSet = _oversHelper.OverSetForOver(overSets, i + 1),
                     OverNumber = i + 1,
                     PlayerIdentity = (i % 2 == 0) ? bowlingTeam[5] : bowlingTeam[3],
                     BallsBowled = 8,

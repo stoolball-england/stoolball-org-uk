@@ -38,11 +38,12 @@ namespace Stoolball.Data.SqlServer
         private readonly IPlayerRepository _playerRepository;
         private readonly IDataRedactor _dataRedactor;
         private readonly IStatisticsRepository _statisticsRepository;
+        private readonly IOversHelper _oversHelper;
 
         public SqlServerMatchRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
             IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser, IMatchNameBuilder matchNameBuilder, IPlayerTypeSelector playerTypeSelector,
             IBowlingScorecardComparer bowlingScorecardComparer, IBattingScorecardComparer battingScorecardComparer, IPlayerRepository playerRepository, IDataRedactor dataRedactor,
-            IStatisticsRepository statisticsRepository)
+            IStatisticsRepository statisticsRepository, IOversHelper oversHelper)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
@@ -57,6 +58,7 @@ namespace Stoolball.Data.SqlServer
             _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
             _dataRedactor = dataRedactor ?? throw new ArgumentNullException(nameof(dataRedactor));
             _statisticsRepository = statisticsRepository ?? throw new ArgumentNullException(nameof(statisticsRepository));
+            _oversHelper = oversHelper ?? throw new ArgumentNullException(nameof(oversHelper));
             _htmlSanitiser.AllowedTags.Clear();
             _htmlSanitiser.AllowedTags.Add("p");
             _htmlSanitiser.AllowedTags.Add("h2");
@@ -1007,7 +1009,7 @@ namespace Stoolball.Data.SqlServer
                                 over.OverNumber,
                                 auditableInnings.MatchInningsId,
                                 over.PlayerIdentity.PlayerIdentityId,
-                                OverSet.ForOver(auditableInnings.OverSets, over.OverNumber)?.OverSetId,
+                                _oversHelper.OverSetForOver(auditableInnings.OverSets, over.OverNumber)?.OverSetId,
                                 over.BallsBowled,
                                 over.NoBalls,
                                 over.Wides,
@@ -1032,7 +1034,7 @@ namespace Stoolball.Data.SqlServer
                             new
                             {
                                 after.PlayerIdentity.PlayerIdentityId,
-                                OverSet.ForOver(auditableInnings.OverSets, after.OverNumber)?.OverSetId,
+                                _oversHelper.OverSetForOver(auditableInnings.OverSets, after.OverNumber)?.OverSetId,
                                 after.BallsBowled,
                                 after.NoBalls,
                                 after.Wides,
@@ -1047,7 +1049,7 @@ namespace Stoolball.Data.SqlServer
                     // What about unchanged overs? They may have an OverSetId but we've just recreated the OverSets, so it needs to be updated
                     foreach (var over in comparison.OversUnchanged)
                     {
-                        await connection.ExecuteAsync($"UPDATE {Tables.Over} SET OverSetId = @OverSetId WHERE OverId = @OverId", new { OverSet.ForOver(auditableInnings.OverSets, over.OverNumber)?.OverSetId, over.OverId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"UPDATE {Tables.Over} SET OverSetId = @OverSetId WHERE OverId = @OverId", new { _oversHelper.OverSetForOver(auditableInnings.OverSets, over.OverNumber)?.OverSetId, over.OverId }, transaction).ConfigureAwait(false);
                     }
 
                     // Now the previous over sets can be removed, because the references from Tables.Over should be gone

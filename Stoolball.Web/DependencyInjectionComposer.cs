@@ -65,6 +65,7 @@ namespace Stoolball.Web
             composition.Register<IOverSetScaffolder, OverSetScaffolder>();
             composition.Register<IPlayerInMatchStatisticsBuilder, PlayerInMatchStatisticsBuilder>();
             composition.Register<IPlayerIdentityFinder, PlayerIdentityFinder>();
+            composition.Register<IOversHelper, OversHelper>();
 
             // Data migration from the old Stoolball England website
             composition.Register<IAuditHistoryBuilder, AuditHistoryBuilder>();

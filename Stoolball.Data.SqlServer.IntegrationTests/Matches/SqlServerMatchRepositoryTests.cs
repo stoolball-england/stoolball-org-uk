@@ -50,7 +50,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 Mock.Of<IBattingScorecardComparer>(),
                 Mock.Of<IPlayerRepository>(),
                 Mock.Of<IDataRedactor>(),
-                Mock.Of<IStatisticsRepository>());
+                Mock.Of<IStatisticsRepository>(),
+                Mock.Of<IOversHelper>());
 
             await repo.DeleteMatch(_databaseFixture.MatchWithFullDetailsForDelete, memberKey, memberName).ConfigureAwait(false);
 

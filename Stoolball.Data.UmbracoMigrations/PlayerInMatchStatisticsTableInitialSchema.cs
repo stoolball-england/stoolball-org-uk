@@ -137,18 +137,13 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? BallsBowled { get; set; }
 
-        [Column(nameof(OversBowled))]
+        [Column(nameof(Overs))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public decimal? OversBowled { get; set; }
+        public decimal? Overs { get; set; }
 
-        [Column(nameof(OversBowledDecimal))]
-        [Index(IndexTypes.NonClustered)]
+        [Column(nameof(Maidens))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public decimal? OversBowledDecimal { get; set; }
-
-        [Column(nameof(MaidensBowled))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public int? MaidensBowled { get; set; }
+        public int? Maidens { get; set; }
 
         [Column(nameof(RunsConceded))]
         [Index(IndexTypes.NonClustered)]
