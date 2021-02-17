@@ -205,17 +205,6 @@ namespace Stoolball.UnitTests.Statistics
             {
                 innings.BowlingFigures = bowlingFigures.CalculateBowlingFigures(innings);
             }
-
-            // In the first innings, the first batter had a second go
-            Match.MatchInnings[0].PlayerInnings.Add(new PlayerInnings
-            {
-                PlayerInningsId = Guid.NewGuid(),
-                BattingPosition = 12,
-                PlayerIdentity = Match.MatchInnings[0].PlayerInnings[0].PlayerIdentity,
-                DismissalType = DismissalType.Retired,
-                RunsScored = 10,
-                BallsFaced = 6
-            });
         }
 
         private static List<OverSet> CreateOverSets()
@@ -299,7 +288,7 @@ namespace Stoolball.UnitTests.Statistics
                                 BattingPosition = 2,
                                 PlayerIdentity = battingTeam[1],
                                 DismissalType = DismissalType.Caught,
-                                DismissedBy = bowlingTeam[9],
+                                DismissedBy = bowlingTeam[4], // [4] is not on the batting card, but appears as a fielder
                                 Bowler = bowlingTeam[7], // Not on bowling card
                                 RunsScored = 20,
                                 BallsFaced = 15
@@ -309,8 +298,9 @@ namespace Stoolball.UnitTests.Statistics
                                 PlayerInningsId = Guid.NewGuid(),
                                 BattingPosition = 3,
                                 PlayerIdentity = battingTeam[2],
-                                DismissalType = DismissalType.NotOut,
-                                RunsScored = 120,
+                                DismissalType = DismissalType.RunOut,
+                                DismissedBy = bowlingTeam[8],
+                                RunsScored = null,
                                 BallsFaced = 150
                             },
                             new PlayerInnings
@@ -318,23 +308,25 @@ namespace Stoolball.UnitTests.Statistics
                                 PlayerInningsId = Guid.NewGuid(),
                                 BattingPosition = 4,
                                 PlayerIdentity = battingTeam[3],
-                                DismissalType = DismissalType.NotOut,
+                                DismissalType = DismissalType.RunOut, // But fielder not recorded
                                 RunsScored = 42,
-                                BallsFaced = 35
+                                BallsFaced = null
                             },
                             new PlayerInnings
                             {
                                 PlayerInningsId = Guid.NewGuid(),
                                 BattingPosition = 5,
-                                PlayerIdentity = battingTeam[4],
-                                DismissalType = DismissalType.DidNotBat
+                                PlayerIdentity = battingTeam[0], // the first batter had two turns; Player [4] is not on the batting card but appears as a fielder
+                                DismissalType = DismissalType.Retired,
+                                RunsScored = 10
                             },
                             new PlayerInnings
                             {
                                 PlayerInningsId = Guid.NewGuid(),
                                 BattingPosition = 6,
                                 PlayerIdentity = battingTeam[5],
-                                DismissalType = DismissalType.DidNotBat
+                                DismissalType = DismissalType.CaughtAndBowled, // should be credited to bowler, not fielder
+                                Bowler = bowlingTeam[3]
                             },
                             new PlayerInnings
                             {

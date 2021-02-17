@@ -81,27 +81,27 @@ namespace Stoolball.Statistics
 
         public int? BattingPosition { get; set; }
 
-        public DismissalType DismissalType { get; set; }
+        public DismissalType? DismissalType { get; set; }
 
         public bool? PlayerWasDismissed { get; set; }
 
         public Guid? BowledByPlayerIdentityId { get; set; }
 
-        public string BowledByName { get; set; }
+        public string BowledByPlayerIdentityName { get; set; }
 
-        public string BowledByRoute { get; set; }
+        public string BowledByPlayerRoute { get; set; }
 
         public Guid? CaughtByPlayerIdentityId { get; set; }
 
-        public string CaughtByName { get; set; }
+        public string CaughtByPlayerIdentityName { get; set; }
 
-        public string CaughtByRoute { get; set; }
+        public string CaughtByPlayerRoute { get; set; }
 
         public Guid? RunOutByPlayerIdentityId { get; set; }
 
-        public string RunOutByName { get; set; }
+        public string RunOutByPlayerIdentityName { get; set; }
 
-        public string RunOutByRoute { get; set; }
+        public string RunOutByPlayerRoute { get; set; }
 
         public int? RunsScored { get; set; }
 

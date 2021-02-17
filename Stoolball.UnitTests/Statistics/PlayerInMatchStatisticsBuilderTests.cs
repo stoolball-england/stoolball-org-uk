@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Moq;
 using Stoolball.Matches;
@@ -95,7 +96,6 @@ namespace Stoolball.UnitTests.Statistics
                 }
             }
         }
-
 
         [Fact]
         public void Each_batter_should_have_one_record_per_innings_with_innings_data()
@@ -336,9 +336,6 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Only_players_who_bat_again_in_an_innings_should_have_multiple_records_for_an_innings()
         {
-            var playerWhoBattedTwiceInAnInnings = _match.MatchInnings[0].PlayerInnings[0].PlayerIdentity;
-            var inningsWhereTheyBattedTwice = _match.MatchInnings[0].MatchInningsId;
-
             var finder = new Mock<IPlayerIdentityFinder>();
             finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
             var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
@@ -347,7 +344,8 @@ namespace Stoolball.UnitTests.Statistics
             {
                 foreach (var innings in _match.MatchInnings)
                 {
-                    if (identity.PlayerIdentityId == playerWhoBattedTwiceInAnInnings.PlayerIdentityId && innings.MatchInningsId == inningsWhereTheyBattedTwice)
+                    // In the test data, the first batter bats twice in each innings
+                    if (identity.PlayerIdentityId == innings.PlayerInnings[0].PlayerIdentity.PlayerIdentityId)
                     {
                         Assert.Equal(2, result.Count(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId));
                         Assert.NotNull(result.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId && x.PlayerInningsInMatchInnings == 1));
@@ -361,38 +359,208 @@ namespace Stoolball.UnitTests.Statistics
             }
         }
 
-        // TODO:
+        [Fact]
+        public void Each_batter_in_batting_innings_should_have_position_dismissal_and_score()
+        {
+            var batters = _match.MatchInnings.SelectMany(i => i.PlayerInnings.Select(pi => pi.PlayerIdentity));
 
-        // Other edge cases?
+            var finder = new Mock<IPlayerIdentityFinder>();
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
 
-        // Write tests for other fields not covered
+            foreach (var batter in batters)
+            {
+                foreach (var innings in _match.MatchInnings.Where(x => x.BattingTeam.Team.TeamId == batter.Team.TeamId))
+                {
+                    var expected = innings.PlayerInnings.Where(x => x.PlayerIdentity.PlayerIdentityId == batter.PlayerIdentityId).ToList();
+                    var playerRecords = result.Where(x => x.PlayerIdentityId == batter.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId);
 
-        // playerRecord.OverNumberOfFirstOverBowled
-        // playerRecord.BallsBowled
-        // playerRecord.OversBowled
-        // playerRecord.OversBowledDecimal
-        // playerRecord.MaidensBowled
-        // playerRecord.RunsConceded
-        // playerRecord.HasRunsConceded
-        // playerRecord.Wickets
-        // playerRecord.WicketsWithBowling
-        // playerRecord.BattingPosition
-        // playerRecord.DismissalType
-        // playerRecord.PlayerWasDismissed
-        // playerRecord.BowledByPlayerIdentityId
-        // playerRecord.BowledByName
-        // playerRecord.BowledByRoute
-        // playerRecord.CaughtByPlayerIdentityId
-        // playerRecord.CaughtByName
-        // playerRecord.CaughtByRoute
-        // playerRecord.RunOutByPlayerIdentityId
-        // playerRecord.RunOutByName
-        // playerRecord.RunOutByRoute
-        // playerRecord.RunsScored
-        // playerRecord.BallsFaced
-        // playerRecord.Catches
-        // playerRecord.RunOuts
-        // playerRecord.WonMatch
-        // playerRecord.PlayerOfTheMatch
+                    Assert.Equal(expected.Count, playerRecords.Count());
+                    for (var i = 0; i < expected.Count; i++)
+                    {
+                        var playerRecord = playerRecords.SingleOrDefault(x => x.BattingPosition == expected[i].BattingPosition);
+                        Assert.NotNull(playerRecord);
+
+                        Assert.Equal(expected[i].DismissalType, playerRecord.DismissalType);
+                        Assert.Equal(StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(expected[i].DismissalType), playerRecord.PlayerWasDismissed);
+                        Assert.Equal(expected[i].RunsScored, playerRecord.RunsScored);
+                        Assert.Equal(expected[i].BallsFaced, playerRecord.BallsFaced);
+                    }
+                }
+            }
+        }
+
+        [Fact]
+        public void Batting_team_members_with_no_player_innings_did_not_bat_and_should_have_null_position_and_score()
+        {
+            var batters = _match.MatchInnings.SelectMany(i => i.PlayerInnings.Select(pi => pi.PlayerIdentity.PlayerIdentityId.Value)).ToList();
+            var missingBatters = _playerIdentities.Where(x => !batters.Contains(x.PlayerIdentityId.Value));
+
+            var finder = new Mock<IPlayerIdentityFinder>();
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+
+            foreach (var batter in missingBatters)
+            {
+                foreach (var innings in _match.MatchInnings.Where(x => x.BattingTeam.Team.TeamId == batter.Team.TeamId))
+                {
+                    var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == batter.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId);
+                    Assert.NotNull(playerRecord);
+
+                    Assert.Null(playerRecord.BattingPosition);
+                    Assert.Equal(DismissalType.DidNotBat, playerRecord.DismissalType);
+                    Assert.False(playerRecord.PlayerWasDismissed);
+                    Assert.Null(playerRecord.RunsScored);
+                    Assert.Null(playerRecord.BallsFaced);
+                }
+            }
+        }
+
+        [Fact]
+        public void Each_dismissal_credited_to_a_bowler_should_have_bowler_details()
+        {
+            var finder = new Mock<IPlayerIdentityFinder>();
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+
+            foreach (var innings in _match.MatchInnings)
+            {
+                var playerInningsCountForPlayers = new Dictionary<Guid, int>();
+                foreach (var playerInnings in innings.PlayerInnings)
+                {
+                    if (!playerInningsCountForPlayers.ContainsKey(playerInnings.PlayerIdentity.PlayerIdentityId.Value))
+                    {
+                        playerInningsCountForPlayers.Add(playerInnings.PlayerIdentity.PlayerIdentityId.Value, 1);
+                    }
+                    else
+                    {
+                        playerInningsCountForPlayers[playerInnings.PlayerIdentity.PlayerIdentityId.Value]++;
+                    }
+
+                    var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == playerInnings.PlayerIdentity.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId && x.PlayerInningsInMatchInnings == playerInningsCountForPlayers[playerInnings.PlayerIdentity.PlayerIdentityId.Value]);
+                    Assert.NotNull(playerRecord);
+
+                    if (StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Contains(playerInnings.DismissalType) && playerInnings.Bowler != null)
+                    {
+                        Assert.Equal(playerInnings.Bowler.PlayerIdentityId, playerRecord.BowledByPlayerIdentityId);
+                        Assert.Equal(playerInnings.Bowler.PlayerIdentityName, playerRecord.BowledByPlayerIdentityName);
+                        Assert.Equal(playerInnings.Bowler.Player.PlayerRoute, playerRecord.BowledByPlayerRoute);
+                    }
+                    else
+                    {
+                        Assert.Null(playerRecord.BowledByPlayerIdentityId);
+                        Assert.Null(playerRecord.BowledByPlayerIdentityName);
+                        Assert.Null(playerRecord.BowledByPlayerRoute);
+                    }
+                }
+            }
+        }
+
+        [Fact]
+        public void Each_caught_dismissal_should_have_catcher_details()
+        {
+            var finder = new Mock<IPlayerIdentityFinder>();
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+
+            foreach (var innings in _match.MatchInnings)
+            {
+                var playerInningsCountForPlayers = new Dictionary<Guid, int>();
+                foreach (var playerInnings in innings.PlayerInnings)
+                {
+                    if (!playerInningsCountForPlayers.ContainsKey(playerInnings.PlayerIdentity.PlayerIdentityId.Value))
+                    {
+                        playerInningsCountForPlayers.Add(playerInnings.PlayerIdentity.PlayerIdentityId.Value, 1);
+                    }
+                    else
+                    {
+                        playerInningsCountForPlayers[playerInnings.PlayerIdentity.PlayerIdentityId.Value]++;
+                    }
+
+                    var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == playerInnings.PlayerIdentity.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId && x.PlayerInningsInMatchInnings == playerInningsCountForPlayers[playerInnings.PlayerIdentity.PlayerIdentityId.Value]);
+                    Assert.NotNull(playerRecord);
+
+                    if (playerInnings.DismissalType == DismissalType.Caught && playerInnings.DismissedBy != null)
+                    {
+                        Assert.Equal(playerInnings.DismissedBy.PlayerIdentityId, playerRecord.CaughtByPlayerIdentityId);
+                        Assert.Equal(playerInnings.DismissedBy.PlayerIdentityName, playerRecord.CaughtByPlayerIdentityName);
+                        Assert.Equal(playerInnings.DismissedBy.Player.PlayerRoute, playerRecord.CaughtByPlayerRoute);
+                    }
+                    else if (playerInnings.DismissalType == DismissalType.CaughtAndBowled && playerInnings.Bowler != null)
+                    {
+                        Assert.Equal(playerInnings.Bowler.PlayerIdentityId, playerRecord.CaughtByPlayerIdentityId);
+                        Assert.Equal(playerInnings.Bowler.PlayerIdentityName, playerRecord.CaughtByPlayerIdentityName);
+                        Assert.Equal(playerInnings.Bowler.Player.PlayerRoute, playerRecord.CaughtByPlayerRoute);
+                    }
+                    else
+                    {
+                        Assert.Null(playerRecord.CaughtByPlayerIdentityId);
+                        Assert.Null(playerRecord.CaughtByPlayerIdentityName);
+                        Assert.Null(playerRecord.CaughtByPlayerRoute);
+                    }
+                }
+            }
+        }
+
+        [Fact]
+        public void Each_run_out_dismissal_should_have_fielder_details()
+        {
+            var finder = new Mock<IPlayerIdentityFinder>();
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_match)).Returns(_playerIdentities);
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object).BuildStatisticsForMatch(_match);
+
+            foreach (var innings in _match.MatchInnings)
+            {
+                var playerInningsCountForPlayers = new Dictionary<Guid, int>();
+                foreach (var playerInnings in innings.PlayerInnings)
+                {
+                    if (!playerInningsCountForPlayers.ContainsKey(playerInnings.PlayerIdentity.PlayerIdentityId.Value))
+                    {
+                        playerInningsCountForPlayers.Add(playerInnings.PlayerIdentity.PlayerIdentityId.Value, 1);
+                    }
+                    else
+                    {
+                        playerInningsCountForPlayers[playerInnings.PlayerIdentity.PlayerIdentityId.Value]++;
+                    }
+
+                    var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == playerInnings.PlayerIdentity.PlayerIdentityId && x.MatchInningsId == innings.MatchInningsId && x.PlayerInningsInMatchInnings == playerInningsCountForPlayers[playerInnings.PlayerIdentity.PlayerIdentityId.Value]);
+                    Assert.NotNull(playerRecord);
+
+                    if (playerInnings.DismissalType == DismissalType.RunOut && playerInnings.DismissedBy != null)
+                    {
+                        Assert.Equal(playerInnings.DismissedBy.PlayerIdentityId, playerRecord.RunOutByPlayerIdentityId);
+                        Assert.Equal(playerInnings.DismissedBy.PlayerIdentityName, playerRecord.RunOutByPlayerIdentityName);
+                        Assert.Equal(playerInnings.DismissedBy.Player.PlayerRoute, playerRecord.RunOutByPlayerRoute);
+                    }
+                    else
+                    {
+                        Assert.Null(playerRecord.RunOutByPlayerIdentityId);
+                        Assert.Null(playerRecord.RunOutByPlayerIdentityName);
+                        Assert.Null(playerRecord.RunOutByPlayerRoute);
+                    }
+                }
+            }
+        }
     }
+
+
+    // TODO:
+
+    // Other edge cases?
+
+    // Write tests for other fields not covered
+
+    // playerRecord.OverNumberOfFirstOverBowled
+    // playerRecord.BallsBowled
+    // playerRecord.OversBowled
+    // playerRecord.OversBowledDecimal
+    // playerRecord.MaidensBowled
+    // playerRecord.RunsConceded
+    // playerRecord.HasRunsConceded
+    // playerRecord.Wickets
+    // playerRecord.WicketsWithBowling
+    // playerRecord.Catches
+    // playerRecord.RunOuts
+    // playerRecord.WonMatch
+    // playerRecord.PlayerOfTheMatch
 }

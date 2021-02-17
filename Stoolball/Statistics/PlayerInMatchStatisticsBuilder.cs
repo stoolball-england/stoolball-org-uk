@@ -64,18 +64,7 @@ namespace Stoolball.Statistics
 
                 foreach (var batter in batters)
                 {
-                    // Add a record every batting team member in this innings regardless of whether they are recorded as batting
-                    var record = CreateRecordForPlayerInInnings(match, innings, batter, homeTeamIsBatting ? homeTeam : awayTeam, homeTeamIsBatting ? awayTeam : homeTeam);
-                    record.PlayerInningsInMatchInnings = 1;
-                    records.Add(record);
-
-                    // Add extra records for any players who batted multiple times in the same innings
-                    var playerInningsForThisPlayer = innings.PlayerInnings.Where(x => x.PlayerIdentity.PlayerIdentityId == batter.PlayerIdentityId).OrderBy(x => x.BattingPosition);
-                    for (var i = 1; i < playerInningsForThisPlayer.Count(); i++)
-                    {
-                        records.Add(CreateRecordForPlayerInInnings(match, innings, batter, homeTeamIsBatting ? homeTeam : awayTeam, homeTeamIsBatting ? awayTeam : homeTeam));
-                        records[records.Count - 1].PlayerInningsInMatchInnings = i + 1;
-                    }
+                    records.AddRange(CreateInningsRecordsForBatter(match, homeTeam, awayTeam, innings, homeTeamIsBatting, batter));
                 }
 
                 foreach (var fielder in fielders)
@@ -88,6 +77,70 @@ namespace Stoolball.Statistics
             }
 
             return records;
+        }
+
+        private static List<PlayerInMatchStatisticsRecord> CreateInningsRecordsForBatter(Match match, TeamInMatch homeTeam, TeamInMatch awayTeam, MatchInnings innings, bool homeTeamIsBatting, PlayerIdentity batter)
+        {
+            var records = new List<PlayerInMatchStatisticsRecord>();
+
+            var allPlayerInningsForThisPlayer = innings.PlayerInnings.Where(x => x.PlayerIdentity.PlayerIdentityId == batter.PlayerIdentityId).OrderBy(x => x.BattingPosition).ToList();
+            var firstPlayerInningsForThisPlayer = allPlayerInningsForThisPlayer.FirstOrDefault();
+
+            // Add a record every batting team member in this innings regardless of whether they are recorded as batting
+            var record = CreateRecordForPlayerInInnings(match, innings, batter, homeTeamIsBatting ? homeTeam : awayTeam, homeTeamIsBatting ? awayTeam : homeTeam);
+            record.PlayerInningsInMatchInnings = 1;
+            AddPlayerInningsDataToRecord(firstPlayerInningsForThisPlayer, record);
+            // There may be player innings with DismissalType = null, but that means they *were* dismissed, so for players who are missing from the batting card assume DidNotBat rather than null
+            record.DismissalType = firstPlayerInningsForThisPlayer != null ? firstPlayerInningsForThisPlayer.DismissalType : DismissalType.DidNotBat;
+            record.PlayerWasDismissed = firstPlayerInningsForThisPlayer != null ? StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(firstPlayerInningsForThisPlayer.DismissalType) : false;
+            records.Add(record);
+
+            // Add extra records for any players who batted multiple times in the same innings
+            for (var i = 1; i < allPlayerInningsForThisPlayer.Count; i++)
+            {
+                records.Add(CreateRecordForPlayerInInnings(match, innings, batter, homeTeamIsBatting ? homeTeam : awayTeam, homeTeamIsBatting ? awayTeam : homeTeam));
+                records[records.Count - 1].PlayerInningsInMatchInnings = i + 1;
+                AddPlayerInningsDataToRecord(allPlayerInningsForThisPlayer[i], records[records.Count - 1]);
+                records[records.Count - 1].DismissalType = allPlayerInningsForThisPlayer[i].DismissalType;
+                records[records.Count - 1].PlayerWasDismissed = StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(allPlayerInningsForThisPlayer[i].DismissalType);
+            }
+
+            return records;
+        }
+
+        private static void AddPlayerInningsDataToRecord(PlayerInnings playerInnings, PlayerInMatchStatisticsRecord record)
+        {
+            record.BattingPosition = playerInnings?.BattingPosition;
+            record.RunsScored = playerInnings?.RunsScored;
+            record.BallsFaced = playerInnings?.BallsFaced;
+
+            if (playerInnings != null && StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Contains(playerInnings.DismissalType))
+            {
+                record.BowledByPlayerIdentityId = playerInnings.Bowler?.PlayerIdentityId;
+                record.BowledByPlayerIdentityName = playerInnings.Bowler?.PlayerIdentityName;
+                record.BowledByPlayerRoute = playerInnings.Bowler?.Player?.PlayerRoute;
+            }
+
+            if (playerInnings != null && playerInnings.DismissalType == DismissalType.Caught)
+            {
+                record.CaughtByPlayerIdentityId = playerInnings.DismissedBy?.PlayerIdentityId;
+                record.CaughtByPlayerIdentityName = playerInnings.DismissedBy?.PlayerIdentityName;
+                record.CaughtByPlayerRoute = playerInnings.DismissedBy?.Player?.PlayerRoute;
+            }
+
+            if (playerInnings != null && playerInnings.DismissalType == DismissalType.CaughtAndBowled)
+            {
+                record.CaughtByPlayerIdentityId = playerInnings.Bowler?.PlayerIdentityId;
+                record.CaughtByPlayerIdentityName = playerInnings.Bowler?.PlayerIdentityName;
+                record.CaughtByPlayerRoute = playerInnings.Bowler?.Player?.PlayerRoute;
+            }
+
+            if (playerInnings != null && playerInnings.DismissalType == DismissalType.RunOut)
+            {
+                record.RunOutByPlayerIdentityId = playerInnings.DismissedBy?.PlayerIdentityId;
+                record.RunOutByPlayerIdentityName = playerInnings.DismissedBy?.PlayerIdentityName;
+                record.RunOutByPlayerRoute = playerInnings.DismissedBy?.Player?.PlayerRoute;
+            }
         }
 
         private static PlayerInMatchStatisticsRecord CreateRecordForPlayerInInnings(Match match, MatchInnings innings, PlayerIdentity identity, TeamInMatch team, TeamInMatch opposition)

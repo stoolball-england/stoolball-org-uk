@@ -194,13 +194,13 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public Guid? BowledByPlayerIdentityId { get; set; }
 
-        [Column(nameof(BowledByName))]
+        [Column(nameof(BowledByPlayerIdentityName))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public string BowledByName { get; set; }
+        public string BowledByPlayerIdentityName { get; set; }
 
-        [Column(nameof(BowledByRoute))]
+        [Column(nameof(BowledByPlayerRoute))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public string BowledByRoute { get; set; }
+        public string BowledByPlayerRoute { get; set; }
 
         [Column(nameof(CaughtByPlayerIdentityId))]
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId), Name = "FK_StoolballStatisticsPlayerMatch_StoolballPlayerIdentity_CaughtById")]
@@ -208,13 +208,13 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public Guid? CaughtByPlayerIdentityId { get; set; }
 
-        [Column(nameof(CaughtByName))]
+        [Column(nameof(CaughtByPlayerIdentityName))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public string CaughtByName { get; set; }
+        public string CaughtByPlayerIdentityName { get; set; }
 
-        [Column(nameof(CaughtByRoute))]
+        [Column(nameof(CaughtByPlayerRoute))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public string CaughtByRoute { get; set; }
+        public string CaughtByPlayerRoute { get; set; }
 
         [Column(nameof(RunOutByPlayerIdentityId))]
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId), Name = "FK_StoolballStatisticsPlayerMatch_StoolballPlayerIdentity_RunOutById")]
@@ -222,13 +222,13 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public Guid? RunOutByPlayerIdentityId { get; set; }
 
-        [Column(nameof(RunOutByName))]
+        [Column(nameof(RunOutByPlayerIdentityName))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public string RunOutByName { get; set; }
+        public string RunOutByPlayerIdentityName { get; set; }
 
-        [Column(nameof(RunOutByRoute))]
+        [Column(nameof(RunOutByPlayerRoute))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public string RunOutByRoute { get; set; }
+        public string RunOutByPlayerRoute { get; set; }
 
         [Column(nameof(RunsScored))]
         [Index(IndexTypes.NonClustered)]

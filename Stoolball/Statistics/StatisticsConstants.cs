@@ -10,6 +10,9 @@ namespace Stoolball.Statistics
         public const int BALLS_PER_OVER = 8;
 
         [SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "It's a constant value that C# can't represent as a constant")]
-        public static IEnumerable<DismissalType> DISMISSALS_CREDITED_TO_BOWLER = new[] { DismissalType.Caught, DismissalType.CaughtAndBowled, DismissalType.Bowled, DismissalType.BodyBeforeWicket, DismissalType.HitTheBallTwice };
+        public static List<DismissalType?> DISMISSALS_CREDITED_TO_BOWLER = new List<DismissalType?> { DismissalType.Caught, DismissalType.CaughtAndBowled, DismissalType.Bowled, DismissalType.BodyBeforeWicket, DismissalType.HitTheBallTwice };
+
+        [SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "It's a constant value that C# can't represent as a constant")]
+        public static List<DismissalType?> DISMISSALS_THAT_ARE_OUT = new List<DismissalType?> { DismissalType.Caught, DismissalType.CaughtAndBowled, DismissalType.Bowled, DismissalType.BodyBeforeWicket, DismissalType.HitTheBallTwice, DismissalType.RunOut, DismissalType.TimedOut, null };
     }
 }
