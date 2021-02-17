@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Humanizer;
 using Stoolball.Teams;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -49,7 +51,8 @@ namespace Stoolball.Web.Statistics
             }
             else
             {
-                model.Metadata.PageTitle = model.Player.PlayerName;
+                var teams = model.Player.PlayerIdentities.Select(x => x.Team.TeamName).Distinct().ToList();
+                model.Metadata.PageTitle = $"{model.Player.PlayerName}, a player for {teams.Humanize()} stoolball {(teams.Count > 1 ? "teams" : "team")}";
                 //model.Metadata.Description = model.Player.Description();
 
                 return CurrentTemplate(model);
