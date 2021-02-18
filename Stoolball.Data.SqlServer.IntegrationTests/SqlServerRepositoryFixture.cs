@@ -49,6 +49,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 }
 
                 MatchWithFullDetailsForDelete = seedDataGenerator.CreateMatchInThePastWithFullDetails();
+                repo.CreateMatchLocation(MatchWithFullDetailsForDelete.MatchLocation);
                 repo.CreateMatch(MatchWithFullDetailsForDelete);
 
                 TournamentWithFullDetailsForDelete = seedDataGenerator.CreateTournamentInThePastWithFullDetails();

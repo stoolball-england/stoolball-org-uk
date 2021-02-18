@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Stoolball.Matches;
 using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
@@ -14,266 +17,525 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
 
+        private static DateTime DateTimeOffsetAccurateToTheMinute(DateTimeOffset dateTime)
+        {
+            return dateTime.Date.AddHours(dateTime.Hour).AddMinutes(dateTime.Minute);
+        }
+
         [Fact]
         public async Task Read_total_matches_supports_no_filter()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await matchDataSource.ReadTotalMatches(null).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchListings.Count, result);
         }
 
         [Fact]
         public async Task Read_total_matches_supports_only_matches_filter()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await matchDataSource.ReadTotalMatches(new MatchQuery { IncludeMatches = true, IncludeTournaments = false }).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchListings.Count(x => x.MatchRoute.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase)), result);
         }
 
         [Fact]
         public async Task Read_total_matches_supports_only_tournaments_filter()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await matchDataSource.ReadTotalMatches(new MatchQuery { IncludeMatches = false, IncludeTournaments = true }).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchListings.Count(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase)), result);
         }
 
         [Fact]
         public async Task Read_total_matches_supports_filter_by_match_type()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await matchDataSource.ReadTotalMatches(new MatchQuery { MatchTypes = new List<MatchType> { MatchType.LeagueMatch } }).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchListings.Count(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase) || x.MatchType == MatchType.LeagueMatch), result);
         }
 
         [Fact]
-        public async Task Read_total_matches_supports_filtering_matches_by_team()
+        public async Task Read_total_matches_supports_filter_matches_by_team()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await matchDataSource.ReadTotalMatches(new MatchQuery { TeamIds = new List<Guid> { _databaseFixture.MatchInThePastWithFullDetails.Teams.First().Team.TeamId.Value } }).ConfigureAwait(false);
+
+            Assert.Equal(1, result);
         }
 
         [Fact]
-        public async Task Read_total_matches_supports_filtering_matches_by_competition()
+        public async Task Read_total_matches_supports_filter_matches_by_competition()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await matchDataSource.ReadTotalMatches(new MatchQuery { CompetitionIds = new List<Guid> { _databaseFixture.MatchInThePastWithFullDetails.Season.Competition.CompetitionId.Value } }).ConfigureAwait(false);
+
+            Assert.Equal(1, result);
         }
 
         [Fact]
-        public async Task Read_total_matches_supports_filtering_matches_by_season()
+        public async Task Read_total_matches_supports_filter_matches_by_season()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await matchDataSource.ReadTotalMatches(new MatchQuery { SeasonIds = new List<Guid> { _databaseFixture.MatchInThePastWithFullDetails.Season.SeasonId.Value } }).ConfigureAwait(false);
+
+            Assert.Equal(1, result);
         }
 
         [Fact]
-        public async Task Read_total_matches_supports_filtering_matches_by_match_location()
+        public async Task Read_total_matches_supports_filter_matches_by_match_location()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await matchDataSource.ReadTotalMatches(new MatchQuery { MatchLocationIds = new List<Guid> { _databaseFixture.MatchInThePastWithFullDetails.MatchLocation.MatchLocationId.Value } }).ConfigureAwait(false);
+
+            Assert.Equal(1, result);
         }
 
         [Fact]
-        public async Task Read_total_matches_supports_filtering_matches_from_date()
+        public async Task Read_total_matches_supports_filter_from_date()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await matchDataSource.ReadTotalMatches(new MatchQuery { FromDate = DateTimeOffset.UtcNow }).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchListings.Count(x => x.StartTime >= DateTimeOffset.UtcNow), result);
         }
 
         [Fact]
         public async Task Read_total_matches_supports_filter_before_date()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await matchDataSource.ReadTotalMatches(new MatchQuery { UntilDate = DateTimeOffset.UtcNow }).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchListings.Count(x => x.StartTime <= DateTimeOffset.UtcNow), result);
         }
 
         [Fact]
-        public async Task Read_total_matches_supports_filtering_tournament_matches()
+        public async Task Read_total_matches_supports_including_tournament_matches()
         {
-            // Review usage - possibly combine with option in next test?
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await matchDataSource.ReadTotalMatches(new MatchQuery { IncludeTournamentMatches = true }).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchListings.Count + _databaseFixture.TournamentMatchListings.Count, result);
         }
 
         [Fact]
         public async Task Read_total_matches_supports_filter_by_tournament()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await matchDataSource.ReadTotalMatches(new MatchQuery { TournamentId = _databaseFixture.TournamentInThePastWithFullDetails.TournamentId }).ConfigureAwait(false);
+
+            Assert.Equal(1, result);
         }
 
         [Fact]
-        public async Task Read_total_matches_supports_filtering_tournaments_by_team()
+        public async Task Read_total_matches_supports_filter_tournaments_by_team()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await matchDataSource.ReadTotalMatches(new MatchQuery { TeamIds = new List<Guid> { _databaseFixture.TournamentInThePastWithFullDetails.Teams.First().Team.TeamId.Value } }).ConfigureAwait(false);
+
+            Assert.Equal(1, result);
         }
 
         [Fact]
-        public async Task Read_total_matches_supports_filtering_tournaments_by_competition()
+        public async Task Read_total_matches_supports_filter_tournaments_by_competition()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await matchDataSource.ReadTotalMatches(new MatchQuery { CompetitionIds = new List<Guid> { _databaseFixture.TournamentInThePastWithFullDetails.Seasons.First().Competition.CompetitionId.Value } }).ConfigureAwait(false);
+
+            Assert.Equal(1, result);
         }
 
         [Fact]
-        public async Task Read_total_matches_supports_filtering_tournaments_by_season()
+        public async Task Read_total_matches_supports_filter_tournaments_by_season()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await matchDataSource.ReadTotalMatches(new MatchQuery { SeasonIds = new List<Guid> { _databaseFixture.TournamentInThePastWithFullDetails.Seasons.First().SeasonId.Value } }).ConfigureAwait(false);
+
+            Assert.Equal(1, result);
         }
 
         [Fact]
-        public async Task Read_total_matches_supports_filtering_tournaments_by_match_location()
+        public async Task Read_total_matches_supports_filter_tournaments_by_match_location()
         {
-            throw new NotImplementedException();
-        }
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
 
-        [Fact]
-        public async Task Read_total_matches_supports_filtering_tournaments_from_date()
-        {
-            throw new NotImplementedException();
-        }
+            var result = await matchDataSource.ReadTotalMatches(new MatchQuery { MatchLocationIds = new List<Guid> { _databaseFixture.TournamentInThePastWithFullDetails.TournamentLocation.MatchLocationId.Value } }).ConfigureAwait(false);
 
-        [Fact]
-        public async Task Read_total_matches_supports_filtering_tournaments_by_tournamentid()
-        {
-            throw new NotImplementedException();
+            Assert.Equal(1, result);
         }
 
         [Fact]
         public async Task Read_match_listings_returns_match_fields()
         {
-            // m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, m.MatchResultType,
-            // NULL AS TournamentQualificationType, NULL AS SpacesInTournament, m.OrderInTournament
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(null).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchListings.Count, results.Count);
+            foreach (var listing in _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase)))
+            {
+                var result = results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute);
+                Assert.NotNull(result);
+
+                Assert.Equal(listing.MatchName, result.MatchName);
+                Assert.Equal(DateTimeOffsetAccurateToTheMinute(listing.StartTime), DateTimeOffsetAccurateToTheMinute(result.StartTime));
+                Assert.Equal(listing.StartTimeIsKnown, result.StartTimeIsKnown);
+                Assert.Equal(listing.MatchType, result.MatchType);
+                Assert.Equal(listing.PlayerType, result.PlayerType);
+                Assert.Equal(listing.MatchResultType, result.MatchResultType);
+            }
         }
 
         [Fact]
         public async Task Read_match_listings_returns_match_teams()
         {
-            // mt.TeamRole, mt.MatchTeamId, mt.TeamId
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(null).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchListings.Count, results.Count);
+            foreach (var listing in _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase) && x.Teams.Any()))
+            {
+                var result = results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute);
+                Assert.NotNull(result);
+
+                foreach (var team in listing.Teams)
+                {
+                    var resultTeam = result.Teams.SingleOrDefault(x => x.MatchTeamId == team.MatchTeamId);
+                    Assert.NotNull(resultTeam);
+
+                    Assert.Equal(team.TeamRole, resultTeam.TeamRole);
+                    Assert.Equal(team.Team.TeamId, resultTeam.Team.TeamId);
+                }
+            }
         }
 
         [Fact]
-        public async Task Read_match_listings_returns_match_runs_and_wickets()
+        public async Task Read_match_listings_returns_MatchInnings_with_runs_and_wickets_only_if_not_null()
         {
-            // i.Runs, i.Wickets
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(null).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchListings.Count, results.Count);
+            foreach (var listing in _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase)))
+            {
+                var result = results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute);
+                Assert.NotNull(result);
+
+                if (listing.MatchInnings.Any(x => x.Runs.HasValue || x.Wickets.HasValue))
+                {
+                    Assert.Equal(listing.MatchInnings.Count, result.MatchInnings.Count);
+                    foreach (var innings in listing.MatchInnings)
+                    {
+                        var resultInnings = result.MatchInnings.SingleOrDefault(x => x.MatchInningsId == innings.MatchInningsId);
+                        Assert.NotNull(resultInnings);
+
+                        Assert.Equal(innings.Runs, resultInnings.Runs);
+                        Assert.Equal(innings.Wickets, resultInnings.Wickets);
+                    }
+                }
+                else
+                {
+                    Assert.Empty(result.MatchInnings);
+                }
+            }
         }
 
         [Fact]
         public async Task Read_match_listings_returns_tournament_fields()
         {
-            // ourney.TournamentName AS MatchName, tourney.TournamentRoute AS MatchRoute, tourney.StartTime, tourney.StartTimeIsKnown, 
-            // NULL AS MatchType, tourney.PlayerType, NULL AS MatchResultType,
-            //  tourney.QualificationType AS TournamentQualificationType, tourney.SpacesInTournament, NULL AS OrderInTournament
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(null).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchListings.Count, results.Count);
+            foreach (var listing in _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase)))
+            {
+                var result = results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute);
+                Assert.NotNull(result);
+
+                Assert.Equal(listing.MatchName, result.MatchName);
+                Assert.Equal(DateTimeOffsetAccurateToTheMinute(listing.StartTime), DateTimeOffsetAccurateToTheMinute(result.StartTime));
+                Assert.Equal(listing.StartTimeIsKnown, result.StartTimeIsKnown);
+                Assert.Equal(listing.PlayerType, result.PlayerType);
+                Assert.Equal(listing.TournamentQualificationType, result.TournamentQualificationType);
+                Assert.Equal(listing.SpacesInTournament, result.SpacesInTournament);
+            }
         }
 
         [Fact]
         public async Task Read_match_listings_does_not_return_tournament_teams()
         {
-            // mt.TeamRole, mt.MatchTeamId, mt.TeamId
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(null).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchListings.Count, results.Count);
+            foreach (var match in _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase)))
+            {
+                var result = results.SingleOrDefault(x => x.MatchRoute == match.MatchRoute);
+                Assert.NotNull(result);
+                Assert.Empty(result.Teams);
+            }
         }
 
         [Fact]
         public async Task Read_match_listings_sorts_by_start_time()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(null).ConfigureAwait(false);
+
+            var previousStartTime = DateTimeOffset.MinValue;
+            foreach (var result in results)
+            {
+                Assert.True(result.StartTime >= previousStartTime);
+                previousStartTime = result.StartTime;
+            }
         }
 
         [Fact]
         public async Task Read_match_listings_supports_no_filter()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(null).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchListings.Count, results.Count);
+            foreach (var listing in _databaseFixture.MatchListings)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute));
+            }
         }
 
         [Fact]
         public async Task Read_match_listings_supports_only_matches_filter()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(new MatchQuery { IncludeMatches = true, IncludeTournaments = false }).ConfigureAwait(false);
+
+            var expected = _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase));
+            Assert.Equal(expected.Count(), results.Count);
+            foreach (var listing in expected)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute));
+            }
         }
 
         [Fact]
         public async Task Read_match_listings_supports_only_tournaments_filter()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(new MatchQuery { IncludeMatches = false, IncludeTournaments = true }).ConfigureAwait(false);
+
+            var expected = _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase));
+            Assert.Equal(expected.Count(), results.Count);
+            foreach (var listing in expected)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute));
+            }
         }
 
         [Fact]
         public async Task Read_match_listings_supports_filter_by_match_type()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(new MatchQuery { MatchTypes = new List<MatchType> { MatchType.FriendlyMatch } }).ConfigureAwait(false);
+
+            var expected = _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/tournaments/", StringComparison.OrdinalIgnoreCase) || x.MatchType == MatchType.FriendlyMatch);
+            Assert.Equal(expected.Count(), results.Count);
+            foreach (var listing in expected)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute));
+            }
         }
 
         [Fact]
-        public async Task Read_match_listings_supports_filtering_matches_by_team()
+        public async Task Read_match_listings_supports_filter_matches_by_team()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(new MatchQuery { TeamIds = new List<Guid> { _databaseFixture.MatchInThePastWithFullDetails.Teams.First().Team.TeamId.Value } }).ConfigureAwait(false);
+
+            Assert.Single(results);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchRoute, results.Single().MatchRoute);
         }
 
         [Fact]
-        public async Task Read_match_listings_supports_filtering_matches_by_competition()
+        public async Task Read_match_listings_supports_filter_matches_by_competition()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(new MatchQuery { CompetitionIds = new List<Guid> { _databaseFixture.MatchInThePastWithFullDetails.Season.Competition.CompetitionId.Value } }).ConfigureAwait(false);
+
+            Assert.Single(results);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchRoute, results.Single().MatchRoute);
         }
 
         [Fact]
-        public async Task Read_match_listings_supports_filtering_matches_by_season()
+        public async Task Read_match_listings_supports_filter_matches_by_season()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(new MatchQuery { SeasonIds = new List<Guid> { _databaseFixture.MatchInThePastWithFullDetails.Season.SeasonId.Value } }).ConfigureAwait(false);
+
+            Assert.Single(results);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchRoute, results.Single().MatchRoute);
         }
 
         [Fact]
-        public async Task Read_match_listings_supports_filtering_matches_by_match_location()
+        public async Task Read_match_listings_supports_filter_matches_by_match_location()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(new MatchQuery { MatchLocationIds = new List<Guid> { _databaseFixture.MatchInThePastWithFullDetails.MatchLocation.MatchLocationId.Value } }).ConfigureAwait(false);
+
+            Assert.Single(results);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchRoute, results.Single().MatchRoute);
         }
 
         [Fact]
-        public async Task Read_match_listings_supports_filtering_matches_from_date()
+        public async Task Read_match_listings_supports_filter_from_date()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(new MatchQuery { FromDate = DateTimeOffset.UtcNow }).ConfigureAwait(false);
+
+            var expected = _databaseFixture.MatchListings.Where(x => x.StartTime >= DateTimeOffset.Now);
+            Assert.Equal(expected.Count(), results.Count);
+            foreach (var listing in expected)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute));
+            }
         }
 
         [Fact]
         public async Task Read_match_listings_supports_filter_before_date()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(new MatchQuery { UntilDate = DateTimeOffset.UtcNow }).ConfigureAwait(false);
+
+            var expected = _databaseFixture.MatchListings.Where(x => x.StartTime <= DateTimeOffset.Now);
+            Assert.Equal(expected.Count(), results.Count);
+            foreach (var listing in expected)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute));
+            }
         }
 
         [Fact]
-        public async Task Read_match_listings_supports_filtering_tournament_matches()
+        public async Task Read_match_listings_supports_filter_tournament_matches()
         {
-            // Review usage - possibly combine with option in next test?
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(new MatchQuery { IncludeTournamentMatches = true }).ConfigureAwait(false);
+
+            var expected = new List<MatchListing>();
+            expected.AddRange(_databaseFixture.MatchListings);
+            expected.AddRange(_databaseFixture.TournamentMatchListings);
+            Assert.Equal(expected.Count, results.Count);
+            foreach (var listing in expected)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute));
+            }
         }
 
         [Fact]
-        public async Task Read_match_listings_supports_filter_by_tournament()
+        public async Task Read_match_listings_supports_filter_by_tournament_for_tournament_matches()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(new MatchQuery
+            {
+                TournamentId = _databaseFixture.TournamentInThePastWithFullDetails.TournamentId,
+                IncludeTournamentMatches = true,
+                IncludeTournaments = false,
+            }).ConfigureAwait(false);
+
+            var expected = _databaseFixture.TournamentMatchListings.Where(x => x.MatchRoute != _databaseFixture.MatchInThePastWithFullDetailsAndTournament.MatchRoute);
+            Assert.Equal(expected.Count(), results.Count);
+            foreach (var listing in expected)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute));
+            }
         }
 
         [Fact]
-        public async Task Read_match_listings_supports_filtering_tournaments_by_team()
+        public async Task Read_match_listings_supports_filter_tournaments_by_team()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(new MatchQuery { TeamIds = new List<Guid> { _databaseFixture.TournamentInThePastWithFullDetails.Teams.First().Team.TeamId.Value } }).ConfigureAwait(false);
+
+            Assert.Single(results);
+            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentRoute, results.Single().MatchRoute);
         }
 
         [Fact]
-        public async Task Read_match_listings_supports_filtering_tournaments_by_competition()
+        public async Task Read_match_listings_supports_filter_tournaments_by_competition()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(new MatchQuery { CompetitionIds = new List<Guid> { _databaseFixture.TournamentInThePastWithFullDetails.Seasons.First().Competition.CompetitionId.Value } }).ConfigureAwait(false);
+
+            Assert.Single(results);
+            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentRoute, results.Single().MatchRoute);
         }
 
         [Fact]
-        public async Task Read_match_listings_supports_filtering_tournaments_by_season()
+        public async Task Read_match_listings_supports_filter_tournaments_by_season()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(new MatchQuery { SeasonIds = new List<Guid> { _databaseFixture.TournamentInThePastWithFullDetails.Seasons.First().SeasonId.Value } }).ConfigureAwait(false);
+
+            Assert.Single(results);
+            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentRoute, results.Single().MatchRoute);
         }
 
         [Fact]
-        public async Task Read_match_listings_supports_filtering_tournaments_by_match_location()
+        public async Task Read_match_listings_supports_filter_tournaments_by_match_location()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(new MatchQuery { MatchLocationIds = new List<Guid> { _databaseFixture.TournamentInThePastWithFullDetails.TournamentLocation.MatchLocationId.Value } }).ConfigureAwait(false);
+
+            Assert.Single(results);
+            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentRoute, results.Single().MatchRoute);
         }
 
         [Fact]
-        public async Task Read_match_listings_supports_filtering_tournaments_from_date()
+        public async Task Read_match_listings_supports_filter_tournaments_by_tournamentid()
         {
-            throw new NotImplementedException();
-        }
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
 
-        [Fact]
-        public async Task Read_match_listings_supports_filtering_tournaments_by_tournamentid()
-        {
-            throw new NotImplementedException();
+            var results = await matchDataSource.ReadMatchListings(new MatchQuery { TournamentId = _databaseFixture.TournamentInThePastWithFullDetails.TournamentId }).ConfigureAwait(false);
+
+            Assert.Single(results);
+            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentRoute, results.Single().MatchRoute);
         }
     }
 }

@@ -64,16 +64,6 @@ namespace Stoolball.Web.Matches
             {
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament);
 
-                model.Matches = new MatchListingViewModel
-                {
-                    Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
-                    {
-                        TournamentId = model.Tournament.TournamentId,
-                        IncludeTournamentMatches = true
-                    }).ConfigureAwait(false),
-                    ShowMatchDate = false
-                };
-
                 model.Metadata.PageTitle = model.Tournament.TournamentFullNameAndPlayerType(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = model.Tournament.TournamentName, Url = new Uri(model.Tournament.TournamentRoute, UriKind.Relative) });

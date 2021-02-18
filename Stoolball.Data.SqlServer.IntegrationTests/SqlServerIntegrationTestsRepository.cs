@@ -86,11 +86,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
         public void CreateMatch(Match match)
         {
-            if (match.MatchLocation != null)
-            {
-                CreateMatchLocation(match.MatchLocation);
-            }
-
             if (match.Season != null)
             {
                 CreateCompetition(match.Season.Competition);

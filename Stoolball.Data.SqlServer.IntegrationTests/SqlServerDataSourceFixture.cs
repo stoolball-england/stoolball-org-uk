@@ -31,11 +31,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public List<Competition> Competitions { get; internal set; } = new List<Competition>();
         public List<Season> Seasons { get; internal set; } = new List<Season>();
         public List<Match> Matches { get; internal set; } = new List<Match>();
+        public List<MatchListing> MatchListings { get; internal set; } = new List<MatchListing>();
         public List<MatchLocation> MatchLocations { get; internal set; } = new List<MatchLocation>();
         public List<Team> Teams { get; internal set; } = new List<Team>();
 
         public List<PlayerIdentity> PlayerIdentities { get; internal set; } = new List<PlayerIdentity>();
         public Season SeasonWithFullDetails { get; private set; }
+        public List<MatchListing> TournamentMatchListings { get; private set; } = new List<MatchListing>();
 
         public SqlServerDataSourceFixture() : base("StoolballDataSourceIntegrationTests")
         {
@@ -84,27 +86,34 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 MatchInThePastWithMinimalDetails = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
                 repo.CreateMatch(MatchInThePastWithMinimalDetails);
+                Matches.Add(MatchInThePastWithMinimalDetails);
+                MatchListings.Add(MatchToMatchListing(MatchInThePastWithMinimalDetails));
 
                 MatchInTheFutureWithMinimalDetails = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
                 MatchInTheFutureWithMinimalDetails.StartTime = DateTime.UtcNow.AddMonths(1);
                 repo.CreateMatch(MatchInTheFutureWithMinimalDetails);
-                Matches.Add(MatchInThePastWithMinimalDetails);
+                Matches.Add(MatchInTheFutureWithMinimalDetails);
+                MatchListings.Add(MatchToMatchListing(MatchInTheFutureWithMinimalDetails));
 
                 MatchInThePastWithFullDetails = seedDataGenerator.CreateMatchInThePastWithFullDetails();
+                repo.CreateMatchLocation(MatchInThePastWithFullDetails.MatchLocation);
                 repo.CreateMatch(MatchInThePastWithFullDetails);
                 Teams.AddRange(MatchInThePastWithFullDetails.Teams.Select(x => x.Team));
                 Competitions.Add(MatchInThePastWithFullDetails.Season.Competition);
                 Seasons.Add(MatchInThePastWithFullDetails.Season);
                 MatchLocations.Add(MatchInThePastWithFullDetails.MatchLocation);
                 Matches.Add(MatchInThePastWithFullDetails);
+                MatchListings.Add(MatchToMatchListing(MatchInThePastWithFullDetails));
                 PlayerIdentities.AddRange(playerIdentityFinder.PlayerIdentitiesInMatch(MatchInThePastWithFullDetails));
 
                 TournamentInThePastWithMinimalDetails = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
                 repo.CreateTournament(TournamentInThePastWithMinimalDetails);
+                MatchListings.Add(TournamentToMatchListing(TournamentInThePastWithMinimalDetails));
 
                 TournamentInTheFutureWithMinimalDetails = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
                 TournamentInTheFutureWithMinimalDetails.StartTime = DateTime.UtcNow.AddMonths(1);
                 repo.CreateTournament(TournamentInTheFutureWithMinimalDetails);
+                MatchListings.Add(TournamentToMatchListing(TournamentInTheFutureWithMinimalDetails));
 
                 TournamentInThePastWithFullDetails = seedDataGenerator.CreateTournamentInThePastWithFullDetails();
                 Teams.AddRange(TournamentInThePastWithFullDetails.Teams.Select(x => x.Team));
@@ -127,15 +136,28 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     repo.AddTournamentToSeason(TournamentInThePastWithFullDetails, season);
                     Seasons.Add(season);
                 }
+                MatchListings.Add(TournamentToMatchListing(TournamentInThePastWithFullDetails));
+                for (var i = 0; i < 5; i++)
+                {
+                    var tournamentMatch = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
+                    tournamentMatch.Tournament = TournamentInThePastWithFullDetails;
+                    tournamentMatch.StartTime = TournamentInThePastWithFullDetails.StartTime.AddHours(i);
+                    tournamentMatch.OrderInTournament = i + 1;
+                    repo.CreateMatch(tournamentMatch);
+                    Matches.Add(tournamentMatch);
+                    TournamentMatchListings.Add(MatchToMatchListing(tournamentMatch));
+                }
 
                 MatchInThePastWithFullDetailsAndTournament = seedDataGenerator.CreateMatchInThePastWithFullDetails();
                 MatchInThePastWithFullDetailsAndTournament.Tournament = TournamentInThePastWithMinimalDetails;
                 MatchInThePastWithFullDetailsAndTournament.Season.FromYear = MatchInThePastWithFullDetailsAndTournament.Season.UntilYear = 2018;
+                repo.CreateMatchLocation(MatchInThePastWithFullDetailsAndTournament.MatchLocation);
                 repo.CreateMatch(MatchInThePastWithFullDetailsAndTournament);
                 Teams.AddRange(MatchInThePastWithFullDetailsAndTournament.Teams.Select(x => x.Team));
                 Competitions.Add(MatchInThePastWithFullDetailsAndTournament.Season.Competition);
                 MatchLocations.Add(MatchInThePastWithFullDetailsAndTournament.MatchLocation);
                 Matches.Add(MatchInThePastWithFullDetailsAndTournament);
+                TournamentMatchListings.Add(MatchToMatchListing(MatchInThePastWithFullDetailsAndTournament));
                 Seasons.Add(MatchInThePastWithFullDetailsAndTournament.Season);
                 PlayerIdentities.AddRange(playerIdentityFinder.PlayerIdentitiesInMatch(MatchInThePastWithFullDetailsAndTournament));
 
@@ -193,8 +215,53 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     var matchLocation = seedDataGenerator.CreateMatchLocationWithMinimalDetails();
                     repo.CreateMatchLocation(matchLocation);
                     MatchLocations.Add(matchLocation);
+
+                    var match = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
+                    match.MatchLocation = matchLocation;
+                    match.StartTime = DateTime.UtcNow.AddMonths(i - 15);
+                    match.MatchType = (i % 2 == 0) ? MatchType.FriendlyMatch : MatchType.LeagueMatch;
+                    match.PlayerType = (i % 3 == 0) ? PlayerType.Mixed : PlayerType.Ladies;
+                    repo.CreateMatch(match);
+                    Matches.Add(match);
+                    MatchListings.Add(MatchToMatchListing(match));
+
+                    var tournament = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
+                    tournament.TournamentLocation = matchLocation;
+                    tournament.StartTime = DateTime.UtcNow.AddMonths(i - 20).AddDays(5);
+                    repo.CreateTournament(tournament);
+                    MatchListings.Add(TournamentToMatchListing(tournament));
                 }
             }
+        }
+
+        private static MatchListing TournamentToMatchListing(Tournament tournament)
+        {
+            return new MatchListing
+            {
+                MatchName = tournament.TournamentName,
+                MatchRoute = tournament.TournamentRoute,
+                StartTime = tournament.StartTime,
+                StartTimeIsKnown = tournament.StartTimeIsKnown,
+                PlayerType = tournament.PlayerType,
+                TournamentQualificationType = tournament.QualificationType,
+                SpacesInTournament = tournament.SpacesInTournament
+            };
+        }
+
+        private static MatchListing MatchToMatchListing(Match match)
+        {
+            return new MatchListing
+            {
+                MatchInnings = match.MatchInnings,
+                MatchName = match.MatchName,
+                MatchRoute = match.MatchRoute,
+                MatchResultType = match.MatchResultType,
+                MatchType = match.MatchType,
+                PlayerType = match.PlayerType,
+                StartTime = match.StartTime,
+                StartTimeIsKnown = match.StartTimeIsKnown,
+                Teams = match.Teams
+            };
         }
     }
 }

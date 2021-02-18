@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Dapper;
 using Stoolball.Matches;
 using Stoolball.Teams;
-using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer
 {
@@ -30,7 +29,7 @@ namespace Stoolball.Data.SqlServer
         {
             if (matchQuery is null)
             {
-                throw new ArgumentNullException(nameof(matchQuery));
+                matchQuery = new MatchQuery();
             }
 
             if (!matchQuery.IncludeMatches && !matchQuery.IncludeTournaments)
@@ -56,7 +55,7 @@ namespace Stoolball.Data.SqlServer
 
                 if (matchQuery.IncludeMatches && matchQuery.IncludeTournaments)
                 {
-                    sql.Append(" UNION ");
+                    sql.Append(" UNION ALL ");
                 }
 
                 if (matchQuery.IncludeTournaments)
@@ -90,7 +89,7 @@ namespace Stoolball.Data.SqlServer
         {
             if (matchQuery is null)
             {
-                throw new ArgumentNullException(nameof(matchQuery));
+                matchQuery = new MatchQuery();
             }
 
             if (!matchQuery.IncludeMatches && !matchQuery.IncludeTournaments)
@@ -106,12 +105,13 @@ namespace Stoolball.Data.SqlServer
 
                 if (matchQuery.IncludeMatches)
                 {
+                    // Join to MatchInnings only happens if there's a batting team, because otherwise all you get from it is extra rows to process with just a MatchInningsId
                     var (matchSql, matchParameters) = BuildMatchQuery(matchQuery,
                         $@"SELECT m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, m.MatchResultType,
                                 NULL AS TournamentQualificationType, NULL AS SpacesInTournament, m.OrderInTournament,
                                 mt.TeamRole, mt.MatchTeamId,
                                 mt.TeamId,
-                                i.Runs, i.Wickets
+                                i.MatchInningsId, i.Runs, i.Wickets
                                 FROM { Tables.Match } AS m
                                 LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
                                 LEFT JOIN {Tables.MatchInnings} AS i ON m.MatchId = i.MatchId AND i.BattingMatchTeamId = mt.MatchTeamId
@@ -139,7 +139,7 @@ namespace Stoolball.Data.SqlServer
                                 tourney.QualificationType AS TournamentQualificationType, tourney.SpacesInTournament, NULL AS OrderInTournament,
                                 NULL AS TeamRole, NULL AS MatchTeamId,
                                 NULL AS TeamId,
-                                NULL AS Runs, NULL AS Wickets
+                                NULL AS MatchInningsId, NULL AS Runs, NULL AS Wickets
                                 FROM { Tables.Tournament} AS tourney
                                 <<JOIN>>
                                 <<WHERE>> ");
@@ -164,24 +164,26 @@ namespace Stoolball.Data.SqlServer
                         teamInMatch.Team = team;
                         matchListing.Teams.Add(teamInMatch);
 
-                        matchListing.MatchInnings.Add(new MatchInnings
+                        if (matchInnings != null)
                         {
-                            BattingMatchTeamId = teamInMatch.MatchTeamId,
-                            BattingTeam = teamInMatch,
-                            Runs = matchInnings?.Runs,
-                            Wickets = matchInnings?.Wickets
-                        });
+                            matchInnings.BattingMatchTeamId = teamInMatch.MatchTeamId;
+                            matchInnings.BattingTeam = teamInMatch;
+                        };
+                    }
+                    if (matchInnings != null)
+                    {
+                        matchListing.MatchInnings.Add(matchInnings);
                     }
                     return matchListing;
                 },
                 new DynamicParameters(parameters),
-                splitOn: "TeamRole, TeamId, Runs").ConfigureAwait(false);
+                splitOn: "TeamRole, TeamId, MatchInningsId").ConfigureAwait(false);
 
                 var listingsToReturn = matches.GroupBy(match => match.MatchRoute).Select(copiesOfMatch =>
                 {
                     var matchToReturn = copiesOfMatch.First();
                     matchToReturn.MatchInnings = copiesOfMatch.Select(match => match.MatchInnings.SingleOrDefault()).OfType<MatchInnings>().ToList();
-                    matchToReturn.Teams = copiesOfMatch.Select(match => match.Teams.SingleOrDefault()).OfType<TeamInMatch>().ToList();
+                    matchToReturn.Teams = copiesOfMatch.Select(match => match.Teams.SingleOrDefault()).OfType<TeamInMatch>().Distinct(new TeamInMatchEqualityComparer()).ToList();
                     return matchToReturn;
                 }).ToList();
 
@@ -315,6 +317,12 @@ namespace Stoolball.Data.SqlServer
             {
                 where.Add("tourney.StartTime >= @FromDate");
                 parameters.Add("@FromDate", matchQuery.FromDate.Value);
+            }
+
+            if (matchQuery.UntilDate != null)
+            {
+                where.Add("tourney.StartTime <= @UntilDate");
+                parameters.Add("@UntilDate", matchQuery.UntilDate.Value);
             }
 
             if (matchQuery.TournamentId != null)
