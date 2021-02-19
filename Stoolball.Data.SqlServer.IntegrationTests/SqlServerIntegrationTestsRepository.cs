@@ -8,6 +8,7 @@ using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
+using Stoolball.Statistics;
 using Stoolball.Teams;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests
@@ -175,6 +176,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             }
             foreach (var playerIdentity in playerIdentities.Distinct(new PlayerIdentityEqualityComparer()))
             {
+                CreatePlayer(playerIdentity.Player);
                 CreatePlayerIdentity(playerIdentity);
             }
 
@@ -355,7 +357,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             });
         }
 
-        public void CreatePlayerIdentity(PlayerIdentity playerIdentity)
+        public void CreatePlayer(Player player)
         {
             _connection.Execute($@"INSERT INTO {Tables.Player} 
                     (PlayerId, PlayerName, PlayerRoute)
@@ -363,11 +365,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     (@PlayerId, @PlayerName, @PlayerRoute)",
                    new
                    {
-                       PlayerId = playerIdentity.Player.PlayerId,
-                       PlayerName = playerIdentity.Player.PlayerName,
-                       PlayerRoute = playerIdentity.Player.PlayerRoute
+                       PlayerId = player.PlayerId,
+                       PlayerName = player.PlayerName,
+                       PlayerRoute = player.PlayerRoute
                    });
+        }
 
+        public void CreatePlayerIdentity(PlayerIdentity playerIdentity)
+        {
             _connection.Execute($@"INSERT INTO {Tables.PlayerIdentity} 
                     (PlayerIdentityId, PlayerId, TeamId, PlayerIdentityName, ComparableName, FirstPlayed, LastPlayed, TotalMatches, MissedMatches, Probability)
                     VALUES
@@ -605,6 +610,83 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             {
                 CreateOverSet(overSet, null, season.SeasonId, null);
             }
+        }
+
+        public void CreatePlayerInMatchStatisticsRecord(PlayerInMatchStatisticsRecord record)
+        {
+            _connection.Execute($@"INSERT INTO {Tables.PlayerInMatchStatistics}
+                    (PlayerInMatchStatisticsId, PlayerId, PlayerIdentityId, PlayerIdentityName, PlayerRoute, MatchId, MatchStartTime, MatchType, MatchPlayerType, MatchName, MatchRoute, 
+                     TournamentId, SeasonId, CompetitionId, MatchTeamId, TeamId, TeamName, TeamRoute, OppositionTeamId, OppositionTeamName, OppositionTeamRoute, MatchLocationId, 
+                     MatchInningsId, MatchInningsRuns, MatchInningsWickets, InningsOrderInMatch, InningsOrderIsKnown, 
+                     OverNumberOfFirstOverBowled, BallsBowled, Overs, Maidens, RunsConceded, HasRunsConceded, Wickets, WicketsWithBowling, 
+                     PlayerInningsInMatchInnings, BattingPosition, DismissalType, PlayerWasDismissed, BowledByPlayerIdentityId, BowledByPlayerIdentityName, BowledByPlayerRoute, 
+                     CaughtByPlayerIdentityId, CaughtByPlayerIdentityName, CaughtByPlayerRoute, RunOutByPlayerIdentityId, RunOutByPlayerIdentityName, RunOutByPlayerRoute, 
+                     RunsScored, BallsFaced, Catches, RunOuts, WonMatch, PlayerOfTheMatch)
+                    VALUES
+                    (@PlayerInMatchStatisticsId, @PlayerId, @PlayerIdentityId, @PlayerIdentityName, @PlayerRoute, @MatchId, @MatchStartTime, @MatchType, @MatchPlayerType, @MatchName, @MatchRoute,
+                     @TournamentId, @SeasonId, @CompetitionId, @MatchTeamId, @TeamId, @TeamName, @TeamRoute, @OppositionTeamId, @OppositionTeamName, @OppositionTeamRoute, @MatchLocationId,
+                     @MatchInningsId, @MatchInningsRuns, @MatchInningsWickets, @InningsOrderInMatch, @InningsOrderIsKnown, 
+                     @OverNumberOfFirstOverBowled, @BallsBowled, @Overs, @Maidens, @RunsConceded, @HasRunsConceded, @Wickets, @WicketsWithBowling,
+                     @PlayerInningsInMatchInnings, @BattingPosition, @DismissalType, @PlayerWasDismissed, @BowledByPlayerIdentityId, @BowledByPlayerIdentityName, @BowledByPlayerRoute,
+                     @CaughtByPlayerIdentityId, @CaughtByPlayerIdentityName, @CaughtByPlayerRoute, @RunOutByPlayerIdentityId, @RunOutByPlayerIdentityName, @RunOutByPlayerRoute,
+                     @RunsScored, @BallsFaced, @Catches, @RunOuts, @WonMatch, @PlayerOfTheMatch)",
+                        new
+                        {
+                            PlayerInMatchStatisticsId = Guid.NewGuid(),
+                            record.PlayerId,
+                            record.PlayerIdentityId,
+                            record.PlayerIdentityName,
+                            record.PlayerRoute,
+                            record.MatchId,
+                            record.MatchStartTime,
+                            MatchType = record.MatchType.ToString(),
+                            MatchPlayerType = record.MatchPlayerType.ToString(),
+                            record.MatchName,
+                            record.MatchRoute,
+                            record.TournamentId,
+                            record.SeasonId,
+                            record.CompetitionId,
+                            record.MatchTeamId,
+                            record.TeamId,
+                            record.TeamName,
+                            record.TeamRoute,
+                            record.OppositionTeamId,
+                            record.OppositionTeamName,
+                            record.OppositionTeamRoute,
+                            record.MatchLocationId,
+                            record.MatchInningsId,
+                            record.MatchInningsRuns,
+                            record.MatchInningsWickets,
+                            record.InningsOrderInMatch,
+                            record.InningsOrderIsKnown,
+                            record.OverNumberOfFirstOverBowled,
+                            record.BallsBowled,
+                            record.Overs,
+                            record.Maidens,
+                            record.RunsConceded,
+                            record.HasRunsConceded,
+                            record.Wickets,
+                            record.WicketsWithBowling,
+                            record.PlayerInningsInMatchInnings,
+                            record.BattingPosition,
+                            DismissalType = record.DismissalType?.ToString(),
+                            record.PlayerWasDismissed,
+                            record.BowledByPlayerIdentityId,
+                            record.BowledByPlayerIdentityName,
+                            record.BowledByPlayerRoute,
+                            record.CaughtByPlayerIdentityId,
+                            record.CaughtByPlayerIdentityName,
+                            record.CaughtByPlayerRoute,
+                            record.RunOutByPlayerIdentityId,
+                            record.RunOutByPlayerIdentityName,
+                            record.RunOutByPlayerRoute,
+                            record.RunsScored,
+                            record.BallsFaced,
+                            record.Catches,
+                            record.RunOuts,
+                            record.WonMatch,
+                            record.PlayerOfTheMatch
+                        });
         }
     }
 }

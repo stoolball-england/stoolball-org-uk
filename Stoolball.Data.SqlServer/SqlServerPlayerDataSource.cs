@@ -78,11 +78,11 @@ namespace Stoolball.Data.SqlServer
             {
                 var playerData = await connection.QueryAsync<Player, PlayerIdentity, Team, Player>(
                     $@"SELECT PlayerId, PlayerIdentityName AS PlayerName,
-                        PlayerIdentityName, COUNT(DISTINCT MatchId) AS TotalMatches, MIN(MatchStartTime) AS FirstPlayed, MAX(MatchStartTime) AS LastPlayed, 
+                        PlayerIdentityId, PlayerIdentityName, COUNT(DISTINCT MatchId) AS TotalMatches, MIN(MatchStartTime) AS FirstPlayed, MAX(MatchStartTime) AS LastPlayed, 
                         TeamName, TeamRoute
                         FROM {Tables.PlayerInMatchStatistics} 
                         WHERE LOWER(PlayerRoute) = @Route
-                        GROUP BY PlayerId, PlayerIdentityName, TeamName, TeamRoute",
+                        GROUP BY PlayerId, PlayerIdentityId, PlayerIdentityName, TeamName, TeamRoute",
                         (player, playerIdentity, team) =>
                         {
                             playerIdentity.Team = team;
@@ -90,7 +90,7 @@ namespace Stoolball.Data.SqlServer
                             return player;
                         },
                         new { Route = normalisedRoute },
-                        splitOn: "PlayerIdentityName, TeamName"
+                        splitOn: "PlayerIdentityId, TeamName"
                         ).ConfigureAwait(false);
 
                 var playerToReturn = playerData.GroupBy(x => x.PlayerId).Select(group =>

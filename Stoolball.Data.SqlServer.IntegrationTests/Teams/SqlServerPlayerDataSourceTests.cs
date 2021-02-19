@@ -136,9 +136,28 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         }
 
         [Fact]
-        public async Task Read_player_by_route_should_be_tested()
+        public async Task Read_player_by_route_returns_multiple_player_identities_with_teams()
         {
-            throw new NotImplementedException();
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.PlayerWithMultipleIdentities.PlayerRoute, "players")).Returns(_databaseFixture.PlayerWithMultipleIdentities.PlayerRoute);
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await playerDataSource.ReadPlayerByRoute(_databaseFixture.PlayerWithMultipleIdentities.PlayerRoute).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.PlayerWithMultipleIdentities.PlayerId, result.PlayerId);
+            Assert.Equal(_databaseFixture.PlayerWithMultipleIdentities.PlayerIdentities.Count, result.PlayerIdentities.Count);
+            foreach (var identity in _databaseFixture.PlayerWithMultipleIdentities.PlayerIdentities)
+            {
+                var resultIdentity = result.PlayerIdentities.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId);
+                Assert.NotNull(resultIdentity);
+
+                Assert.Equal(identity.PlayerIdentityName, resultIdentity.PlayerIdentityName);
+                Assert.Equal(identity.Team.TeamName, resultIdentity.Team.TeamName);
+                Assert.Equal(identity.Team.TeamRoute, resultIdentity.Team.TeamRoute);
+                Assert.Equal(identity.TotalMatches, resultIdentity.TotalMatches);
+                Assert.Equal(identity.FirstPlayed, resultIdentity.FirstPlayed);
+                Assert.Equal(identity.LastPlayed, resultIdentity.LastPlayed);
+            }
         }
     }
 }

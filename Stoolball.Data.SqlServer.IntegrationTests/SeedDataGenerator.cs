@@ -661,5 +661,30 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             }
             return oversBowled;
         }
+
+        public Player CreatePlayerWithMultipleIdentities()
+        {
+            return new Player
+            {
+                PlayerId = Guid.NewGuid(),
+                PlayerName = "Player name",
+                PlayerRoute = "/players/player-" + Guid.NewGuid(),
+                PlayerIdentities = new List<PlayerIdentity>
+                {
+                    new PlayerIdentity
+                    {
+                        PlayerIdentityId = Guid.NewGuid(),
+                        PlayerIdentityName = "Player identity 1",
+                        Team = CreateTeamWithMinimalDetails("Team for player identity 1")
+                    },
+                    new PlayerIdentity
+                    {
+                        PlayerIdentityId = Guid.NewGuid(),
+                        PlayerIdentityName = "Player identity 2",
+                        Team = CreateTeamWithMinimalDetails("Team for player identity 2")
+                    }
+                }
+            };
+        }
     }
 }
