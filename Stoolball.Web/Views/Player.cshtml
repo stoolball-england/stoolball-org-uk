@@ -8,7 +8,7 @@
     var matchYears = (firstMatchYear == lastMatchYear) ? $"in {firstMatchYear}" : $"from {firstMatchYear} to {lastMatchYear}";
 }
 <div class="container-xl">
-    <h1>@(Model.Player?.PlayerName)</h1>
-    <p>@(Model.Player?.PlayerName) has played @Model.Player.PlayerIdentities.Sum(x => x.TotalMatches) 
+    <h1>@(Model.Player?.PlayerName())</h1>
+    <p>@(Model.Player?.PlayerName()) has played @Model.Player.PlayerIdentities.Sum(x => x.TotalMatches) 
     matches for @Html.Raw(Model.Player.PlayerIdentities.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.</p>
 </div>

@@ -52,7 +52,7 @@ namespace Stoolball.Web.Statistics
             else
             {
                 var teams = model.Player.PlayerIdentities.Select(x => x.Team.TeamName).Distinct().ToList();
-                model.Metadata.PageTitle = $"{model.Player.PlayerName}, a player for {teams.Humanize()} stoolball {(teams.Count > 1 ? "teams" : "team")}";
+                model.Metadata.PageTitle = $"{model.Player.PlayerName()}, a player for {teams.Humanize()} stoolball {(teams.Count > 1 ? "teams" : "team")}";
                 //model.Metadata.Description = model.Player.Description();
 
                 return CurrentTemplate(model);

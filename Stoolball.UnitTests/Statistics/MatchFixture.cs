@@ -46,7 +46,6 @@ namespace Stoolball.UnitTests.Statistics
                     Player = new Player
                     {
                         PlayerId = Guid.NewGuid(),
-                        PlayerName = "Home player " + (i + 1),
                         PlayerRoute = "/players/home-" + (i + 1)
                     },
                     PlayerIdentityId = Guid.NewGuid(),
@@ -62,7 +61,6 @@ namespace Stoolball.UnitTests.Statistics
                     Player = new Player
                     {
                         PlayerId = Guid.NewGuid(),
-                        PlayerName = "Away player " + (i + 1),
                         PlayerRoute = "/players/away-" + (i + 1)
                     },
                     PlayerIdentityId = Guid.NewGuid(),

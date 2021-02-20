@@ -322,7 +322,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     Player = new Player
                     {
                         PlayerId = Guid.NewGuid(),
-                        PlayerName = "Home player " + (i + 1),
                         PlayerRoute = "/players/home-" + (i + 1)
                     },
                     PlayerIdentityId = Guid.NewGuid(),
@@ -339,7 +338,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     Player = new Player
                     {
                         PlayerId = Guid.NewGuid(),
-                        PlayerName = "Away player " + (i + 1),
                         PlayerRoute = "/players/away-" + (i + 1)
                     },
                     PlayerIdentityId = Guid.NewGuid(),
@@ -667,7 +665,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             return new Player
             {
                 PlayerId = Guid.NewGuid(),
-                PlayerName = "Player name",
                 PlayerRoute = "/players/player-" + Guid.NewGuid(),
                 PlayerIdentities = new List<PlayerIdentity>
                 {

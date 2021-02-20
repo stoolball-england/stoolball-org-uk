@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Stoolball.Data.SqlServer;
@@ -70,7 +71,6 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
             var migratedPlayer = new Player
             {
                 PlayerId = Guid.NewGuid(),
-                PlayerName = player.PlayerIdentityName,
                 PlayerIdentities = new List<PlayerIdentity> { migratedPlayerIdentity }
             };
 
@@ -82,7 +82,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 {
                     var teamId = await connection.ExecuteScalarAsync<Guid>($"SELECT TeamId FROM {Tables.Team} WHERE MigratedTeamId = @MigratedTeamId", new { migratedPlayerIdentity.MigratedTeamId }, transaction).ConfigureAwait(false);
 
-                    migratedPlayer.PlayerRoute = _routeGenerator.GenerateRoute($"/players", migratedPlayer.PlayerName, NoiseWords.PlayerRoute);
+                    migratedPlayer.PlayerRoute = _routeGenerator.GenerateRoute($"/players", migratedPlayer.PlayerIdentities.First().PlayerIdentityName, NoiseWords.PlayerRoute);
 
                     int count;
                     do
@@ -97,11 +97,10 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
 
                     _auditHistoryBuilder.BuildInitialAuditHistory(player, migratedPlayerIdentity, nameof(SqlServerPlayerDataMigrator), x => x);
 
-                    await connection.ExecuteAsync($@"INSERT INTO {Tables.Player} (PlayerId, PlayerName, PlayerRoute) VALUES (@PlayerId, @PlayerName, @PlayerRoute)",
+                    await connection.ExecuteAsync($@"INSERT INTO {Tables.Player} (PlayerId, PlayerRoute) VALUES (@PlayerId, @PlayerRoute)",
                         new
                         {
                             migratedPlayer.PlayerId,
-                            migratedPlayer.PlayerName,
                             migratedPlayer.PlayerRoute
                         },
                       transaction).ConfigureAwait(false);

@@ -99,7 +99,6 @@ namespace Stoolball.Data.SqlServer
             player = new Player
             {
                 PlayerId = Guid.NewGuid(),
-                PlayerName = auditablePlayerIdentity.PlayerIdentityName,
                 PlayerRoute = _routeGenerator.GenerateRoute($"/players", auditablePlayerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute)
             };
             player.PlayerIdentities.Add(auditablePlayerIdentity);
@@ -117,13 +116,12 @@ namespace Stoolball.Data.SqlServer
 
             await transaction.Connection.ExecuteAsync(
                   $@"INSERT INTO {Tables.Player} 
-                                               (PlayerId, PlayerName, PlayerRoute) 
+                                               (PlayerId, PlayerRoute) 
                                                VALUES 
-                                               (@PlayerId, @PlayerName, @PlayerRoute)",
+                                               (@PlayerId, @PlayerRoute)",
                   new
                   {
                       player.PlayerId,
-                      player.PlayerName,
                       player.PlayerRoute
                   }, transaction).ConfigureAwait(false);
 

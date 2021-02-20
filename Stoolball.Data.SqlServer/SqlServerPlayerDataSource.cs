@@ -82,7 +82,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var playerData = await connection.QueryAsync<Player, PlayerIdentity, Team, Player>(
-                    $@"SELECT PlayerId, PlayerIdentityName AS PlayerName,
+                    $@"SELECT PlayerId, 
                         PlayerIdentityId, PlayerIdentityName, COUNT(DISTINCT MatchId) AS TotalMatches, MIN(MatchStartTime) AS FirstPlayed, MAX(MatchStartTime) AS LastPlayed, 
                         TeamName, TeamRoute
                         FROM {Tables.PlayerInMatchStatistics} 

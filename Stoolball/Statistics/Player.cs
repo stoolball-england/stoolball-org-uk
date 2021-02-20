@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Stoolball.Logging;
 
 namespace Stoolball.Statistics
@@ -8,7 +9,10 @@ namespace Stoolball.Statistics
     {
         public Guid? PlayerId { get; set; }
 
-        public string PlayerName { get; set; }
+        public string PlayerName()
+        {
+            return string.Join("/", PlayerIdentities.Select(x => x.PlayerIdentityName).Distinct());
+        }
 
         public string PlayerRoute { get; set; }
 

@@ -360,13 +360,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public void CreatePlayer(Player player)
         {
             _connection.Execute($@"INSERT INTO {Tables.Player} 
-                    (PlayerId, PlayerName, PlayerRoute)
+                    (PlayerId, PlayerRoute)
                     VALUES
-                    (@PlayerId, @PlayerName, @PlayerRoute)",
+                    (@PlayerId, @PlayerRoute)",
                    new
                    {
                        PlayerId = player.PlayerId,
-                       PlayerName = player.PlayerName,
                        PlayerRoute = player.PlayerRoute
                    });
         }

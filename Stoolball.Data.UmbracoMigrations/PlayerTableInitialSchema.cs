@@ -14,12 +14,8 @@ namespace Stoolball.Data.UmbracoMigrations
         [Column(nameof(PlayerId))]
         public Guid PlayerId { get; set; }
 
-        [Column(nameof(PlayerName))]
-        public string PlayerName { get; set; }
-
         [Column(nameof(PlayerRoute))]
-        [Index(IndexTypes.NonClustered)]
-        [NullSetting(NullSetting = NullSettings.Null)]
+        [Index(IndexTypes.Clustered)]
         public string PlayerRoute { get; set; }
     }
 }
