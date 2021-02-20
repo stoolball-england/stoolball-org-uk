@@ -2,9 +2,10 @@
 @using Humanizer
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Matches
-@using Stoolball.Teams
+@using Stoolball.Matches
 @using Stoolball.Security
-@using Constants = Stoolball.Constants 
+@using Constants = Stoolball.Constants
+@using Umbraco.Core.Composing
 @{
     Html.EnableClientValidation();
     Html.EnableUnobtrusiveJavaScript();
@@ -23,15 +24,6 @@
         {
             <p>If you delete @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false)) you will:</p>
             <ul>
-                @{
-                    var batters = Model.Match.MatchInnings.SelectMany(x => x.PlayerInnings.Select(pi => pi.PlayerIdentity));
-                    var fielders = Model.Match.MatchInnings.SelectMany(x => x.PlayerInnings.Select(pi => pi.DismissedBy).OfType<PlayerIdentity>());
-                    var wicketTakers = Model.Match.MatchInnings.SelectMany(x => x.PlayerInnings.Select(pi => pi.Bowler).OfType<PlayerIdentity>());
-                    var bowlers = Model.Match.MatchInnings.SelectMany(x => x.OversBowled.Select(o => o.PlayerIdentity));
-                    var awards = Model.Match.Awards.Select(x => x.PlayerIdentity);
-                    var comparer = new PlayerIdentityEqualityComparer();
-                    var players = batters.Union(fielders, comparer).Union(wicketTakers, comparer).Union(bowlers, comparer).Union(awards, comparer).ToList();
-                }
                 @if (Model.Match.Teams.Count > 0)
                 {
                     <li>remove this match from match listings for @Model.Match.Teams.Humanize(x => x.Team.TeamName)</li>
@@ -48,16 +40,16 @@
                 {
                     <li>not affect any competitions</li>
                 }
-                @if (players.Count > 0)
+                @if (Model.PlayerIdentities.Count > 0)
                 {
-                    <li>change batting, bowling and fielding statistics for both teams, affecting @("player".ToQuantity(players.Count))</li>
+                    <li>change batting, bowling and fielding statistics for both teams, affecting @("player".ToQuantity(Model.PlayerIdentities.Count))</li>
                 }
                 else
                 {
                     <li>not affect any batting, bowling and fielding statistics</li>
                 }
                 @{
-                    var playersAtRisk = players.Where(x => x.TotalMatches == 1).ToList();
+                    var playersAtRisk = Model.PlayerIdentities.Where(x => x.TotalMatches == 1).ToList();
                     if (playersAtRisk.Count > 0)
                     {
                         <li>delete @("player".ToQuantity(playersAtRisk.Count)) involved in only this match: @playersAtRisk.Humanize(x => x.PlayerIdentityName)</li>
@@ -69,7 +61,7 @@
                 }
                 @if (Model.Match.Awards.Count > 0)
                 {
-                    <li>remove @("player award".ToQuantity(Model.Match.Awards.Count)) from @awards.Humanize(x => x.PlayerIdentityName)'s statistics</li>
+                    <li>remove @("player award".ToQuantity(Model.Match.Awards.Count)) from @Model.Match.Awards.Select(x => x.PlayerIdentity).Humanize(x => x.PlayerIdentityName)'s statistics</li>
                 }
                 else
                 {

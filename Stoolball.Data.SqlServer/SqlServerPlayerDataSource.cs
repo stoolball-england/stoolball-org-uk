@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -32,31 +30,37 @@ namespace Stoolball.Data.SqlServer
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var sql = $@"SELECT p.PlayerIdentityId, p.PlayerIdentityName, p.TotalMatches, p.FirstPlayed, p.LastPlayed,
-                            t.TeamId, tn.TeamName
-                            FROM {Tables.PlayerIdentity} AS p 
-                            INNER JOIN {Tables.Team} AS t ON p.TeamId = t.TeamId
-                            INNER JOIN {Tables.TeamVersion} AS tn ON t.TeamId = tn.TeamId
+                var sql = $@"SELECT stats.PlayerIdentityId, stats.PlayerIdentityName, 
+                            COUNT(DISTINCT MatchId) AS TotalMatches, MIN(MatchStartTime) AS FirstPlayed,  MAX(MatchStartTime) AS LastPlayed,
+                            COUNT(DISTINCT MatchId) -(SELECT COUNT(DISTINCT MatchId) * 5 FROM {Tables.PlayerInMatchStatistics} WHERE TeamId = stats.TeamId AND MatchStartTime > MAX(stats.MatchStartTime)) AS Probability,
+                            stats.TeamId, stats.TeamName
+                            FROM {Tables.PlayerInMatchStatistics} AS stats 
                             <<WHERE>>
-                            AND tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
-                            ORDER BY t.TeamId ASC, p.Probability DESC, p.PlayerIdentityName ASC";
+                            GROUP BY stats.PlayerIdentityId, stats.PlayerIdentityName, stats.TeamId, stats.TeamName
+                            ORDER BY stats.TeamId ASC, Probability DESC, stats.PlayerIdentityName ASC";
 
                 var where = new List<string>();
                 var parameters = new Dictionary<string, object>();
 
                 if (!string.IsNullOrEmpty(playerQuery?.Query))
                 {
-                    where.Add("p.PlayerIdentityName LIKE @Query");
+                    where.Add("stats.PlayerIdentityName LIKE @Query");
                     parameters.Add("@Query", $"%{playerQuery.Query.Replace(" ", "%")}%");
                 }
 
                 if (playerQuery?.TeamIds?.Count > 0)
                 {
-                    where.Add("p.TeamId IN @TeamIds");
+                    where.Add("stats.TeamId IN @TeamIds");
                     parameters.Add("@TeamIds", playerQuery.TeamIds.Select(x => x.ToString()));
                 }
 
-                sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : "WHERE 1=1"); // Ensure there's always a WHERE clause so that it can be appended to
+                if (playerQuery?.PlayerIdentityIds?.Count > 0)
+                {
+                    where.Add("stats.PlayerIdentityId IN @PlayerIdentityIds");
+                    parameters.Add("@PlayerIdentityIds", playerQuery.PlayerIdentityIds.Select(x => x.ToString()));
+                }
+
+                sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
 
                 return (await connection.QueryAsync<PlayerIdentity, Team, PlayerIdentity>(sql,
                     (player, team) =>

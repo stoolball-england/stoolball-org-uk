@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
+using Stoolball.Teams;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -19,6 +21,8 @@ namespace Stoolball.Web.Matches
     public class DeleteMatchController : RenderMvcControllerAsync
     {
         private readonly IMatchDataSource _matchDataSource;
+        private readonly IPlayerDataSource _playerDataSource;
+        private readonly IPlayerIdentityFinder _playerIdentityFinder;
         private readonly ICommentsDataSource<Match> _matchCommentsDataSource;
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
@@ -30,12 +34,16 @@ namespace Stoolball.Web.Matches
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IMatchDataSource matchDataSource,
+           IPlayerDataSource playerDataSource,
+           IPlayerIdentityFinder playerIdentityFinder,
            ICommentsDataSource<Match> matchCommentsDataSource,
            IAuthorizationPolicy<Match> authorizationPolicy,
            IDateTimeFormatter dateFormatter)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
+            _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
+            _playerIdentityFinder = playerIdentityFinder ?? throw new ArgumentNullException(nameof(playerIdentityFinder));
             _matchCommentsDataSource = matchCommentsDataSource ?? throw new ArgumentNullException(nameof(matchCommentsDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
@@ -47,7 +55,7 @@ namespace Stoolball.Web.Matches
         {
             if (contentModel is null)
             {
-                throw new System.ArgumentNullException(nameof(contentModel));
+                throw new ArgumentNullException(nameof(contentModel));
             }
 
             var model = new DeleteMatchViewModel(contentModel.Content, Services?.UserService)
@@ -63,6 +71,15 @@ namespace Stoolball.Web.Matches
             else
             {
                 model.TotalComments = await _matchCommentsDataSource.ReadTotalComments(model.Match.MatchId.Value).ConfigureAwait(false);
+
+                // Find the player identities in the match, then reselect them with details of how many matches they've played
+                model.PlayerIdentities = _playerIdentityFinder.PlayerIdentitiesInMatch(model.Match).ToList();
+                model.PlayerIdentities = await _playerDataSource.ReadPlayerIdentities(
+                    new PlayerIdentityQuery
+                    {
+                        PlayerIdentityIds = model.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList()
+                    }
+                ).ConfigureAwait(false);
 
                 model.ConfirmDeleteRequest.RequiredText = model.Match.MatchName;
 

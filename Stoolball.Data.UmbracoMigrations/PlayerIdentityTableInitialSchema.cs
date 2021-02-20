@@ -32,26 +32,5 @@ namespace Stoolball.Data.UmbracoMigrations
 
         [Column(nameof(ComparableName))]
         public string ComparableName { get; set; }
-
-        [Column(nameof(FirstPlayed))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public DateTime? FirstPlayed { get; set; }
-
-        [Column(nameof(LastPlayed))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public DateTime? LastPlayed { get; set; }
-
-        [Column(nameof(TotalMatches))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public int? TotalMatches { get; set; }
-
-        [Column(nameof(MissedMatches))]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public int? MissedMatches { get; set; }
-
-        [Column(nameof(Probability))]
-        [Index(IndexTypes.NonClustered)]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public int? Probability { get; set; }
     }
 }

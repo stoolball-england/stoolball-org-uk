@@ -94,7 +94,6 @@ namespace Stoolball.Data.SqlServer
 
             auditablePlayerIdentity.PlayerIdentityId = Guid.NewGuid();
             auditablePlayerIdentity.PlayerIdentityName = CapitaliseName(auditablePlayerIdentity.PlayerIdentityName);
-            auditablePlayerIdentity.TotalMatches = 1;
 
             player = new Player
             {
@@ -128,16 +127,15 @@ namespace Stoolball.Data.SqlServer
                   }, transaction).ConfigureAwait(false);
 
             await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerIdentity} 
-                                (PlayerIdentityId, PlayerId, PlayerIdentityName, ComparableName, TeamId, TotalMatches) 
-                                VALUES (@PlayerIdentityId, @PlayerId, @PlayerIdentityName, @ComparableName, @TeamId, @TotalMatches)",
+                                (PlayerIdentityId, PlayerId, PlayerIdentityName, ComparableName, TeamId) 
+                                VALUES (@PlayerIdentityId, @PlayerId, @PlayerIdentityName, @ComparableName, @TeamId)",
                    new
                    {
                        auditablePlayerIdentity.PlayerIdentityId,
                        player.PlayerId,
                        auditablePlayerIdentity.PlayerIdentityName,
                        ComparableName = auditablePlayerIdentity.ComparableName(),
-                       auditablePlayerIdentity.Team.TeamId,
-                       auditablePlayerIdentity.TotalMatches
+                       auditablePlayerIdentity.Team.TeamId
                    }, transaction).ConfigureAwait(false);
 
             var serialisedPlayer = JsonConvert.SerializeObject(player);

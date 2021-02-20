@@ -49,11 +49,6 @@
             MigratedPlayerIdentityId: player.playerId,
             PlayerIdentityName: player.name,
             MigratedTeamId: player.teamId,
-            FirstPlayed: player.firstPlayed,
-            LastPlayed: player.lastPlayed,
-            TotalMatches: player.totalMatches,
-            MissedMatches: player.missedMatches,
-            Probability: player.probability,
             PlayerIdentityRoute: player.route,
             History: [
               {

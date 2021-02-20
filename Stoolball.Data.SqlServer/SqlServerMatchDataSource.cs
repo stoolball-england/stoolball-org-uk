@@ -42,7 +42,6 @@ namespace Stoolball.Data.SqlServer
             public Guid PlayerIdentityId { get; set; }
             public string PlayerIdentityName { get; set; }
             public string PlayerRoute { get; set; }
-            public int? TotalMatches { get; set; }
         }
 
         /// <summary>
@@ -109,9 +108,9 @@ namespace Stoolball.Data.SqlServer
                                os.OverSetId, os.OverSetNumber, os.Overs, os.BallsPerOver,
                                i.BattingMatchTeamId, i.BowlingMatchTeamId,
                                pi.BattingPosition, pi.DismissalType, pi.RunsScored, pi.BallsFaced,
-                               bat.PlayerIdentityId, bat.PlayerIdentityName, bat.TotalMatches, bat2.PlayerId, bat2.PlayerRoute,
-                               field.PlayerIdentityId, field.PlayerIdentityName, field.TotalMatches, field2.PlayerId, field2.PlayerRoute,
-                               bowl.PlayerIdentityId, bowl.PlayerIdentityName, bowl.TotalMatches, bowl2.PlayerId, bowl2.PlayerRoute
+                               bat.PlayerIdentityId, bat.PlayerIdentityName, bat2.PlayerId, bat2.PlayerRoute,
+                               field.PlayerIdentityId, field.PlayerIdentityName, field2.PlayerId, field2.PlayerRoute,
+                               bowl.PlayerIdentityId, bowl.PlayerIdentityName, bowl2.PlayerId, bowl2.PlayerRoute
                                FROM {Tables.MatchInnings} i 
                                LEFT JOIN {Tables.OverSet} os ON i.MatchInningsId = os.MatchInningsId
                                LEFT JOIN {Tables.PlayerInnings} pi ON i.MatchInningsId = pi.MatchInningsId
@@ -149,7 +148,6 @@ namespace Stoolball.Data.SqlServer
                                     },
                                     PlayerIdentityId = batter.PlayerIdentityId,
                                     PlayerIdentityName = batter.PlayerIdentityName,
-                                    TotalMatches = batter.TotalMatches,
                                     Team = innings.BattingTeam.Team
                                 };
                                 if (dismissedBy != null)
@@ -163,7 +161,6 @@ namespace Stoolball.Data.SqlServer
                                         },
                                         PlayerIdentityId = dismissedBy.PlayerIdentityId,
                                         PlayerIdentityName = dismissedBy.PlayerIdentityName,
-                                        TotalMatches = dismissedBy.TotalMatches,
                                         Team = innings.BowlingTeam.Team
                                     };
                                 }
@@ -178,7 +175,6 @@ namespace Stoolball.Data.SqlServer
                                         },
                                         PlayerIdentityId = bowledBy.PlayerIdentityId,
                                         PlayerIdentityName = bowledBy.PlayerIdentityName,
-                                        TotalMatches = bowledBy.TotalMatches,
                                         Team = innings.BowlingTeam.Team
                                     };
                                 }
@@ -211,7 +207,7 @@ namespace Stoolball.Data.SqlServer
                     var unprocessedInningsWithOvers = await connection.QueryAsync<MatchInnings, Over, PlayerIdentity, Player, Team, MatchInnings>(
                              $@"SELECT i.MatchInningsId,
                                     o.OverNumber, o.BallsBowled, o.NoBalls, o.Wides, o.RunsConceded,
-                                    pi.PlayerIdentityId, pi.PlayerIdentityName, pi.TotalMatches, 
+                                    pi.PlayerIdentityId, pi.PlayerIdentityName, 
                                     p.PlayerId, p.PlayerRoute,
                                     pi.TeamId
                                     FROM {Tables.MatchInnings} i 
@@ -253,7 +249,7 @@ namespace Stoolball.Data.SqlServer
                     var bowlingFigures = await connection.QueryAsync<BowlingFigures, MatchInnings, PlayerIdentity, Player, Team, BowlingFigures>
                         ($@"SELECT bf.Overs, bf.Maidens, bf.RunsConceded, bf.Wickets,
                             bf.MatchInningsId,
-                            pi.PlayerIdentityName,
+                            pi.PlayerIdentityId, pi.PlayerIdentityName,
                             p.PlayerId, p.PlayerRoute,
                             pi.TeamId
                             FROM {Tables.BowlingFigures} bf
@@ -270,7 +266,7 @@ namespace Stoolball.Data.SqlServer
                                 return bowling;
                             },
                             new { MatchInningsIds = matchToReturn.MatchInnings.Select(x => x.MatchInningsId) },
-                            splitOn: "MatchInningsId, PlayerIdentityName, PlayerId, TeamId").ConfigureAwait(false);
+                            splitOn: "MatchInningsId, PlayerIdentityId, PlayerId, TeamId").ConfigureAwait(false);
 
                     foreach (var innings in matchToReturn.MatchInnings)
                     {
@@ -280,7 +276,7 @@ namespace Stoolball.Data.SqlServer
                     // Add awards - player of the match etc - to the match
                     matchToReturn.Awards = (await connection.QueryAsync<MatchAward, Award, PlayerIdentity, Player, Team, MatchAward>(
                         $@"SELECT ma.AwardedToId, ma.Reason, a.AwardName, 
-                               pi.PlayerIdentityId, pi.PlayerIdentityName, pi.TotalMatches, 
+                               pi.PlayerIdentityId, pi.PlayerIdentityName, 
                                p.PlayerId, p.PlayerRoute,
                                pi.TeamId
                                FROM {Tables.AwardedTo} ma

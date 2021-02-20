@@ -64,12 +64,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 PlayerIdentityId = Guid.NewGuid(),
                 MigratedPlayerIdentityId = player.MigratedPlayerIdentityId,
                 PlayerIdentityName = player.PlayerIdentityName,
-                MigratedTeamId = player.MigratedTeamId,
-                FirstPlayed = player.FirstPlayed,
-                LastPlayed = player.LastPlayed,
-                TotalMatches = player.TotalMatches,
-                MissedMatches = player.MissedMatches,
-                Probability = player.Probability
+                MigratedTeamId = player.MigratedTeamId
             };
 
             var migratedPlayer = new Player
@@ -112,11 +107,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                       transaction).ConfigureAwait(false);
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerIdentity}
-							(PlayerIdentityId, PlayerId, MigratedPlayerIdentityId, PlayerIdentityName, ComparableName, TeamId, 
-						  	 FirstPlayed, LastPlayed, TotalMatches, MissedMatches, Probability)
+							(PlayerIdentityId, PlayerId, MigratedPlayerIdentityId, PlayerIdentityName, ComparableName, TeamId)
 							VALUES 
-                            (@PlayerIdentityId, @PlayerId, @MigratedPlayerIdentityId, @PlayerIdentityName, @ComparableName, @TeamId, 
-                             @FirstPlayed, @LastPlayed, @TotalMatches, @MissedMatches, @Probability)",
+                            (@PlayerIdentityId, @PlayerId, @MigratedPlayerIdentityId, @PlayerIdentityName, @ComparableName, @TeamId)",
                      new
                      {
                          migratedPlayerIdentity.PlayerIdentityId,
@@ -124,12 +117,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                          migratedPlayerIdentity.MigratedPlayerIdentityId,
                          migratedPlayerIdentity.PlayerIdentityName,
                          ComparableName = migratedPlayerIdentity.ComparableName(),
-                         TeamId = teamId,
-                         migratedPlayerIdentity.FirstPlayed,
-                         migratedPlayerIdentity.LastPlayed,
-                         migratedPlayerIdentity.TotalMatches,
-                         migratedPlayerIdentity.MissedMatches,
-                         migratedPlayerIdentity.Probability
+                         TeamId = teamId
                      },
                      transaction).ConfigureAwait(false);
 

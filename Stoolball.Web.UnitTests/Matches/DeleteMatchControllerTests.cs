@@ -7,6 +7,7 @@ using Moq;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Security;
+using Stoolball.Teams;
 using Stoolball.Web.Matches;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -34,7 +35,11 @@ namespace Stoolball.Web.Tests.Matches
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                umbracoHelper, matchDataSource, Mock.Of<ICommentsDataSource<Stoolball.Matches.Match>>(),
+                umbracoHelper,
+                matchDataSource,
+                Mock.Of<IPlayerDataSource>(),
+                Mock.Of<IPlayerIdentityFinder>(),
+                Mock.Of<ICommentsDataSource<Stoolball.Matches.Match>>(),
                 Mock.Of<IAuthorizationPolicy<Stoolball.Matches.Match>>(),
                 Mock.Of<IDateTimeFormatter>())
             {
