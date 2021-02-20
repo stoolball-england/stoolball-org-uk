@@ -96,7 +96,7 @@ namespace Stoolball.Web.Matches
             model.CurrentInnings.MatchInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
             model.CurrentInnings.MatchInnings.OversBowled = postedData.OversBowledSearch.Where(x => x.Bowler?.Trim().Length > 0).Select((x, index) => new Over
             {
-                PlayerIdentity = new PlayerIdentity
+                Bowler = new PlayerIdentity
                 {
                     PlayerIdentityName = x.Bowler.Trim(),
                     Team = model.CurrentInnings.MatchInnings.BowlingTeam.Team

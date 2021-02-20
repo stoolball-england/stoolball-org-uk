@@ -15,7 +15,7 @@ namespace Stoolball.Matches
 
             while (playerInnings.Count < playersPerTeam)
             {
-                playerInnings.Add(new PlayerInnings { PlayerIdentity = new PlayerIdentity() });
+                playerInnings.Add(new PlayerInnings { Batter = new PlayerIdentity() });
             }
         }
     }

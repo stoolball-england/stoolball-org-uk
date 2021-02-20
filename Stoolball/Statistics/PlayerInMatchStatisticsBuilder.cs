@@ -82,14 +82,14 @@ namespace Stoolball.Statistics
         {
             var record = CreateRecordForPlayerInInnings(match, innings, fielder, homeTeamIsBatting ? awayTeam : homeTeam, homeTeamIsBatting ? homeTeam : awayTeam);
             var bowlingFigures = innings.BowlingFigures.SingleOrDefault(x => x.Bowler.PlayerIdentityId == fielder.PlayerIdentityId);
-            var oversBowled = innings.OversBowled.Where(x => x.PlayerIdentity.PlayerIdentityId == fielder.PlayerIdentityId);
+            var oversBowled = innings.OversBowled.Where(x => x.Bowler.PlayerIdentityId == fielder.PlayerIdentityId);
 
             record.PlayerInningsInMatchInnings = null;
             record.Catches = innings.PlayerInnings.Count(x => (x.DismissalType == DismissalType.Caught && x.DismissedBy?.PlayerIdentityId == fielder.PlayerIdentityId) ||
                                                           (x.DismissalType == DismissalType.CaughtAndBowled && x.Bowler?.PlayerIdentityId == fielder.PlayerIdentityId));
             record.RunOuts = innings.PlayerInnings.Count(x => x.DismissalType == DismissalType.RunOut && x.DismissedBy?.PlayerIdentityId == fielder.PlayerIdentityId);
 
-            record.OverNumberOfFirstOverBowled = innings.OversBowled.OrderBy(x => x.OverNumber).FirstOrDefault(x => x.PlayerIdentity.PlayerIdentityId == fielder.PlayerIdentityId)?.OverNumber;
+            record.OverNumberOfFirstOverBowled = innings.OversBowled.OrderBy(x => x.OverNumber).FirstOrDefault(x => x.Bowler.PlayerIdentityId == fielder.PlayerIdentityId)?.OverNumber;
             if (oversBowled.Any())
             {
                 record.BallsBowled = oversBowled.Sum(x => x.BallsBowled);
@@ -114,7 +114,7 @@ namespace Stoolball.Statistics
         {
             var records = new List<PlayerInMatchStatisticsRecord>();
 
-            var allPlayerInningsForThisPlayer = innings.PlayerInnings.Where(x => x.PlayerIdentity.PlayerIdentityId == batter.PlayerIdentityId).OrderBy(x => x.BattingPosition).ToList();
+            var allPlayerInningsForThisPlayer = innings.PlayerInnings.Where(x => x.Batter.PlayerIdentityId == batter.PlayerIdentityId).OrderBy(x => x.BattingPosition).ToList();
             var firstPlayerInningsForThisPlayer = allPlayerInningsForThisPlayer.FirstOrDefault();
 
             // Add a record every batting team member in this innings regardless of whether they are recorded as batting

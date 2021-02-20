@@ -168,10 +168,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             playerIdentities.AddRange(match.Awards.Select(x => x.PlayerIdentity));
             foreach (var innings in match.MatchInnings)
             {
-                playerIdentities.AddRange(innings.PlayerInnings.Select(x => x.PlayerIdentity));
+                playerIdentities.AddRange(innings.PlayerInnings.Select(x => x.Batter));
                 playerIdentities.AddRange(innings.PlayerInnings.Select(x => x.DismissedBy).OfType<PlayerIdentity>());
                 playerIdentities.AddRange(innings.PlayerInnings.Select(x => x.Bowler).OfType<PlayerIdentity>());
-                playerIdentities.AddRange(innings.OversBowled.Select(x => x.PlayerIdentity));
+                playerIdentities.AddRange(innings.OversBowled.Select(x => x.Bowler));
                 playerIdentities.AddRange(innings.BowlingFigures.Select(x => x.Bowler));
             }
             foreach (var playerIdentity in playerIdentities.Distinct(new PlayerIdentityEqualityComparer()))
@@ -212,18 +212,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 foreach (var playerInnings in innings.PlayerInnings)
                 {
                     _connection.Execute($@"INSERT INTO {Tables.PlayerInnings} 
-                    (PlayerInningsId, MatchInningsId, PlayerIdentityId, BattingPosition, DismissalType, DismissedById, BowlerId, RunsScored, BallsFaced)
+                    (PlayerInningsId, MatchInningsId, BatterPlayerIdentityId, BattingPosition, DismissalType, DismissedByPlayerIdentityId, BowlerPlayerIdentityId, RunsScored, BallsFaced)
                     VALUES
-                    (@PlayerInningsId, @MatchInningsId, @PlayerIdentityId, @BattingPosition, @DismissalType, @DismissedById, @BowlerId, @RunsScored, @BallsFaced)",
+                    (@PlayerInningsId, @MatchInningsId, @BatterPlayerIdentityId, @BattingPosition, @DismissalType, @DismissedByPlayerIdentityId, @BowlerPlayerIdentityId, @RunsScored, @BallsFaced)",
                   new
                   {
                       playerInnings.PlayerInningsId,
                       innings.MatchInningsId,
-                      playerInnings.PlayerIdentity.PlayerIdentityId,
+                      BatterPlayerIdentityId = playerInnings.Batter.PlayerIdentityId,
                       playerInnings.BattingPosition,
                       DismissalType = playerInnings.DismissalType.ToString(),
-                      DismissedById = playerInnings.DismissedBy?.PlayerIdentityId,
-                      BowlerId = playerInnings.Bowler?.PlayerIdentityId,
+                      DismissedByPlayerIdentityId = playerInnings.DismissedBy?.PlayerIdentityId,
+                      BowlerPlayerIdentityId = playerInnings.Bowler?.PlayerIdentityId,
                       playerInnings.RunsScored,
                       playerInnings.BallsFaced
                   });
@@ -237,15 +237,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 foreach (var overBowled in innings.OversBowled)
                 {
                     _connection.Execute($@"INSERT INTO {Tables.Over} 
-                    (OverId, MatchInningsId, OverSetId, PlayerIdentityId, OverNumber, BallsBowled, NoBalls, Wides, RunsConceded)
+                    (OverId, MatchInningsId, OverSetId, BowlerPlayerIdentityId, OverNumber, BallsBowled, NoBalls, Wides, RunsConceded)
                     VALUES
-                    (@OverId, @MatchInningsId, @OverSetId, @PlayerIdentityId, @OverNumber, @BallsBowled, @NoBalls, @Wides, @RunsConceded)",
+                    (@OverId, @MatchInningsId, @OverSetId, @BowlerPlayerIdentityId, @OverNumber, @BallsBowled, @NoBalls, @Wides, @RunsConceded)",
                   new
                   {
                       overBowled.OverId,
                       innings.MatchInningsId,
                       overBowled.OverSet.OverSetId,
-                      overBowled.PlayerIdentity.PlayerIdentityId,
+                      BowlerPlayerIdentityId = overBowled.Bowler.PlayerIdentityId,
                       overBowled.OverNumber,
                       overBowled.BallsBowled,
                       overBowled.NoBalls,
@@ -258,15 +258,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 foreach (var bowlingFigures in innings.BowlingFigures)
                 {
                     _connection.Execute($@"INSERT INTO {Tables.BowlingFigures} 
-                    (BowlingFiguresId, MatchInningsId, BowlingOrder, PlayerIdentityId, Overs, Maidens, RunsConceded, Wickets, IsFromOversBowled)
+                    (BowlingFiguresId, MatchInningsId, BowlingOrder, BowlerPlayerIdentityId, Overs, Maidens, RunsConceded, Wickets, IsFromOversBowled)
                     VALUES
-                    (@BowlingFiguresId, @MatchInningsId, @BowlingOrder, @PlayerIdentityId, @Overs, @Maidens, @RunsConceded, @Wickets, @IsFromOversBowled)",
+                    (@BowlingFiguresId, @MatchInningsId, @BowlingOrder, @BowlerPlayerIdentityId, @Overs, @Maidens, @RunsConceded, @Wickets, @IsFromOversBowled)",
                   new
                   {
                       bowlingFigures.BowlingFiguresId,
                       innings.MatchInningsId,
                       BowlingOrder = 1,
-                      bowlingFigures.Bowler.PlayerIdentityId,
+                      BowlerPlayerIdentityId = bowlingFigures.Bowler.PlayerIdentityId,
                       bowlingFigures.Overs,
                       bowlingFigures.Maidens,
                       bowlingFigures.RunsConceded,

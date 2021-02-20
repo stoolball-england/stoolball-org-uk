@@ -135,7 +135,7 @@ namespace Stoolball.Web.Matches
             model.CurrentInnings.MatchInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
             model.CurrentInnings.MatchInnings.PlayerInnings = postedData.PlayerInningsSearch.Where(x => !string.IsNullOrWhiteSpace(x.Batter)).Select(x => new PlayerInnings
             {
-                PlayerIdentity = new PlayerIdentity
+                Batter = new PlayerIdentity
                 {
                     PlayerIdentityName = x.Batter.Trim(),
                     Team = model.CurrentInnings.MatchInnings.BattingTeam.Team

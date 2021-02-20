@@ -114,11 +114,11 @@ namespace Stoolball.Data.SqlServer
                                FROM {Tables.MatchInnings} i 
                                LEFT JOIN {Tables.OverSet} os ON i.MatchInningsId = os.MatchInningsId
                                LEFT JOIN {Tables.PlayerInnings} pi ON i.MatchInningsId = pi.MatchInningsId
-                               LEFT JOIN {Tables.PlayerIdentity} bat ON pi.PlayerIdentityId = bat.PlayerIdentityId
+                               LEFT JOIN {Tables.PlayerIdentity} bat ON pi.BatterPlayerIdentityId = bat.PlayerIdentityId
                                LEFT JOIN {Tables.Player} bat2 ON bat.PlayerId = bat2.PlayerId
-                               LEFT JOIN {Tables.PlayerIdentity} field ON pi.DismissedById = field.PlayerIdentityId
+                               LEFT JOIN {Tables.PlayerIdentity} field ON pi.DismissedByPlayerIdentityId = field.PlayerIdentityId
                                LEFT JOIN {Tables.Player} field2 ON field.PlayerId = field2.PlayerId
-                               LEFT JOIN {Tables.PlayerIdentity} bowl ON pi.BowlerId = bowl.PlayerIdentityId
+                               LEFT JOIN {Tables.PlayerIdentity} bowl ON pi.BowlerPlayerIdentityId = bowl.PlayerIdentityId
                                LEFT JOIN {Tables.Player} bowl2 ON bowl.PlayerId = bowl2.PlayerId
                                WHERE i.MatchId = @MatchId
                                ORDER BY i.InningsOrderInMatch, pi.BattingPosition",
@@ -139,7 +139,7 @@ namespace Stoolball.Data.SqlServer
                             }
                             if (batting != null)
                             {
-                                batting.PlayerIdentity = new PlayerIdentity
+                                batting.Batter = new PlayerIdentity
                                 {
                                     Player = new Player
                                     {
@@ -212,15 +212,15 @@ namespace Stoolball.Data.SqlServer
                                     pi.TeamId
                                     FROM {Tables.MatchInnings} i 
                                     INNER JOIN {Tables.Over} o ON i.MatchInningsId = o.MatchInningsId
-                                    INNER JOIN {Tables.PlayerIdentity} pi ON o.PlayerIdentityId = pi.PlayerIdentityId
+                                    INNER JOIN {Tables.PlayerIdentity} pi ON o.BowlerPlayerIdentityId = pi.PlayerIdentityId
                                     INNER JOIN {Tables.Player} p ON pi.PlayerId = p.PlayerId
                                     WHERE i.MatchId = @MatchId
                                     ORDER BY i.InningsOrderInMatch, o.OverNumber",
                              (innings, over, bowlerPlayerIdentity, bowlerPlayer, team) =>
                              {
-                                 over.PlayerIdentity = bowlerPlayerIdentity;
-                                 over.PlayerIdentity.Player = bowlerPlayer;
-                                 over.PlayerIdentity.Team = team;
+                                 over.Bowler = bowlerPlayerIdentity;
+                                 over.Bowler.Player = bowlerPlayer;
+                                 over.Bowler.Team = team;
                                  innings.OversBowled.Add(over);
                                  return innings;
                              },
@@ -253,7 +253,7 @@ namespace Stoolball.Data.SqlServer
                             p.PlayerId, p.PlayerRoute,
                             pi.TeamId
                             FROM {Tables.BowlingFigures} bf
-                            INNER JOIN {Tables.PlayerIdentity} pi ON bf.PlayerIdentityId = pi.PlayerIdentityId
+                            INNER JOIN {Tables.PlayerIdentity} pi ON bf.BowlerPlayerIdentityId = pi.PlayerIdentityId
                             INNER JOIN {Tables.Player} p ON pi.PlayerId = p.PlayerId
                             WHERE bf.MatchInningsId IN @MatchInningsIds
                             ORDER BY bf.MatchInningsId, bf.BowlingOrder",

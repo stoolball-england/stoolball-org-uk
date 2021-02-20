@@ -135,7 +135,7 @@ namespace Stoolball.Data.SqlServer
                 PlayerInnings = innings.PlayerInnings.Select(x => new PlayerInnings
                 {
                     PlayerInningsId = x.PlayerInningsId,
-                    PlayerIdentity = CreateAuditableCopy(x.PlayerIdentity),
+                    Batter = CreateAuditableCopy(x.Batter),
                     DismissedBy = x.DismissedBy != null ? CreateAuditableCopy(x.DismissedBy) : null,
                     Bowler = x.Bowler != null ? CreateAuditableCopy(x.Bowler) : null,
                     DismissalType = x.DismissalType,
@@ -145,7 +145,7 @@ namespace Stoolball.Data.SqlServer
                 OversBowled = innings.OversBowled.Select(x => new Over
                 {
                     OverId = x.OverId,
-                    PlayerIdentity = CreateAuditableCopy(x.PlayerIdentity),
+                    Bowler = CreateAuditableCopy(x.Bowler),
                     BallsBowled = x.BallsBowled,
                     NoBalls = x.NoBalls,
                     Wides = x.Wides,
@@ -774,13 +774,13 @@ namespace Stoolball.Data.SqlServer
                                field.PlayerIdentityName,
                                bowl.PlayerIdentityName
                                FROM {Tables.PlayerInnings} i 
-                               INNER JOIN {Tables.PlayerIdentity} bat ON i.PlayerIdentityId = bat.PlayerIdentityId
-                               LEFT JOIN {Tables.PlayerIdentity} field ON i.DismissedById = field.PlayerIdentityId
-                               LEFT JOIN {Tables.PlayerIdentity} bowl ON i.BowlerId = bowl.PlayerIdentityId
+                               INNER JOIN {Tables.PlayerIdentity} bat ON i.BatterPlayerIdentityId = bat.PlayerIdentityId
+                               LEFT JOIN {Tables.PlayerIdentity} field ON i.DismissedByPlayerIdentityId = field.PlayerIdentityId
+                               LEFT JOIN {Tables.PlayerIdentity} bowl ON i.BowlerPlayerIdentityId = bowl.PlayerIdentityId
                                WHERE i.MatchInningsId = @MatchInningsId",
                         (playerInnings, batter, fielder, bowler) =>
                         {
-                            playerInnings.PlayerIdentity = batter;
+                            playerInnings.Batter = batter;
                             playerInnings.DismissedBy = fielder;
                             playerInnings.Bowler = bowler;
                             return playerInnings;
@@ -805,8 +805,8 @@ namespace Stoolball.Data.SqlServer
 
                     foreach (var playerInnings in comparison.PlayerInningsAdded)
                     {
-                        playerInnings.PlayerIdentity.Team = auditableInnings.BattingTeam.Team;
-                        playerInnings.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.PlayerIdentity, memberKey, memberName, transaction).ConfigureAwait(false);
+                        playerInnings.Batter.Team = auditableInnings.BattingTeam.Team;
+                        playerInnings.Batter.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.Batter, memberKey, memberName, transaction).ConfigureAwait(false);
 
                         if (playerInnings.DismissedBy != null)
                         {
@@ -822,18 +822,18 @@ namespace Stoolball.Data.SqlServer
 
                         playerInnings.PlayerInningsId = Guid.NewGuid();
                         await connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerInnings} 
-                                (PlayerInningsId, BattingPosition, MatchInningsId, PlayerIdentityId, DismissalType, DismissedById, BowlerId, RunsScored, BallsFaced) 
+                                (PlayerInningsId, BattingPosition, MatchInningsId, BatterPlayerIdentityId, DismissalType, DismissedByPlayerIdentityId, BowlerPlayerIdentityId, RunsScored, BallsFaced) 
                                 VALUES 
-                                (@PlayerInningsId, @BattingPosition, @MatchInningsId, @PlayerIdentityId, @DismissalType, @DismissedById, @BowlerId, @RunsScored, @BallsFaced)",
+                                (@PlayerInningsId, @BattingPosition, @MatchInningsId, @BatterPlayerIdentityId, @DismissalType, @DismissedByPlayerIdentityId, @BowlerPlayerIdentityId, @RunsScored, @BallsFaced)",
                             new
                             {
                                 playerInnings.PlayerInningsId,
                                 playerInnings.BattingPosition,
                                 auditableInnings.MatchInningsId,
-                                playerInnings.PlayerIdentity.PlayerIdentityId,
+                                BatterPlayerIdentityId = playerInnings.Batter.PlayerIdentityId,
                                 DismissalType = playerInnings.DismissalType?.ToString(),
-                                DismissedById = playerInnings.DismissedBy?.PlayerIdentityId,
-                                BowlerId = playerInnings.Bowler?.PlayerIdentityId,
+                                DismissedByPlayerIdentityId = playerInnings.DismissedBy?.PlayerIdentityId,
+                                BowlerPlayerIdentityId = playerInnings.Bowler?.PlayerIdentityId,
                                 playerInnings.RunsScored,
                                 playerInnings.BallsFaced
                             }, transaction).ConfigureAwait(false);
@@ -842,8 +842,8 @@ namespace Stoolball.Data.SqlServer
 
                     foreach (var (before, after) in comparison.PlayerInningsChanged)
                     {
-                        after.PlayerIdentity.Team = auditableInnings.BattingTeam.Team;
-                        after.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.PlayerIdentity, memberKey, memberName, transaction).ConfigureAwait(false);
+                        after.Batter.Team = auditableInnings.BattingTeam.Team;
+                        after.Batter.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.Batter, memberKey, memberName, transaction).ConfigureAwait(false);
 
                         if (after.DismissedBy != null)
                         {
@@ -859,19 +859,19 @@ namespace Stoolball.Data.SqlServer
 
                         after.PlayerInningsId = before.PlayerInningsId;
                         await connection.ExecuteAsync($@"UPDATE {Tables.PlayerInnings} SET 
-                                PlayerIdentityId = @PlayerIdentityId,
+                                BatterPlayerIdentityId = @BatterPlayerIdentityId,
                                 DismissalType = @DismissalType,
-                                DismissedById = @DismissedById,
-                                BowlerId = @BowlerId,
+                                DismissedByPlayerIdentityId = @DismissedByPlayerIdentityId,
+                                BowlerPlayerIdentityId = @BowlerPlayerIdentityId,
                                 RunsScored = @RunsScored,
                                 BallsFaced = @BallsFaced
                                 WHERE PlayerInningsId = @PlayerInningsId",
                             new
                             {
-                                after.PlayerIdentity.PlayerIdentityId,
+                                BatterPlayerIdentityId = after.Batter.PlayerIdentityId,
                                 DismissalType = after.DismissalType?.ToString(),
-                                DismissedById = after.DismissedBy?.PlayerIdentityId,
-                                BowlerId = after.Bowler?.PlayerIdentityId,
+                                DismissedByPlayerIdentityId = after.DismissedBy?.PlayerIdentityId,
+                                BowlerPlayerIdentityId = after.Bowler?.PlayerIdentityId,
                                 after.RunsScored,
                                 after.BallsFaced,
                                 after.PlayerInningsId
@@ -965,12 +965,12 @@ namespace Stoolball.Data.SqlServer
                         $@"SELECT o.OverId, o.OverNumber, o.BallsBowled, o.NoBalls, o.Wides, o.RunsConceded,
                                o.OverSetId,
                                p.PlayerIdentityName
-                               FROM {Tables.Over} o INNER JOIN {Tables.PlayerIdentity} p ON o.PlayerIdentityId = p.PlayerIdentityId
+                               FROM {Tables.Over} o INNER JOIN {Tables.PlayerIdentity} p ON o.BowlerPlayerIdentityId = p.PlayerIdentityId
                                WHERE o.MatchInningsId = @MatchInningsId",
                         (over, overSet, playerIdentity) =>
                         {
                             over.OverSet = overSet;
-                            over.PlayerIdentity = playerIdentity;
+                            over.Bowler = playerIdentity;
                             return over;
                         },
                            new { auditableInnings.MatchInningsId },
@@ -997,18 +997,18 @@ namespace Stoolball.Data.SqlServer
                     foreach (var over in comparison.OversAdded)
                     {
                         over.OverId = Guid.NewGuid();
-                        over.PlayerIdentity.Team = auditableInnings.BowlingTeam.Team;
-                        over.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(over.PlayerIdentity, memberKey, memberName, transaction).ConfigureAwait(false);
+                        over.Bowler.Team = auditableInnings.BowlingTeam.Team;
+                        over.Bowler.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(over.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($@"INSERT INTO {Tables.Over} 
-                                (OverId, OverNumber, MatchInningsId, PlayerIdentityId, OverSetId, BallsBowled, NoBalls, Wides, RunsConceded) 
+                                (OverId, OverNumber, MatchInningsId, BowlerPlayerIdentityId, OverSetId, BallsBowled, NoBalls, Wides, RunsConceded) 
                                 VALUES 
-                                (@OverId, @OverNumber, @MatchInningsId, @PlayerIdentityId, @OverSetId, @BallsBowled, @NoBalls, @Wides, @RunsConceded)",
+                                (@OverId, @OverNumber, @MatchInningsId, @BowlerPlayerIdentityId, @OverSetId, @BallsBowled, @NoBalls, @Wides, @RunsConceded)",
                             new
                             {
                                 over.OverId,
                                 over.OverNumber,
                                 auditableInnings.MatchInningsId,
-                                over.PlayerIdentity.PlayerIdentityId,
+                                BowlerPlayerIdentityId = over.Bowler.PlayerIdentityId,
                                 _oversHelper.OverSetForOver(auditableInnings.OverSets, over.OverNumber)?.OverSetId,
                                 over.BallsBowled,
                                 over.NoBalls,
@@ -1021,10 +1021,10 @@ namespace Stoolball.Data.SqlServer
                     foreach (var (before, after) in comparison.OversChanged)
                     {
                         after.OverId = before.OverId;
-                        after.PlayerIdentity.Team = auditableInnings.BowlingTeam.Team;
-                        after.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.PlayerIdentity, memberKey, memberName, transaction).ConfigureAwait(false);
+                        after.Bowler.Team = auditableInnings.BowlingTeam.Team;
+                        after.Bowler.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($@"UPDATE {Tables.Over} SET 
-                                PlayerIdentityId = @PlayerIdentityId,
+                                BowlerPlayerIdentityId = @BowlerPlayerIdentityId,
                                 OverSetId = @OverSetId,
                                 BallsBowled = @BallsBowled,
                                 NoBalls = @NoBalls,
@@ -1033,7 +1033,7 @@ namespace Stoolball.Data.SqlServer
                                 WHERE OverId = @OverId",
                             new
                             {
-                                after.PlayerIdentity.PlayerIdentityId,
+                                BowlerPlayerIdentityId = after.Bowler.PlayerIdentityId,
                                 _oversHelper.OverSetForOver(auditableInnings.OverSets, after.OverNumber)?.OverSetId,
                                 after.BallsBowled,
                                 after.NoBalls,

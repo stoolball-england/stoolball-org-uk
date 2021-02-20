@@ -30,8 +30,8 @@ namespace Stoolball.Matches
 
             var comparison = new BowlingScorecardComparison();
 
-            var identitiesBefore = before.Select(x => x.PlayerIdentity.PlayerIdentityName).Distinct();
-            var identitiesAfter = after.Select(x => x.PlayerIdentity.PlayerIdentityName).Distinct();
+            var identitiesBefore = before.Select(x => x.Bowler.PlayerIdentityName).Distinct();
+            var identitiesAfter = after.Select(x => x.Bowler.PlayerIdentityName).Distinct();
             comparison.PlayerIdentitiesAdded.AddRange(identitiesAfter.Where(x => !identitiesBefore.Contains(x)));
             comparison.PlayerIdentitiesRemoved.AddRange(identitiesBefore.Where(x => !identitiesAfter.Contains(x)));
 
@@ -67,7 +67,7 @@ namespace Stoolball.Matches
                 }
                 else if (overBefore != null && overAfter != null)
                 {
-                    if (overBefore.PlayerIdentity.ComparableName() != overAfter.PlayerIdentity.ComparableName() ||
+                    if (overBefore.Bowler.ComparableName() != overAfter.Bowler.ComparableName() ||
                         overBefore.BallsBowled != overAfter.BallsBowled ||
                         overBefore.NoBalls != overAfter.NoBalls ||
                         overBefore.Wides != overAfter.Wides ||
@@ -75,13 +75,13 @@ namespace Stoolball.Matches
                     {
                         comparison.OversChanged.Add((overBefore, overAfter));
 
-                        if (!comparison.PlayerIdentitiesRemoved.Contains(overBefore.PlayerIdentity.PlayerIdentityName) && !comparison.PlayerIdentitiesAffected.Contains(overBefore.PlayerIdentity.PlayerIdentityName))
+                        if (!comparison.PlayerIdentitiesRemoved.Contains(overBefore.Bowler.PlayerIdentityName) && !comparison.PlayerIdentitiesAffected.Contains(overBefore.Bowler.PlayerIdentityName))
                         {
-                            comparison.PlayerIdentitiesAffected.Add(overBefore.PlayerIdentity.PlayerIdentityName);
+                            comparison.PlayerIdentitiesAffected.Add(overBefore.Bowler.PlayerIdentityName);
                         }
-                        if (!comparison.PlayerIdentitiesAdded.Contains(overAfter.PlayerIdentity.PlayerIdentityName) && !comparison.PlayerIdentitiesAffected.Contains(overAfter.PlayerIdentity.PlayerIdentityName))
+                        if (!comparison.PlayerIdentitiesAdded.Contains(overAfter.Bowler.PlayerIdentityName) && !comparison.PlayerIdentitiesAffected.Contains(overAfter.Bowler.PlayerIdentityName))
                         {
-                            comparison.PlayerIdentitiesAffected.Add(overAfter.PlayerIdentity.PlayerIdentityName);
+                            comparison.PlayerIdentitiesAffected.Add(overAfter.Bowler.PlayerIdentityName);
                         }
                     }
                     else

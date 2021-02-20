@@ -28,9 +28,9 @@ namespace Stoolball.UnitTests.Statistics
             var innings = new MatchInnings
             {
                 OversBowled = new List<Over> {
-                    new Over { OverNumber = 2, PlayerIdentity = new PlayerIdentity { PlayerIdentityName = secondBowler } },
-                    new Over { OverNumber = 3, PlayerIdentity = new PlayerIdentity { PlayerIdentityName = thirdBowler } },
-                    new Over { OverNumber = 1, PlayerIdentity = new PlayerIdentity { PlayerIdentityName = firstBowler } }
+                    new Over { OverNumber = 2, Bowler = new PlayerIdentity { PlayerIdentityName = secondBowler } },
+                    new Over { OverNumber = 3, Bowler = new PlayerIdentity { PlayerIdentityName = thirdBowler } },
+                    new Over { OverNumber = 1, Bowler = new PlayerIdentity { PlayerIdentityName = firstBowler } }
                 }
             };
 
@@ -128,11 +128,11 @@ namespace Stoolball.UnitTests.Statistics
                     }
                 },
                 OversBowled = new List<Over> {
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = 8 }, // complete over counted
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = 8 }, // multiple complete overs counted
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = null }, // over with missing balls data not counted
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = thirdBowler }, BallsBowled = 8 }, // complete over counted
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = thirdBowler }, BallsBowled = 4 } // partial over counted
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = 8 }, // complete over counted
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = 8 }, // multiple complete overs counted
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = null }, // over with missing balls data not counted
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = thirdBowler }, BallsBowled = 8 }, // complete over counted
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = thirdBowler }, BallsBowled = 4 } // partial over counted
                 }
             };
 
@@ -155,8 +155,8 @@ namespace Stoolball.UnitTests.Statistics
             var innings = new MatchInnings
             {
                 OversBowled = new List<Over> {
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = bowler }, BallsBowled = 8 }, // complete over counted
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = bowler }, BallsBowled = 10 }, // longer complete over counted as more than one
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = bowler }, BallsBowled = 8 }, // complete over counted
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = bowler }, BallsBowled = 10 }, // longer complete over counted as more than one
                 }
             };
 
@@ -180,11 +180,11 @@ namespace Stoolball.UnitTests.Statistics
                     }
                 },
                 OversBowled = new List<Over> {
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = 8, RunsConceded = 5 }, // over with runs not counted
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = null, RunsConceded = 5 }, // over with missing balls data not counted
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = 8, RunsConceded = null }, // over with missing runs data not counted
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = 10, RunsConceded = 0 }, // longer overs counted, zero runs counted
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = 4, RunsConceded = 0 } // partial overs not counted
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = 8, RunsConceded = 5 }, // over with runs not counted
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = null, RunsConceded = 5 }, // over with missing balls data not counted
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = 8, RunsConceded = null }, // over with missing runs data not counted
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = 10, RunsConceded = 0 }, // longer overs counted, zero runs counted
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = 4, RunsConceded = 0 } // partial overs not counted
                 }
             };
 
@@ -209,9 +209,9 @@ namespace Stoolball.UnitTests.Statistics
                     }
                 },
                 OversBowled = new List<Over> {
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = secondBowler }, RunsConceded = 5 },
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = secondBowler }, RunsConceded = null },
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = secondBowler }, RunsConceded = 15 }
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = secondBowler }, RunsConceded = 5 },
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = secondBowler }, RunsConceded = null },
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = secondBowler }, RunsConceded = 15 }
                 }
             };
 
@@ -245,9 +245,9 @@ namespace Stoolball.UnitTests.Statistics
                     }
                 },
                 OversBowled = new List<Over> {
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = firstBowler } },
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = secondBowler } },
-                    new Over { PlayerIdentity = new PlayerIdentity { PlayerIdentityName = thirdBowler } }
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = firstBowler } },
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = secondBowler } },
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = thirdBowler } }
                 }
             };
 
@@ -273,7 +273,7 @@ namespace Stoolball.UnitTests.Statistics
                     }
                 },
                 OversBowled = new List<Over> {
-                    new Over { PlayerIdentity = bowler1 },
+                    new Over { Bowler = bowler1 },
                 }
             };
 
@@ -301,7 +301,7 @@ namespace Stoolball.UnitTests.Statistics
                     }
                 },
                 OversBowled = new List<Over> {
-                    new Over { PlayerIdentity = bowler1 },
+                    new Over { Bowler = bowler1 },
                 }
             };
 

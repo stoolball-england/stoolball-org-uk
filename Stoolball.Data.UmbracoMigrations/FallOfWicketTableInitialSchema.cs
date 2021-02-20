@@ -19,6 +19,10 @@ namespace Stoolball.Data.UmbracoMigrations
         [Index(IndexTypes.Clustered)]
         public Guid MatchInningsId { get; set; }
 
+        [Column(nameof(BatterPlayerIdentityId))]
+        [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId))]
+        public Guid BatterPlayerIdentityId { get; set; }
+
         [Column(nameof(BattingPosition))]
         public int BattingPosition { get; set; }
 

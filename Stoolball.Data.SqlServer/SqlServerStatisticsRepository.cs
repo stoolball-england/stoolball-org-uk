@@ -59,15 +59,15 @@ namespace Stoolball.Data.SqlServer
                 bowlingFigures.Bowler.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(bowlingFigures.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
 
                 await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.BowlingFigures} 
-                                (BowlingFiguresId, MatchInningsId, BowlingOrder, PlayerIdentityId, Overs, Maidens, RunsConceded, Wickets, IsFromOversBowled)
+                                (BowlingFiguresId, MatchInningsId, BowlingOrder, BowlerPlayerIdentityId, Overs, Maidens, RunsConceded, Wickets, IsFromOversBowled)
                                 VALUES 
-                                (@BowlingFiguresId, @MatchInningsId, @BowlingOrder, @PlayerIdentityId, @Overs, @Maidens, @RunsConceded, @Wickets, @IsFromOversBowled)",
+                                (@BowlingFiguresId, @MatchInningsId, @BowlingOrder, @BowlerPlayerIdentityId, @Overs, @Maidens, @RunsConceded, @Wickets, @IsFromOversBowled)",
                         new
                         {
                             BowlingFiguresId = Guid.NewGuid(),
                             innings.MatchInningsId,
                             BowlingOrder = i,
-                            bowlingFigures.Bowler.PlayerIdentityId,
+                            BowlerPlayerIdentityId = bowlingFigures.Bowler.PlayerIdentityId,
                             bowlingFigures.Overs,
                             bowlingFigures.Maidens,
                             bowlingFigures.RunsConceded,

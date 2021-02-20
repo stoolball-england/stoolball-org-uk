@@ -80,7 +80,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     {
                         MatchId = (await connection.ExecuteScalarAsync<Guid>($"SELECT MatchId FROM {Tables.Match} WHERE MigratedMatchId = @MigratedMatchId", new { migratedInnings.MigratedMatchId }, transaction).ConfigureAwait(false))
                     };
-                    migratedInnings.PlayerIdentity = new PlayerIdentity
+                    migratedInnings.Batter = new PlayerIdentity
                     {
                         PlayerIdentityId = (await connection.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @MigratedPlayerIdentityId", new { migratedInnings.MigratedPlayerIdentityId }, transaction).ConfigureAwait(false)),
                         Team = new Team
@@ -115,18 +115,18 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         transaction).ConfigureAwait(false));
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerInnings}
-						(PlayerInningsId, MatchInningsId, PlayerIdentityId, BattingPosition, DismissalType, DismissedById, BowlerId, RunsScored, BallsFaced)
+						(PlayerInningsId, MatchInningsId, BatterPlayerIdentityId, BattingPosition, DismissalType, DismissedByPlayerIdentityId, BowlerPlayerIdentityId, RunsScored, BallsFaced)
 						VALUES 
-                        (@PlayerInningsId, @MatchInningsId, @PlayerIdentityId, @BattingPosition, @DismissalType, @DismissedById, @BowlerId, @RunsScored, @BallsFaced)",
+                        (@PlayerInningsId, @MatchInningsId, @BatterPlayerIdentityId, @BattingPosition, @DismissalType, @DismissedByPlayerIdentityId, @BowlerPlayerIdentityId, @RunsScored, @BallsFaced)",
                     new
                     {
                         migratedInnings.PlayerInningsId,
                         MatchInningsId = inningsId,
-                        migratedInnings.PlayerIdentity.PlayerIdentityId,
+                        BatterPlayerIdentityId = migratedInnings.Batter.PlayerIdentityId,
                         migratedInnings.BattingPosition,
                         DismissalType = migratedInnings.DismissalType?.ToString(),
-                        DismissedById = migratedInnings.DismissedBy?.PlayerIdentityId,
-                        BowlerId = migratedInnings.Bowler?.PlayerIdentityId,
+                        DismissedByPlayerIdentityId = migratedInnings.DismissedBy?.PlayerIdentityId,
+                        BowlerPlayerIdentityId = migratedInnings.Bowler?.PlayerIdentityId,
                         migratedInnings.RunsScored,
                         migratedInnings.BallsFaced
                     },
@@ -202,7 +202,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     {
                         MatchId = (await connection.ExecuteScalarAsync<Guid>($"SELECT MatchId FROM {Tables.Match} WHERE MigratedMatchId = @MigratedMatchId", new { migratedOver.MigratedMatchId }, transaction).ConfigureAwait(false))
                     };
-                    migratedOver.PlayerIdentity = new PlayerIdentity
+                    migratedOver.Bowler = new PlayerIdentity
                     {
                         PlayerIdentityId = (await connection.ExecuteScalarAsync<Guid>($"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE MigratedPlayerIdentityId = @MigratedPlayerIdentityId", new { migratedOver.MigratedPlayerIdentityId }, transaction).ConfigureAwait(false)),
                         Team = new Team
@@ -223,13 +223,13 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                         transaction).ConfigureAwait(false));
 
                     await connection.ExecuteAsync($@"INSERT INTO {Tables.Over}
-						(OverId, MatchInningsId, OverSetId, PlayerIdentityId, OverNumber, BallsBowled, NoBalls, Wides, RunsConceded)
-						VALUES (@OverId, @MatchInningsId, (SELECT TOP 1 OverSetId FROM {Tables.OverSet} WHERE MatchInningsId = @MatchInningsId), @PlayerIdentityId, @OverNumber, @BallsBowled, @NoBalls, @Wides, @RunsConceded)",
+						(OverId, MatchInningsId, OverSetId, BowlerPlayerIdentityId, OverNumber, BallsBowled, NoBalls, Wides, RunsConceded)
+						VALUES (@OverId, @MatchInningsId, (SELECT TOP 1 OverSetId FROM {Tables.OverSet} WHERE MatchInningsId = @MatchInningsId), @BowlerPlayerIdentityId, @OverNumber, @BallsBowled, @NoBalls, @Wides, @RunsConceded)",
                     new
                     {
                         migratedOver.OverId,
                         MatchInningsId = inningsId,
-                        migratedOver.PlayerIdentity.PlayerIdentityId,
+                        BowlerPlayerIdentityId = migratedOver.Bowler.PlayerIdentityId,
                         migratedOver.OverNumber,
                         migratedOver.BallsBowled,
                         migratedOver.NoBalls,

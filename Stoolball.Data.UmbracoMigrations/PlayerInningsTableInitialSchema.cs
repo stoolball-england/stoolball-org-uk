@@ -19,9 +19,9 @@ namespace Stoolball.Data.UmbracoMigrations
         [Index(IndexTypes.Clustered)]
         public Guid MatchInningsId { get; set; }
 
-        [Column(nameof(PlayerIdentityId))]
+        [Column(nameof(BatterPlayerIdentityId))]
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId))]
-        public Guid PlayerIdentityId { get; set; }
+        public Guid BatterPlayerIdentityId { get; set; }
 
         [Column(nameof(BattingPosition))]
         public int BattingPosition { get; set; }
@@ -30,15 +30,15 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public string DismissalType { get; set; }
 
-        [Column(nameof(DismissedById))]
+        [Column(nameof(DismissedByPlayerIdentityId))]
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId), Name = "FK_StoolballBatting_StoolballPlayerIdentity_DismissedById")]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public Guid? DismissedById { get; set; }
+        public Guid? DismissedByPlayerIdentityId { get; set; }
 
-        [Column(nameof(BowlerId))]
+        [Column(nameof(BowlerPlayerIdentityId))]
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId), Name = "FK_StoolballBatting_StoolballPlayerIdentity_BowlerId")]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public Guid? BowlerId { get; set; }
+        public Guid? BowlerPlayerIdentityId { get; set; }
 
         [Column(nameof(RunsScored))]
         [NullSetting(NullSetting = NullSettings.Null)]

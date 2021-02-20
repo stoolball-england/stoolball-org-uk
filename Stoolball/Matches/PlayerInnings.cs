@@ -1,7 +1,7 @@
-﻿using Stoolball.Logging;
-using Stoolball.Statistics;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Stoolball.Logging;
+using Stoolball.Statistics;
 
 namespace Stoolball.Matches
 {
@@ -11,7 +11,7 @@ namespace Stoolball.Matches
 
         public Match Match { get; set; }
 
-        public PlayerIdentity PlayerIdentity { get; set; }
+        public PlayerIdentity Batter { get; set; }
 
         public int BattingPosition { get; set; }
 
@@ -25,8 +25,7 @@ namespace Stoolball.Matches
 
         public int? BallsFaced { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
-        public Uri EntityUri
-        {
+        public Uri EntityUri {
             get { return new Uri($"https://www.stoolball.org.uk/id/player-innings/{PlayerInningsId}"); }
         }
     }

@@ -26,7 +26,7 @@
                 @foreach (var playerInnings in Model.PlayerInnings)
                 {
                     <tr>
-                        <th class="player-name"><a href="@playerInnings.PlayerIdentity.Player.PlayerRoute">@playerInnings.PlayerIdentity.PlayerIdentityName</a></th>
+                        <th class="player-name"><a href="@playerInnings.Batter.Player.PlayerRoute">@playerInnings.Batter.PlayerIdentityName</a></th>
                         <td data-stackable="true">
                             <span class="table-as-cards__label" aria-hidden="true">How out</span>
                             @if (playerInnings.DismissalType == DismissalType.NotOut)

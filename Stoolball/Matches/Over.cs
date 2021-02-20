@@ -10,7 +10,7 @@ namespace Stoolball.Matches
     {
         public Guid? OverId { get; set; }
 
-        public PlayerIdentity PlayerIdentity { get; set; }
+        public PlayerIdentity Bowler { get; set; }
 
         public int OverNumber { get; set; }
 

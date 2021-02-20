@@ -57,7 +57,7 @@
                         total += over.RunsConceded.Value;
                     }
                     <tr>
-                        <th scope="row" class="player-name"><a href="@over.PlayerIdentity.Player.PlayerRoute">@over.PlayerIdentity.PlayerIdentityName</a></th>
+                        <th scope="row" class="player-name"><a href="@over.Bowler.Player.PlayerRoute">@over.Bowler.PlayerIdentityName</a></th>
                         <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Balls</span><span class="scorecard__numeric-value">@over.BallsBowled</span></td>
                         <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Wides</span><span class="scorecard__numeric-value">@over.Wides</span></td>
                         <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">No balls</span><span class="scorecard__numeric-value">@over.NoBalls</span></td>

@@ -30,10 +30,10 @@ namespace Stoolball.Matches
 
             var comparison = new BattingScorecardComparison();
 
-            var battingIdentitiesBefore = before.Where(x => !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).Select(x => x.PlayerIdentity.PlayerIdentityName).Distinct();
-            var bowlingIdentitiesBefore = before.Where(x => !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).SelectMany(x => new[] { x.DismissedBy?.PlayerIdentityName, x.Bowler?.PlayerIdentityName }.Where(name => !string.IsNullOrWhiteSpace(name))).Distinct();
-            var battingIdentitiesAfter = after.Where(x => !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).Select(x => x.PlayerIdentity.PlayerIdentityName).Distinct();
-            var bowlingIdentitiesAfter = after.Where(x => !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).SelectMany(x => new[] { x.DismissedBy?.PlayerIdentityName, x.Bowler?.PlayerIdentityName }.Where(name => !string.IsNullOrWhiteSpace(name))).Distinct();
+            var battingIdentitiesBefore = before.Where(x => !string.IsNullOrWhiteSpace(x.Batter.PlayerIdentityName)).Select(x => x.Batter.PlayerIdentityName).Distinct();
+            var bowlingIdentitiesBefore = before.Where(x => !string.IsNullOrWhiteSpace(x.Batter.PlayerIdentityName)).SelectMany(x => new[] { x.DismissedBy?.PlayerIdentityName, x.Bowler?.PlayerIdentityName }.Where(name => !string.IsNullOrWhiteSpace(name))).Distinct();
+            var battingIdentitiesAfter = after.Where(x => !string.IsNullOrWhiteSpace(x.Batter.PlayerIdentityName)).Select(x => x.Batter.PlayerIdentityName).Distinct();
+            var bowlingIdentitiesAfter = after.Where(x => !string.IsNullOrWhiteSpace(x.Batter.PlayerIdentityName)).SelectMany(x => new[] { x.DismissedBy?.PlayerIdentityName, x.Bowler?.PlayerIdentityName }.Where(name => !string.IsNullOrWhiteSpace(name))).Distinct();
             comparison.BattingPlayerIdentitiesAdded.AddRange(battingIdentitiesAfter.Where(x => !battingIdentitiesBefore.Contains(x)));
             comparison.BowlingPlayerIdentitiesAdded.AddRange(bowlingIdentitiesAfter.Where(x => !bowlingIdentitiesBefore.Contains(x)));
             comparison.BattingPlayerIdentitiesRemoved.AddRange(battingIdentitiesBefore.Where(x => !battingIdentitiesAfter.Contains(x)));
@@ -45,7 +45,7 @@ namespace Stoolball.Matches
             {
                 try
                 {
-                    inningsBefore = before.Where(x => !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).SingleOrDefault(x => x.BattingPosition == battingPosition);
+                    inningsBefore = before.Where(x => !string.IsNullOrWhiteSpace(x.Batter.PlayerIdentityName)).SingleOrDefault(x => x.BattingPosition == battingPosition);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -54,7 +54,7 @@ namespace Stoolball.Matches
 
                 try
                 {
-                    inningsAfter = after.Where(x => !string.IsNullOrWhiteSpace(x.PlayerIdentity.PlayerIdentityName)).SingleOrDefault(x => x.BattingPosition == battingPosition);
+                    inningsAfter = after.Where(x => !string.IsNullOrWhiteSpace(x.Batter.PlayerIdentityName)).SingleOrDefault(x => x.BattingPosition == battingPosition);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -71,7 +71,7 @@ namespace Stoolball.Matches
                 }
                 else if (inningsBefore != null && inningsAfter != null)
                 {
-                    if (inningsBefore.PlayerIdentity.ComparableName() != inningsAfter.PlayerIdentity.ComparableName() ||
+                    if (inningsBefore.Batter.ComparableName() != inningsAfter.Batter.ComparableName() ||
                         inningsBefore.DismissalType != inningsAfter.DismissalType ||
                         inningsBefore.DismissedBy?.ComparableName() != inningsAfter.DismissedBy?.ComparableName() ||
                         inningsBefore.Bowler?.ComparableName() != inningsAfter.Bowler?.ComparableName() ||
@@ -80,9 +80,9 @@ namespace Stoolball.Matches
                     {
                         comparison.PlayerInningsChanged.Add((inningsBefore, inningsAfter));
 
-                        if (!comparison.BattingPlayerIdentitiesRemoved.Contains(inningsBefore.PlayerIdentity.PlayerIdentityName) && !comparison.BattingPlayerIdentitiesAffected.Contains(inningsBefore.PlayerIdentity.PlayerIdentityName))
+                        if (!comparison.BattingPlayerIdentitiesRemoved.Contains(inningsBefore.Batter.PlayerIdentityName) && !comparison.BattingPlayerIdentitiesAffected.Contains(inningsBefore.Batter.PlayerIdentityName))
                         {
-                            comparison.BattingPlayerIdentitiesAffected.Add(inningsBefore.PlayerIdentity.PlayerIdentityName);
+                            comparison.BattingPlayerIdentitiesAffected.Add(inningsBefore.Batter.PlayerIdentityName);
                         }
 
                         if (inningsBefore.DismissedBy != null && !comparison.BowlingPlayerIdentitiesRemoved.Contains(inningsBefore.DismissedBy.PlayerIdentityName) && !comparison.BowlingPlayerIdentitiesAffected.Contains(inningsBefore.DismissedBy.PlayerIdentityName))
@@ -95,9 +95,9 @@ namespace Stoolball.Matches
                             comparison.BowlingPlayerIdentitiesAffected.Add(inningsBefore.Bowler.PlayerIdentityName);
                         }
 
-                        if (!comparison.BattingPlayerIdentitiesAdded.Contains(inningsAfter.PlayerIdentity.PlayerIdentityName) && !comparison.BattingPlayerIdentitiesAffected.Contains(inningsAfter.PlayerIdentity.PlayerIdentityName))
+                        if (!comparison.BattingPlayerIdentitiesAdded.Contains(inningsAfter.Batter.PlayerIdentityName) && !comparison.BattingPlayerIdentitiesAffected.Contains(inningsAfter.Batter.PlayerIdentityName))
                         {
-                            comparison.BattingPlayerIdentitiesAffected.Add(inningsAfter.PlayerIdentity.PlayerIdentityName);
+                            comparison.BattingPlayerIdentitiesAffected.Add(inningsAfter.Batter.PlayerIdentityName);
                         }
 
                         if (inningsAfter.DismissedBy != null && !comparison.BowlingPlayerIdentitiesRemoved.Contains(inningsAfter.DismissedBy.PlayerIdentityName) && !comparison.BowlingPlayerIdentitiesAffected.Contains(inningsAfter.DismissedBy.PlayerIdentityName))

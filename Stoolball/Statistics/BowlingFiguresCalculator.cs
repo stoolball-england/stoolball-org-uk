@@ -22,8 +22,8 @@ namespace Stoolball.Statistics
             }
 
             // Get all bowlers who bowled, in the order they bowled
-            var bowlerNames = innings.OversBowled.OrderBy(x => x.OverNumber).Select(x => x.PlayerIdentity.ComparableName()).Distinct().ToList();
-            var bowlers = bowlerNames.Select(name => innings.OversBowled.First(over => over.PlayerIdentity.ComparableName() == name).PlayerIdentity).ToList();
+            var bowlerNames = innings.OversBowled.OrderBy(x => x.OverNumber).Select(x => x.Bowler.ComparableName()).Distinct().ToList();
+            var bowlers = bowlerNames.Select(name => innings.OversBowled.First(over => over.Bowler.ComparableName() == name).Bowler).ToList();
 
             // Add unexpected bowlers who are recorded as taking wickets but not bowling
             foreach (var bowlerOnBattingCard in innings.PlayerInnings
@@ -44,7 +44,7 @@ namespace Stoolball.Statistics
                 decimal? overs = null;
                 int? maidens = null, runsConceded = null;
 
-                var oversByThisBowler = innings.OversBowled.Where(x => x.PlayerIdentity.ComparableName() == bowler.ComparableName());
+                var oversByThisBowler = innings.OversBowled.Where(x => x.Bowler.ComparableName() == bowler.ComparableName());
 
                 if (oversByThisBowler.Any())
                 {

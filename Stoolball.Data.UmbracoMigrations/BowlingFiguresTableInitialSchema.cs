@@ -22,9 +22,9 @@ namespace Stoolball.Data.UmbracoMigrations
         [Column(nameof(BowlingOrder))]
         public int BowlingOrder { get; set; }
 
-        [Column(nameof(PlayerIdentityId))]
+        [Column(nameof(BowlerPlayerIdentityId))]
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId))]
-        public Guid PlayerIdentityId { get; set; }
+        public Guid BowlerPlayerIdentityId { get; set; }
 
         [Column(nameof(Overs))]
         [NullSetting(NullSetting = NullSettings.Null)]

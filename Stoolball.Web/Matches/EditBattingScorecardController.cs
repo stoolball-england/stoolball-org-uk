@@ -96,7 +96,7 @@ namespace Stoolball.Web.Matches
                 // while retaining the benefits of ASP.NET model binding. Using the "search" keyword in the property name also helps to disable contact/password managers.
                 model.CurrentInnings.PlayerInningsSearch.AddRange(model.CurrentInnings.MatchInnings.PlayerInnings.Select(x => new PlayerInningsViewModel
                 {
-                    Batter = x.PlayerIdentity?.PlayerIdentityName,
+                    Batter = x.Batter?.PlayerIdentityName,
                     DismissalType = x.DismissalType,
                     DismissedBy = x.DismissedBy?.PlayerIdentityName,
                     Bowler = x.Bowler?.PlayerIdentityName,
