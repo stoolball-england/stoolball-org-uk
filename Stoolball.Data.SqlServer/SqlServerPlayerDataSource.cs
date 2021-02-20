@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Stoolball.Routing;
+using Stoolball.Statistics;
 using Stoolball.Teams;
 
 namespace Stoolball.Data.SqlServer

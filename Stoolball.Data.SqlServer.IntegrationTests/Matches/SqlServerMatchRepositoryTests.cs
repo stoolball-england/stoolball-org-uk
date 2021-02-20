@@ -10,7 +10,6 @@ using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Security;
 using Stoolball.Statistics;
-using Stoolball.Teams;
 using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Matches

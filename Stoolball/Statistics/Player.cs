@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Stoolball.Logging;
 
-namespace Stoolball.Teams
+namespace Stoolball.Statistics
 {
     public class Player : IAuditable
     {

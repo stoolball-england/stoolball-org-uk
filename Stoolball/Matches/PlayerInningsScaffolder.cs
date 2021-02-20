@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Stoolball.Teams;
+using Stoolball.Statistics;
 
 namespace Stoolball.Matches
 {

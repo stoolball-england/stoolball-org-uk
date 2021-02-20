@@ -2,7 +2,7 @@
 using System.Data;
 using System.Threading.Tasks;
 
-namespace Stoolball.Teams
+namespace Stoolball.Statistics
 {
     public interface IPlayerRepository
     {

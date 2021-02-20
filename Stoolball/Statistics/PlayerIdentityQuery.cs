@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Stoolball.Teams
+namespace Stoolball.Statistics
 {
     public class PlayerIdentityQuery
     {

@@ -7,6 +7,7 @@ using Dapper;
 using Newtonsoft.Json;
 using Stoolball.Logging;
 using Stoolball.Routing;
+using Stoolball.Statistics;
 using Stoolball.Teams;
 using static Stoolball.Constants;
 

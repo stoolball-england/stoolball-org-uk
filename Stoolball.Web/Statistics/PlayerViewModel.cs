@@ -1,4 +1,4 @@
-﻿using Stoolball.Teams;
+﻿using Stoolball.Statistics;
 using Stoolball.Web.Routing;
 using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Core.Services;

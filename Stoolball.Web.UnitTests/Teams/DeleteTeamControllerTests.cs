@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Moq;
 using Stoolball.Matches;
 using Stoolball.Security;
+using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Teams;
 using Umbraco.Core.Cache;

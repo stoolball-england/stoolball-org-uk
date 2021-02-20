@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Dapper;
 using Stoolball.Matches;
 using Stoolball.Statistics;
-using Stoolball.Teams;
 
 namespace Stoolball.Data.SqlServer
 {

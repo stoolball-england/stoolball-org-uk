@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Stoolball.Logging;
-using Stoolball.Teams;
+using Stoolball.Statistics;
 
 namespace Stoolball.Matches
 {

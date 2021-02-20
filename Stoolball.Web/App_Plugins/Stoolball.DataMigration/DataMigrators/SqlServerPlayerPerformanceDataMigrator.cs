@@ -4,6 +4,7 @@ using Dapper;
 using Stoolball.Data.SqlServer;
 using Stoolball.Logging;
 using Stoolball.Matches;
+using Stoolball.Statistics;
 using Stoolball.Teams;
 using static Stoolball.Constants;
 

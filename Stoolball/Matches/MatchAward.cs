@@ -1,6 +1,6 @@
 ﻿using System;
 using Stoolball.Awards;
-using Stoolball.Teams;
+using Stoolball.Statistics;
 
 namespace Stoolball.Matches
 {

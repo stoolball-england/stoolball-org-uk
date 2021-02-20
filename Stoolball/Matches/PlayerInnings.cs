@@ -1,5 +1,5 @@
 ﻿using Stoolball.Logging;
-using Stoolball.Teams;
+using Stoolball.Statistics;
 using System;
 using System.Collections.Generic;
 

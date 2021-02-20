@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Stoolball.Teams;
+using Stoolball.Matches;
 
-namespace Stoolball.Matches
+namespace Stoolball.Statistics
 {
     public class PlayerIdentityFinder : IPlayerIdentityFinder
     {

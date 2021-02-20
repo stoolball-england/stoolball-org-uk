@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Humanizer;
-using Stoolball.Teams;
+using Stoolball.Statistics;
 using Stoolball.Web.WebApi;
 using Umbraco.Core;
 using Umbraco.Core.Cache;
@@ -17,7 +17,7 @@ using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.WebApi;
 
-namespace Stoolball.Web.Teams
+namespace Stoolball.Web.Statistics
 {
     public class PlayersApiController : UmbracoApiController
     {

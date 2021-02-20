@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Stoolball.Teams
+namespace Stoolball.Statistics
 {
     /// <summary>
     /// Get stoolball player data from a data source

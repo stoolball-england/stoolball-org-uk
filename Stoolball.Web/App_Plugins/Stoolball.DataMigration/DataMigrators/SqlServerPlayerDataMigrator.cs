@@ -5,7 +5,7 @@ using Dapper;
 using Stoolball.Data.SqlServer;
 using Stoolball.Logging;
 using Stoolball.Routing;
-using Stoolball.Teams;
+using Stoolball.Statistics;
 using static Stoolball.Constants;
 
 namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators

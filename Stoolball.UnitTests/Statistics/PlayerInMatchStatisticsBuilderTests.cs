@@ -4,7 +4,6 @@ using System.Linq;
 using Moq;
 using Stoolball.Matches;
 using Stoolball.Statistics;
-using Stoolball.Teams;
 using Xunit;
 
 namespace Stoolball.UnitTests.Statistics

@@ -10,6 +10,7 @@ using Stoolball.Competitions;
 using Stoolball.Logging;
 using Stoolball.MatchLocations;
 using Stoolball.Schools;
+using Stoolball.Statistics;
 
 namespace Stoolball.Teams
 {

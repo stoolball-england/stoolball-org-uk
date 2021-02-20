@@ -5,10 +5,10 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Moq;
 using Stoolball.Routing;
-using Stoolball.Teams;
+using Stoolball.Statistics;
 using Xunit;
 
-namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
+namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 {
     [Collection(IntegrationTestConstants.DataSourceIntegrationTestCollection)]
     public class SqlServerPlayerDataSourceTests

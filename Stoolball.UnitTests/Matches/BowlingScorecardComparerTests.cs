@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Stoolball.Matches;
-using Stoolball.Teams;
+using Stoolball.Statistics;
 using Xunit;
 
 namespace Stoolball.UnitTests.Matches

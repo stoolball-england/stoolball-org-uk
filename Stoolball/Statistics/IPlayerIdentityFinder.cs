@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Stoolball.Teams;
+using Stoolball.Matches;
 
-namespace Stoolball.Matches
+namespace Stoolball.Statistics
 {
     public interface IPlayerIdentityFinder
     {

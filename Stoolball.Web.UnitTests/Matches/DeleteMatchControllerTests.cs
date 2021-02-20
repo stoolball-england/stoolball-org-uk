@@ -7,7 +7,7 @@ using Moq;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Security;
-using Stoolball.Teams;
+using Stoolball.Statistics;
 using Stoolball.Web.Matches;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
