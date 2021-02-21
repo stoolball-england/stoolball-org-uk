@@ -59,32 +59,60 @@ namespace Stoolball.Statistics
                     throw new ArgumentException($"{nameof(match)} must have the BattingTeam and BowlingTeam set for each MatchInnings");
                 }
 
-                var homeTeamIsBatting = innings.BattingTeam.Team.TeamId == homeTeam.Team.TeamId;
+                var homeTeamIsBatting = innings.BattingTeam.MatchTeamId == homeTeam.MatchTeamId;
                 var batters = homeTeamIsBatting ? homePlayers : awayPlayers;
                 var fielders = homeTeamIsBatting ? awayPlayers : homePlayers;
 
                 foreach (var batter in batters)
                 {
-                    records.AddRange(CreateInningsRecordsForBatter(match, homeTeam, awayTeam, innings, homeTeamIsBatting, batter));
+                    FindOrCreateInningsRecordsForBatter(records, match, homeTeam, awayTeam, innings, homeTeamIsBatting, batter);
                 }
 
                 foreach (var fielder in fielders)
                 {
-                    // Add a record for every fielding team member in this innings
-                    records.Add(CreateInningsRecordForFielder(match, homeTeam, awayTeam, innings, homeTeamIsBatting, fielder));
+                    FindOrCreateInningsRecordForFielder(records, match, homeTeam, awayTeam, innings, homeTeamIsBatting, fielder);
                 }
+            }
+
+            foreach (var playerRecord in records.Where(x => x.MatchTeamId == homeTeam.MatchTeamId))
+            {
+                var identity = homePlayers.Single(x => x.PlayerIdentityId == playerRecord.PlayerIdentityId);
+
+                if (match.InningsOrderIsKnown)
+                {
+                    playerRecord.BattedFirst = match.MatchInnings[0].BattingTeam.MatchTeamId == homeTeam.MatchTeamId;
+                }
+                playerRecord.WonMatch = DidThePlayerWinTheMatch(homeTeam.MatchTeamId.Value, match);
+                playerRecord.PlayerOfTheMatch = match.Awards.Any(x => x.Award.AwardName.ToUpperInvariant() == StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD && x.PlayerIdentity.PlayerIdentityId == identity.PlayerIdentityId);
+            }
+
+            foreach (var playerRecord in records.Where(x => x.MatchTeamId == awayTeam.MatchTeamId))
+            {
+                var identity = awayPlayers.Single(x => x.PlayerIdentityId == playerRecord.PlayerIdentityId);
+
+                if (match.InningsOrderIsKnown)
+                {
+                    playerRecord.BattedFirst = match.MatchInnings[0].BattingTeam.MatchTeamId == awayTeam.MatchTeamId;
+                }
+                playerRecord.WonMatch = DidThePlayerWinTheMatch(awayTeam.MatchTeamId.Value, match);
+                playerRecord.PlayerOfTheMatch = match.Awards.Any(x => x.Award.AwardName.ToUpperInvariant() == StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD && x.PlayerIdentity.PlayerIdentityId == identity.PlayerIdentityId);
             }
 
             return records;
         }
 
-        private PlayerInMatchStatisticsRecord CreateInningsRecordForFielder(Match match, TeamInMatch homeTeam, TeamInMatch awayTeam, MatchInnings innings, bool homeTeamIsBatting, PlayerIdentity fielder)
+        private void FindOrCreateInningsRecordForFielder(List<PlayerInMatchStatisticsRecord> records, Match match, TeamInMatch homeTeam, TeamInMatch awayTeam, MatchInnings innings, bool homeTeamIsBatting, PlayerIdentity fielder)
         {
-            var record = CreateRecordForPlayerInInnings(match, innings, fielder, homeTeamIsBatting ? awayTeam : homeTeam, homeTeamIsBatting ? homeTeam : awayTeam);
+            var record = records.SingleOrDefault(x => x.MatchId == match.MatchId && x.PlayerIdentityId == fielder.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
+            if (record == null)
+            {
+                record = CreateRecordForPlayerInInningsPair(match, innings, fielder, homeTeamIsBatting ? awayTeam : homeTeam, homeTeamIsBatting ? homeTeam : awayTeam);
+                record.PlayerInningsNumber = null;
+                records.Add(record);
+            }
             var bowlingFigures = innings.BowlingFigures.SingleOrDefault(x => x.Bowler.PlayerIdentityId == fielder.PlayerIdentityId);
             var oversBowled = innings.OversBowled.Where(x => x.Bowler.PlayerIdentityId == fielder.PlayerIdentityId);
 
-            record.PlayerInningsInMatchInnings = null;
             record.Catches = innings.PlayerInnings.Count(x => (x.DismissalType == DismissalType.Caught && x.DismissedBy?.PlayerIdentityId == fielder.PlayerIdentityId) ||
                                                           (x.DismissalType == DismissalType.CaughtAndBowled && x.Bowler?.PlayerIdentityId == fielder.PlayerIdentityId));
             record.RunOuts = innings.PlayerInnings.Count(x => x.DismissalType == DismissalType.RunOut && x.DismissedBy?.PlayerIdentityId == fielder.PlayerIdentityId);
@@ -101,53 +129,48 @@ namespace Stoolball.Statistics
             record.Overs = bowlingFigures?.Overs;
             record.Maidens = bowlingFigures?.Maidens;
             record.RunsConceded = bowlingFigures?.RunsConceded;
-            record.HasRunsConceded = bowlingFigures != null ? bowlingFigures.RunsConceded != null : (bool?)null;
+            record.HasRunsConceded = bowlingFigures?.RunsConceded != null;
             record.Wickets = bowlingFigures?.Wickets;
             record.WicketsWithBowling = (bowlingFigures != null && oversBowled.Any()) ? bowlingFigures.Wickets : (int?)null;
-
-            record.WonMatch = DidThePlayerWinTheMatch(fielder, match);
-            record.PlayerOfTheMatch = match.Awards.Any(x => x.Award.AwardName.ToUpperInvariant() == StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD && x.PlayerIdentity.PlayerIdentityId == fielder.PlayerIdentityId);
-            return record;
         }
 
-        private static List<PlayerInMatchStatisticsRecord> CreateInningsRecordsForBatter(Match match, TeamInMatch homeTeam, TeamInMatch awayTeam, MatchInnings innings, bool homeTeamIsBatting, PlayerIdentity batter)
+        private static void FindOrCreateInningsRecordsForBatter(List<PlayerInMatchStatisticsRecord> records, Match match, TeamInMatch homeTeam, TeamInMatch awayTeam, MatchInnings innings, bool homeTeamIsBatting, PlayerIdentity batter)
         {
-            var records = new List<PlayerInMatchStatisticsRecord>();
-
             var allPlayerInningsForThisPlayer = innings.PlayerInnings.Where(x => x.Batter.PlayerIdentityId == batter.PlayerIdentityId).OrderBy(x => x.BattingPosition).ToList();
             var firstPlayerInningsForThisPlayer = allPlayerInningsForThisPlayer.FirstOrDefault();
 
-            // Add a record every batting team member in this innings regardless of whether they are recorded as batting
-            var record = CreateRecordForPlayerInInnings(match, innings, batter, homeTeamIsBatting ? homeTeam : awayTeam, homeTeamIsBatting ? awayTeam : homeTeam);
-            record.PlayerInningsInMatchInnings = 1;
+            // Find or add a record every batting team member in this innings regardless of whether they are recorded as batting
+            var record = records.SingleOrDefault(x => x.MatchId == match.MatchId && x.PlayerIdentityId == batter.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
+            if (record == null)
+            {
+                record = CreateRecordForPlayerInInningsPair(match, innings, batter, homeTeamIsBatting ? homeTeam : awayTeam, homeTeamIsBatting ? awayTeam : homeTeam);
+                records.Add(record);
+            }
+            record.PlayerInningsNumber = 1;
             AddPlayerInningsDataToRecord(firstPlayerInningsForThisPlayer, record);
             // There may be player innings with DismissalType = null, but that means they *were* dismissed, so for players who are missing from the batting card assume DidNotBat rather than null
             record.DismissalType = firstPlayerInningsForThisPlayer != null ? firstPlayerInningsForThisPlayer.DismissalType : DismissalType.DidNotBat;
             record.PlayerWasDismissed = firstPlayerInningsForThisPlayer != null ? StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(firstPlayerInningsForThisPlayer.DismissalType) : false;
-            records.Add(record);
 
             // Add extra records for any players who batted multiple times in the same innings
             for (var i = 1; i < allPlayerInningsForThisPlayer.Count; i++)
             {
-                records.Add(CreateRecordForPlayerInInnings(match, innings, batter, homeTeamIsBatting ? homeTeam : awayTeam, homeTeamIsBatting ? awayTeam : homeTeam));
-                records[records.Count - 1].PlayerInningsInMatchInnings = i + 1;
-                AddPlayerInningsDataToRecord(allPlayerInningsForThisPlayer[i], records[records.Count - 1]);
-                records[records.Count - 1].DismissalType = allPlayerInningsForThisPlayer[i].DismissalType;
-                records[records.Count - 1].PlayerWasDismissed = StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(allPlayerInningsForThisPlayer[i].DismissalType);
+                var extraBattingRecord = records.SingleOrDefault(x => x.MatchId == match.MatchId && x.PlayerIdentityId == batter.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && x.PlayerInningsNumber == i + 1);
+                if (extraBattingRecord == null)
+                {
+                    extraBattingRecord = CreateRecordForPlayerInInningsPair(match, innings, batter, homeTeamIsBatting ? homeTeam : awayTeam, homeTeamIsBatting ? awayTeam : homeTeam);
+                    extraBattingRecord.PlayerInningsNumber = i + 1;
+                    AddPlayerInningsDataToRecord(allPlayerInningsForThisPlayer[i], extraBattingRecord);
+                    extraBattingRecord.DismissalType = allPlayerInningsForThisPlayer[i].DismissalType;
+                    extraBattingRecord.PlayerWasDismissed = StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(allPlayerInningsForThisPlayer[i].DismissalType);
+                    records.Add(extraBattingRecord);
+                }
             }
-
-            foreach (var playerRecord in records)
-            {
-                playerRecord.WonMatch = DidThePlayerWinTheMatch(batter, match);
-                playerRecord.PlayerOfTheMatch = match.Awards.Any(x => x.Award.AwardName.ToUpperInvariant() == StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD && x.PlayerIdentity.PlayerIdentityId == batter.PlayerIdentityId);
-            }
-
-            return records;
         }
 
-        private static int? DidThePlayerWinTheMatch(PlayerIdentity identity, Match match)
+        private static int? DidThePlayerWinTheMatch(Guid matchTeamId, Match match)
         {
-            var isHomePlayer = identity.Team.TeamId == match.Teams.Single(x => x.TeamRole == TeamRole.Home).Team.TeamId;
+            var isHomePlayer = matchTeamId == match.Teams.Single(x => x.TeamRole == TeamRole.Home).MatchTeamId;
             if (match.MatchResultType == MatchResultType.HomeWin)
             {
                 return isHomePlayer ? 1 : -1;
@@ -201,8 +224,11 @@ namespace Stoolball.Statistics
             }
         }
 
-        private static PlayerInMatchStatisticsRecord CreateRecordForPlayerInInnings(Match match, MatchInnings innings, PlayerIdentity identity, TeamInMatch team, TeamInMatch opposition)
+        private static PlayerInMatchStatisticsRecord CreateRecordForPlayerInInningsPair(Match match, MatchInnings innings, PlayerIdentity identity, TeamInMatch team, TeamInMatch opposition)
         {
+            var isOnBattingTeam = team.MatchTeamId == innings.BattingTeam.MatchTeamId;
+            var pairedInnings = match.MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
+
             return new PlayerInMatchStatisticsRecord
             {
                 PlayerId = identity.Player.PlayerId.Value,
@@ -219,11 +245,11 @@ namespace Stoolball.Statistics
                 MatchLocationId = match.MatchLocation?.MatchLocationId,
                 SeasonId = match.Season?.SeasonId,
                 CompetitionId = match.Season?.Competition?.CompetitionId,
-                MatchInningsId = innings.MatchInningsId.Value,
-                InningsOrderInMatch = innings.InningsOrderInMatch,
-                InningsOrderIsKnown = match.InningsOrderIsKnown,
-                MatchInningsRuns = innings.Runs,
-                MatchInningsWickets = innings.Wickets,
+                MatchInningsPair = innings.InningsPair(),
+                MatchInningsRuns = isOnBattingTeam ? innings.Runs : pairedInnings.Runs,
+                MatchInningsWickets = isOnBattingTeam ? pairedInnings.Wickets : innings.Wickets,
+                OppositionMatchInningsRuns = isOnBattingTeam ? pairedInnings.Runs : innings.Runs,
+                OppositionMatchInningsWickets = isOnBattingTeam ? innings.Wickets : pairedInnings.Wickets,
                 MatchTeamId = team.MatchTeamId.Value,
                 TeamId = team.Team.TeamId.Value,
                 TeamName = team.Team.TeamName,

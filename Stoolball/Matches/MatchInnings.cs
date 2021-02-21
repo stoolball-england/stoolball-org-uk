@@ -10,6 +10,14 @@ namespace Stoolball.Matches
         public Guid? MatchInningsId { get; set; }
         public int InningsOrderInMatch { get; set; }
 
+        public int InningsPair()
+        {
+            var pair = InningsOrderInMatch;
+            if (pair % 2 == 0) { pair--; };
+            pair = pair - (int)Math.Floor((decimal)(pair / 2));
+            return pair;
+        }
+
         public Guid? BattingMatchTeamId { get; set; }
         public Guid? BowlingMatchTeamId { get; set; }
         public TeamInMatch BattingTeam { get; set; }

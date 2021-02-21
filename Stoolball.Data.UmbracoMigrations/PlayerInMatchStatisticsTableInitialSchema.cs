@@ -106,11 +106,6 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public Guid? MatchLocationId { get; set; }
 
-        [Column(nameof(MatchInningsId))]
-        [ForeignKey(typeof(MatchInningsTableInitialSchema), Column = nameof(MatchInningsTableInitialSchema.MatchInningsId))]
-        [Index(IndexTypes.NonClustered)]
-        public Guid MatchInningsId { get; set; }
-
         [Column(nameof(MatchInningsRuns))]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
@@ -121,12 +116,23 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? MatchInningsWickets { get; set; }
 
-        [Column(nameof(InningsOrderInMatch))]
+        [Column(nameof(OppositionMatchInningsRuns))]
         [Index(IndexTypes.NonClustered)]
-        public int InningsOrderInMatch { get; set; }
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? OppositionMatchInningsRuns { get; set; }
 
-        [Column(nameof(InningsOrderIsKnown))]
-        public bool InningsOrderIsKnown { get; set; }
+        [Column(nameof(OppositionMatchInningsWickets))]
+        [Index(IndexTypes.NonClustered)]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? OppositionMatchInningsWickets { get; set; }
+
+        [Column(nameof(MatchInningsPair))]
+        [Index(IndexTypes.NonClustered)]
+        public int MatchInningsPair { get; set; }
+
+        [Column(nameof(BattedFirst))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public bool? BattedFirst { get; set; }
 
         [Column(nameof(OverNumberOfFirstOverBowled))]
         [NullSetting(NullSetting = NullSettings.Null)]
@@ -151,7 +157,6 @@ namespace Stoolball.Data.UmbracoMigrations
         public int? RunsConceded { get; set; }
 
         [Column(nameof(HasRunsConceded))]
-        [NullSetting(NullSetting = NullSettings.Null)]
         public bool HasRunsConceded { get; set; }
 
         [Column(nameof(Wickets))]
@@ -164,9 +169,9 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? WicketsWithBowling { get; set; }
 
-        [Column(nameof(PlayerInningsInMatchInnings))]
+        [Column(nameof(PlayerInningsNumber))]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? PlayerInningsInMatchInnings { get; set; }
+        public int? PlayerInningsNumber { get; set; }
 
         [Column(nameof(BattingPosition))]
         [Index(IndexTypes.NonClustered)]
@@ -180,8 +185,7 @@ namespace Stoolball.Data.UmbracoMigrations
 
         [Column(nameof(PlayerWasDismissed))]
         [Index(IndexTypes.NonClustered)]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public bool? PlayerWasDismissed { get; set; }
+        public bool PlayerWasDismissed { get; set; }
 
         [Column(nameof(BowledByPlayerIdentityId))]
         [ForeignKey(typeof(PlayerIdentityTableInitialSchema), Column = nameof(PlayerIdentityTableInitialSchema.PlayerIdentityId), Name = "FK_StoolballStatisticsPlayerMatch_StoolballPlayerIdentity_BowledById")]
@@ -237,13 +241,11 @@ namespace Stoolball.Data.UmbracoMigrations
 
         [Column(nameof(Catches))]
         [Index(IndexTypes.NonClustered)]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public int? Catches { get; set; }
+        public int Catches { get; set; }
 
         [Column(nameof(RunOuts))]
         [Index(IndexTypes.NonClustered)]
-        [NullSetting(NullSetting = NullSettings.Null)]
-        public int? RunOuts { get; set; }
+        public int RunOuts { get; set; }
 
         [Column(nameof(WonMatch))]
         [Index(IndexTypes.NonClustered)]

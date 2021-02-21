@@ -50,14 +50,16 @@ namespace Stoolball.Statistics
 
         public Guid? MatchLocationId { get; set; }
 
-        public Guid MatchInningsId { get; set; }
-
+        public int MatchInningsPair { get; set; }
         public int? MatchInningsRuns { get; set; }
 
         public int? MatchInningsWickets { get; set; }
 
-        public int InningsOrderInMatch { get; set; }
-        public bool InningsOrderIsKnown { get; set; }
+        public int? OppositionMatchInningsRuns { get; set; }
+
+        public int? OppositionMatchInningsWickets { get; set; }
+
+        public bool? BattedFirst { get; set; }
 
         public int? OverNumberOfFirstOverBowled { get; set; }
 
@@ -69,19 +71,19 @@ namespace Stoolball.Statistics
 
         public int? RunsConceded { get; set; }
 
-        public bool? HasRunsConceded { get; set; }
+        public bool HasRunsConceded { get; set; }
 
         public int? Wickets { get; set; }
 
         public int? WicketsWithBowling { get; set; }
 
-        public int? PlayerInningsInMatchInnings { get; set; }
+        public int? PlayerInningsNumber { get; set; }
 
         public int? BattingPosition { get; set; }
 
         public DismissalType? DismissalType { get; set; }
 
-        public bool? PlayerWasDismissed { get; set; }
+        public bool PlayerWasDismissed { get; set; }
 
         public Guid? BowledByPlayerIdentityId { get; set; }
 
@@ -105,9 +107,9 @@ namespace Stoolball.Statistics
 
         public int? BallsFaced { get; set; }
 
-        public int? Catches { get; set; }
+        public int Catches { get; set; }
 
-        public int? RunOuts { get; set; }
+        public int RunOuts { get; set; }
 
         public int? WonMatch { get; set; }
 

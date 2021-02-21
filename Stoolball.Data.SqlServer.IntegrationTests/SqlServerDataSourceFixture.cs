@@ -291,7 +291,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 MatchName = match.MatchName,
                 MatchRoute = match.MatchRoute,
                 MatchStartTime = match.StartTime,
-                MatchInningsId = match.MatchInnings.First().MatchInningsId.Value,
+                MatchInningsPair = 1,
                 MatchTeamId = match.Teams.First().MatchTeamId.Value
             });
             repo.CreatePlayerInMatchStatisticsRecord(new PlayerInMatchStatisticsRecord
@@ -311,7 +311,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 MatchName = match.MatchName,
                 MatchRoute = match.MatchRoute,
                 MatchStartTime = match.StartTime,
-                MatchInningsId = match.MatchInnings.Last().MatchInningsId.Value,
+                MatchInningsPair = 1,
                 MatchTeamId = match.Teams.Last().MatchTeamId.Value
             });
         }
