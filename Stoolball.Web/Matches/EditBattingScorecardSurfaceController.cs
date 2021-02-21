@@ -10,7 +10,6 @@ using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Statistics;
-using Stoolball.Teams;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -180,7 +179,7 @@ namespace Stoolball.Web.Matches
             if (model.IsAuthorized[AuthorizedAction.EditMatchResult] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
-                await _matchRepository.UpdateBattingScorecard(model.CurrentInnings.MatchInnings, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _matchRepository.UpdateBattingScorecard(model.Match, model.CurrentInnings.MatchInnings.MatchInningsId.Value, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
                 // redirect to the bowling scorecard for this innings
                 return Redirect($"{model.Match.MatchRoute}/edit/innings/{model.InningsOrderInMatch.Value}/bowling");

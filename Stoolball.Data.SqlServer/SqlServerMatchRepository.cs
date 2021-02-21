@@ -39,11 +39,12 @@ namespace Stoolball.Data.SqlServer
         private readonly IDataRedactor _dataRedactor;
         private readonly IStatisticsRepository _statisticsRepository;
         private readonly IOversHelper _oversHelper;
+        private readonly IPlayerInMatchStatisticsBuilder _playerInMatchStatisticsBuilder;
 
         public SqlServerMatchRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
             IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser, IMatchNameBuilder matchNameBuilder, IPlayerTypeSelector playerTypeSelector,
             IBowlingScorecardComparer bowlingScorecardComparer, IBattingScorecardComparer battingScorecardComparer, IPlayerRepository playerRepository, IDataRedactor dataRedactor,
-            IStatisticsRepository statisticsRepository, IOversHelper oversHelper)
+            IStatisticsRepository statisticsRepository, IOversHelper oversHelper, IPlayerInMatchStatisticsBuilder playerInMatchStatisticsBuilder)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
@@ -59,6 +60,7 @@ namespace Stoolball.Data.SqlServer
             _dataRedactor = dataRedactor ?? throw new ArgumentNullException(nameof(dataRedactor));
             _statisticsRepository = statisticsRepository ?? throw new ArgumentNullException(nameof(statisticsRepository));
             _oversHelper = oversHelper ?? throw new ArgumentNullException(nameof(oversHelper));
+            _playerInMatchStatisticsBuilder = playerInMatchStatisticsBuilder ?? throw new ArgumentNullException(nameof(playerInMatchStatisticsBuilder));
             _htmlSanitiser.AllowedTags.Clear();
             _htmlSanitiser.AllowedTags.Add("p");
             _htmlSanitiser.AllowedTags.Add("h2");
@@ -109,7 +111,8 @@ namespace Stoolball.Data.SqlServer
                 Team = new Team
                 {
                     TeamId = teamInMatch.Team?.TeamId,
-                    TeamName = teamInMatch.Team?.TeamName
+                    TeamName = teamInMatch.Team?.TeamName,
+                    TeamRoute = teamInMatch.Team?.TeamRoute
                 },
                 TeamRole = teamInMatch.TeamRole,
                 WonToss = teamInMatch.WonToss,
@@ -184,7 +187,7 @@ namespace Stoolball.Data.SqlServer
 
         private static PlayerIdentity CreateAuditableCopy(PlayerIdentity playerIdentity)
         {
-            return new PlayerIdentity
+            var copy = new PlayerIdentity
             {
                 PlayerIdentityId = playerIdentity.PlayerIdentityId,
                 PlayerIdentityName = playerIdentity.PlayerIdentityName,
@@ -193,6 +196,15 @@ namespace Stoolball.Data.SqlServer
                     TeamId = playerIdentity.Team?.TeamId
                 }
             };
+            if (playerIdentity.Player != null)
+            {
+                copy.Player = new Player
+                {
+                    PlayerId = playerIdentity.Player.PlayerId,
+                    PlayerRoute = playerIdentity.Player.PlayerRoute
+                };
+            }
+            return copy;
         }
 
         /// <summary>
@@ -723,6 +735,9 @@ namespace Stoolball.Data.SqlServer
                         await _redirectsRepository.InsertRedirect(beforeUpdate.MatchRoute, auditableMatch.MatchRoute, null, transaction).ConfigureAwait(false);
                     }
 
+                    var playerStatistics = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(auditableMatch);
+                    await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
+
                     var redacted = CreateRedactedCopy(auditableMatch);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
@@ -748,11 +763,11 @@ namespace Stoolball.Data.SqlServer
         /// <summary>
         /// Updates the battings scorecard for a single innings of a match
         /// </summary>
-        public async Task<MatchInnings> UpdateBattingScorecard(MatchInnings innings, Guid memberKey, string memberName)
+        public async Task<MatchInnings> UpdateBattingScorecard(Match match, Guid matchInningsId, Guid memberKey, string memberName)
         {
-            if (innings is null)
+            if (match is null)
             {
-                throw new ArgumentNullException(nameof(innings));
+                throw new ArgumentNullException(nameof(match));
             }
 
             if (memberName is null)
@@ -760,7 +775,8 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            var auditableInnings = CreateAuditableCopy(innings);
+            var auditableMatch = CreateAuditableCopy(match);
+            var auditableInnings = auditableMatch.MatchInnings.Single(x => x.MatchInningsId == matchInningsId);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -806,18 +822,18 @@ namespace Stoolball.Data.SqlServer
                     foreach (var playerInnings in comparison.PlayerInningsAdded)
                     {
                         playerInnings.Batter.Team = auditableInnings.BattingTeam.Team;
-                        playerInnings.Batter.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.Batter, memberKey, memberName, transaction).ConfigureAwait(false);
+                        playerInnings.Batter = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.Batter, memberKey, memberName, transaction).ConfigureAwait(false);
 
                         if (playerInnings.DismissedBy != null)
                         {
                             playerInnings.DismissedBy.Team = auditableInnings.BowlingTeam.Team;
-                            playerInnings.DismissedBy.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.DismissedBy, memberKey, memberName, transaction).ConfigureAwait(false);
+                            playerInnings.DismissedBy = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.DismissedBy, memberKey, memberName, transaction).ConfigureAwait(false);
                         }
 
                         if (playerInnings.Bowler != null)
                         {
                             playerInnings.Bowler.Team = auditableInnings.BowlingTeam.Team;
-                            playerInnings.Bowler.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
+                            playerInnings.Bowler = await _playerRepository.CreateOrMatchPlayerIdentity(playerInnings.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
                         }
 
                         playerInnings.PlayerInningsId = Guid.NewGuid();
@@ -843,18 +859,18 @@ namespace Stoolball.Data.SqlServer
                     foreach (var (before, after) in comparison.PlayerInningsChanged)
                     {
                         after.Batter.Team = auditableInnings.BattingTeam.Team;
-                        after.Batter.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.Batter, memberKey, memberName, transaction).ConfigureAwait(false);
+                        after.Batter = await _playerRepository.CreateOrMatchPlayerIdentity(after.Batter, memberKey, memberName, transaction).ConfigureAwait(false);
 
                         if (after.DismissedBy != null)
                         {
                             after.DismissedBy.Team = auditableInnings.BowlingTeam.Team;
-                            after.DismissedBy.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.DismissedBy, memberKey, memberName, transaction).ConfigureAwait(false);
+                            after.DismissedBy = await _playerRepository.CreateOrMatchPlayerIdentity(after.DismissedBy, memberKey, memberName, transaction).ConfigureAwait(false);
                         }
 
                         if (after.Bowler != null)
                         {
                             after.Bowler.Team = auditableInnings.BowlingTeam.Team;
-                            after.Bowler.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
+                            after.Bowler = await _playerRepository.CreateOrMatchPlayerIdentity(after.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
                         }
 
                         after.PlayerInningsId = before.PlayerInningsId;
@@ -917,6 +933,9 @@ namespace Stoolball.Data.SqlServer
 
                     await _statisticsRepository.UpdateBowlingFigures(auditableInnings, memberKey, memberName, transaction).ConfigureAwait(false);
 
+                    var playerStatistics = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(auditableMatch);
+                    await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
+
                     var serialisedInnings = JsonConvert.SerializeObject(auditableInnings);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
@@ -931,7 +950,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Updated, auditableInnings, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.UpdateBattingScorecard));
+                    _logger.Info(GetType(), LoggingTemplates.Updated, auditableInnings, memberName, memberKey, GetType(), nameof(UpdateBattingScorecard));
                 }
             }
 
@@ -941,11 +960,11 @@ namespace Stoolball.Data.SqlServer
         /// <summary>
         /// Updates the bowling scorecard for a single innings of a match
         /// </summary>
-        public async Task<MatchInnings> UpdateBowlingScorecard(MatchInnings innings, Guid memberKey, string memberName)
+        public async Task<MatchInnings> UpdateBowlingScorecard(Match match, Guid matchInningsId, Guid memberKey, string memberName)
         {
-            if (innings is null)
+            if (match is null)
             {
-                throw new ArgumentNullException(nameof(innings));
+                throw new ArgumentNullException(nameof(match));
             }
 
             if (memberName is null)
@@ -953,7 +972,8 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            var auditableInnings = CreateAuditableCopy(innings);
+            var auditableMatch = CreateAuditableCopy(match);
+            var auditableInnings = auditableMatch.MatchInnings.Single(x => x.MatchInningsId == matchInningsId);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -998,7 +1018,7 @@ namespace Stoolball.Data.SqlServer
                     {
                         over.OverId = Guid.NewGuid();
                         over.Bowler.Team = auditableInnings.BowlingTeam.Team;
-                        over.Bowler.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(over.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
+                        over.Bowler = await _playerRepository.CreateOrMatchPlayerIdentity(over.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($@"INSERT INTO {Tables.Over} 
                                 (OverId, OverNumber, MatchInningsId, BowlerPlayerIdentityId, OverSetId, BallsBowled, NoBalls, Wides, RunsConceded) 
                                 VALUES 
@@ -1022,7 +1042,7 @@ namespace Stoolball.Data.SqlServer
                     {
                         after.OverId = before.OverId;
                         after.Bowler.Team = auditableInnings.BowlingTeam.Team;
-                        after.Bowler.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(after.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
+                        after.Bowler = await _playerRepository.CreateOrMatchPlayerIdentity(after.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($@"UPDATE {Tables.Over} SET 
                                 BowlerPlayerIdentityId = @BowlerPlayerIdentityId,
                                 OverSetId = @OverSetId,
@@ -1058,8 +1078,10 @@ namespace Stoolball.Data.SqlServer
                         await connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE OverSetId IN @previousOverSetIds", new { previousOverSetIds }, transaction).ConfigureAwait(false);
                     }
 
-
                     await _statisticsRepository.UpdateBowlingFigures(auditableInnings, memberKey, memberName, transaction).ConfigureAwait(false);
+
+                    var playerStatistics = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(auditableMatch);
+                    await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
 
                     var serialisedInnings = JsonConvert.SerializeObject(auditableInnings);
                     await _auditRepository.CreateAudit(new AuditRecord
@@ -1161,7 +1183,7 @@ namespace Stoolball.Data.SqlServer
 
                             if (!award.PlayerIdentity.PlayerIdentityId.HasValue)
                             {
-                                award.PlayerIdentity.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(award.PlayerIdentity, memberKey, memberName, transaction).ConfigureAwait(false);
+                                award.PlayerIdentity = await _playerRepository.CreateOrMatchPlayerIdentity(award.PlayerIdentity, memberKey, memberName, transaction).ConfigureAwait(false);
                             }
 
                             await connection.ExecuteAsync($@"INSERT INTO {Tables.AwardedTo} 
@@ -1177,6 +1199,10 @@ namespace Stoolball.Data.SqlServer
                                     transaction).ConfigureAwait(false);
                         }
                     }
+
+                    var playerStatistics = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(auditableMatch);
+                    await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
+
                     var redacted = CreateRedactedCopy(auditableMatch);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {

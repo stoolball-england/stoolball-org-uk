@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Awards;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
@@ -64,6 +65,7 @@ namespace Stoolball.Web.Matches
             model.Match.Awards = model.FormData.Awards.Select(x => new MatchAward
             {
                 AwardedToId = x.MatchAwardId,
+                Award = new Award { AwardName = StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD },
                 PlayerIdentity = new PlayerIdentity
                 {
                     PlayerIdentityName = x.PlayerSearch,

@@ -14,12 +14,14 @@ namespace Stoolball.Statistics
                 throw new ArgumentNullException(nameof(match));
             }
 
-            return match.MatchInnings.SelectMany(i => i.PlayerInnings.Select(pi => pi.Batter))
-                .Union(match.MatchInnings.SelectMany(i => i.PlayerInnings.Where(pi => pi.DismissedBy != null).Select(pi => pi.DismissedBy)))
-                .Union(match.MatchInnings.SelectMany(i => i.PlayerInnings.Where(pi => pi.Bowler != null).Select(pi => pi.Bowler)))
-                .Union(match.MatchInnings.SelectMany(i => i.OversBowled.Select(pi => pi.Bowler)))
-                .Union(match.MatchInnings.SelectMany(i => i.BowlingFigures.Select(pi => pi.Bowler)))
-                .Union(match.Awards.Select(x => x.PlayerIdentity)).Distinct(new PlayerIdentityEqualityComparer());
+            var comparer = new PlayerIdentityEqualityComparer();
+
+            return match.MatchInnings.SelectMany(i => i.PlayerInnings.Where(pi => !string.IsNullOrEmpty(pi.Batter.PlayerIdentityName)).Select(pi => pi.Batter))
+                .Union(match.MatchInnings.SelectMany(i => i.PlayerInnings.Where(pi => pi.DismissedBy != null && !string.IsNullOrEmpty(pi.DismissedBy.PlayerIdentityName)).Select(pi => pi.DismissedBy)), comparer)
+                .Union(match.MatchInnings.SelectMany(i => i.PlayerInnings.Where(pi => pi.Bowler != null && !string.IsNullOrEmpty(pi.Bowler.PlayerIdentityName)).Select(pi => pi.Bowler)), comparer)
+                .Union(match.MatchInnings.SelectMany(i => i.OversBowled.Where(pi => !string.IsNullOrEmpty(pi.Bowler.PlayerIdentityName)).Select(pi => pi.Bowler)), comparer)
+                .Union(match.MatchInnings.SelectMany(i => i.BowlingFigures.Where(pi => !string.IsNullOrEmpty(pi.Bowler.PlayerIdentityName)).Select(pi => pi.Bowler)), comparer)
+                .Union(match.Awards.Where(award => !string.IsNullOrEmpty(award.PlayerIdentity?.PlayerIdentityName)).Select(x => x.PlayerIdentity)).Distinct(comparer);
         }
     }
 }

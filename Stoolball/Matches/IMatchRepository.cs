@@ -33,11 +33,11 @@ namespace Stoolball.Matches
         /// <summary>
         /// Updates the bowling scorecard for a single innings of a match
         /// </summary>
-        Task<MatchInnings> UpdateBowlingScorecard(MatchInnings innings, Guid memberKey, string memberName);
+        Task<MatchInnings> UpdateBowlingScorecard(Match match, Guid matchInningsId, Guid memberKey, string memberName);
 
         /// <summary>
         /// Updates the battings scorecard for a single innings of a match
         /// </summary>
-        Task<MatchInnings> UpdateBattingScorecard(MatchInnings innings, Guid memberKey, string memberName);
+        Task<MatchInnings> UpdateBattingScorecard(Match match, Guid matchInningsId, Guid memberKey, string memberName);
     }
 }

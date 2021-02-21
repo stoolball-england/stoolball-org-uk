@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Dapper;
@@ -45,16 +46,16 @@ namespace Stoolball.Data.SqlServer
         /// Finds an existing player identity or creates it if it is not found
         /// </summary>
         /// <returns>The <see cref="PlayerIdentity.PlayerIdentityId"/> of the created or matched player identity</returns>
-        public async Task<Guid> CreateOrMatchPlayerIdentity(PlayerIdentity playerIdentity, Guid memberKey, string memberName, IDbTransaction transaction)
+        public async Task<PlayerIdentity> CreateOrMatchPlayerIdentity(PlayerIdentity playerIdentity, Guid memberKey, string memberName, IDbTransaction transaction)
         {
             if (playerIdentity is null)
             {
                 throw new ArgumentNullException(nameof(playerIdentity));
             }
 
-            if (playerIdentity.PlayerIdentityId.HasValue)
+            if (playerIdentity.PlayerIdentityId.HasValue && playerIdentity.Player.PlayerId.HasValue)
             {
-                return playerIdentity.PlayerIdentityId.Value;
+                return playerIdentity;
             }
 
             if (string.IsNullOrWhiteSpace(playerIdentity.PlayerIdentityName))
@@ -77,18 +78,25 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(transaction));
             }
 
-            Player player;
-            var matchedPlayer = await transaction.Connection.ExecuteScalarAsync<Guid?>(
-                    $"SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE ComparableName = @ComparableName AND TeamId = @TeamId",
+            var matchedPlayerIdentity = (await transaction.Connection.QueryAsync<PlayerIdentity, Player, PlayerIdentity>(
+                    $"SELECT PlayerIdentityId, PlayerIdentityName, PlayerId FROM {Tables.PlayerIdentity} WHERE ComparableName = @ComparableName AND TeamId = @TeamId",
+                    (pi, p) =>
+                    {
+                        pi.Player = p;
+                        return pi;
+                    },
                     new
                     {
                         ComparableName = playerIdentity.ComparableName(),
                         playerIdentity.Team.TeamId
-                    }, transaction).ConfigureAwait(false);
+                    },
+                    transaction,
+                    splitOn: "PlayerId").ConfigureAwait(false)).FirstOrDefault();
 
-            if (matchedPlayer.HasValue)
+            if (matchedPlayerIdentity != null && matchedPlayerIdentity.PlayerIdentityId.HasValue && matchedPlayerIdentity.Player.PlayerId.HasValue)
             {
-                return matchedPlayer.Value;
+                matchedPlayerIdentity.Team = playerIdentity.Team;
+                return matchedPlayerIdentity;
             }
 
             var auditablePlayerIdentity = CreateAuditableCopy(playerIdentity);
@@ -96,7 +104,7 @@ namespace Stoolball.Data.SqlServer
             auditablePlayerIdentity.PlayerIdentityId = Guid.NewGuid();
             auditablePlayerIdentity.PlayerIdentityName = CapitaliseName(auditablePlayerIdentity.PlayerIdentityName);
 
-            player = new Player
+            var player = new Player
             {
                 PlayerId = Guid.NewGuid(),
                 PlayerRoute = _routeGenerator.GenerateRoute($"/players", auditablePlayerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute)
@@ -151,7 +159,9 @@ namespace Stoolball.Data.SqlServer
 
             _logger.Info(GetType(), LoggingTemplates.Created, player, memberName, memberKey, GetType(), nameof(SqlServerPlayerRepository.CreateOrMatchPlayerIdentity));
 
-            return auditablePlayerIdentity.PlayerIdentityId.Value;
+            player.PlayerIdentities.Clear();
+            auditablePlayerIdentity.Player = player;
+            return auditablePlayerIdentity;
         }
 
         private static string CapitaliseName(string playerIdentityName)

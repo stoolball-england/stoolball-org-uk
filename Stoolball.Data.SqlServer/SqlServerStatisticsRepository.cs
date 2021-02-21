@@ -56,7 +56,7 @@ namespace Stoolball.Data.SqlServer
                     throw new ArgumentException($"{nameof(innings.MatchInningsId)} cannot be null in a {typeof(MatchInnings)}");
                 }
 
-                bowlingFigures.Bowler.PlayerIdentityId = await _playerRepository.CreateOrMatchPlayerIdentity(bowlingFigures.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
+                bowlingFigures.Bowler = await _playerRepository.CreateOrMatchPlayerIdentity(bowlingFigures.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
 
                 await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.BowlingFigures} 
                                 (BowlingFiguresId, MatchInningsId, BowlingOrder, BowlerPlayerIdentityId, Overs, Maidens, RunsConceded, Wickets, IsFromOversBowled)
