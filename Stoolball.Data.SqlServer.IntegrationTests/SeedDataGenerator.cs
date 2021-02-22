@@ -660,25 +660,19 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             return oversBowled;
         }
 
-        public Player CreatePlayerWithMultipleIdentities()
+        public Player CreatePlayer(string playerName)
         {
             return new Player
             {
                 PlayerId = Guid.NewGuid(),
-                PlayerRoute = "/players/player-" + Guid.NewGuid(),
+                PlayerRoute = $"/players/{playerName.Kebaberize()}-{Guid.NewGuid()}",
                 PlayerIdentities = new List<PlayerIdentity>
                 {
                     new PlayerIdentity
                     {
                         PlayerIdentityId = Guid.NewGuid(),
-                        PlayerIdentityName = "Player identity 1",
-                        Team = CreateTeamWithMinimalDetails("Team for player identity 1")
-                    },
-                    new PlayerIdentity
-                    {
-                        PlayerIdentityId = Guid.NewGuid(),
-                        PlayerIdentityName = "Player identity 2",
-                        Team = CreateTeamWithMinimalDetails("Team for player identity 2")
+                        PlayerIdentityName = playerName,
+                        Team = CreateTeamWithMinimalDetails($"Team for {playerName}")
                     }
                 }
             };

@@ -10,12 +10,12 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 {
-    [Collection(IntegrationTestConstants.DataSourceIntegrationTestCollection)]
+    [Collection(IntegrationTestConstants.StatisticsDataSourceIntegrationTestCollection)]
     public class SqlServerPlayerDataSourceTests
     {
-        private readonly SqlServerDataSourceFixture _databaseFixture;
+        private readonly SqlServerStatisticsDataSourceFixture _databaseFixture;
 
-        public SqlServerPlayerDataSourceTests(SqlServerDataSourceFixture databaseFixture)
+        public SqlServerPlayerDataSourceTests(SqlServerStatisticsDataSourceFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
@@ -66,8 +66,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await playerDataSource.ReadPlayerIdentities(null).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.PlayerWithMultipleIdentities.PlayerIdentities.Count, results.Count);
-            foreach (var identity in _databaseFixture.PlayerWithMultipleIdentities.PlayerIdentities)
+            Assert.Equal(_databaseFixture.PlayerIdentities.Count, results.Count);
+            foreach (var identity in _databaseFixture.PlayerIdentities)
             {
                 Assert.NotNull(results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId));
             }

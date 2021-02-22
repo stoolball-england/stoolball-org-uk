@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using Dapper;
 using Stoolball.Awards;
 using Stoolball.Clubs;
@@ -124,8 +122,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
             foreach (var teamInMatch in match.Teams)
             {
-                CreateTeam(teamInMatch.Team);
-
                 _connection.Execute($@"INSERT INTO {Tables.MatchTeam} 
                     (MatchTeamId, TeamId, PlayingAsTeamName, MatchId, TeamRole, WonToss, WinnerOfMatchId)
                     VALUES
@@ -162,22 +158,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         innings.Runs,
                         innings.Wickets
                     });
-            }
-
-            var playerIdentities = new List<PlayerIdentity>();
-            playerIdentities.AddRange(match.Awards.Select(x => x.PlayerIdentity));
-            foreach (var innings in match.MatchInnings)
-            {
-                playerIdentities.AddRange(innings.PlayerInnings.Select(x => x.Batter));
-                playerIdentities.AddRange(innings.PlayerInnings.Select(x => x.DismissedBy).OfType<PlayerIdentity>());
-                playerIdentities.AddRange(innings.PlayerInnings.Select(x => x.Bowler).OfType<PlayerIdentity>());
-                playerIdentities.AddRange(innings.OversBowled.Select(x => x.Bowler));
-                playerIdentities.AddRange(innings.BowlingFigures.Select(x => x.Bowler));
-            }
-            foreach (var playerIdentity in playerIdentities.Distinct(new PlayerIdentityEqualityComparer()))
-            {
-                CreatePlayer(playerIdentity.Player);
-                CreatePlayerIdentity(playerIdentity);
             }
 
             foreach (var award in match.Awards)

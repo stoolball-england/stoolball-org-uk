@@ -42,7 +42,7 @@ namespace Stoolball.Statistics
 
             if (allPlayers.Any(x => x.Player?.PlayerId == null))
             {
-                throw new ArgumentException($"All player identities in match {match.MatchId} must have a PlayerId");
+                throw new ArgumentException($"All player identities in match {match.MatchId} must have a PlayerId. Player identity ");
             }
 
             var homeTeam = match.Teams.Single(t => t.TeamRole == TeamRole.Home);

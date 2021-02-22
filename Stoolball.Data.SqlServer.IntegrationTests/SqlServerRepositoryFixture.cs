@@ -2,6 +2,7 @@
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
+using Stoolball.Statistics;
 using Stoolball.Teams;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests
@@ -30,6 +31,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 connection.Open();
 
                 var repo = new SqlServerIntegrationTestsRepository(connection);
+                var playerIdentityFinder = new PlayerIdentityFinder();
 
                 ClubWithTeamsForDelete = seedDataGenerator.CreateClubWithTeams();
                 repo.CreateClub(ClubWithTeamsForDelete);
@@ -50,6 +52,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 MatchWithFullDetailsForDelete = seedDataGenerator.CreateMatchInThePastWithFullDetails();
                 repo.CreateMatchLocation(MatchWithFullDetailsForDelete.MatchLocation);
+                foreach (var team in MatchWithFullDetailsForDelete.Teams)
+                {
+                    repo.CreateTeam(team.Team);
+                }
+                var playersForMatchWithFullDetailsForDelete = playerIdentityFinder.PlayerIdentitiesInMatch(MatchWithFullDetailsForDelete);
+                foreach (var player in playersForMatchWithFullDetailsForDelete)
+                {
+                    repo.CreatePlayer(player.Player);
+                    repo.CreatePlayerIdentity(player);
+                }
                 repo.CreateMatch(MatchWithFullDetailsForDelete);
 
                 TournamentWithFullDetailsForDelete = seedDataGenerator.CreateTournamentInThePastWithFullDetails();

@@ -39,8 +39,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public List<PlayerIdentity> PlayerIdentities { get; internal set; } = new List<PlayerIdentity>();
         public Season SeasonWithFullDetails { get; private set; }
         public List<MatchListing> TournamentMatchListings { get; private set; } = new List<MatchListing>();
-        public Player PlayerWithMultipleIdentities { get; private set; }
-        public List<Match> MatchesForPlayerWithMultipleIdentities { get; internal set; } = new List<Match>();
 
         public SqlServerDataSourceFixture() : base("StoolballDataSourceIntegrationTests")
         {
@@ -100,6 +98,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 MatchInThePastWithFullDetails = seedDataGenerator.CreateMatchInThePastWithFullDetails();
                 repo.CreateMatchLocation(MatchInThePastWithFullDetails.MatchLocation);
+                var playersForMatchInThePastWithFullDetails = playerIdentityFinder.PlayerIdentitiesInMatch(MatchInThePastWithFullDetails);
+                foreach (var team in MatchInThePastWithFullDetails.Teams)
+                {
+                    repo.CreateTeam(team.Team);
+                }
+                foreach (var player in playersForMatchInThePastWithFullDetails)
+                {
+                    repo.CreatePlayer(player.Player);
+                    repo.CreatePlayerIdentity(player);
+                }
                 repo.CreateMatch(MatchInThePastWithFullDetails);
                 Teams.AddRange(MatchInThePastWithFullDetails.Teams.Select(x => x.Team));
                 Competitions.Add(MatchInThePastWithFullDetails.Season.Competition);
@@ -155,6 +163,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 MatchInThePastWithFullDetailsAndTournament.Tournament = TournamentInThePastWithMinimalDetails;
                 MatchInThePastWithFullDetailsAndTournament.Season.FromYear = MatchInThePastWithFullDetailsAndTournament.Season.UntilYear = 2018;
                 repo.CreateMatchLocation(MatchInThePastWithFullDetailsAndTournament.MatchLocation);
+                foreach (var team in MatchInThePastWithFullDetailsAndTournament.Teams)
+                {
+                    repo.CreateTeam(team.Team);
+                }
+                var playersForMatchInThePastWithFullDetailsAndTournament = playerIdentityFinder.PlayerIdentitiesInMatch(MatchInThePastWithFullDetailsAndTournament);
+                foreach (var player in playersForMatchInThePastWithFullDetailsAndTournament)
+                {
+                    repo.CreatePlayer(player.Player);
+                    repo.CreatePlayerIdentity(player);
+                }
                 repo.CreateMatch(MatchInThePastWithFullDetailsAndTournament);
                 Teams.AddRange(MatchInThePastWithFullDetailsAndTournament.Teams.Select(x => x.Team));
                 Competitions.Add(MatchInThePastWithFullDetailsAndTournament.Season.Competition);
@@ -235,87 +253,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     repo.CreateTournament(tournament);
                     MatchListings.Add(TournamentToMatchListing(tournament));
                 }
-
-
-
-                PlayerWithMultipleIdentities = seedDataGenerator.CreatePlayerWithMultipleIdentities();
-                repo.CreatePlayer(PlayerWithMultipleIdentities);
-                foreach (var identity in PlayerWithMultipleIdentities.PlayerIdentities)
-                {
-                    repo.CreateTeam(identity.Team);
-                    Teams.Add(identity.Team);
-                }
-                MatchesForPlayerWithMultipleIdentities.Add(seedDataGenerator.CreateMatchInThePastWithMinimalDetails());
-                MatchesForPlayerWithMultipleIdentities.Add(seedDataGenerator.CreateMatchInThePastWithMinimalDetails());
-                for (var i = 0; i < MatchesForPlayerWithMultipleIdentities.Count; i++)
-                {
-                    MatchesForPlayerWithMultipleIdentities[i].StartTime = MatchesForPlayerWithMultipleIdentities[i].StartTime.AddMonths(i);
-                }
-                foreach (var identity in PlayerWithMultipleIdentities.PlayerIdentities)
-                {
-                    identity.Player = PlayerWithMultipleIdentities;
-                    identity.TotalMatches = MatchesForPlayerWithMultipleIdentities.Count;
-                    identity.FirstPlayed = MatchesForPlayerWithMultipleIdentities.Min(x => x.StartTime);
-                    identity.LastPlayed = MatchesForPlayerWithMultipleIdentities.Max(x => x.StartTime);
-                    repo.CreatePlayerIdentity(identity);
-                    PlayerIdentities.Add(identity);
-                }
-                foreach (var match in MatchesForPlayerWithMultipleIdentities)
-                {
-                    CreateMatchWithStatisticsForPlayer(PlayerWithMultipleIdentities, match, repo);
-                }
             }
         }
-
-        private void CreateMatchWithStatisticsForPlayer(Player player, Match match, SqlServerIntegrationTestsRepository repo)
-        {
-            match.Teams.Add(new TeamInMatch { MatchTeamId = Guid.NewGuid(), TeamRole = TeamRole.Home, Team = player.PlayerIdentities.First().Team });
-            match.Teams.Add(new TeamInMatch { MatchTeamId = Guid.NewGuid(), TeamRole = TeamRole.Away, Team = player.PlayerIdentities.Last().Team });
-            repo.CreateMatch(match);
-            Matches.Add(match);
-            MatchListings.Add(MatchToMatchListing(match));
-            repo.CreatePlayerInMatchStatisticsRecord(new PlayerInMatchStatisticsRecord
-            {
-                PlayerInMatchStatisticsId = Guid.NewGuid(),
-                PlayerId = player.PlayerId.Value,
-                PlayerIdentityId = player.PlayerIdentities.First().PlayerIdentityId.Value,
-                PlayerIdentityName = player.PlayerIdentities.First().PlayerIdentityName,
-                PlayerRoute = player.PlayerRoute,
-                TeamId = player.PlayerIdentities.First().Team.TeamId.Value,
-                TeamName = player.PlayerIdentities.First().Team.TeamName,
-                TeamRoute = player.PlayerIdentities.First().Team.TeamRoute,
-                OppositionTeamId = player.PlayerIdentities.Last().Team.TeamId.Value,
-                OppositionTeamName = player.PlayerIdentities.Last().Team.TeamName,
-                OppositionTeamRoute = player.PlayerIdentities.Last().Team.TeamRoute,
-                MatchId = match.MatchId.Value,
-                MatchName = match.MatchName,
-                MatchRoute = match.MatchRoute,
-                MatchStartTime = match.StartTime,
-                MatchInningsPair = 1,
-                MatchTeamId = match.Teams.First().MatchTeamId.Value
-            });
-            repo.CreatePlayerInMatchStatisticsRecord(new PlayerInMatchStatisticsRecord
-            {
-                PlayerInMatchStatisticsId = Guid.NewGuid(),
-                PlayerId = player.PlayerId.Value,
-                PlayerIdentityId = player.PlayerIdentities.Last().PlayerIdentityId.Value,
-                PlayerIdentityName = player.PlayerIdentities.Last().PlayerIdentityName,
-                PlayerRoute = player.PlayerRoute,
-                TeamId = player.PlayerIdentities.Last().Team.TeamId.Value,
-                TeamName = player.PlayerIdentities.Last().Team.TeamName,
-                TeamRoute = player.PlayerIdentities.Last().Team.TeamRoute,
-                OppositionTeamId = player.PlayerIdentities.First().Team.TeamId.Value,
-                OppositionTeamName = player.PlayerIdentities.First().Team.TeamName,
-                OppositionTeamRoute = player.PlayerIdentities.First().Team.TeamRoute,
-                MatchId = match.MatchId.Value,
-                MatchName = match.MatchName,
-                MatchRoute = match.MatchRoute,
-                MatchStartTime = match.StartTime,
-                MatchInningsPair = 1,
-                MatchTeamId = match.Teams.Last().MatchTeamId.Value
-            });
-        }
-
         private static MatchListing TournamentToMatchListing(Tournament tournament)
         {
             return new MatchListing
