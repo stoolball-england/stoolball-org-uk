@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Moq;
 using Stoolball.Routing;
@@ -35,8 +35,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
                 Assert.Equal(identity.PlayerIdentityName, result.PlayerIdentityName);
                 Assert.Equal(identity.TotalMatches, result.TotalMatches);
-                Assert.Equal(identity.FirstPlayed, result.FirstPlayed);
-                Assert.Equal(identity.LastPlayed, result.LastPlayed);
+                Assert.Equal(identity.FirstPlayed.Value.AccurateToTheMinute(), result.FirstPlayed.Value.AccurateToTheMinute());
+                Assert.Equal(identity.LastPlayed.Value.AccurateToTheMinute(), result.LastPlayed.Value.AccurateToTheMinute());
             }
         }
 
@@ -48,7 +48,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await playerDataSource.ReadPlayerIdentities(null).ConfigureAwait(false);
 
-            foreach (var identity in _databaseFixture.PlayerWithMultipleIdentities.PlayerIdentities)
+            foreach (var identity in _databaseFixture.PlayerIdentities)
             {
                 var result = results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId);
                 Assert.NotNull(result);
@@ -78,26 +78,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+            var expected = _databaseFixture.PlayerWithMultipleIdentities.PlayerIdentities.First();
 
-            var results = await playerDataSource.ReadPlayerIdentities(new PlayerIdentityQuery { Query = "PlAyEr IdEntIty 1" }).ConfigureAwait(false);
-
-            var expected = _databaseFixture.PlayerWithMultipleIdentities.PlayerIdentities.Where(x => Regex.IsMatch(x.PlayerIdentityName, "Player.*1", RegexOptions.IgnoreCase));
-            Assert.Equal(expected.Count(), results.Count);
-            foreach (var identity in expected)
+            var results = await playerDataSource.ReadPlayerIdentities(new PlayerIdentityQuery
             {
-                Assert.NotNull(results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId));
-            }
+                Query = expected.PlayerIdentityName.ToLower(CultureInfo.CurrentCulture).Substring(0, 5) + expected.PlayerIdentityName.ToUpperInvariant().Substring(5)
+            }).ConfigureAwait(false);
+
+            Assert.Single(results);
+            Assert.Equal(expected.PlayerIdentityId, results[0].PlayerIdentityId);
         }
 
         [Fact]
-        public async Task Read_player_identities_supports_case_insensitive_filter_by_team_id()
+        public async Task Read_player_identities_supports_filter_by_team_id()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
             var results = await playerDataSource.ReadPlayerIdentities(new PlayerIdentityQuery { TeamIds = new List<Guid> { _databaseFixture.PlayerWithMultipleIdentities.PlayerIdentities[0].Team.TeamId.Value } }).ConfigureAwait(false);
 
-            var expected = _databaseFixture.PlayerWithMultipleIdentities.PlayerIdentities.Where(x => x.Team.TeamId == _databaseFixture.PlayerWithMultipleIdentities.PlayerIdentities[0].Team.TeamId.Value);
+            var expected = _databaseFixture.PlayerIdentities.Where(x => x.Team.TeamId == _databaseFixture.PlayerWithMultipleIdentities.PlayerIdentities[0].Team.TeamId.Value);
             Assert.Equal(expected.Count(), results.Count);
             foreach (var identity in expected)
             {
@@ -106,11 +106,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task Read_player_identities_supports_case_insensitive_filter_by_player_identity_id()
+        public async Task Read_player_identities_supports_filter_by_player_identity_id()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var match = _databaseFixture.MatchesForPlayerWithMultipleIdentities.First();
 
             var results = await playerDataSource.ReadPlayerIdentities(new PlayerIdentityQuery { PlayerIdentityIds = _databaseFixture.PlayerWithMultipleIdentities.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList() }).ConfigureAwait(false);
 
@@ -171,8 +170,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Assert.Equal(identity.Team.TeamName, resultIdentity.Team.TeamName);
                 Assert.Equal(identity.Team.TeamRoute, resultIdentity.Team.TeamRoute);
                 Assert.Equal(identity.TotalMatches, resultIdentity.TotalMatches);
-                Assert.Equal(identity.FirstPlayed, resultIdentity.FirstPlayed);
-                Assert.Equal(identity.LastPlayed, resultIdentity.LastPlayed);
+                Assert.Equal(identity.FirstPlayed.Value.AccurateToTheMinute(), resultIdentity.FirstPlayed.Value.AccurateToTheMinute());
+                Assert.Equal(identity.LastPlayed.Value.AccurateToTheMinute(), resultIdentity.LastPlayed.Value.AccurateToTheMinute());
             }
         }
     }

@@ -17,11 +17,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
 
-        private static DateTime DateTimeOffsetAccurateToTheMinute(DateTimeOffset dateTime)
-        {
-            return dateTime.Date.AddHours(dateTime.Hour).AddMinutes(dateTime.Minute);
-        }
-
         [Fact]
         public async Task Read_total_matches_supports_no_filter()
         {
@@ -196,7 +191,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 Assert.NotNull(result);
 
                 Assert.Equal(listing.MatchName, result.MatchName);
-                Assert.Equal(DateTimeOffsetAccurateToTheMinute(listing.StartTime), DateTimeOffsetAccurateToTheMinute(result.StartTime));
+                Assert.Equal(listing.StartTime.AccurateToTheMinute(), result.StartTime.AccurateToTheMinute());
                 Assert.Equal(listing.StartTimeIsKnown, result.StartTimeIsKnown);
                 Assert.Equal(listing.MatchType, result.MatchType);
                 Assert.Equal(listing.PlayerType, result.PlayerType);
@@ -274,7 +269,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 Assert.NotNull(result);
 
                 Assert.Equal(listing.MatchName, result.MatchName);
-                Assert.Equal(DateTimeOffsetAccurateToTheMinute(listing.StartTime), DateTimeOffsetAccurateToTheMinute(result.StartTime));
+                Assert.Equal(listing.StartTime.AccurateToTheMinute(), result.StartTime.AccurateToTheMinute());
+                Assert.Equal(listing.StartTime.AccurateToTheMinute(), result.StartTime.AccurateToTheMinute());
                 Assert.Equal(listing.StartTimeIsKnown, result.StartTimeIsKnown);
                 Assert.Equal(listing.PlayerType, result.PlayerType);
                 Assert.Equal(listing.TournamentQualificationType, result.TournamentQualificationType);

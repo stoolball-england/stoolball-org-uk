@@ -10,7 +10,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
     public sealed class SqlServerStatisticsDataSourceFixture : BaseSqlServerFixture
     {
         public Player PlayerWithMultipleIdentities { get; private set; }
-        public List<Match> MatchesForPlayerWithMultipleIdentities { get; internal set; } = new List<Match>();
 
         public List<PlayerIdentity> PlayerIdentities { get; internal set; } = new List<PlayerIdentity>();
 
@@ -30,46 +29,31 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 var repo = new SqlServerIntegrationTestsRepository(connection);
 
-                // Create a player with multiple identities, and a couple of matches that feature that player
-                PlayerWithMultipleIdentities = seedDataGenerator.CreatePlayer("Player identity 1");
-                PlayerWithMultipleIdentities.PlayerIdentities.Add(seedDataGenerator.CreatePlayer("Player identity 2").PlayerIdentities.First());
-
-                repo.CreatePlayer(PlayerWithMultipleIdentities);
-                foreach (var identity in PlayerWithMultipleIdentities.PlayerIdentities)
-                {
-                    repo.CreateTeam(identity.Team);
-                    PlayerIdentities.Add(identity);
-                }
-                MatchesForPlayerWithMultipleIdentities.Add(seedDataGenerator.CreateMatchInThePastWithMinimalDetails());
-                MatchesForPlayerWithMultipleIdentities.Add(seedDataGenerator.CreateMatchInThePastWithMinimalDetails());
-                for (var i = 0; i < MatchesForPlayerWithMultipleIdentities.Count; i++)
-                {
-                    MatchesForPlayerWithMultipleIdentities[i].StartTime = MatchesForPlayerWithMultipleIdentities[i].StartTime.AddMonths(i);
-                }
-                foreach (var identity in PlayerWithMultipleIdentities.PlayerIdentities)
-                {
-                    identity.Player = PlayerWithMultipleIdentities;
-                    identity.TotalMatches = MatchesForPlayerWithMultipleIdentities.Count;
-                    identity.FirstPlayed = MatchesForPlayerWithMultipleIdentities.Min(x => x.StartTime);
-                    identity.LastPlayed = MatchesForPlayerWithMultipleIdentities.Max(x => x.StartTime);
-                    repo.CreatePlayerIdentity(identity);
-                }
-                foreach (var match in MatchesForPlayerWithMultipleIdentities)
-                {
-                    var playerIdentitiesInMatch = playerIdentityFinder.PlayerIdentitiesInMatch(match).ToList();
-                    CreateMatchWithStatisticsForPlayer(PlayerWithMultipleIdentities, match, repo, playerIdentitiesInMatch);
-                }
-
                 // Create utilities to randomise and build data
                 var randomiser = new Random();
                 var statisticsBuilder = new PlayerInMatchStatisticsBuilder(new PlayerIdentityFinder(), new OversHelper());
 
                 // Create a pool of teams of 8 players
-                var poolOfTeams = new List<(Team, List<PlayerIdentity>)>();
+                var poolOfTeams = new List<(Team team, List<PlayerIdentity> identities)>();
                 for (var i = 0; i < 5; i++)
                 {
                     poolOfTeams.Add(CreateATeamWithPlayers(seedDataGenerator, $"Team {i + 1} pool player"));
                 }
+
+                // Randomly assign at least one player from each team a second identity
+                foreach (var (team, playerIdentities) in poolOfTeams)
+                {
+                    var player1 = playerIdentities[randomiser.Next(playerIdentities.Count)];
+                    var (targetTeam, targetIdentities) = poolOfTeams[randomiser.Next(poolOfTeams.Count)];
+                    var player2 = targetIdentities[randomiser.Next(targetIdentities.Count)];
+                    player2.Player = player1.Player;
+
+                    // The last one will be subject to extra tests
+                    PlayerWithMultipleIdentities = player1.Player;
+                }
+
+                PlayerWithMultipleIdentities.PlayerIdentities.Clear();
+                PlayerWithMultipleIdentities.PlayerIdentities.AddRange(poolOfTeams.SelectMany(x => x.identities).Where(x => x.Player.PlayerId == PlayerWithMultipleIdentities.PlayerId).Distinct(new PlayerIdentityEqualityComparer()));
 
                 // Create 10 matches for them to play in, with some first innings batting
                 var poolOfMatches = new List<Match>();
@@ -112,8 +96,29 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     CreateRandomScorecardData(randomiser, poolOfMatches[i].MatchInnings[1], teamBInMatch, teamAInMatch, teamBPlayers, teamAPlayers);
                 }
 
-                // Add all of that to the database
+                // Add all player identities to expected collections for testing
                 var teamsThatGotUsed = poolOfMatches.SelectMany(x => x.Teams).Select(x => x.Team.TeamId.Value).Distinct().ToList();
+                foreach (var (team, playerIdentities) in poolOfTeams.Where(x => teamsThatGotUsed.Contains(x.team.TeamId.Value)))
+                {
+                    PlayerIdentities.AddRange(playerIdentities);
+
+                    // Since all player identities in a team get used, we can update individual participation stats from the team
+                    var matchesPlayedByThisTeam = poolOfMatches.Where(x => x.Teams.Any(t => t.Team.TeamId == team.TeamId)).ToList();
+                    foreach (var identity in playerIdentities)
+                    {
+                        identity.TotalMatches = matchesPlayedByThisTeam.Count;
+                        identity.FirstPlayed = matchesPlayedByThisTeam.Min(x => x.StartTime);
+                        identity.LastPlayed = matchesPlayedByThisTeam.Max(x => x.StartTime);
+                    }
+                }
+
+                // Add all of that to the database
+                var distinctPlayers = poolOfTeams.SelectMany(x => x.identities).Select(x => x.Player).Distinct(new PlayerEqualityComparer());
+                foreach (var player in distinctPlayers)
+                {
+                    repo.CreatePlayer(player);
+                }
+
                 foreach (var (team, playerIdentities) in poolOfTeams)
                 {
                     if (!teamsThatGotUsed.Contains(team.TeamId.Value)) continue;
@@ -121,7 +126,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     repo.CreateTeam(team);
                     foreach (var playerIdentity in playerIdentities)
                     {
-                        repo.CreatePlayer(playerIdentity.Player);
                         repo.CreatePlayerIdentity(playerIdentity);
                     }
                 }
@@ -134,12 +138,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     {
                         repo.CreatePlayerInMatchStatisticsRecord(record);
                     }
-                }
-
-                // Also add it to expected collections for testing
-                foreach (var (team, playerIdentities) in poolOfTeams)
-                {
-                    PlayerIdentities.AddRange(playerIdentities);
                 }
             }
         }
@@ -201,62 +199,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             }
 
             return (poolOfPlayers[0].Team, poolOfPlayers);
-        }
-
-        private static void CreateMatchWithStatisticsForPlayer(Player player, Match match, SqlServerIntegrationTestsRepository repo, List<PlayerIdentity> playerIdentities)
-        {
-            match.Teams.Add(new TeamInMatch { MatchTeamId = Guid.NewGuid(), TeamRole = TeamRole.Home, Team = player.PlayerIdentities.First().Team });
-            match.Teams.Add(new TeamInMatch { MatchTeamId = Guid.NewGuid(), TeamRole = TeamRole.Away, Team = player.PlayerIdentities.Last().Team });
-            foreach (var team in match.Teams)
-            {
-                repo.CreateTeam(team.Team);
-            }
-            foreach (var playerInMatch in playerIdentities)
-            {
-                repo.CreatePlayer(playerInMatch.Player);
-                repo.CreatePlayerIdentity(playerInMatch);
-            }
-            repo.CreateMatch(match);
-            repo.CreatePlayerInMatchStatisticsRecord(new PlayerInMatchStatisticsRecord
-            {
-                PlayerInMatchStatisticsId = Guid.NewGuid(),
-                PlayerId = player.PlayerId.Value,
-                PlayerIdentityId = player.PlayerIdentities.First().PlayerIdentityId.Value,
-                PlayerIdentityName = player.PlayerIdentities.First().PlayerIdentityName,
-                PlayerRoute = player.PlayerRoute,
-                TeamId = player.PlayerIdentities.First().Team.TeamId.Value,
-                TeamName = player.PlayerIdentities.First().Team.TeamName,
-                TeamRoute = player.PlayerIdentities.First().Team.TeamRoute,
-                OppositionTeamId = player.PlayerIdentities.Last().Team.TeamId.Value,
-                OppositionTeamName = player.PlayerIdentities.Last().Team.TeamName,
-                OppositionTeamRoute = player.PlayerIdentities.Last().Team.TeamRoute,
-                MatchId = match.MatchId.Value,
-                MatchName = match.MatchName,
-                MatchRoute = match.MatchRoute,
-                MatchStartTime = match.StartTime,
-                MatchInningsPair = 1,
-                MatchTeamId = match.Teams.First().MatchTeamId.Value
-            });
-            repo.CreatePlayerInMatchStatisticsRecord(new PlayerInMatchStatisticsRecord
-            {
-                PlayerInMatchStatisticsId = Guid.NewGuid(),
-                PlayerId = player.PlayerId.Value,
-                PlayerIdentityId = player.PlayerIdentities.Last().PlayerIdentityId.Value,
-                PlayerIdentityName = player.PlayerIdentities.Last().PlayerIdentityName,
-                PlayerRoute = player.PlayerRoute,
-                TeamId = player.PlayerIdentities.Last().Team.TeamId.Value,
-                TeamName = player.PlayerIdentities.Last().Team.TeamName,
-                TeamRoute = player.PlayerIdentities.Last().Team.TeamRoute,
-                OppositionTeamId = player.PlayerIdentities.First().Team.TeamId.Value,
-                OppositionTeamName = player.PlayerIdentities.First().Team.TeamName,
-                OppositionTeamRoute = player.PlayerIdentities.First().Team.TeamRoute,
-                MatchId = match.MatchId.Value,
-                MatchName = match.MatchName,
-                MatchRoute = match.MatchRoute,
-                MatchStartTime = match.StartTime,
-                MatchInningsPair = 1,
-                MatchTeamId = match.Teams.Last().MatchTeamId.Value
-            });
         }
     }
 }
