@@ -130,6 +130,10 @@ namespace Stoolball.Data.UmbracoMigrations
         [Index(IndexTypes.NonClustered)]
         public int MatchInningsPair { get; set; }
 
+        [Column(nameof(WonToss))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public bool? WonToss { get; set; }
+
         [Column(nameof(BattedFirst))]
         [NullSetting(NullSetting = NullSettings.Null)]
         public bool? BattedFirst { get; set; }

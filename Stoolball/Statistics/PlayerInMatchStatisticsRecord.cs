@@ -59,6 +59,8 @@ namespace Stoolball.Statistics
 
         public int? OppositionMatchInningsWickets { get; set; }
 
+        public bool? WonToss { get; set; }
+
         public bool? BattedFirst { get; set; }
 
         public int? OverNumberOfFirstOverBowled { get; set; }
@@ -114,6 +116,5 @@ namespace Stoolball.Statistics
         public int? WonMatch { get; set; }
 
         public bool PlayerOfTheMatch { get; set; }
-
     }
 }

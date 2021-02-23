@@ -82,6 +82,7 @@ namespace Stoolball.Statistics
                 {
                     playerRecord.BattedFirst = match.MatchInnings[0].BattingTeam.MatchTeamId == homeTeam.MatchTeamId;
                 }
+                playerRecord.WonToss = homeTeam.WonToss;
                 playerRecord.WonMatch = DidThePlayerWinTheMatch(homeTeam.MatchTeamId.Value, match);
                 playerRecord.PlayerOfTheMatch = match.Awards.Any(x => x.Award.AwardName.ToUpperInvariant() == StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD && x.PlayerIdentity.PlayerIdentityId == identity.PlayerIdentityId);
             }
@@ -94,6 +95,7 @@ namespace Stoolball.Statistics
                 {
                     playerRecord.BattedFirst = match.MatchInnings[0].BattingTeam.MatchTeamId == awayTeam.MatchTeamId;
                 }
+                playerRecord.WonToss = awayTeam.WonToss;
                 playerRecord.WonMatch = DidThePlayerWinTheMatch(awayTeam.MatchTeamId.Value, match);
                 playerRecord.PlayerOfTheMatch = match.Awards.Any(x => x.Award.AwardName.ToUpperInvariant() == StatisticsConstants.PLAYER_OF_THE_MATCH_AWARD && x.PlayerIdentity.PlayerIdentityId == identity.PlayerIdentityId);
             }

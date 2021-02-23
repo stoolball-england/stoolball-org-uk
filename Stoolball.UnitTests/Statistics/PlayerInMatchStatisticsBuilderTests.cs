@@ -761,6 +761,31 @@ namespace Stoolball.UnitTests.Statistics
         }
 
         [Fact]
+        public void Every_record_should_record_whether_the_toss_was_won()
+        {
+            var finder = new Mock<IPlayerIdentityFinder>();
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
+
+            foreach (var identity in _playerIdentities)
+            {
+                foreach (var innings in _matchFixture.Match.MatchInnings.Where(x => x.BattingTeam.Team.TeamId == identity.Team.TeamId))
+                {
+                    var playerRecords = result.Where(x => x.PlayerIdentityId == identity.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair());
+                    Assert.True(playerRecords.Any());
+
+                    foreach (var playerRecord in playerRecords)
+                    {
+                        var isHomePlayer = identity.Team.TeamId == _matchFixture.Match.Teams.Single(x => x.TeamRole == TeamRole.Home).Team.TeamId;
+                        var teamInMatch = _matchFixture.Match.Teams.Single(x => x.TeamRole == (isHomePlayer ? TeamRole.Home : TeamRole.Away));
+                        Assert.Equal(teamInMatch.WonToss, playerRecord.WonToss);
+                    }
+                }
+            }
+        }
+
+        [Fact]
         public void Every_record_should_record_whether_the_match_was_won()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
