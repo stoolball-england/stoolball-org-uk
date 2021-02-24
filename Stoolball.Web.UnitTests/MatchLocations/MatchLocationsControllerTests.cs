@@ -67,7 +67,7 @@ namespace Stoolball.Web.Tests.MatchLocations
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Equal("example", ((MatchLocationsViewModel)((ViewResult)result).Model).MatchLocationQuery.Query);
+                Assert.Equal("example", ((MatchLocationsViewModel)((ViewResult)result).Model).MatchLocationFilter.Query);
             }
         }
 

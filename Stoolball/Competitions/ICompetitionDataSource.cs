@@ -12,13 +12,13 @@ namespace Stoolball.Competitions
         /// Gets the number of competitions that match a query
         /// </summary>
         /// <returns></returns>
-        Task<int> ReadTotalCompetitions(CompetitionQuery competitionQuery);
+        Task<int> ReadTotalCompetitions(CompetitionFilter competitionQuery);
 
         /// <summary>
         /// Gets a list of competitions based on a query
         /// </summary>
         /// <returns>A list of <see cref="Competition"/> objects. An empty list if no competitions are found.</returns>
-        Task<List<Competition>> ReadCompetitions(CompetitionQuery competitionQuery);
+        Task<List<Competition>> ReadCompetitions(CompetitionFilter competitionQuery);
 
         /// <summary>
         /// Gets a single stoolball competition based on its route

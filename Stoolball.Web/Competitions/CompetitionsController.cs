@@ -40,20 +40,20 @@ namespace Stoolball.Web.Competitions
             _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
             var model = new CompetitionsViewModel(contentModel.Content, Services?.UserService)
             {
-                CompetitionQuery = new CompetitionQuery
+                CompetitionFilter = new CompetitionFilter
                 {
                     Query = Request.QueryString["q"]?.Trim(),
                     PageNumber = pageNumber > 0 ? pageNumber : 1
                 }
             };
 
-            model.TotalCompetitions = await _competitionDataSource.ReadTotalCompetitions(model.CompetitionQuery).ConfigureAwait(false);
-            model.Competitions = await _competitionDataSource.ReadCompetitions(model.CompetitionQuery).ConfigureAwait(false);
+            model.TotalCompetitions = await _competitionDataSource.ReadTotalCompetitions(model.CompetitionFilter).ConfigureAwait(false);
+            model.Competitions = await _competitionDataSource.ReadCompetitions(model.CompetitionFilter).ConfigureAwait(false);
 
             model.Metadata.PageTitle = Constants.Pages.Competitions;
-            if (!string.IsNullOrEmpty(model.CompetitionQuery.Query))
+            if (!string.IsNullOrEmpty(model.CompetitionFilter.Query))
             {
-                model.Metadata.PageTitle += $" matching '{model.CompetitionQuery.Query}'";
+                model.Metadata.PageTitle += $" matching '{model.CompetitionFilter.Query}'";
             }
 
             return CurrentTemplate(model);

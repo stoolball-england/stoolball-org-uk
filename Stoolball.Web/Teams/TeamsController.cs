@@ -41,7 +41,7 @@ namespace Stoolball.Web.Teams
             _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
             var model = new TeamsViewModel(contentModel.Content, Services?.UserService)
             {
-                TeamQuery = new TeamQuery
+                TeamFilter = new TeamFilter
                 {
                     Query = Request.QueryString["q"]?.Trim(),
                     IncludeClubTeams = false,
@@ -50,13 +50,13 @@ namespace Stoolball.Web.Teams
                 }
             };
 
-            model.TotalTeams = await _teamDataSource.ReadTotalTeams(model.TeamQuery).ConfigureAwait(false);
-            model.Teams = await _teamDataSource.ReadTeamListings(model.TeamQuery).ConfigureAwait(false);
+            model.TotalTeams = await _teamDataSource.ReadTotalTeams(model.TeamFilter).ConfigureAwait(false);
+            model.Teams = await _teamDataSource.ReadTeamListings(model.TeamFilter).ConfigureAwait(false);
 
             model.Metadata.PageTitle = Constants.Pages.Teams;
-            if (!string.IsNullOrEmpty(model.TeamQuery.Query))
+            if (!string.IsNullOrEmpty(model.TeamFilter.Query))
             {
-                model.Metadata.PageTitle += $" matching '{model.TeamQuery.Query}'";
+                model.Metadata.PageTitle += $" matching '{model.TeamFilter.Query}'";
             }
 
             return CurrentTemplate(model);

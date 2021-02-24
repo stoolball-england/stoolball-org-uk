@@ -66,7 +66,7 @@ namespace Stoolball.Web.MatchLocations
             }
             else
             {
-                viewModel.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchQuery
+                viewModel.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchFilter
                 {
                     MatchLocationIds = new List<Guid> { viewModel.MatchLocation.MatchLocationId.Value },
                     IncludeTournamentMatches = true

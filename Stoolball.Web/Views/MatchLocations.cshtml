@@ -4,9 +4,9 @@
 <div class="container-xl">
     <h1>
         @Stoolball.Constants.Pages.MatchLocations
-        @if (!string.IsNullOrEmpty(Model.MatchLocationQuery.Query))
+        @if (!string.IsNullOrEmpty(Model.MatchLocationFilter.Query))
         {
-            @: matching '@Model.MatchLocationQuery.Query'
+            @: matching '@Model.MatchLocationFilter.Query'
         }
     </h1>
 
@@ -21,7 +21,7 @@
 
     <form method="get" action="@Request.Url" class="form-inline form-search">
         <label class="sr-only" for="location-search">Match location name</label>
-        <input type="search" class="form-control" id="location-search" name="q" value="@Model.MatchLocationQuery.Query" />
+        <input type="search" class="form-control" id="location-search" name="q" value="@Model.MatchLocationFilter.Query" />
         <button type="submit" class="btn btn-primary">Search</button>
     </form>
 
@@ -43,10 +43,10 @@
             </dd>
         }
     </dl>
-    @if (Model.TotalMatchLocations > (Model.MatchLocationQuery.PageNumber * Model.MatchLocationQuery.PageSize))
+    @if (Model.TotalMatchLocations > (Model.MatchLocationFilter.PageNumber * Model.MatchLocationFilter.PageSize))
     {
         var query = HttpUtility.ParseQueryString(Request.Url.Query);
-        query["page"] = (Model.MatchLocationQuery.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        query["page"] = (Model.MatchLocationFilter.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
         <p><a href="/locations?@query" class="btn btn-secondary">Next page</a></p>
     }
 </div>

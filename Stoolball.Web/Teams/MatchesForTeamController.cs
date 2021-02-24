@@ -74,7 +74,7 @@ namespace Stoolball.Web.Teams
                     Team = team,
                     Matches = new MatchListingViewModel
                     {
-                        Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
+                        Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
                         {
                             TeamIds = new List<Guid> { team.TeamId.Value },
                             FromDate = _seasonEstimator.EstimateSeasonDates(DateTimeOffset.UtcNow).fromDate

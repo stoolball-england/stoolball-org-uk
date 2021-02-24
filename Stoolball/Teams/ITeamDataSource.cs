@@ -12,13 +12,13 @@ namespace Stoolball.Teams
         /// Gets the number of teams that match a query
         /// </summary>
         /// <returns></returns>
-        Task<int> ReadTotalTeams(TeamQuery teamQuery);
+        Task<int> ReadTotalTeams(TeamFilter teamQuery);
 
         /// <summary>
         /// Gets a list of teams based on a query
         /// </summary>
         /// <returns>A list of <see cref="Team"/> objects. An empty list if no teams are found.</returns>
-        Task<List<Team>> ReadTeams(TeamQuery teamQuery);
+        Task<List<Team>> ReadTeams(TeamFilter teamQuery);
 
         /// <summary>
         /// Gets a single team based on its route

@@ -64,13 +64,13 @@ namespace Stoolball.Web.Competitions
             else
             {
                 var competitionIds = new List<Guid> { model.Competition.CompetitionId.Value };
-                model.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchQuery
+                model.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchFilter
                 {
                     CompetitionIds = competitionIds,
                     IncludeTournamentMatches = true
                 }).ConfigureAwait(false);
 
-                model.TotalTeams = await _teamDataSource.ReadTotalTeams(new TeamQuery
+                model.TotalTeams = await _teamDataSource.ReadTotalTeams(new TeamFilter
                 {
                     CompetitionIds = competitionIds
                 }).ConfigureAwait(false);

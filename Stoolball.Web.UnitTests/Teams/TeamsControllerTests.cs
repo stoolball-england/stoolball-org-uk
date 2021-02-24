@@ -67,7 +67,7 @@ namespace Stoolball.Web.Tests.Teams
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Equal("example", ((TeamsViewModel)((ViewResult)result).Model).TeamQuery.Query);
+                Assert.Equal("example", ((TeamsViewModel)((ViewResult)result).Model).TeamFilter.Query);
             }
         }
 

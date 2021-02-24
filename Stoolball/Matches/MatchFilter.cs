@@ -3,9 +3,8 @@ using System.Collections.Generic;
 
 namespace Stoolball.Matches
 {
-    public class MatchQuery
+    public class MatchFilter
     {
-
         public List<Guid> TeamIds { get; internal set; } = new List<Guid>();
         public List<Guid> CompetitionIds { get; internal set; } = new List<Guid>();
         public List<Guid> SeasonIds { get; internal set; } = new List<Guid>();

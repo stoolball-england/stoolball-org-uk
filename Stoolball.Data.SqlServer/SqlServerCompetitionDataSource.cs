@@ -103,7 +103,7 @@ namespace Stoolball.Data.SqlServer
         /// Gets the number of competitions that match a query
         /// </summary>
         /// <returns></returns>
-        public async Task<int> ReadTotalCompetitions(CompetitionQuery competitionQuery)
+        public async Task<int> ReadTotalCompetitions(CompetitionFilter competitionQuery)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -121,9 +121,9 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of competitions based on a query
         /// </summary>
         /// <returns>A list of <see cref="Competition"/> objects. An empty list if no competitions are found.</returns>
-        public async Task<List<Competition>> ReadCompetitions(CompetitionQuery competitionQuery)
+        public async Task<List<Competition>> ReadCompetitions(CompetitionFilter competitionQuery)
         {
-            if (competitionQuery == null) { competitionQuery = new CompetitionQuery(); }
+            if (competitionQuery == null) { competitionQuery = new CompetitionFilter(); }
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -184,7 +184,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private static (string sql, Dictionary<string, object> parameters) BuildWhereClause(CompetitionQuery competitionQuery)
+        private static (string sql, Dictionary<string, object> parameters) BuildWhereClause(CompetitionFilter competitionQuery)
         {
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();

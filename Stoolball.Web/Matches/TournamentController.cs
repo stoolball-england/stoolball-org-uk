@@ -68,7 +68,7 @@ namespace Stoolball.Web.Matches
 
                 model.Matches = new MatchListingViewModel
                 {
-                    Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
+                    Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
                     {
                         TournamentId = model.Tournament.TournamentId,
                         IncludeTournamentMatches = true,

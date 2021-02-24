@@ -32,7 +32,7 @@ namespace Stoolball.Web.Competitions
         [Route("api/seasons/autocomplete")]
         public async Task<AutocompleteResultSet> Autocomplete([FromUri] string query = null, [FromUri] string[] matchType = null)
         {
-            var competitionQuery = new CompetitionQuery { Query = query };
+            var competitionQuery = new CompetitionFilter { Query = query };
             if (matchType != null)
             {
                 foreach (var mt in matchType)

@@ -77,7 +77,7 @@ namespace Stoolball.Web.Clubs
                 // Only get matches if there are teams, otherwise matches for all teams will be returned
                 if (model.Club.Teams.Count > 0)
                 {
-                    model.Matches.Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
+                    model.Matches.Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
                     {
                         TeamIds = club.Teams.Select(team => team.TeamId.Value).ToList(),
                         FromDate = _seasonEstimator.EstimateSeasonDates(DateTimeOffset.UtcNow).fromDate

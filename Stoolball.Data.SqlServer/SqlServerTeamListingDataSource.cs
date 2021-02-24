@@ -26,7 +26,7 @@ namespace Stoolball.Data.SqlServer
         /// Gets the number of clubs and teams that match a query
         /// </summary>
         /// <returns></returns>
-        public async Task<int> ReadTotalTeams(TeamQuery teamQuery)
+        public async Task<int> ReadTotalTeams(TeamFilter teamQuery)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -69,7 +69,7 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of clubs and teams based on a query
         /// </summary>
         /// <returns>A list of <see cref="TeamListing"/> objects. An empty list if no clubs or teams are found.</returns>
-        public async Task<List<TeamListing>> ReadTeamListings(TeamQuery teamQuery)
+        public async Task<List<TeamListing>> ReadTeamListings(TeamFilter teamQuery)
         {
             if (teamQuery is null)
             {
@@ -178,7 +178,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private static (string where, Dictionary<string, object> parameters) BuildTeamWhereClause(TeamQuery teamQuery)
+        private static (string where, Dictionary<string, object> parameters) BuildTeamWhereClause(TeamFilter teamQuery)
         {
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();
@@ -204,7 +204,7 @@ namespace Stoolball.Data.SqlServer
             return (where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : "WHERE 1=1", parameters); // Always have a where clause so that it can be appended to
         }
 
-        private static (string where, Dictionary<string, object> parameters) BuildClubWhereQuery(TeamQuery teamQuery)
+        private static (string where, Dictionary<string, object> parameters) BuildClubWhereQuery(TeamFilter teamQuery)
         {
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();

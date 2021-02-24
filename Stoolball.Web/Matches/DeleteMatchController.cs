@@ -76,7 +76,7 @@ namespace Stoolball.Web.Matches
                 // Find the player identities in the match, then reselect them with details of how many matches they've played
                 model.PlayerIdentities = _playerIdentityFinder.PlayerIdentitiesInMatch(model.Match).ToList();
                 model.PlayerIdentities = await _playerDataSource.ReadPlayerIdentities(
-                    new PlayerIdentityQuery
+                    new PlayerIdentityFilter
                     {
                         PlayerIdentityIds = model.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList()
                     }

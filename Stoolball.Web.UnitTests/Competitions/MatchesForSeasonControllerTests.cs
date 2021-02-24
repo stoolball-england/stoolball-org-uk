@@ -64,7 +64,7 @@ namespace Stoolball.Web.Tests.Competitions
             seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Season>(null));
 
             var matchesDataSource = new Mock<IMatchListingDataSource>();
-            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
+            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>())).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = new TestController(seasonDataSource.Object, matchesDataSource.Object, UmbracoHelper))
             {
@@ -90,7 +90,7 @@ namespace Stoolball.Web.Tests.Competitions
             });
 
             var matchesDataSource = new Mock<IMatchListingDataSource>();
-            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
+            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>())).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = new TestController(seasonDataSource.Object, matchesDataSource.Object, UmbracoHelper))
             {

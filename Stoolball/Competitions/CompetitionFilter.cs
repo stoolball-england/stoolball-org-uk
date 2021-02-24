@@ -3,7 +3,7 @@ using Stoolball.Matches;
 
 namespace Stoolball.Competitions
 {
-    public class CompetitionQuery
+    public class CompetitionFilter
     {
         public string Query { get; internal set; }
         public List<MatchType> MatchTypes { get; internal set; } = new List<MatchType>();

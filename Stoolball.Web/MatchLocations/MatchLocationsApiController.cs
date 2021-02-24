@@ -68,7 +68,7 @@ namespace Stoolball.Web.MatchLocations
 
         private async Task<List<MatchLocation>> QueryMatchLocations(string query, string[] not, bool? hasActiveTeams, string[] teamTypes)
         {
-            var locationQuery = new MatchLocationQuery { Query = query, HasActiveTeams = hasActiveTeams, PageSize = 10000 };
+            var locationQuery = new MatchLocationFilter { Query = query, HasActiveTeams = hasActiveTeams, PageSize = 10000 };
             if (not != null)
             {
                 foreach (var guid in not)

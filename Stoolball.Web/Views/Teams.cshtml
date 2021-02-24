@@ -4,9 +4,9 @@
 <div class="container-xl">
     <h1>
         @Stoolball.Constants.Pages.Teams
-        @if (!string.IsNullOrEmpty(Model.TeamQuery.Query))
+        @if (!string.IsNullOrEmpty(Model.TeamFilter.Query))
         {
-            @: matching '@Model.TeamQuery.Query'
+            @: matching '@Model.TeamFilter.Query'
         }
     </h1>
 
@@ -36,13 +36,13 @@
         </li>
     </ul>
 
-    @if (string.IsNullOrEmpty(Model.TeamQuery.Query))
+    @if (string.IsNullOrEmpty(Model.TeamFilter.Query))
     {
         <p class="alert alert-info alert-tip">Try searching for <a href="/teams?q=ladies">ladies teams</a>, <a href="/teams?q=mixed">mixed teams</a> or <a href="/teams?q=junior">junior teams</a>.</p>
     }
     <form method="get" action="@Request.Url" class="form-inline form-search">
         <label class="sr-only" for="team-search">Team name</label>
-        <input type="search" class="form-control" id="team-search" name="q" value="@Model.TeamQuery.Query" />
+        <input type="search" class="form-control" id="team-search" name="q" value="@Model.TeamFilter.Query" />
         <button type="submit" class="btn btn-primary">Search</button>
     </form>
 
@@ -95,10 +95,10 @@
             <dd class="list-results__detail">@detail</dd>
         }
     </dl>
-    @if (Model.TotalTeams > (Model.TeamQuery.PageNumber * Model.TeamQuery.PageSize))
+    @if (Model.TotalTeams > (Model.TeamFilter.PageNumber * Model.TeamFilter.PageSize))
     {
         var query = HttpUtility.ParseQueryString(Request.Url.Query);
-        query["page"] = (Model.TeamQuery.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        query["page"] = (Model.TeamFilter.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
         <p><a href="/teams?@query" class="btn btn-secondary">Next page</a></p>
     }
 </div>

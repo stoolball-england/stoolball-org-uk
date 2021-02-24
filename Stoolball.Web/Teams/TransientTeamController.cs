@@ -72,7 +72,7 @@ namespace Stoolball.Web.Teams
 
             model.Matches = new MatchListingViewModel
             {
-                Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
+                Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
                 {
                     TeamIds = new List<Guid> { model.Team.TeamId.Value },
                     IncludeMatches = false

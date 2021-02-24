@@ -30,11 +30,11 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of seasons based on a query
         /// </summary>
         /// <returns>A list of <see cref="Season"/> objects. An empty list if no seasons are found.</returns>
-        public async Task<List<Season>> ReadSeasons(CompetitionQuery competitionQuery)
+        public async Task<List<Season>> ReadSeasons(CompetitionFilter competitionQuery)
         {
             if (competitionQuery is null)
             {
-                competitionQuery = new CompetitionQuery();
+                competitionQuery = new CompetitionFilter();
             }
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
@@ -74,7 +74,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private static (string sql, Dictionary<string, object> parameters) BuildWhereClause(CompetitionQuery competitionQuery)
+        private static (string sql, Dictionary<string, object> parameters) BuildWhereClause(CompetitionFilter competitionQuery)
         {
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();

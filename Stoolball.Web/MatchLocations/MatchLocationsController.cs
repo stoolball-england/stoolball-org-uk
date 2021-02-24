@@ -42,7 +42,7 @@ namespace Stoolball.Web.MatchLocations
             _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
             var model = new MatchLocationsViewModel(contentModel.Content, Services?.UserService)
             {
-                MatchLocationQuery = new MatchLocationQuery
+                MatchLocationFilter = new MatchLocationFilter
                 {
                     Query = Request.QueryString["q"]?.Trim(),
                     TeamTypes = new List<TeamType> { TeamType.LimitedMembership, TeamType.Occasional, TeamType.Regular, TeamType.Representative, TeamType.SchoolAgeGroup, TeamType.SchoolAgeGroup, TeamType.SchoolClub, TeamType.SchoolOther },
@@ -50,13 +50,13 @@ namespace Stoolball.Web.MatchLocations
                 }
             };
 
-            model.TotalMatchLocations = await _matchLocationDataSource.ReadTotalMatchLocations(model.MatchLocationQuery).ConfigureAwait(false);
-            model.MatchLocations = await _matchLocationDataSource.ReadMatchLocations(model.MatchLocationQuery).ConfigureAwait(false);
+            model.TotalMatchLocations = await _matchLocationDataSource.ReadTotalMatchLocations(model.MatchLocationFilter).ConfigureAwait(false);
+            model.MatchLocations = await _matchLocationDataSource.ReadMatchLocations(model.MatchLocationFilter).ConfigureAwait(false);
 
             model.Metadata.PageTitle = Constants.Pages.MatchLocations;
-            if (!string.IsNullOrEmpty(model.MatchLocationQuery.Query))
+            if (!string.IsNullOrEmpty(model.MatchLocationFilter.Query))
             {
-                model.Metadata.PageTitle += $" matching '{model.MatchLocationQuery.Query}'";
+                model.Metadata.PageTitle += $" matching '{model.MatchLocationFilter.Query}'";
             }
 
             return CurrentTemplate(model);

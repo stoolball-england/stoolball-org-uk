@@ -41,7 +41,7 @@ namespace Stoolball.Web.Teams
                 throw new ArgumentNullException(nameof(teamType));
             }
 
-            var teamQuery = new TeamQuery { Query = query };
+            var teamQuery = new TeamFilter { Query = query };
             teamQuery.IncludeClubTeams = includeClubTeams;
 
             foreach (var guid in not)

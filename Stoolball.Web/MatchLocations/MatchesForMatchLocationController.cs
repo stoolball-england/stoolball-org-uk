@@ -70,7 +70,7 @@ namespace Stoolball.Web.MatchLocations
                     MatchLocation = location,
                     Matches = new MatchListingViewModel
                     {
-                        Matches = await _matchDataSource.ReadMatchListings(new MatchQuery
+                        Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
                         {
                             MatchLocationIds = new List<Guid> { location.MatchLocationId.Value },
                             FromDate = _seasonEstimator.EstimateSeasonDates(DateTimeOffset.UtcNow).fromDate

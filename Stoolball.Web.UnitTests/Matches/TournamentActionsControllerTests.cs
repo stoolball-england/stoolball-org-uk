@@ -79,7 +79,7 @@ namespace Stoolball.Web.Tests.Matches
             tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentName = "Example tournament", TournamentRoute = "/tournaments/example" });
 
             var matchDataSource = new Mock<IMatchListingDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchQuery>())).ReturnsAsync(new List<MatchListing>());
+            matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>())).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = new TestController(tournamentDataSource.Object, matchDataSource.Object, UmbracoHelper))
             {

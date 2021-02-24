@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Stoolball.Teams
 {
-    public class TeamQuery
+    public class TeamFilter
     {
         public string Query { get; internal set; }
         public List<Guid> ExcludeTeamIds { get; internal set; } = new List<Guid>();

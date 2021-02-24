@@ -25,11 +25,11 @@ namespace Stoolball.Data.SqlServer
         /// Gets the number of matches and tournaments that match a query
         /// </summary>
         /// <returns></returns>
-        public async Task<int> ReadTotalMatches(MatchQuery matchQuery)
+        public async Task<int> ReadTotalMatches(MatchFilter matchQuery)
         {
             if (matchQuery is null)
             {
-                matchQuery = new MatchQuery();
+                matchQuery = new MatchFilter();
             }
 
             if (!matchQuery.IncludeMatches && !matchQuery.IncludeTournaments)
@@ -85,11 +85,11 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of matches and tournaments based on a query
         /// </summary>
         /// <returns>A list of <see cref="MatchListing"/> objects. An empty list if no matches or tournaments are found.</returns>
-        public async Task<List<MatchListing>> ReadMatchListings(MatchQuery matchQuery)
+        public async Task<List<MatchListing>> ReadMatchListings(MatchFilter matchQuery)
         {
             if (matchQuery is null)
             {
-                matchQuery = new MatchQuery();
+                matchQuery = new MatchFilter();
             }
 
             if (!matchQuery.IncludeMatches && !matchQuery.IncludeTournaments)
@@ -191,7 +191,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private static (string filteredSql, Dictionary<string, object> parameters) BuildMatchQuery(MatchQuery matchQuery, string sql)
+        private static (string filteredSql, Dictionary<string, object> parameters) BuildMatchQuery(MatchFilter matchQuery, string sql)
         {
             if (matchQuery is null)
             {
@@ -268,7 +268,7 @@ namespace Stoolball.Data.SqlServer
             return (sql, parameters);
         }
 
-        private static (string filteredSql, Dictionary<string, object> parameters) BuildTournamentQuery(MatchQuery matchQuery, string sql)
+        private static (string filteredSql, Dictionary<string, object> parameters) BuildTournamentQuery(MatchFilter matchQuery, string sql)
         {
             if (matchQuery is null)
             {

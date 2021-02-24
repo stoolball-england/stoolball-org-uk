@@ -4,7 +4,7 @@ using Stoolball.Teams;
 
 namespace Stoolball.MatchLocations
 {
-    public class MatchLocationQuery
+    public class MatchLocationFilter
     {
         public string Query { get; internal set; }
         public List<Guid> ExcludeMatchLocationIds { get; internal set; } = new List<Guid>();

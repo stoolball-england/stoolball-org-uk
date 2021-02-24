@@ -13,7 +13,7 @@ namespace Stoolball.Competitions
         /// Gets a list of seasons based on a query
         /// </summary>
         /// <returns>A list of <see cref="Season"/> objects. An empty list if no seasons are found.</returns>
-        Task<List<Season>> ReadSeasons(CompetitionQuery competitionQuery);
+        Task<List<Season>> ReadSeasons(CompetitionFilter competitionQuery);
 
         /// <summary>
         /// Gets a single stoolball season based on its route

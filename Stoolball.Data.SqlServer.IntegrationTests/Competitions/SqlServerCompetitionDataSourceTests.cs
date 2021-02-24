@@ -134,7 +134,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var competitionDataSource = new SqlServerCompetitionDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new CompetitionQuery { Query = "MiNiMaL" };
+            var query = new CompetitionFilter { Query = "MiNiMaL" };
 
             var result = await competitionDataSource.ReadTotalCompetitions(query).ConfigureAwait(false);
 
@@ -147,7 +147,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var competitionDataSource = new SqlServerCompetitionDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new CompetitionQuery { Query = "JuNioR" };
+            var query = new CompetitionFilter { Query = "JuNioR" };
 
             var result = await competitionDataSource.ReadTotalCompetitions(query).ConfigureAwait(false);
 
@@ -160,7 +160,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var competitionDataSource = new SqlServerCompetitionDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var results = await competitionDataSource.ReadCompetitions(new CompetitionQuery { PageSize = _databaseFixture.Competitions.Count }).ConfigureAwait(false);
+            var results = await competitionDataSource.ReadCompetitions(new CompetitionFilter { PageSize = _databaseFixture.Competitions.Count }).ConfigureAwait(false);
 
             foreach (var competition in _databaseFixture.Competitions)
             {
@@ -181,7 +181,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var competitionDataSource = new SqlServerCompetitionDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var results = await competitionDataSource.ReadCompetitions(new CompetitionQuery { PageSize = _databaseFixture.Competitions.Count }).ConfigureAwait(false);
+            var results = await competitionDataSource.ReadCompetitions(new CompetitionFilter { PageSize = _databaseFixture.Competitions.Count }).ConfigureAwait(false);
 
             foreach (var competition in _databaseFixture.Competitions)
             {
@@ -216,7 +216,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var competitionDataSource = new SqlServerCompetitionDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await competitionDataSource.ReadCompetitions(new CompetitionQuery { PageSize = _databaseFixture.Competitions.Count }).ConfigureAwait(false);
+            var result = await competitionDataSource.ReadCompetitions(new CompetitionFilter { PageSize = _databaseFixture.Competitions.Count }).ConfigureAwait(false);
 
             foreach (var competition in _databaseFixture.Competitions)
             {
@@ -230,7 +230,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var competitionDataSource = new SqlServerCompetitionDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new CompetitionQuery { Query = "MiNiMaL", PageSize = _databaseFixture.Competitions.Count };
+            var query = new CompetitionFilter { Query = "MiNiMaL", PageSize = _databaseFixture.Competitions.Count };
 
             var result = await competitionDataSource.ReadCompetitions(query).ConfigureAwait(false);
 
@@ -246,7 +246,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var competitionDataSource = new SqlServerCompetitionDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new CompetitionQuery { Query = "JuNioR", PageSize = _databaseFixture.Competitions.Count };
+            var query = new CompetitionFilter { Query = "JuNioR", PageSize = _databaseFixture.Competitions.Count };
 
             var result = await competitionDataSource.ReadCompetitions(query).ConfigureAwait(false);
 
@@ -262,7 +262,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var competitionDataSource = new SqlServerCompetitionDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await competitionDataSource.ReadCompetitions(new CompetitionQuery { PageSize = _databaseFixture.Competitions.Count }).ConfigureAwait(false);
+            var result = await competitionDataSource.ReadCompetitions(new CompetitionFilter { PageSize = _databaseFixture.Competitions.Count }).ConfigureAwait(false);
 
             var expectedActiveStatus = true;
             var hasSeasonsIfActive = true;
@@ -299,7 +299,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var remaining = _databaseFixture.Competitions.Count;
             while (remaining > 0)
             {
-                var result = await competitionDataSource.ReadCompetitions(new CompetitionQuery { PageNumber = pageNumber, PageSize = pageSize }).ConfigureAwait(false);
+                var result = await competitionDataSource.ReadCompetitions(new CompetitionFilter { PageNumber = pageNumber, PageSize = pageSize }).ConfigureAwait(false);
 
                 var expected = pageSize > remaining ? remaining : pageSize;
                 Assert.Equal(expected, result.Count);

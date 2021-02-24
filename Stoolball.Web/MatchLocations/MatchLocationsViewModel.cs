@@ -12,7 +12,7 @@ namespace Stoolball.Web.MatchLocations
         {
         }
 
-        public MatchLocationQuery MatchLocationQuery { get; set; } = new MatchLocationQuery();
+        public MatchLocationFilter MatchLocationFilter { get; set; } = new MatchLocationFilter();
         public List<MatchLocation> MatchLocations { get; internal set; } = new List<MatchLocation>();
         public int TotalMatchLocations { get; set; }
     }

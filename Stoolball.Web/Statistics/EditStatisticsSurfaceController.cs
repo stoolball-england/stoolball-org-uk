@@ -76,7 +76,7 @@ namespace Stoolball.Web.Statistics
             {
                 Logger.Info(GetType(), "Updating match statistics for all matches in {Type:l}.{Method:l}.", GetType(), nameof(UpdateStatistics));
 
-                var matchListings = (await _matchListingDataSource.ReadMatchListings(new MatchQuery
+                var matchListings = (await _matchListingDataSource.ReadMatchListings(new MatchFilter
                 {
                     IncludeMatches = true,
                     IncludeTournamentMatches = true,

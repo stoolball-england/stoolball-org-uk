@@ -94,9 +94,9 @@ namespace Stoolball.Data.SqlServer
         /// Gets the number of match locations that match a query
         /// </summary>
         /// <returns></returns>
-        public async Task<int> ReadTotalMatchLocations(MatchLocationQuery matchLocationQuery)
+        public async Task<int> ReadTotalMatchLocations(MatchLocationFilter matchLocationQuery)
         {
-            if (matchLocationQuery == null) matchLocationQuery = new MatchLocationQuery();
+            if (matchLocationQuery == null) matchLocationQuery = new MatchLocationFilter();
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -110,9 +110,9 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of match locations based on a query
         /// </summary>
         /// <returns>A list of <see cref="MatchLocation"/> objects. An empty list if no match locations are found.</returns>
-        public async Task<List<MatchLocation>> ReadMatchLocations(MatchLocationQuery matchLocationQuery)
+        public async Task<List<MatchLocation>> ReadMatchLocations(MatchLocationFilter matchLocationQuery)
         {
-            if (matchLocationQuery == null) matchLocationQuery = new MatchLocationQuery();
+            if (matchLocationQuery == null) matchLocationQuery = new MatchLocationFilter();
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -195,7 +195,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private static (string filteredSql, Dictionary<string, object> parameters) BuildMatchLocationQuery(MatchLocationQuery matchLocationQuery, string sql, string[] currentJoins)
+        private static (string filteredSql, Dictionary<string, object> parameters) BuildMatchLocationQuery(MatchLocationFilter matchLocationQuery, string sql, string[] currentJoins)
         {
             var join = new List<string>();
             var where = new List<string>();

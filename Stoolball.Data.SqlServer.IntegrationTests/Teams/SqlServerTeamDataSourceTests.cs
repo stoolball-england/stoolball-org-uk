@@ -151,7 +151,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamQuery { Query = "DeTaIlS" };
+            var query = new TeamFilter { Query = "DeTaIlS" };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
@@ -164,7 +164,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamQuery { Query = "LoCaLiTy" };
+            var query = new TeamFilter { Query = "LoCaLiTy" };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
@@ -176,7 +176,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamQuery { Query = "ToWn" };
+            var query = new TeamFilter { Query = "ToWn" };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
@@ -188,7 +188,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamQuery { Query = "CoUnTy" };
+            var query = new TeamFilter { Query = "CoUnTy" };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
@@ -200,7 +200,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamQuery { CompetitionIds = new List<Guid> { _databaseFixture.TeamWithFullDetails.Seasons[0].Season.Competition.CompetitionId.Value } };
+            var query = new TeamFilter { CompetitionIds = new List<Guid> { _databaseFixture.TeamWithFullDetails.Seasons[0].Season.Competition.CompetitionId.Value } };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
@@ -212,7 +212,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamQuery { ExcludeTeamIds = new List<Guid> { _databaseFixture.TeamWithFullDetails.TeamId.Value } };
+            var query = new TeamFilter { ExcludeTeamIds = new List<Guid> { _databaseFixture.TeamWithFullDetails.TeamId.Value } };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
@@ -224,7 +224,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamQuery { TeamTypes = new List<TeamType> { TeamType.Representative } };
+            var query = new TeamFilter { TeamTypes = new List<TeamType> { TeamType.Representative } };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
@@ -236,7 +236,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamQuery { IncludeClubTeams = false };
+            var query = new TeamFilter { IncludeClubTeams = false };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
@@ -331,7 +331,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamQuery { Query = "DeTaIlS" };
+            var query = new TeamFilter { Query = "DeTaIlS" };
 
             var result = await teamDataSource.ReadTeams(query).ConfigureAwait(false);
 
@@ -347,7 +347,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamQuery { Query = "LoCaLiTy" };
+            var query = new TeamFilter { Query = "LoCaLiTy" };
 
             var result = await teamDataSource.ReadTeams(query).ConfigureAwait(false);
 
@@ -363,7 +363,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamQuery { Query = "ToWn" };
+            var query = new TeamFilter { Query = "ToWn" };
 
             var result = await teamDataSource.ReadTeams(query).ConfigureAwait(false);
 
@@ -379,7 +379,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamQuery { Query = "CoUnTy" };
+            var query = new TeamFilter { Query = "CoUnTy" };
 
             var result = await teamDataSource.ReadTeams(query).ConfigureAwait(false);
 
@@ -395,7 +395,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamQuery { CompetitionIds = new List<Guid> { _databaseFixture.TeamWithFullDetails.Seasons[0].Season.Competition.CompetitionId.Value } };
+            var query = new TeamFilter { CompetitionIds = new List<Guid> { _databaseFixture.TeamWithFullDetails.Seasons[0].Season.Competition.CompetitionId.Value } };
 
             var result = await teamDataSource.ReadTeams(query).ConfigureAwait(false);
 
@@ -411,7 +411,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamQuery { ExcludeTeamIds = new List<Guid> { _databaseFixture.TeamWithFullDetails.TeamId.Value } };
+            var query = new TeamFilter { ExcludeTeamIds = new List<Guid> { _databaseFixture.TeamWithFullDetails.TeamId.Value } };
 
             var result = await teamDataSource.ReadTeams(query).ConfigureAwait(false);
 
@@ -427,7 +427,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamQuery { TeamTypes = new List<TeamType> { TeamType.Representative } };
+            var query = new TeamFilter { TeamTypes = new List<TeamType> { TeamType.Representative } };
 
             var result = await teamDataSource.ReadTeams(query).ConfigureAwait(false);
 
@@ -443,7 +443,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamQuery { IncludeClubTeams = false };
+            var query = new TeamFilter { IncludeClubTeams = false };
 
             var result = await teamDataSource.ReadTeams(query).ConfigureAwait(false);
 

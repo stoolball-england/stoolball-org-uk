@@ -336,7 +336,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await seasonDataSource.ReadSeasons(new CompetitionQuery { Query = " 2021 season" }).ConfigureAwait(false);
+            var result = await seasonDataSource.ReadSeasons(new CompetitionFilter { Query = " 2021 season" }).ConfigureAwait(false);
 
             var expected = _databaseFixture.Seasons.Where(x => x.FromYear == 2021);
             Assert.Equal(expected.Count(), result.Count);
@@ -352,7 +352,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await seasonDataSource.ReadSeasons(new CompetitionQuery { Query = "2020/21 season" }).ConfigureAwait(false);
+            var result = await seasonDataSource.ReadSeasons(new CompetitionFilter { Query = "2020/21 season" }).ConfigureAwait(false);
 
             var expected = _databaseFixture.Seasons.Where(x => x.FromYear == 2020 && x.UntilYear == 2021);
             Assert.Equal(expected.Count(), result.Count);
@@ -368,7 +368,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await seasonDataSource.ReadSeasons(new CompetitionQuery { Query = "LaDiEs" }).ConfigureAwait(false);
+            var result = await seasonDataSource.ReadSeasons(new CompetitionFilter { Query = "LaDiEs" }).ConfigureAwait(false);
 
             var expected = _databaseFixture.Seasons.Where(x => x.Competition.PlayerType == PlayerType.Ladies);
             Assert.Equal(expected.Count(), result.Count);
@@ -384,7 +384,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await seasonDataSource.ReadSeasons(new CompetitionQuery { MatchTypes = new List<MatchType> { MatchType.LeagueMatch } }).ConfigureAwait(false);
+            var result = await seasonDataSource.ReadSeasons(new CompetitionFilter { MatchTypes = new List<MatchType> { MatchType.LeagueMatch } }).ConfigureAwait(false);
 
             var expected = _databaseFixture.Seasons.Where(x => x.MatchTypes.Contains(MatchType.LeagueMatch));
             Assert.Equal(expected.Count(), result.Count);

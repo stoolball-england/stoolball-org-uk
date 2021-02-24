@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Stoolball.Statistics
 {
-    public class PlayerIdentityQuery
+    public class PlayerIdentityFilter
     {
         public string Query { get; set; }
         public List<Guid> TeamIds { get; internal set; } = new List<Guid>();

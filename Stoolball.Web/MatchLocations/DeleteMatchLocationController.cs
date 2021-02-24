@@ -59,7 +59,7 @@ namespace Stoolball.Web.MatchLocations
             }
             else
             {
-                model.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchQuery
+                model.TotalMatches = await _matchDataSource.ReadTotalMatches(new MatchFilter
                 {
                     MatchLocationIds = new List<Guid> { model.MatchLocation.MatchLocationId.Value },
                     IncludeTournamentMatches = true

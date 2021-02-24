@@ -32,7 +32,7 @@ namespace Stoolball.Data.SqlServer
         /// Gets the number of teams that match a query
         /// </summary>
         /// <returns></returns>
-        public async Task<int> ReadTotalTeams(TeamQuery teamQuery)
+        public async Task<int> ReadTotalTeams(TeamFilter teamQuery)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -172,7 +172,7 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of teams based on a query
         /// </summary>
         /// <returns>A list of <see cref="Team"/> objects. An empty list if no teams are found.</returns>
-        public async Task<List<Team>> ReadTeams(TeamQuery teamQuery)
+        public async Task<List<Team>> ReadTeams(TeamFilter teamQuery)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -217,7 +217,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private static (string filteredSql, Dictionary<string, object> parameters) ApplyTeamQuery(TeamQuery teamQuery, string sql, string[] currentJoinsBeyondTeamVersion)
+        private static (string filteredSql, Dictionary<string, object> parameters) ApplyTeamQuery(TeamFilter teamQuery, string sql, string[] currentJoinsBeyondTeamVersion)
         {
             var join = new List<string>();
             var where = new List<string>();

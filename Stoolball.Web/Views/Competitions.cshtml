@@ -4,9 +4,9 @@
 <div class="container-xl">
     <h1>
         @Stoolball.Constants.Pages.Competitions
-        @if (!string.IsNullOrEmpty(Model.CompetitionQuery.Query))
+        @if (!string.IsNullOrEmpty(Model.CompetitionFilter.Query))
         {
-            @: matching '@Model.CompetitionQuery.Query'
+            @: matching '@Model.CompetitionFilter.Query'
         }
     </h1>
 
@@ -19,13 +19,13 @@
         </li>
     </ul>
 
-    @if (string.IsNullOrEmpty(Model.CompetitionQuery.Query))
+    @if (string.IsNullOrEmpty(Model.CompetitionFilter.Query))
     {
         <p class="alert alert-info alert-tip">Try searching for <a href="/competitions?q=ladies">ladies competitions</a>, <a href="/competitions?q=mixed">mixed competitions</a> or <a href="/competitions?q=junior">junior competitions</a>.</p>
     }
     <form method="get" action="@Request.Url" class="form-inline form-search">
         <label class="sr-only" for="competition-search">Competition name</label>
-        <input type="search" class="form-control" id="competition-search" name="q" value="@Model.CompetitionQuery.Query" />
+        <input type="search" class="form-control" id="competition-search" name="q" value="@Model.CompetitionFilter.Query" />
         <button type="submit" class="btn btn-primary">Search</button>
     </form>
 
@@ -49,10 +49,10 @@
             }
         }
     </dl>
-    @if (Model.TotalCompetitions > (Model.CompetitionQuery.PageNumber * Model.CompetitionQuery.PageSize))
+    @if (Model.TotalCompetitions > (Model.CompetitionFilter.PageNumber * Model.CompetitionFilter.PageSize))
     {
         var query = HttpUtility.ParseQueryString(Request.Url.Query);
-        query["page"] = (Model.CompetitionQuery.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        query["page"] = (Model.CompetitionFilter.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
         <p><a href="/competitions?@query" class="btn btn-secondary">Next page</a></p>
     }
 </div>
