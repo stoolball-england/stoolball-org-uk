@@ -13,6 +13,9 @@ namespace Stoolball.Web.Statistics
         }
         public List<PlayerInningsResult> Results { get; internal set; } = new List<PlayerInningsResult>();
         public int TotalResults { get; set; }
-        public StatisticsFilter StatisticsFilter { get; set; }
+        public StatisticsFilter StatisticsFilter { get; set; } = new StatisticsFilter();
+
+        public bool ShowCaption { get; set; } = true;
+        public bool ShowPlayerColumn { get; set; } = true;
     }
 }

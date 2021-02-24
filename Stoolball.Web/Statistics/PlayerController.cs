@@ -18,6 +18,7 @@ namespace Stoolball.Web.Statistics
     public class PlayerController : RenderMvcControllerAsync
     {
         private readonly IPlayerDataSource _playerDataSource;
+        private readonly IStatisticsDataSource _statisticsDataSource;
 
         public PlayerController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -25,10 +26,12 @@ namespace Stoolball.Web.Statistics
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           IPlayerDataSource playerDataSource)
+           IPlayerDataSource playerDataSource,
+           IStatisticsDataSource statisticsDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
+            _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
         }
 
         [HttpGet]
@@ -42,8 +45,12 @@ namespace Stoolball.Web.Statistics
 
             var model = new PlayerViewModel(contentModel.Content, Services?.UserService)
             {
-                Player = await _playerDataSource.ReadPlayerByRoute(Request.RawUrl).ConfigureAwait(false)
+                Player = await _playerDataSource.ReadPlayerByRoute(Request.RawUrl).ConfigureAwait(false),
             };
+
+            var filter = new StatisticsFilter { MaxResults = 5 };
+            filter.PlayerIds.Add(model.Player.PlayerId.Value);
+            model.PlayerInnings = (await _statisticsDataSource.ReadPlayerInnings(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
             if (model.Player == null)
             {

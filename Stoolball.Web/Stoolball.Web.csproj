@@ -1521,6 +1521,7 @@
     <Content Include="Views\StyleGuideStoolballData.cshtml" />
     <Content Include="Views\TeamsMap.cshtml" />
     <Content Include="Views\Player.cshtml" />
+    <Content Include="Views\Partials\_IndividualScores.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

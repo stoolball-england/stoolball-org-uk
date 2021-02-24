@@ -1,15 +1,24 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<PlayerViewModel>
+@using ClientDependency.Core.Mvc
 @using Stoolball.Web.Statistics
 @using System.Linq
 @using Humanizer
-@{ 
+@{
+    Html.RequiresCss("/statistics/statistics.min.css");
+ 
     var firstMatchYear = Model.Player.PlayerIdentities.Min(x => x.FirstPlayed).Value.Year;
     var lastMatchYear = Model.Player.PlayerIdentities.Min(x => x.LastPlayed).Value.Year;
     var matchYears = (firstMatchYear == lastMatchYear) ? $"in {firstMatchYear}" : $"from {firstMatchYear} to {lastMatchYear}";
+    var individualScores = new IndividualScoresViewModel(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = false };
+    individualScores.Results.AddRange(Model.PlayerInnings);
 }
 <div class="container-xl">
     <h1>@(Model.Player?.PlayerName())</h1>
-    <p>@(Model.Player?.PlayerName()) has played @Model.Player.PlayerIdentities.Sum(x => x.TotalMatches) 
-    matches for @Html.Raw(Model.Player.PlayerIdentities.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.</p>
+    <p>
+        @(Model.Player?.PlayerName()) has played @Model.Player.PlayerIdentities.Sum(x => x.TotalMatches)
+        matches for @Html.Raw(Model.Player.PlayerIdentities.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.
+    </p>
+
+    @Html.Partial("_IndividualScores", individualScores)
     <p><a href="/play/statistics/individual-scores?player=@Model.Player.PlayerId">Individual scores – view all</a></p>
 </div>

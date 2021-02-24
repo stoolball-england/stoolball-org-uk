@@ -1,57 +1,25 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<IndividualScoresViewModel>
-@using Stoolball.Dates
-@using Stoolball.Statistics
 @using Stoolball.Web.Statistics
-@using Umbraco.Core.Composing
 @using ClientDependency.Core.Mvc
-@{ 
-    var dateTimeFormatter = Current.Factory.CreateInstance<DateTimeFormatter>();
+@{
     Html.RequiresCss("/statistics/statistics.min.css");
+}
+@section head {
+    @if (Model.StatisticsFilter.PageNumber == 1)
+    {
+        <meta name="robots" content="index, nofollow">
+    }
+    else
+    {
+        <meta name="robots" content="noindex, nofollow">
+    }
 }
 <div class="container-xl">
     <h1>Highest individual scores for @(Model.Results.First().Player.PlayerName())</h1>
     <p>The statistics below are based on scorecards added to this website. If you know someone who's played better, add the scorecard for that match – see <a href="/organise/website/how-to-add-match-results/">How to add match results</a>.</p>
-    <table class="statistics table-as-cards table-as-cards-reset-md">
-        <caption>Highest individual scores</caption>
-        <thead>
-            <tr><th scope="col">#</th><th scope="col">Player</th><th scope="col">Match</th><th scope="col">When</th><th scope="col" class="numeric">Runs</th><th scope="col" class="numeric">Balls</th></tr>
-        </thead>
-        <tbody>
-            @{
-                int? previousRunsScored = null;
-                bool? previousNotOut = null;
-                for (var i = 0; i < Model.Results.Count(); i++)
-                {
-                    var notOut = !StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(Model.Results[i].PlayerInnings.DismissalType);
-                    var equalToPrevious = Model.Results[i].PlayerInnings.RunsScored == previousRunsScored && notOut == previousNotOut;
-                    previousRunsScored = Model.Results[i].PlayerInnings.RunsScored;
-                    previousNotOut = notOut;
-                    <tr>
-                        <td class="table-as-cards__header-md">@(equalToPrevious ? "=" : ((Model.StatisticsFilter.PageSize * (Model.StatisticsFilter.PageNumber-1)) + i + 1).ToString())</td>
-                        <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Player</span><a href="@Model.Results[i].Player.PlayerRoute">@(Model.Results[i].Player.PlayerName())</a></td>
-                        <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Match</span><div><a href="@Model.Results[i].Match.MatchRoute">@Model.Results[i].Match.MatchName</a></div></td>
-                        <td data-stackable="true" class="text-nowrap"><span class="table-as-cards__label" aria-hidden="true">When</span>@(dateTimeFormatter.FormatDate(Model.Results[i].Match.StartTime.LocalDateTime, false, true, true))</td>
-                        @if (notOut)
-                        {
-                            <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Runs</span><span class="runs-scored">@Model.Results[i].PlayerInnings.RunsScored*</span></td>
-                        }
-                        else
-                        {
-                            <td data-stackable="true" class="numeric-md player-was-out"><span class="table-as-cards__label" aria-hidden="true">Runs</span><span class="runs-scored">@Model.Results[i].PlayerInnings.RunsScored</span></td>
-                        }
-                        @if (Model.Results[i].PlayerInnings.BallsFaced.HasValue)
-                        {
-                            <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Balls</span><span class="balls-faced">@Model.Results[i].PlayerInnings.BallsFaced.Value.ToString()</span></td>
-                        }
-                        else
-                        {
-                            <td data-stackable="true" class="numeric-md balls-faced-missing">–</td>
-                        }
-                    </tr>
-                }
-            }
-        </tbody>
-    </table>
+    
+    @Html.Partial("_IndividualScores")
+
     @if (Model.StatisticsFilter.PageNumber > 1)
     {
         var query = HttpUtility.ParseQueryString(Request.Url.Query);

@@ -44,7 +44,7 @@ namespace Stoolball.Web.Statistics
                 return new HttpStatusCodeResult(400);
             }
 
-            var model = new IndividualScoresViewModel(contentModel.Content, Services?.UserService);
+            var model = new IndividualScoresViewModel(contentModel.Content, Services?.UserService) { ShowCaption = false };
 
             _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
             model.StatisticsFilter = new StatisticsFilter { PageNumber = pageNumber > 0 ? pageNumber : 1 };
