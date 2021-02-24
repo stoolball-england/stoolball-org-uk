@@ -863,6 +863,12 @@
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Statistics\statistics.css">
+      <DependentUpon>statistics.scss</DependentUpon>
+    </Content>
+    <Content Include="Statistics\statistics.min.css">
+      <DependentUpon>statistics.css</DependentUpon>
+    </Content>
     <Content Include="Status\410.html" />
     <Content Include="Status\offline.html" />
     <Content Include="Status\500.html" />
@@ -952,6 +958,7 @@
     <Content Include="Scripts\bootstrap.js.map" />
     <Content Include="Scripts\bootstrap.bundle.min.js.map" />
     <Content Include="Scripts\bootstrap.bundle.js.map" />
+    <Content Include="Statistics\statistics.scss" />
     <None Include="Status\offline.json" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
@@ -1055,6 +1062,7 @@
     <Content Include="Views\Partials\BlockList\BlockList.cshtml" />
     <Content Include="Views\EditSeasonResultsTable.cshtml" />
     <Content Include="Views\EditStatistics.cshtml" />
+    <Content Include="Views\IndividualScores.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -1302,10 +1310,12 @@
     <Compile Include="Security\DelegatedContentSecurityPolicyAttribute.cs" />
     <Compile Include="Security\DisableMemberDelete.cs" />
     <Compile Include="Security\MemberGroupHelper.cs" />
+    <Compile Include="Statistics\IndividualScoresController.cs" />
     <Compile Include="Statistics\PlayerController.cs" />
     <Compile Include="Statistics\MemoryCacheBackgroundTaskTracker.cs" />
     <Compile Include="Statistics\EditStatisticsSurfaceController.cs" />
     <Compile Include="Statistics\IBackgroundTaskTracker.cs" />
+    <Compile Include="Statistics\IndividualScoresViewModel.cs" />
     <Compile Include="Statistics\StatisticsViewModel.cs" />
     <Compile Include="Statistics\EditStatisticsController.cs" />
     <Compile Include="Statistics\EditStatisticsApiController.cs" />

@@ -107,7 +107,7 @@ namespace Stoolball.Data.SqlServer
                         $@"SELECT i.MatchInningsId, i.Byes, i.Wides, i.NoBalls, i.BonusOrPenaltyRuns, i.Runs, i.Wickets, i.InningsOrderInMatch,
                                os.OverSetId, os.OverSetNumber, os.Overs, os.BallsPerOver,
                                i.BattingMatchTeamId, i.BowlingMatchTeamId,
-                               pi.BattingPosition, pi.DismissalType, pi.RunsScored, pi.BallsFaced,
+                               pi.PlayerInningsId, pi.BattingPosition, pi.DismissalType, pi.RunsScored, pi.BallsFaced,
                                bat.PlayerIdentityId, bat.PlayerIdentityName, bat2.PlayerId, bat2.PlayerRoute,
                                field.PlayerIdentityId, field.PlayerIdentityName, field2.PlayerId, field2.PlayerRoute,
                                bowl.PlayerIdentityId, bowl.PlayerIdentityName, bowl2.PlayerId, bowl2.PlayerRoute
@@ -183,7 +183,7 @@ namespace Stoolball.Data.SqlServer
                             return innings;
                         },
                         new { matchToReturn.MatchId },
-                        splitOn: "OverSetId, BattingMatchTeamId, BattingPosition, PlayerIdentityId, PlayerIdentityId, PlayerIdentityId")
+                        splitOn: "OverSetId, BattingMatchTeamId, PlayerInningsId, PlayerIdentityId, PlayerIdentityId, PlayerIdentityId")
                         .ConfigureAwait(false);
 
                     matchToReturn.MatchInnings = unprocessedInningsWithBatting.GroupBy(x => x.MatchInningsId).Select(inningsRows =>

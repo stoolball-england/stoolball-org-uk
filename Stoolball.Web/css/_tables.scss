@@ -87,6 +87,12 @@ th.numeric {
     flex-grow: 1;
 }
 
+// Selected cells can be reversed for clarity
+.table-as-cards__header-md {
+    background: $table-dark-bg;
+    color: $table-dark-color;
+}
+
 @include media-breakpoint-up(sm) {
     // When .table-as-cards is in use, it might only be appropriate to apply .numeric when the table returns to a standard display
     td.numeric-sm,
@@ -108,6 +114,11 @@ th.numeric {
 }
 
 @include media-breakpoint-up(md) {
+    // When .table-as-cards is in use, it might only be appropriate to apply .numeric when the table returns to a standard display
+    td.numeric-md,
+    th.numeric-md {
+        @include numeric-value;
+    }
     // Reset everything that .table-as-cards did, so that the table is now displayed normally
     .table-as-cards.table-as-cards-reset-md thead {
         @include table-as-cards-reset-thead;
@@ -119,5 +130,10 @@ th.numeric {
 
     .table-as-cards.table-as-cards-reset-md .table-as-cards__label {
         @include table-as-cards-reset-label;
+    }
+
+    .table-as-cards__header-md {
+        background: none;
+        color: $table-color;
     }
 }

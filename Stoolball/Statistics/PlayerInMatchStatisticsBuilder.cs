@@ -193,7 +193,7 @@ namespace Stoolball.Statistics
 
         private static void AddPlayerInningsDataToRecord(PlayerInnings playerInnings, PlayerInMatchStatisticsRecord record)
         {
-            record.PlayerInningsId = playerInnings.PlayerInningsId;
+            record.PlayerInningsId = playerInnings?.PlayerInningsId;
             record.BattingPosition = playerInnings?.BattingPosition == 2 ? 1 : playerInnings?.BattingPosition;
             record.RunsScored = playerInnings?.RunsScored;
             record.BallsFaced = playerInnings?.BallsFaced;

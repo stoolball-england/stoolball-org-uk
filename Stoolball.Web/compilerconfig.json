@@ -62,5 +62,9 @@
   {
     "outputFile": "css/who-are-stoolball-england.page.css",
     "inputFile": "css/who-are-stoolball-england.page.scss"
+  },
+  {
+    "outputFile": "Statistics/statistics.css",
+    "inputFile": "Statistics/statistics.scss"
   }
 ]

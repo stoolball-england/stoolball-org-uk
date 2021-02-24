@@ -1,0 +1,37 @@
+﻿@import "../Content/bootstrap/_functions.scss";
+@import "../Content/bootstrap/_mixins.scss";
+@import "../Content/bootstrap/_variables.scss";
+
+.statistics .table-as-cards__label {
+    width: 5em;
+}
+
+.statistics .runs-scored { 
+    font-weight: bold;
+}
+
+.statistics .player-was-out {
+    padding-right: 1.1em;
+}
+
+.balls-faced-missing[data-stackable] {
+    display: none;
+}
+
+@include media-breakpoint-up(md) {
+    .statistics .runs-scored {
+        font-weight: normal;
+    }
+
+    .statistics .balls-faced:before {
+        content: "(";
+    }
+
+    .statistics .balls-faced {
+        font-size: 0.8rem;
+    }
+
+    .statistics .balls-faced:after {
+        content: ")";
+    }
+}

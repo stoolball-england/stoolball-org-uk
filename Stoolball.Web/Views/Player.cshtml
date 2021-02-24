@@ -11,4 +11,5 @@
     <h1>@(Model.Player?.PlayerName())</h1>
     <p>@(Model.Player?.PlayerName()) has played @Model.Player.PlayerIdentities.Sum(x => x.TotalMatches) 
     matches for @Html.Raw(Model.Player.PlayerIdentities.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.</p>
+    <p><a href="/play/statistics/individual-scores?player=@Model.Player.PlayerId">Individual scores – view all</a></p>
 </div>

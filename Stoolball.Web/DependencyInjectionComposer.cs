@@ -145,6 +145,7 @@ namespace Stoolball.Web
             composition.Register<EditCompetitionController>();
             composition.Register<DeleteCompetitionController>();
             composition.Register<EditStatisticsController>();
+            composition.Register<IndividualScoresController>();
 
             // Data sources for stoolball data.
             composition.Register<IDatabaseConnectionFactory, UmbracoDatabaseConnectionFactory>();
@@ -169,6 +170,7 @@ namespace Stoolball.Web
             composition.Register<IMatchRepository, SqlServerMatchRepository>();
             composition.Register<ITournamentDataSource, SqlServerTournamentDataSource>();
             composition.Register<ITournamentRepository, SqlServerTournamentRepository>();
+            composition.Register<IStatisticsDataSource, SqlServerStatisticsDataSource>();
             composition.Register<IStatisticsRepository, SqlServerStatisticsRepository>();
 
             // Security checks
