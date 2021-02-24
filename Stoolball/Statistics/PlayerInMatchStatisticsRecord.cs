@@ -81,6 +81,8 @@ namespace Stoolball.Statistics
 
         public int? PlayerInningsNumber { get; set; }
 
+        public Guid? PlayerInningsId { get; set; }
+
         public int? BattingPosition { get; set; }
 
         public DismissalType? DismissalType { get; set; }

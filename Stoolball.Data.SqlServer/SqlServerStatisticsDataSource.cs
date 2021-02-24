@@ -18,10 +18,7 @@ namespace Stoolball.Data.SqlServer
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
         }
 
-        /// <summary> 
-        /// Gets the best batting performances
-        /// </summary> 
-        public async Task<int> ReadTotalBattingPerformances(StatisticsFilter filter)
+        public async Task<int> ReadTotalPlayerInnings(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -43,17 +40,14 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        /// <summary> 
-        /// Gets the best batting performances
-        /// </summary> 
-        public async Task<IEnumerable<BattingPerformanceResult>> ReadBestBattingPerformances(StatisticsFilter filter, StatisticsSortOrder sortOrder)
+        public async Task<IEnumerable<PlayerInningsResult>> ReadPlayerInnings(StatisticsFilter filter, StatisticsSortOrder sortOrder)
         {
             filter = filter ?? new StatisticsFilter();
 
             var orderByFields = new List<string>();
             if (sortOrder == StatisticsSortOrder.LatestFirst)
             {
-                orderByFields.Add("MatchStartTime ASC");
+                orderByFields.Add("MatchStartTime DESC");
             }
             else if (sortOrder == StatisticsSortOrder.BestFirst)
             {
@@ -65,18 +59,18 @@ namespace Stoolball.Data.SqlServer
                 throw new InvalidOperationException();
             }
 
-            return await ReadBestFiguresInAMatch("RunsScored", new[] { "DismissalType", "BallsFaced" }, orderByFields, 0, filter).ConfigureAwait(false);
+            return await ReadBestFiguresInAMatch("RunsScored", new[] { "PlayerInningsId", "DismissalType", "BallsFaced" }, orderByFields, 0, filter).ConfigureAwait(false);
         }
 
 
         /// <summary> 
         /// Gets best performances in a match based on the specified fields and filters
         /// </summary> 
-        private async Task<IEnumerable<BattingPerformanceResult>> ReadBestFiguresInAMatch(string primaryFieldName, IEnumerable<string> selectFields, IEnumerable<string> orderByFields, int minimumValue, StatisticsFilter filter)
+        private async Task<IEnumerable<PlayerInningsResult>> ReadBestFiguresInAMatch(string primaryFieldName, IEnumerable<string> selectFields, IEnumerable<string> orderByFields, int minimumValue, StatisticsFilter filter)
         {
             var select = $@"SELECT PlayerId, PlayerRoute, PlayerIdentityId, PlayerIdentityName, TeamId, TeamName,
-                {primaryFieldName}, MatchId, MatchStartTime, MatchName, MatchRoute, OppositionTeamId, OppositionTeamName, 
-                {string.Join(", ", selectFields)}";
+                OppositionTeamId AS TeamId, OppositionTeamName AS TeamName, MatchRoute, MatchStartTime AS StartTime, MatchName, 
+                {primaryFieldName}, {string.Join(", ", selectFields)}";
 
             var (where, parameters) = BuildQuery(filter);
             where = $"WHERE {primaryFieldName} IS NOT NULL AND {primaryFieldName} >= {minimumValue} {where}";
@@ -92,7 +86,7 @@ namespace Stoolball.Data.SqlServer
                 {
                     var result = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.PlayerInMatchStatistics} {where}", parameters).ConfigureAwait(false);
                     var lastPositionLimit = ((result > 0 && result < filter.MaxResults) ? result - 1 : (filter.MaxResults - 1)).ToString();
-                    maxResults = $"AND {primaryFieldName} >= (SELECT {primaryFieldName} FROM {Tables.PlayerInMatchStatistics} {where} {orderBy} LIMIT {lastPositionLimit},1) ";
+                    maxResults = $"AND {primaryFieldName} >= (SELECT {primaryFieldName} FROM {Tables.PlayerInMatchStatistics} {where} {orderBy} OFFSET {lastPositionLimit} ROWS FETCH NEXT 1 ROWS ONLY) ";
                 }
             }
 
@@ -101,15 +95,18 @@ namespace Stoolball.Data.SqlServer
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                return await connection.QueryAsync<Player, PlayerIdentity, Team, Team, MatchListing, BattingPerformanceResult, BattingPerformanceResult>(sql,
-                    (player, playerIdentity, team, oppositionTeam, match, result) =>
+                return await connection.QueryAsync<Player, PlayerIdentity, Team, Team, MatchListing, PlayerInnings, PlayerInningsResult>(sql,
+                    (player, playerIdentity, team, oppositionTeam, match, playerInnings) =>
                     {
-                        result.Player = player;
-                        result.Player.PlayerIdentities.Add(playerIdentity);
-                        result.Team = team;
-                        result.OppositionTeam = oppositionTeam;
-                        result.Match = match;
-                        return result;
+                        player.PlayerIdentities.Add(playerIdentity);
+                        return new PlayerInningsResult
+                        {
+                            Player = player,
+                            Team = team,
+                            OppositionTeam = oppositionTeam,
+                            Match = match,
+                            PlayerInnings = playerInnings
+                        };
                     },
                     parameters,
                     splitOn: $"PlayerIdentityId, TeamId, TeamId, MatchRoute, {primaryFieldName}").ConfigureAwait(false);
@@ -246,13 +243,13 @@ namespace Stoolball.Data.SqlServer
 
             if (filter.FromDate.HasValue)
             {
-                where.Add("m.MatchStartTime >= @FromDate");
+                where.Add("MatchStartTime >= @FromDate");
                 parameters.Add("@FromDate", filter.FromDate);
             }
 
             if (filter.UntilDate.HasValue)
             {
-                where.Add("m.MatchStartTime <= @UntilDate");
+                where.Add("MatchStartTime <= @UntilDate");
                 parameters.Add("@UntilDate", filter.UntilDate);
             }
 
@@ -270,7 +267,7 @@ namespace Stoolball.Data.SqlServer
                 }
             }
 
-            return (where.Count > 0 ? string.Join(" AND ", where) : string.Empty, parameters);
+            return (where.Count > 0 ? " AND " + string.Join(" AND ", where) : string.Empty, parameters);
         }
 
         /// <summary> 
@@ -279,7 +276,7 @@ namespace Stoolball.Data.SqlServer
         private static string LimitByPage(StatisticsFilter filter)
         {
             // Limit main query to just the current page
-            return "LIMIT " + (filter.PageSize * (filter.PageNumber - 1)) + $", {filter.PageSize} ";
+            return $"OFFSET {(filter.PageSize * (filter.PageNumber - 1))} ROWS FETCH NEXT {filter.PageSize} ROWS ONLY";
         }
     }
 }

@@ -12,6 +12,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public Player PlayerWithMultipleIdentities { get; private set; }
 
         public List<PlayerIdentity> PlayerIdentities { get; internal set; } = new List<PlayerIdentity>();
+        public List<Match> Matches { get; internal set; } = new List<Match>();
 
         public SqlServerStatisticsDataSourceFixture() : base("StoolballStatisticsDataSourceIntegrationTests")
         {
@@ -56,7 +57,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 PlayerWithMultipleIdentities.PlayerIdentities.AddRange(poolOfTeams.SelectMany(x => x.identities).Where(x => x.Player.PlayerId == PlayerWithMultipleIdentities.PlayerId).Distinct(new PlayerIdentityEqualityComparer()));
 
                 // Create 10 matches for them to play in, with some first innings batting
-                var poolOfMatches = new List<Match>();
                 for (var i = 0; i < 10; i++)
                 {
                     var homeTeamBatsFirst = randomiser.Next(2) == 0;
@@ -87,23 +87,23 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         BattedFirst = false
                     };
 
-                    poolOfMatches.Add(seedDataGenerator.CreateMatchInThePastWithMinimalDetails());
-                    poolOfMatches[i].StartTime = DateTimeOffset.UtcNow.AddMonths((i * -1) - 1);
-                    poolOfMatches[i].Teams.Add(teamAInMatch);
-                    poolOfMatches[i].Teams.Add(teamBInMatch);
+                    Matches.Add(seedDataGenerator.CreateMatchInThePastWithMinimalDetails());
+                    Matches[i].StartTime = DateTimeOffset.UtcNow.AddMonths((i * -1) - 1);
+                    Matches[i].Teams.Add(teamAInMatch);
+                    Matches[i].Teams.Add(teamBInMatch);
 
-                    CreateRandomScorecardData(randomiser, poolOfMatches[i].MatchInnings[0], teamAInMatch, teamBInMatch, teamAPlayers, teamBPlayers);
-                    CreateRandomScorecardData(randomiser, poolOfMatches[i].MatchInnings[1], teamBInMatch, teamAInMatch, teamBPlayers, teamAPlayers);
+                    CreateRandomScorecardData(randomiser, Matches[i].MatchInnings[0], teamAInMatch, teamBInMatch, teamAPlayers, teamBPlayers);
+                    CreateRandomScorecardData(randomiser, Matches[i].MatchInnings[1], teamBInMatch, teamAInMatch, teamBPlayers, teamAPlayers);
                 }
 
                 // Add all player identities to expected collections for testing
-                var teamsThatGotUsed = poolOfMatches.SelectMany(x => x.Teams).Select(x => x.Team.TeamId.Value).Distinct().ToList();
+                var teamsThatGotUsed = Matches.SelectMany(x => x.Teams).Select(x => x.Team.TeamId.Value).Distinct().ToList();
                 foreach (var (team, playerIdentities) in poolOfTeams.Where(x => teamsThatGotUsed.Contains(x.team.TeamId.Value)))
                 {
                     PlayerIdentities.AddRange(playerIdentities);
 
                     // Since all player identities in a team get used, we can update individual participation stats from the team
-                    var matchesPlayedByThisTeam = poolOfMatches.Where(x => x.Teams.Any(t => t.Team.TeamId == team.TeamId)).ToList();
+                    var matchesPlayedByThisTeam = Matches.Where(x => x.Teams.Any(t => t.Team.TeamId == team.TeamId)).ToList();
                     foreach (var identity in playerIdentities)
                     {
                         identity.TotalMatches = matchesPlayedByThisTeam.Count;
@@ -129,7 +129,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         repo.CreatePlayerIdentity(playerIdentity);
                     }
                 }
-                foreach (var match in poolOfMatches)
+                foreach (var match in Matches)
                 {
                     repo.CreateMatch(match);
 
@@ -173,6 +173,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             {
                 bowlerOrMissingData = null;
             }
+            var runsScored = randomiser.Next(2) == 0 ? randomiser.Next(102) : (int?)null; // simulate missing data;
+            var ballsFaced = randomiser.Next(2) == 0 ? randomiser.Next(151) : (int?)null; // simulate missing data
+            if (dismissal == DismissalType.NotOut || dismissal == DismissalType.TimedOut)
+            {
+                runsScored = null;
+                ballsFaced = null;
+            }
 
             return new PlayerInnings
             {
@@ -181,8 +188,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 DismissalType = dismissal,
                 DismissedBy = fielderOrMissingData,
                 Bowler = bowlerOrMissingData,
-                RunsScored = randomiser.Next(2) == 0 ? randomiser.Next(102) : (int?)null, // simulate missing data
-                BallsFaced = randomiser.Next(2) == 0 ? randomiser.Next(151) : (int?)null, // simulate missing data
+                RunsScored = runsScored,
+                BallsFaced = ballsFaced
             };
         }
 

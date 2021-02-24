@@ -593,7 +593,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                      TournamentId, SeasonId, CompetitionId, MatchTeamId, TeamId, TeamName, TeamRoute, OppositionTeamId, OppositionTeamName, OppositionTeamRoute, MatchLocationId, 
                      MatchInningsPair, MatchInningsRuns, MatchInningsWickets, OppositionMatchInningsRuns, OppositionMatchInningsWickets, 
                      OverNumberOfFirstOverBowled, BallsBowled, Overs, Maidens, RunsConceded, HasRunsConceded, Wickets, WicketsWithBowling, 
-                     WonToss, BattedFirst, PlayerInningsNumber, BattingPosition, DismissalType, PlayerWasDismissed, BowledByPlayerIdentityId, BowledByPlayerIdentityName, BowledByPlayerRoute, 
+                     WonToss, BattedFirst, PlayerInningsNumber, PlayerInningsId, BattingPosition, DismissalType, PlayerWasDismissed, BowledByPlayerIdentityId, BowledByPlayerIdentityName, BowledByPlayerRoute, 
                      CaughtByPlayerIdentityId, CaughtByPlayerIdentityName, CaughtByPlayerRoute, RunOutByPlayerIdentityId, RunOutByPlayerIdentityName, RunOutByPlayerRoute, 
                      RunsScored, BallsFaced, Catches, RunOuts, WonMatch, PlayerOfTheMatch)
                     VALUES
@@ -601,7 +601,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                      @TournamentId, @SeasonId, @CompetitionId, @MatchTeamId, @TeamId, @TeamName, @TeamRoute, @OppositionTeamId, @OppositionTeamName, @OppositionTeamRoute, @MatchLocationId,
                      @MatchInningsPair, @MatchInningsRuns, @MatchInningsWickets, @OppositionMatchInningsRuns, @OppositionMatchInningsWickets, 
                      @OverNumberOfFirstOverBowled, @BallsBowled, @Overs, @Maidens, @RunsConceded, @HasRunsConceded, @Wickets, @WicketsWithBowling,
-                     @WonToss, @BattedFirst, @PlayerInningsNumber, @BattingPosition, @DismissalType, @PlayerWasDismissed, @BowledByPlayerIdentityId, @BowledByPlayerIdentityName, @BowledByPlayerRoute,
+                     @WonToss, @BattedFirst, @PlayerInningsNumber, @PlayerInningsId, @BattingPosition, @DismissalType, @PlayerWasDismissed, @BowledByPlayerIdentityId, @BowledByPlayerIdentityName, @BowledByPlayerRoute,
                      @CaughtByPlayerIdentityId, @CaughtByPlayerIdentityName, @CaughtByPlayerRoute, @RunOutByPlayerIdentityId, @RunOutByPlayerIdentityName, @RunOutByPlayerRoute,
                      @RunsScored, @BallsFaced, @Catches, @RunOuts, @WonMatch, @PlayerOfTheMatch)",
                         new
@@ -644,8 +644,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                             record.WonToss,
                             record.BattedFirst,
                             record.PlayerInningsNumber,
+                            record.PlayerInningsId,
                             record.BattingPosition,
-                            DismissalType = record.DismissalType?.ToString(),
+                            record.DismissalType,
                             record.PlayerWasDismissed,
                             record.BowledByPlayerIdentityId,
                             record.BowledByPlayerIdentityName,

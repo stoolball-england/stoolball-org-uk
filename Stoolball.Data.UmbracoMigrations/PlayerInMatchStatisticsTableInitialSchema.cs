@@ -177,6 +177,11 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? PlayerInningsNumber { get; set; }
 
+        [Column(nameof(PlayerInningsId))]
+        [ForeignKey(typeof(PlayerInningsTableInitialSchema), Column = nameof(PlayerInningsTableInitialSchema.PlayerInningsId))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public Guid? PlayerInningsId { get; set; }
+
         [Column(nameof(BattingPosition))]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
@@ -185,7 +190,7 @@ namespace Stoolball.Data.UmbracoMigrations
         [Column(nameof(DismissalType))]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public string DismissalType { get; set; }
+        public int? DismissalType { get; set; }
 
         [Column(nameof(PlayerWasDismissed))]
         [Index(IndexTypes.NonClustered)]
