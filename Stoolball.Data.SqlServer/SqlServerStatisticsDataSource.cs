@@ -77,21 +77,26 @@ namespace Stoolball.Data.SqlServer
 
             var orderBy = orderByFields.Any() ? "ORDER BY " + string.Join(", ", orderByFields) : string.Empty;
 
-            var maxResults = string.Empty;
-            if (filter.MaxResults.HasValue)
+            var offsetWithExtraResults = string.Empty;
+            var offsetPaging = string.Empty;
+            if (filter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
             {
                 // Need to get the value at the last position to show, but first must check there
                 // are at least as many records as the total requested, and set a lower limit if not
                 using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
                 {
                     var result = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.PlayerInMatchStatistics} {where}", parameters).ConfigureAwait(false);
-                    var lastPositionLimit = ((result > 0 && result < filter.MaxResults) ? result - 1 : (filter.MaxResults - 1)).ToString();
-                    maxResults = $"AND {primaryFieldName} >= (SELECT {primaryFieldName} FROM {Tables.PlayerInMatchStatistics} {where} {orderBy} OFFSET {lastPositionLimit} ROWS FETCH NEXT 1 ROWS ONLY) ";
+                    var lastPositionOffset = ((result > 0 && result < filter.MaxResultsAllowingExtraResultsIfValuesAreEqual) ? result - 1 : (filter.MaxResultsAllowingExtraResultsIfValuesAreEqual - 1));
+                    offsetWithExtraResults = $"AND {primaryFieldName} >= (SELECT {primaryFieldName} FROM {Tables.PlayerInMatchStatistics} {where} {orderBy} OFFSET {lastPositionOffset} ROWS FETCH NEXT 1 ROWS ONLY) ";
                 }
             }
+            else
+            {
+                offsetPaging = OffsetByPage(filter);
 
-            var limit = LimitByPage(filter);
-            var sql = $"{select} FROM {Tables.PlayerInMatchStatistics} {where} {maxResults} {orderBy} {limit}";
+            }
+
+            var sql = $"{select} FROM {Tables.PlayerInMatchStatistics} {where} {offsetWithExtraResults} {orderBy} {offsetPaging}";
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -273,7 +278,7 @@ namespace Stoolball.Data.SqlServer
         /// <summary> 
         /// Generates a LIMIT clause if appropriate
         /// </summary> 
-        private static string LimitByPage(StatisticsFilter filter)
+        private static string OffsetByPage(StatisticsFilter filter)
         {
             // Limit main query to just the current page
             return $"OFFSET {(filter.PageSize * (filter.PageNumber - 1))} ROWS FETCH NEXT {filter.PageSize} ROWS ONLY";

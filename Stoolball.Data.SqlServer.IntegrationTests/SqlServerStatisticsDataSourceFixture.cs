@@ -11,8 +11,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
     {
         public Player PlayerWithMultipleIdentities { get; private set; }
 
-        public List<PlayerIdentity> PlayerIdentities { get; internal set; } = new List<PlayerIdentity>();
-        public List<Match> Matches { get; internal set; } = new List<Match>();
+        public List<PlayerIdentity> PlayerIdentities { get; private set; } = new List<PlayerIdentity>();
+        public List<Match> Matches { get; private set; } = new List<Match>();
+        public Player PlayerWithFifthAndSixthInningsTheSame { get; private set; }
 
         public SqlServerStatisticsDataSourceFixture() : base("StoolballStatisticsDataSourceIntegrationTests")
         {
@@ -56,8 +57,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 PlayerWithMultipleIdentities.PlayerIdentities.Clear();
                 PlayerWithMultipleIdentities.PlayerIdentities.AddRange(poolOfTeams.SelectMany(x => x.identities).Where(x => x.Player.PlayerId == PlayerWithMultipleIdentities.PlayerId).Distinct(new PlayerIdentityEqualityComparer()));
 
-                // Create 10 matches for them to play in, with some first innings batting
-                for (var i = 0; i < 10; i++)
+                // Create matches for them to play in, with some first innings batting
+                for (var i = 0; i < 20; i++)
                 {
                     var homeTeamBatsFirst = randomiser.Next(2) == 0;
 
@@ -95,6 +96,27 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     CreateRandomScorecardData(randomiser, Matches[i].MatchInnings[0], teamAInMatch, teamBInMatch, teamAPlayers, teamBPlayers);
                     CreateRandomScorecardData(randomiser, Matches[i].MatchInnings[1], teamBInMatch, teamAInMatch, teamBPlayers, teamAPlayers);
                 }
+
+                // Find any player with at least six innings, and make the sixth best score the same as the fifth so that we can test retrieving a top five + any equal results
+                var inningsForPlayerWithAtLeast6Scores = Matches
+                                 .SelectMany(x => x.MatchInnings) // for each innings of each match...
+                                 .SelectMany(x => x.PlayerInnings.Where(i => i.DismissalType != DismissalType.DidNotBat && i.DismissalType != DismissalType.TimedOut && i.RunsScored.HasValue)) // get the player innings where the player got to bat...
+                                 .GroupBy(x => x.Batter.Player.PlayerId) // separate them into a group of innings for each player...
+                                 .First(x => x.Count() > 5) // get the first player that had more than 5 such innings...
+                                 .Select(x => x) // get those innings out of the IGrouping structure...
+                                 .OrderByDescending(x => x.RunsScored) // sort the best scores first, because that's what the query we're testing will do...
+                                 .ToList(); // make it possible to access innings by index
+
+                // Make the sixth innings the same as the fifth, including anything that might affect the out/not out status.
+                // If there's a seventh, make sure it's different so we know what to assert.
+                inningsForPlayerWithAtLeast6Scores[5].DismissalType = inningsForPlayerWithAtLeast6Scores[4].DismissalType;
+                inningsForPlayerWithAtLeast6Scores[5].DismissedBy = inningsForPlayerWithAtLeast6Scores[4].DismissedBy;
+                inningsForPlayerWithAtLeast6Scores[5].Bowler = inningsForPlayerWithAtLeast6Scores[4].Bowler;
+                inningsForPlayerWithAtLeast6Scores[5].RunsScored = inningsForPlayerWithAtLeast6Scores[4].RunsScored;
+                if (inningsForPlayerWithAtLeast6Scores.Count > 6 && inningsForPlayerWithAtLeast6Scores[5].RunsScored == inningsForPlayerWithAtLeast6Scores[6].RunsScored) { inningsForPlayerWithAtLeast6Scores[6].RunsScored++; }
+
+                PlayerWithFifthAndSixthInningsTheSame = inningsForPlayerWithAtLeast6Scores.First().Batter.Player;
+
 
                 // Add all player identities to expected collections for testing
                 var teamsThatGotUsed = Matches.SelectMany(x => x.Teams).Select(x => x.Team.TeamId.Value).Distinct().ToList();
@@ -151,17 +173,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             {
                 var fielderOrMissingData = randomiser.Next(2) == 0 ? fieldingPlayers[randomiser.Next(fieldingPlayers.Count)] : null;
                 var bowlerOrMissingData = randomiser.Next(2) == 0 ? fieldingPlayers[randomiser.Next(fieldingPlayers.Count)] : null;
-                innings.PlayerInnings.Add(CreateRandomPlayerInnings(randomiser, battingPlayers[p], fielderOrMissingData, bowlerOrMissingData));
+                innings.PlayerInnings.Add(CreateRandomPlayerInnings(randomiser, p + 1, battingPlayers[p], fielderOrMissingData, bowlerOrMissingData));
             }
 
             // sometimes pick a random player to bat twice in the innings
             if (randomiser.Next(2) == 0)
             {
-                innings.PlayerInnings.Add(CreateRandomPlayerInnings(randomiser, battingPlayers[randomiser.Next(battingPlayers.Count)], fieldingPlayers[randomiser.Next(fieldingPlayers.Count)], fieldingPlayers[randomiser.Next(fieldingPlayers.Count)]));
+                innings.PlayerInnings.Add(CreateRandomPlayerInnings(randomiser, battingPlayers.Count, battingPlayers[randomiser.Next(battingPlayers.Count)], fieldingPlayers[randomiser.Next(fieldingPlayers.Count)], fieldingPlayers[randomiser.Next(fieldingPlayers.Count)]));
             }
         }
 
-        private static PlayerInnings CreateRandomPlayerInnings(Random randomiser, PlayerIdentity batter, PlayerIdentity fielderOrMissingData, PlayerIdentity bowlerOrMissingData)
+        private static PlayerInnings CreateRandomPlayerInnings(Random randomiser, int battingPosition, PlayerIdentity batter, PlayerIdentity fielderOrMissingData, PlayerIdentity bowlerOrMissingData)
         {
             var dismissalTypes = Enum.GetValues(typeof(DismissalType));
             var dismissal = (DismissalType)dismissalTypes.GetValue(randomiser.Next(dismissalTypes.Length));
@@ -184,6 +206,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             return new PlayerInnings
             {
                 PlayerInningsId = Guid.NewGuid(),
+                BattingPosition = battingPosition,
                 Batter = batter,
                 DismissalType = dismissal,
                 DismissedBy = fielderOrMissingData,

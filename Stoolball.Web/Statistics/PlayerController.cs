@@ -48,7 +48,7 @@ namespace Stoolball.Web.Statistics
                 Player = await _playerDataSource.ReadPlayerByRoute(Request.RawUrl).ConfigureAwait(false),
             };
 
-            var filter = new StatisticsFilter { MaxResults = 5 };
+            var filter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 5 };
             filter.PlayerIds.Add(model.Player.PlayerId.Value);
             model.PlayerInnings = (await _statisticsDataSource.ReadPlayerInnings(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 

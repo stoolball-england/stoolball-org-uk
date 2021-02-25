@@ -237,5 +237,21 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 remaining -= pageSize;
             }
         }
+
+        [Fact]
+        public async Task Read_player_innings_with_MaxResultsAllowingExtraResultsIfValuesAreEqual_returns_results_equal_to_the_max()
+        {
+            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = (await dataSource.ReadPlayerInnings(new StatisticsFilter
+            {
+                MaxResultsAllowingExtraResultsIfValuesAreEqual = 5,
+                PlayerIds = new List<Guid> { _databaseFixture.PlayerWithFifthAndSixthInningsTheSame.PlayerId.Value }
+            },
+            StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+
+            Assert.Equal(6, results.Count);
+            Assert.Equal(results[4].PlayerInnings.RunsScored, results[5].PlayerInnings.RunsScored);
+        }
     }
 }

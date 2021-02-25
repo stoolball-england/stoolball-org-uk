@@ -30,6 +30,6 @@ namespace Stoolball.Statistics
         public bool? PlayerOfTheMatch { get; set; }
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 50;
-        public int? MaxResults { get; set; }
+        public int? MaxResultsAllowingExtraResultsIfValuesAreEqual { get; set; }
     }
 }
