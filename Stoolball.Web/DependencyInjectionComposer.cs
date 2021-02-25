@@ -144,6 +144,7 @@ namespace Stoolball.Web
             composition.Register<CreateCompetitionController>();
             composition.Register<EditCompetitionController>();
             composition.Register<DeleteCompetitionController>();
+            composition.Register<StatisticsController>();
             composition.Register<EditStatisticsController>();
             composition.Register<IndividualScoresController>();
 

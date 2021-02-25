@@ -20,5 +20,5 @@
     </p>
 
     @Html.Partial("_IndividualScores", individualScores)
-    <p><a href="/play/statistics/individual-scores?player=@Model.Player.PlayerId">Individual scores – view all</a></p>
+    <p><a href="@Stoolball.Constants.Pages.StatisticsUrl/individual-scores?player=@Model.Player.PlayerId">Individual scores – view all</a></p>
 </div>

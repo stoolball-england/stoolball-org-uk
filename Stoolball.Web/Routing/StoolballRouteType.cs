@@ -62,6 +62,7 @@
         EditTournament,
         EditTournamentTeams,
         DeleteTournament,
+        Statistics,
         EditStatistics,
         Player,
         IndividualScores

@@ -105,6 +105,11 @@ $selected_background: #555;
     background-image: url(/images/icons/settings-white-24dp.svg);
 }
 
+// For the occasional page where there are no standard tabs, only admin options, remove the line
+.nav-tabs-admin-only {
+    border-bottom: none;
+}
+
 @include media-breakpoint-up(md) {
     // At md and above, change strategy from absolute positioning to flexbox.
     // The first .nav-item-admin uses flex-grow: 1 to take up all the extra space and

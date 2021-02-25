@@ -135,7 +135,8 @@ namespace Stoolball.Web.Routing
                 { $"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}teams{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.TransientTeam },
                 { $"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.EditTransientTeam },
 
-                // Match /play/statistics/edit or /play/statistics/example-statistic
+                // Match /play/statistics, /play/statistics/edit or /play/statistics/example-statistic
+                { $"play{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.Statistics },
                 { $"play{SLASH}statistics{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.EditStatistics },
                 { $"play{SLASH}statistics{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores }
             };

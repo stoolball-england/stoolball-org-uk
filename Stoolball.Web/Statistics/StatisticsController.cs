@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Stoolball.Data.SqlServer;
 using Stoolball.Security;
+using Stoolball.Statistics;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -15,20 +16,20 @@ using static Stoolball.Constants;
 
 namespace Stoolball.Web.Statistics
 {
-    public class EditStatisticsController : RenderMvcControllerAsync
+    public class StatisticsController : RenderMvcControllerAsync
     {
-        private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
+        private readonly IStatisticsDataSource _statisticsDataSource;
 
-        public EditStatisticsController(IGlobalSettings globalSettings,
+        public StatisticsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           IDatabaseConnectionFactory databaseConnectionFactory)
+           IStatisticsDataSource statisticsDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
+            _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
         }
 
         [HttpGet]
@@ -40,10 +41,13 @@ namespace Stoolball.Web.Statistics
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new EditStatisticsViewModel(contentModel.Content, Services.UserService);
+            var model = new StatisticsViewModel(contentModel.Content, Services?.UserService);
             model.IsAuthorized[AuthorizedAction.EditStatistics] = Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null);
 
-            model.Metadata.PageTitle = "Update statistics";
+            model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
+            model.PlayerInnings = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+
+            model.Metadata.PageTitle = $"Statistics for all teams";
 
             return CurrentTemplate(model);
         }

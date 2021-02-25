@@ -15,21 +15,29 @@
     }
 }
 <div class="container-xl">
-    <h1>Highest individual scores for @(Model.Results.First().Player.PlayerName())</h1>
-    <p>The statistics below are based on scorecards added to this website. If you know someone who's played better, add the scorecard for that match – see <a href="/organise/website/how-to-add-match-results/">How to add match results</a>.</p>
-    
+    <h1>Highest individual scores 
+    @if (Model.StatisticsFilter.PlayerIds.Any()) {
+        @:for @(Model.Results.First().Player.PlayerName())
+    }</h1>
+
+    @Html.Partial("_StatisticsBasis")
     @Html.Partial("_IndividualScores")
 
-    @if (Model.StatisticsFilter.PageNumber > 1)
+    @if (Model.TotalResults > Model.StatisticsFilter.PageSize)
     {
-        var query = HttpUtility.ParseQueryString(Request.Url.Query);
-        query["page"] = (Model.StatisticsFilter.PageNumber - 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
-        <p><a href="/play/statistics/individual-scores?@query" class="btn btn-secondary btn-back">Previous page</a></p>
-    }
-    @if (Model.TotalResults > (Model.StatisticsFilter.PageNumber * Model.StatisticsFilter.PageSize))
-    {
-        var query = HttpUtility.ParseQueryString(Request.Url.Query);
-        query["page"] = (Model.StatisticsFilter.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
-        <p><a href="/play/statistics/individual-scores?@query" class="btn btn-secondary">Next page</a></p>
+        <p>
+        @if (Model.StatisticsFilter.PageNumber > 1)
+        {
+            var query = HttpUtility.ParseQueryString(Request.Url.Query);
+            query["page"] = (Model.StatisticsFilter.PageNumber - 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+            <a href="/play/statistics/individual-scores?@query" class="btn btn-secondary btn-back">Previous page</a>
+        }
+        @if (Model.TotalResults > (Model.StatisticsFilter.PageNumber * Model.StatisticsFilter.PageSize))
+        {
+            var query = HttpUtility.ParseQueryString(Request.Url.Query);
+            query["page"] = (Model.StatisticsFilter.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+            <a href="/play/statistics/individual-scores?@query" class="btn btn-secondary">Next page</a>
+        }
+        </p>
     }
 </div>

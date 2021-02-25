@@ -52,7 +52,7 @@ namespace Stoolball.Web.Statistics
         [ContentSecurityPolicy]
         public ActionResult UpdateStatistics()
         {
-            var model = new StatisticsViewModel(CurrentPage, Services.UserService);
+            var model = new EditStatisticsViewModel(CurrentPage, Services.UserService);
             model.IsAuthorized[AuthorizedAction.EditStatistics] = Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null);
 
             if (model.IsAuthorized[AuthorizedAction.EditStatistics] && ModelState.IsValid)

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Navigation;
 using Stoolball.Statistics;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -39,18 +40,19 @@ namespace Stoolball.Web.Statistics
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            if (!Guid.TryParse(Request.QueryString["player"], out Guid playerId))
-            {
-                return new HttpStatusCodeResult(400);
-            }
-
             var model = new IndividualScoresViewModel(contentModel.Content, Services?.UserService) { ShowCaption = false };
-
             _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
             model.StatisticsFilter = new StatisticsFilter { PageNumber = pageNumber > 0 ? pageNumber : 1 };
-            model.StatisticsFilter.PlayerIds.Add(playerId);
+
+            var pageTitle = "Highest individual scores";
+
+            if (Guid.TryParse(Request.QueryString["player"], out Guid playerId))
+            {
+                model.StatisticsFilter.PlayerIds.Add(playerId);
+            }
 
             model.Results = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+
 
             if (!model.Results.Any())
             {
@@ -59,7 +61,13 @@ namespace Stoolball.Web.Statistics
             else
             {
                 model.TotalResults = await _statisticsDataSource.ReadTotalPlayerInnings(model.StatisticsFilter).ConfigureAwait(false);
-                model.Metadata.PageTitle = $"Highest individual scores for {model.Results.First().Player.PlayerName()}";
+
+                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Statistics, Url = new Uri(Constants.Pages.StatisticsUrl, UriKind.Relative) });
+                if (model.StatisticsFilter.PlayerIds.Any())
+                {
+                    pageTitle += $" for {model.Results.First().Player.PlayerName()}";
+                }
+                model.Metadata.PageTitle = pageTitle;
 
                 return CurrentTemplate(model);
             }

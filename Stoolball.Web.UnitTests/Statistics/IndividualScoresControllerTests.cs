@@ -56,20 +56,6 @@ namespace Stoolball.Web.Tests.Statistics
         }
 
         [Fact]
-        public async Task Missing_or_bad_player_id_returns_400()
-        {
-            var dataSource = new Mock<IStatisticsDataSource>();
-
-            using (var controller = new TestController(dataSource.Object, UmbracoHelper, string.Empty))
-            {
-                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
-
-                Assert.IsType<HttpStatusCodeResult>(result);
-                Assert.Equal(400, ((HttpStatusCodeResult)result).StatusCode);
-            }
-        }
-
-        [Fact]
         public async Task Player_with_no_innings_returns_404()
         {
             var dataSource = new Mock<IStatisticsDataSource>();

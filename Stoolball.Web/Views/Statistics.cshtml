@@ -1,0 +1,28 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel>
+@using Stoolball.Security
+@using Stoolball.Web.Statistics
+@using ClientDependency.Core.Mvc
+@{
+    Html.RequiresCss("/statistics/statistics.min.css");
+    var individualScores = new IndividualScoresViewModel(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true };
+    individualScores.Results.AddRange(Model.PlayerInnings);
+}
+@section head {
+    <meta name="robots" content="noindex, follow" />
+}
+<div class="container-xl">
+    <h1>Statistics for all teams</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.EditStatistics])
+    {
+        <ul class="nav nav-tabs nav-tabs-admin-only">
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-edit" href="@Stoolball.Constants.Pages.StatisticsUrl/edit">Edit statistics</a>
+            </li>
+        </ul>
+    }
+
+    @Html.Partial("_StatisticsBasis")
+    @Html.Partial("_IndividualScores", individualScores)
+    <p><a href="@Stoolball.Constants.Pages.StatisticsUrl/individual-scores">Individual scores – view all</a></p>
+</div>
