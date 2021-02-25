@@ -57,7 +57,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 PlayerWithMultipleIdentities.PlayerIdentities.Clear();
                 PlayerWithMultipleIdentities.PlayerIdentities.AddRange(poolOfTeams.SelectMany(x => x.identities).Where(x => x.Player.PlayerId == PlayerWithMultipleIdentities.PlayerId).Distinct(new PlayerIdentityEqualityComparer()));
 
-                // Create matches for them to play in, with some first innings batting
+                // Create matches for them to play in, with some batting
                 for (var i = 0; i < 20; i++)
                 {
                     var homeTeamBatsFirst = randomiser.Next(2) == 0;
@@ -93,8 +93,19 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     Matches[i].Teams.Add(teamAInMatch);
                     Matches[i].Teams.Add(teamBInMatch);
 
-                    CreateRandomScorecardData(randomiser, Matches[i].MatchInnings[0], teamAInMatch, teamBInMatch, teamAPlayers, teamBPlayers);
-                    CreateRandomScorecardData(randomiser, Matches[i].MatchInnings[1], teamBInMatch, teamAInMatch, teamBPlayers, teamAPlayers);
+                    // Some matches should have multiple innings
+                    if (randomiser.Next(4) == 0)
+                    {
+                        Matches[i].MatchInnings.Add(CreateMatchInnings(randomiser, 3));
+                        Matches[i].MatchInnings.Add(CreateMatchInnings(randomiser, 4));
+                    }
+
+                    foreach (var innings in Matches[i].MatchInnings.Where(x => x.InningsOrderInMatch % 2 == 1))
+                    {
+                        var pairedInnings = Matches[i].MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
+                        CreateRandomScorecardData(randomiser, innings, teamAInMatch, teamBInMatch, teamAPlayers, teamBPlayers);
+                        CreateRandomScorecardData(randomiser, pairedInnings, teamBInMatch, teamAInMatch, teamBPlayers, teamAPlayers);
+                    }
                 }
 
                 // Find any player with at least six innings, and make the sixth best score the same as the fifth so that we can test retrieving a top five + any equal results
@@ -164,8 +175,25 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             }
         }
 
+        private static MatchInnings CreateMatchInnings(Random randomiser, int inningsOrderInMatch)
+        {
+            return new MatchInnings
+            {
+                MatchInningsId = Guid.NewGuid(),
+                InningsOrderInMatch = inningsOrderInMatch,
+                NoBalls = randomiser.Next(30),
+                Wides = randomiser.Next(30),
+                Byes = randomiser.Next(30),
+                BonusOrPenaltyRuns = randomiser.Next(-5, 5),
+                Runs = randomiser.Next(100, 250),
+                Wickets = randomiser.Next(11)
+            };
+        }
+
         private static void CreateRandomScorecardData(Random randomiser, MatchInnings innings, TeamInMatch battingTeam, TeamInMatch fieldingTeam, List<PlayerIdentity> battingPlayers, List<PlayerIdentity> fieldingPlayers)
         {
+            innings.BattingMatchTeamId = battingTeam.MatchTeamId;
+            innings.BowlingMatchTeamId = fieldingTeam.MatchTeamId;
             innings.BattingTeam = battingTeam;
             innings.BowlingTeam = fieldingTeam;
 
