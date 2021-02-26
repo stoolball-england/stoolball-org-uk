@@ -22,22 +22,4 @@
 
     @Html.Partial("_StatisticsBasis")
     @Html.Partial("_IndividualScores")
-
-    @if (Model.TotalResults > Model.StatisticsFilter.PageSize)
-    {
-        <p>
-        @if (Model.StatisticsFilter.PageNumber > 1)
-        {
-            var query = HttpUtility.ParseQueryString(Request.Url.Query);
-            query["page"] = (Model.StatisticsFilter.PageNumber - 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
-            <a href="/play/statistics/individual-scores?@query" class="btn btn-secondary btn-back">Previous page</a>
-        }
-        @if (Model.TotalResults > (Model.StatisticsFilter.PageNumber * Model.StatisticsFilter.PageSize))
-        {
-            var query = HttpUtility.ParseQueryString(Request.Url.Query);
-            query["page"] = (Model.StatisticsFilter.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
-            <a href="/play/statistics/individual-scores?@query" class="btn btn-secondary">Next page</a>
-        }
-        </p>
-    }
 </div>

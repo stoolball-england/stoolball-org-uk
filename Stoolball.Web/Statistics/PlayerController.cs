@@ -49,9 +49,9 @@ namespace Stoolball.Web.Statistics
                 Player = await _playerDataSource.ReadPlayerByRoute(Request.RawUrl).ConfigureAwait(false),
             };
 
-            var filter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 5 };
-            filter.PlayerIds.Add(model.Player.PlayerId.Value);
-            model.PlayerInnings = (await _statisticsDataSource.ReadPlayerInnings(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+            model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 5 };
+            model.StatisticsFilter.PlayerIds.Add(model.Player.PlayerId.Value);
+            model.PlayerInnings = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
             if (model.Player == null)
             {

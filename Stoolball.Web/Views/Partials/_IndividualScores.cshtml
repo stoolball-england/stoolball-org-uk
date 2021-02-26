@@ -8,20 +8,22 @@
 }
 <table class="statistics table-as-cards table-as-cards-reset-md">
     @if (Model.ShowCaption)
-    { 
+    {
         <caption>Highest individual scores</caption>
     }
     <thead>
         <tr>
-        <th scope="col">#</th>
-        @if (Model.ShowPlayerColumn)
-        {
-            <th scope="col">Player</th> 
-        }
-        <th scope="col">Match</th>
-        <th scope="col">When</th>
-        <th scope="col" class="numeric">Runs</th>
-        <th scope="col" class="numeric">Balls</th></tr>
+            <th scope="col">#</th>
+            @if (Model.ShowPlayerColumn)
+            {
+                <th scope="col">Player</th>
+
+            }
+            <th scope="col">Match</th>
+            <th scope="col">When</th>
+            <th scope="col" class="numeric">Runs</th>
+            <th scope="col" class="numeric">Balls</th>
+        </tr>
     </thead>
     <tbody>
         @{
@@ -62,3 +64,32 @@
         }
     </tbody>
 </table>
+@if (Model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
+{
+    var queryString = HttpUtility.ParseQueryString(string.Empty);
+    if (Model.StatisticsFilter.PlayerIds.Any())
+    {
+        queryString["player"] = Model.Results.First().Player.PlayerId.Value.ToString();
+    }
+    <p><a href="@Stoolball.Constants.Pages.StatisticsUrl/individual-scores@(queryString.Count > 0 ? "?" + queryString.ToString() : string.Empty)">Individual scores – view all</a></p>
+}
+else
+{
+    if (Model.TotalResults > Model.StatisticsFilter.PageSize)
+    {
+        <p>
+            @if (Model.StatisticsFilter.PageNumber > 1)
+            {
+                var query = HttpUtility.ParseQueryString(Request.Url.Query);
+                query["page"] = (Model.StatisticsFilter.PageNumber - 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                <a href="@Stoolball.Constants.Pages.StatisticsUrl/individual-scores?@query" class="btn btn-secondary btn-back">Previous page</a>
+            }
+            @if (Model.TotalResults > (Model.StatisticsFilter.PageNumber * Model.StatisticsFilter.PageSize))
+            {
+                var query = HttpUtility.ParseQueryString(Request.Url.Query);
+                query["page"] = (Model.StatisticsFilter.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                <a href="@Stoolball.Constants.Pages.StatisticsUrl/individual-scores?@query" class="btn btn-secondary">Next page</a>
+            }
+        </p>
+    }
+}
