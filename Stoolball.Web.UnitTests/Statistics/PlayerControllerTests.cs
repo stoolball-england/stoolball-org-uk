@@ -33,7 +33,8 @@ namespace Stoolball.Web.Tests.Statistics
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
-                playerDataSource)
+                playerDataSource,
+                Mock.Of<IStatisticsDataSource>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));

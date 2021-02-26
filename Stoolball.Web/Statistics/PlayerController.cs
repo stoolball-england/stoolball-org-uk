@@ -49,16 +49,16 @@ namespace Stoolball.Web.Statistics
                 Player = await _playerDataSource.ReadPlayerByRoute(Request.RawUrl).ConfigureAwait(false),
             };
 
-            model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 5 };
-            model.StatisticsFilter.PlayerIds.Add(model.Player.PlayerId.Value);
-            model.PlayerInnings = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
-
             if (model.Player == null)
             {
                 return new HttpNotFoundResult();
             }
             else
             {
+                model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 5 };
+                model.StatisticsFilter.PlayerRoutes.Add(model.Player.PlayerRoute);
+                model.PlayerInnings = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Statistics, Url = new Uri(Constants.Pages.StatisticsUrl, UriKind.Relative) });
 
                 var teams = model.Player.PlayerIdentities.Select(x => x.Team.TeamName).Distinct().ToList();

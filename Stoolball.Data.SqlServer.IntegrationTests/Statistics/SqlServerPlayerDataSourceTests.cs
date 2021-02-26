@@ -160,6 +160,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var result = await playerDataSource.ReadPlayerByRoute(_databaseFixture.PlayerWithMultipleIdentities.PlayerRoute).ConfigureAwait(false);
 
             Assert.Equal(_databaseFixture.PlayerWithMultipleIdentities.PlayerId, result.PlayerId);
+            Assert.Equal(_databaseFixture.PlayerWithMultipleIdentities.PlayerRoute, result.PlayerRoute);
             Assert.Equal(_databaseFixture.PlayerWithMultipleIdentities.PlayerIdentities.Count, result.PlayerIdentities.Count);
             foreach (var identity in _databaseFixture.PlayerWithMultipleIdentities.PlayerIdentities)
             {

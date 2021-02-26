@@ -66,12 +66,7 @@
 </table>
 @if (Model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
 {
-    var queryString = HttpUtility.ParseQueryString(string.Empty);
-    if (Model.StatisticsFilter.PlayerIds.Any())
-    {
-        queryString["player"] = Model.Results.First().Player.PlayerId.Value.ToString();
-    }
-    <p><a href="@Stoolball.Constants.Pages.StatisticsUrl/individual-scores@(queryString.Count > 0 ? "?" + queryString.ToString() : string.Empty)">Individual scores – view all</a></p>
+    <p><a href="@Request.RawUrl/individual-scores">Individual scores – view all</a></p>
 }
 else
 {
@@ -82,13 +77,13 @@ else
             {
                 var query = HttpUtility.ParseQueryString(Request.Url.Query);
                 query["page"] = (Model.StatisticsFilter.PageNumber - 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
-                <a href="@Stoolball.Constants.Pages.StatisticsUrl/individual-scores?@query" class="btn btn-secondary btn-back">Previous page</a>
+                <a href="@Request.Path?@query" class="btn btn-secondary btn-back">Previous page</a>
             }
             @if (Model.TotalResults > (Model.StatisticsFilter.PageNumber * Model.StatisticsFilter.PageSize))
             {
                 var query = HttpUtility.ParseQueryString(Request.Url.Query);
                 query["page"] = (Model.StatisticsFilter.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
-                <a href="@Stoolball.Constants.Pages.StatisticsUrl/individual-scores?@query" class="btn btn-secondary">Next page</a>
+                <a href="@Request.Path?@query" class="btn btn-secondary">Next page</a>
             }
         </p>
     }

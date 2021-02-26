@@ -33,7 +33,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            var result = await dataSource.ReadTotalPlayerInnings(new StatisticsFilter { PlayerIds = new List<Guid> { _databaseFixture.PlayerWithMultipleIdentities.PlayerId.Value } }).ConfigureAwait(false);
+            var result = await dataSource.ReadTotalPlayerInnings(new StatisticsFilter { PlayerRoutes = new List<string> { _databaseFixture.PlayerWithMultipleIdentities.PlayerRoute } }).ConfigureAwait(false);
 
             var expected = _databaseFixture.Matches.SelectMany(x => x.MatchInnings)
                 .SelectMany(x => x.PlayerInnings)
@@ -159,14 +159,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task Read_player_innings_supports_filter_by_player_id()
+        public async Task Read_player_innings_supports_filter_by_player_route()
         {
             var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var results = await dataSource.ReadPlayerInnings(new StatisticsFilter
             {
                 PageSize = int.MaxValue,
-                PlayerIds = new List<Guid> { _databaseFixture.PlayerWithMultipleIdentities.PlayerId.Value }
+                PlayerRoutes = new List<string> { _databaseFixture.PlayerWithMultipleIdentities.PlayerRoute }
             },
             StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
@@ -246,7 +246,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var results = (await dataSource.ReadPlayerInnings(new StatisticsFilter
             {
                 MaxResultsAllowingExtraResultsIfValuesAreEqual = 5,
-                PlayerIds = new List<Guid> { _databaseFixture.PlayerWithFifthAndSixthInningsTheSame.PlayerId.Value }
+                PlayerRoutes = new List<string> { _databaseFixture.PlayerWithFifthAndSixthInningsTheSame.PlayerRoute }
             },
             StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 

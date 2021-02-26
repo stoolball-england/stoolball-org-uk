@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Moq;
+using Stoolball.Routing;
 using Stoolball.Statistics;
 using Stoolball.Web.Statistics;
 using Umbraco.Core.Cache;
@@ -34,10 +35,12 @@ namespace Stoolball.Web.Tests.Statistics
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
-                statisticsDataSource)
+                statisticsDataSource,
+                Mock.Of<IRouteNormaliser>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
+                request.SetupGet(x => x.RawUrl).Returns(Stoolball.Constants.Pages.StatisticsUrl + "/individual-scores");
                 request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString(queryString));
 
                 var context = new Mock<HttpContextBase>();

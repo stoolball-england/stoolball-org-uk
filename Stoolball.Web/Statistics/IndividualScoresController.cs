@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Navigation;
+using Stoolball.Routing;
 using Stoolball.Statistics;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -18,6 +19,7 @@ namespace Stoolball.Web.Statistics
     public class IndividualScoresController : RenderMvcControllerAsync
     {
         private readonly IStatisticsDataSource _statisticsDataSource;
+        private readonly IRouteNormaliser _routeNormaliser;
 
         public IndividualScoresController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -25,10 +27,12 @@ namespace Stoolball.Web.Statistics
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           IStatisticsDataSource statisticsDataSource)
+           IStatisticsDataSource statisticsDataSource,
+           IRouteNormaliser routeNormaliser)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
+            _routeNormaliser = routeNormaliser ?? throw new ArgumentNullException(nameof(routeNormaliser));
         }
 
         [HttpGet]
@@ -46,9 +50,10 @@ namespace Stoolball.Web.Statistics
 
             var pageTitle = "Highest individual scores";
 
-            if (Guid.TryParse(Request.QueryString["player"], out Guid playerId))
+
+            if (Request.RawUrl.StartsWith("/players/", StringComparison.OrdinalIgnoreCase))
             {
-                model.StatisticsFilter.PlayerIds.Add(playerId);
+                model.StatisticsFilter.PlayerRoutes.Add(_routeNormaliser.NormaliseRouteToEntity(Request.RawUrl, "players"));
             }
 
             model.Results = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
@@ -63,9 +68,11 @@ namespace Stoolball.Web.Statistics
                 model.TotalResults = await _statisticsDataSource.ReadTotalPlayerInnings(model.StatisticsFilter).ConfigureAwait(false);
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Statistics, Url = new Uri(Constants.Pages.StatisticsUrl, UriKind.Relative) });
-                if (model.StatisticsFilter.PlayerIds.Any())
+                if (model.StatisticsFilter.PlayerRoutes.Any())
                 {
-                    pageTitle += $" for {model.Results.First().Player.PlayerName()}";
+                    var player = model.Results.First().Player;
+                    model.Breadcrumbs.Add(new Breadcrumb { Name = player.PlayerName(), Url = new Uri(player.PlayerRoute, UriKind.Relative) });
+                    pageTitle += $" for {player.PlayerName()}";
                 }
                 model.Metadata.PageTitle = pageTitle;
 

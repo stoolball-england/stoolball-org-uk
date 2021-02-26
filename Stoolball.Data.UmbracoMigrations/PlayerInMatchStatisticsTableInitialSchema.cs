@@ -30,11 +30,12 @@ namespace Stoolball.Data.UmbracoMigrations
 
         [Column(nameof(PlayerRoute))]
         [NullSetting(NullSetting = NullSettings.Null)]
+        [Index(IndexTypes.Clustered)]
         public string PlayerRoute { get; set; }
 
         [Column(nameof(MatchId))]
         [ForeignKey(typeof(MatchTableInitialSchema), Column = nameof(MatchTableInitialSchema.MatchId))]
-        [Index(IndexTypes.Clustered)]
+        [Index(IndexTypes.NonClustered)]
         public Guid MatchId { get; set; }
 
         [Column(nameof(MatchStartTime))]

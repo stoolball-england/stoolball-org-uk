@@ -131,10 +131,10 @@ namespace Stoolball.Data.SqlServer
                 where.Add("PlayerOfTheMatch = 1");
             }
 
-            if (filter.PlayerIds.Any())
+            if (filter.PlayerRoutes.Any())
             {
-                where.Add("PlayerId IN @PlayerIds");
-                parameters.Add("@PlayerIds", filter.PlayerIds);
+                where.Add("PlayerRoute IN @PlayerRoutes");
+                parameters.Add("@PlayerRoutes", filter.PlayerRoutes);
             }
 
             if (filter.BowledByPlayerIdentityIds.Any())

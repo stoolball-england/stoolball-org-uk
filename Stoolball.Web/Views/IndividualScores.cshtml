@@ -16,7 +16,8 @@
 }
 <div class="container-xl">
     <h1>Highest individual scores 
-    @if (Model.StatisticsFilter.PlayerIds.Any()) {
+    @if (Model.StatisticsFilter.PlayerRoutes.Any()) {
+        Model.ShowPlayerColumn = false;
         @:for @(Model.Results.First().Player.PlayerName())
     }</h1>
 

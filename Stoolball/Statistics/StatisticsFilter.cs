@@ -10,7 +10,7 @@ namespace Stoolball.Statistics
         public List<Guid> TeamIds { get; internal set; } = new List<Guid>();
         public List<Guid> OppositionTeamIds { get; internal set; } = new List<Guid>();
         public bool SwapTeamAndOppositionFilters { get; set; }
-        public List<Guid> PlayerIds { get; internal set; } = new List<Guid>();
+        public List<string> PlayerRoutes { get; internal set; } = new List<string>();
         public List<Guid> BowledByPlayerIdentityIds { get; internal set; } = new List<Guid>();
         public List<Guid> CaughtByPlayerIdentityIds { get; internal set; } = new List<Guid>();
         public List<Guid> RunOutByPlayerIdentityIds { get; internal set; } = new List<Guid>();

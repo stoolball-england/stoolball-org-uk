@@ -147,6 +147,8 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/play/statistics/EDIT/", StoolballRouteType.EditStatistics)]
         [InlineData("https://example.org/play/statistics/individual-scores", StoolballRouteType.IndividualScores)]
         [InlineData("https://example.org/play/statistics/Individual-Scores/", StoolballRouteType.IndividualScores)]
+        [InlineData("https://example.org/players/example-name/individual-scores", StoolballRouteType.IndividualScores)]
+        [InlineData("https://example.org/players/example-NAME/Individual-Scores/", StoolballRouteType.IndividualScores)]
         [InlineData("https://example.org/players/example-name/", StoolballRouteType.Player)]
         [InlineData("https://example.org/players/example-NAME", StoolballRouteType.Player)]
         public void Correct_route_should_match(string route, StoolballRouteType expectedType)

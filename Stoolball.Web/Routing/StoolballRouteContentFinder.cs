@@ -72,6 +72,7 @@ namespace Stoolball.Web.Routing
                 { $"matches{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Match },
                 { $"tournaments{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Tournament },
                 { $"players{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Player },
+                { $"players{SLASH}{ANY_VALID_ROUTE}{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores },
 
                 // Match /competitions/example-entity/2020, /competitions/example-entity/2020-21, 
                 // but not /competitions, /competitions/, /competitions/example-entity, /competitions/example-entity/invalid 
