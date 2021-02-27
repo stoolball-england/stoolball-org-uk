@@ -12,21 +12,23 @@
         <p class="alert alert-info"><strong>This competition isn't played any more.</strong></p>
     }
 
-    @if (authorizedToEdit)
-    {
-        @* When another tab is added, only the last two should be protected by authorizedToEdit, but there's no point having just one tab *@
-        <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-add nav-tabs-has-edit" : string.Empty)">
-            <li class="nav-item">
-                <em class="nav-link active">Summary</em>
-            </li>
+    <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-add nav-tabs-has-edit" : string.Empty)">
+        <li class="nav-item">
+            <em class="nav-link active">Summary</em>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Competition.CompetitionRoute/statistics">Statistics</a>
+        </li>
+        @if (authorizedToEdit)
+        {
             <li class="nav-item nav-item-admin">
                 <a class="nav-link nav-link-add" href="@Model.Competition.CompetitionRoute/add">Add season</a>
             </li>
             <li class="nav-item nav-item-admin">
                 <a class="nav-link nav-link-edit" href="@Model.Competition.CompetitionRoute/edit">Edit competition</a>
             </li>
-        </ul>
-    }
+        }
+    </ul>
 
     @Html.Raw(Model.Competition.Introduction)
 

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Competitions;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
 using Stoolball.Routing;
@@ -24,6 +25,7 @@ namespace Stoolball.Web.Statistics
         private readonly IPlayerDataSource _playerDataSource;
         private readonly ITeamDataSource _teamDataSource;
         private readonly IMatchLocationDataSource _matchLocationDataSource;
+        private readonly ICompetitionDataSource _competitionDataSource;
         private readonly IRouteNormaliser _routeNormaliser;
 
         public IndividualScoresController(IGlobalSettings globalSettings,
@@ -36,6 +38,7 @@ namespace Stoolball.Web.Statistics
            IPlayerDataSource playerDataSource,
            ITeamDataSource teamDataSource,
            IMatchLocationDataSource matchLocationDataSource,
+           ICompetitionDataSource competitionDataSource,
            IRouteNormaliser routeNormaliser)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
@@ -43,6 +46,7 @@ namespace Stoolball.Web.Statistics
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _matchLocationDataSource = matchLocationDataSource ?? throw new ArgumentNullException(nameof(matchLocationDataSource));
+            _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
             _routeNormaliser = routeNormaliser ?? throw new ArgumentNullException(nameof(routeNormaliser));
         }
 
@@ -73,6 +77,10 @@ namespace Stoolball.Web.Statistics
             else if (Request.RawUrl.StartsWith("/locations/", StringComparison.OrdinalIgnoreCase))
             {
                 model.StatisticsFilter.MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(_routeNormaliser.NormaliseRouteToEntity(Request.RawUrl, "locations"), false).ConfigureAwait(false);
+            }
+            else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
+            {
+                model.StatisticsFilter.Competition = await _competitionDataSource.ReadCompetitionByRoute(_routeNormaliser.NormaliseRouteToEntity(Request.RawUrl, "competitions")).ConfigureAwait(false);
             }
 
             model.Results = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();

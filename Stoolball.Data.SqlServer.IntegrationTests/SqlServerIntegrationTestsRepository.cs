@@ -85,12 +85,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
         public void CreateMatch(Match match)
         {
-            if (match.Season != null)
-            {
-                CreateCompetition(match.Season.Competition);
-                CreateSeason(match.Season, match.Season.Competition.CompetitionId.Value);
-            }
-
             _connection.Execute($@"INSERT INTO {Tables.Match} 
                     (MatchId, MatchName, UpdateMatchNameAutomatically, MatchType, PlayerType, StartTime, StartTimeIsKnown, MatchRoute, MatchLocationId, PlayersPerTeam, 
                      EnableBonusOrPenaltyRuns, LastPlayerBatsOn, InningsOrderIsKnown, MatchResultType, MatchNotes, SeasonId, TournamentId, OrderInTournament, MemberKey)

@@ -2,11 +2,12 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.MatchLocations;
 using Stoolball.Navigation;
 using Stoolball.Statistics;
-using Stoolball.Teams;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
+using Stoolball.Web.Statistics;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -14,24 +15,24 @@ using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
 
-namespace Stoolball.Web.Statistics
+namespace Stoolball.Web.MatchLocations
 {
-    public class TeamStatisticsController : RenderMvcControllerAsync
+    public class MatchLocationStatisticsController : RenderMvcControllerAsync
     {
-        private readonly ITeamDataSource _teamDataSource;
+        private readonly IMatchLocationDataSource _matchLocationDataSource;
         private readonly IStatisticsDataSource _statisticsDataSource;
 
-        public TeamStatisticsController(IGlobalSettings globalSettings,
+        public MatchLocationStatisticsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           ITeamDataSource teamDataSource,
+           IMatchLocationDataSource matchLocationDataSource,
            IStatisticsDataSource statisticsDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
+            _matchLocationDataSource = matchLocationDataSource ?? throw new ArgumentNullException(nameof(matchLocationDataSource));
             _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
         }
 
@@ -44,9 +45,9 @@ namespace Stoolball.Web.Statistics
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new StatisticsViewModel<Team>(contentModel.Content, Services?.UserService)
+            var model = new StatisticsViewModel<MatchLocation>(contentModel.Content, Services?.UserService)
             {
-                Context = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, false).ConfigureAwait(false),
+                Context = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl, false).ConfigureAwait(false),
             };
 
             if (model.Context == null)
@@ -56,17 +57,13 @@ namespace Stoolball.Web.Statistics
             else
             {
                 model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
-                model.StatisticsFilter.Team = model.Context;
+                model.StatisticsFilter.MatchLocation = model.Context;
                 model.PlayerInnings = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
-                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
-                if (model.Context.Club != null)
-                {
-                    model.Breadcrumbs.Add(new Breadcrumb { Name = model.Context.Club.ClubName, Url = new Uri(model.Context.Club.ClubRoute, UriKind.Relative) });
-                }
+                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.MatchLocations, Url = new Uri(Constants.Pages.MatchLocationsUrl, UriKind.Relative) });
 
-                model.Metadata.PageTitle = $"Statistics for {model.Context.TeamName} stoolball team";
-                model.Metadata.Description = $"Statistics for {model.Context.TeamName}, a {model.Context.Description().Substring(2)}";
+                model.Metadata.PageTitle = $"Statistics for {model.Context.NameAndLocalityOrTown()}";
+                model.Metadata.Description = $"Statistics for stoolball matches played at {model.Context.NameAndLocalityOrTown()}.";
 
                 return CurrentTemplate(model);
             }

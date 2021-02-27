@@ -1,0 +1,29 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<Competition>>
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.Statistics
+@using Stoolball.Competitions
+@{
+    Html.RequiresCss("/statistics/statistics.min.css");
+
+    var individualScores = new IndividualScoresViewModel(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    individualScores.Results.AddRange(Model.PlayerInnings);
+}
+<div class="container-xl">
+    <h1>@Model.Context.CompetitionNameAndPlayerType()</h1>
+
+    @if (Model.Context.UntilYear.HasValue)
+    {
+        <p class="alert alert-info"><strong>This competition isn't played any more.</strong></p>
+    }
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Context.CompetitionRoute">Summary</a>
+        </li>
+        <li class="nav-item">
+            <em class="nav-link active">Statistics</em>
+        </li>
+    </ul>
+
+        @Html.Partial("_IndividualScores", individualScores)
+</div>

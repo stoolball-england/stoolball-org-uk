@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Statistics;
@@ -17,6 +18,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public Player PlayerWithFifthAndSixthInningsTheSame { get; private set; }
         public Team Team { get; set; }
         public List<MatchLocation> MatchLocations { get; private set; } = new List<MatchLocation>();
+        public List<Competition> Competitions { get; private set; } = new List<Competition>();
 
         public SqlServerStatisticsDataSourceFixture() : base("StoolballStatisticsDataSourceIntegrationTests")
         {
@@ -49,6 +51,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 for (var i = 0; i < 5; i++)
                 {
                     MatchLocations.Add(seedDataGenerator.CreateMatchLocationWithMinimalDetails());
+                }
+
+                // Create a pool of competitions
+                for (var i = 0; i < 5; i++)
+                {
+                    Competitions.Add(seedDataGenerator.CreateCompetitionWithMinimalDetails());
+                    Competitions[Competitions.Count - 1].Seasons.Add(seedDataGenerator.CreateSeasonWithMinimalDetails(Competitions[Competitions.Count - 1], DateTime.Now.Year - i, DateTime.Now.Year - i));
                 }
 
                 // Randomly assign at least one player from each team a second identity
@@ -121,6 +130,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     {
                         Matches[i].MatchLocation = MatchLocations[randomiser.Next(MatchLocations.Count)];
                     }
+
+                    // Most matches have a season and competition
+                    if (randomiser.Next(4) != 0)
+                    {
+                        Matches[i].Season = Competitions[randomiser.Next(Competitions.Count)].Seasons.First();
+                    }
                 }
 
                 // Find any player with at least six innings, and make the sixth best score the same as the fifth so that we can test retrieving a top five + any equal results
@@ -163,8 +178,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     }
                 }
 
-                // Remove any match locations that didn't get used
+                // Remove any entities that didn't get used
                 MatchLocations.RemoveAll(x => !Matches.Select(m => m.MatchLocation?.MatchLocationId).Contains(x.MatchLocationId));
+                Competitions.RemoveAll(x => !Matches.Select(m => m.Season?.Competition?.CompetitionId).Contains(x.CompetitionId));
 
                 // Add all of that to the database
                 var distinctPlayers = poolOfTeams.SelectMany(x => x.identities).Select(x => x.Player).Distinct(new PlayerEqualityComparer());
@@ -186,6 +202,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 foreach (var location in MatchLocations)
                 {
                     repo.CreateMatchLocation(location);
+                }
+                foreach (var competition in Competitions)
+                {
+                    repo.CreateCompetition(competition);
+                    foreach (var season in competition.Seasons)
+                    {
+                        repo.CreateSeason(season, competition.CompetitionId.Value);
+                    }
                 }
                 foreach (var match in Matches)
                 {

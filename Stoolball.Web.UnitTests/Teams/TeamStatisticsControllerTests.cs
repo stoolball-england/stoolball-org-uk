@@ -8,6 +8,7 @@ using Moq;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Statistics;
+using Stoolball.Web.Teams;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -16,7 +17,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Statistics
+namespace Stoolball.Web.Tests.Teams
 {
     public class TeamStatisticsControllerTests : UmbracoBaseTest
     {

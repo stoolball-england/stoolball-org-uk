@@ -1064,6 +1064,7 @@
     <Content Include="Views\EditStatistics.cshtml" />
     <Content Include="Views\IndividualScores.cshtml" />
     <Content Include="Views\MatchLocationStatistics.cshtml" />
+    <Content Include="Views\CompetitionStatistics.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -1311,8 +1312,9 @@
     <Compile Include="Security\DelegatedContentSecurityPolicyAttribute.cs" />
     <Compile Include="Security\DisableMemberDelete.cs" />
     <Compile Include="Security\MemberGroupHelper.cs" />
-    <Compile Include="Statistics\MatchLocationStatisticsController.cs" />
-    <Compile Include="Statistics\TeamStatisticsController.cs" />
+    <Compile Include="MatchLocations\MatchLocationStatisticsController.cs" />
+    <Compile Include="Competitions\CompetitionStatisticsController.cs" />
+    <Compile Include="Teams\TeamStatisticsController.cs" />
     <Compile Include="Statistics\StatisticsViewModel.cs" />
     <Compile Include="Statistics\StatisticsController.cs" />
     <Compile Include="Statistics\IndividualScoresController.cs" />

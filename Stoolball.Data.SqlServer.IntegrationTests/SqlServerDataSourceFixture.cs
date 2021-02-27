@@ -108,6 +108,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     repo.CreatePlayer(player.Player);
                     repo.CreatePlayerIdentity(player);
                 }
+                repo.CreateCompetition(MatchInThePastWithFullDetails.Season.Competition);
+                repo.CreateSeason(MatchInThePastWithFullDetails.Season, MatchInThePastWithFullDetails.Season.Competition.CompetitionId.Value);
                 repo.CreateMatch(MatchInThePastWithFullDetails);
                 Teams.AddRange(MatchInThePastWithFullDetails.Teams.Select(x => x.Team));
                 Competitions.Add(MatchInThePastWithFullDetails.Season.Competition);
@@ -173,6 +175,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     repo.CreatePlayer(player.Player);
                     repo.CreatePlayerIdentity(player);
                 }
+                repo.CreateCompetition(MatchInThePastWithFullDetailsAndTournament.Season.Competition);
+                repo.CreateSeason(MatchInThePastWithFullDetailsAndTournament.Season, MatchInThePastWithFullDetailsAndTournament.Season.Competition.CompetitionId.Value);
                 repo.CreateMatch(MatchInThePastWithFullDetailsAndTournament);
                 Teams.AddRange(MatchInThePastWithFullDetailsAndTournament.Teams.Select(x => x.Team));
                 Competitions.Add(MatchInThePastWithFullDetailsAndTournament.Season.Competition);

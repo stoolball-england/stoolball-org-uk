@@ -67,6 +67,7 @@
         Player,
         TeamStatistics,
         MatchLocationStatistics,
+        CompetitionStatistics,
         IndividualScores
     }
 }

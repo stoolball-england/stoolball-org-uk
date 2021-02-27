@@ -62,6 +62,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     repo.CreatePlayer(player.Player);
                     repo.CreatePlayerIdentity(player);
                 }
+                repo.CreateCompetition(MatchWithFullDetailsForDelete.Season.Competition);
+                repo.CreateSeason(MatchWithFullDetailsForDelete.Season, MatchWithFullDetailsForDelete.Season.Competition.CompetitionId.Value);
                 repo.CreateMatch(MatchWithFullDetailsForDelete);
 
                 TournamentWithFullDetailsForDelete = seedDataGenerator.CreateTournamentInThePastWithFullDetails();

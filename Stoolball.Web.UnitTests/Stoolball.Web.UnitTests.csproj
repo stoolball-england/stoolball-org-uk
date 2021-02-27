@@ -75,6 +75,7 @@
     <Compile Include="Competitions\EditCompetitionControllerTests.cs" />
     <Compile Include="Competitions\MatchesForSeasonControllerTests.cs" />
     <Compile Include="Competitions\CompetitionActionsControllerTests.cs" />
+    <Compile Include="Competitions\CompetitionStatisticsControllerTests.cs" />
     <Compile Include="Competitions\SeasonActionsControllerTests.cs" />
     <Compile Include="Competitions\DeleteSeasonControllerTests.cs" />
     <Compile Include="Competitions\SeasonResultsTableControllerTests.cs" />
@@ -104,8 +105,8 @@
     <Compile Include="MatchLocations\DeleteMatchLocationControllerTests.cs" />
     <Compile Include="MatchLocations\MatchLocationsControllerTests.cs" />
     <Compile Include="Routing\PostSaveRedirectorTests.cs" />
-    <Compile Include="Statistics\MatchLocationStatisticsControllerTests.cs" />
-    <Compile Include="Statistics\TeamStatisticsControllerTests.cs" />
+    <Compile Include="MatchLocations\MatchLocationStatisticsControllerTests.cs" />
+    <Compile Include="Teams\TeamStatisticsControllerTests.cs" />
     <Compile Include="Statistics\StatisticsControllerTests.cs" />
     <Compile Include="Statistics\IndividualScoresControllerTests.cs" />
     <Compile Include="Statistics\PlayerControllerTests.cs" />

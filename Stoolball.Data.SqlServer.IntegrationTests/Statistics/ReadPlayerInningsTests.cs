@@ -69,6 +69,20 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
+        public async Task Read_total_player_innings_supports_filter_by_competition_id()
+        {
+            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await dataSource.ReadTotalPlayerInnings(new StatisticsFilter { Competition = _databaseFixture.Competitions.First() }).ConfigureAwait(false);
+
+            var expected = _databaseFixture.Matches.Where(x => x.Season?.Competition?.CompetitionId == _databaseFixture.Competitions.First().CompetitionId)
+                .SelectMany(x => x.MatchInnings)
+                .SelectMany(x => x.PlayerInnings)
+                .Count(x => x.RunsScored.HasValue);
+            Assert.Equal(expected, result);
+        }
+
+        [Fact]
         public async Task Read_player_innings_returns_player()
         {
             var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
@@ -244,6 +258,29 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
             var expected = _databaseFixture.Matches.Where(x => x.MatchLocation?.MatchLocationId == _databaseFixture.MatchLocations.First().MatchLocationId)
+                .SelectMany(x => x.MatchInnings)
+                .SelectMany(x => x.PlayerInnings)
+                .Where(x => x.RunsScored.HasValue).ToList();
+            Assert.Equal(expected.Count, results.Count());
+            foreach (var expectedInnings in expected)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.PlayerInnings.PlayerInningsId == expectedInnings.PlayerInningsId));
+            }
+        }
+
+        [Fact]
+        public async Task Read_player_innings_supports_filter_by_competition_id()
+        {
+            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await dataSource.ReadPlayerInnings(new StatisticsFilter
+            {
+                PageSize = int.MaxValue,
+                Competition = _databaseFixture.Competitions.First()
+            },
+            StatisticsSortOrder.BestFirst).ConfigureAwait(false);
+
+            var expected = _databaseFixture.Matches.Where(x => x.Season?.Competition?.CompetitionId == _databaseFixture.Competitions.First().CompetitionId)
                 .SelectMany(x => x.MatchInnings)
                 .SelectMany(x => x.PlayerInnings)
                 .Where(x => x.RunsScored.HasValue).ToList();

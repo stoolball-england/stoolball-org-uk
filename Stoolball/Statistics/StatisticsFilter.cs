@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Teams;
@@ -17,7 +18,7 @@ namespace Stoolball.Statistics
         public List<Guid> CaughtByPlayerIdentityIds { get; internal set; } = new List<Guid>();
         public List<Guid> RunOutByPlayerIdentityIds { get; internal set; } = new List<Guid>();
         public List<Guid> SeasonIds { get; internal set; } = new List<Guid>();
-        public List<Guid> CompetitionIds { get; internal set; } = new List<Guid>();
+        public Competition Competition { get; set; }
         public MatchLocation MatchLocation { get; set; }
         public List<Guid> TournamentIds { get; internal set; } = new List<Guid>();
         public List<MatchType> MatchTypes { get; internal set; } = new List<MatchType>();
@@ -43,6 +44,10 @@ namespace Stoolball.Statistics
             if (Team != null)
             {
                 description.Append(" for ").Append(Team.TeamName);
+            }
+            if (Competition != null)
+            {
+                description.Append(" in the ").Append(Competition.CompetitionName);
             }
             if (MatchLocation != null)
             {
