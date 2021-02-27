@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
@@ -26,6 +27,7 @@ namespace Stoolball.Web.Statistics
         private readonly ITeamDataSource _teamDataSource;
         private readonly IMatchLocationDataSource _matchLocationDataSource;
         private readonly ICompetitionDataSource _competitionDataSource;
+        private readonly ISeasonDataSource _seasonDataSource;
         private readonly IRouteNormaliser _routeNormaliser;
 
         public IndividualScoresController(IGlobalSettings globalSettings,
@@ -39,6 +41,7 @@ namespace Stoolball.Web.Statistics
            ITeamDataSource teamDataSource,
            IMatchLocationDataSource matchLocationDataSource,
            ICompetitionDataSource competitionDataSource,
+           ISeasonDataSource seasonDataSource,
            IRouteNormaliser routeNormaliser)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
@@ -47,6 +50,7 @@ namespace Stoolball.Web.Statistics
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _matchLocationDataSource = matchLocationDataSource ?? throw new ArgumentNullException(nameof(matchLocationDataSource));
             _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
+            _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _routeNormaliser = routeNormaliser ?? throw new ArgumentNullException(nameof(routeNormaliser));
         }
 
@@ -77,6 +81,10 @@ namespace Stoolball.Web.Statistics
             else if (Request.RawUrl.StartsWith("/locations/", StringComparison.OrdinalIgnoreCase))
             {
                 model.StatisticsFilter.MatchLocation = await _matchLocationDataSource.ReadMatchLocationByRoute(_routeNormaliser.NormaliseRouteToEntity(Request.RawUrl, "locations"), false).ConfigureAwait(false);
+            }
+            else if (Regex.IsMatch(Request.RawUrl, @"^\/competitions\/[a-z0-9-]+\/[0-9]{4}(-[0-9]{2})?", RegexOptions.IgnoreCase))
+            {
+                model.StatisticsFilter.Season = await _seasonDataSource.ReadSeasonByRoute(_routeNormaliser.NormaliseRouteToEntity(Request.RawUrl, "competitions", @"^[a-z0-9-]+\/[0-9]{4}(-[0-9]{2})?$")).ConfigureAwait(false);
             }
             else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {

@@ -198,10 +198,10 @@ namespace Stoolball.Data.SqlServer
                 }
             }
 
-            if (filter.SeasonIds.Any())
+            if (filter.Season != null)
             {
-                where.Add("SeasonId IN @SeasonIds");
-                parameters.Add("@SeasonIds", filter.SeasonIds);
+                where.Add("SeasonId = @SeasonId");
+                parameters.Add("@SeasonId", filter.Season.SeasonId);
             }
 
             if (filter.Competition != null)

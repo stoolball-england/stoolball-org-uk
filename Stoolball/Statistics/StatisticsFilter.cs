@@ -17,7 +17,7 @@ namespace Stoolball.Statistics
         public List<Guid> BowledByPlayerIdentityIds { get; internal set; } = new List<Guid>();
         public List<Guid> CaughtByPlayerIdentityIds { get; internal set; } = new List<Guid>();
         public List<Guid> RunOutByPlayerIdentityIds { get; internal set; } = new List<Guid>();
-        public List<Guid> SeasonIds { get; internal set; } = new List<Guid>();
+        public Season Season { get; set; }
         public Competition Competition { get; set; }
         public MatchLocation MatchLocation { get; set; }
         public List<Guid> TournamentIds { get; internal set; } = new List<Guid>();
@@ -48,6 +48,10 @@ namespace Stoolball.Statistics
             if (Competition != null)
             {
                 description.Append(" in the ").Append(Competition.CompetitionName);
+            }
+            if (Season != null)
+            {
+                description.Append(" in the ").Append(Season.SeasonFullName());
             }
             if (MatchLocation != null)
             {

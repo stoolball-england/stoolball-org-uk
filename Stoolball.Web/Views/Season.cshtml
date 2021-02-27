@@ -31,6 +31,9 @@
                 <a class="nav-link" href="@Model.Season.SeasonRoute/table">Table</a>
             </li>
         }
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Season.SeasonRoute/statistics">Statistics</a>
+        </li>
         @if (authorizedToEdit)
         {
             <li class="nav-item nav-item-admin">
@@ -65,5 +68,5 @@
                 <a href="@next.SeasonRoute" class="btn btn-secondary">Next season</a>
             }
         </p>
-        }
-    </div>
+    }
+</div>

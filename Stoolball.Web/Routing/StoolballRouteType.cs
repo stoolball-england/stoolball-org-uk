@@ -68,6 +68,7 @@
         TeamStatistics,
         MatchLocationStatistics,
         CompetitionStatistics,
+        SeasonStatistics,
         IndividualScores
     }
 }

@@ -30,5 +30,13 @@
         </li>
     </ul>
 
-    @Html.Partial("_IndividualScores", individualScores)
+
+    @if (!Model.PlayerInnings.Any())
+    {
+        <p>There are no statistics for this team yet. Statistics are based on scorecards added to this website – see <a href="/organise/website/how-to-add-match-results/">How to add match results</a>.</p>
+    }
+    else
+    {
+        @Html.Partial("_IndividualScores", individualScores)
+    }
 </div>

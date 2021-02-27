@@ -1194,6 +1194,7 @@
     <Compile Include="Clubs\ClubActionsController.cs" />
     <Compile Include="Competitions\CompetitionActionsController.cs" />
     <Compile Include="Competitions\CompetitionAuthorizationPolicy.cs" />
+    <Compile Include="Competitions\SeasonStatisticsController.cs" />
     <Compile Include="Competitions\DeleteCompetitionViewModel.cs" />
     <Compile Include="Competitions\DeleteCompetitionController.cs" />
     <Compile Include="Competitions\CompetitionController.cs" />
@@ -1532,6 +1533,7 @@
     <Content Include="Views\Statistics.cshtml" />
     <Content Include="Views\Partials\_StatisticsBasis.cshtml" />
     <Content Include="Views\TeamStatistics.cshtml" />
+    <Content Include="Views\SeasonStatistics.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

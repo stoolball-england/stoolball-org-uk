@@ -17,22 +17,22 @@ using Umbraco.Web.Models;
 
 namespace Stoolball.Web.Competitions
 {
-    public class CompetitionStatisticsController : RenderMvcControllerAsync
+    public class SeasonStatisticsController : RenderMvcControllerAsync
     {
-        private readonly ICompetitionDataSource _competitionDataSource;
+        private readonly ISeasonDataSource _seasonDataSource;
         private readonly IStatisticsDataSource _statisticsDataSource;
 
-        public CompetitionStatisticsController(IGlobalSettings globalSettings,
+        public SeasonStatisticsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           ICompetitionDataSource competitionDataSource,
+           ISeasonDataSource seasonDataSource,
            IStatisticsDataSource statisticsDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
+            _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
         }
 
@@ -45,9 +45,9 @@ namespace Stoolball.Web.Competitions
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new StatisticsViewModel<Competition>(contentModel.Content, Services?.UserService)
+            var model = new StatisticsViewModel<Season>(contentModel.Content, Services?.UserService)
             {
-                Context = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false),
+                Context = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false),
             };
 
             if (model.Context == null)
@@ -57,13 +57,14 @@ namespace Stoolball.Web.Competitions
             else
             {
                 model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
-                model.StatisticsFilter.Competition = model.Context;
+                model.StatisticsFilter.Season = model.Context;
                 model.PlayerInnings = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
+                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Context.Competition.CompetitionName, Url = new Uri(model.Context.Competition.CompetitionRoute, UriKind.Relative) });
 
-                model.Metadata.PageTitle = $"Statistics for {model.Context.CompetitionName}";
-                model.Metadata.Description = $"Statistics for stoolball matches played in all the years of the {model.Context.CompetitionName}.";
+                model.Metadata.PageTitle = $"Statistics for {model.Context.SeasonFullNameAndPlayerType()}";
+                model.Metadata.Description = $"Statistics for stoolball matches played in the {model.Context.SeasonFullName()}.";
 
                 return CurrentTemplate(model);
             }

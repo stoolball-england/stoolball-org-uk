@@ -83,6 +83,8 @@ namespace Stoolball.Web.Routing
                 // but not /competitions, /competitions/, /competitions/example-entity/2020, /competitions/example-entity/invalid 
                 // or /competitions/example-entity/2020/invalid, in upper, lower or mixed case
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForSeason },
+                { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.SeasonStatistics },
+                { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}statistics{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches{SLASH}add{SLASH}friendly{OPTIONAL_SLASH}", StoolballRouteType.CreateFriendlyMatch },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches{SLASH}add{SLASH}knockout{OPTIONAL_SLASH}", StoolballRouteType.CreateKnockoutMatch },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches{SLASH}add{SLASH}league{OPTIONAL_SLASH}", StoolballRouteType.CreateLeagueMatch },

@@ -19,16 +19,16 @@ using Xunit;
 
 namespace Stoolball.Web.Tests.Competitions
 {
-    public class CompetitionStatisticsControllerTests : UmbracoBaseTest
+    public class SeasonStatisticsControllerTests : UmbracoBaseTest
     {
-        public CompetitionStatisticsControllerTests()
+        public SeasonStatisticsControllerTests()
         {
             Setup();
         }
 
-        private class TestController : CompetitionStatisticsController
+        private class TestController : SeasonStatisticsController
         {
-            public TestController(ICompetitionDataSource competitionDataSource, IStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
+            public TestController(ISeasonDataSource seasonDataSource, IStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -36,7 +36,7 @@ namespace Stoolball.Web.Tests.Competitions
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
-                competitionDataSource,
+                seasonDataSource,
                 statisticsDataSource)
             {
                 var request = new Mock<HttpRequestBase>();
@@ -53,18 +53,18 @@ namespace Stoolball.Web.Tests.Competitions
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("CompetitionStatistics", model);
+                return View("SeasonStatistics", model);
             }
         }
 
         [Fact]
-        public async Task Route_not_matching_competition_returns_404()
+        public async Task Route_not_matching_season_returns_404()
         {
-            var competitionDataSource = new Mock<ICompetitionDataSource>();
-            competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).Returns(Task.FromResult<Competition>(null));
+            var seasonDataSource = new Mock<ISeasonDataSource>();
+            seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Season>(null));
             var statisticsDataSource = new Mock<IStatisticsDataSource>();
 
-            using (var controller = new TestController(competitionDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(seasonDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -73,18 +73,26 @@ namespace Stoolball.Web.Tests.Competitions
         }
 
         [Fact]
-        public async Task Route_matching_competition_returns_StatisticsViewModel()
+        public async Task Route_matching_season_returns_StatisticsViewModel()
         {
-            var competitionDataSource = new Mock<ICompetitionDataSource>();
-            competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionId = Guid.NewGuid() });
+            var seasonDataSource = new Mock<ISeasonDataSource>();
+            seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).ReturnsAsync(new Season
+            {
+                SeasonId = Guid.NewGuid(),
+                Competition = new Competition
+                {
+                    CompetitionName = "Example competition",
+                    CompetitionRoute = "/competitions/example-competition"
+                }
+            });
             var statisticsDataSource = new Mock<IStatisticsDataSource>();
             statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new PlayerInningsResult[] { new PlayerInningsResult() } as IEnumerable<PlayerInningsResult>));
 
-            using (var controller = new TestController(competitionDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(seasonDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<StatisticsViewModel<Competition>>(((ViewResult)result).Model);
+                Assert.IsType<StatisticsViewModel<Season>>(((ViewResult)result).Model);
             }
         }
     }
