@@ -3,6 +3,10 @@
 @using ClientDependency.Core.Mvc
 @{
     Html.RequiresCss("/statistics/statistics.min.css");
+    if (Model.StatisticsFilter.Player != null)
+    {
+        Model.ShowPlayerColumn = false;
+    }
 }
 @section head {
     @if (Model.StatisticsFilter.PageNumber == 1)
@@ -15,11 +19,7 @@
     }
 }
 <div class="container-xl">
-    <h1>Highest individual scores 
-    @if (Model.StatisticsFilter.PlayerRoutes.Any()) {
-        Model.ShowPlayerColumn = false;
-        @:for @(Model.Results.First().Player.PlayerName())
-    }</h1>
+    <h1>Highest individual scores@(Model.StatisticsFilter)</h1>
 
     @Html.Partial("_StatisticsBasis")
     @Html.Partial("_IndividualScores")

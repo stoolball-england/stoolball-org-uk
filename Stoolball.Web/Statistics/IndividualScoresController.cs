@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using Stoolball.Navigation;
 using Stoolball.Routing;
 using Stoolball.Statistics;
+using Stoolball.Teams;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -19,6 +20,8 @@ namespace Stoolball.Web.Statistics
     public class IndividualScoresController : RenderMvcControllerAsync
     {
         private readonly IStatisticsDataSource _statisticsDataSource;
+        private readonly IPlayerDataSource _playerDataSource;
+        private readonly ITeamDataSource _teamDataSource;
         private readonly IRouteNormaliser _routeNormaliser;
 
         public IndividualScoresController(IGlobalSettings globalSettings,
@@ -28,10 +31,14 @@ namespace Stoolball.Web.Statistics
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IStatisticsDataSource statisticsDataSource,
+           IPlayerDataSource playerDataSource,
+           ITeamDataSource teamDataSource,
            IRouteNormaliser routeNormaliser)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
+            _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
+            _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _routeNormaliser = routeNormaliser ?? throw new ArgumentNullException(nameof(routeNormaliser));
         }
 
@@ -53,11 +60,18 @@ namespace Stoolball.Web.Statistics
 
             if (Request.RawUrl.StartsWith("/players/", StringComparison.OrdinalIgnoreCase))
             {
-                model.StatisticsFilter.PlayerRoutes.Add(_routeNormaliser.NormaliseRouteToEntity(Request.RawUrl, "players"));
+                model.StatisticsFilter.Player = await _playerDataSource.ReadPlayerByRoute(_routeNormaliser.NormaliseRouteToEntity(Request.RawUrl, "players")).ConfigureAwait(false);
+            }
+            else if (Request.RawUrl.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
+            {
+                var team = await _teamDataSource.ReadTeamByRoute(_routeNormaliser.NormaliseRouteToEntity(Request.RawUrl, "teams"), false).ConfigureAwait(false);
+                if (team != null)
+                {
+                    model.StatisticsFilter.Team = team;
+                }
             }
 
             model.Results = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
-
 
             if (!model.Results.Any())
             {
@@ -68,11 +82,10 @@ namespace Stoolball.Web.Statistics
                 model.TotalResults = await _statisticsDataSource.ReadTotalPlayerInnings(model.StatisticsFilter).ConfigureAwait(false);
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Statistics, Url = new Uri(Constants.Pages.StatisticsUrl, UriKind.Relative) });
-                if (model.StatisticsFilter.PlayerRoutes.Any())
+                if (model.StatisticsFilter.Player != null)
                 {
-                    var player = model.Results.First().Player;
-                    model.Breadcrumbs.Add(new Breadcrumb { Name = player.PlayerName(), Url = new Uri(player.PlayerRoute, UriKind.Relative) });
-                    pageTitle += $" for {player.PlayerName()}";
+                    model.Breadcrumbs.Add(new Breadcrumb { Name = model.StatisticsFilter.Player.PlayerName(), Url = new Uri(model.StatisticsFilter.Player.PlayerRoute, UriKind.Relative) });
+                    pageTitle += model.StatisticsFilter.ToString();
                 }
                 model.Metadata.PageTitle = pageTitle;
 

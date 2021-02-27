@@ -14,6 +14,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public List<PlayerIdentity> PlayerIdentities { get; private set; } = new List<PlayerIdentity>();
         public List<Match> Matches { get; private set; } = new List<Match>();
         public Player PlayerWithFifthAndSixthInningsTheSame { get; private set; }
+        public Team Team { get; set; }
 
         public SqlServerStatisticsDataSourceFixture() : base("StoolballStatisticsDataSourceIntegrationTests")
         {
@@ -129,9 +130,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 PlayerWithFifthAndSixthInningsTheSame = inningsForPlayerWithAtLeast6Scores.First().Batter.Player;
 
 
-                // Add all player identities to expected collections for testing
-                var teamsThatGotUsed = Matches.SelectMany(x => x.Teams).Select(x => x.Team.TeamId.Value).Distinct().ToList();
-                foreach (var (team, playerIdentities) in poolOfTeams.Where(x => teamsThatGotUsed.Contains(x.team.TeamId.Value)))
+                // Add entities to expected collections for testing
+                var teamComparer = new TeamEqualityComparer();
+                var teamsThatGotUsed = Matches.SelectMany(x => x.Teams).Select(x => x.Team).Distinct(teamComparer).ToList();
+                Team = teamsThatGotUsed[0];
+
+                foreach (var (team, playerIdentities) in poolOfTeams.Where(x => teamsThatGotUsed.Contains(x.team, teamComparer)))
                 {
                     PlayerIdentities.AddRange(playerIdentities);
 
@@ -154,7 +158,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 foreach (var (team, playerIdentities) in poolOfTeams)
                 {
-                    if (!teamsThatGotUsed.Contains(team.TeamId.Value)) continue;
+                    if (!teamsThatGotUsed.Contains(team, teamComparer)) continue;
 
                     repo.CreateTeam(team);
                     foreach (var playerIdentity in playerIdentities)

@@ -72,6 +72,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.Statistics, typeof(StatisticsController) },
             { StoolballRouteType.EditStatistics, typeof(EditStatisticsController) },
             { StoolballRouteType.Player, typeof(PlayerController) },
+            { StoolballRouteType.TeamStatistics, typeof(TeamStatisticsController) },
             { StoolballRouteType.IndividualScores, typeof(IndividualScoresController) }
         };
 

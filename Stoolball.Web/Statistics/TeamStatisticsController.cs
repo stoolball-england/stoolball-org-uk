@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Humanizer;
 using Stoolball.Navigation;
 using Stoolball.Statistics;
+using Stoolball.Teams;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -16,22 +16,22 @@ using Umbraco.Web.Models;
 
 namespace Stoolball.Web.Statistics
 {
-    public class PlayerController : RenderMvcControllerAsync
+    public class TeamStatisticsController : RenderMvcControllerAsync
     {
-        private readonly IPlayerDataSource _playerDataSource;
+        private readonly ITeamDataSource _teamDataSource;
         private readonly IStatisticsDataSource _statisticsDataSource;
 
-        public PlayerController(IGlobalSettings globalSettings,
+        public TeamStatisticsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           IPlayerDataSource playerDataSource,
+           ITeamDataSource teamDataSource,
            IStatisticsDataSource statisticsDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
+            _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
         }
 
@@ -44,26 +44,29 @@ namespace Stoolball.Web.Statistics
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new PlayerViewModel(contentModel.Content, Services?.UserService)
+            var model = new StatisticsViewModel<Team>(contentModel.Content, Services?.UserService)
             {
-                Player = await _playerDataSource.ReadPlayerByRoute(Request.RawUrl).ConfigureAwait(false),
+                Context = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, false).ConfigureAwait(false),
             };
 
-            if (model.Player == null)
+            if (model.Context == null)
             {
                 return new HttpNotFoundResult();
             }
             else
             {
-                model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 5 };
-                model.StatisticsFilter.Player = model.Player;
+                model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
+                model.StatisticsFilter.Team = model.Context;
                 model.PlayerInnings = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
-                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Statistics, Url = new Uri(Constants.Pages.StatisticsUrl, UriKind.Relative) });
+                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
+                if (model.Context.Club != null)
+                {
+                    model.Breadcrumbs.Add(new Breadcrumb { Name = model.Context.Club.ClubName, Url = new Uri(model.Context.Club.ClubRoute, UriKind.Relative) });
+                }
 
-                var teams = model.Player.PlayerIdentities.Select(x => x.Team.TeamName).Distinct().ToList();
-                model.Metadata.PageTitle = $"{model.Player.PlayerName()}, a player for {teams.Humanize()} stoolball {(teams.Count > 1 ? "teams" : "team")}";
-                //model.Metadata.Description = model.Player.Description();
+                model.Metadata.PageTitle = $"Statistics for {model.Context.TeamName} stoolball team";
+                model.Metadata.Description = $"Statistics for {model.Context.TeamName}, a {model.Context.Description().Substring(2)}";
 
                 return CurrentTemplate(model);
             }

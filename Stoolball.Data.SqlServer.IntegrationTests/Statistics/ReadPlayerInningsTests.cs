@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Stoolball.Statistics;
@@ -29,15 +28,29 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task Read_total_player_innings_supports_filter_by_player_id()
+        public async Task Read_total_player_innings_supports_filter_by_player()
         {
             var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            var result = await dataSource.ReadTotalPlayerInnings(new StatisticsFilter { PlayerRoutes = new List<string> { _databaseFixture.PlayerWithMultipleIdentities.PlayerRoute } }).ConfigureAwait(false);
+            var result = await dataSource.ReadTotalPlayerInnings(new StatisticsFilter { Player = _databaseFixture.PlayerWithMultipleIdentities }).ConfigureAwait(false);
 
             var expected = _databaseFixture.Matches.SelectMany(x => x.MatchInnings)
                 .SelectMany(x => x.PlayerInnings)
                 .Count(x => x.Batter.Player.PlayerId == _databaseFixture.PlayerWithMultipleIdentities.PlayerId && x.RunsScored.HasValue);
+            Assert.Equal(expected, result);
+        }
+
+        [Fact]
+        public async Task Read_total_player_innings_supports_filter_by_team_id()
+        {
+            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await dataSource.ReadTotalPlayerInnings(new StatisticsFilter { Team = _databaseFixture.Team }).ConfigureAwait(false);
+
+            var expected = _databaseFixture.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.Team.TeamId.Value))
+                .SelectMany(x => x.MatchInnings.Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.Team.TeamId.Value))
+                .SelectMany(x => x.PlayerInnings)
+                .Count(x => x.RunsScored.HasValue);
             Assert.Equal(expected, result);
         }
 
@@ -166,13 +179,36 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var results = await dataSource.ReadPlayerInnings(new StatisticsFilter
             {
                 PageSize = int.MaxValue,
-                PlayerRoutes = new List<string> { _databaseFixture.PlayerWithMultipleIdentities.PlayerRoute }
+                Player = _databaseFixture.PlayerWithMultipleIdentities
             },
             StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
             var expected = _databaseFixture.Matches.SelectMany(x => x.MatchInnings)
                 .SelectMany(x => x.PlayerInnings)
                 .Where(x => x.Batter.Player.PlayerId == _databaseFixture.PlayerWithMultipleIdentities.PlayerId && x.RunsScored.HasValue).ToList();
+            Assert.Equal(expected.Count, results.Count());
+            foreach (var expectedInnings in expected)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.PlayerInnings.PlayerInningsId == expectedInnings.PlayerInningsId));
+            }
+        }
+
+        [Fact]
+        public async Task Read_player_innings_supports_filter_by_team_id()
+        {
+            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await dataSource.ReadPlayerInnings(new StatisticsFilter
+            {
+                PageSize = int.MaxValue,
+                Team = _databaseFixture.Team
+            },
+            StatisticsSortOrder.BestFirst).ConfigureAwait(false);
+
+            var expected = _databaseFixture.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.Team.TeamId.Value))
+                .SelectMany(x => x.MatchInnings.Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.Team.TeamId.Value))
+                .SelectMany(x => x.PlayerInnings)
+                .Where(x => x.RunsScored.HasValue).ToList();
             Assert.Equal(expected.Count, results.Count());
             foreach (var expectedInnings in expected)
             {
@@ -246,7 +282,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var results = (await dataSource.ReadPlayerInnings(new StatisticsFilter
             {
                 MaxResultsAllowingExtraResultsIfValuesAreEqual = 5,
-                PlayerRoutes = new List<string> { _databaseFixture.PlayerWithFifthAndSixthInningsTheSame.PlayerRoute }
+                Player = _databaseFixture.PlayerWithFifthAndSixthInningsTheSame
             },
             StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 

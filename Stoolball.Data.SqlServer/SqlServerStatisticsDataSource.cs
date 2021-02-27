@@ -131,10 +131,10 @@ namespace Stoolball.Data.SqlServer
                 where.Add("PlayerOfTheMatch = 1");
             }
 
-            if (filter.PlayerRoutes.Any())
+            if (filter.Player != null)
             {
-                where.Add("PlayerRoute IN @PlayerRoutes");
-                parameters.Add("@PlayerRoutes", filter.PlayerRoutes);
+                where.Add("PlayerId = @PlayerId");
+                parameters.Add("@PlayerId", filter.Player.PlayerId);
             }
 
             if (filter.BowledByPlayerIdentityIds.Any())
@@ -159,15 +159,15 @@ namespace Stoolball.Data.SqlServer
             {
                 // When querying by the player id of a fielder, flip team && opposition because
                 // the fielder's team is the opposition_id
-                if (filter.TeamIds.Any())
+                if (filter.Team != null)
                 {
-                    where.Add("OppositionTeamId IN @OppositionTeamIds");
-                    parameters.Add("@OppositionTeamIds", filter.TeamIds);
+                    where.Add("OppositionTeamId = @OppositionTeamId");
+                    parameters.Add("@OppositionTeamId", filter.Team.TeamId);
                 }
 
                 if (filter.OppositionTeamIds.Any())
                 {
-                    where.Add("TeamId IN @TeamIds");
+                    where.Add("TeamId = @TeamIds");
                     parameters.Add("@TeamIds", filter.OppositionTeamIds);
                 }
 
@@ -179,10 +179,10 @@ namespace Stoolball.Data.SqlServer
             }
             else
             {
-                if (filter.TeamIds.Any())
+                if (filter.Team != null)
                 {
-                    where.Add("TeamId IN @TeamIds");
-                    parameters.Add("@TeamIds", filter.TeamIds);
+                    where.Add("TeamId = @TeamId");
+                    parameters.Add("@TeamId", filter.Team.TeamId);
                 }
 
                 if (filter.OppositionTeamIds.Any())

@@ -97,6 +97,8 @@ namespace Stoolball.Web.Routing
                 // Match /teams/example-team/valid or /teams/example-team/valid/ but not /teams, /teams/
                 // /teams/example-team, /teams/example-team/ or /teams/example-team/invalid in upper, lower or mixed case
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForClub },
+                { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.TeamStatistics},
+                { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores},
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.ClubActions },
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}club{OPTIONAL_SLASH}", StoolballRouteType.EditClub },
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}delete{OPTIONAL_SLASH}", StoolballRouteType.DeleteClub },

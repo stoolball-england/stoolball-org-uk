@@ -11,7 +11,16 @@ namespace Stoolball.Web.Statistics
         public StatisticsViewModel(IPublishedContent contentModel, IUserService userService) : base(contentModel, userService)
         {
         }
-        public List<PlayerInningsResult> PlayerInnings { get; internal set; } = new List<PlayerInningsResult>();
         public StatisticsFilter StatisticsFilter { get; set; } = new StatisticsFilter();
+        public List<PlayerInningsResult> PlayerInnings { get; internal set; } = new List<PlayerInningsResult>();
+    }
+
+    public class StatisticsViewModel<T> : StatisticsViewModel
+    {
+        public StatisticsViewModel(IPublishedContent contentModel, IUserService userService) : base(contentModel, userService)
+        {
+        }
+
+        public T Context { get; set; }
     }
 }

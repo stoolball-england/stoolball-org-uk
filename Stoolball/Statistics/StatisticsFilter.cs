@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Stoolball.Matches;
 using Stoolball.Teams;
 
@@ -7,10 +8,10 @@ namespace Stoolball.Statistics
 {
     public class StatisticsFilter
     {
-        public List<Guid> TeamIds { get; internal set; } = new List<Guid>();
+        public Team Team { get; set; }
         public List<Guid> OppositionTeamIds { get; internal set; } = new List<Guid>();
         public bool SwapTeamAndOppositionFilters { get; set; }
-        public List<string> PlayerRoutes { get; internal set; } = new List<string>();
+        public Player Player { get; set; }
         public List<Guid> BowledByPlayerIdentityIds { get; internal set; } = new List<Guid>();
         public List<Guid> CaughtByPlayerIdentityIds { get; internal set; } = new List<Guid>();
         public List<Guid> RunOutByPlayerIdentityIds { get; internal set; } = new List<Guid>();
@@ -31,5 +32,18 @@ namespace Stoolball.Statistics
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 50;
         public int? MaxResultsAllowingExtraResultsIfValuesAreEqual { get; set; }
+        public override string ToString()
+        {
+            var description = new StringBuilder();
+            if (Player != null)
+            {
+                description.Append(" for ").Append(Player.PlayerName()).Append(' ');
+            }
+            if (Team != null)
+            {
+                description.Append(" for ").Append(Team.TeamName).Append(' ');
+            }
+            return description.ToString().TrimEnd();
+        }
     }
 }

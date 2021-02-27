@@ -1310,6 +1310,7 @@
     <Compile Include="Security\DelegatedContentSecurityPolicyAttribute.cs" />
     <Compile Include="Security\DisableMemberDelete.cs" />
     <Compile Include="Security\MemberGroupHelper.cs" />
+    <Compile Include="Statistics\TeamStatisticsController.cs" />
     <Compile Include="Statistics\StatisticsViewModel.cs" />
     <Compile Include="Statistics\StatisticsController.cs" />
     <Compile Include="Statistics\IndividualScoresController.cs" />
@@ -1526,6 +1527,7 @@
     <Content Include="Views\Partials\_IndividualScores.cshtml" />
     <Content Include="Views\Statistics.cshtml" />
     <Content Include="Views\Partials\_StatisticsBasis.cshtml" />
+    <Content Include="Views\TeamStatistics.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
