@@ -155,6 +155,12 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@RunOutByPlayerIdentityIds", filter.RunOutByPlayerIdentityIds);
             }
 
+            if (filter.Club != null)
+            {
+                where.Add("ClubId = @ClubId");
+                parameters.Add("@ClubId", filter.Club.ClubId);
+            }
+
             if (filter.SwapTeamAndOppositionFilters)
             {
                 // When querying by the player id of a fielder, flip team && opposition because

@@ -78,6 +78,11 @@ namespace Stoolball.Data.UmbracoMigrations
         [Index(IndexTypes.NonClustered)]
         public Guid MatchTeamId { get; set; }
 
+        [Column(nameof(ClubId))]
+        [ForeignKey(typeof(ClubTableInitialSchema), Column = nameof(ClubTableInitialSchema.ClubId))]
+        [Index(IndexTypes.NonClustered)]
+        public Guid ClubId { get; set; }
+
         [Column(nameof(TeamId))]
         [ForeignKey(typeof(TeamTableInitialSchema), Column = nameof(TeamTableInitialSchema.TeamId))]
         [Index(IndexTypes.NonClustered)]

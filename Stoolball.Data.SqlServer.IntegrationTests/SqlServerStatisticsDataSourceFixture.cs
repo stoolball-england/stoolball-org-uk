@@ -16,7 +16,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public List<PlayerIdentity> PlayerIdentities { get; private set; } = new List<PlayerIdentity>();
         public List<Match> Matches { get; private set; } = new List<Match>();
         public Player PlayerWithFifthAndSixthInningsTheSame { get; private set; }
-        public Team Team { get; set; }
+        public Team TeamWithClub { get; set; }
         public List<MatchLocation> MatchLocations { get; private set; } = new List<MatchLocation>();
         public List<Competition> Competitions { get; private set; } = new List<Competition>();
 
@@ -45,6 +45,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 for (var i = 0; i < 5; i++)
                 {
                     poolOfTeams.Add(CreateATeamWithPlayers(seedDataGenerator, $"Team {i + 1} pool player"));
+                    if (i % 2 == 0)
+                    {
+                        poolOfTeams[poolOfTeams.Count - 1].team.Club = seedDataGenerator.CreateClubWithMinimalDetails();
+                    }
                 }
 
                 // Create a pool of match locations 
@@ -162,7 +166,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 // Add entities to expected collections for testing
                 var teamComparer = new TeamEqualityComparer();
                 var teamsThatGotUsed = Matches.SelectMany(x => x.Teams).Select(x => x.Team).Distinct(teamComparer).ToList();
-                Team = teamsThatGotUsed[0];
+                TeamWithClub = teamsThatGotUsed.First(x => x.Club != null);
 
                 foreach (var (team, playerIdentities) in poolOfTeams.Where(x => teamsThatGotUsed.Contains(x.team, teamComparer)))
                 {
@@ -193,6 +197,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 {
                     if (!teamsThatGotUsed.Contains(team, teamComparer)) continue;
 
+                    if (team.Club != null)
+                    {
+                        repo.CreateClub(team.Club);
+                    }
                     repo.CreateTeam(team);
                     foreach (var playerIdentity in playerIdentities)
                     {

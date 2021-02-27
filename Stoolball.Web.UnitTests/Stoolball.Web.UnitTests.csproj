@@ -65,6 +65,7 @@
     <Compile Include="Clubs\DeleteClubControllerTests.cs" />
     <Compile Include="Clubs\CreateClubControllerTests.cs" />
     <Compile Include="Clubs\EditClubControllerTests.cs" />
+    <Compile Include="Clubs\ClubStatisticsControllerTests.cs" />
     <Compile Include="Competitions\CompetitionsControllerTests.cs" />
     <Compile Include="Competitions\SeasonStatisticsControllerTests.cs" />
     <Compile Include="Competitions\DeleteCompetitionControllerTests.cs" />

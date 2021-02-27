@@ -65,6 +65,7 @@
         Statistics,
         EditStatistics,
         Player,
+        ClubStatistics,
         TeamStatistics,
         MatchLocationStatistics,
         CompetitionStatistics,

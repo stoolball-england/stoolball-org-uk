@@ -1,7 +1,7 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<Team>>
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<Club>>
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Statistics
-@using Stoolball.Teams
+@using Stoolball.Clubs
 @{
     Html.RequiresCss("/statistics/statistics.min.css");
 
@@ -9,21 +9,14 @@
     individualScores.Results.AddRange(Model.PlayerInnings);
 }
 <div class="container-xl">
-    <h1>@Model.Context.TeamNameLocationAndPlayerType()</h1>
-
-    @if (Model.Context.UntilYear.HasValue)
-    {
-        <div class="alert alert-info">
-            <p><strong>This team is no longer active.</strong></p>
-        </div>
-    }
+    <h1>@Model.Context.ClubName</h1>
 
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link" href="@Model.Context.TeamRoute">Summary</a>
+            <a class="nav-link" href="@Model.Context.ClubRoute">Summary</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="@Model.Context.TeamRoute/matches">Matches</a>
+            <a class="nav-link" href="@Model.Context.ClubRoute/matches">Matches</a>
         </li>
         <li class="nav-item">
             <em class="nav-link active">Statistics</em>
@@ -33,7 +26,7 @@
 
     @if (!Model.PlayerInnings.Any())
     {
-        <p>There are no statistics for this team yet. Statistics are based on scorecards added to this website – see <a href="/organise/website/how-to-add-match-results/">How to add match results</a>.</p>
+        <p>There are no statistics for this club yet. Statistics are based on scorecards added to this website – see <a href="/organise/website/how-to-add-match-results/">How to add match results</a>.</p>
     }
     else
     {

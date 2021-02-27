@@ -36,6 +36,8 @@ namespace Stoolball.Statistics
 
         public Guid MatchTeamId { get; set; }
 
+        public Guid? ClubId { get; set; }
+
         public Guid TeamId { get; set; }
 
         public string TeamName { get; set; }

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Moq;
-using Stoolball.Competitions;
+using Stoolball.Clubs;
 using Stoolball.Statistics;
-using Stoolball.Web.Competitions;
+using Stoolball.Web.Clubs;
 using Stoolball.Web.Statistics;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -17,18 +17,18 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Competitions
+namespace Stoolball.Web.Tests.Clubs
 {
-    public class SeasonStatisticsControllerTests : UmbracoBaseTest
+    public class ClubStatisticsControllerTests : UmbracoBaseTest
     {
-        public SeasonStatisticsControllerTests()
+        public ClubStatisticsControllerTests()
         {
             Setup();
         }
 
-        private class TestController : SeasonStatisticsController
+        private class TestController : ClubStatisticsController
         {
-            public TestController(ISeasonDataSource seasonDataSource, IStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
+            public TestController(IClubDataSource clubDataSource, IStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -36,7 +36,7 @@ namespace Stoolball.Web.Tests.Competitions
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
-                seasonDataSource,
+                clubDataSource,
                 statisticsDataSource)
             {
                 var request = new Mock<HttpRequestBase>();
@@ -53,18 +53,18 @@ namespace Stoolball.Web.Tests.Competitions
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("SeasonStatistics", model);
+                return View("ClubStatistics", model);
             }
         }
 
         [Fact]
-        public async Task Route_not_matching_season_returns_404()
+        public async Task Route_not_matching_club_returns_404()
         {
-            var seasonDataSource = new Mock<ISeasonDataSource>();
-            seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Season>(null));
+            var clubDataSource = new Mock<IClubDataSource>();
+            clubDataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).Returns(Task.FromResult<Club>(null));
             var statisticsDataSource = new Mock<IStatisticsDataSource>();
 
-            using (var controller = new TestController(seasonDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(clubDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -73,26 +73,18 @@ namespace Stoolball.Web.Tests.Competitions
         }
 
         [Fact]
-        public async Task Route_matching_season_returns_StatisticsViewModel()
+        public async Task Route_matching_club_returns_StatisticsViewModel()
         {
-            var seasonDataSource = new Mock<ISeasonDataSource>();
-            seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season
-            {
-                SeasonId = Guid.NewGuid(),
-                Competition = new Competition
-                {
-                    CompetitionName = "Example competition",
-                    CompetitionRoute = "/competitions/example-competition"
-                }
-            });
+            var clubDataSource = new Mock<IClubDataSource>();
+            clubDataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).ReturnsAsync(new Club { ClubId = Guid.NewGuid() });
             var statisticsDataSource = new Mock<IStatisticsDataSource>();
             statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new PlayerInningsResult[] { new PlayerInningsResult() } as IEnumerable<PlayerInningsResult>));
 
-            using (var controller = new TestController(seasonDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(clubDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<StatisticsViewModel<Season>>(((ViewResult)result).Model);
+                Assert.IsType<StatisticsViewModel<Club>>(((ViewResult)result).Model);
             }
         }
     }

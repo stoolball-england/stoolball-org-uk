@@ -101,7 +101,7 @@ namespace Stoolball.Data.SqlServer
             {
                 await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.PlayerInMatchStatistics}
                     (PlayerInMatchStatisticsId, PlayerId, PlayerIdentityId, PlayerIdentityName, PlayerRoute, MatchId, MatchStartTime, MatchType, MatchPlayerType, MatchName, MatchRoute, 
-                     TournamentId, SeasonId, CompetitionId, MatchTeamId, TeamId, TeamName, TeamRoute, OppositionTeamId, OppositionTeamName, OppositionTeamRoute, MatchLocationId, 
+                     TournamentId, SeasonId, CompetitionId, MatchTeamId, ClubId, TeamId, TeamName, TeamRoute, OppositionTeamId, OppositionTeamName, OppositionTeamRoute, MatchLocationId, 
                      MatchInningsPair, MatchInningsRuns, MatchInningsWickets, OppositionMatchInningsRuns, OppositionMatchInningsWickets, 
                      OverNumberOfFirstOverBowled, BallsBowled, Overs, Maidens, RunsConceded, HasRunsConceded, Wickets, WicketsWithBowling, 
                      WonToss, BattedFirst, PlayerInningsNumber, PlayerInningsId, BattingPosition, DismissalType, PlayerWasDismissed, BowledByPlayerIdentityId, BowledByPlayerIdentityName, BowledByPlayerRoute, 
@@ -109,7 +109,7 @@ namespace Stoolball.Data.SqlServer
                      RunsScored, BallsFaced, Catches, RunOuts, WonMatch, PlayerOfTheMatch)
                     VALUES
                     (@PlayerInMatchStatisticsId, @PlayerId, @PlayerIdentityId, @PlayerIdentityName, @PlayerRoute, @MatchId, @MatchStartTime, @MatchType, @MatchPlayerType, @MatchName, @MatchRoute,
-                     @TournamentId, @SeasonId, @CompetitionId, @MatchTeamId, @TeamId, @TeamName, @TeamRoute, @OppositionTeamId, @OppositionTeamName, @OppositionTeamRoute, @MatchLocationId,
+                     @TournamentId, @SeasonId, @CompetitionId, @MatchTeamId, @ClubId, @TeamId, @TeamName, @TeamRoute, @OppositionTeamId, @OppositionTeamName, @OppositionTeamRoute, @MatchLocationId,
                      @MatchInningsPair, @MatchInningsRuns, @MatchInningsWickets, @OppositionMatchInningsRuns, @OppositionMatchInningsWickets, 
                      @OverNumberOfFirstOverBowled, @BallsBowled, @Overs, @Maidens, @RunsConceded, @HasRunsConceded, @Wickets, @WicketsWithBowling,
                      @WonToss, @BattedFirst, @PlayerInningsNumber, @PlayerInningsId, @BattingPosition, @DismissalType, @PlayerWasDismissed, @BowledByPlayerIdentityId, @BowledByPlayerIdentityName, @BowledByPlayerRoute,
@@ -132,6 +132,7 @@ namespace Stoolball.Data.SqlServer
                             record.SeasonId,
                             record.CompetitionId,
                             record.MatchTeamId,
+                            record.ClubId,
                             record.TeamId,
                             record.TeamName,
                             record.TeamRoute,

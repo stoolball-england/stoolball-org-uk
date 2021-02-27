@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
@@ -10,6 +11,7 @@ namespace Stoolball.Statistics
 {
     public class StatisticsFilter
     {
+        public Club Club { get; set; }
         public Team Team { get; set; }
         public List<Guid> OppositionTeamIds { get; internal set; } = new List<Guid>();
         public bool SwapTeamAndOppositionFilters { get; set; }
@@ -34,12 +36,17 @@ namespace Stoolball.Statistics
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 50;
         public int? MaxResultsAllowingExtraResultsIfValuesAreEqual { get; set; }
+
         public override string ToString()
         {
             var description = new StringBuilder();
             if (Player != null)
             {
                 description.Append(" for ").Append(Player.PlayerName());
+            }
+            if (Club != null)
+            {
+                description.Append(" for ").Append(Club.ClubName);
             }
             if (Team != null)
             {

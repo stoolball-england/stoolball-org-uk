@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Humanizer;
 using Stoolball.Awards;
+using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
@@ -38,6 +39,8 @@ namespace Stoolball.UnitTests.Statistics
                 BattedFirst = false,
                 TeamRole = TeamRole.Away
             };
+
+            homeTeam.Team.Club = new Club { ClubId = Guid.NewGuid(), ClubName = "Home club", ClubRoute = "/home-club" };
 
             for (var i = 0; i < 11; i++)
             {

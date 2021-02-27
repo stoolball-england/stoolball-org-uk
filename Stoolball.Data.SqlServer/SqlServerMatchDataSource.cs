@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Stoolball.Awards;
+using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
@@ -44,6 +45,15 @@ namespace Stoolball.Data.SqlServer
             public string PlayerRoute { get; set; }
         }
 
+        private class TeamDto
+        {
+            public Guid TeamId { get; set; }
+            public string TeamRoute { get; set; }
+            public string TeamName { get; set; }
+            public string MemberGroupName { get; set; }
+            public Guid? ClubId { get; set; }
+        }
+
         /// <summary>
         /// Gets a single stoolball match based on its route
         /// </summary>
@@ -55,12 +65,12 @@ namespace Stoolball.Data.SqlServer
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var matches = await connection.QueryAsync<Match, Tournament, TeamInMatch, Team, MatchLocation, Season, Competition, Match>(
+                var matches = await connection.QueryAsync<Match, Tournament, TeamInMatch, TeamDto, MatchLocation, Season, Competition, Match>(
                     $@"SELECT m.MatchId, m.MatchName, m.MatchType, m.PlayerType, m.StartTime, m.StartTimeIsKnown, m.MatchResultType, m.PlayersPerTeam,
                             m.LastPlayerBatsOn, m.EnableBonusOrPenaltyRuns, m.InningsOrderIsKnown, m.MatchNotes, m.MatchRoute, m.MemberKey, m.UpdateMatchNameAutomatically,
                             tourney.TournamentId, tourney.TournamentRoute, tourney.TournamentName, tourney.MemberKey,
                             mt.MatchTeamId, mt.TeamRole, mt.WonToss,
-                            t.TeamId, t.TeamRoute, tn.TeamName, t.MemberGroupName,
+                            t.TeamId, t.TeamRoute, tn.TeamName, t.MemberGroupName, t.ClubId,
                             ml.MatchLocationId, ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
                             ml.Locality, ml.Town, ml.Latitude, ml.Longitude,
                             s.SeasonId, s.SeasonRoute, s.FromYear, s.UntilYear,
@@ -82,7 +92,11 @@ namespace Stoolball.Data.SqlServer
                         match.Tournament = tournament;
                         if (teamInMatch != null && team != null)
                         {
-                            teamInMatch.Team = team;
+                            teamInMatch.Team = new Team { TeamId = team.TeamId, TeamName = team.TeamName, TeamRoute = team.TeamRoute, MemberGroupName = team.MemberGroupName };
+                            if (team.ClubId.HasValue)
+                            {
+                                teamInMatch.Team.Club = new Club { ClubId = team.ClubId };
+                            }
                             match.Teams.Add(teamInMatch);
                         }
                         match.MatchLocation = matchLocation;

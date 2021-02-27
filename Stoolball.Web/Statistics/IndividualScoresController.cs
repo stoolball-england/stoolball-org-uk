@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
@@ -24,6 +25,7 @@ namespace Stoolball.Web.Statistics
     {
         private readonly IStatisticsDataSource _statisticsDataSource;
         private readonly IPlayerDataSource _playerDataSource;
+        private readonly IClubDataSource _clubDataSource;
         private readonly ITeamDataSource _teamDataSource;
         private readonly IMatchLocationDataSource _matchLocationDataSource;
         private readonly ICompetitionDataSource _competitionDataSource;
@@ -38,6 +40,7 @@ namespace Stoolball.Web.Statistics
            UmbracoHelper umbracoHelper,
            IStatisticsDataSource statisticsDataSource,
            IPlayerDataSource playerDataSource,
+           IClubDataSource clubDataSource,
            ITeamDataSource teamDataSource,
            IMatchLocationDataSource matchLocationDataSource,
            ICompetitionDataSource competitionDataSource,
@@ -47,6 +50,7 @@ namespace Stoolball.Web.Statistics
         {
             _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
+            _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _matchLocationDataSource = matchLocationDataSource ?? throw new ArgumentNullException(nameof(matchLocationDataSource));
             _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
@@ -73,6 +77,10 @@ namespace Stoolball.Web.Statistics
             if (Request.RawUrl.StartsWith("/players/", StringComparison.OrdinalIgnoreCase))
             {
                 model.StatisticsFilter.Player = await _playerDataSource.ReadPlayerByRoute(_routeNormaliser.NormaliseRouteToEntity(Request.RawUrl, "players")).ConfigureAwait(false);
+            }
+            else if (Request.RawUrl.StartsWith("/clubs/", StringComparison.OrdinalIgnoreCase))
+            {
+                model.StatisticsFilter.Club = await _clubDataSource.ReadClubByRoute(_routeNormaliser.NormaliseRouteToEntity(Request.RawUrl, "clubs")).ConfigureAwait(false);
             }
             else if (Request.RawUrl.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {

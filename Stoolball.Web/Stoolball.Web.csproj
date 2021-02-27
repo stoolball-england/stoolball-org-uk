@@ -1065,6 +1065,7 @@
     <Content Include="Views\IndividualScores.cshtml" />
     <Content Include="Views\MatchLocationStatistics.cshtml" />
     <Content Include="Views\CompetitionStatistics.cshtml" />
+    <Content Include="Views\ClubStatistics.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -1192,6 +1193,7 @@
     <Compile Include="Clubs\EditClubSurfaceController.cs" />
     <Compile Include="Clubs\MatchesForClubController.cs" />
     <Compile Include="Clubs\ClubActionsController.cs" />
+    <Compile Include="Clubs\ClubStatisticsController.cs" />
     <Compile Include="Competitions\CompetitionActionsController.cs" />
     <Compile Include="Competitions\CompetitionAuthorizationPolicy.cs" />
     <Compile Include="Competitions\SeasonStatisticsController.cs" />

@@ -41,14 +41,28 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
+        public async Task Read_total_player_innings_supports_filter_by_club_id()
+        {
+            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            var result = await dataSource.ReadTotalPlayerInnings(new StatisticsFilter { Club = _databaseFixture.TeamWithClub.Club }).ConfigureAwait(false);
+
+            var expected = _databaseFixture.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TeamWithClub.TeamId.Value))
+                .SelectMany(x => x.MatchInnings.Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.TeamWithClub.TeamId.Value))
+                .SelectMany(x => x.PlayerInnings)
+                .Count(x => x.RunsScored.HasValue);
+            Assert.Equal(expected, result);
+        }
+
+        [Fact]
         public async Task Read_total_player_innings_supports_filter_by_team_id()
         {
             var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            var result = await dataSource.ReadTotalPlayerInnings(new StatisticsFilter { Team = _databaseFixture.Team }).ConfigureAwait(false);
+            var result = await dataSource.ReadTotalPlayerInnings(new StatisticsFilter { Team = _databaseFixture.TeamWithClub }).ConfigureAwait(false);
 
-            var expected = _databaseFixture.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.Team.TeamId.Value))
-                .SelectMany(x => x.MatchInnings.Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.Team.TeamId.Value))
+            var expected = _databaseFixture.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TeamWithClub.TeamId.Value))
+                .SelectMany(x => x.MatchInnings.Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.TeamWithClub.TeamId.Value))
                 .SelectMany(x => x.PlayerInnings)
                 .Count(x => x.RunsScored.HasValue);
             Assert.Equal(expected, result);
@@ -237,19 +251,19 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
-        public async Task Read_player_innings_supports_filter_by_team_id()
+        public async Task Read_player_innings_supports_filter_by_club_id()
         {
             var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var results = await dataSource.ReadPlayerInnings(new StatisticsFilter
             {
                 PageSize = int.MaxValue,
-                Team = _databaseFixture.Team
+                Club = _databaseFixture.TeamWithClub.Club
             },
             StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.Team.TeamId.Value))
-                .SelectMany(x => x.MatchInnings.Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.Team.TeamId.Value))
+            var expected = _databaseFixture.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TeamWithClub.TeamId.Value))
+                .SelectMany(x => x.MatchInnings.Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.TeamWithClub.TeamId.Value))
                 .SelectMany(x => x.PlayerInnings)
                 .Where(x => x.RunsScored.HasValue).ToList();
             Assert.Equal(expected.Count, results.Count());
@@ -259,6 +273,28 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             }
         }
 
+        [Fact]
+        public async Task Read_player_innings_supports_filter_by_team_id()
+        {
+            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await dataSource.ReadPlayerInnings(new StatisticsFilter
+            {
+                PageSize = int.MaxValue,
+                Team = _databaseFixture.TeamWithClub
+            },
+            StatisticsSortOrder.BestFirst).ConfigureAwait(false);
+
+            var expected = _databaseFixture.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TeamWithClub.TeamId.Value))
+                .SelectMany(x => x.MatchInnings.Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.TeamWithClub.TeamId.Value))
+                .SelectMany(x => x.PlayerInnings)
+                .Where(x => x.RunsScored.HasValue).ToList();
+            Assert.Equal(expected.Count, results.Count());
+            foreach (var expectedInnings in expected)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.PlayerInnings.PlayerInningsId == expectedInnings.PlayerInningsId));
+            }
+        }
 
         [Fact]
         public async Task Read_player_innings_supports_filter_by_match_location_id()

@@ -254,6 +254,7 @@ namespace Stoolball.Statistics
                 OppositionMatchInningsRuns = isOnBattingTeam ? pairedInnings.Runs : innings.Runs,
                 OppositionMatchInningsWickets = isOnBattingTeam ? innings.Wickets : pairedInnings.Wickets,
                 MatchTeamId = team.MatchTeamId.Value,
+                ClubId = team.Team.Club?.ClubId,
                 TeamId = team.Team.TeamId.Value,
                 TeamName = team.Team.TeamName,
                 TeamRoute = team.Team.TeamRoute,
