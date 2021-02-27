@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Moq;
+using Stoolball.MatchLocations;
 using Stoolball.Statistics;
-using Stoolball.Teams;
 using Stoolball.Web.Statistics;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -18,16 +18,16 @@ using Xunit;
 
 namespace Stoolball.Web.Tests.Statistics
 {
-    public class TeamStatisticsControllerTests : UmbracoBaseTest
+    public class MatchLocationStatisticsControllerTests : UmbracoBaseTest
     {
-        public TeamStatisticsControllerTests()
+        public MatchLocationStatisticsControllerTests()
         {
             Setup();
         }
 
-        private class TestController : TeamStatisticsController
+        private class TestController : MatchLocationStatisticsController
         {
-            public TestController(ITeamDataSource teamDataSource, IStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
+            public TestController(IMatchLocationDataSource matchLocationDataSource, IStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -35,7 +35,7 @@ namespace Stoolball.Web.Tests.Statistics
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
-                teamDataSource,
+                matchLocationDataSource,
                 statisticsDataSource)
             {
                 var request = new Mock<HttpRequestBase>();
@@ -52,18 +52,18 @@ namespace Stoolball.Web.Tests.Statistics
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("TeamStatistics", model);
+                return View("MatchLocationStatistics", model);
             }
         }
 
         [Fact]
-        public async Task Route_not_matching_team_returns_404()
+        public async Task Route_not_matching_location_returns_404()
         {
-            var teamDataSource = new Mock<ITeamDataSource>();
-            teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Team>(null));
+            var locationDataSource = new Mock<IMatchLocationDataSource>();
+            locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<MatchLocation>(null));
             var statisticsDataSource = new Mock<IStatisticsDataSource>();
 
-            using (var controller = new TestController(teamDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(locationDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -72,18 +72,18 @@ namespace Stoolball.Web.Tests.Statistics
         }
 
         [Fact]
-        public async Task Route_matching_team_returns_StatisticsViewModel()
+        public async Task Route_matching_location_returns_StatisticsViewModel()
         {
-            var teamDataSource = new Mock<ITeamDataSource>();
-            teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).ReturnsAsync(new Team { TeamId = Guid.NewGuid() });
+            var locationDataSource = new Mock<IMatchLocationDataSource>();
+            locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).ReturnsAsync(new MatchLocation { MatchLocationId = Guid.NewGuid() });
             var statisticsDataSource = new Mock<IStatisticsDataSource>();
             statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new PlayerInningsResult[] { new PlayerInningsResult() } as IEnumerable<PlayerInningsResult>));
 
-            using (var controller = new TestController(teamDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(locationDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<StatisticsViewModel<Team>>(((ViewResult)result).Model);
+                Assert.IsType<StatisticsViewModel<MatchLocation>>(((ViewResult)result).Model);
             }
         }
     }

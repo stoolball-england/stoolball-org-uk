@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/MatchLocationStatistics.cshtml",
+  "Master": null,
+  "Udi": "umb://template/8b6f9fcb2b1a4486a5e8cd1e8c9b93f3",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/MatchLocationStatistics.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Match Location Statistics",
+  "Alias": "MatchLocationStatistics",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.5.3"
+}

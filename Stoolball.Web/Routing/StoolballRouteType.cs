@@ -66,6 +66,7 @@
         EditStatistics,
         Player,
         TeamStatistics,
+        MatchLocationStatistics,
         IndividualScores
     }
 }

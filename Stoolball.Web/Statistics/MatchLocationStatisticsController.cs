@@ -1,0 +1,71 @@
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Stoolball.MatchLocations;
+using Stoolball.Navigation;
+using Stoolball.Statistics;
+using Stoolball.Web.Routing;
+using Stoolball.Web.Security;
+using Umbraco.Core.Cache;
+using Umbraco.Core.Configuration;
+using Umbraco.Core.Logging;
+using Umbraco.Core.Services;
+using Umbraco.Web;
+using Umbraco.Web.Models;
+
+namespace Stoolball.Web.Statistics
+{
+    public class MatchLocationStatisticsController : RenderMvcControllerAsync
+    {
+        private readonly IMatchLocationDataSource _matchLocationDataSource;
+        private readonly IStatisticsDataSource _statisticsDataSource;
+
+        public MatchLocationStatisticsController(IGlobalSettings globalSettings,
+           IUmbracoContextAccessor umbracoContextAccessor,
+           ServiceContext serviceContext,
+           AppCaches appCaches,
+           IProfilingLogger profilingLogger,
+           UmbracoHelper umbracoHelper,
+           IMatchLocationDataSource matchLocationDataSource,
+           IStatisticsDataSource statisticsDataSource)
+           : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        {
+            _matchLocationDataSource = matchLocationDataSource ?? throw new ArgumentNullException(nameof(matchLocationDataSource));
+            _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
+        }
+
+        [HttpGet]
+        [ContentSecurityPolicy]
+        public async override Task<ActionResult> Index(ContentModel contentModel)
+        {
+            if (contentModel is null)
+            {
+                throw new ArgumentNullException(nameof(contentModel));
+            }
+
+            var model = new StatisticsViewModel<MatchLocation>(contentModel.Content, Services?.UserService)
+            {
+                Context = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl, false).ConfigureAwait(false),
+            };
+
+            if (model.Context == null)
+            {
+                return new HttpNotFoundResult();
+            }
+            else
+            {
+                model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
+                model.StatisticsFilter.MatchLocation = model.Context;
+                model.PlayerInnings = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+
+                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.MatchLocations, Url = new Uri(Constants.Pages.MatchLocationsUrl, UriKind.Relative) });
+
+                model.Metadata.PageTitle = $"Statistics for {model.Context.NameAndLocalityOrTown()}";
+                model.Metadata.Description = $"Statistics for stoolball matches played at {model.Context.NameAndLocalityOrTown()}.";
+
+                return CurrentTemplate(model);
+            }
+        }
+    }
+}

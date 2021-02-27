@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Stoolball.Matches;
+using Stoolball.MatchLocations;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 
@@ -15,6 +16,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public List<Match> Matches { get; private set; } = new List<Match>();
         public Player PlayerWithFifthAndSixthInningsTheSame { get; private set; }
         public Team Team { get; set; }
+        public List<MatchLocation> MatchLocations { get; private set; } = new List<MatchLocation>();
 
         public SqlServerStatisticsDataSourceFixture() : base("StoolballStatisticsDataSourceIntegrationTests")
         {
@@ -41,6 +43,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 for (var i = 0; i < 5; i++)
                 {
                     poolOfTeams.Add(CreateATeamWithPlayers(seedDataGenerator, $"Team {i + 1} pool player"));
+                }
+
+                // Create a pool of match locations 
+                for (var i = 0; i < 5; i++)
+                {
+                    MatchLocations.Add(seedDataGenerator.CreateMatchLocationWithMinimalDetails());
                 }
 
                 // Randomly assign at least one player from each team a second identity
@@ -107,6 +115,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         CreateRandomScorecardData(randomiser, innings, teamAInMatch, teamBInMatch, teamAPlayers, teamBPlayers);
                         CreateRandomScorecardData(randomiser, pairedInnings, teamBInMatch, teamAInMatch, teamBPlayers, teamAPlayers);
                     }
+
+                    // Most matches have a match location
+                    if (randomiser.Next(4) != 0)
+                    {
+                        Matches[i].MatchLocation = MatchLocations[randomiser.Next(MatchLocations.Count)];
+                    }
                 }
 
                 // Find any player with at least six innings, and make the sixth best score the same as the fifth so that we can test retrieving a top five + any equal results
@@ -149,6 +163,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     }
                 }
 
+                // Remove any match locations that didn't get used
+                MatchLocations.RemoveAll(x => !Matches.Select(m => m.MatchLocation?.MatchLocationId).Contains(x.MatchLocationId));
+
                 // Add all of that to the database
                 var distinctPlayers = poolOfTeams.SelectMany(x => x.identities).Select(x => x.Player).Distinct(new PlayerEqualityComparer());
                 foreach (var player in distinctPlayers)
@@ -165,6 +182,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     {
                         repo.CreatePlayerIdentity(playerIdentity);
                     }
+                }
+                foreach (var location in MatchLocations)
+                {
+                    repo.CreateMatchLocation(location);
                 }
                 foreach (var match in Matches)
                 {

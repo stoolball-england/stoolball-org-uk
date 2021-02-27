@@ -111,6 +111,8 @@ namespace Stoolball.Web.Routing
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}team{OPTIONAL_SLASH}", StoolballRouteType.EditTeam },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}delete{OPTIONAL_SLASH}", StoolballRouteType.DeleteTeam },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForMatchLocation },
+                { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.MatchLocationStatistics },
+                { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.MatchLocationActions },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}location{OPTIONAL_SLASH}", StoolballRouteType.EditMatchLocation },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}delete{OPTIONAL_SLASH}", StoolballRouteType.DeleteMatchLocation },

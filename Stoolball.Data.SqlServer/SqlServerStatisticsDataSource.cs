@@ -210,10 +210,10 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@CompetitionIds", filter.CompetitionIds);
             }
 
-            if (filter.MatchLocationIds.Any())
+            if (filter.MatchLocation != null)
             {
-                where.Add("MatchLocationId IN @MatchLocationIds");
-                parameters.Add("@MatchLocationIds", filter.MatchLocationIds);
+                where.Add("MatchLocationId = @MatchLocationId");
+                parameters.Add("@MatchLocationId", filter.MatchLocation.MatchLocationId);
             }
 
             if (filter.MatchTypes.Any())
