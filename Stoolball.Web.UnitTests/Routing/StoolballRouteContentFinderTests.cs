@@ -110,7 +110,7 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/competitions/example/2020/statistics/Bowling-Figures", StoolballRouteType.BowlingFigures)]
         [InlineData("https://example.org/competitions/example/2020/Statistics/BowLING-figureS/", StoolballRouteType.BowlingFigures)]
         [InlineData("https://example.org/competitions/example/2020-21/STATISTICS/Bowling-figures", StoolballRouteType.BowlingFigures)]
-        [InlineData("https://example.org/competitions/example/2020-21/StAtIsTiCs/Bowling_FIGURES/", StoolballRouteType.BowlingFigures)]
+        [InlineData("https://example.org/competitions/example/2020-21/StAtIsTiCs/Bowling-FIGURES/", StoolballRouteType.BowlingFigures)]
         [InlineData("https://example.org/competitions/example/2020/matches", StoolballRouteType.MatchesForSeason)]
         [InlineData("https://example.org/competitions/example/2020/MATCHES/", StoolballRouteType.MatchesForSeason)]
         [InlineData("https://example.org/competitions/example/2020-21/MATCHES", StoolballRouteType.MatchesForSeason)]
