@@ -11,14 +11,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 {
     public sealed class SqlServerStatisticsDataSourceFixture : BaseSqlServerFixture
     {
-        public Player PlayerWithMultipleIdentities { get; private set; }
+        public Player BowlerWithMultipleIdentities { get; private set; }
 
         public List<PlayerIdentity> PlayerIdentities { get; private set; } = new List<PlayerIdentity>();
         public List<Match> Matches { get; private set; } = new List<Match>();
         public Player PlayerWithFifthAndSixthInningsTheSame { get; private set; }
+        public Player PlayerWithFifthAndSixthBowlingFiguresTheSame { get; private set; }
         public Team TeamWithClub { get; set; }
         public List<MatchLocation> MatchLocations { get; private set; } = new List<MatchLocation>();
         public List<Competition> Competitions { get; private set; } = new List<Competition>();
+        public List<Player> PlayersWithMultipleIdentities { get; private set; } = new List<Player>();
 
         public SqlServerStatisticsDataSourceFixture() : base("StoolballStatisticsDataSourceIntegrationTests")
         {
@@ -72,15 +74,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     var player2 = targetIdentities[randomiser.Next(targetIdentities.Count)];
                     player2.Player = player1.Player;
 
-                    // The last one will be subject to extra tests
-                    PlayerWithMultipleIdentities = player1.Player;
+                    PlayersWithMultipleIdentities.Add(player2.Player);
                 }
 
-                PlayerWithMultipleIdentities.PlayerIdentities.Clear();
-                PlayerWithMultipleIdentities.PlayerIdentities.AddRange(poolOfTeams.SelectMany(x => x.identities).Where(x => x.Player.PlayerId == PlayerWithMultipleIdentities.PlayerId).Distinct(new PlayerIdentityEqualityComparer()));
-
-                // Create matches for them to play in, with some batting
-                for (var i = 0; i < 20; i++)
+                // Create matches for them to play in, with scorecards
+                for (var i = 0; i < 40; i++)
                 {
                     var homeTeamBatsFirst = randomiser.Next(2) == 0;
 
@@ -153,18 +151,45 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                                  .ToList(); // make it possible to access innings by index
 
                 // Make the sixth innings the same as the fifth, including anything that might affect the out/not out status.
-                // If there's a seventh, make sure it's different so we know what to assert.
+                // If there are more, make sure they're worse so we know what to assert.
                 inningsForPlayerWithAtLeast6Scores[5].DismissalType = inningsForPlayerWithAtLeast6Scores[4].DismissalType;
                 inningsForPlayerWithAtLeast6Scores[5].DismissedBy = inningsForPlayerWithAtLeast6Scores[4].DismissedBy;
                 inningsForPlayerWithAtLeast6Scores[5].Bowler = inningsForPlayerWithAtLeast6Scores[4].Bowler;
                 inningsForPlayerWithAtLeast6Scores[5].RunsScored = inningsForPlayerWithAtLeast6Scores[4].RunsScored;
-                if (inningsForPlayerWithAtLeast6Scores.Count > 6 && inningsForPlayerWithAtLeast6Scores[5].RunsScored == inningsForPlayerWithAtLeast6Scores[6].RunsScored) { inningsForPlayerWithAtLeast6Scores[6].RunsScored++; }
+                for (var i = 6; i < inningsForPlayerWithAtLeast6Scores.Count; i++)
+                {
+                    inningsForPlayerWithAtLeast6Scores[i].RunsScored--;
+                }
 
                 PlayerWithFifthAndSixthInningsTheSame = inningsForPlayerWithAtLeast6Scores.First().Batter.Player;
+
+                // Find any player with at least six sets of bowling figures, and make the sixth set the same as the fifth so that we can test retrieving a top five + any equal results
+                var inningsForPlayerWithAtLeast6BowlingFigures = Matches
+                                 .SelectMany(x => x.MatchInnings) // for each innings of each match...
+                                 .SelectMany(x => x.BowlingFigures) // get the bowling figures...
+                                 .GroupBy(x => x.Bowler.Player.PlayerId) // separate them into a group of figures for each player...
+                                 .First(x => x.Count() > 5) // get the first player that had more than 5 sets of bowling figures...
+                                 .Select(x => x) // get those figures out of the IGrouping structure...
+                                 .OrderByDescending(x => x.Wickets).ThenByDescending(x => x.RunsConceded.HasValue).ThenBy(x => x.RunsConceded) // sort the best scores first, because that's what the query we're testing will do...
+                                 .ToList(); // make it possible to access figures by index
+
+                // Make the sixth set of figures the same as the fifth.
+                // If there are more, make sure they're worse so we know what to assert.
+                inningsForPlayerWithAtLeast6BowlingFigures[5].Overs = inningsForPlayerWithAtLeast6BowlingFigures[4].Overs;
+                inningsForPlayerWithAtLeast6BowlingFigures[5].Maidens = inningsForPlayerWithAtLeast6BowlingFigures[4].Maidens;
+                inningsForPlayerWithAtLeast6BowlingFigures[5].RunsConceded = inningsForPlayerWithAtLeast6BowlingFigures[4].RunsConceded;
+                inningsForPlayerWithAtLeast6BowlingFigures[5].Wickets = inningsForPlayerWithAtLeast6BowlingFigures[4].Wickets;
+                for (var i = 6; i < inningsForPlayerWithAtLeast6BowlingFigures.Count; i++)
+                {
+                    inningsForPlayerWithAtLeast6BowlingFigures[i].RunsConceded++;
+                }
+
+                PlayerWithFifthAndSixthBowlingFiguresTheSame = inningsForPlayerWithAtLeast6BowlingFigures.First().Bowler.Player;
 
 
                 // Add entities to expected collections for testing
                 var teamComparer = new TeamEqualityComparer();
+                var identityComparer = new PlayerIdentityEqualityComparer();
                 var teamsThatGotUsed = Matches.SelectMany(x => x.Teams).Select(x => x.Team).Distinct(teamComparer).ToList();
                 TeamWithClub = teamsThatGotUsed.First(x => x.Club != null);
 
@@ -181,6 +206,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         identity.LastPlayed = matchesPlayedByThisTeam.Max(x => x.StartTime);
                     }
                 }
+
+                // Find any player who has multiple identities and bowled
+                BowlerWithMultipleIdentities = Matches
+                    .SelectMany(x => x.MatchInnings)
+                    .SelectMany(x => x.BowlingFigures)
+                    .Where(x => PlayersWithMultipleIdentities.Contains(x.Bowler.Player, new PlayerEqualityComparer()))
+                    .Select(x => x.Bowler.Player)
+                    .First();
+                BowlerWithMultipleIdentities.PlayerIdentities.Clear();
+                BowlerWithMultipleIdentities.PlayerIdentities.AddRange(PlayerIdentities.Where(x => x.Player.PlayerId == BowlerWithMultipleIdentities.PlayerId));
 
                 // Remove any entities that didn't get used
                 MatchLocations.RemoveAll(x => !Matches.Select(m => m.MatchLocation?.MatchLocationId).Contains(x.MatchLocationId));
@@ -247,25 +282,86 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             };
         }
 
-        private static void CreateRandomScorecardData(Random randomiser, MatchInnings innings, TeamInMatch battingTeam, TeamInMatch fieldingTeam, List<PlayerIdentity> battingPlayers, List<PlayerIdentity> fieldingPlayers)
+        private static void CreateRandomScorecardData(Random randomiser, MatchInnings innings, TeamInMatch battingTeam, TeamInMatch bowlingTeam, List<PlayerIdentity> battingPlayers, List<PlayerIdentity> bowlingPlayers)
         {
             innings.BattingMatchTeamId = battingTeam.MatchTeamId;
-            innings.BowlingMatchTeamId = fieldingTeam.MatchTeamId;
+            innings.BowlingMatchTeamId = bowlingTeam.MatchTeamId;
             innings.BattingTeam = battingTeam;
-            innings.BowlingTeam = fieldingTeam;
+            innings.BowlingTeam = bowlingTeam;
 
             for (var p = 0; p < battingPlayers.Count; p++)
             {
-                var fielderOrMissingData = randomiser.Next(2) == 0 ? fieldingPlayers[randomiser.Next(fieldingPlayers.Count)] : null;
-                var bowlerOrMissingData = randomiser.Next(2) == 0 ? fieldingPlayers[randomiser.Next(fieldingPlayers.Count)] : null;
+                var fielderOrMissingData = randomiser.Next(2) == 0 ? bowlingPlayers[randomiser.Next(bowlingPlayers.Count)] : null;
+                var bowlerOrMissingData = randomiser.Next(2) == 0 ? bowlingPlayers[randomiser.Next(bowlingPlayers.Count)] : null;
                 innings.PlayerInnings.Add(CreateRandomPlayerInnings(randomiser, p + 1, battingPlayers[p], fielderOrMissingData, bowlerOrMissingData));
             }
 
             // sometimes pick a random player to bat twice in the innings
             if (randomiser.Next(2) == 0)
             {
-                innings.PlayerInnings.Add(CreateRandomPlayerInnings(randomiser, battingPlayers.Count, battingPlayers[randomiser.Next(battingPlayers.Count)], fieldingPlayers[randomiser.Next(fieldingPlayers.Count)], fieldingPlayers[randomiser.Next(fieldingPlayers.Count)]));
+                innings.PlayerInnings.Add(CreateRandomPlayerInnings(randomiser, battingPlayers.Count, battingPlayers[randomiser.Next(battingPlayers.Count)], bowlingPlayers[randomiser.Next(bowlingPlayers.Count)], bowlingPlayers[randomiser.Next(bowlingPlayers.Count)]));
             }
+
+            // pick 4 players to bowl - note there may be other bowlers recorded as taking wickets on the batting card above
+            var bowlers = new List<PlayerIdentity>();
+            var comparer = new PlayerIdentityEqualityComparer();
+            while (bowlers.Count < 4)
+            {
+                var potentialBowler = bowlingPlayers[randomiser.Next(bowlingPlayers.Count)];
+                if (!bowlers.Contains(potentialBowler, comparer)) { bowlers.Add(potentialBowler); }
+            }
+
+            // Create up to 12 random overs, or a missing bowling card
+            var hasBowlingData = randomiser.Next(5) > 0;
+            innings.OverSets.Add(new OverSet
+            {
+                OverSetId = Guid.NewGuid(),
+                OverSetNumber = 1,
+                Overs = randomiser.Next(8, 13),
+                BallsPerOver = 8
+            });
+            if (hasBowlingData)
+            {
+                for (var i = 1; i <= innings.OverSets[0].Overs; i++)
+                {
+                    if (i < 6 && i % 2 == 1) { innings.OversBowled.Add(CreateRandomOver(randomiser, innings.OverSets[0], i, bowlers[0])); }
+                    if (i < 6 && i % 2 == 0) { innings.OversBowled.Add(CreateRandomOver(randomiser, innings.OverSets[0], i, bowlers[1])); }
+                    if (i >= 6 && i % 2 == 1) { innings.OversBowled.Add(CreateRandomOver(randomiser, innings.OverSets[0], i, bowlers[2])); }
+                    if (i >= 6 && i % 2 == 0) { innings.OversBowled.Add(CreateRandomOver(randomiser, innings.OverSets[0], i, bowlers[3])); }
+                }
+            }
+
+            var bowlingFigures = new BowlingFiguresCalculator();
+            innings.BowlingFigures = bowlingFigures.CalculateBowlingFigures(innings);
+        }
+
+        private static Over CreateRandomOver(Random randomiser, OverSet overSet, int overNumber, PlayerIdentity playerIdentity)
+        {
+            // BallsBowled is usually provided but over data beyond the bowler name can be missing. 
+            // The last over is often fewer balls.
+            var ballsBowled = randomiser.Next(10) == 0 ? (int?)null : 8;
+            if (overNumber == 12) { ballsBowled = randomiser.Next(9); }
+
+            // Random numbers for the over, simulating missing data
+            int? noBalls = null, wides = null, runsConceded = null;
+            if (ballsBowled.HasValue)
+            {
+                noBalls = randomiser.Next(4) == 0 ? (int?)null : randomiser.Next(5);
+                wides = randomiser.Next(4) == 0 ? (int?)null : randomiser.Next(5);
+                runsConceded = randomiser.Next(4) == 0 ? (int?)null : randomiser.Next(20);
+            }
+
+            return new Over
+            {
+                OverId = Guid.NewGuid(),
+                OverSet = overSet,
+                Bowler = playerIdentity,
+                OverNumber = overNumber,
+                BallsBowled = ballsBowled,
+                NoBalls = noBalls,
+                Wides = wides,
+                RunsConceded = runsConceded
+            };
         }
 
         private static PlayerInnings CreateRandomPlayerInnings(Random randomiser, int battingPosition, PlayerIdentity batter, PlayerIdentity fielderOrMissingData, PlayerIdentity bowlerOrMissingData)

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Web.Routing;
 using Umbraco.Core.Models.PublishedContent;
@@ -11,7 +12,7 @@ namespace Stoolball.Web.Statistics
         public IndividualScoresViewModel(IPublishedContent contentModel, IUserService userService) : base(contentModel, userService)
         {
         }
-        public List<PlayerInningsResult> Results { get; internal set; } = new List<PlayerInningsResult>();
+        public List<StatisticsResult<PlayerInnings>> Results { get; internal set; } = new List<StatisticsResult<PlayerInnings>>();
         public int TotalResults { get; set; }
         public StatisticsFilter StatisticsFilter { get; set; } = new StatisticsFilter();
 

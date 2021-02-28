@@ -65,6 +65,8 @@ namespace Stoolball.Statistics
 
         public bool? BattedFirst { get; set; }
 
+        public Guid? BowlingFiguresId { get; set; }
+
         public int? OverNumberOfFirstOverBowled { get; set; }
 
         public int? BallsBowled { get; set; }

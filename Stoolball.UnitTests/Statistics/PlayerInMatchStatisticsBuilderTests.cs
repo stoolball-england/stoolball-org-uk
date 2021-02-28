@@ -633,6 +633,7 @@ namespace Stoolball.UnitTests.Statistics
                     var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == figures.Bowler.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
                     Assert.NotNull(playerRecord);
 
+                    Assert.Equal(figures.BowlingFiguresId, playerRecord.BowlingFiguresId);
                     Assert.Equal(figures.Overs, playerRecord.Overs);
                     Assert.Equal(figures.Maidens, playerRecord.Maidens);
                     Assert.Equal(figures.RunsConceded, playerRecord.RunsConceded);

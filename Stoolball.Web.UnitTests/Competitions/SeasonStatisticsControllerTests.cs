@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using Moq;
 using Stoolball.Competitions;
+using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Web.Competitions;
 using Stoolball.Web.Statistics;
@@ -86,7 +87,7 @@ namespace Stoolball.Web.Tests.Competitions
                 }
             });
             var statisticsDataSource = new Mock<IStatisticsDataSource>();
-            statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new PlayerInningsResult[] { new PlayerInningsResult() } as IEnumerable<PlayerInningsResult>));
+            statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new StatisticsResult<PlayerInnings>[] { new StatisticsResult<PlayerInnings>() } as IEnumerable<StatisticsResult<PlayerInnings>>));
 
             using (var controller = new TestController(seasonDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
             {

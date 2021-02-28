@@ -25,6 +25,13 @@ namespace Stoolball.Data.SqlServer
             return await ReadTotalBestFiguresInAMatch("RunsScored", 0, filter).ConfigureAwait(false);
         }
 
+        public async Task<int> ReadTotalBowlingFigures(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+
+            return await ReadTotalBestFiguresInAMatch("Wickets", 0, filter).ConfigureAwait(false);
+        }
+
         private async Task<int> ReadTotalBestFiguresInAMatch(string primaryFieldName, int minimumValue, StatisticsFilter filter)
         {
             var (where, parameters) = BuildQuery(filter);
@@ -40,7 +47,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        public async Task<IEnumerable<PlayerInningsResult>> ReadPlayerInnings(StatisticsFilter filter, StatisticsSortOrder sortOrder)
+        public async Task<IEnumerable<StatisticsResult<PlayerInnings>>> ReadPlayerInnings(StatisticsFilter filter, StatisticsSortOrder sortOrder)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -59,14 +66,40 @@ namespace Stoolball.Data.SqlServer
                 throw new InvalidOperationException();
             }
 
-            return await ReadBestFiguresInAMatch("RunsScored", new[] { "PlayerInningsId", "DismissalType", "BallsFaced" }, orderByFields, 0, filter).ConfigureAwait(false);
+            return await ReadBestFiguresInAMatch<PlayerInnings>("RunsScored", "PlayerWasDismissed", new[] { "PlayerInningsId", "DismissalType", "BallsFaced" }, orderByFields, 0, filter).ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<StatisticsResult<BowlingFigures>>> ReadBowlingFigures(StatisticsFilter filter, StatisticsSortOrder sortOrder)
+        {
+            filter = filter ?? new StatisticsFilter();
+
+            var orderByFields = new List<string>();
+            if (sortOrder == StatisticsSortOrder.LatestFirst)
+            {
+                orderByFields.Add("MatchStartTime DESC");
+            }
+            else if (sortOrder == StatisticsSortOrder.BestFirst)
+            {
+                orderByFields.Add("Wickets DESC");
+                orderByFields.Add("HasRunsConceded DESC");
+                orderByFields.Add("RunsConceded ASC");
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
+
+            // NOTE: Don't check for RunsConceded IS NOT NULL in this stat, because 5/NULL is still better than 4/20.
+            // Wickets, even if 0, means the player bowled in the match, so check it is not null.
+            // Can trust wickets, not other fields, because wickets figure is generated whether bowling is recorded on batting and/or bowling card.
+            return await ReadBestFiguresInAMatch<BowlingFigures>("Wickets", "RunsConceded", new[] { "BowlingFiguresId", "RunsConceded", "Overs", "Maidens" }, orderByFields, 0, filter).ConfigureAwait(false);
         }
 
 
         /// <summary> 
         /// Gets best performances in a match based on the specified fields and filters
         /// </summary> 
-        private async Task<IEnumerable<PlayerInningsResult>> ReadBestFiguresInAMatch(string primaryFieldName, IEnumerable<string> selectFields, IEnumerable<string> orderByFields, int minimumValue, StatisticsFilter filter)
+        private async Task<IEnumerable<StatisticsResult<T>>> ReadBestFiguresInAMatch<T>(string primaryFieldName, string secondaryFieldNameForMaxResults, IEnumerable<string> selectFields, IEnumerable<string> orderByFields, int minimumValue, StatisticsFilter filter)
         {
             var select = $@"SELECT PlayerId, PlayerRoute, PlayerIdentityId, PlayerIdentityName, TeamId, TeamName,
                 OppositionTeamId AS TeamId, OppositionTeamName AS TeamName, MatchRoute, MatchStartTime AS StartTime, MatchName, 
@@ -87,12 +120,12 @@ namespace Stoolball.Data.SqlServer
             {
                 // Get the values from what should be the last row according to the maximum number of results.
                 preQuery = $@"DECLARE @MaxResult1 int, @MaxResult2 int;
-                            SELECT @MaxResult1 = {primaryFieldName}, @MaxResult2 = PlayerWasDismissed FROM {Tables.PlayerInMatchStatistics} {where} {orderBy}
+                            SELECT @MaxResult1 = {primaryFieldName}, @MaxResult2 = {secondaryFieldNameForMaxResults} FROM {Tables.PlayerInMatchStatistics} {where} {orderBy}
                             OFFSET {filter.MaxResultsAllowingExtraResultsIfValuesAreEqual - 1} ROWS FETCH NEXT 1 ROWS ONLY; ";
 
                 // If @MaxResult1 IS NULL there are fewer rows than the requested maximum, so just fetch all.
                 // Otherwise look for results that are greater than or equal to the value(s) in the last row retrieved above.
-                offsetWithExtraResults = $"AND (@MaxResult1 IS NULL OR ({primaryFieldName} > @MaxResult1 OR ({primaryFieldName} = @MaxResult1 AND PlayerWasDismissed = @MaxResult2))) ";
+                offsetWithExtraResults = $"AND (@MaxResult1 IS NULL OR ({primaryFieldName} > @MaxResult1 OR ({primaryFieldName} = @MaxResult1 AND ({secondaryFieldNameForMaxResults} <= @MaxResult2 OR @MaxResult2 IS NULL)))) ";
             }
             else
             {
@@ -104,17 +137,17 @@ namespace Stoolball.Data.SqlServer
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                return await connection.QueryAsync<Player, PlayerIdentity, Team, Team, MatchListing, PlayerInnings, PlayerInningsResult>(sql,
+                return await connection.QueryAsync<Player, PlayerIdentity, Team, Team, MatchListing, T, StatisticsResult<T>>(sql,
                     (player, playerIdentity, team, oppositionTeam, match, playerInnings) =>
                     {
                         player.PlayerIdentities.Add(playerIdentity);
-                        return new PlayerInningsResult
+                        return new StatisticsResult<T>
                         {
                             Player = player,
                             Team = team,
                             OppositionTeam = oppositionTeam,
                             Match = match,
-                            PlayerInnings = playerInnings
+                            Result = playerInnings
                         };
                     },
                     parameters,

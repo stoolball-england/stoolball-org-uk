@@ -143,6 +143,12 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public bool? BattedFirst { get; set; }
 
+        [Column(nameof(BowlingFiguresId))]
+        [ForeignKey(typeof(BowlingFiguresTableInitialSchema), Column = nameof(BowlingFiguresTableInitialSchema.BowlingFiguresId))]
+        [Index(IndexTypes.NonClustered)]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public Guid? BowlingFiguresId { get; set; }
+
         [Column(nameof(OverNumberOfFirstOverBowled))]
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? OverNumberOfFirstOverBowled { get; set; }

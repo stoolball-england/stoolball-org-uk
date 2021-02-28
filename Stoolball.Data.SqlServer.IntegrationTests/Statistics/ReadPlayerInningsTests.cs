@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Stoolball.Matches;
 using Stoolball.Statistics;
 using Xunit;
 
@@ -32,11 +34,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            var result = await dataSource.ReadTotalPlayerInnings(new StatisticsFilter { Player = _databaseFixture.PlayerWithMultipleIdentities }).ConfigureAwait(false);
+            var result = await dataSource.ReadTotalPlayerInnings(new StatisticsFilter { Player = _databaseFixture.BowlerWithMultipleIdentities }).ConfigureAwait(false);
 
             var expected = _databaseFixture.Matches.SelectMany(x => x.MatchInnings)
                 .SelectMany(x => x.PlayerInnings)
-                .Count(x => x.Batter.Player.PlayerId == _databaseFixture.PlayerWithMultipleIdentities.PlayerId && x.RunsScored.HasValue);
+                .Count(x => x.Batter.Player.PlayerId == _databaseFixture.BowlerWithMultipleIdentities.PlayerId && x.RunsScored.HasValue);
             Assert.Equal(expected, result);
         }
 
@@ -121,7 +123,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var expected = _databaseFixture.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).Where(x => x.RunsScored.HasValue).ToList();
             foreach (var expectedInnings in expected)
             {
-                var result = results.SingleOrDefault(x => x.PlayerInnings.PlayerInningsId == expectedInnings.PlayerInningsId);
+                var result = results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId);
                 Assert.NotNull(result);
 
                 Assert.Equal(expectedInnings.Batter.Player.PlayerId, result.Player.PlayerId);
@@ -141,12 +143,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var expected = _databaseFixture.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).Where(x => x.RunsScored.HasValue).ToList();
             foreach (var expectedInnings in expected)
             {
-                var result = results.SingleOrDefault(x => x.PlayerInnings.PlayerInningsId == expectedInnings.PlayerInningsId);
+                var result = results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId);
                 Assert.NotNull(result);
 
-                Assert.Equal(expectedInnings.DismissalType, result.PlayerInnings.DismissalType);
-                Assert.Equal(expectedInnings.RunsScored, result.PlayerInnings.RunsScored);
-                Assert.Equal(expectedInnings.BallsFaced, result.PlayerInnings.BallsFaced);
+                Assert.Equal(expectedInnings.DismissalType, result.Result.DismissalType);
+                Assert.Equal(expectedInnings.RunsScored, result.Result.RunsScored);
+                Assert.Equal(expectedInnings.BallsFaced, result.Result.BallsFaced);
             }
         }
 
@@ -160,7 +162,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var expected = _databaseFixture.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).Where(x => x.RunsScored.HasValue).ToList();
             foreach (var expectedInnings in expected)
             {
-                var result = results.SingleOrDefault(x => x.PlayerInnings.PlayerInningsId == expectedInnings.PlayerInningsId);
+                var result = results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId);
                 Assert.NotNull(result);
 
                 Assert.Equal(expectedInnings.Batter.Team.TeamId, result.Team.TeamId);
@@ -180,7 +182,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 foreach (var playerInnings in innings.PlayerInnings.Where(x => x.RunsScored.HasValue))
                 {
-                    var result = results.SingleOrDefault(x => x.PlayerInnings.PlayerInningsId == playerInnings.PlayerInningsId);
+                    var result = results.SingleOrDefault(x => x.Result.PlayerInningsId == playerInnings.PlayerInningsId);
                     Assert.NotNull(result);
 
                     Assert.Equal(innings.BowlingTeam.Team.TeamId, result.OppositionTeam.TeamId);
@@ -202,7 +204,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     foreach (var playerInnings in innings.PlayerInnings.Where(x => x.RunsScored.HasValue))
                     {
-                        var result = results.SingleOrDefault(x => x.PlayerInnings.PlayerInningsId == playerInnings.PlayerInningsId);
+                        var result = results.SingleOrDefault(x => x.Result.PlayerInningsId == playerInnings.PlayerInningsId);
                         Assert.NotNull(result);
 
                         Assert.Equal(match.MatchRoute, result.Match.MatchRoute);
@@ -224,7 +226,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             Assert.Equal(expected.Count, results.Count());
             foreach (var expectedInnings in expected)
             {
-                Assert.NotNull(results.SingleOrDefault(x => x.PlayerInnings.PlayerInningsId == expectedInnings.PlayerInningsId));
+                Assert.NotNull(results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId));
             }
         }
 
@@ -236,17 +238,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var results = await dataSource.ReadPlayerInnings(new StatisticsFilter
             {
                 PageSize = int.MaxValue,
-                Player = _databaseFixture.PlayerWithMultipleIdentities
+                Player = _databaseFixture.BowlerWithMultipleIdentities
             },
             StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
             var expected = _databaseFixture.Matches.SelectMany(x => x.MatchInnings)
                 .SelectMany(x => x.PlayerInnings)
-                .Where(x => x.Batter.Player.PlayerId == _databaseFixture.PlayerWithMultipleIdentities.PlayerId && x.RunsScored.HasValue).ToList();
+                .Where(x => x.Batter.Player.PlayerId == _databaseFixture.BowlerWithMultipleIdentities.PlayerId && x.RunsScored.HasValue).ToList();
             Assert.Equal(expected.Count, results.Count());
             foreach (var expectedInnings in expected)
             {
-                Assert.NotNull(results.SingleOrDefault(x => x.PlayerInnings.PlayerInningsId == expectedInnings.PlayerInningsId));
+                Assert.NotNull(results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId));
             }
         }
 
@@ -269,7 +271,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             Assert.Equal(expected.Count, results.Count());
             foreach (var expectedInnings in expected)
             {
-                Assert.NotNull(results.SingleOrDefault(x => x.PlayerInnings.PlayerInningsId == expectedInnings.PlayerInningsId));
+                Assert.NotNull(results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId));
             }
         }
 
@@ -292,7 +294,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             Assert.Equal(expected.Count, results.Count());
             foreach (var expectedInnings in expected)
             {
-                Assert.NotNull(results.SingleOrDefault(x => x.PlayerInnings.PlayerInningsId == expectedInnings.PlayerInningsId));
+                Assert.NotNull(results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId));
             }
         }
 
@@ -315,7 +317,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             Assert.Equal(expected.Count, results.Count());
             foreach (var expectedInnings in expected)
             {
-                Assert.NotNull(results.SingleOrDefault(x => x.PlayerInnings.PlayerInningsId == expectedInnings.PlayerInningsId));
+                Assert.NotNull(results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId));
             }
         }
 
@@ -338,7 +340,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             Assert.Equal(expected.Count, results.Count());
             foreach (var expectedInnings in expected)
             {
-                Assert.NotNull(results.SingleOrDefault(x => x.PlayerInnings.PlayerInningsId == expectedInnings.PlayerInningsId));
+                Assert.NotNull(results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId));
             }
         }
 
@@ -361,7 +363,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             Assert.Equal(expected.Count, results.Count());
             foreach (var expectedInnings in expected)
             {
-                Assert.NotNull(results.SingleOrDefault(x => x.PlayerInnings.PlayerInningsId == expectedInnings.PlayerInningsId));
+                Assert.NotNull(results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId));
             }
         }
 
@@ -376,15 +378,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var previousScoreWasOut = false;
             foreach (var result in results)
             {
-                Assert.True(result.PlayerInnings.RunsScored.Value <= previousScore);
+                Assert.True(result.Result.RunsScored.Value <= previousScore);
 
-                if (result.PlayerInnings.RunsScored.Value == previousScore && previousScoreWasOut)
+                if (result.Result.RunsScored.Value == previousScore && previousScoreWasOut)
                 {
-                    Assert.Contains(result.PlayerInnings.DismissalType, StatisticsConstants.DISMISSALS_THAT_ARE_OUT);
+                    Assert.Contains(result.Result.DismissalType, StatisticsConstants.DISMISSALS_THAT_ARE_OUT);
                 }
 
-                previousScore = result.PlayerInnings.RunsScored.Value;
-                previousScoreWasOut = StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(result.PlayerInnings.DismissalType);
+                previousScore = result.Result.RunsScored.Value;
+                previousScoreWasOut = StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(result.Result.DismissalType);
             }
         }
 
@@ -435,8 +437,34 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             },
             StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
-            Assert.Equal(6, results.Count);
-            Assert.Equal(results[4].PlayerInnings.RunsScored, results[5].PlayerInnings.RunsScored);
+            var allExpectedResults = _databaseFixture.Matches.SelectMany(x => x.MatchInnings)
+                .SelectMany(x => x.PlayerInnings)
+                .Where(x => x.Batter.Player.PlayerId == _databaseFixture.PlayerWithFifthAndSixthInningsTheSame.PlayerId && x.RunsScored.HasValue)
+                .OrderByDescending(x => x.RunsScored).ThenBy(x => StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(x.DismissalType));
+
+            var expected = new List<PlayerInnings>();
+            foreach (var result in allExpectedResults)
+            {
+                if (expected.Count < 5 ||
+                    (expected[expected.Count - 1].RunsScored == result.RunsScored && StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(expected[expected.Count - 1].DismissalType) == StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(result.DismissalType)))
+                {
+                    expected.Add(result);
+                    continue;
+                }
+                else break;
+            }
+
+            Assert.Equal(expected.Count, results.Count);
+            foreach (var expectedInnings in expected)
+            {
+                var result = results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId);
+                Assert.NotNull(result);
+
+                Assert.Equal(expectedInnings.DismissalType, result.Result.DismissalType);
+                Assert.Equal(expectedInnings.RunsScored, result.Result.RunsScored);
+                Assert.Equal(expectedInnings.BallsFaced, result.Result.BallsFaced);
+            }
+            Assert.Equal(results[4].Result.RunsScored, results[5].Result.RunsScored);
         }
     }
 }
