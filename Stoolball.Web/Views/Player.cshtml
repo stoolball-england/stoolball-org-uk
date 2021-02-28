@@ -2,6 +2,7 @@
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Statistics
 @using System.Linq
+@using Stoolball.Matches
 @using Stoolball.Statistics
 @using Humanizer
 @{
@@ -10,8 +11,10 @@
     var firstMatchYear = Model.Player.PlayerIdentities.Min(x => x.FirstPlayed).Value.Year;
     var lastMatchYear = Model.Player.PlayerIdentities.Min(x => x.LastPlayed).Value.Year;
     var matchYears = (firstMatchYear == lastMatchYear) ? $"in {firstMatchYear}" : $"from {firstMatchYear} to {lastMatchYear}";
-    var individualScores = new IndividualScoresViewModel(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = false, StatisticsFilter = Model.StatisticsFilter };
+    var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = false, StatisticsFilter = Model.StatisticsFilter };
     individualScores.Results.AddRange(Model.PlayerInnings);
+    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = false, StatisticsFilter = Model.StatisticsFilter };
+    bowlingFigures.Results.AddRange(Model.BowlingFigures);
 }
 <div class="container-xl">
     <h1>@(Model.Player?.PlayerName())</h1>
@@ -21,4 +24,5 @@
     </p>
 
     @Html.Partial("_IndividualScores", individualScores)
+    @Html.Partial("_BowlingFigures", bowlingFigures)
 </div>

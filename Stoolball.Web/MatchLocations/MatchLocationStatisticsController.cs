@@ -45,7 +45,7 @@ namespace Stoolball.Web.MatchLocations
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new StatisticsViewModel<MatchLocation>(contentModel.Content, Services?.UserService)
+            var model = new StatisticsSummaryViewModel<MatchLocation>(contentModel.Content, Services?.UserService)
             {
                 Context = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl, false).ConfigureAwait(false),
             };
@@ -59,6 +59,7 @@ namespace Stoolball.Web.MatchLocations
                 model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
                 model.StatisticsFilter.MatchLocation = model.Context;
                 model.PlayerInnings = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+                model.BowlingFigures = (await _statisticsDataSource.ReadBowlingFigures(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.MatchLocations, Url = new Uri(Constants.Pages.MatchLocationsUrl, UriKind.Relative) });
 

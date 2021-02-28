@@ -1,6 +1,5 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<PlayerInnings>>
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<BowlingFigures>>
 @using Stoolball.Dates
-@using Stoolball.Matches
 @using Stoolball.Statistics
 @using Stoolball.Web.Statistics
 @using Umbraco.Core.Composing
@@ -12,7 +11,7 @@
     <table class="statistics table-as-cards table-as-cards-reset-md">
         @if (Model.ShowCaption)
         {
-            <caption>Highest individual scores</caption>
+            <caption>Best bowling figures</caption>
         }
         <thead>
             <tr>
@@ -24,20 +23,19 @@
                 }
                 <th scope="col">Match</th>
                 <th scope="col">When</th>
+                <th scope="col" class="numeric">Wickets</th>
                 <th scope="col" class="numeric">Runs</th>
-                <th scope="col" class="numeric">Balls</th>
             </tr>
         </thead>
         <tbody>
             @{
-                int? previousRunsScored = null;
-                bool? previousNotOut = null;
+                int? previousWickets = null;
+                int? previousRuns = null;
                 for (var i = 0; i < Model.Results.Count(); i++)
                 {
-                    var notOut = !StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(Model.Results[i].Result.DismissalType);
-                    var equalToPrevious = Model.Results[i].Result.RunsScored == previousRunsScored && notOut == previousNotOut;
-                    previousRunsScored = Model.Results[i].Result.RunsScored;
-                    previousNotOut = notOut;
+                    var equalToPrevious = Model.Results[i].Result.Wickets == previousWickets && Model.Results[i].Result.RunsConceded == previousRuns;
+                    previousWickets = Model.Results[i].Result.Wickets;
+                    previousRuns = Model.Results[i].Result.RunsConceded;
                     <tr>
                         <td class="table-as-cards__header-md">@(equalToPrevious ? "=" : ((Model.StatisticsFilter.PageSize * (Model.StatisticsFilter.PageNumber - 1)) + i + 1).ToString())</td>
                         @if (Model.ShowPlayerColumn)
@@ -46,17 +44,10 @@
                         }
                         <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Match</span><div><a href="@Model.Results[i].Match.MatchRoute">@Model.Results[i].Match.MatchName</a></div></td>
                         <td data-stackable="true" class="text-nowrap"><span class="table-as-cards__label" aria-hidden="true">When</span>@(dateTimeFormatter.FormatDate(Model.Results[i].Match.StartTime.LocalDateTime, false, true, false))</td>
-                        @if (notOut)
+                        <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Wickets</span><span class="wickets">@Model.Results[i].Result.Wickets</span></td>
+                        @if (Model.Results[i].Result.RunsConceded.HasValue)
                         {
-                            <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Runs</span><span class="runs-scored">@Model.Results[i].Result.RunsScored*</span></td>
-                        }
-                        else
-                        {
-                            <td data-stackable="true" class="numeric-md player-was-out"><span class="table-as-cards__label" aria-hidden="true">Runs</span><span class="runs-scored">@Model.Results[i].Result.RunsScored</span></td>
-                        }
-                        @if (Model.Results[i].Result.BallsFaced.HasValue)
-                        {
-                            <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Balls</span><span class="balls-faced">@Model.Results[i].Result.BallsFaced.Value.ToString()</span></td>
+                            <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Runs</span>@Model.Results[i].Result.RunsConceded.Value</td>
                         }
                         else
                         {
@@ -69,7 +60,7 @@
     </table>
     if (Model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
     {
-        <p><a href="@Request.RawUrl/individual-scores">Individual scores – view all</a></p>
+        <p><a href="@Request.RawUrl/bowling-figures">Bowling figures – view all</a></p>
     }
     else
     {

@@ -74,7 +74,7 @@ namespace Stoolball.Web.Tests.Competitions
         }
 
         [Fact]
-        public async Task Route_matching_season_returns_StatisticsViewModel()
+        public async Task Route_matching_season_returns_StatisticsSummaryViewModel()
         {
             var seasonDataSource = new Mock<ISeasonDataSource>();
             seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Season
@@ -93,7 +93,7 @@ namespace Stoolball.Web.Tests.Competitions
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<StatisticsViewModel<Season>>(((ViewResult)result).Model);
+                Assert.IsType<StatisticsSummaryViewModel<Season>>(((ViewResult)result).Model);
             }
         }
     }

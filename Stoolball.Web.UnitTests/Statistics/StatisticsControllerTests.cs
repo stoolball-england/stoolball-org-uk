@@ -54,7 +54,7 @@ namespace Stoolball.Web.Tests.Statistics
         }
 
         [Fact]
-        public async Task Index_returns_StatisticsViewModel()
+        public async Task Index_returns_StatisticsSummaryViewModel()
         {
             var dataSource = new Mock<IStatisticsDataSource>();
 
@@ -62,7 +62,7 @@ namespace Stoolball.Web.Tests.Statistics
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<StatisticsViewModel>(((ViewResult)result).Model);
+                Assert.IsType<StatisticsSummaryViewModel>(((ViewResult)result).Model);
             }
         }
     }

@@ -74,7 +74,7 @@ namespace Stoolball.Web.Tests.Competitions
         }
 
         [Fact]
-        public async Task Route_matching_competition_returns_StatisticsViewModel()
+        public async Task Route_matching_competition_returns_StatisticsSummaryViewModel()
         {
             var competitionDataSource = new Mock<ICompetitionDataSource>();
             competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionId = Guid.NewGuid() });
@@ -85,7 +85,7 @@ namespace Stoolball.Web.Tests.Competitions
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<StatisticsViewModel<Competition>>(((ViewResult)result).Model);
+                Assert.IsType<StatisticsSummaryViewModel<Competition>>(((ViewResult)result).Model);
             }
         }
     }

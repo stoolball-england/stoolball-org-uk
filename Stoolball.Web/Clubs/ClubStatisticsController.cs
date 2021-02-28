@@ -45,7 +45,7 @@ namespace Stoolball.Web.Clubs
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new StatisticsViewModel<Club>(contentModel.Content, Services?.UserService)
+            var model = new StatisticsSummaryViewModel<Club>(contentModel.Content, Services?.UserService)
             {
                 Context = await _clubDataSource.ReadClubByRoute(Request.RawUrl).ConfigureAwait(false),
             };
@@ -59,6 +59,7 @@ namespace Stoolball.Web.Clubs
                 model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
                 model.StatisticsFilter.Club = model.Context;
                 model.PlayerInnings = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+                model.BowlingFigures = (await _statisticsDataSource.ReadBowlingFigures(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
 

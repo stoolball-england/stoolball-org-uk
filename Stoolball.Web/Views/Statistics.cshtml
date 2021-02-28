@@ -1,11 +1,15 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel>
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsSummaryViewModel>
 @using Stoolball.Security
+@using Stoolball.Matches
+@using Stoolball.Statistics
 @using Stoolball.Web.Statistics
 @using ClientDependency.Core.Mvc
 @{
     Html.RequiresCss("/statistics/statistics.min.css");
-    var individualScores = new IndividualScoresViewModel(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
     individualScores.Results.AddRange(Model.PlayerInnings);
+    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    bowlingFigures.Results.AddRange(Model.BowlingFigures);
 }
 @section head {
     <meta name="robots" content="noindex, follow" />
@@ -24,4 +28,5 @@
 
     @Html.Partial("_StatisticsBasis")
     @Html.Partial("_IndividualScores", individualScores)
+    @Html.Partial("_BowlingFigures", bowlingFigures)
 </div>

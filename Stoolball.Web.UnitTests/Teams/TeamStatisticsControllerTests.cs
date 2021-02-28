@@ -74,7 +74,7 @@ namespace Stoolball.Web.Tests.Teams
         }
 
         [Fact]
-        public async Task Route_matching_team_returns_StatisticsViewModel()
+        public async Task Route_matching_team_returns_StatisticsSummaryViewModel()
         {
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).ReturnsAsync(new Team { TeamId = Guid.NewGuid() });
@@ -85,7 +85,7 @@ namespace Stoolball.Web.Tests.Teams
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<StatisticsViewModel<Team>>(((ViewResult)result).Model);
+                Assert.IsType<StatisticsSummaryViewModel<Team>>(((ViewResult)result).Model);
             }
         }
     }

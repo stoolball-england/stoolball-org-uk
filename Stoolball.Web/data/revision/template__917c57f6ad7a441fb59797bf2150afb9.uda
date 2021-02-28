@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/BowlingFigures.cshtml",
+  "Master": null,
+  "Udi": "umb://template/917c57f6ad7a441fb59797bf2150afb9",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/BowlingFigures.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Bowling Figures",
+  "Alias": "BowlingFigures",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "3.5.3"
+}

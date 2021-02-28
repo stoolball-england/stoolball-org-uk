@@ -1,6 +1,6 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<PlayerInnings>>
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<BowlingFigures>>
 @using Stoolball.Web.Statistics
-@using Stoolball.Matches
+@using Stoolball.Statistics
 @using ClientDependency.Core.Mvc
 @{
     Html.RequiresCss("/statistics/statistics.min.css");
@@ -20,8 +20,8 @@
     }
 }
 <div class="container-xl">
-    <h1>Highest individual scores@(Model.StatisticsFilter)</h1>
+    <h1>Best bowling figures@(Model.StatisticsFilter)</h1>
 
     @Html.Partial("_StatisticsBasis")
-    @Html.Partial("_IndividualScores")
+    @Html.Partial("_BowlingFigures")
 </div>

@@ -74,7 +74,7 @@ namespace Stoolball.Web.Tests.MatchLocations
         }
 
         [Fact]
-        public async Task Route_matching_location_returns_StatisticsViewModel()
+        public async Task Route_matching_location_returns_StatisticsSummaryViewModel()
         {
             var locationDataSource = new Mock<IMatchLocationDataSource>();
             locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).ReturnsAsync(new MatchLocation { MatchLocationId = Guid.NewGuid() });
@@ -85,7 +85,7 @@ namespace Stoolball.Web.Tests.MatchLocations
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<StatisticsViewModel<MatchLocation>>(((ViewResult)result).Model);
+                Assert.IsType<StatisticsSummaryViewModel<MatchLocation>>(((ViewResult)result).Model);
             }
         }
     }

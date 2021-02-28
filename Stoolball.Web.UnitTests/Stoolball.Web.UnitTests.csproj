@@ -108,6 +108,7 @@
     <Compile Include="MatchLocations\MatchLocationsControllerTests.cs" />
     <Compile Include="Routing\PostSaveRedirectorTests.cs" />
     <Compile Include="MatchLocations\MatchLocationStatisticsControllerTests.cs" />
+    <Compile Include="Statistics\BowlingFiguresControllerTests.cs" />
     <Compile Include="Teams\TeamStatisticsControllerTests.cs" />
     <Compile Include="Statistics\StatisticsControllerTests.cs" />
     <Compile Include="Statistics\IndividualScoresControllerTests.cs" />

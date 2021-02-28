@@ -70,6 +70,7 @@
         MatchLocationStatistics,
         CompetitionStatistics,
         SeasonStatistics,
-        IndividualScores
+        IndividualScores,
+        BowlingFigures
     }
 }

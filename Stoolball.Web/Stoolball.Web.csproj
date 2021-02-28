@@ -1066,6 +1066,7 @@
     <Content Include="Views\MatchLocationStatistics.cshtml" />
     <Content Include="Views\CompetitionStatistics.cshtml" />
     <Content Include="Views\ClubStatistics.cshtml" />
+    <Content Include="Views\BowlingFigures.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -1317,15 +1318,16 @@
     <Compile Include="Security\MemberGroupHelper.cs" />
     <Compile Include="MatchLocations\MatchLocationStatisticsController.cs" />
     <Compile Include="Competitions\CompetitionStatisticsController.cs" />
+    <Compile Include="Statistics\BowlingFiguresController.cs" />
     <Compile Include="Teams\TeamStatisticsController.cs" />
-    <Compile Include="Statistics\StatisticsViewModel.cs" />
+    <Compile Include="Statistics\StatisticsSummaryViewModel.cs" />
     <Compile Include="Statistics\StatisticsController.cs" />
     <Compile Include="Statistics\IndividualScoresController.cs" />
     <Compile Include="Statistics\PlayerController.cs" />
     <Compile Include="Statistics\MemoryCacheBackgroundTaskTracker.cs" />
     <Compile Include="Statistics\EditStatisticsSurfaceController.cs" />
     <Compile Include="Statistics\IBackgroundTaskTracker.cs" />
-    <Compile Include="Statistics\IndividualScoresViewModel.cs" />
+    <Compile Include="Statistics\StatisticsViewModel.cs" />
     <Compile Include="Statistics\EditStatisticsViewModel.cs" />
     <Compile Include="Statistics\EditStatisticsController.cs" />
     <Compile Include="Statistics\EditStatisticsApiController.cs" />
@@ -1536,6 +1538,8 @@
     <Content Include="Views\Partials\_StatisticsBasis.cshtml" />
     <Content Include="Views\TeamStatistics.cshtml" />
     <Content Include="Views\SeasonStatistics.cshtml" />
+    <Content Include="Views\Partials\_BowlingFigures.cshtml" />
+    <Content Include="Views\Partials\_StatisticsPaging.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

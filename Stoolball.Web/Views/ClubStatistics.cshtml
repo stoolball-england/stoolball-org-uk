@@ -1,12 +1,16 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<Club>>
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsSummaryViewModel<Club>>
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Statistics
 @using Stoolball.Clubs
+@using Stoolball.Matches
+@using Stoolball.Statistics
 @{
     Html.RequiresCss("/statistics/statistics.min.css");
 
-    var individualScores = new IndividualScoresViewModel(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
     individualScores.Results.AddRange(Model.PlayerInnings);
+    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    bowlingFigures.Results.AddRange(Model.BowlingFigures);
 }
 <div class="container-xl">
     <h1>@Model.Context.ClubName</h1>
@@ -24,12 +28,13 @@
     </ul>
 
 
-    @if (!Model.PlayerInnings.Any())
+    @if (!Model.PlayerInnings.Any() && !Model.BowlingFigures.Any())
     {
         <p>There are no statistics for this club yet. Statistics are based on scorecards added to this website – see <a href="/organise/website/how-to-add-match-results/">How to add match results</a>.</p>
     }
     else
     {
         @Html.Partial("_IndividualScores", individualScores)
+        @Html.Partial("_BowlingFigures", bowlingFigures)
     }
 </div>

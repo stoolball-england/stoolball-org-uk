@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
-using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
 using Stoolball.Routing;
@@ -22,7 +21,7 @@ using Umbraco.Web.Models;
 
 namespace Stoolball.Web.Statistics
 {
-    public class IndividualScoresController : RenderMvcControllerAsync
+    public class BowlingFiguresController : RenderMvcControllerAsync
     {
         private readonly IStatisticsDataSource _statisticsDataSource;
         private readonly IPlayerDataSource _playerDataSource;
@@ -33,7 +32,7 @@ namespace Stoolball.Web.Statistics
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly IRouteNormaliser _routeNormaliser;
 
-        public IndividualScoresController(IGlobalSettings globalSettings,
+        public BowlingFiguresController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
@@ -68,11 +67,11 @@ namespace Stoolball.Web.Statistics
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new StatisticsViewModel<PlayerInnings>(contentModel.Content, Services?.UserService) { ShowCaption = false };
+            var model = new StatisticsViewModel<BowlingFigures>(contentModel.Content, Services?.UserService) { ShowCaption = false };
             _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
             model.StatisticsFilter = new StatisticsFilter { PageNumber = pageNumber > 0 ? pageNumber : 1 };
 
-            var pageTitle = "Highest individual scores";
+            var pageTitle = "Best bowling figures";
 
 
             if (Request.RawUrl.StartsWith("/players/", StringComparison.OrdinalIgnoreCase))
@@ -100,7 +99,7 @@ namespace Stoolball.Web.Statistics
                 model.StatisticsFilter.Competition = await _competitionDataSource.ReadCompetitionByRoute(_routeNormaliser.NormaliseRouteToEntity(Request.RawUrl, "competitions")).ConfigureAwait(false);
             }
 
-            model.Results = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+            model.Results = (await _statisticsDataSource.ReadBowlingFigures(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
             if (!model.Results.Any())
             {
@@ -108,7 +107,7 @@ namespace Stoolball.Web.Statistics
             }
             else
             {
-                model.TotalResults = await _statisticsDataSource.ReadTotalPlayerInnings(model.StatisticsFilter).ConfigureAwait(false);
+                model.TotalResults = await _statisticsDataSource.ReadTotalBowlingFigures(model.StatisticsFilter).ConfigureAwait(false);
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Statistics, Url = new Uri(Constants.Pages.StatisticsUrl, UriKind.Relative) });
                 if (model.StatisticsFilter.Player != null)

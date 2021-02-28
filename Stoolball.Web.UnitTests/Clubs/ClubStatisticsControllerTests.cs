@@ -74,7 +74,7 @@ namespace Stoolball.Web.Tests.Clubs
         }
 
         [Fact]
-        public async Task Route_matching_club_returns_StatisticsViewModel()
+        public async Task Route_matching_club_returns_StatisticsSummaryViewModel()
         {
             var clubDataSource = new Mock<IClubDataSource>();
             clubDataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).ReturnsAsync(new Club { ClubId = Guid.NewGuid() });
@@ -85,7 +85,7 @@ namespace Stoolball.Web.Tests.Clubs
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<StatisticsViewModel<Club>>(((ViewResult)result).Model);
+                Assert.IsType<StatisticsSummaryViewModel<Club>>(((ViewResult)result).Model);
             }
         }
     }
