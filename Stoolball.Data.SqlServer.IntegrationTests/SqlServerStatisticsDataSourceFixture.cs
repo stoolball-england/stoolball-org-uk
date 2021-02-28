@@ -282,7 +282,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             }
             var runsScored = randomiser.Next(2) == 0 ? randomiser.Next(102) : (int?)null; // simulate missing data;
             var ballsFaced = randomiser.Next(2) == 0 ? randomiser.Next(151) : (int?)null; // simulate missing data
-            if (dismissal == DismissalType.NotOut || dismissal == DismissalType.TimedOut)
+            if (dismissal == DismissalType.DidNotBat || dismissal == DismissalType.TimedOut)
             {
                 runsScored = null;
                 ballsFaced = null;

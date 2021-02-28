@@ -77,18 +77,22 @@ namespace Stoolball.Data.SqlServer
 
             var orderBy = orderByFields.Any() ? "ORDER BY " + string.Join(", ", orderByFields) : string.Empty;
 
+            // The result set can be limited in two mutually-exlusive ways:
+            // 1. Max results (eg top ten) but where results beyond but equal to the max are also included
+            // 2. Paging
+            var preQuery = string.Empty;
             var offsetWithExtraResults = string.Empty;
             var offsetPaging = string.Empty;
             if (filter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
             {
-                // Need to get the value at the last position to show, but first must check there
-                // are at least as many records as the total requested, and set a lower limit if not
-                using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
-                {
-                    var result = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.PlayerInMatchStatistics} {where}", parameters).ConfigureAwait(false);
-                    var lastPositionOffset = ((result > 0 && result < filter.MaxResultsAllowingExtraResultsIfValuesAreEqual) ? result - 1 : (filter.MaxResultsAllowingExtraResultsIfValuesAreEqual - 1));
-                    offsetWithExtraResults = $"AND {primaryFieldName} >= (SELECT {primaryFieldName} FROM {Tables.PlayerInMatchStatistics} {where} {orderBy} OFFSET {lastPositionOffset} ROWS FETCH NEXT 1 ROWS ONLY) ";
-                }
+                // Get the values from what should be the last row according to the maximum number of results.
+                preQuery = $@"DECLARE @MaxResult1 int, @MaxResult2 int;
+                            SELECT @MaxResult1 = {primaryFieldName}, @MaxResult2 = PlayerWasDismissed FROM {Tables.PlayerInMatchStatistics} {where} {orderBy}
+                            OFFSET {filter.MaxResultsAllowingExtraResultsIfValuesAreEqual - 1} ROWS FETCH NEXT 1 ROWS ONLY; ";
+
+                // If @MaxResult1 IS NULL there are fewer rows than the requested maximum, so just fetch all.
+                // Otherwise look for results that are greater than or equal to the value(s) in the last row retrieved above.
+                offsetWithExtraResults = $"AND (@MaxResult1 IS NULL OR ({primaryFieldName} > @MaxResult1 OR ({primaryFieldName} = @MaxResult1 AND PlayerWasDismissed = @MaxResult2))) ";
             }
             else
             {
@@ -96,7 +100,7 @@ namespace Stoolball.Data.SqlServer
 
             }
 
-            var sql = $"{select} FROM {Tables.PlayerInMatchStatistics} {where} {offsetWithExtraResults} {orderBy} {offsetPaging}";
+            var sql = $"{preQuery} {select} FROM {Tables.PlayerInMatchStatistics} {where} {offsetWithExtraResults} {orderBy} {offsetPaging}";
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
