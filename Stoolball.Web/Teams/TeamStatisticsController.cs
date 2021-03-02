@@ -47,7 +47,7 @@ namespace Stoolball.Web.Teams
 
             var model = new StatisticsSummaryViewModel<Team>(contentModel.Content, Services?.UserService)
             {
-                Context = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, false).ConfigureAwait(false),
+                Context = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false),
             };
 
             if (model.Context == null)

@@ -5,13 +5,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Moq;
-using Stoolball.Clubs;
-using Stoolball.Competitions;
 using Stoolball.Matches;
-using Stoolball.MatchLocations;
-using Stoolball.Routing;
 using Stoolball.Statistics;
-using Stoolball.Teams;
 using Stoolball.Web.Statistics;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
@@ -32,8 +27,7 @@ namespace Stoolball.Web.Tests.Statistics
 
         private class TestController : IndividualScoresController
         {
-            public TestController(IStatisticsDataSource statisticsDataSource, IPlayerDataSource playerDataSource, IClubDataSource clubDataSource, ITeamDataSource teamDataSource, IMatchLocationDataSource matchLocationDataSource,
-                ICompetitionDataSource competitionDataSource, ISeasonDataSource seasonDataSource, UmbracoHelper umbracoHelper, string queryString)
+            public TestController(IStatisticsFilterUrlParser statisticsFilterUrlParser, IStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper, string queryString)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -41,14 +35,9 @@ namespace Stoolball.Web.Tests.Statistics
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
+                statisticsFilterUrlParser,
                 statisticsDataSource,
-                playerDataSource,
-                clubDataSource,
-                teamDataSource,
-                matchLocationDataSource,
-                competitionDataSource,
-                seasonDataSource,
-                Mock.Of<IRouteNormaliser>())
+                Mock.Of<IStatisticsBreadcrumbBuilder>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -74,19 +63,13 @@ namespace Stoolball.Web.Tests.Statistics
         public async Task Player_with_no_innings_returns_404()
         {
             var statisticsDataSource = new Mock<IStatisticsDataSource>();
-            var playerDataSource = new Mock<IPlayerDataSource>();
-            var clubDataSource = new Mock<IClubDataSource>();
-            var teamDataSource = new Mock<ITeamDataSource>();
-            var matchLocationDataSource = new Mock<IMatchLocationDataSource>();
-            var competitionDataSource = new Mock<ICompetitionDataSource>();
-            var seasonDataSource = new Mock<ISeasonDataSource>();
+            var urlParser = new Mock<IStatisticsFilterUrlParser>();
 
             var playerId = Guid.NewGuid();
             var results = new List<StatisticsResult<PlayerInnings>>();
             _ = statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<PlayerInnings>>));
 
-            using (var controller = new TestController(statisticsDataSource.Object, playerDataSource.Object, clubDataSource.Object, teamDataSource.Object, matchLocationDataSource.Object,
-                competitionDataSource.Object, seasonDataSource.Object, UmbracoHelper, $"player={playerId}"))
+            using (var controller = new TestController(urlParser.Object, statisticsDataSource.Object, UmbracoHelper, $"player={playerId}"))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -98,12 +81,8 @@ namespace Stoolball.Web.Tests.Statistics
         public async Task Player_with_innings_returns_StatisticsViewModel()
         {
             var statisticsDataSource = new Mock<IStatisticsDataSource>();
-            var playerDataSource = new Mock<IPlayerDataSource>();
-            var clubDataSource = new Mock<IClubDataSource>();
-            var teamDataSource = new Mock<ITeamDataSource>();
-            var matchLocationDataSource = new Mock<IMatchLocationDataSource>();
-            var competitionDataSource = new Mock<ICompetitionDataSource>();
-            var seasonDataSource = new Mock<ISeasonDataSource>();
+            var urlParser = new Mock<IStatisticsFilterUrlParser>();
+            urlParser.Setup(x => x.ParseUrl(It.IsAny<Uri>())).Returns(Task.FromResult(new StatisticsFilter()));
 
             var playerId = Guid.NewGuid();
             var results = new List<StatisticsResult<PlayerInnings>> {
@@ -119,8 +98,7 @@ namespace Stoolball.Web.Tests.Statistics
             };
             statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<PlayerInnings>>));
 
-            using (var controller = new TestController(statisticsDataSource.Object, playerDataSource.Object, clubDataSource.Object, teamDataSource.Object, matchLocationDataSource.Object,
-                competitionDataSource.Object, seasonDataSource.Object, UmbracoHelper, $"player={playerId}"))
+            using (var controller = new TestController(urlParser.Object, statisticsDataSource.Object, UmbracoHelper, $"player={playerId}"))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

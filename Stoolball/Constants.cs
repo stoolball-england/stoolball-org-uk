@@ -27,6 +27,7 @@ namespace Stoolball
             public const string TournamentsUrl = "/tournaments";
             public const string Statistics = "Statistics";
             public const string StatisticsUrl = "/play/statistics";
+            public const string SeasonUrlRegEx = @"^[a-z0-9-]+\/[0-9]{4}(-[0-9]{2})?$";
         }
 
         [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Not a typical class. This is creating a set of constants accessible with IntelliSense.")]
