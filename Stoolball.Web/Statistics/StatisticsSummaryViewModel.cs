@@ -24,5 +24,6 @@ namespace Stoolball.Web.Statistics
         }
 
         public T Context { get; set; }
+        public InningsStatistics InningsStatistics { get; internal set; }
     }
 }

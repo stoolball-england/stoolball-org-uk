@@ -117,6 +117,7 @@ namespace Stoolball.Web
             composition.Register<ITournamentRepository, SqlServerTournamentRepository>();
             composition.Register<IStatisticsDataSource, SqlServerStatisticsDataSource>();
             composition.Register<IStatisticsRepository, SqlServerStatisticsRepository>();
+            composition.Register<IInningsStatisticsDataSource, SqlServerInningsStatisticsDataSource>();
 
             // Security checks
             composition.Register<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>();

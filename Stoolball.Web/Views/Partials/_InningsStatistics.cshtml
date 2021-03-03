@@ -1,0 +1,65 @@
+﻿@model InningsStatistics
+@using Stoolball.Statistics
+@if (Model.Any())
+{
+    <div class="innings-statistics">
+        @if (Model.AnyRunsScored())
+        {
+            <table>
+                <caption>Runs scored</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Highest</th>
+                        <th scope="col">Lowest</th>
+                        <th scope="col">Average</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>@(Model.HighestRunsScored.HasValue ? Model.HighestRunsScored.ToString() : "–")</td>
+                        <td>@(Model.LowestRunsScored.HasValue ? Model.LowestRunsScored.ToString() : "–")</td>
+                        <td>@(Model.AverageRunsScored.HasValue ? Model.AverageRunsScored.Value.ToString("0.##") : "–")</td>
+                    </tr>
+                </tbody>
+            </table>
+        }
+        @if (Model.AnyRunsConceded())
+        {
+            <table>
+                <caption>Runs conceded</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Highest</th>
+                        <th scope="col">Lowest</th>
+                        <th scope="col">Average</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>@(Model.HighestRunsConceded.HasValue ? Model.HighestRunsConceded.ToString() : "–")</td>
+                        <td>@(Model.LowestRunsConceded.HasValue ? Model.LowestRunsConceded.ToString() : "–")</td>
+                        <td>@(Model.AverageRunsConceded.HasValue ? Model.AverageRunsConceded.Value.ToString("0.##") : "–")</td>
+                    </tr>
+                </tbody>
+            </table>
+        }
+        @if (Model.AnyWickets())
+        {
+            <table>
+                <caption>Wickets</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Average taken</th>
+                        <th scope="col">Average lost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>@(Model.AverageWicketsTaken.HasValue ? Model.AverageWicketsTaken.Value.ToString("0.##") : "–")</td>
+                        <td>@(Model.AverageWicketsLost.HasValue ? Model.AverageWicketsLost.Value.ToString("0.##") : "–")</td>
+                    </tr>
+                </tbody>
+            </table>
+        }
+    </div>
+}

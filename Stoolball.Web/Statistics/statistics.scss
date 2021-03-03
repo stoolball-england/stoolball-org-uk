@@ -35,3 +35,22 @@
         content: ")";
     }
 }
+
+@include media-breakpoint-up(md) {
+    // Display the three tables summing up best & worst innings totals as if they were one table
+    .innings-statistics {
+        display: flex;
+    }
+
+    .innings-statistics > table > caption {
+        border-radius: 0;
+    }
+
+    .innings-statistics > table:first-child > caption {
+        border-radius: $border-radius 0 0 0;
+    }
+
+    .innings-statistics > table:last-child > caption {
+        border-radius: 0 $border-radius 0 0;
+    }
+}

@@ -1541,6 +1541,7 @@
     <Content Include="Views\SeasonStatistics.cshtml" />
     <Content Include="Views\Partials\_BowlingFigures.cshtml" />
     <Content Include="Views\Partials\_StatisticsPaging.cshtml" />
+    <Content Include="Views\Partials\_InningsStatistics.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

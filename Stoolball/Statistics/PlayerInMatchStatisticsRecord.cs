@@ -53,13 +53,13 @@ namespace Stoolball.Statistics
         public Guid? MatchLocationId { get; set; }
 
         public int MatchInningsPair { get; set; }
-        public int? MatchInningsRuns { get; set; }
+        public int? TeamRunsScored { get; set; }
 
-        public int? MatchInningsWickets { get; set; }
+        public int? TeamWicketsLost { get; set; }
 
-        public int? OppositionMatchInningsRuns { get; set; }
+        public int? TeamRunsConceded { get; set; }
 
-        public int? OppositionMatchInningsWickets { get; set; }
+        public int? TeamWicketsTaken { get; set; }
 
         public bool? WonToss { get; set; }
 

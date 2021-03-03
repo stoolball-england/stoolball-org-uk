@@ -111,25 +111,25 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public Guid? MatchLocationId { get; set; }
 
-        [Column(nameof(MatchInningsRuns))]
+        [Column(nameof(TeamRunsScored))]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? MatchInningsRuns { get; set; }
+        public int? TeamRunsScored { get; set; }
 
-        [Column(nameof(MatchInningsWickets))]
+        [Column(nameof(TeamWicketsLost))]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? MatchInningsWickets { get; set; }
+        public int? TeamWicketsLost { get; set; }
 
-        [Column(nameof(OppositionMatchInningsRuns))]
+        [Column(nameof(TeamRunsConceded))]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? OppositionMatchInningsRuns { get; set; }
+        public int? TeamRunsConceded { get; set; }
 
-        [Column(nameof(OppositionMatchInningsWickets))]
+        [Column(nameof(TeamWicketsTaken))]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
-        public int? OppositionMatchInningsWickets { get; set; }
+        public int? TeamWicketsTaken { get; set; }
 
         [Column(nameof(MatchInningsPair))]
         [Index(IndexTypes.NonClustered)]

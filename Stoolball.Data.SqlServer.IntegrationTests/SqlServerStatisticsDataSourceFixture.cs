@@ -18,6 +18,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public Player PlayerWithFifthAndSixthInningsTheSame { get; private set; }
         public Player PlayerWithFifthAndSixthBowlingFiguresTheSame { get; private set; }
         public Team TeamWithClub { get; set; }
+        public List<Team> Teams { get; set; }
         public List<MatchLocation> MatchLocations { get; private set; } = new List<MatchLocation>();
         public List<Competition> Competitions { get; private set; } = new List<Competition>();
         public List<Player> PlayersWithMultipleIdentities { get; private set; } = new List<Player>();
@@ -190,10 +191,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 // Add entities to expected collections for testing
                 var teamComparer = new TeamEqualityComparer();
                 var identityComparer = new PlayerIdentityEqualityComparer();
-                var teamsThatGotUsed = Matches.SelectMany(x => x.Teams).Select(x => x.Team).Distinct(teamComparer).ToList();
-                TeamWithClub = teamsThatGotUsed.First(x => x.Club != null);
+                Teams = Matches.SelectMany(x => x.Teams).Select(x => x.Team).Distinct(teamComparer).ToList(); // teams that got used
+                TeamWithClub = Teams.First(x => x.Club != null);
 
-                foreach (var (team, playerIdentities) in poolOfTeams.Where(x => teamsThatGotUsed.Contains(x.team, teamComparer)))
+                foreach (var (team, playerIdentities) in poolOfTeams.Where(x => Teams.Contains(x.team, teamComparer)))
                 {
                     PlayerIdentities.AddRange(playerIdentities);
 
@@ -230,7 +231,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 foreach (var (team, playerIdentities) in poolOfTeams)
                 {
-                    if (!teamsThatGotUsed.Contains(team, teamComparer)) continue;
+                    if (!Teams.Contains(team, teamComparer)) continue;
 
                     if (team.Club != null)
                     {

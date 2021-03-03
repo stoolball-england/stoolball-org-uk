@@ -21,6 +21,7 @@ namespace Stoolball.Web.Clubs
     {
         private readonly IClubDataSource _clubDataSource;
         private readonly IStatisticsDataSource _statisticsDataSource;
+        private readonly IInningsStatisticsDataSource _inningsStatisticsDataSource;
 
         public ClubStatisticsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -29,11 +30,13 @@ namespace Stoolball.Web.Clubs
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IClubDataSource clubDataSource,
-           IStatisticsDataSource statisticsDataSource)
+           IStatisticsDataSource statisticsDataSource,
+           IInningsStatisticsDataSource inningsStatisticsDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
             _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
+            _inningsStatisticsDataSource = inningsStatisticsDataSource ?? throw new ArgumentNullException(nameof(inningsStatisticsDataSource));
         }
 
         [HttpGet]
@@ -56,8 +59,10 @@ namespace Stoolball.Web.Clubs
             }
             else
             {
-                model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
-                model.StatisticsFilter.Club = model.Context;
+                model.StatisticsFilter = new StatisticsFilter { Club = model.Context };
+                model.InningsStatistics = await _inningsStatisticsDataSource.ReadInningsStatistics(model.StatisticsFilter).ConfigureAwait(false);
+
+                model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual = 10;
                 model.PlayerInnings = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
                 model.BowlingFigures = (await _statisticsDataSource.ReadBowlingFigures(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
