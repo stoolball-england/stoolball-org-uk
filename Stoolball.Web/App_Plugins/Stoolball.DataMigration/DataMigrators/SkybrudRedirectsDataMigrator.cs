@@ -35,31 +35,11 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 using (var transaction = connection.BeginTransaction())
                 {
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/you", transaction).ConfigureAwait(false);
-
-                    var accountPage = publishedContentQuery.ContentSingleAtXPath("//myAccount");
-                    if (accountPage != null)
-                    {
-                        await _redirectsRepository.InsertRedirect("/you/settings.php", accountPage.Id, accountPage.Key, new Uri(accountPage.Url(), UriKind.Relative), transaction).ConfigureAwait(false);
-                        await _redirectsRepository.InsertRedirect("/you/essential.php", accountPage.Id, accountPage.Key, new Uri(accountPage.Url(), UriKind.Relative), transaction).ConfigureAwait(false);
-                    }
-
-                    var loginPage = publishedContentQuery.ContentSingleAtXPath("//loginMember");
-                    if (loginPage != null)
-                    {
-                        await _redirectsRepository.InsertRedirect("/you", loginPage.Id, loginPage.Key, new Uri(loginPage.Url(), UriKind.Relative), transaction).ConfigureAwait(false);
-                    }
-
-                    var passwordResetPage = publishedContentQuery.ContentSingleAtXPath("//resetPassword");
-                    if (passwordResetPage != null)
-                    {
-                        await _redirectsRepository.InsertRedirect("/you/request-password-reset", passwordResetPage.Id, passwordResetPage.Key, new Uri(passwordResetPage.Url(), UriKind.Relative), transaction).ConfigureAwait(false);
-                    }
-
-                    var createMemberPage = publishedContentQuery.ContentSingleAtXPath("//createMember");
-                    if (createMemberPage != null)
-                    {
-                        await _redirectsRepository.InsertRedirect("/you/signup.php", createMemberPage.Id, createMemberPage.Key, new Uri(createMemberPage.Url(), UriKind.Relative), transaction).ConfigureAwait(false);
-                    }
+                    await _redirectsRepository.InsertRedirect("/you/settings.php", "/account", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/you/essential.php", "/account", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/you", "/account/sign-in", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/you/request-password-reset", "/account/reset-password", null, transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/you/signup.php", "/account/create", null, transaction).ConfigureAwait(false);
 
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/organise/insurance", transaction).ConfigureAwait(false);
                     await _redirectsRepository.InsertRedirect("/insurance", "/organise/insurance", null, transaction).ConfigureAwait(false);
