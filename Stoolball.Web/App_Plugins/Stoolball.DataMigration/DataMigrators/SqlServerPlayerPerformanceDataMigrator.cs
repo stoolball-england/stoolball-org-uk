@@ -160,7 +160,7 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    await connection.ExecuteAsync($"TRUNCATE TABLE {Tables.BowlingFigures}", null, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.BowlingFigures}", null, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"TRUNCATE TABLE {Tables.Over}", null, transaction).ConfigureAwait(false);
                     transaction.Commit();
                 }
