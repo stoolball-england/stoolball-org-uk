@@ -96,6 +96,9 @@
                 );
               }
 
+              // replace the succeeded item with a simple type to save memory, since we only show the count
+              vm.imported = vm.imported.map(x => true);
+
               position = position + batchSize;
             }
             vm.done = true;
