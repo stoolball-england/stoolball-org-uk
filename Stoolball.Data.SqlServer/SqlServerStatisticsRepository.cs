@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Stoolball.Matches;
@@ -14,13 +13,21 @@ namespace Stoolball.Data.SqlServer
     /// </summary>
     public class SqlServerStatisticsRepository : IStatisticsRepository
     {
-        private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IPlayerRepository _playerRepository;
 
-        public SqlServerStatisticsRepository(IDatabaseConnectionFactory databaseConnectionFactory, IPlayerRepository playerRepository)
+        public SqlServerStatisticsRepository(IPlayerRepository playerRepository)
         {
-            _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
+        }
+
+        public async Task DeleteBowlingFigures(Guid matchInningsId, IDbTransaction transaction)
+        {
+            if (transaction is null)
+            {
+                throw new ArgumentNullException(nameof(transaction));
+            }
+
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.BowlingFigures} WHERE MatchInningsId = @matchInningsId", new { matchInningsId }, transaction).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -41,11 +48,14 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(transaction));
             }
 
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.BowlingFigures} WHERE MatchInningsId = @MatchInningsId", new { innings.MatchInningsId }, transaction).ConfigureAwait(false);
-
             var i = 1;
             foreach (var bowlingFigures in innings.BowlingFigures)
             {
+                if (!bowlingFigures.BowlingFiguresId.HasValue)
+                {
+                    bowlingFigures.BowlingFiguresId = Guid.NewGuid();
+                }
+
                 if (bowlingFigures.Bowler == null)
                 {
                     throw new ArgumentException($"{nameof(bowlingFigures.Bowler)} cannot be null in a {typeof(BowlingFigures)}");
@@ -64,7 +74,7 @@ namespace Stoolball.Data.SqlServer
                                 (@BowlingFiguresId, @MatchInningsId, @BowlingOrder, @BowlerPlayerIdentityId, @Overs, @Maidens, @RunsConceded, @Wickets, @IsFromOversBowled)",
                         new
                         {
-                            BowlingFiguresId = Guid.NewGuid(),
+                            bowlingFigures.BowlingFiguresId,
                             innings.MatchInningsId,
                             BowlingOrder = i,
                             BowlerPlayerIdentityId = bowlingFigures.Bowler.PlayerIdentityId,
@@ -82,6 +92,16 @@ namespace Stoolball.Data.SqlServer
             return innings.BowlingFigures;
         }
 
+        public async Task DeletePlayerStatistics(Guid matchId, IDbTransaction transaction)
+        {
+            if (transaction is null)
+            {
+                throw new ArgumentNullException(nameof(transaction));
+            }
+
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInMatchStatistics} WHERE MatchId = @matchId", new { matchId }, transaction).ConfigureAwait(false);
+        }
+
         public async Task UpdatePlayerStatistics(IEnumerable<PlayerInMatchStatisticsRecord> statisticsData, IDbTransaction transaction)
         {
             if (statisticsData is null)
@@ -93,9 +113,6 @@ namespace Stoolball.Data.SqlServer
             {
                 throw new ArgumentNullException(nameof(transaction));
             }
-
-            var matchesToUpdate = statisticsData.Select(x => x.MatchId).Distinct();
-            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInMatchStatistics} WHERE MatchId IN @MatchIds", new { MatchIds = matchesToUpdate }, transaction).ConfigureAwait(false);
 
             foreach (var record in statisticsData)
             {

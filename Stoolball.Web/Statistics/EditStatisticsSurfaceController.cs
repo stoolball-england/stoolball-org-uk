@@ -105,8 +105,10 @@ namespace Stoolball.Web.Statistics
                             {
                                 using (var transaction = connection.BeginTransaction())
                                 {
+                                    await _statisticsRepository.DeletePlayerStatistics(match.MatchId.Value, transaction).ConfigureAwait(false);
                                     foreach (var innings in match.MatchInnings)
                                     {
+                                        await _statisticsRepository.DeleteBowlingFigures(innings.MatchInningsId.Value, transaction).ConfigureAwait(false);
                                         innings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(innings);
                                         await _statisticsRepository.UpdateBowlingFigures(innings, memberKey, memberName, transaction).ConfigureAwait(false);
                                         _taskTracker.IncrementCompletedBy(taskId, 1);
