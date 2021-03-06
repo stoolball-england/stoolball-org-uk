@@ -1,4 +1,5 @@
-﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="15.0" DefaultTargets="Build"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\uSync.8.8.3\build\uSync.props" Condition="Exists('..\packages\uSync.8.8.3\build\uSync.props')" />
   <Import Project="..\packages\UmbracoCms.8.11.1\build\UmbracoCms.props" Condition="Exists('..\packages\UmbracoCms.8.11.1\build\UmbracoCms.props')" />
   <Import Project="..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.3.3.2\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props" Condition="Exists('..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.3.3.2\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" />
@@ -172,6 +173,9 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="RazorGenerator.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\RazorGenerator.Mvc.2.4.9\lib\net40\RazorGenerator.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="Semver, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Semver.2.0.4\lib\net452\Semver.dll</HintPath>
     </Reference>
@@ -335,6 +339,9 @@
     </Reference>
     <Reference Include="uSync8.Core, Version=8.8.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\uSync.Core.8.8.3\lib\net472\uSync8.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebActivatorEx.2.0.3\lib\net40\WebActivatorEx.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -668,7 +675,10 @@
     <Content Include="config\BackOfficeTours\getting-started.json" />
     <Content Include="App_Plugins\uSync8\package.manifest" />
     <Content Include="App_Plugins\uSync8\addons.json" />
-    <Content Include="App_Plugins\UmbracoForms\RazorTemplates\HtmlTable.cshtml" />
+    <Content Include="App_Plugins\UmbracoForms\RazorTemplates\HtmlTable.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>HtmlTable.generated.cs</LastGenOutput>
+    </Content>
     <Content Include="App_Plugins\UmbracoForms\package.manifest" />
     <Content Include="App_Plugins\UmbracoForms\Fonts\icomoon.woff" />
     <Content Include="App_Plugins\UmbracoForms\Fonts\icomoon.ttf" />
@@ -1046,28 +1056,91 @@
     <Content Include="service-worker.js" />
     <Content Include="Teams\team.js" />
     <Content Include="Teams\teams-map.js" />
-    <Content Include="Views\Partials\BlockList\Components\FormattedText.cshtml" />
-    <Content Include="Views\Content.cshtml" />
+    <Content Include="Views\Partials\BlockList\Components\FormattedText.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>FormattedText.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Content.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Content.generated.cs</LastGenOutput>
+    </Content>
     <Content Include="App_Plugins\Stoolball.BlockEditors\FormattedText.html" />
-    <Content Include="Views\Partials\BlockList\Components\FormattedTextWithImage.cshtml" />
-    <Content Include="Views\Partials\BlockList\Components\ImageElementType.cshtml" />
-    <Content Include="Views\Partials\BlockList\Components\FormElementType.cshtml" />
-    <Content Include="Views\Partials\BlockList\Components\GettyImage.cshtml" />
-    <Content Include="Views\Partials\BlockList\Components\YouTubeVideo.cshtml" />
-    <Content Include="Views\Partials\BlockList\Components\Tip.cshtml" />
-    <Content Include="Views\Partials\BlockList\Components\ProductPreview.cshtml" />
-    <Content Include="Views\Partials\BlockList\Components\Consent.cshtml" />
-    <Content Include="Views\News.cshtml" />
-    <Content Include="Views\NewsStory.cshtml" />
-    <Content Include="Views\Partials\BlockList\BlockList.cshtml" />
-    <Content Include="Views\EditSeasonResultsTable.cshtml" />
-    <Content Include="Views\EditStatistics.cshtml" />
-    <Content Include="Views\IndividualScores.cshtml" />
-    <Content Include="Views\MatchLocationStatistics.cshtml" />
-    <Content Include="Views\CompetitionStatistics.cshtml" />
-    <Content Include="Views\ClubStatistics.cshtml" />
-    <Content Include="Views\BowlingFigures.cshtml" />
-    <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml" />
+    <Content Include="Views\Partials\BlockList\Components\FormattedTextWithImage.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>FormattedTextWithImage.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\BlockList\Components\ImageElementType.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>ImageElementType.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\BlockList\Components\FormElementType.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>FormElementType.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\BlockList\Components\GettyImage.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>GettyImage.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\BlockList\Components\YouTubeVideo.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>YouTubeVideo.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\BlockList\Components\Tip.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Tip.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\BlockList\Components\ProductPreview.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>ProductPreview.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\BlockList\Components\Consent.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Consent.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\News.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>News.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\NewsStory.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>NewsStory.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\BlockList\BlockList.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>BlockList.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditSeasonResultsTable.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditSeasonResultsTable.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditStatistics.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditStatistics.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\IndividualScores.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>IndividualScores.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\MatchLocationStatistics.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>MatchLocationStatistics.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\CompetitionStatistics.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>CompetitionStatistics.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\ClubStatistics.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>ClubStatistics.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\BowlingFigures.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>BowlingFigures.generated.cs</LastGenOutput>
+    </Content>
+    <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
+    </None>
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -1184,6 +1257,12 @@
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerSchoolDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.DataMigration\DataMigrators\SqlServerClubDataMigrator.cs" />
     <Compile Include="App_Plugins\Stoolball.PropertyEditors\StylesheetPickerPropertyValueConverter.cs" />
+    <Compile Include="App_Plugins\UmbracoForms\RazorTemplates\HtmlTable.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HtmlTable.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="App_Start\RazorGeneratorMvcStart.cs" />
     <Compile Include="Clubs\ClubAuthorizationPolicy.cs" />
     <Compile Include="Clubs\DeleteClubViewModel.cs" />
     <Compile Include="Clubs\DeleteClubController.cs" />
@@ -1347,6 +1426,706 @@
     <Compile Include="Statistics\PlayersApiController.cs" />
     <Compile Include="Teams\TeamsMapController.cs" />
     <Compile Include="UmbracoDatabaseConnectionFactory.cs" />
+    <Compile Include="Views\ApproveMember.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ApproveMember.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\BowlingFigures.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BowlingFigures.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Club.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Club.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ClubActions.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ClubActions.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ClubStatistics.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ClubStatistics.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Competition.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Competition.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CompetitionActions.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompetitionActions.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Competitions.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Competitions.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CompetitionStatistics.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompetitionStatistics.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Content.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Content.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CreateClub.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CreateClub.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CreateCompetition.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CreateCompetition.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CreateFriendlyMatch.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CreateFriendlyMatch.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CreateKnockoutMatch.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CreateKnockoutMatch.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CreateLeagueMatch.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CreateLeagueMatch.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CreateMatchLocation.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CreateMatchLocation.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CreateMember.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CreateMember.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CreateSeason.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CreateSeason.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CreateTeam.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CreateTeam.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CreateTournament.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CreateTournament.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DeleteClub.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DeleteClub.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DeleteCompetition.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DeleteCompetition.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DeleteMatch.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DeleteMatch.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DeleteMatchLocation.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DeleteMatchLocation.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DeleteSeason.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DeleteSeason.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DeleteTeam.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DeleteTeam.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DeleteTournament.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DeleteTournament.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditBattingScorecard.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditBattingScorecard.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditBowlingScorecard.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditBowlingScorecard.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditCloseOfPlay.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditCloseOfPlay.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditClub.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditClub.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditCompetition.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditCompetition.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditFriendlyMatch.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditFriendlyMatch.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditKnockoutMatch.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditKnockoutMatch.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditLeagueMatch.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditLeagueMatch.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditMatchLocation.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditMatchLocation.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditSeason.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditSeason.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditSeasonResultsTable.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditSeasonResultsTable.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditSeasonTeams.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditSeasonTeams.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditStartOfPlay.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditStartOfPlay.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditStatistics.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditStatistics.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditTeam.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditTeam.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditTournament.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditTournament.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditTournamentTeams.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditTournamentTeams.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditTransientTeam.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditTransientTeam.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Home.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Home.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\IndividualScores.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IndividualScores.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LoginMember.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LoginMember.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LogoutMember.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LogoutMember.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Master.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Master.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Match.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Match.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MatchActions.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MatchActions.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MatchesForClub.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MatchesForClub.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MatchesForMatchLocation.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MatchesForMatchLocation.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MatchesForSeason.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MatchesForSeason.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MatchesForTeam.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MatchesForTeam.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MatchLocation.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MatchLocation.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MatchLocationActions.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MatchLocationActions.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MatchLocations.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MatchLocations.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MatchLocationStatistics.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MatchLocationStatistics.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MyAccount.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MyAccount.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\News.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>News.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NewsStory.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NewsStory.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\BlockList\BlockList.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BlockList.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\BlockList\Components\Consent.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Consent.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\BlockList\Components\FormattedText.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FormattedText.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\BlockList\Components\FormattedTextWithImage.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FormattedTextWithImage.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\BlockList\Components\FormElementType.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FormElementType.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\BlockList\Components\GettyImage.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GettyImage.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\BlockList\Components\ImageElementType.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ImageElementType.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\BlockList\Components\ProductPreview.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ProductPreview.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\BlockList\Components\Tip.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Tip.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\BlockList\Components\YouTubeVideo.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>YouTubeVideo.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\Forms\Emails\Stoolball-England-Email.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Stoolball-England-Email.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\Forms\Themes\stoolball\DatePicker.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DatePicker.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FieldType.Email.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FieldType.Textfield.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\Forms\Themes\stoolball\Form.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Form.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\Forms\Themes\stoolball\Render.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Render.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\Forms\Themes\stoolball\Script.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Script.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\Forms\Themes\stoolball\ScrollToFormScript.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ScrollToFormScript.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\Forms\Themes\stoolball\Submitted.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Submitted.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_AddMatchMenu.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_AddMatchMenu.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_AdminOnly.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_AdminOnly.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_BattingScorecard.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_BattingScorecard.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_BattingScorecardExtrasRow.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_BattingScorecardExtrasRow.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_BowlingFigures.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_BowlingFigures.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_BowlingScorecard.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_BowlingScorecard.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_Breadcrumb.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_Breadcrumb.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_ClubMark.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_ClubMark.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_CompetitionActions.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_CompetitionActions.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_CompetitionContactDetails.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_CompetitionContactDetails.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_ContactDetailsMissing.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_ContactDetailsMissing.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_CreateOrEditClub.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_CreateOrEditClub.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_CreateOrEditCompetition.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_CreateOrEditCompetition.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_CreateOrEditFriendlyMatch.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_CreateOrEditFriendlyMatch.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_CreateOrEditKnockoutMatch.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_CreateOrEditKnockoutMatch.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_CreateOrEditLeagueMatch.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_CreateOrEditLeagueMatch.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_CreateOrEditMatchLocation.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_CreateOrEditMatchLocation.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_CreateOrEditSeason.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_CreateOrEditSeason.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_CreateOrEditTeam.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_CreateOrEditTeam.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_CreateOrEditTournament.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_CreateOrEditTournament.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_DeleteIcon.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_DeleteIcon.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_EditBattingScorecard.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_EditBattingScorecard.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_EditBowlingScorecard.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_EditBowlingScorecard.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_EditMatchResultTypeFuture.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_EditMatchResultTypeFuture.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_Footer.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_Footer.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_Header.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_Header.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_IndividualScores.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_IndividualScores.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_InningsStatistics.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_InningsStatistics.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_Login.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_Login.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_Logout.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_Logout.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_MatchList.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_MatchList.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_SeasonList.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_SeasonList.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_SeasonListExpandable.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_SeasonListExpandable.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_SocialMedia.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_SocialMedia.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_StatisticsBasis.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_StatisticsBasis.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_StatisticsPaging.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_StatisticsPaging.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_TeamList.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_TeamList.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Player.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Player.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ProductList.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ProductList.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ResetPassword.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ResetPassword.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ResetPasswordRequest.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ResetPasswordRequest.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Season.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Season.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SeasonActions.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SeasonActions.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SeasonResultsTable.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SeasonResultsTable.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SeasonStatistics.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SeasonStatistics.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Statistics.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Statistics.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StyleGuide.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StyleGuide.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StyleGuideForms.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StyleGuideForms.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StyleGuideStoolballData.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StyleGuideStoolballData.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Team.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Team.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TeamActions.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TeamActions.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Teams.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Teams.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TeamsMap.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TeamsMap.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TeamStatistics.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TeamStatistics.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Tournament.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Tournament.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TournamentActions.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TournamentActions.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TransientTeam.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TransientTeam.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\_ViewStart.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_ViewStart.cshtml</DependentUpon>
+    </Compile>
     <Compile Include="WebApi\TeamResult.cs" />
     <Compile Include="WebApi\MatchLocationResult.cs" />
     <Compile Include="WebApi\ProgressResult.cs" />
@@ -1423,125 +2202,482 @@
     <None Include="Secret-DataMigrationApiKey.Web.local.xdt.config" />
     <None Include="Secret-DataMigrationApiKey.Web.live.xdt.config" />
     <None Include="Secret-Email.Web.live.xdt.config" />
-    <Content Include="Views\Master.cshtml" />
-    <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Home.cshtml" />
-    <Content Include="Views\ApproveMember.cshtml" />
-    <Content Include="Views\MyAccount.cshtml" />
-    <Content Include="Views\LoginMember.cshtml" />
-    <Content Include="Views\LogoutMember.cshtml" />
-    <Content Include="Views\CreateMember.cshtml" />
-    <Content Include="Views\ResetPassword.cshtml" />
-    <Content Include="Views\Partials\_Logout.cshtml" />
-    <Content Include="Views\Partials\_Login.cshtml" />
-    <Content Include="Views\Club.cshtml" />
-    <Content Include="Views\StyleGuide.cshtml" />
-    <Content Include="Views\Partials\_TeamList.cshtml" />
-    <Content Include="Views\MatchLocation.cshtml" />
-    <Content Include="Views\Team.cshtml" />
-    <Content Include="Views\Partials\_SeasonList.cshtml" />
-    <Content Include="Views\Partials\_ClubMark.cshtml" />
-    <Content Include="Views\Season.cshtml" />
-    <Content Include="Views\Competition.cshtml" />
-    <Content Include="Views\MatchesForTeam.cshtml" />
-    <Content Include="Views\Partials\_MatchList.cshtml" />
-    <Content Include="Views\MatchesForClub.cshtml" />
-    <Content Include="Views\MatchesForMatchLocation.cshtml" />
-    <Content Include="Views\MatchesForSeason.cshtml" />
-    <Content Include="Views\TransientTeam.cshtml" />
-    <Content Include="Views\Match.cshtml" />
-    <Content Include="Views\Tournament.cshtml" />
-    <Content Include="Views\MatchLocations.cshtml" />
-    <Content Include="Views\Teams.cshtml" />
-    <Content Include="Views\EditClub.cshtml" />
-    <Content Include="Views\Partials\_DeleteIcon.cshtml" />
-    <Content Include="Views\CreateClub.cshtml" />
-    <Content Include="Views\Partials\_CreateOrEditClub.cshtml" />
-    <Content Include="Views\EditMatchLocation.cshtml" />
-    <Content Include="Views\CreateMatchLocation.cshtml" />
-    <Content Include="Views\Partials\_CreateOrEditMatchLocation.cshtml" />
-    <Content Include="Views\CreateTeam.cshtml" />
-    <Content Include="Views\EditTeam.cshtml" />
-    <Content Include="Views\Partials\_CreateOrEditTeam.cshtml" />
-    <Content Include="Views\EditTransientTeam.cshtml" />
-    <Content Include="Views\CreateCompetition.cshtml" />
-    <Content Include="Views\EditCompetition.cshtml" />
-    <Content Include="Views\Partials\_CreateOrEditCompetition.cshtml" />
-    <Content Include="Views\SeasonActions.cshtml" />
-    <Content Include="Views\CompetitionActions.cshtml" />
-    <Content Include="Views\CreateSeason.cshtml" />
-    <Content Include="Views\EditSeason.cshtml" />
-    <Content Include="Views\Partials\_CompetitionActions.cshtml" />
-    <Content Include="Views\Partials\_CreateOrEditSeason.cshtml" />
-    <Content Include="Views\DeleteMatchLocation.cshtml" />
-    <Content Include="Views\MatchLocationActions.cshtml" />
-    <Content Include="Views\ClubActions.cshtml" />
-    <Content Include="Views\DeleteClub.cshtml" />
-    <Content Include="Views\TeamActions.cshtml" />
-    <Content Include="Views\DeleteTeam.cshtml" />
-    <Content Include="Views\DeleteSeason.cshtml" />
-    <Content Include="Views\DeleteCompetition.cshtml" />
-    <Content Include="Views\Competitions.cshtml" />
-    <Content Include="Views\Partials\_AdminOnly.cshtml" />
-    <Content Include="Views\MatchActions.cshtml" />
-    <Content Include="Views\TournamentActions.cshtml" />
-    <Content Include="Views\DeleteMatch.cshtml" />
-    <Content Include="Views\DeleteTournament.cshtml" />
-    <Content Include="Views\SeasonResultsTable.cshtml" />
-    <Content Include="Views\EditSeasonTeams.cshtml" />
-    <Content Include="Views\CreateLeagueMatch.cshtml" />
-    <Content Include="Views\CreateKnockoutMatch.cshtml" />
-    <Content Include="Views\CreateFriendlyMatch.cshtml" />
-    <Content Include="Views\Partials\_BattingScorecard.cshtml" />
-    <Content Include="Views\Partials\_BattingScorecardExtrasRow.cshtml" />
-    <Content Include="Views\Partials\_BowlingScorecard.cshtml" />
-    <Content Include="Views\EditLeagueMatch.cshtml" />
-    <Content Include="Views\Partials\_CreateOrEditLeagueMatch.cshtml" />
-    <Content Include="Views\EditKnockoutMatch.cshtml" />
-    <Content Include="Views\Partials\_CreateOrEditKnockoutMatch.cshtml" />
-    <Content Include="Views\Partials\_EditMatchResultTypeFuture.cshtml" />
-    <Content Include="Views\Partials\_CreateOrEditFriendlyMatch.cshtml" />
-    <Content Include="Views\EditFriendlyMatch.cshtml" />
-    <Content Include="Views\Partials\_CreateOrEditTournament.cshtml" />
-    <Content Include="Views\CreateTournament.cshtml" />
-    <Content Include="Views\EditTournament.cshtml" />
-    <Content Include="Views\EditTournamentTeams.cshtml" />
-    <Content Include="Views\EditStartOfPlay.cshtml" />
-    <Content Include="Views\EditCloseOfPlay.cshtml" />
-    <Content Include="Views\EditBowlingScorecard.cshtml" />
-    <Content Include="Views\EditBattingScorecard.cshtml" />
-    <Content Include="Views\Partials\_EditBattingScorecard.cshtml" />
-    <Content Include="Views\Partials\_EditBowlingScorecard.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\stoolball\DatePicker.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Form.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Render.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Script.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\stoolball\ScrollToFormScript.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Submitted.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml" />
-    <Content Include="Views\ProductList.cshtml" />
-    <Content Include="Views\Partials\_Header.cshtml" />
-    <Content Include="Views\Partials\_Breadcrumb.cshtml" />
-    <Content Include="Views\Partials\_Footer.cshtml" />
-    <Content Include="Views\Partials\_AddMatchMenu.cshtml" />
-    <Content Include="Views\Partials\_ContactDetailsMissing.cshtml" />
-    <Content Include="Views\Partials\_SeasonListExpandable.cshtml" />
-    <Content Include="Views\ResetPasswordRequest.cshtml" />
-    <Content Include="Views\Partials\_SocialMedia.cshtml" />
-    <Content Include="Views\Partials\_CompetitionContactDetails.cshtml" />
-    <Content Include="Views\StyleGuideForms.cshtml" />
-    <Content Include="Views\StyleGuideStoolballData.cshtml" />
-    <Content Include="Views\TeamsMap.cshtml" />
-    <Content Include="Views\Player.cshtml" />
-    <Content Include="Views\Partials\_IndividualScores.cshtml" />
-    <Content Include="Views\Statistics.cshtml" />
-    <Content Include="Views\Partials\_StatisticsBasis.cshtml" />
-    <Content Include="Views\TeamStatistics.cshtml" />
-    <Content Include="Views\SeasonStatistics.cshtml" />
-    <Content Include="Views\Partials\_BowlingFigures.cshtml" />
-    <Content Include="Views\Partials\_StatisticsPaging.cshtml" />
-    <Content Include="Views\Partials\_InningsStatistics.cshtml" />
+    <Content Include="Views\Master.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Master.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\_ViewStart.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_ViewStart.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Home.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Home.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\ApproveMember.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>ApproveMember.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\MyAccount.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>MyAccount.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\LoginMember.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>LoginMember.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\LogoutMember.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>LogoutMember.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\CreateMember.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>CreateMember.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\ResetPassword.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>ResetPassword.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_Logout.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_Logout.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_Login.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_Login.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Club.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Club.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\StyleGuide.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>StyleGuide.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_TeamList.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_TeamList.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\MatchLocation.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>MatchLocation.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Team.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Team.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_SeasonList.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_SeasonList.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_ClubMark.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_ClubMark.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Season.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Season.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Competition.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Competition.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\MatchesForTeam.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>MatchesForTeam.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_MatchList.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_MatchList.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\MatchesForClub.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>MatchesForClub.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\MatchesForMatchLocation.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>MatchesForMatchLocation.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\MatchesForSeason.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>MatchesForSeason.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\TransientTeam.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>TransientTeam.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Match.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Match.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Tournament.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Tournament.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\MatchLocations.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>MatchLocations.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Teams.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Teams.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditClub.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditClub.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_DeleteIcon.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_DeleteIcon.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\CreateClub.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>CreateClub.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_CreateOrEditClub.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_CreateOrEditClub.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditMatchLocation.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditMatchLocation.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\CreateMatchLocation.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>CreateMatchLocation.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_CreateOrEditMatchLocation.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_CreateOrEditMatchLocation.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\CreateTeam.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>CreateTeam.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditTeam.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditTeam.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_CreateOrEditTeam.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_CreateOrEditTeam.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditTransientTeam.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditTransientTeam.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\CreateCompetition.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>CreateCompetition.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditCompetition.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditCompetition.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_CreateOrEditCompetition.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_CreateOrEditCompetition.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\SeasonActions.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>SeasonActions.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\CompetitionActions.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>CompetitionActions.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\CreateSeason.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>CreateSeason.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditSeason.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditSeason.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_CompetitionActions.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_CompetitionActions.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_CreateOrEditSeason.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_CreateOrEditSeason.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\DeleteMatchLocation.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>DeleteMatchLocation.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\MatchLocationActions.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>MatchLocationActions.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\ClubActions.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>ClubActions.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\DeleteClub.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>DeleteClub.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\TeamActions.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>TeamActions.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\DeleteTeam.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>DeleteTeam.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\DeleteSeason.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>DeleteSeason.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\DeleteCompetition.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>DeleteCompetition.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Competitions.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Competitions.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_AdminOnly.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_AdminOnly.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\MatchActions.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>MatchActions.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\TournamentActions.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>TournamentActions.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\DeleteMatch.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>DeleteMatch.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\DeleteTournament.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>DeleteTournament.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\SeasonResultsTable.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>SeasonResultsTable.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditSeasonTeams.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditSeasonTeams.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\CreateLeagueMatch.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>CreateLeagueMatch.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\CreateKnockoutMatch.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>CreateKnockoutMatch.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\CreateFriendlyMatch.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>CreateFriendlyMatch.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_BattingScorecard.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_BattingScorecard.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_BattingScorecardExtrasRow.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_BattingScorecardExtrasRow.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_BowlingScorecard.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_BowlingScorecard.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditLeagueMatch.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditLeagueMatch.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_CreateOrEditLeagueMatch.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_CreateOrEditLeagueMatch.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditKnockoutMatch.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditKnockoutMatch.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_CreateOrEditKnockoutMatch.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_CreateOrEditKnockoutMatch.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_EditMatchResultTypeFuture.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_EditMatchResultTypeFuture.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_CreateOrEditFriendlyMatch.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_CreateOrEditFriendlyMatch.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditFriendlyMatch.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditFriendlyMatch.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_CreateOrEditTournament.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_CreateOrEditTournament.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\CreateTournament.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>CreateTournament.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditTournament.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditTournament.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditTournamentTeams.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditTournamentTeams.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditStartOfPlay.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditStartOfPlay.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditCloseOfPlay.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditCloseOfPlay.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditBowlingScorecard.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditBowlingScorecard.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditBattingScorecard.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditBattingScorecard.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_EditBattingScorecard.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_EditBattingScorecard.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_EditBowlingScorecard.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_EditBowlingScorecard.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\Forms\Themes\stoolball\DatePicker.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>DatePicker.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Form.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Form.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Render.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Render.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Script.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Script.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\Forms\Themes\stoolball\ScrollToFormScript.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>ScrollToFormScript.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Submitted.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Submitted.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>FieldType.Textfield.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>FieldType.Email.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\ProductList.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>ProductList.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_Header.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_Header.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_Breadcrumb.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_Breadcrumb.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_Footer.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_Footer.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_AddMatchMenu.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_AddMatchMenu.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_ContactDetailsMissing.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_ContactDetailsMissing.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_SeasonListExpandable.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_SeasonListExpandable.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\ResetPasswordRequest.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>ResetPasswordRequest.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_SocialMedia.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_SocialMedia.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_CompetitionContactDetails.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_CompetitionContactDetails.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\StyleGuideForms.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>StyleGuideForms.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\StyleGuideStoolballData.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>StyleGuideStoolballData.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\TeamsMap.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>TeamsMap.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Player.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Player.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_IndividualScores.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_IndividualScores.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Statistics.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Statistics.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_StatisticsBasis.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_StatisticsBasis.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\TeamStatistics.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>TeamStatistics.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\SeasonStatistics.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>SeasonStatistics.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_BowlingFigures.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_BowlingFigures.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_StatisticsPaging.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_StatisticsPaging.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_InningsStatistics.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_InningsStatistics.generated.cs</LastGenOutput>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

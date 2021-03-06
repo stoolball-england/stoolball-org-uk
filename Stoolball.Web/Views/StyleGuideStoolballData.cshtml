@@ -6,6 +6,7 @@
 @using Stoolball.Matches
 @using Stoolball.Web.Matches
 @using Stoolball.Web.Competitions
+@using Stoolball.Statistics
 @{
     Html.RequiresJs("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey, 50);
     Html.RequiresJs("/js/maps.js", 90);
@@ -198,7 +199,6 @@
                     Wides = 4,
                     NoBalls = 6,
                     BonusOrPenaltyRuns = 8,
-                    Overs = 1,
                     Runs = 100,
                     Wickets = 1
                 }
@@ -206,18 +206,18 @@
         };
         innings.CurrentInnings.MatchInnings.PlayerInnings.Add(new PlayerInnings
         {
-            PlayerIdentity = new PlayerIdentity { PlayerIdentityName = "Player One" },
+            Batter = new PlayerIdentity { PlayerIdentityName = "Player One", Player = new Player { PlayerRoute  ="/players/player-one" } },
             DismissalType = DismissalType.Caught,
-            DismissedBy = new PlayerIdentity { PlayerIdentityName = "Player Two" },
-            Bowler = new PlayerIdentity { PlayerIdentityName = "Player Three" },
+            DismissedBy = new PlayerIdentity { PlayerIdentityName = "Player Two", Player = new Player { PlayerRoute = "/players/player-two" } },
+            Bowler = new PlayerIdentity { PlayerIdentityName = "Player Three", Player = new Player { PlayerRoute = "/players/player-three" } },
             RunsScored = 50,
             BallsFaced = 60
         });
         innings.CurrentInnings.MatchInnings.PlayerInnings.Add(new PlayerInnings
         {
-            PlayerIdentity = new PlayerIdentity { PlayerIdentityName = "Player Four" },
+            Batter = new PlayerIdentity { PlayerIdentityName = "Player Four", Player = new Player { PlayerRoute = "/players/player-four" } },
             DismissalType = DismissalType.BodyBeforeWicket,
-            Bowler = new PlayerIdentity { PlayerIdentityName = "Player Three" },
+            Bowler = new PlayerIdentity { PlayerIdentityName = "Player Three", Player = new Player { PlayerRoute = "/players/player-three" } },
             RunsScored = 10,
             BallsFaced = 10
         });
@@ -240,7 +240,7 @@
         });
         innings.CurrentInnings.MatchInnings.OversBowled.Add(new Over
         {
-            PlayerIdentity = new PlayerIdentity { PlayerIdentityName = "Player Two" },
+            Bowler = new PlayerIdentity { PlayerIdentityName = "Player Two", Player = new Player { PlayerRoute = "/players/player-two" } },
             BallsBowled = 8,
             Wides = 2,
             NoBalls = 4,
@@ -254,10 +254,10 @@
             NoBalls = 4,
             RunsConceded = 8
         });
-    }
+        }
 
 
-    @Html.Partial("_BattingScorecard", innings.CurrentInnings.MatchInnings)
+        @Html.Partial("_BattingScorecard", innings.CurrentInnings.MatchInnings)
     @Html.Partial("_BowlingScorecard", innings.CurrentInnings.MatchInnings)
     @Html.Partial("_EditBattingScorecard", innings)
     @Html.Partial("_EditBowlingScorecard", innings)

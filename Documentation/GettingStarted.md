@@ -8,6 +8,7 @@ The following software is recommended to work on this project:
 - [NuGet command line](https://www.nuget.org/downloads)
 - [Visual Studio Community 2019 or better](https://visualstudio.microsoft.com/downloads/)
 - [Web Compiler extension](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.WebCompiler) for Visual Studio
+- [Razor Generator extension](https://marketplace.visualstudio.com/items?itemName=DavidEbbo.RazorGenerator) for Visual Studio
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Jest](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest) and [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) for Visual Studio Code
 - [SQL Server Express LocalDB or better](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb?view=sql-server-ver15)
