@@ -96,6 +96,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             for (var innings = 0; innings < _databaseFixture.MatchInThePastWithFullDetails.MatchInnings.Count; innings++)
             {
                 Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].MatchInningsId, result.MatchInnings[innings].MatchInningsId);
+                Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].Byes, result.MatchInnings[innings].Byes);
+                Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].Wides, result.MatchInnings[innings].Wides);
+                Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].NoBalls, result.MatchInnings[innings].NoBalls);
+                Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].BonusOrPenaltyRuns, result.MatchInnings[innings].BonusOrPenaltyRuns);
+                Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].Runs, result.MatchInnings[innings].Runs);
+                Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].Wickets, result.MatchInnings[innings].Wickets);
+                Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].InningsOrderInMatch, result.MatchInnings[innings].InningsOrderInMatch);
+                Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].BattingMatchTeamId, result.MatchInnings[innings].BattingMatchTeamId);
+                Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchInnings[innings].BowlingMatchTeamId, result.MatchInnings[innings].BowlingMatchTeamId);
             }
         }
 

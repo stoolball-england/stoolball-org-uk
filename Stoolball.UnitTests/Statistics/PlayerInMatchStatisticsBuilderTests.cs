@@ -71,6 +71,18 @@ namespace Stoolball.UnitTests.Statistics
             Assert.Equal(isOnBattingTeam ? innings.BowlingTeam.Team.TeamRoute : innings.BattingTeam.Team.TeamRoute, playerRecord.OppositionTeamRoute);
         }
 
+        private static void AssertTeamTotals(MatchInnings battingInnings, MatchInnings bowlingInnings, PlayerInMatchStatisticsRecord playerRecord)
+        {
+            Assert.Equal(battingInnings.Runs, playerRecord.TeamRunsScored);
+            Assert.Equal(battingInnings.BonusOrPenaltyRuns, playerRecord.TeamBonusOrPenaltyRunsAwarded);
+            Assert.Equal(battingInnings.Wickets, playerRecord.TeamWicketsLost);
+            Assert.Equal(bowlingInnings.Runs, playerRecord.TeamRunsConceded);
+            Assert.Equal(bowlingInnings.NoBalls, playerRecord.TeamNoBallsConceded);
+            Assert.Equal(bowlingInnings.Wides, playerRecord.TeamWidesConceded);
+            Assert.Equal(bowlingInnings.Byes, playerRecord.TeamByesConceded);
+            Assert.Equal(bowlingInnings.Wickets, playerRecord.TeamWicketsTaken);
+        }
+
         [Fact]
         public void Each_batter_should_have_one_record_per_innings_pair_with_player_and_match_data()
         {
@@ -112,10 +124,7 @@ namespace Stoolball.UnitTests.Statistics
                     AssertInningsFields(identity, innings, playerRecord);
 
                     var pairedInnings = _matchFixture.Match.MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
-                    Assert.Equal(innings.Runs, playerRecord.TeamRunsScored);
-                    Assert.Equal(innings.Wickets, playerRecord.TeamWicketsTaken);
-                    Assert.Equal(pairedInnings.Runs, playerRecord.TeamRunsConceded);
-                    Assert.Equal(pairedInnings.Wickets, playerRecord.TeamWicketsLost);
+                    AssertTeamTotals(innings, pairedInnings, playerRecord);
                 }
             }
         }
@@ -161,10 +170,7 @@ namespace Stoolball.UnitTests.Statistics
                     AssertInningsFields(identity, innings, playerRecord);
 
                     var pairedInnings = _matchFixture.Match.MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
-                    Assert.Equal(pairedInnings.Runs, playerRecord.TeamRunsScored);
-                    Assert.Equal(pairedInnings.Wickets, playerRecord.TeamWicketsTaken);
-                    Assert.Equal(innings.Runs, playerRecord.TeamRunsConceded);
-                    Assert.Equal(innings.Wickets, playerRecord.TeamWicketsLost);
+                    AssertTeamTotals(pairedInnings, innings, playerRecord);
                 }
             }
         }
@@ -210,10 +216,7 @@ namespace Stoolball.UnitTests.Statistics
                     AssertInningsFields(identity, innings, playerRecord);
 
                     var pairedInnings = _matchFixture.Match.MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
-                    Assert.Equal(pairedInnings.Runs, playerRecord.TeamRunsScored);
-                    Assert.Equal(pairedInnings.Wickets, playerRecord.TeamWicketsTaken);
-                    Assert.Equal(innings.Runs, playerRecord.TeamRunsConceded);
-                    Assert.Equal(innings.Wickets, playerRecord.TeamWicketsLost);
+                    AssertTeamTotals(pairedInnings, innings, playerRecord);
                 }
             }
         }
@@ -259,10 +262,7 @@ namespace Stoolball.UnitTests.Statistics
                     AssertInningsFields(identity, innings, playerRecord);
 
                     var pairedInnings = _matchFixture.Match.MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
-                    Assert.Equal(pairedInnings.Runs, playerRecord.TeamRunsScored);
-                    Assert.Equal(pairedInnings.Wickets, playerRecord.TeamWicketsTaken);
-                    Assert.Equal(innings.Runs, playerRecord.TeamRunsConceded);
-                    Assert.Equal(innings.Wickets, playerRecord.TeamWicketsLost);
+                    AssertTeamTotals(pairedInnings, innings, playerRecord);
                 }
             }
         }
@@ -308,10 +308,7 @@ namespace Stoolball.UnitTests.Statistics
                     AssertInningsFields(identity, innings, playerRecord);
 
                     var pairedInnings = _matchFixture.Match.MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
-                    Assert.Equal(pairedInnings.Runs, playerRecord.TeamRunsScored);
-                    Assert.Equal(pairedInnings.Wickets, playerRecord.TeamWicketsTaken);
-                    Assert.Equal(innings.Runs, playerRecord.TeamRunsConceded);
-                    Assert.Equal(innings.Wickets, playerRecord.TeamWicketsLost);
+                    AssertTeamTotals(pairedInnings, innings, playerRecord);
                 }
             }
         }
@@ -357,10 +354,7 @@ namespace Stoolball.UnitTests.Statistics
                     AssertInningsFields(identity, innings, playerRecord);
 
                     var pairedInnings = _matchFixture.Match.MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
-                    Assert.Equal(innings.Runs, playerRecord.TeamRunsScored);
-                    Assert.Equal(innings.Wickets, playerRecord.TeamWicketsTaken);
-                    Assert.Equal(pairedInnings.Runs, playerRecord.TeamRunsConceded);
-                    Assert.Equal(pairedInnings.Wickets, playerRecord.TeamWicketsLost);
+                    AssertTeamTotals(innings, pairedInnings, playerRecord);
                 }
             }
         }

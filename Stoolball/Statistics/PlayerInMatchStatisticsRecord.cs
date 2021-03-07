@@ -57,7 +57,12 @@ namespace Stoolball.Statistics
 
         public int? TeamWicketsLost { get; set; }
 
+        public int? TeamBonusOrPenaltyRunsAwarded { get; set; }
+
         public int? TeamRunsConceded { get; set; }
+        public int? TeamNoBallsConceded { get; set; }
+        public int? TeamWidesConceded { get; set; }
+        public int? TeamByesConceded { get; set; }
 
         public int? TeamWicketsTaken { get; set; }
 

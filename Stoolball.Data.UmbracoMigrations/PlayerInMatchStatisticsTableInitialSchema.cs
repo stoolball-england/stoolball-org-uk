@@ -122,10 +122,30 @@ namespace Stoolball.Data.UmbracoMigrations
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? TeamWicketsLost { get; set; }
 
+        [Column(nameof(TeamBonusOrPenaltyRunsAwarded))]
+        [Index(IndexTypes.NonClustered)]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? TeamBonusOrPenaltyRunsAwarded { get; set; }
+
         [Column(nameof(TeamRunsConceded))]
         [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? TeamRunsConceded { get; set; }
+
+        [Column(nameof(TeamNoBallsConceded))]
+        [Index(IndexTypes.NonClustered)]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? TeamNoBallsConceded { get; set; }
+
+        [Column(nameof(TeamWidesConceded))]
+        [Index(IndexTypes.NonClustered)]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? TeamWidesConceded { get; set; }
+
+        [Column(nameof(TeamByesConceded))]
+        [Index(IndexTypes.NonClustered)]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? TeamByesConceded { get; set; }
 
         [Column(nameof(TeamWicketsTaken))]
         [Index(IndexTypes.NonClustered)]

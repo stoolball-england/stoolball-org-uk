@@ -29,7 +29,7 @@ namespace Stoolball.Web.Tests.Teams
 
         private class TestController : TeamStatisticsController
         {
-            public TestController(ITeamDataSource teamDataSource, IStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
+            public TestController(ITeamDataSource teamDataSource, IStatisticsDataSource statisticsDataSource, IInningsStatisticsDataSource inningsStatisticsDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -38,7 +38,8 @@ namespace Stoolball.Web.Tests.Teams
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
                 teamDataSource,
-                statisticsDataSource)
+                statisticsDataSource,
+                inningsStatisticsDataSource)
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -64,8 +65,9 @@ namespace Stoolball.Web.Tests.Teams
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Team>(null));
             var statisticsDataSource = new Mock<IStatisticsDataSource>();
+            var inningsDataSource = new Mock<IInningsStatisticsDataSource>();
 
-            using (var controller = new TestController(teamDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(teamDataSource.Object, statisticsDataSource.Object, inningsDataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -77,11 +79,12 @@ namespace Stoolball.Web.Tests.Teams
         public async Task Route_matching_team_returns_StatisticsSummaryViewModel()
         {
             var teamDataSource = new Mock<ITeamDataSource>();
-            teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).ReturnsAsync(new Team { TeamId = Guid.NewGuid() });
+            teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team { TeamId = Guid.NewGuid() });
             var statisticsDataSource = new Mock<IStatisticsDataSource>();
             statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new StatisticsResult<PlayerInnings>[] { new StatisticsResult<PlayerInnings>() } as IEnumerable<StatisticsResult<PlayerInnings>>));
+            var inningsDataSource = new Mock<IInningsStatisticsDataSource>();
 
-            using (var controller = new TestController(teamDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(teamDataSource.Object, statisticsDataSource.Object, inningsDataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

@@ -150,6 +150,7 @@ namespace Stoolball.Data.SqlServer
                             if (matchTeamIds != null && matchTeamIds.BowlingMatchTeamId.HasValue)
                             {
                                 innings.BowlingTeam = matchToReturn.Teams.Single(x => x.MatchTeamId == matchTeamIds.BowlingMatchTeamId);
+                                innings.BowlingMatchTeamId = matchTeamIds.BowlingMatchTeamId;
                             }
                             if (batting != null)
                             {

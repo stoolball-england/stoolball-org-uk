@@ -2719,7 +2719,6 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.live.xdt.template.config" />
-    <None Include="Secret-InstrumentationKey.ApplicationInsights.local.xdt.config" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
