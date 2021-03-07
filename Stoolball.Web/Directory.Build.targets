@@ -241,6 +241,8 @@
       <TemplateProductionTransform>$(ProjectDir)Web.live.xdt.template.config</TemplateProductionTransform>
       <ActualProductionTransform>$(ProjectDir)Web.live.xdt.config</ActualProductionTransform>
       <FeaturePolicy>accelerometer 'none';ambient-light-sensor 'none';autoplay 'none';battery 'none';camera 'none';display-capture 'none';document-domain 'none';encrypted-media 'none';execution-while-not-rendered 'none';execution-while-out-of-viewport 'none';fullscreen 'none';geolocation 'none';gyroscope 'none';layout-animations 'none';legacy-image-formats 'none';magnetometer 'none';microphone 'none';midi 'none';navigation-override 'none';oversized-images 'none';payment 'none';picture-in-picture 'none';publickey-credentials 'none';sync-xhr 'none';usb 'none';wake-lock 'none';xr-spatial-tracking 'none'</FeaturePolicy>
+      <TemplateAppInsightsConfig>$(ProjectDir)ApplicationInsights.template.config</TemplateAppInsightsConfig>
+      <ActualAppInsightsConfig>$(ProjectDir)ApplicationInsights.config</ActualAppInsightsConfig>
     </PropertyGroup>
     <Copy SourceFiles="$(OriginalWebConfig)" DestinationFiles="$(TempWebConfig)" />
     <TransformXml Source="$(TempWebConfig)" Transform="$(ProjectDir)\Web.local.xdt.config" Destination="$(OriginalWebConfig)" StackTrace="true" />
@@ -255,6 +257,9 @@
     <TransformXml Source="$(TempWebConfig)" Transform="$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config" Destination="$(OriginalWebConfig)" StackTrace="true" Condition="Exists('$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config')" />
     <Delete Files="$(TempWebConfig)" Condition="Exists('$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config')" />
     <Warning Text="$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config not found. Google maps will not load. This is probably because you're using an Umbraco Cloud trial account." Condition="!Exists('$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config')"/>
+
+    <TransformXml Source="$(TemplateAppInsightsConfig)" Transform="$(ProjectDir)\Secret-InstrumentationKey.ApplicationInsights.local.xdt.config" Destination="$(ActualAppInsightsConfig)" StackTrace="true" Condition="Exists('$(ProjectDir)\Secret-InstrumentationKey.ApplicationInsights.local.xdt.config')"  />
+    <Warning Text="$(ProjectDir)\Secret-InstrumentationKey.ApplicationInsights.local.xdt.config not found. To set up reporting to Application Insights copy ApplicationInsights.xdt.template.config to Secret-InstrumentationKey.ApplicationInsights.local.xdt.config and add your instrumentation key." Condition="!Exists('$(ProjectDir)\Secret-InstrumentationKey.ApplicationInsights.local.xdt.config')"/>
 
     <!-- Replace tokens that appear in the generated Web.config, to avoid duplication in the XDT file -->
     <ReplaceFileText

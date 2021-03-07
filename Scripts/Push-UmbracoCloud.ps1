@@ -7,7 +7,8 @@ git pull origin master
 Pop-Location
 
 # Copy changes from Stoolball.Web to the .UmbracoCloud deployment repository
-robocopy .\Stoolball.Web .\.UmbracoCloud /IF *.dll *.cshtml *.uda *.xdt.config *.css *.html *.js package.manifest en-*.xml *.png *.gif *.jpg *.svg *.woff *.woff2 /XF Umbraco.*.dll uSync8.*.dll member-group__*.uda *.local.xdt.config *.test.js /S /XD .git $projectRoot\Stoolball.Web\obj $projectRoot\Stoolball.Web\umbraco $projectRoot\Stoolball.Web\App_Data $projectRoot\Stoolball.Web\App_Plugins\Deploy $projectRoot\Stoolball.Web\App_Plugins\UmbracoForms $projectRoot\Stoolball.Web\App_Plugins\uSync8 $projectRoot\Stoolball.Web\Content $projectRoot\Stoolball.Web\Media
+robocopy .\Stoolball.Web .\.UmbracoCloud /IF *.dll *.cshtml *.uda *.xdt.config *.css *.html *.js package.manifest en-*.xml *.png *.gif *.jpg *.svg *.ico *.woff *.woff2 /XF Umbraco.*.dll uSync8.*.dll member-group__*.uda *.local.xdt.config *.template.config *.test.js /S /XD .git $projectRoot\Stoolball.Web\obj $projectRoot\Stoolball.Web\umbraco $projectRoot\Stoolball.Web\App_Data $projectRoot\Stoolball.Web\App_Plugins\Deploy $projectRoot\Stoolball.Web\App_Plugins\UmbracoForms $projectRoot\Stoolball.Web\App_Plugins\uSync8 $projectRoot\Stoolball.Web\Content $projectRoot\Stoolball.Web\Media
+copy .\Stoolball.Web\ApplicationInsights.template.config .\.UmbracoCloud\ApplicationInsights.config
 copy .\Stoolball.Web\fonts\Web.config .\.UmbracoCloud\fonts
 copy .\Stoolball.Web\images\Web.config .\.UmbracoCloud\images
 
