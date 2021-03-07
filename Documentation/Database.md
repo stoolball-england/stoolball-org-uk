@@ -4,12 +4,7 @@ Stoolball data such as leagues, teams and matches is held in custom tables in th
 
 ## Inspecting the Umbraco database
 
-To check the content of the custom tables, stop IIS Express if it's running and use the Server Explorer window in Visual Studio to create a new 'Data Connection' using 'Microsoft SQL Server database file' as the 'Data source'. Connect to `Stoolball.Web\App_Data\Umbraco.mdf`. When you're finished click 'Close Connection'.
-
-### If Umbraco fails to boot
-
-If you run Umbraco after inspecting the database in Visual Studio you may get an error saying Umbraco failed to boot because "A connection string is configured but Umbraco could not connect to the database". If so the database is probably still locked by SQL Server. Open a PowerShell prompt
-in the root of this repository and run `.\Scripts\Stop-SqlServer.ps1` to kill the lock, then refresh the browser.
+To check the content of the custom tables, open the 'SQL Server Object Explorer' window in Visual Studio and look for the `Stoolball.Web\App_Data\Umbraco.mdf` database on the `(localdb)\Umbraco` instance.
 
 ## Creating and upgrading the database
 
