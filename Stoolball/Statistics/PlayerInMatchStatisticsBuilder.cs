@@ -124,6 +124,8 @@ namespace Stoolball.Statistics
             if (oversBowled.Any())
             {
                 record.BallsBowled = oversBowled.Sum(x => x.BallsBowled);
+                record.NoBalls = oversBowled.Sum(x => x.NoBalls);
+                record.Wides = oversBowled.Sum(x => x.Wides);
             }
             else
             {

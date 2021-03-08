@@ -80,6 +80,10 @@ namespace Stoolball.Statistics
 
         public int? Maidens { get; set; }
 
+        public int? NoBalls { get; set; }
+
+        public int? Wides { get; set; }
+
         public int? RunsConceded { get; set; }
 
         public bool HasRunsConceded { get; set; }

@@ -612,6 +612,30 @@ namespace Stoolball.UnitTests.Statistics
             }
         }
 
+
+        [Fact]
+        public void Bowlers_should_have_no_balls_and_wides_from_overs_data()
+        {
+            var finder = new Mock<IPlayerIdentityFinder>();
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+
+            var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
+
+            foreach (var innings in _matchFixture.Match.MatchInnings)
+            {
+                var bowlersWithOvers = innings.OversBowled.OrderBy(x => x.OverNumber).Select(x => x.Bowler.PlayerIdentityId).Distinct();
+
+                foreach (var bowler in bowlersWithOvers)
+                {
+                    var playerRecord = result.SingleOrDefault(x => x.PlayerIdentityId == bowler && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
+                    Assert.NotNull(playerRecord);
+
+                    Assert.Equal(innings.OversBowled.Where(x => x.Bowler.PlayerIdentityId == bowler).Sum(x => x.NoBalls), playerRecord.NoBalls);
+                    Assert.Equal(innings.OversBowled.Where(x => x.Bowler.PlayerIdentityId == bowler).Sum(x => x.Wides), playerRecord.Wides);
+                }
+            }
+        }
+
         [Fact]
         public void Bowlers_should_have_figures_from_bowling_figures_data()
         {

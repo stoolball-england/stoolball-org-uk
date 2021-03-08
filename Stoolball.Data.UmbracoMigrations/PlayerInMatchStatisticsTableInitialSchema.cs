@@ -123,7 +123,6 @@ namespace Stoolball.Data.UmbracoMigrations
         public int? TeamWicketsLost { get; set; }
 
         [Column(nameof(TeamBonusOrPenaltyRunsAwarded))]
-        [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? TeamBonusOrPenaltyRunsAwarded { get; set; }
 
@@ -133,17 +132,14 @@ namespace Stoolball.Data.UmbracoMigrations
         public int? TeamRunsConceded { get; set; }
 
         [Column(nameof(TeamNoBallsConceded))]
-        [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? TeamNoBallsConceded { get; set; }
 
         [Column(nameof(TeamWidesConceded))]
-        [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? TeamWidesConceded { get; set; }
 
         [Column(nameof(TeamByesConceded))]
-        [Index(IndexTypes.NonClustered)]
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? TeamByesConceded { get; set; }
 
@@ -186,6 +182,14 @@ namespace Stoolball.Data.UmbracoMigrations
         [Column(nameof(Maidens))]
         [NullSetting(NullSetting = NullSettings.Null)]
         public int? Maidens { get; set; }
+
+        [Column(nameof(NoBalls))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? NoBalls { get; set; }
+
+        [Column(nameof(Wides))]
+        [NullSetting(NullSetting = NullSettings.Null)]
+        public int? Wides { get; set; }
 
         [Column(nameof(RunsConceded))]
         [Index(IndexTypes.NonClustered)]
