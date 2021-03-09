@@ -546,7 +546,7 @@ WriteLiteral(">Create an account</a></li>\r\n");
             
             #line 104 "..\..\Views\Partials\_Header.cshtml"
                                 }
-                                if (Request.RawUrl.StartsWith("/account/create"))
+                                if (Request.RawUrl.StartsWith("/account/sign-in"))
                                 {
 
             
@@ -577,15 +577,15 @@ WriteLiteral(" class=\"dropdown-item\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 6136), Tuple.Create("\"", 6218)
-, Tuple.Create(Tuple.Create("", 6143), Tuple.Create("/account/sign-in?ReturnUrl=", 6143), true)
+WriteAttribute("href", Tuple.Create(" href=\"", 6137), Tuple.Create("\"", 6219)
+, Tuple.Create(Tuple.Create("", 6144), Tuple.Create("/account/sign-in?ReturnUrl=", 6144), true)
             
             #line 111 "..\..\Views\Partials\_Header.cshtml"
-                  , Tuple.Create(Tuple.Create("", 6170), Tuple.Create<System.Object, System.Int32>(HttpUtility.UrlEncode(Request.Url.PathAndQuery)
+                  , Tuple.Create(Tuple.Create("", 6171), Tuple.Create<System.Object, System.Int32>(HttpUtility.UrlEncode(Request.Url.PathAndQuery)
             
             #line default
             #line hidden
-, 6170), false)
+, 6171), false)
 );
 
 WriteLiteral(">Sign in</a></li>\r\n");
@@ -625,9 +625,9 @@ WriteLiteral(" title=\"Menu\"");
 
 WriteLiteral(">\r\n                            <img");
 
-WriteAttribute("src", Tuple.Create(" src=\"", 6711), Tuple.Create("\"", 6751)
-, Tuple.Create(Tuple.Create("", 6717), Tuple.Create<System.Object, System.Int32>(Href("~/images/icons/menu-white-24dp.svg")
-, 6717), false)
+WriteAttribute("src", Tuple.Create(" src=\"", 6712), Tuple.Create("\"", 6752)
+, Tuple.Create(Tuple.Create("", 6718), Tuple.Create<System.Object, System.Int32>(Href("~/images/icons/menu-white-24dp.svg")
+, 6718), false)
 );
 
 WriteLiteral(" alt=\"Menu\"");
@@ -695,14 +695,14 @@ WriteLiteral(" class=\"dropdown-item\"");
 
 WriteLiteral(">\r\n                                            <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 7692), Tuple.Create("\"", 7711)
+WriteAttribute("href", Tuple.Create(" href=\"", 7693), Tuple.Create("\"", 7712)
             
             #line 135 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("", 7699), Tuple.Create<System.Object, System.Int32>(child.Url()
+, Tuple.Create(Tuple.Create("", 7700), Tuple.Create<System.Object, System.Int32>(child.Url()
             
             #line default
             #line hidden
-, 7699), false)
+, 7700), false)
 );
 
 WriteLiteral(" aria-selected=\"true\"");
@@ -733,14 +733,14 @@ WriteLiteral(" class=\"dropdown-item\"");
 
 WriteLiteral(">\r\n                                            <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 8032), Tuple.Create("\"", 8051)
+WriteAttribute("href", Tuple.Create(" href=\"", 8033), Tuple.Create("\"", 8052)
             
             #line 141 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("", 8039), Tuple.Create<System.Object, System.Int32>(child.Url()
+, Tuple.Create(Tuple.Create("", 8040), Tuple.Create<System.Object, System.Int32>(child.Url()
             
             #line default
             #line hidden
-, 8039), false)
+, 8040), false)
 );
 
 WriteLiteral(">");
@@ -781,59 +781,59 @@ WriteLiteral("\r\n                        </ul>\r\n                    </div>\r\
             #line hidden
 WriteLiteral("        <img");
 
-WriteAttribute("srcset", Tuple.Create(" srcset=\"", 8426), Tuple.Create("\"", 8810)
+WriteAttribute("srcset", Tuple.Create(" srcset=\"", 8427), Tuple.Create("\"", 8811)
             
             #line 154 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("", 8435), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("extra-small")
+, Tuple.Create(Tuple.Create("", 8436), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("extra-small")
             
             #line default
             #line hidden
-, 8435), false)
-, Tuple.Create(Tuple.Create(" ", 8496), Tuple.Create("576w,", 8497), true)
+, 8436), false)
+, Tuple.Create(Tuple.Create(" ", 8497), Tuple.Create("576w,", 8498), true)
             
             #line 155 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("\r\n            ", 8502), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("small")
+, Tuple.Create(Tuple.Create("\r\n            ", 8503), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("small")
             
             #line default
             #line hidden
-, 8516), false)
-, Tuple.Create(Tuple.Create(" ", 8571), Tuple.Create("768w,", 8572), true)
+, 8517), false)
+, Tuple.Create(Tuple.Create(" ", 8572), Tuple.Create("768w,", 8573), true)
             
             #line 156 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("\r\n            ", 8577), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("medium")
+, Tuple.Create(Tuple.Create("\r\n            ", 8578), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("medium")
             
             #line default
             #line hidden
-, 8591), false)
-, Tuple.Create(Tuple.Create(" ", 8647), Tuple.Create("992w,", 8648), true)
+, 8592), false)
+, Tuple.Create(Tuple.Create(" ", 8648), Tuple.Create("992w,", 8649), true)
             
             #line 157 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("\r\n            ", 8653), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("large")
+, Tuple.Create(Tuple.Create("\r\n            ", 8654), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("large")
             
             #line default
             #line hidden
-, 8667), false)
-, Tuple.Create(Tuple.Create(" ", 8722), Tuple.Create("1200w,", 8723), true)
+, 8668), false)
+, Tuple.Create(Tuple.Create(" ", 8723), Tuple.Create("1200w,", 8724), true)
             
             #line 158 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("\r\n            ", 8729), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("extra-large")
+, Tuple.Create(Tuple.Create("\r\n            ", 8730), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("extra-large")
             
             #line default
             #line hidden
-, 8743), false)
-, Tuple.Create(Tuple.Create(" ", 8804), Tuple.Create("2000w", 8805), true)
+, 8744), false)
+, Tuple.Create(Tuple.Create(" ", 8805), Tuple.Create("2000w", 8806), true)
 );
 
 WriteLiteral("\r\n             sizes=\"100vw\"");
 
-WriteAttribute("src", Tuple.Create(" src=\"", 8839), Tuple.Create("\"", 8900)
+WriteAttribute("src", Tuple.Create(" src=\"", 8840), Tuple.Create("\"", 8901)
             
             #line 159 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("", 8845), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("large")
+, Tuple.Create(Tuple.Create("", 8846), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("large")
             
             #line default
             #line hidden
-, 8845), false)
+, 8846), false)
 );
 
 WriteLiteral(" alt=\"\"");
