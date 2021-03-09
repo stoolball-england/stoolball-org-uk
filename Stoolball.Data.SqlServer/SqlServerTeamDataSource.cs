@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Globalization;
@@ -93,6 +93,7 @@ namespace Stoolball.Data.SqlServer
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
+                // The selected match location fields ensure that match locations are sorted the same way as in SqlServerTeamListingDataSource, meaning the team is assigned the same home location by Team.TeamNameLocationAndPlayerType()
                 var teams = await connection.QueryAsync<Team, Club, MatchLocation, Season, Competition, string, Team>(
                     $@"SELECT t.TeamId, tv.TeamName, t.TeamType, t.PlayerType, t.Introduction, t.AgeRangeLower, t.AgeRangeUpper, t.ClubMark,
                             t.Facebook, t.Twitter, t.Instagram, t.YouTube, t.Website, t.PublicContactDetails, t.PrivateContactDetails, 

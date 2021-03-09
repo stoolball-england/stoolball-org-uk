@@ -124,10 +124,12 @@ namespace Stoolball.Data.SqlServer
                                         OFFSET {(teamQuery.PageNumber - 1) * teamQuery.PageSize} ROWS FETCH NEXT {teamQuery.PageSize} ROWS ONLY) AS MatchingIds";
 
                 // Now that the inner query can select just the paged ids we need, the outer query can use them to select complete data sets including multiple rows
-                // based on the matching ids rather than directly on the paging criteria
+                // based on the matching ids rather than directly on the paging criteria.
+                //
+                // The selected match location fields ensure that match locations are sorted the same way as in SqlServerTeamDataSource, meaning the team is assigned the same home location by Team.TeamNameLocationAndPlayerType()
                 var outerQuery = $@"SELECT t.TeamId AS TeamListingId, tn.TeamName AS ClubOrTeamName, tn.ComparableName, t.TeamType, t.TeamRoute AS ClubOrTeamRoute, CASE WHEN tn.UntilDate IS NULL THEN 1 ELSE 0 END AS Active,
                                 t.PlayerType, 
-                                ml.MatchLocationId, ml.Locality, ml.Town, ml.MatchLocationRoute
+                                ml.MatchLocationId, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, ml.Town, ml.MatchLocationRoute
                                 FROM { Tables.Team } AS t 
                                 INNER JOIN { Tables.TeamVersion } AS tn ON t.TeamId = tn.TeamId
                                 LEFT JOIN { Tables.TeamMatchLocation } AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL
@@ -138,7 +140,7 @@ namespace Stoolball.Data.SqlServer
                                 SELECT c.ClubId AS TeamListingId, cn.ClubName AS ClubOrTeamName, cn.ComparableName, NULL AS TeamType, c.ClubRoute AS ClubOrTeamRoute, 
                                 CASE WHEN (SELECT COUNT(t2.TeamId) FROM { Tables.Team } t2 INNER JOIN { Tables.TeamVersion } tn2 ON t2.TeamId = tn2.TeamId WHERE ClubId = c.ClubId AND tn2.UntilDate IS NULL) > 0 THEN 1 ELSE 0 END AS Active,
                                 ct.PlayerType,
-                                ml.MatchLocationId, ml.Locality, ml.Town, ml.MatchLocationRoute
+                                ml.MatchLocationId, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, ml.Town, ml.MatchLocationRoute
                                 FROM { Tables.Club } AS c 
                                 INNER JOIN { Tables.ClubVersion } AS cn ON c.ClubId = cn.ClubId 
                                 LEFT JOIN { Tables.Team } AS ct ON c.ClubId = ct.ClubId
@@ -170,7 +172,7 @@ namespace Stoolball.Data.SqlServer
                 {
                     var resolvedTeam = copiesOfTeam.First();
                     resolvedTeam.PlayerTypes = copiesOfTeam.SelectMany(listing => listing.PlayerTypes).OfType<PlayerType>().Distinct().ToList();
-                    resolvedTeam.MatchLocations = copiesOfTeam.Select(listing => listing.MatchLocations.SingleOrDefault()).OfType<MatchLocation>().Distinct(new MatchLocationEqualityComparer()).ToList();
+                    resolvedTeam.MatchLocations = copiesOfTeam.Select(listing => listing.MatchLocations.SingleOrDefault()).OfType<MatchLocation>().Distinct(new MatchLocationEqualityComparer()).OrderBy(x => x.ComparableName()).ToList();
                     return resolvedTeam;
                 }).ToList();
 
