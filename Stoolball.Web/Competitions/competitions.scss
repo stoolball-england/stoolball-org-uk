@@ -52,3 +52,8 @@
 .edit-season-teams-table .field-validation-error {
     display: block;
 }
+
+// Edit teams in season - prevent column size changing as teams added/removed
+.edit-season-teams-table__date-withdrew {
+    width: 14em;
+}

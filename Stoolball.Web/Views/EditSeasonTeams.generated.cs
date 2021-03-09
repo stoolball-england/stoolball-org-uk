@@ -161,7 +161,13 @@ WriteLiteral(">Teams</th><th");
 
 WriteLiteral(" scope=\"col\"");
 
-WriteLiteral(">Date withdrew</th><th");
+WriteLiteral(" class=\"edit-season-teams-table__date-withdrew\"");
+
+WriteLiteral("><span");
+
+WriteLiteral(" class=\"related-items__if-not-empty\"");
+
+WriteLiteral(">Date withdrew</span></th><th");
 
 WriteLiteral(" scope=\"col\"");
 
@@ -182,7 +188,11 @@ WriteLiteral("></th></tr>\r\n                </thead>\r\n                <tbody>
             
             #line default
             #line hidden
-WriteLiteral("                        <tr>\r\n                            <td");
+WriteLiteral("                        <tr");
+
+WriteLiteral(" class=\"related-item__selected\"");
+
+WriteLiteral(">\r\n                            <td");
 
 WriteLiteral(" class=\"related-item__selected__section\"");
 
@@ -330,7 +340,7 @@ WriteLiteral(" id=\"team-template\"");
 
 WriteLiteral(@">
             <table>
-                <tr>
+                <tr class=""related-item__selected"">
                     <td class=""related-item__selected__section""><div class=""related-item__animate"">{{value}}</div></td>
                     <td class=""related-item__selected__section""><div class=""related-item__animate"">
                         <input name=""Season.Teams[0].WithdrawnDate"" type=""date"" class=""related-item__data"" aria-describedby=""withdrawn-date-[0]"" data-item=""{{data}}"" />

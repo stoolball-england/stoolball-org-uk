@@ -283,7 +283,11 @@ WriteLiteral(">Confirmed teams</th><th");
 
 WriteLiteral(" scope=\"col\"");
 
-WriteLiteral(">Team created for this tournament</th><th");
+WriteLiteral("><span");
+
+WriteLiteral(" class=\"related-items__if-not-empty\"");
+
+WriteLiteral(">Team created for this tournament</span></th><th");
 
 WriteLiteral(" scope=\"col\"");
 
@@ -304,7 +308,11 @@ WriteLiteral("></th></tr>\r\n                </thead>\r\n                <tbody>
             
             #line default
             #line hidden
-WriteLiteral("                        <tr>\r\n                            <td");
+WriteLiteral("                        <tr");
+
+WriteLiteral(" class=\"related-item__selected\"");
+
+WriteLiteral(">\r\n                            <td");
 
 WriteLiteral(" class=\"related-item__selected__section\"");
 
@@ -437,7 +445,7 @@ WriteLiteral(" id=\"team-template\"");
 
 WriteLiteral(@">
             <table>
-                <tr>
+                <tr class=""related-item__selected"">
                     <td class=""related-item__selected__section""><div class=""related-item__animate"">{{value}}</div></td>
                     <td class=""related-item__selected__section""><div class=""related-item__animate"">{{create}}</div></td>
                     <td class=""related-item__delete related-item__selected__section"">
