@@ -55,7 +55,7 @@ namespace Stoolball.Data.SqlServer
                                              Updated = DateTime.UtcNow,
                                              IsPermanent = true,
                                              IsRegex = false,
-                                             ForwardQueryString = false
+                                             ForwardQueryString = true
                                          },
                                         transaction).ConfigureAwait(false);
         }
