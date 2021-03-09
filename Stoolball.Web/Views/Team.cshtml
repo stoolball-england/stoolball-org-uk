@@ -64,7 +64,8 @@
                 var competition = seasonsInACompetition.First().Season.Competition;
                 competition.Seasons.AddRange(seasonsInACompetition.Select(season => season.Season));
                 return competition;
-            }));
+            })
+            .OrderByDescending(x => x.Seasons.First().FromYear).ThenByDescending(x => x.Seasons.First().UntilYear).ThenBy(x => x.ComparableName()));
 
         @Html.Partial("_SeasonListExpandable", seasonListModel);
     }

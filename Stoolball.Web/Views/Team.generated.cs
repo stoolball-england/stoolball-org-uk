@@ -330,21 +330,22 @@ WriteLiteral("\r\n");
                 var competition = seasonsInACompetition.First().Season.Competition;
                 competition.Seasons.AddRange(seasonsInACompetition.Select(season => season.Season));
                 return competition;
-            }));
+            })
+            .OrderByDescending(x => x.Seasons.First().FromYear).ThenByDescending(x => x.Seasons.First().UntilYear).ThenBy(x => x.ComparableName()));
 
         
             
             #line default
             #line hidden
             
-            #line 69 "..\..\Views\Team.cshtml"
+            #line 70 "..\..\Views\Team.cshtml"
    Write(Html.Partial("_SeasonListExpandable", seasonListModel));
 
             
             #line default
             #line hidden
             
-            #line 69 "..\..\Views\Team.cshtml"
+            #line 70 "..\..\Views\Team.cshtml"
                                                                ;
     
             
@@ -353,13 +354,13 @@ WriteLiteral("\r\n");
 WriteLiteral("\r\n\r\n");
 
             
-            #line 72 "..\..\Views\Team.cshtml"
+            #line 73 "..\..\Views\Team.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 72 "..\..\Views\Team.cshtml"
+            #line 73 "..\..\Views\Team.cshtml"
      if (!string.IsNullOrWhiteSpace(Model.Team.Cost))
     {
 
@@ -369,20 +370,20 @@ WriteLiteral("\r\n\r\n");
 WriteLiteral("        <h2>How much does it cost?</h2>\r\n");
 
             
-            #line 75 "..\..\Views\Team.cshtml"
+            #line 76 "..\..\Views\Team.cshtml"
         
             
             #line default
             #line hidden
             
-            #line 75 "..\..\Views\Team.cshtml"
+            #line 76 "..\..\Views\Team.cshtml"
    Write(Html.Raw(Model.Team.Cost));
 
             
             #line default
             #line hidden
             
-            #line 75 "..\..\Views\Team.cshtml"
+            #line 76 "..\..\Views\Team.cshtml"
                                   
     }
 
@@ -392,13 +393,13 @@ WriteLiteral("        <h2>How much does it cost?</h2>\r\n");
 WriteLiteral("\r\n    <h2>Contact details</h2>\r\n");
 
             
-            #line 79 "..\..\Views\Team.cshtml"
+            #line 80 "..\..\Views\Team.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 79 "..\..\Views\Team.cshtml"
+            #line 80 "..\..\Views\Team.cshtml"
       
         var socialMedia = new SocialMedia
         {
@@ -415,14 +416,14 @@ WriteLiteral("\r\n    <h2>Contact details</h2>\r\n");
             #line default
             #line hidden
             
-            #line 90 "..\..\Views\Team.cshtml"
+            #line 91 "..\..\Views\Team.cshtml"
        Write(Html.Raw(Model.Team.PublicContactDetails));
 
             
             #line default
             #line hidden
             
-            #line 90 "..\..\Views\Team.cshtml"
+            #line 91 "..\..\Views\Team.cshtml"
                                                       
 
             if (!string.IsNullOrWhiteSpace(Model.Team.Website))
@@ -433,20 +434,20 @@ WriteLiteral("\r\n    <h2>Contact details</h2>\r\n");
             #line hidden
 WriteLiteral("                <p>Visit <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3420), Tuple.Create("\"", 3446)
+WriteAttribute("href", Tuple.Create(" href=\"", 3568), Tuple.Create("\"", 3594)
             
-            #line 94 "..\..\Views\Team.cshtml"
-, Tuple.Create(Tuple.Create("", 3427), Tuple.Create<System.Object, System.Int32>(Model.Team.Website
+            #line 95 "..\..\Views\Team.cshtml"
+, Tuple.Create(Tuple.Create("", 3575), Tuple.Create<System.Object, System.Int32>(Model.Team.Website
             
             #line default
             #line hidden
-, 3427), false)
+, 3575), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 94 "..\..\Views\Team.cshtml"
+            #line 95 "..\..\Views\Team.cshtml"
                                                   Write(Model.Team.TeamName);
 
             
@@ -455,7 +456,7 @@ WriteLiteral(">");
 WriteLiteral("\'s website</a>.</p>\r\n");
 
             
-            #line 95 "..\..\Views\Team.cshtml"
+            #line 96 "..\..\Views\Team.cshtml"
             }
 
             
@@ -463,14 +464,14 @@ WriteLiteral("\'s website</a>.</p>\r\n");
             #line default
             #line hidden
             
-            #line 97 "..\..\Views\Team.cshtml"
+            #line 98 "..\..\Views\Team.cshtml"
        Write(Html.Partial("_SocialMedia", socialMedia));
 
             
             #line default
             #line hidden
             
-            #line 97 "..\..\Views\Team.cshtml"
+            #line 98 "..\..\Views\Team.cshtml"
                                                       
         }
         else if (Model.Team.TeamType != TeamType.Representative)
@@ -481,14 +482,14 @@ WriteLiteral("\'s website</a>.</p>\r\n");
             #line default
             #line hidden
             
-            #line 102 "..\..\Views\Team.cshtml"
+            #line 103 "..\..\Views\Team.cshtml"
        Write(Html.Partial("_ContactDetailsMissing", "team"));
 
             
             #line default
             #line hidden
             
-            #line 102 "..\..\Views\Team.cshtml"
+            #line 103 "..\..\Views\Team.cshtml"
                                                            
         }
     
@@ -498,13 +499,13 @@ WriteLiteral("\'s website</a>.</p>\r\n");
 WriteLiteral("\r\n\r\n");
 
             
-            #line 106 "..\..\Views\Team.cshtml"
+            #line 107 "..\..\Views\Team.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 106 "..\..\Views\Team.cshtml"
+            #line 107 "..\..\Views\Team.cshtml"
      if (Model.Team.ClubMark)
     {
         
@@ -512,14 +513,14 @@ WriteLiteral("\r\n\r\n");
             #line default
             #line hidden
             
-            #line 108 "..\..\Views\Team.cshtml"
+            #line 109 "..\..\Views\Team.cshtml"
    Write(Html.Partial("_ClubMark"));
 
             
             #line default
             #line hidden
             
-            #line 108 "..\..\Views\Team.cshtml"
+            #line 109 "..\..\Views\Team.cshtml"
                                   
     }
 
