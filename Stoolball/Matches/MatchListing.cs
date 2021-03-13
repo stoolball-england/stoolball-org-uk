@@ -1,11 +1,15 @@
-﻿using Stoolball.Teams;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Text;
+using Humanizer;
+using Stoolball.MatchLocations;
+using Stoolball.Teams;
 
 namespace Stoolball.Matches
 {
     public class MatchListing
     {
+        public Guid MatchId { get; set; }
         public string MatchName { get; set; }
         public DateTimeOffset StartTime { get; set; }
         public bool StartTimeIsKnown { get; set; }
@@ -59,5 +63,21 @@ namespace Stoolball.Matches
         public TournamentQualificationType? TournamentQualificationType { get; set; }
         public int? SpacesInTournament { get; set; }
         public string MatchRoute { get; set; }
+        public MatchLocation MatchLocation { get; set; }
+
+        /// <summary>
+        /// Gets a description of the match suitable for metadata or search results
+        /// </summary>
+        public string Description()
+        {
+            var description = new StringBuilder("Stoolball ");
+
+            description.Append(MatchType == null ? "tournament" : MatchType.Humanize(LetterCasing.LowerCase));
+            if (MatchLocation != null) description.Append(" at ").Append(MatchLocation.NameAndLocalityOrTown());
+
+            description.Append('.');
+
+            return description.ToString();
+        }
     }
 }

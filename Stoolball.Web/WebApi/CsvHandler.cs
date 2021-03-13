@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
 using System.Web;
@@ -22,7 +23,7 @@ namespace Stoolball.Web.WebApi
             }
 
             var requestedPath = Path.GetDirectoryName(context.Request.Url.AbsolutePath);
-            if (requestedPath.ToUpperInvariant() != @"\DATA")
+            if (!requestedPath.StartsWith(@"\DATA", StringComparison.OrdinalIgnoreCase))
             {
                 context.Response.StatusCode = 404;
                 return;

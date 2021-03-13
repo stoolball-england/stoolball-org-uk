@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Stoolball.Matches;
+using Stoolball.MatchLocations;
 using Stoolball.Teams;
 
 namespace Stoolball.Data.SqlServer
@@ -107,14 +108,16 @@ namespace Stoolball.Data.SqlServer
                 {
                     // Join to MatchInnings only happens if there's a batting team, because otherwise all you get from it is extra rows to process with just a MatchInningsId
                     var (matchSql, matchParameters) = BuildMatchQuery(matchQuery,
-                        $@"SELECT m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, m.MatchResultType,
+                        $@"SELECT m.MatchId, m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, m.MatchResultType,
                                 NULL AS TournamentQualificationType, NULL AS SpacesInTournament, m.OrderInTournament,
                                 mt.TeamRole, mt.MatchTeamId,
                                 mt.TeamId,
-                                i.MatchInningsId, i.Runs, i.Wickets
+                                i.MatchInningsId, i.Runs, i.Wickets,
+                                ml.MatchLocationId, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, ml.Town, ml.Latitude, ml.Longitude
                                 FROM { Tables.Match } AS m
                                 LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
                                 LEFT JOIN {Tables.MatchInnings} AS i ON m.MatchId = i.MatchId AND i.BattingMatchTeamId = mt.MatchTeamId
+                                LEFT JOIN {Tables.MatchLocation} AS ml ON m.MatchLocationId = ml.MatchLocationId
                                 <<JOIN>>
                                 <<WHERE>> ");
                     sql.Append(matchSql);
@@ -134,13 +137,15 @@ namespace Stoolball.Data.SqlServer
                 if (matchQuery.IncludeTournaments)
                 {
                     var (tournamentSql, tournamentParameters) = BuildTournamentQuery(matchQuery,
-                        $@"SELECT tourney.TournamentName AS MatchName, tourney.TournamentRoute AS MatchRoute, tourney.StartTime, tourney.StartTimeIsKnown, 
+                        $@"SELECT tourney.TournamentId AS MatchId, tourney.TournamentName AS MatchName, tourney.TournamentRoute AS MatchRoute, tourney.StartTime, tourney.StartTimeIsKnown, 
                                 NULL AS MatchType, tourney.PlayerType, NULL AS MatchResultType,
                                 tourney.QualificationType AS TournamentQualificationType, tourney.SpacesInTournament, NULL AS OrderInTournament,
                                 NULL AS TeamRole, NULL AS MatchTeamId,
                                 NULL AS TeamId,
-                                NULL AS MatchInningsId, NULL AS Runs, NULL AS Wickets
+                                NULL AS MatchInningsId, NULL AS Runs, NULL AS Wickets,
+                                ml.MatchLocationId, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, ml.Town, ml.Latitude, ml.Longitude
                                 FROM { Tables.Tournament} AS tourney
+                                LEFT JOIN {Tables.MatchLocation} AS ml ON tourney.MatchLocationId = ml.MatchLocationId
                                 <<JOIN>>
                                 <<WHERE>> ");
                     sql.Append(tournamentSql);
@@ -156,8 +161,8 @@ namespace Stoolball.Data.SqlServer
                 orderBy.Add("StartTime");
                 sql.Append("ORDER BY ").Append(string.Join(", ", orderBy.ToArray()));
 
-                var matches = await connection.QueryAsync<MatchListing, TeamInMatch, Team, MatchInnings, MatchListing>(sql.ToString(),
-                (matchListing, teamInMatch, team, matchInnings) =>
+                var matches = await connection.QueryAsync<MatchListing, TeamInMatch, Team, MatchInnings, MatchLocation, MatchListing>(sql.ToString(),
+                (matchListing, teamInMatch, team, matchInnings, location) =>
                 {
                     if (teamInMatch != null)
                     {
@@ -174,10 +179,11 @@ namespace Stoolball.Data.SqlServer
                     {
                         matchListing.MatchInnings.Add(matchInnings);
                     }
+                    matchListing.MatchLocation = location;
                     return matchListing;
                 },
                 new DynamicParameters(parameters),
-                splitOn: "TeamRole, TeamId, MatchInningsId").ConfigureAwait(false);
+                splitOn: "TeamRole, TeamId, MatchInningsId, MatchLocationId").ConfigureAwait(false);
 
                 var listingsToReturn = matches.GroupBy(match => match.MatchRoute).Select(copiesOfMatch =>
                 {

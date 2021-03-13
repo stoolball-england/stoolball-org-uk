@@ -190,6 +190,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 var result = results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute);
                 Assert.NotNull(result);
 
+                Assert.Equal(listing.MatchId, result.MatchId);
                 Assert.Equal(listing.MatchName, result.MatchName);
                 Assert.Equal(listing.StartTime.AccurateToTheMinute(), result.StartTime.AccurateToTheMinute());
                 Assert.Equal(listing.StartTimeIsKnown, result.StartTimeIsKnown);
@@ -268,6 +269,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 var result = results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute);
                 Assert.NotNull(result);
 
+                Assert.Equal(listing.MatchId, result.MatchId);
                 Assert.Equal(listing.MatchName, result.MatchName);
                 Assert.Equal(listing.StartTime.AccurateToTheMinute(), result.StartTime.AccurateToTheMinute());
                 Assert.Equal(listing.StartTime.AccurateToTheMinute(), result.StartTime.AccurateToTheMinute());
@@ -275,6 +277,29 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 Assert.Equal(listing.PlayerType, result.PlayerType);
                 Assert.Equal(listing.TournamentQualificationType, result.TournamentQualificationType);
                 Assert.Equal(listing.SpacesInTournament, result.SpacesInTournament);
+            }
+        }
+
+        [Fact]
+        public async Task Read_match_listings_returns_match_location()
+        {
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(null).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchListings.Count, results.Count);
+            foreach (var listing in _databaseFixture.MatchListings.Where(x => x.MatchLocation != null))
+            {
+                var result = results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute);
+                Assert.NotNull(result);
+
+                Assert.Equal(listing.MatchLocation.MatchLocationId, result.MatchLocation.MatchLocationId);
+                Assert.Equal(listing.MatchLocation.SecondaryAddressableObjectName, result.MatchLocation.SecondaryAddressableObjectName);
+                Assert.Equal(listing.MatchLocation.PrimaryAddressableObjectName, result.MatchLocation.PrimaryAddressableObjectName);
+                Assert.Equal(listing.MatchLocation.Locality, result.MatchLocation.Locality);
+                Assert.Equal(listing.MatchLocation.Town, result.MatchLocation.Town);
+                Assert.Equal(listing.MatchLocation.Latitude, result.MatchLocation.Latitude);
+                Assert.Equal(listing.MatchLocation.Longitude, result.MatchLocation.Longitude);
             }
         }
 

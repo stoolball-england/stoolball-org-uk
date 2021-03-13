@@ -265,13 +265,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         {
             return new MatchListing
             {
+                MatchId = tournament.TournamentId.Value,
                 MatchName = tournament.TournamentName,
                 MatchRoute = tournament.TournamentRoute,
                 StartTime = tournament.StartTime,
                 StartTimeIsKnown = tournament.StartTimeIsKnown,
                 PlayerType = tournament.PlayerType,
                 TournamentQualificationType = tournament.QualificationType,
-                SpacesInTournament = tournament.SpacesInTournament
+                SpacesInTournament = tournament.SpacesInTournament,
+                MatchLocation = tournament.TournamentLocation
             };
         }
 
@@ -279,6 +281,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         {
             return new MatchListing
             {
+                MatchId = match.MatchId.Value,
                 MatchInnings = match.MatchInnings,
                 MatchName = match.MatchName,
                 MatchRoute = match.MatchRoute,
@@ -287,7 +290,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 PlayerType = match.PlayerType,
                 StartTime = match.StartTime,
                 StartTimeIsKnown = match.StartTimeIsKnown,
-                Teams = match.Teams
+                Teams = match.Teams,
+                MatchLocation = match.MatchLocation
             };
         }
     }
