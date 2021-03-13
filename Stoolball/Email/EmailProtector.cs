@@ -9,9 +9,6 @@ namespace Stoolball.Email
     /// </summary>
     public class EmailProtector : IEmailProtector
     {
-        // From http://regexlib.com/REDetails.aspx?regexp_id=328
-        private const string EMAIL_REGEX = @"((""[^""\f\n\r\t\v\b]+"")|([\w\!\#\$\%\&\'\*\+\-\~\/\^\`\|\{\}]+(\.[\w\!\#\$\%\&\'\*\+\-\~\/\^\`\|\{\}]+)*))@((\[(((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9])))\])|(((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9])))|((([A-Za-z0-9\-])+\.)+[A-Za-z\-]+))";
-
         private const string REPLACEMENT_HTML_BEFORE_LINK = "(email address available – please ";
         private const string REPLACEMENT_HTML_AFTER_LINK = ")";
 
@@ -36,7 +33,7 @@ namespace Stoolball.Email
                     if (AllowEmailAddress(node.Attributes["href"].Value.Substring(7), userIsAuthenticated, excludedAddress))
                     {
                         node.Attributes["href"].Value = Obfuscate(node.Attributes["href"].Value);
-                        node.InnerHtml = Regex.Replace(node.InnerHtml, EMAIL_REGEX, match => Obfuscate(match.Value));
+                        node.InnerHtml = Regex.Replace(node.InnerHtml, Constants.RegularExpressions.Email, match => Obfuscate(match.Value));
                     }
                     else
                     {
@@ -75,7 +72,7 @@ namespace Stoolball.Email
 
         private static void ProtectTextNode(HtmlTextNode textNode, HtmlNode targetNode, bool userIsAuthenticated, string excludedAddress)
         {
-            var match = Regex.Match(textNode.OuterHtml, EMAIL_REGEX);
+            var match = Regex.Match(textNode.OuterHtml, Constants.RegularExpressions.Email);
             if (match.Success)
             {
                 var beforeMatch = targetNode.OwnerDocument.CreateTextNode(textNode.OuterHtml.Substring(0, match.Index));

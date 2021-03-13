@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Globalization;
@@ -177,8 +177,8 @@ namespace Stoolball.Data.SqlServer
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var sql = $@"SELECT t.TeamId, tv.TeamName, t.TeamRoute, t.PlayerType, YEAR(tv.UntilDate) AS UntilYear,
-                            ml.MatchLocationId, ml.Locality, ml.Town
+                var sql = $@"SELECT t.TeamId, tv.TeamName, t.TeamRoute, t.PlayerType, YEAR(tv.UntilDate) AS UntilYear, t.Website, t.Introduction, t.PlayingTimes, t.PublicContactDetails,
+                            ml.MatchLocationId, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.StreetDescription, ml.Locality, ml.Town, ml.AdministrativeArea, ml.Postcode, ml.Latitude, ml.Longitude
                             FROM {Tables.Team} AS t 
                             INNER JOIN {Tables.TeamVersion} AS tv ON t.TeamId = tv.TeamId
                             LEFT JOIN {Tables.TeamMatchLocation} AS tml ON tml.TeamId = t.TeamId AND tml.UntilDate IS NULL
@@ -268,6 +268,15 @@ namespace Stoolball.Data.SqlServer
             if (teamQuery != null && !teamQuery.IncludeClubTeams)
             {
                 where.Add("t.ClubId IS NULL");
+            }
+
+            if (teamQuery?.ActiveTeams == true)
+            {
+                where.Add("tv.UntilDate IS NULL");
+            }
+            else if (teamQuery?.ActiveTeams == false)
+            {
+                where.Add("tv.UntilDate IS NOT NULL");
             }
 
             sql = sql.Replace("<<JOIN>>", join.Count > 0 ? string.Join(" ", join) : string.Empty)

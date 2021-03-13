@@ -15,5 +15,10 @@ namespace Stoolball.Teams
         /// Gets or sets whether to include teams that are in clubs
         /// </summary>
         public bool IncludeClubTeams { get; internal set; } = true;
+
+        /// <summary>
+        /// Gets or sets whether to include active, inactive or all teams
+        /// </summary>
+        public bool? ActiveTeams { get; set; }
     }
 }

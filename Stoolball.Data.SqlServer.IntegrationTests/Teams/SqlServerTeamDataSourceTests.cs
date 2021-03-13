@@ -244,6 +244,30 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         }
 
         [Fact]
+        public async Task Read_total_teams_supports_filter_by_active_teams()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+            var query = new TeamFilter { ActiveTeams = true };
+
+            var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.Teams.Count(x => !x.UntilYear.HasValue), result);
+        }
+
+        [Fact]
+        public async Task Read_total_teams_supports_filter_by_inactive_teams()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+            var query = new TeamFilter { ActiveTeams = false };
+
+            var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.Teams.Count(x => x.UntilYear.HasValue), result);
+        }
+
+        [Fact]
         public async Task Read_teams_returns_basic_fields()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
@@ -261,6 +285,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 Assert.Equal(team.TeamRoute, result.TeamRoute);
                 Assert.Equal(team.PlayerType, result.PlayerType);
                 Assert.Equal(team.UntilYear, result.UntilYear);
+                Assert.Equal(team.Introduction, result.Introduction);
+                Assert.Equal(team.PlayingTimes, result.PlayingTimes);
+                Assert.Equal(team.PublicContactDetails, result.PublicContactDetails);
+                Assert.Equal(team.Website, result.Website);
             }
         }
 
@@ -282,8 +310,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 {
                     var resultMatchLocation = result.MatchLocations.SingleOrDefault(x => x.MatchLocationId == matchLocation.MatchLocationId);
                     Assert.NotNull(resultMatchLocation);
+                    Assert.Equal(matchLocation.SecondaryAddressableObjectName, resultMatchLocation.SecondaryAddressableObjectName);
+                    Assert.Equal(matchLocation.PrimaryAddressableObjectName, resultMatchLocation.PrimaryAddressableObjectName);
+                    Assert.Equal(matchLocation.StreetDescription, resultMatchLocation.StreetDescription);
                     Assert.Equal(matchLocation.Locality, resultMatchLocation.Locality);
                     Assert.Equal(matchLocation.Town, resultMatchLocation.Town);
+                    Assert.Equal(matchLocation.AdministrativeArea, resultMatchLocation.AdministrativeArea);
+                    Assert.Equal(matchLocation.Postcode, resultMatchLocation.Postcode);
+                    Assert.Equal(matchLocation.Latitude, resultMatchLocation.Latitude);
+                    Assert.Equal(matchLocation.Longitude, resultMatchLocation.Longitude);
                 }
             }
         }
@@ -449,6 +484,38 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 
             Assert.Equal(_databaseFixture.Teams.Count(x => x.Club == null), result.Count);
             foreach (var team in _databaseFixture.Teams.Where(x => x.Club == null))
+            {
+                Assert.NotNull(result.SingleOrDefault(x => x.TeamId == team.TeamId));
+            }
+        }
+
+        [Fact]
+        public async Task Read_teams_supports_filter_by_active_teams()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+            var query = new TeamFilter { ActiveTeams = true };
+
+            var result = await teamDataSource.ReadTeams(query).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.Teams.Count(x => !x.UntilYear.HasValue), result.Count);
+            foreach (var team in _databaseFixture.Teams.Where(x => !x.UntilYear.HasValue))
+            {
+                Assert.NotNull(result.SingleOrDefault(x => x.TeamId == team.TeamId));
+            }
+        }
+
+        [Fact]
+        public async Task Read_teams_supports_filter_by_inactive_teams()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+            var query = new TeamFilter { ActiveTeams = false };
+
+            var result = await teamDataSource.ReadTeams(query).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.Teams.Count(x => x.UntilYear.HasValue), result.Count);
+            foreach (var team in _databaseFixture.Teams.Where(x => x.UntilYear.HasValue))
             {
                 Assert.NotNull(result.SingleOrDefault(x => x.TeamId == team.TeamId));
             }

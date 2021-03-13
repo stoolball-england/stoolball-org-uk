@@ -150,6 +150,7 @@ namespace Stoolball.Teams
             get { return new Uri($"https://www.stoolball.org.uk/id/team/{TeamId}"); }
         }
 
+
         /// <summary>
         /// Gets a description of the team suitable for metadata or search results
         /// </summary>

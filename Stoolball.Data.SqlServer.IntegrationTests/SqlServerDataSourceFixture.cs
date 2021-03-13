@@ -99,6 +99,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 MatchInThePastWithFullDetails = seedDataGenerator.CreateMatchInThePastWithFullDetails();
                 repo.CreateMatchLocation(MatchInThePastWithFullDetails.MatchLocation);
                 var playersForMatchInThePastWithFullDetails = playerIdentityFinder.PlayerIdentitiesInMatch(MatchInThePastWithFullDetails);
+                MatchInThePastWithFullDetails.Teams[0].Team.UntilYear = 2020;
                 foreach (var team in MatchInThePastWithFullDetails.Teams)
                 {
                     repo.CreateTeam(team.Team);
@@ -130,6 +131,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 TournamentInThePastWithFullDetails = seedDataGenerator.CreateTournamentInThePastWithFullDetails();
                 Teams.AddRange(TournamentInThePastWithFullDetails.Teams.Select(x => x.Team));
+                MatchInThePastWithFullDetails.Teams[0].Team.UntilYear = 2020;
                 foreach (var team in TournamentInThePastWithFullDetails.Teams)
                 {
                     repo.CreateTeam(team.Team);
