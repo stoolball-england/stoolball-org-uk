@@ -56,8 +56,9 @@ namespace Stoolball.Web.Matches
                 Description = x.Description()
             }).ToList();
 
-            var path = Path.Combine(HostingEnvironment.ApplicationPhysicalPath, @"App_Data\csv", "wsnet.csv");
-            using (var writer = new StreamWriter(path))
+            var path = Path.Combine(HostingEnvironment.ApplicationPhysicalPath, @"App_Data\csv");
+            if (!Directory.Exists(path)) { Directory.CreateDirectory(path); }
+            using (var writer = new StreamWriter(Path.Combine(path, "wsnet.csv")))
             {
                 using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
                 {

@@ -64,8 +64,9 @@ namespace Stoolball.Web.Teams
                 ContactPhone = _contactDetailsParser.ParseFirstPhoneNumber(x.PublicContactDetails)
             }).Where(x => !string.IsNullOrEmpty(x.ContactEmail) || !string.IsNullOrEmpty(x.ContactPhone)).ToList();
 
-            var path = Path.Combine(HostingEnvironment.ApplicationPhysicalPath, @"App_Data\csv", "spogo-protected.csv");
-            using (var writer = new StreamWriter(path))
+            var path = Path.Combine(HostingEnvironment.ApplicationPhysicalPath, @"App_Data\csv");
+            if (!Directory.Exists(path)) { Directory.CreateDirectory(path); }
+            using (var writer = new StreamWriter(Path.Combine(path, "spogo-protected.csv")))
             {
                 using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
                 {
@@ -74,8 +75,7 @@ namespace Stoolball.Web.Teams
             }
 
             foreach (var team in teams) { team.ContactEmail = team.ContactPhone = string.Empty; }
-            path = Path.Combine(HostingEnvironment.ApplicationPhysicalPath, @"App_Data\csv", "spogo.csv");
-            using (var writer = new StreamWriter(path))
+            using (var writer = new StreamWriter(Path.Combine(path, "spogo.csv")))
             {
                 using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
                 {
