@@ -38,7 +38,7 @@ namespace Stoolball.Web.Teams
                 return false;
             }
 
-            _logger.Info<SpogoCsvExportTask>(nameof(SpogoCsvExportTask) + " running disposable async");
+            _logger.Info<SpogoCsvExportTask>(nameof(SpogoCsvExportTask) + " running");
 
             var teams = (await _teamDataSource.ReadTeams(new TeamFilter
             {

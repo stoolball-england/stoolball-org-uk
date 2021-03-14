@@ -15,6 +15,8 @@ namespace Stoolball.Matches
         public bool StartTimeIsKnown { get; set; }
         public MatchType? MatchType { get; set; }
         public PlayerType PlayerType { get; set; }
+        public int? PlayersPerTeam { get; set; }
+        public int? Overs { get; set; }
         public List<TeamInMatch> Teams { get; internal set; } = new List<TeamInMatch>();
         public MatchResultType? MatchResultType { get; set; }
         public List<MatchInnings> MatchInnings { get; internal set; } = new List<MatchInnings>();

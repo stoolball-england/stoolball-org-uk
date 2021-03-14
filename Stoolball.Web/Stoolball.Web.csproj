@@ -1357,8 +1357,11 @@
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
     <Compile Include="ContentPage\CookiesController.cs" />
+    <Compile Include="Matches\WomensSportsNetworkCsvExportComponent.cs" />
     <Compile Include="Matches\OnlySportCsvExportComponent.cs" />
+    <Compile Include="Matches\WomensSportsNetworkCsvExportTask.cs" />
     <Compile Include="Matches\OnlySportCsvExportTask.cs" />
+    <Compile Include="Matches\WomensSportsNetworkCsvRecord.cs" />
     <Compile Include="Matches\OnlySportCsvRecord.cs" />
     <Compile Include="Teams\SpogoCsvExportComponent.cs" />
     <Compile Include="Teams\SpogoCsvExportTask.cs" />

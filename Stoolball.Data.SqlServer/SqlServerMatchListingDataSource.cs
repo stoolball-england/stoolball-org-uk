@@ -107,9 +107,11 @@ namespace Stoolball.Data.SqlServer
                 if (matchQuery.IncludeMatches)
                 {
                     // Join to MatchInnings only happens if there's a batting team, because otherwise all you get from it is extra rows to process with just a MatchInningsId
+                    // 
+                    // The GROUP BY clause and the join to Tables.OverSet are all only to get SUM(Overs), which is only used by the Women's Sports Network export
                     var (matchSql, matchParameters) = BuildMatchQuery(matchQuery,
-                        $@"SELECT m.MatchId, m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, m.MatchResultType,
-                                NULL AS TournamentQualificationType, NULL AS SpacesInTournament, m.OrderInTournament,
+                        $@"SELECT m.MatchId, m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, m.PlayersPerTeam, m.MatchResultType,
+                                NULL AS TournamentQualificationType, NULL AS SpacesInTournament, m.OrderInTournament, SUM(os.Overs) AS Overs,
                                 mt.TeamRole, mt.MatchTeamId,
                                 mt.TeamId,
                                 i.MatchInningsId, i.Runs, i.Wickets,
@@ -118,8 +120,12 @@ namespace Stoolball.Data.SqlServer
                                 LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
                                 LEFT JOIN {Tables.MatchInnings} AS i ON m.MatchId = i.MatchId AND i.BattingMatchTeamId = mt.MatchTeamId
                                 LEFT JOIN {Tables.MatchLocation} AS ml ON m.MatchLocationId = ml.MatchLocationId
+                                LEFT JOIN {Tables.OverSet} AS os ON i.MatchInningsId = os.MatchInningsId
                                 <<JOIN>>
-                                <<WHERE>> ");
+                                <<WHERE>> 
+                                GROUP BY m.MatchId, m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, m.PlayersPerTeam, m.MatchResultType,
+                                m.OrderInTournament, mt.TeamRole, mt.MatchTeamId, mt.TeamId, i.MatchInningsId, i.Runs, i.Wickets,
+                                ml.MatchLocationId, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, ml.Town, ml.Latitude, ml.Longitude");
                     sql.Append(matchSql);
                     parameters = matchParameters;
 
@@ -138,8 +144,8 @@ namespace Stoolball.Data.SqlServer
                 {
                     var (tournamentSql, tournamentParameters) = BuildTournamentQuery(matchQuery,
                         $@"SELECT tourney.TournamentId AS MatchId, tourney.TournamentName AS MatchName, tourney.TournamentRoute AS MatchRoute, tourney.StartTime, tourney.StartTimeIsKnown, 
-                                NULL AS MatchType, tourney.PlayerType, NULL AS MatchResultType,
-                                tourney.QualificationType AS TournamentQualificationType, tourney.SpacesInTournament, NULL AS OrderInTournament,
+                                NULL AS MatchType, tourney.PlayerType, tourney.PlayersPerTeam, NULL AS MatchResultType,
+                                tourney.QualificationType AS TournamentQualificationType, tourney.SpacesInTournament, NULL AS OrderInTournament, NULL AS Overs,
                                 NULL AS TeamRole, NULL AS MatchTeamId,
                                 NULL AS TeamId,
                                 NULL AS MatchInningsId, NULL AS Runs, NULL AS Wickets,
@@ -159,7 +165,7 @@ namespace Stoolball.Data.SqlServer
                 }
 
                 orderBy.Add("StartTime");
-                sql.Append("ORDER BY ").Append(string.Join(", ", orderBy.ToArray()));
+                sql.Append(" ORDER BY ").Append(string.Join(", ", orderBy.ToArray()));
 
                 var matches = await connection.QueryAsync<MatchListing, TeamInMatch, Team, MatchInnings, MatchLocation, MatchListing>(sql.ToString(),
                 (matchListing, teamInMatch, team, matchInnings, location) =>

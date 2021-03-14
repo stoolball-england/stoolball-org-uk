@@ -196,6 +196,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 Assert.Equal(listing.StartTimeIsKnown, result.StartTimeIsKnown);
                 Assert.Equal(listing.MatchType, result.MatchType);
                 Assert.Equal(listing.PlayerType, result.PlayerType);
+                Assert.Equal(listing.PlayersPerTeam, result.PlayersPerTeam);
                 Assert.Equal(listing.MatchResultType, result.MatchResultType);
             }
         }
@@ -221,6 +222,23 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                     Assert.Equal(team.TeamRole, resultTeam.TeamRole);
                     Assert.Equal(team.Team.TeamId, resultTeam.Team.TeamId);
                 }
+            }
+        }
+
+        [Fact]
+        public async Task Read_match_listings_returns_overs_calculated_from_oversets()
+        {
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(null).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.MatchListings.Count, results.Count);
+            foreach (var listing in _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase)))
+            {
+                var result = results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute);
+                Assert.NotNull(result);
+
+                Assert.Equal(listing.Overs, result.Overs);
             }
         }
 
@@ -275,6 +293,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 Assert.Equal(listing.StartTime.AccurateToTheMinute(), result.StartTime.AccurateToTheMinute());
                 Assert.Equal(listing.StartTimeIsKnown, result.StartTimeIsKnown);
                 Assert.Equal(listing.PlayerType, result.PlayerType);
+                Assert.Equal(listing.PlayersPerTeam, result.PlayersPerTeam);
                 Assert.Equal(listing.TournamentQualificationType, result.TournamentQualificationType);
                 Assert.Equal(listing.SpacesInTournament, result.SpacesInTournament);
             }
