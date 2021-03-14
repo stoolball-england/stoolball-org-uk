@@ -46,6 +46,9 @@ namespace Stoolball.Web.WebApi
                 }
             }
 
+            context.Response.ContentType = "text/csv";
+            context.Response.Headers.Add("Cache-Control", "max-age=86400, public"); // 1 day
+            context.Response.Headers.Add("Content-Disposition", "attachment; filename=\"stoolball-england.csv\"");
             context.Response.WriteFile(path);
         }
 
