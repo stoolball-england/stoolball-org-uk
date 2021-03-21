@@ -71,5 +71,12 @@ namespace Stoolball
             public const string MemberPasswordReset = "Reset password for member {MemberUsername} {MemberKey} in {Type:l}.{Method:l}.";
             public const string MemberAccountUpdated = "Account updated for member {MemberName} {MemberKey} in {Type:l}.{Method:l}.";
         }
+
+        [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Not a typical class. This is creating a set of constants accessible with IntelliSense.")]
+        public static class EntityUriPrefixes
+        {
+            public const string Match = "https://www.stoolball.org.uk/id/match/";
+            public const string Tournament = "https://www.stoolball.org.uk/id/tournament/";
+        }
     }
 }

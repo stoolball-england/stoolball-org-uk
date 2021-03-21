@@ -2741,6 +2741,7 @@
       <LastGenOutput>_InningsStatistics.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\TournamentsRss.cshtml" />
+    <Content Include="Views\TournamentTweets.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

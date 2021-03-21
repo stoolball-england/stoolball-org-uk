@@ -51,11 +51,6 @@ namespace Stoolball.Web.Tests.Matches
                 controllerContext.Setup(p => p.HttpContext.User).Returns(new GenericPrincipal(new GenericIdentity("test"), null));
                 ControllerContext = controllerContext.Object;
             }
-
-            protected override ActionResult CurrentTemplate<T>(T model)
-            {
-                return View("TournamentsRss", model);
-            }
         }
 
         [Fact]

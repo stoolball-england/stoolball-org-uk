@@ -26,8 +26,8 @@
         <description><![CDATA[@tournament.Description()]]></description>
         <link>@:https://@Request.Url.Authority@tournament.MatchRoute</link>
         <pubDate>@tournament.LastAuditDate.Value.ToRFC822()</pubDate>
-        <guid isPermaLink="false">@tournament.MatchId</guid>
-        <source url="@(Request.Url.ToString().Replace("/rss/", "/")).rss" />
+        <guid isPermaLink="false">@Stoolball.Constants.EntityUriPrefixes.Tournament@tournament.MatchId</guid>
+		<source url="@Request.Url.Scheme://@Request.Url.Authority@(Request.Url.AbsolutePath.Replace("/rss/", "/" )).rss@(Request.Url.Query)" />
         <category>@tournament.PlayerType.Humanize(LetterCasing.LowerCase)</category>
     @:</item>
     }

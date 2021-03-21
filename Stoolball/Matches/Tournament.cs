@@ -91,7 +91,7 @@ namespace Stoolball.Matches
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 
         public Uri EntityUri {
-            get { return new Uri($"https://www.stoolball.org.uk/id/tournament/{TournamentId}"); }
+            get { return new Uri($"{Constants.EntityUriPrefixes.Tournament}{TournamentId}"); }
         }
 
         /// <summary>

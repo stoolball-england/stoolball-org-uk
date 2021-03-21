@@ -51,39 +51,38 @@ namespace Stoolball.Web.Matches
                 daysAhead = 365;
             }
 
-            var filter = new MatchFilter
+
+            var model = new MatchListingViewModel(contentModel.Content, Services?.UserService)
             {
-                IncludeTournaments = true,
-                IncludeTournamentMatches = false,
-                IncludeMatches = false,
-                FromDate = DateTimeOffset.UtcNow.AddDays(-1),
-                UntilDate = DateTimeOffset.UtcNow.AddDays(daysAhead)
+                MatchFilter = new MatchFilter
+                {
+                    IncludeTournaments = true,
+                    IncludeTournamentMatches = false,
+                    IncludeMatches = false,
+                    FromDate = DateTimeOffset.UtcNow.AddDays(-1700),
+                    UntilDate = DateTimeOffset.UtcNow.AddDays(daysAhead)
+                },
+                DateTimeFormatter = _dateFormatter
             };
 
             var playerType = Path.GetFileNameWithoutExtension(Request.RawUrl.ToUpperInvariant());
             switch (playerType)
             {
                 case "MIXED":
-                    filter.PlayerTypes.Add(PlayerType.Mixed);
+                    model.MatchFilter.PlayerTypes.Add(PlayerType.Mixed);
                     break;
                 case "LADIES":
-                    filter.PlayerTypes.Add(PlayerType.Ladies);
+                    model.MatchFilter.PlayerTypes.Add(PlayerType.Ladies);
                     break;
                 case "JUNIOR":
-                    filter.PlayerTypes.Add(PlayerType.JuniorMixed);
-                    filter.PlayerTypes.Add(PlayerType.JuniorGirls);
-                    filter.PlayerTypes.Add(PlayerType.JuniorBoys);
+                    model.MatchFilter.PlayerTypes.Add(PlayerType.JuniorMixed);
+                    model.MatchFilter.PlayerTypes.Add(PlayerType.JuniorGirls);
+                    model.MatchFilter.PlayerTypes.Add(PlayerType.JuniorBoys);
                     break;
                 default:
                     playerType = null;
                     break;
             }
-
-            var model = new MatchListingViewModel(contentModel.Content, Services?.UserService)
-            {
-                Matches = await _matchDataSource.ReadMatchListings(filter, MatchSortOrder.LatestUpdateFirst).ConfigureAwait(false),
-                DateTimeFormatter = _dateFormatter
-            };
 
             model.Metadata.PageTitle = "Stoolball tournaments";
             model.Metadata.Description = $"New or updated stoolball tournaments on the Stoolball England website";
@@ -92,8 +91,9 @@ namespace Stoolball.Web.Matches
                 model.Metadata.PageTitle = $"{playerType.ToLower(CultureInfo.CurrentCulture).Humanize(LetterCasing.Sentence)} {model.Metadata.PageTitle.ToLower(CultureInfo.CurrentCulture)}";
                 model.Metadata.Description = $"New or updated {playerType.ToLower(CultureInfo.CurrentCulture).Humanize(LetterCasing.LowerCase)} stoolball tournaments on the Stoolball England website";
             }
+            model.Matches = await _matchDataSource.ReadMatchListings(model.MatchFilter, MatchSortOrder.LatestUpdateFirst).ConfigureAwait(false);
 
-            return CurrentTemplate(model);
+            return View(Request.QueryString["format"] == "tweet" ? "TournamentTweets" : "TournamentsRss", model);
         }
     }
 }

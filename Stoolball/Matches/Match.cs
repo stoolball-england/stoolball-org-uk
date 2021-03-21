@@ -87,7 +87,7 @@ namespace Stoolball.Matches
         public Season Season { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
         public Uri EntityUri {
-            get { return new Uri($"https://www.stoolball.org.uk/id/match/{MatchId}"); }
+            get { return new Uri($"{Constants.EntityUriPrefixes.Match}{MatchId}"); }
         }
 
         /// <summary>
