@@ -86,7 +86,7 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of matches and tournaments based on a query
         /// </summary>
         /// <returns>A list of <see cref="MatchListing"/> objects. An empty list if no matches or tournaments are found.</returns>
-        public async Task<List<MatchListing>> ReadMatchListings(MatchFilter matchQuery)
+        public async Task<List<MatchListing>> ReadMatchListings(MatchFilter matchQuery, MatchSortOrder sortOrder)
         {
             if (matchQuery is null)
             {
@@ -112,6 +112,7 @@ namespace Stoolball.Data.SqlServer
                     var (matchSql, matchParameters) = BuildMatchQuery(matchQuery,
                         $@"SELECT m.MatchId, m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, m.PlayersPerTeam, m.MatchResultType,
                                 NULL AS TournamentQualificationType, NULL AS SpacesInTournament, m.OrderInTournament, SUM(os.Overs) AS Overs,
+                                (SELECT TOP 1 AuditDate FROM {Tables.Audit} WHERE EntityUri = CONCAT('https://www.stoolball.org.uk/id/match/', m.MatchId) ORDER BY AuditDate DESC) AS LastAuditDate,
                                 mt.TeamRole, mt.MatchTeamId,
                                 mt.TeamId,
                                 i.MatchInningsId, i.Runs, i.Wickets,
@@ -146,6 +147,7 @@ namespace Stoolball.Data.SqlServer
                         $@"SELECT tourney.TournamentId AS MatchId, tourney.TournamentName AS MatchName, tourney.TournamentRoute AS MatchRoute, tourney.StartTime, tourney.StartTimeIsKnown, 
                                 NULL AS MatchType, tourney.PlayerType, tourney.PlayersPerTeam, NULL AS MatchResultType,
                                 tourney.QualificationType AS TournamentQualificationType, tourney.SpacesInTournament, NULL AS OrderInTournament, NULL AS Overs,
+                                (SELECT TOP 1 AuditDate FROM {Tables.Audit} WHERE EntityUri = CONCAT('https://www.stoolball.org.uk/id/tournament/', tourney.TournamentId) ORDER BY AuditDate DESC) AS LastAuditDate,
                                 NULL AS TeamRole, NULL AS MatchTeamId,
                                 NULL AS TeamId,
                                 NULL AS MatchInningsId, NULL AS Runs, NULL AS Wickets,
@@ -164,7 +166,14 @@ namespace Stoolball.Data.SqlServer
                     }
                 }
 
-                orderBy.Add("StartTime");
+                if (sortOrder == MatchSortOrder.MatchDateEarliestFirst)
+                {
+                    orderBy.Add("StartTime");
+                }
+                else if (sortOrder == MatchSortOrder.LatestUpdateFirst)
+                {
+                    orderBy.Add("LastAuditDate DESC");
+                }
                 sql.Append(" ORDER BY ").Append(string.Join(", ", orderBy.ToArray()));
 
                 var matches = await connection.QueryAsync<MatchListing, TeamInMatch, Team, MatchInnings, MatchLocation, MatchListing>(sql.ToString(),
@@ -203,24 +212,30 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private static (string filteredSql, Dictionary<string, object> parameters) BuildMatchQuery(MatchFilter matchQuery, string sql)
+        private static (string filteredSql, Dictionary<string, object> parameters) BuildMatchQuery(MatchFilter filter, string sql)
         {
-            if (matchQuery is null)
+            if (filter is null)
             {
-                throw new ArgumentNullException(nameof(matchQuery));
+                throw new ArgumentNullException(nameof(filter));
             }
 
             var join = new List<string>();
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();
 
-            if (matchQuery.MatchTypes?.Count > 0)
+            if (filter.MatchTypes?.Count > 0)
             {
                 where.Add("m.MatchType IN @MatchTypes");
-                parameters.Add("@MatchTypes", matchQuery.MatchTypes.Select(x => x.ToString()));
+                parameters.Add("@MatchTypes", filter.MatchTypes.Select(x => x.ToString()));
             }
 
-            if (matchQuery.TeamIds?.Count > 0)
+            if (filter.PlayerTypes?.Count > 0)
+            {
+                where.Add("m.PlayerType IN @PlayerTypes");
+                parameters.Add("@PlayerTypes", filter.PlayerTypes.Select(x => x.ToString()));
+            }
+
+            if (filter.TeamIds?.Count > 0)
             {
                 if (!sql.Contains(Tables.MatchTeam))
                 {
@@ -228,50 +243,50 @@ namespace Stoolball.Data.SqlServer
                 }
 
                 where.Add("mt.TeamId IN @TeamIds");
-                parameters.Add("@TeamIds", matchQuery.TeamIds);
+                parameters.Add("@TeamIds", filter.TeamIds);
             }
 
-            if (matchQuery.CompetitionIds?.Count > 0)
+            if (filter.CompetitionIds?.Count > 0)
             {
                 join.Add($"INNER JOIN {Tables.Season} s ON m.SeasonId = s.SeasonId");
 
                 where.Add("s.CompetitionId IN @CompetitionIds");
-                parameters.Add("@CompetitionIds", matchQuery.CompetitionIds);
+                parameters.Add("@CompetitionIds", filter.CompetitionIds);
             }
 
-            if (matchQuery.SeasonIds?.Count > 0)
+            if (filter.SeasonIds?.Count > 0)
             {
                 where.Add("m.SeasonId IN @SeasonIds");
-                parameters.Add("@SeasonIds", matchQuery.SeasonIds);
+                parameters.Add("@SeasonIds", filter.SeasonIds);
             }
 
-            if (matchQuery.MatchLocationIds?.Count > 0)
+            if (filter.MatchLocationIds?.Count > 0)
             {
                 where.Add("m.MatchLocationId IN @MatchLocationIds");
-                parameters.Add("@MatchLocationIds", matchQuery.MatchLocationIds);
+                parameters.Add("@MatchLocationIds", filter.MatchLocationIds);
             }
 
-            if (matchQuery.FromDate != null)
+            if (filter.FromDate != null)
             {
                 where.Add("m.StartTime >= @FromDate");
-                parameters.Add("@FromDate", matchQuery.FromDate.Value);
+                parameters.Add("@FromDate", filter.FromDate.Value);
             }
 
-            if (matchQuery.UntilDate != null)
+            if (filter.UntilDate != null)
             {
                 where.Add("m.StartTime <= @UntilDate");
-                parameters.Add("@UntilDate", matchQuery.UntilDate.Value);
+                parameters.Add("@UntilDate", filter.UntilDate.Value);
             }
 
-            if (matchQuery.IncludeTournamentMatches == false)
+            if (filter.IncludeTournamentMatches == false)
             {
                 where.Add("m.TournamentId IS NULL");
             }
 
-            if (matchQuery.TournamentId != null)
+            if (filter.TournamentId != null)
             {
                 where.Add("m.TournamentId = @TournamentId");
-                parameters.Add("@TournamentId", matchQuery.TournamentId.Value);
+                parameters.Add("@TournamentId", filter.TournamentId.Value);
             }
 
             sql = sql.Replace("<<JOIN>>", join.Count > 0 ? string.Join(" ", join) : string.Empty)
@@ -280,35 +295,41 @@ namespace Stoolball.Data.SqlServer
             return (sql, parameters);
         }
 
-        private static (string filteredSql, Dictionary<string, object> parameters) BuildTournamentQuery(MatchFilter matchQuery, string sql)
+        private static (string filteredSql, Dictionary<string, object> parameters) BuildTournamentQuery(MatchFilter filter, string sql)
         {
-            if (matchQuery is null)
+            if (filter is null)
             {
-                throw new ArgumentNullException(nameof(matchQuery));
+                throw new ArgumentNullException(nameof(filter));
             }
 
             var join = new List<string>();
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();
 
-            if (matchQuery.TeamIds?.Count > 0)
+            if (filter.PlayerTypes?.Count > 0)
+            {
+                where.Add("tourney.PlayerType IN @PlayerTypes");
+                parameters.Add("@PlayerTypes", filter.PlayerTypes.Select(x => x.ToString()));
+            }
+
+            if (filter.TeamIds?.Count > 0)
             {
                 join.Add($"INNER JOIN {Tables.TournamentTeam} tt ON tourney.TournamentId = tt.TournamentId");
 
                 where.Add("tt.TeamId IN @TeamIds");
-                parameters.Add("@TeamIds", matchQuery.TeamIds);
+                parameters.Add("@TeamIds", filter.TeamIds);
             }
 
-            if (matchQuery.CompetitionIds?.Count > 0)
+            if (filter.CompetitionIds?.Count > 0)
             {
                 join.Add($"INNER JOIN {Tables.TournamentSeason} ts ON tourney.TournamentId = ts.TournamentId");
                 join.Add($"INNER JOIN {Tables.Season} s ON ts.SeasonId = s.SeasonId");
 
                 where.Add("s.CompetitionId IN @CompetitionIds");
-                parameters.Add("@CompetitionIds", matchQuery.CompetitionIds);
+                parameters.Add("@CompetitionIds", filter.CompetitionIds);
             }
 
-            if (matchQuery.SeasonIds?.Count > 0)
+            if (filter.SeasonIds?.Count > 0)
             {
                 if (!string.Join(string.Empty, join).Contains(Tables.TournamentSeason))
                 {
@@ -316,31 +337,31 @@ namespace Stoolball.Data.SqlServer
                 }
 
                 where.Add("ts.SeasonId IN @SeasonIds");
-                parameters.Add("@SeasonIds", matchQuery.SeasonIds);
+                parameters.Add("@SeasonIds", filter.SeasonIds);
             }
 
-            if (matchQuery.MatchLocationIds?.Count > 0)
+            if (filter.MatchLocationIds?.Count > 0)
             {
                 where.Add("tourney.MatchLocationId IN @MatchLocationIds");
-                parameters.Add("@MatchLocationIds", matchQuery.MatchLocationIds);
+                parameters.Add("@MatchLocationIds", filter.MatchLocationIds);
             }
 
-            if (matchQuery.FromDate != null)
+            if (filter.FromDate != null)
             {
                 where.Add("tourney.StartTime >= @FromDate");
-                parameters.Add("@FromDate", matchQuery.FromDate.Value);
+                parameters.Add("@FromDate", filter.FromDate.Value);
             }
 
-            if (matchQuery.UntilDate != null)
+            if (filter.UntilDate != null)
             {
                 where.Add("tourney.StartTime <= @UntilDate");
-                parameters.Add("@UntilDate", matchQuery.UntilDate.Value);
+                parameters.Add("@UntilDate", filter.UntilDate.Value);
             }
 
-            if (matchQuery.TournamentId != null)
+            if (filter.TournamentId != null)
             {
                 where.Add("tourney.TournamentId = @TournamentId");
-                parameters.Add("@TournamentId", matchQuery.TournamentId.Value);
+                parameters.Add("@TournamentId", filter.TournamentId.Value);
             }
 
             sql = sql.Replace("<<JOIN>>", join.Count > 0 ? string.Join(" ", join) : string.Empty)

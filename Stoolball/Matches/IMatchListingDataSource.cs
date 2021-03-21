@@ -18,6 +18,6 @@ namespace Stoolball.Matches
         /// Gets a list of matches and tournaments based on a query
         /// </summary>
         /// <returns>A list of <see cref="MatchListing"/> objects. An empty list if no matches or tournaments are found.</returns>
-        Task<List<MatchListing>> ReadMatchListings(MatchFilter matchQuery);
+        Task<List<MatchListing>> ReadMatchListings(MatchFilter matchQuery, MatchSortOrder sortOrder);
     }
 }

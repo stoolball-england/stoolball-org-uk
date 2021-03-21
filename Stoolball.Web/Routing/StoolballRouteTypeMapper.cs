@@ -63,6 +63,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.EditBowlingScorecard, typeof(EditBowlingScorecardController) },
             { StoolballRouteType.EditCloseOfPlay, typeof(EditCloseOfPlayController) },
             { StoolballRouteType.DeleteMatch, typeof(DeleteMatchController) },
+            { StoolballRouteType.TournamentsRss, typeof(TournamentsRssController) },
             { StoolballRouteType.Tournament, typeof(TournamentController) },
             { StoolballRouteType.TournamentActions, typeof(TournamentActionsController) },
             { StoolballRouteType.CreateTournament, typeof(CreateTournamentController) },

@@ -1,15 +1,15 @@
-﻿using Moq;
-using Stoolball.Dates;
-using Stoolball.Email;
-using Stoolball.Matches;
-using Stoolball.Security;
-using Stoolball.Web.Matches;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Moq;
+using Stoolball.Dates;
+using Stoolball.Email;
+using Stoolball.Matches;
+using Stoolball.Security;
+using Stoolball.Web.Matches;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -80,7 +80,7 @@ namespace Stoolball.Web.Tests.Matches
             tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentName = "Example tournament" });
 
             var matchDataSource = new Mock<IMatchListingDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>())).ReturnsAsync(new List<MatchListing>());
+            matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = new TestController(tournamentDataSource.Object, matchDataSource.Object, UmbracoHelper))
             {

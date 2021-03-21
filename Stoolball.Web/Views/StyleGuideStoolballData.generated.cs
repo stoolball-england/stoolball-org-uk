@@ -615,7 +615,7 @@ WriteLiteral("\r\n    <p>This is a list of matches.</p>\r\n");
             
             #line 138 "..\..\Views\StyleGuideStoolballData.cshtml"
       
-        var matchListing = new MatchListingViewModel
+        var matchListing = new MatchListingViewModel(Umbraco.AssignedContentItem, Services.UserService)
         {
             DateTimeFormatter = new Stoolball.Dates.DateTimeFormatter()
         };

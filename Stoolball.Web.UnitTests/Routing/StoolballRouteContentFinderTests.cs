@@ -171,6 +171,7 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/matches/example-MaTcH/Edit/close-Of-Play/", StoolballRouteType.EditCloseOfPlay)]
         [InlineData("https://example.org/matches/example-match/delete", StoolballRouteType.DeleteMatch)]
         [InlineData("https://example.org/matches/example-MaTcH/DELETE/", StoolballRouteType.DeleteMatch)]
+        [InlineData("https://example.org/rss/tournaments/all", StoolballRouteType.TournamentsRss)]
         [InlineData("https://example.org/tournaments/example-tournament/", StoolballRouteType.Tournament)]
         [InlineData("https://example.org/tournaments/123-TOURNAMENT/", StoolballRouteType.Tournament)]
         [InlineData("https://example.org/tournaments/example-tournament/Edit", StoolballRouteType.TournamentActions)]
@@ -223,6 +224,7 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/matches/example-match/edit/innings/1/invalid/")]
         [InlineData("https://example.org/tournaments")]
         [InlineData("https://example.org/tournamnents/")]
+        [InlineData("https://example.org/rss/tournaments/invalid")]
         [InlineData("https://example.org/other")]
         [InlineData("https://example.org/other/")]
         public void Other_route_should_not_match(string route)

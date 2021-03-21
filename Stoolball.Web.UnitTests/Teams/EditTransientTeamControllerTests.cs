@@ -78,7 +78,7 @@ namespace Stoolball.Web.Tests.Teams
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team { TeamId = Guid.NewGuid(), TeamRoute = "/teams/example" });
 
             var matchDataSource = new Mock<IMatchListingDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>())).ReturnsAsync(new List<MatchListing> { new MatchListing {
+            matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing> { new MatchListing {
                 StartTime = DateTimeOffset.UtcNow,
                 MatchRoute = "/example"
             } });

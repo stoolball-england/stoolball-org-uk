@@ -67,19 +67,37 @@ namespace Stoolball.Matches
         public string MatchRoute { get; set; }
         public MatchLocation MatchLocation { get; set; }
 
+        public DateTimeOffset? LastAuditDate { get; set; }
+
         /// <summary>
         /// Gets a description of the match suitable for metadata or search results
         /// </summary>
         public string Description()
         {
-            var description = new StringBuilder("Stoolball ");
+            var description = new StringBuilder(PlayerType.Humanize(LetterCasing.Sentence)).Append(" stoolball ");
 
             description.Append(MatchType == null ? "tournament" : MatchType.Humanize(LetterCasing.LowerCase));
-            if (MatchLocation != null) description.Append(" at ").Append(MatchLocation.NameAndLocalityOrTown());
+            if (MatchLocation != null)
+            {
+                description.Append(" at ").Append(MatchLocation.NameAndLocalityOrTown());
+            }
+            description.Append(". ");
 
-            description.Append('.');
+            if (TournamentQualificationType == Matches.TournamentQualificationType.OpenTournament)
+            {
+                description.Append("Any team may enter this tournament. ");
+            }
+            else if (TournamentQualificationType == Matches.TournamentQualificationType.ClosedTournament)
+            {
+                description.Append("This tournament is for invited or qualifying teams only. ");
+            }
 
-            return description.ToString();
+            if (PlayersPerTeam.HasValue)
+            {
+                description.Append(PlayersPerTeam).Append(" players per team. ");
+            }
+
+            return description.ToString().TrimEnd();
         }
     }
 }

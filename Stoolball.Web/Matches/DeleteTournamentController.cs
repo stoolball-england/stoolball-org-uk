@@ -67,14 +67,14 @@ namespace Stoolball.Web.Matches
             {
                 model.TotalComments = await _tournamentCommentsDataSource.ReadTotalComments(model.Tournament.TournamentId.Value).ConfigureAwait(false);
 
-                model.Matches = new MatchListingViewModel
+                model.Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
                 {
                     Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
                     {
                         TournamentId = model.Tournament.TournamentId,
                         IncludeTournamentMatches = true,
                         IncludeTournaments = false
-                    }).ConfigureAwait(false)
+                    }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false)
                 };
 
                 model.ConfirmDeleteRequest.RequiredText = model.Tournament.TournamentName;

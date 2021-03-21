@@ -47,7 +47,7 @@
         {
             if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable || Model.Season.ResultsTableType == ResultsTableType.NonLeagueResultsTable)
             {
-                var matchesAwaitingResults = new MatchListingViewModel { DateTimeFormatter = Model.Matches.DateTimeFormatter };
+                var matchesAwaitingResults = new MatchListingViewModel(Umbraco.AssignedContentItem, Services.UserService) { DateTimeFormatter = Model.Matches.DateTimeFormatter };
                 var withdrawnTeams = Model.Season.Teams.Where(x => x.WithdrawnDate.HasValue);
                 var columns = 7;
                 <table class="results-table table-as-cards table-as-cards-reset-md table-hover">

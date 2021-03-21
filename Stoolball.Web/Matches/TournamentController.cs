@@ -66,14 +66,14 @@ namespace Stoolball.Web.Matches
             {
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament);
 
-                model.Matches = new MatchListingViewModel
+                model.Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
                 {
                     Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
                     {
                         TournamentId = model.Tournament.TournamentId,
                         IncludeTournamentMatches = true,
                         IncludeTournaments = false
-                    }).ConfigureAwait(false),
+                    }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false),
                     ShowMatchDate = false,
                     HighlightNextMatch = false,
                     DateTimeFormatter = _dateFormatter

@@ -740,6 +740,7 @@
     <Content Include="css\rules.page.min.css">
       <DependentUpon>rules.page.css</DependentUpon>
     </Content>
+    <Content Include="images\logos\stoolball-england-rss.gif" />
     <Content Include="js\libs\markerclustererplus.1.0.3.min.js" />
     <Content Include="Matches\close-of-play.js" />
     <Content Include="Matches\match.js" />
@@ -1357,6 +1358,7 @@
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
     <Compile Include="ContentPage\CookiesController.cs" />
+    <Compile Include="Matches\TournamentsRssController.cs" />
     <Compile Include="Matches\WomensSportsNetworkCsvExportComponent.cs" />
     <Compile Include="Matches\OnlySportCsvExportComponent.cs" />
     <Compile Include="Matches\WomensSportsNetworkCsvExportTask.cs" />
@@ -2738,6 +2740,7 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_InningsStatistics.generated.cs</LastGenOutput>
     </Content>
+    <Content Include="Views\TournamentsRss.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

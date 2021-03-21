@@ -37,7 +37,7 @@ namespace Stoolball.Web.Matches
             var matches = (await _matchDataSource.ReadMatchListings(new MatchFilter
             {
                 FromDate = DateTimeOffset.UtcNow
-            }).ConfigureAwait(false)).Select(x => new OnlySportCsvRecord
+            }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false)).Select(x => new OnlySportCsvRecord
             {
                 MatchId = x.MatchId.GetHashCode() > 0 ? x.MatchId.GetHashCode() : x.MatchId.GetHashCode() * -1,
                 Title = x.MatchName,

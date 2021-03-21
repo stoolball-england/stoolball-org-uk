@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Stoolball.Teams;
 
 namespace Stoolball.Matches
 {
@@ -9,6 +10,7 @@ namespace Stoolball.Matches
         public List<Guid> CompetitionIds { get; internal set; } = new List<Guid>();
         public List<Guid> SeasonIds { get; internal set; } = new List<Guid>();
         public List<MatchType> MatchTypes { get; internal set; } = new List<MatchType>();
+        public List<PlayerType> PlayerTypes { get; internal set; } = new List<PlayerType>();
         public bool IncludeMatches { get; internal set; } = true;
         public bool IncludeTournamentMatches { get; set; }
         public bool IncludeTournaments { get; set; } = true;

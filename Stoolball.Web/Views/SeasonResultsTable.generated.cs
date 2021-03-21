@@ -264,7 +264,7 @@ WriteLiteral("    </ul>\r\n\r\n");
         {
             if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable || Model.Season.ResultsTableType == ResultsTableType.NonLeagueResultsTable)
             {
-                var matchesAwaitingResults = new MatchListingViewModel { DateTimeFormatter = Model.Matches.DateTimeFormatter };
+                var matchesAwaitingResults = new MatchListingViewModel(Umbraco.AssignedContentItem, Services.UserService) { DateTimeFormatter = Model.Matches.DateTimeFormatter };
                 var withdrawnTeams = Model.Season.Teams.Where(x => x.WithdrawnDate.HasValue);
                 var columns = 7;
 
@@ -502,14 +502,14 @@ WriteLiteral(" scope=\"row\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 10336), Tuple.Create("\"", 10362)
+WriteAttribute("href", Tuple.Create(" href=\"", 10387), Tuple.Create("\"", 10413)
             
             #line 168 "..\..\Views\SeasonResultsTable.cshtml"
-, Tuple.Create(Tuple.Create("", 10343), Tuple.Create<System.Object, System.Int32>(row.Team.TeamRoute
+, Tuple.Create(Tuple.Create("", 10394), Tuple.Create<System.Object, System.Int32>(row.Team.TeamRoute
             
             #line default
             #line hidden
-, 10343), false)
+, 10394), false)
 );
 
 WriteLiteral(">");
@@ -805,14 +805,14 @@ WriteLiteral(" scope=\"row\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 12857), Tuple.Create("\"", 12884)
+WriteAttribute("href", Tuple.Create(" href=\"", 12908), Tuple.Create("\"", 12935)
             
             #line 190 "..\..\Views\SeasonResultsTable.cshtml"
-, Tuple.Create(Tuple.Create("", 12864), Tuple.Create<System.Object, System.Int32>(team.Team.TeamRoute
+, Tuple.Create(Tuple.Create("", 12915), Tuple.Create<System.Object, System.Int32>(team.Team.TeamRoute
             
             #line default
             #line hidden
-, 12864), false)
+, 12915), false)
 );
 
 WriteLiteral(">");
@@ -826,14 +826,14 @@ WriteLiteral(">");
             #line hidden
 WriteLiteral("</a></th><td");
 
-WriteAttribute("colspan", Tuple.Create(" colspan=\"", 12917), Tuple.Create("\"", 12939)
+WriteAttribute("colspan", Tuple.Create(" colspan=\"", 12968), Tuple.Create("\"", 12990)
             
             #line 190 "..\..\Views\SeasonResultsTable.cshtml"
-                                                               , Tuple.Create(Tuple.Create("", 12927), Tuple.Create<System.Object, System.Int32>(columns-1
+                                                               , Tuple.Create(Tuple.Create("", 12978), Tuple.Create<System.Object, System.Int32>(columns-1
             
             #line default
             #line hidden
-, 12927), false)
+, 12978), false)
 );
 
 WriteLiteral(">Withdrew from season</td></tr>\r\n");

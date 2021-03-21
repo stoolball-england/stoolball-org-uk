@@ -1,16 +1,16 @@
-﻿using Moq;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Routing;
+using Moq;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Security;
 using Stoolball.Web.Clubs;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -66,7 +66,7 @@ namespace Stoolball.Web.Tests.Clubs
             clubDataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).Returns(Task.FromResult<Club>(null));
 
             var matchesDataSource = new Mock<IMatchListingDataSource>();
-            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>())).ReturnsAsync(new List<MatchListing>());
+            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = new TestController(clubDataSource.Object, matchesDataSource.Object, UmbracoHelper))
             {
@@ -83,7 +83,7 @@ namespace Stoolball.Web.Tests.Clubs
             clubDataSource.Setup(x => x.ReadClubByRoute(It.IsAny<string>())).ReturnsAsync(new Club());
 
             var matchesDataSource = new Mock<IMatchListingDataSource>();
-            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>())).ReturnsAsync(new List<MatchListing>());
+            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = new TestController(clubDataSource.Object, matchesDataSource.Object, UmbracoHelper))
             {

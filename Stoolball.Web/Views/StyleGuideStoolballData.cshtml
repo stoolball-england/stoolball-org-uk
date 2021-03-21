@@ -136,7 +136,7 @@
     })
     <p>This is a list of matches.</p>
     @{
-        var matchListing = new MatchListingViewModel
+        var matchListing = new MatchListingViewModel(Umbraco.AssignedContentItem, Services.UserService)
         {
             DateTimeFormatter = new Stoolball.Dates.DateTimeFormatter()
         };

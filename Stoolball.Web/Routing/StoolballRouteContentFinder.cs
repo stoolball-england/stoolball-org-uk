@@ -152,6 +152,9 @@ namespace Stoolball.Web.Routing
                 { $"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}teams{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.TransientTeam },
                 { $"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.EditTransientTeam },
 
+                // Match /rss/tournaments/all, /rss/tournaments/ladies, /rss/tournaments/mixed, /rss/tournaments/junior but nothing else, in upper, lower or mixed case
+                { $@"rss/tournaments{SLASH}(all|ladies|mixed|junior)", StoolballRouteType.TournamentsRss },
+
                 // Match /play/statistics, /play/statistics/edit or /play/statistics/example-statistic
                 { $"play{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.Statistics },
                 { $"play{SLASH}statistics{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.EditStatistics },

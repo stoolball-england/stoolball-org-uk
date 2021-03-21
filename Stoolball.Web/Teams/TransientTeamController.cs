@@ -70,13 +70,13 @@ namespace Stoolball.Web.Teams
 
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team);
 
-            model.Matches = new MatchListingViewModel
+            model.Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
             {
                 Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
                 {
                     TeamIds = new List<Guid> { model.Team.TeamId.Value },
                     IncludeMatches = false
-                }).ConfigureAwait(false),
+                }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false),
                 HighlightNextMatch = false,
                 DateTimeFormatter = _dateFormatter
             };

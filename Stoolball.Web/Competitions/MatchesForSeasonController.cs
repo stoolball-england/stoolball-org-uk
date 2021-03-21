@@ -64,12 +64,12 @@ namespace Stoolball.Web.Competitions
                 var model = new SeasonViewModel(contentModel.Content, Services?.UserService)
                 {
                     Season = season,
-                    Matches = new MatchListingViewModel
+                    Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
                     {
                         Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
                         {
                             SeasonIds = new List<Guid> { season.SeasonId.Value }
-                        }).ConfigureAwait(false),
+                        }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false),
                         DateTimeFormatter = _dateFormatter
                     },
                 };

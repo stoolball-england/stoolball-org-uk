@@ -72,13 +72,13 @@ namespace Stoolball.Web.Competitions
             }
             else
             {
-                model.Matches = new MatchListingViewModel
+                model.Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
                 {
                     Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
                     {
                         SeasonIds = new List<Guid> { model.Season.SeasonId.Value },
                         IncludeTournaments = false
-                    }).ConfigureAwait(false),
+                    }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false),
                     DateTimeFormatter = _dateTimeFormatter
                 };
                 model.Season.PointsRules.AddRange(await _seasonDataSource.ReadPointsRules(model.Season.SeasonId.Value).ConfigureAwait(false));

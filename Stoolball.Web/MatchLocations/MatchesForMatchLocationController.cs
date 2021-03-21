@@ -68,13 +68,13 @@ namespace Stoolball.Web.MatchLocations
                 var model = new MatchLocationViewModel(contentModel.Content, Services?.UserService)
                 {
                     MatchLocation = location,
-                    Matches = new MatchListingViewModel
+                    Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
                     {
                         Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
                         {
                             MatchLocationIds = new List<Guid> { location.MatchLocationId.Value },
                             FromDate = _seasonEstimator.EstimateSeasonDates(DateTimeOffset.UtcNow).fromDate
-                        }).ConfigureAwait(false),
+                        }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false),
                         DateTimeFormatter = _dateFormatter
                     },
                 };

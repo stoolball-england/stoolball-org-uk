@@ -1,16 +1,16 @@
-﻿using Moq;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Routing;
+using Moq;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Web.Teams;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -66,7 +66,7 @@ namespace Stoolball.Web.Tests.Teams
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Team>(null));
 
             var matchesDataSource = new Mock<IMatchListingDataSource>();
-            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>())).ReturnsAsync(new List<MatchListing>());
+            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
 
             var seasonSelector = new Mock<ICreateMatchSeasonSelector>();
 
@@ -85,7 +85,7 @@ namespace Stoolball.Web.Tests.Teams
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team { TeamId = Guid.NewGuid() });
 
             var matchesDataSource = new Mock<IMatchListingDataSource>();
-            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>())).ReturnsAsync(new List<MatchListing>());
+            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
 
             var seasonSelector = new Mock<ICreateMatchSeasonSelector>();
             seasonSelector.Setup(x => x.SelectPossibleSeasons(It.IsAny<IEnumerable<TeamInSeason>>(), It.IsAny<MatchType>())).Returns(new List<Season>());

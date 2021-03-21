@@ -87,13 +87,13 @@ namespace Stoolball.Web.Teams
             };
             model.IsAuthorized = isAuthorized;
 
-            model.Matches = new MatchListingViewModel
+            model.Matches = new MatchListingViewModel(CurrentPage, Services?.UserService)
             {
                 Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
                 {
                     TeamIds = new List<Guid> { model.Team.TeamId.Value },
                     IncludeMatches = false
-                }).ConfigureAwait(false),
+                }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false),
                 DateTimeFormatter = _dateFormatter
             };
 

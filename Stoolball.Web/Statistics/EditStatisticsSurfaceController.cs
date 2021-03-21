@@ -82,7 +82,7 @@ namespace Stoolball.Web.Statistics
                     IncludeTournamentMatches = true,
                     IncludeTournaments = false,
                     UntilDate = DateTime.UtcNow
-                }).ConfigureAwait(false));
+                }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false));
 
                 _taskTracker.SetTarget(taskId, matchListings.Sum(x => x.MatchInnings.Count) + matchListings.Count);
 

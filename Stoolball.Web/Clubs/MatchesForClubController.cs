@@ -68,7 +68,7 @@ namespace Stoolball.Web.Clubs
                 var model = new ClubViewModel(contentModel.Content, Services?.UserService)
                 {
                     Club = club,
-                    Matches = new MatchListingViewModel
+                    Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
                     {
                         DateTimeFormatter = _dateFormatter
                     }
@@ -81,7 +81,7 @@ namespace Stoolball.Web.Clubs
                     {
                         TeamIds = club.Teams.Select(team => team.TeamId.Value).ToList(),
                         FromDate = _seasonEstimator.EstimateSeasonDates(DateTimeOffset.UtcNow).fromDate
-                    }).ConfigureAwait(false);
+                    }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
                 }
 
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Club);

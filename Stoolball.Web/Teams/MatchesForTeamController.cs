@@ -72,13 +72,13 @@ namespace Stoolball.Web.Teams
                 var model = new TeamViewModel(contentModel.Content, Services?.UserService)
                 {
                     Team = team,
-                    Matches = new MatchListingViewModel
+                    Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
                     {
                         Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
                         {
                             TeamIds = new List<Guid> { team.TeamId.Value },
                             FromDate = _seasonEstimator.EstimateSeasonDates(DateTimeOffset.UtcNow).fromDate
-                        }).ConfigureAwait(false),
+                        }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false),
                         DateTimeFormatter = _dateFormatter
                     },
                 };

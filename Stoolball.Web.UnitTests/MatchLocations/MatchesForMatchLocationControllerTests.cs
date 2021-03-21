@@ -1,16 +1,16 @@
-﻿using Moq;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Routing;
+using Moq;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Security;
 using Stoolball.Web.MatchLocations;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -65,7 +65,7 @@ namespace Stoolball.Web.Tests.MatchLocations
             locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<MatchLocation>(null));
 
             var matchesDataSource = new Mock<IMatchListingDataSource>();
-            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>())).ReturnsAsync(new List<MatchListing>());
+            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = new TestController(locationDataSource.Object, matchesDataSource.Object, UmbracoHelper))
             {
@@ -82,7 +82,7 @@ namespace Stoolball.Web.Tests.MatchLocations
             locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).ReturnsAsync(new MatchLocation { MatchLocationId = Guid.NewGuid() });
 
             var matchesDataSource = new Mock<IMatchListingDataSource>();
-            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>())).ReturnsAsync(new List<MatchListing>());
+            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
 
             using (var controller = new TestController(locationDataSource.Object, matchesDataSource.Object, UmbracoHelper))
             {

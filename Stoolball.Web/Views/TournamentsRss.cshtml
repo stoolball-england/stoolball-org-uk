@@ -1,0 +1,35 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<MatchListingViewModel>
+@using Stoolball.Web.Matches
+@using Humanizer
+@using Stoolball.Dates
+@{
+    Layout = null;
+    Response.ContentType = "text/xml";
+}<?xml version="1.0" encoding="utf-8">
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
+<channel>
+    <title>@Model.Metadata.PageTitle</title>
+    <link>https://@Request.Url.Authority/tournaments</link>
+    <description>@Model.Metadata.Description</description>
+    <pubDate>@DateTimeOffset.UtcNow.ToRFC822()</pubDate>
+    <image>
+        <url>https://@Request.Url.Authority/images/logos/stoolball-england-rss.gif</url>
+        <title>@Model.Metadata.PageTitle</title>
+        <link>https://@Request.Url.Authority/tournaments</link>
+    </image>
+    <language>en-GB</language>
+    <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+    @foreach (var tournament in Model.Matches)
+    {
+    @:<item>
+        <title><![CDATA[@tournament.MatchName, @Model.DateTimeFormatter.FormatDate(tournament.StartTime.LocalDateTime, true, false,false)]]></title>
+        <description><![CDATA[@tournament.Description()]]></description>
+        <link>@:https://@Request.Url.Authority@tournament.MatchRoute</link>
+        <pubDate>@tournament.LastAuditDate.Value.ToRFC822()</pubDate>
+        <guid isPermaLink="false">@tournament.MatchId</guid>
+        <source url="@(Request.Url.ToString().Replace("/rss/", "/")).rss" />
+        <category>@tournament.PlayerType.Humanize(LetterCasing.LowerCase)</category>
+    @:</item>
+    }
+</channel>
+</rss>
