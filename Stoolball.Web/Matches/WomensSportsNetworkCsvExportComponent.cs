@@ -27,8 +27,8 @@ namespace Stoolball.Web.Matches
 
         public void Initialize()
         {
-            var delayBeforeWeStart = 0; // 1min
-            var howOftenWeRepeat = 10000; // 5mins
+            var delayBeforeWeStart = 0;
+            var howOftenWeRepeat = 1000 * 60 * 60 * 24; // 24 hours
 
             _task = new WomensSportsNetworkCsvExportTask(_taskRunner, delayBeforeWeStart, howOftenWeRepeat, _logger, _matchDataSource);
 
