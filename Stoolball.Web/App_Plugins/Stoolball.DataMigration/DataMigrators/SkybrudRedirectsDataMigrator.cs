@@ -85,6 +85,8 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/history/documents-photos-and-videos/making-stoolball-bats-in-lewes", transaction).ConfigureAwait(false);
                     await _redirectsRepository.InsertRedirect("/history/documents-photos-and-videos/making-stoolball-bats-in-lewes", "/history/documents-photos-and-videos/stoolball-through-the-ages", null, transaction).ConfigureAwait(false);
 
+                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/rules", transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/rules/starter-stoolball", "/rules/quick-start-stoolball", null, transaction).ConfigureAwait(false);
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/indoor", transaction).ConfigureAwait(false);
                     await _redirectsRepository.InsertRedirect("/indoor", "/rules/indoor", null, transaction).ConfigureAwait(false);
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/spirit", transaction).ConfigureAwait(false);
