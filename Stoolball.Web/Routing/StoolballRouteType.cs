@@ -39,6 +39,7 @@
         EditCompetition,
         DeleteCompetition,
         Competitions,
+        MatchesRss,
         MatchesForClub,
         MatchesForTeam,
         MatchesForMatchLocation,

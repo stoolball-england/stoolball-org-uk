@@ -27,6 +27,15 @@ a:focus, a:active {
     @include link-focus;
 }
 
+a[type='application/rss+xml'] {
+    padding-left: 20px;
+    background: left center / 16px url(/images/icons/iconmonstr-rss-feed-3.svg) no-repeat;
+    border: none;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-skip-ink: auto;
+}
+
 blockquote {
     font-style: italic;
 }

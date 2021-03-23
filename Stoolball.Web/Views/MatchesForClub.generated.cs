@@ -159,7 +159,22 @@ WriteLiteral("        <p>There are no matches for this club this season.</p>\r\n
             
             #line default
             #line hidden
-WriteLiteral("</div>");
+WriteLiteral("    <p><a");
+
+WriteLiteral(" type=\"application/rss+xml\"");
+
+WriteAttribute("href", Tuple.Create(" href=\"", 847), Tuple.Create("\"", 887)
+            
+            #line 28 "..\..\Views\MatchesForClub.cshtml"
+, Tuple.Create(Tuple.Create("", 854), Tuple.Create<System.Object, System.Int32>(Model.Club.ClubRoute
+            
+            #line default
+            #line hidden
+, 854), false)
+, Tuple.Create(Tuple.Create("", 875), Tuple.Create("/matches.rss", 875), true)
+);
+
+WriteLiteral(">New and updated matches – subscribe with RSS</a></p>\r\n</div>");
 
         }
     }

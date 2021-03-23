@@ -38,6 +38,11 @@ namespace Stoolball.Data.SqlServer
                 return 0;
             }
 
+            if (ExcludeTournamentsDueToMatchTypeFilter(matchQuery.MatchResultTypes))
+            {
+                matchQuery.IncludeTournaments = false;
+            }
+
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var sql = new StringBuilder("SELECT SUM(Total) FROM (");
@@ -98,6 +103,11 @@ namespace Stoolball.Data.SqlServer
                 return new List<MatchListing>();
             }
 
+            if (ExcludeTournamentsDueToMatchTypeFilter(matchQuery.MatchResultTypes))
+            {
+                matchQuery.IncludeTournaments = false;
+            }
+
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var sql = new StringBuilder();
@@ -112,6 +122,7 @@ namespace Stoolball.Data.SqlServer
                     var (matchSql, matchParameters) = BuildMatchQuery(matchQuery,
                         $@"SELECT m.MatchId, m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, m.PlayersPerTeam, m.MatchResultType,
                                 NULL AS TournamentQualificationType, NULL AS SpacesInTournament, m.OrderInTournament, SUM(os.Overs) AS Overs,
+                                (SELECT TOP 1 AuditDate FROM {Tables.Audit} WHERE EntityUri = CONCAT('{Constants.EntityUriPrefixes.Match}', m.MatchId) ORDER BY AuditDate ASC) AS FirstAuditDate,
                                 (SELECT TOP 1 AuditDate FROM {Tables.Audit} WHERE EntityUri = CONCAT('{Constants.EntityUriPrefixes.Match}', m.MatchId) ORDER BY AuditDate DESC) AS LastAuditDate,
                                 mt.TeamRole, mt.MatchTeamId,
                                 mt.TeamId,
@@ -147,6 +158,7 @@ namespace Stoolball.Data.SqlServer
                         $@"SELECT tourney.TournamentId AS MatchId, tourney.TournamentName AS MatchName, tourney.TournamentRoute AS MatchRoute, tourney.StartTime, tourney.StartTimeIsKnown, 
                                 NULL AS MatchType, tourney.PlayerType, tourney.PlayersPerTeam, NULL AS MatchResultType,
                                 tourney.QualificationType AS TournamentQualificationType, tourney.SpacesInTournament, NULL AS OrderInTournament, NULL AS Overs,
+                                (SELECT TOP 1 AuditDate FROM {Tables.Audit} WHERE EntityUri = CONCAT('{Constants.EntityUriPrefixes.Tournament}', tourney.TournamentId) ORDER BY AuditDate ASC) AS FirstAuditDate,
                                 (SELECT TOP 1 AuditDate FROM {Tables.Audit} WHERE EntityUri = CONCAT('{Constants.EntityUriPrefixes.Tournament}', tourney.TournamentId) ORDER BY AuditDate DESC) AS LastAuditDate,
                                 NULL AS TeamRole, NULL AS MatchTeamId,
                                 NULL AS TeamId,
@@ -233,6 +245,24 @@ namespace Stoolball.Data.SqlServer
             {
                 where.Add("m.PlayerType IN @PlayerTypes");
                 parameters.Add("@PlayerTypes", filter.PlayerTypes.Select(x => x.ToString()));
+            }
+
+            if (filter.MatchResultTypes?.Count > 0)
+            {
+                if (filter.MatchResultTypes.Contains(null) && filter.MatchResultTypes.Count == 1)
+                {
+                    where.Add("m.MatchResultType IS NULL");
+                }
+                else if (filter.MatchResultTypes.Contains(null) && filter.MatchResultTypes.Count > 1)
+                {
+                    where.Add("(m.MatchResultType IS NULL OR m.MatchResultType IN @MatchResultTypes)");
+                    parameters.Add("@MatchResultTypes", filter.MatchResultTypes.Where(x => x.HasValue).Select(x => x.ToString()));
+                }
+                else
+                {
+                    where.Add("m.MatchResultType IN @MatchResultTypes");
+                    parameters.Add("@MatchResultTypes", filter.MatchResultTypes.Select(x => x.ToString()));
+                }
             }
 
             if (filter.TeamIds?.Count > 0)
@@ -368,6 +398,12 @@ namespace Stoolball.Data.SqlServer
                      .Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
 
             return (sql, parameters);
+        }
+
+        private static bool ExcludeTournamentsDueToMatchTypeFilter(List<MatchResultType?> matchResultTypes)
+        {
+            var resultTypesThatExcludeTournaments = matchResultTypes?.Where(x => x.HasValue).ToList();
+            return (resultTypesThatExcludeTournaments != null && resultTypesThatExcludeTournaments.Count > 0);
         }
     }
 }

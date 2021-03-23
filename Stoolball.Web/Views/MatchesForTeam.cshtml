@@ -1,7 +1,6 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamViewModel>
 @using Stoolball.Web.Matches
 @using Stoolball.Matches
-@using Stoolball.Security
 @{
     var matchMenu = new AddMatchMenuViewModel { BaseRoute = Model.Team.TeamRoute, EnableTournaments = true };
 
@@ -49,4 +48,5 @@
     {
         <p>There are no matches for this team this season.</p>
     }
+    <p><a type="application/rss+xml" href="@Model.Team.TeamRoute/matches.rss">New and updated matches – subscribe with RSS</a></p>
 </div>

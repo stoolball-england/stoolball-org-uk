@@ -59,7 +59,7 @@ namespace Stoolball.Web.Matches
                     IncludeTournaments = true,
                     IncludeTournamentMatches = false,
                     IncludeMatches = false,
-                    FromDate = DateTimeOffset.UtcNow.AddDays(-1700),
+                    FromDate = DateTimeOffset.UtcNow.AddDays(-1),
                     UntilDate = DateTimeOffset.UtcNow.AddDays(daysAhead)
                 },
                 DateTimeFormatter = _dateFormatter
@@ -89,7 +89,7 @@ namespace Stoolball.Web.Matches
             if (!string.IsNullOrEmpty(playerType))
             {
                 model.Metadata.PageTitle = $"{playerType.ToLower(CultureInfo.CurrentCulture).Humanize(LetterCasing.Sentence)} {model.Metadata.PageTitle.ToLower(CultureInfo.CurrentCulture)}";
-                model.Metadata.Description = $"New or updated {playerType.ToLower(CultureInfo.CurrentCulture).Humanize(LetterCasing.LowerCase)} stoolball tournaments on the Stoolball England website";
+                model.Metadata.Description = $"New or updated {playerType.Humanize(LetterCasing.LowerCase)} stoolball tournaments on the Stoolball England website";
             }
             model.Matches = await _matchDataSource.ReadMatchListings(model.MatchFilter, MatchSortOrder.LatestUpdateFirst).ConfigureAwait(false);
 

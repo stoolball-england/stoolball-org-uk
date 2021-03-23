@@ -58,6 +58,15 @@ namespace Stoolball.Web.Routing
                 { $"teams{OPTIONAL_SLASH}", StoolballRouteType.Teams },
                 { $"locations{OPTIONAL_SLASH}", StoolballRouteType.MatchLocations },
 
+                // Match /matches/rss, /tournaments/all/rss, /tournaments/ladies/rss, /tournaments/mixed/rss, /tournaments/junior/rss but nothing else, in upper, lower or mixed case
+                // Important for these to be before the rules that match individual matches and tournaments.
+                { $@"tournaments{SLASH}(all|ladies|mixed|junior){SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.TournamentsRss }, // old site
+                { $@"tournaments{SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.TournamentsRss }, // preferred URL
+                { $@"matches{SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.MatchesRss },
+                { $@"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.MatchesRss },
+                { $@"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.MatchesRss },
+                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.MatchesRss },
+
                 // Match /prefix/example-entity or /prefix/action, but not /prefix, /prefix/, or /prefix/example-entity/invalid, 
                 // in upper, lower or mixed case
                 { $"clubs{SLASH}add{OPTIONAL_SLASH}", StoolballRouteType.CreateClub },
@@ -151,9 +160,6 @@ namespace Stoolball.Web.Routing
                 // /tournaments/example123/invalid or /tournaments/example123/teams/example-team/invalid in upper, lower or mixed case
                 { $"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}teams{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.TransientTeam },
                 { $"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.EditTransientTeam },
-
-                // Match /rss/tournaments/all, /rss/tournaments/ladies, /rss/tournaments/mixed, /rss/tournaments/junior but nothing else, in upper, lower or mixed case
-                { $@"rss/tournaments{SLASH}(all|ladies|mixed|junior)", StoolballRouteType.TournamentsRss },
 
                 // Match /play/statistics, /play/statistics/edit or /play/statistics/example-statistic
                 { $"play{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.Statistics },

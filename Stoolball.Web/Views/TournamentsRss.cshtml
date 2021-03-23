@@ -4,8 +4,8 @@
 @using Stoolball.Dates
 @{
     Layout = null;
-    Response.ContentType = "text/xml";
-}<?xml version="1.0" encoding="utf-8">
+    Response.ContentType = "application/rss+xml";
+}<?xml version="1.0" encoding="utf-8" ?>
 <rss xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
 <channel>
     <title>@Model.Metadata.PageTitle</title>
@@ -27,7 +27,7 @@
         <link>@:https://@Request.Url.Authority@tournament.MatchRoute</link>
         <pubDate>@tournament.LastAuditDate.Value.ToRFC822()</pubDate>
         <guid isPermaLink="false">@Stoolball.Constants.EntityUriPrefixes.Tournament@tournament.MatchId</guid>
-		<source url="@Request.Url.Scheme://@Request.Url.Authority@(Request.Url.AbsolutePath.Replace("/rss/", "/" )).rss@(Request.Url.Query)" />
+		<source url="@Request.Url.Scheme://@Request.Url.Authority@(Request.Url.AbsolutePath.Substring(0,Request.Url.AbsolutePath.Length-4)).rss@(Request.Url.Query)" />
         <category>@tournament.PlayerType.Humanize(LetterCasing.LowerCase)</category>
     @:</item>
     }

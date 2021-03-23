@@ -69,6 +69,7 @@ namespace Stoolball.Web
             composition.Register<IStatisticsFilterUrlParser, StatisticsFilterUrlParser>();
             composition.Register<IStatisticsBreadcrumbBuilder, StatisticsBreadcrumbBuilder>();
             composition.Register<IContactDetailsParser, ContactDetailsParser>();
+            composition.Register<IMatchesRssQueryStringParser, MatchesRssQueryStringParser>();
 
             // Data migration from the old Stoolball England website
             composition.Register<IAuditHistoryBuilder, AuditHistoryBuilder>();

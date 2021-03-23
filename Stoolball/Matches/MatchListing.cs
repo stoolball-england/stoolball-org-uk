@@ -67,6 +67,7 @@ namespace Stoolball.Matches
         public string MatchRoute { get; set; }
         public MatchLocation MatchLocation { get; set; }
 
+        public DateTimeOffset? FirstAuditDate { get; set; }
         public DateTimeOffset? LastAuditDate { get; set; }
 
         /// <summary>
