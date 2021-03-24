@@ -117,11 +117,9 @@ namespace Stoolball.Data.SqlServer
                 if (matchQuery.IncludeMatches)
                 {
                     // Join to MatchInnings only happens if there's a batting team, because otherwise all you get from it is extra rows to process with just a MatchInningsId
-                    // 
-                    // The GROUP BY clause and the join to Tables.OverSet are all only to get SUM(Overs), which is only used by the Women's Sports Network export
                     var (matchSql, matchParameters) = BuildMatchQuery(matchQuery,
                         $@"SELECT m.MatchId, m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, m.PlayersPerTeam, m.MatchResultType,
-                                NULL AS TournamentQualificationType, NULL AS SpacesInTournament, m.OrderInTournament, SUM(os.Overs) AS Overs,
+                                NULL AS TournamentQualificationType, NULL AS SpacesInTournament, m.OrderInTournament,
                                 (SELECT TOP 1 AuditDate FROM {Tables.Audit} WHERE EntityUri = CONCAT('{Constants.EntityUriPrefixes.Match}', m.MatchId) ORDER BY AuditDate ASC) AS FirstAuditDate,
                                 (SELECT TOP 1 AuditDate FROM {Tables.Audit} WHERE EntityUri = CONCAT('{Constants.EntityUriPrefixes.Match}', m.MatchId) ORDER BY AuditDate DESC) AS LastAuditDate,
                                 mt.TeamRole, mt.MatchTeamId,
@@ -132,12 +130,8 @@ namespace Stoolball.Data.SqlServer
                                 LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
                                 LEFT JOIN {Tables.MatchInnings} AS i ON m.MatchId = i.MatchId AND i.BattingMatchTeamId = mt.MatchTeamId
                                 LEFT JOIN {Tables.MatchLocation} AS ml ON m.MatchLocationId = ml.MatchLocationId
-                                LEFT JOIN {Tables.OverSet} AS os ON i.MatchInningsId = os.MatchInningsId
                                 <<JOIN>>
-                                <<WHERE>> 
-                                GROUP BY m.MatchId, m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, m.PlayersPerTeam, m.MatchResultType,
-                                m.OrderInTournament, mt.TeamRole, mt.MatchTeamId, mt.TeamId, i.MatchInningsId, i.Runs, i.Wickets,
-                                ml.MatchLocationId, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, ml.Town, ml.Latitude, ml.Longitude");
+                                <<WHERE>> ");
                     sql.Append(matchSql);
                     parameters = matchParameters;
 
@@ -157,7 +151,7 @@ namespace Stoolball.Data.SqlServer
                     var (tournamentSql, tournamentParameters) = BuildTournamentQuery(matchQuery,
                         $@"SELECT tourney.TournamentId AS MatchId, tourney.TournamentName AS MatchName, tourney.TournamentRoute AS MatchRoute, tourney.StartTime, tourney.StartTimeIsKnown, 
                                 NULL AS MatchType, tourney.PlayerType, tourney.PlayersPerTeam, NULL AS MatchResultType,
-                                tourney.QualificationType AS TournamentQualificationType, tourney.SpacesInTournament, NULL AS OrderInTournament, NULL AS Overs,
+                                tourney.QualificationType AS TournamentQualificationType, tourney.SpacesInTournament, NULL AS OrderInTournament, 
                                 (SELECT TOP 1 AuditDate FROM {Tables.Audit} WHERE EntityUri = CONCAT('{Constants.EntityUriPrefixes.Tournament}', tourney.TournamentId) ORDER BY AuditDate ASC) AS FirstAuditDate,
                                 (SELECT TOP 1 AuditDate FROM {Tables.Audit} WHERE EntityUri = CONCAT('{Constants.EntityUriPrefixes.Tournament}', tourney.TournamentId) ORDER BY AuditDate DESC) AS LastAuditDate,
                                 NULL AS TeamRole, NULL AS MatchTeamId,

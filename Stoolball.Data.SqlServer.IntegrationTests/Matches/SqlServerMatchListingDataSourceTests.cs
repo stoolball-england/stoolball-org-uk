@@ -257,23 +257,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         }
 
         [Fact]
-        public async Task Read_match_listings_returns_overs_calculated_from_oversets()
-        {
-            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
-
-            var results = await matchDataSource.ReadMatchListings(null, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
-
-            Assert.Equal(_databaseFixture.MatchListings.Count, results.Count);
-            foreach (var listing in _databaseFixture.MatchListings.Where(x => x.MatchRoute.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase)))
-            {
-                var result = results.SingleOrDefault(x => x.MatchRoute == listing.MatchRoute);
-                Assert.NotNull(result);
-
-                Assert.Equal(listing.Overs, result.Overs);
-            }
-        }
-
-        [Fact]
         public async Task Read_match_listings_returns_MatchInnings_with_runs_and_wickets_only_if_not_null()
         {
             var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);

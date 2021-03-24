@@ -290,7 +290,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 MatchType = match.MatchType,
                 PlayerType = match.PlayerType,
                 PlayersPerTeam = match.PlayersPerTeam,
-                Overs = match.MatchInnings.Any(x => x.OverSets.Any()) ? match.MatchInnings.FirstOrDefault()?.OverSets.Sum(x => x.Overs) : null,
                 StartTime = match.StartTime,
                 StartTimeIsKnown = match.StartTimeIsKnown,
                 Teams = match.Teams,
