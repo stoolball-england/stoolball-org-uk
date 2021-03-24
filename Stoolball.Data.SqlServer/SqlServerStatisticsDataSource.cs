@@ -151,7 +151,8 @@ namespace Stoolball.Data.SqlServer
                         };
                     },
                     parameters,
-                    splitOn: $"PlayerIdentityId, TeamId, TeamId, MatchRoute, {primaryFieldName}").ConfigureAwait(false);
+                    splitOn: $"PlayerIdentityId, TeamId, TeamId, MatchRoute, {primaryFieldName}",
+                    commandTimeout: 60).ConfigureAwait(false);
             }
         }
 
