@@ -1,0 +1,11 @@
+﻿@model IEnumerable<string>
+@{ 
+    var trimmedQueryString = HttpUtility.ParseQueryString(string.Empty);
+    foreach (var key in Model)
+    {
+        if (key != "page" || int.TryParse(Request.QueryString["page"], out var page) && page > 1)
+        {
+            trimmedQueryString.Add(key, Request.QueryString[key]);
+        }
+    }
+}<link rel="canonical" href="https://www.stoolball.org.uk@(Request.Url.AbsolutePath.TrimEnd('/'))@(trimmedQueryString.Count > 0 ? "?" : string.Empty)@trimmedQueryString" />

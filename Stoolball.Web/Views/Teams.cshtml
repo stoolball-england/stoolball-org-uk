@@ -1,11 +1,12 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamsViewModel>
 @using Humanizer
 @using Stoolball.Teams
-<div class="container-xl">
+@section canonical {@Html.Partial("_CanonicalUrl", new[] { "page","q" })}
+    <div class="container-xl">
     <h1>
         @Stoolball.Constants.Pages.Teams
         @if (!string.IsNullOrEmpty(Model.TeamFilter.Query))
-        {
+{
             @: matching '@Model.TeamFilter.Query'
         }
     </h1>

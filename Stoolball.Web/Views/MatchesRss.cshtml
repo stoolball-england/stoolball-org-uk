@@ -5,6 +5,8 @@
 @{
     Layout = null;
     Response.ContentType = "application/rss+xml";
+    var canonicalUrl = $"{Request.Url.Scheme}://{Request.Url.Authority}{Request.Url.AbsolutePath.Substring(0, Request.Url.AbsolutePath.Length - 4)}.rss{Request.Url.Query}";
+    Response.Headers.Add("Link", $"<{canonicalUrl}>; rel=\"canonical\"");
 }<?xml version="1.0" encoding="utf-8" ?>
 <rss xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
 <channel>
@@ -27,7 +29,7 @@
         <link>@:https://@Request.Url.Authority@listing.MatchRoute</link>
         <pubDate>@listing.LastAuditDate.Value.ToRFC822()</pubDate>
         <guid isPermaLink="false">@Stoolball.Constants.EntityUriPrefixes.Tournament@listing.MatchId</guid>
-        <source url="@Request.Url.Scheme://@Request.Url.Authority@(Request.Url.AbsolutePath.Substring(0,Request.Url.AbsolutePath.Length-4)).rss@(Request.Url.Query)" />
+        <source url="@canonicalUrl" />
         <category>@listing.PlayerType.Humanize(LetterCasing.LowerCase)</category>
     @:</item>
     }

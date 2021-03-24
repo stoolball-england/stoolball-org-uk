@@ -55,6 +55,17 @@ namespace ASP
         }
         public override void Execute()
         {
+DefineSection("canonical", () => {
+
+            
+            #line 4 "..\..\Views\Competitions.cshtml"
+               Write(Html.Partial("_CanonicalUrl", new[] { "page", "q" }));
+
+            
+            #line default
+            #line hidden
+});
+
 WriteLiteral("<div");
 
 WriteLiteral(" class=\"container-xl\"");
@@ -64,7 +75,7 @@ WriteLiteral(">\r\n    <h1>\r\n");
 WriteLiteral("        ");
 
             
-            #line 6 "..\..\Views\Competitions.cshtml"
+            #line 7 "..\..\Views\Competitions.cshtml"
    Write(Stoolball.Constants.Pages.Competitions);
 
             
@@ -73,13 +84,13 @@ WriteLiteral("        ");
 WriteLiteral("\r\n");
 
             
-            #line 7 "..\..\Views\Competitions.cshtml"
+            #line 8 "..\..\Views\Competitions.cshtml"
         
             
             #line default
             #line hidden
             
-            #line 7 "..\..\Views\Competitions.cshtml"
+            #line 8 "..\..\Views\Competitions.cshtml"
          if (!string.IsNullOrEmpty(Model.CompetitionFilter.Query))
         {
 
@@ -91,7 +102,7 @@ WriteLiteral("            ");
 WriteLiteral(" matching \'");
 
             
-            #line 9 "..\..\Views\Competitions.cshtml"
+            #line 10 "..\..\Views\Competitions.cshtml"
                     Write(Model.CompetitionFilter.Query);
 
             
@@ -100,7 +111,7 @@ WriteLiteral(" matching \'");
 WriteLiteral("\'\r\n");
 
             
-            #line 10 "..\..\Views\Competitions.cshtml"
+            #line 11 "..\..\Views\Competitions.cshtml"
         }
 
             
@@ -131,13 +142,13 @@ WriteLiteral(" href=\"/competitions/add\"");
 WriteLiteral(">Add competition</a>\r\n        </li>\r\n    </ul>\r\n\r\n");
 
             
-            #line 22 "..\..\Views\Competitions.cshtml"
+            #line 23 "..\..\Views\Competitions.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 22 "..\..\Views\Competitions.cshtml"
+            #line 23 "..\..\Views\Competitions.cshtml"
      if (string.IsNullOrEmpty(Model.CompetitionFilter.Query))
     {
 
@@ -163,7 +174,7 @@ WriteLiteral(" href=\"/competitions?q=junior\"");
 WriteLiteral(">junior competitions</a>.</p>\r\n");
 
             
-            #line 25 "..\..\Views\Competitions.cshtml"
+            #line 26 "..\..\Views\Competitions.cshtml"
     }
 
             
@@ -173,14 +184,14 @@ WriteLiteral("    <form");
 
 WriteLiteral(" method=\"get\"");
 
-WriteAttribute("action", Tuple.Create(" action=\"", 1052), Tuple.Create("\"", 1073)
+WriteAttribute("action", Tuple.Create(" action=\"", 1128), Tuple.Create("\"", 1149)
             
-            #line 26 "..\..\Views\Competitions.cshtml"
-, Tuple.Create(Tuple.Create("", 1061), Tuple.Create<System.Object, System.Int32>(Request.Url
+            #line 27 "..\..\Views\Competitions.cshtml"
+, Tuple.Create(Tuple.Create("", 1137), Tuple.Create<System.Object, System.Int32>(Request.Url
             
             #line default
             #line hidden
-, 1061), false)
+, 1137), false)
 );
 
 WriteLiteral(" class=\"form-inline form-search\"");
@@ -201,14 +212,14 @@ WriteLiteral(" id=\"competition-search\"");
 
 WriteLiteral(" name=\"q\"");
 
-WriteAttribute("value", Tuple.Create(" value=\"", 1273), Tuple.Create("\"", 1311)
+WriteAttribute("value", Tuple.Create(" value=\"", 1349), Tuple.Create("\"", 1387)
             
-            #line 28 "..\..\Views\Competitions.cshtml"
-          , Tuple.Create(Tuple.Create("", 1281), Tuple.Create<System.Object, System.Int32>(Model.CompetitionFilter.Query
+            #line 29 "..\..\Views\Competitions.cshtml"
+          , Tuple.Create(Tuple.Create("", 1357), Tuple.Create<System.Object, System.Int32>(Model.CompetitionFilter.Query
             
             #line default
             #line hidden
-, 1281), false)
+, 1357), false)
 );
 
 WriteLiteral(" />\r\n        <button");
@@ -220,13 +231,13 @@ WriteLiteral(" class=\"btn btn-primary\"");
 WriteLiteral(">Search</button>\r\n    </form>\r\n\r\n    <dl>\r\n");
 
             
-            #line 33 "..\..\Views\Competitions.cshtml"
+            #line 34 "..\..\Views\Competitions.cshtml"
         
             
             #line default
             #line hidden
             
-            #line 33 "..\..\Views\Competitions.cshtml"
+            #line 34 "..\..\Views\Competitions.cshtml"
          foreach (var competition in Model.Competitions)
         {
             if (!competition.UntilYear.HasValue && competition.Seasons.Count > 0)
@@ -241,20 +252,20 @@ WriteLiteral(" class=\"list-results__title\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1630), Tuple.Create("\"", 1677)
+WriteAttribute("href", Tuple.Create(" href=\"", 1706), Tuple.Create("\"", 1753)
             
-            #line 37 "..\..\Views\Competitions.cshtml"
-, Tuple.Create(Tuple.Create("", 1637), Tuple.Create<System.Object, System.Int32>(competition.Seasons.First().SeasonRoute
+            #line 38 "..\..\Views\Competitions.cshtml"
+, Tuple.Create(Tuple.Create("", 1713), Tuple.Create<System.Object, System.Int32>(competition.Seasons.First().SeasonRoute
             
             #line default
             #line hidden
-, 1637), false)
+, 1713), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 37 "..\..\Views\Competitions.cshtml"
+            #line 38 "..\..\Views\Competitions.cshtml"
                                                                                               Write(competition.CompetitionName);
 
             
@@ -269,7 +280,7 @@ WriteLiteral(" class=\"list-results__detail\"");
 WriteLiteral(">");
 
             
-            #line 38 "..\..\Views\Competitions.cshtml"
+            #line 39 "..\..\Views\Competitions.cshtml"
                                              Write(Regex.Replace((competition.PlayerType.Humanize(LetterCasing.LowerCase) + " team").ToQuantity(competition.Seasons.First().Teams.Count), "^0 ", "No "));
 
             
@@ -278,7 +289,7 @@ WriteLiteral(">");
 WriteLiteral(".</dd>\r\n");
 
             
-            #line 39 "..\..\Views\Competitions.cshtml"
+            #line 40 "..\..\Views\Competitions.cshtml"
             }
             else if (!competition.UntilYear.HasValue)
             {
@@ -292,20 +303,20 @@ WriteLiteral(" class=\"list-results__title\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2061), Tuple.Create("\"", 2099)
+WriteAttribute("href", Tuple.Create(" href=\"", 2137), Tuple.Create("\"", 2175)
             
-            #line 42 "..\..\Views\Competitions.cshtml"
-, Tuple.Create(Tuple.Create("", 2068), Tuple.Create<System.Object, System.Int32>(competition.CompetitionRoute
+            #line 43 "..\..\Views\Competitions.cshtml"
+, Tuple.Create(Tuple.Create("", 2144), Tuple.Create<System.Object, System.Int32>(competition.CompetitionRoute
             
             #line default
             #line hidden
-, 2068), false)
+, 2144), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 42 "..\..\Views\Competitions.cshtml"
+            #line 43 "..\..\Views\Competitions.cshtml"
                                                                                      Write(competition.CompetitionName);
 
             
@@ -320,7 +331,7 @@ WriteLiteral(" class=\"list-results__detail\"");
 WriteLiteral(">");
 
             
-            #line 43 "..\..\Views\Competitions.cshtml"
+            #line 44 "..\..\Views\Competitions.cshtml"
                                             Write(competition.PlayerType.Humanize(LetterCasing.Sentence));
 
             
@@ -329,7 +340,7 @@ WriteLiteral(">");
 WriteLiteral(".</dd>\r\n");
 
             
-            #line 44 "..\..\Views\Competitions.cshtml"
+            #line 45 "..\..\Views\Competitions.cshtml"
             }
             else
             {
@@ -343,20 +354,20 @@ WriteLiteral(" class=\"list-results__title\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2350), Tuple.Create("\"", 2462)
+WriteAttribute("href", Tuple.Create(" href=\"", 2426), Tuple.Create("\"", 2538)
             
-            #line 47 "..\..\Views\Competitions.cshtml"
-, Tuple.Create(Tuple.Create("", 2357), Tuple.Create<System.Object, System.Int32>(competition.Seasons.Count > 0 ? competition.Seasons.First().SeasonRoute : competition.CompetitionRoute
+            #line 48 "..\..\Views\Competitions.cshtml"
+, Tuple.Create(Tuple.Create("", 2433), Tuple.Create<System.Object, System.Int32>(competition.Seasons.Count > 0 ? competition.Seasons.First().SeasonRoute : competition.CompetitionRoute
             
             #line default
             #line hidden
-, 2357), false)
+, 2433), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 47 "..\..\Views\Competitions.cshtml"
+            #line 48 "..\..\Views\Competitions.cshtml"
                                                                                                                                                                Write(competition.CompetitionName);
 
             
@@ -371,7 +382,7 @@ WriteLiteral(" class=\"list-results__detail\"");
 WriteLiteral(">");
 
             
-            #line 48 "..\..\Views\Competitions.cshtml"
+            #line 49 "..\..\Views\Competitions.cshtml"
                                             Write(competition.PlayerType.Humanize(LetterCasing.Sentence));
 
             
@@ -380,7 +391,7 @@ WriteLiteral(">");
 WriteLiteral(". No longer played.</dd>\r\n");
 
             
-            #line 49 "..\..\Views\Competitions.cshtml"
+            #line 50 "..\..\Views\Competitions.cshtml"
             }
         }
 
@@ -390,13 +401,13 @@ WriteLiteral(". No longer played.</dd>\r\n");
 WriteLiteral("    </dl>\r\n");
 
             
-            #line 52 "..\..\Views\Competitions.cshtml"
+            #line 53 "..\..\Views\Competitions.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 52 "..\..\Views\Competitions.cshtml"
+            #line 53 "..\..\Views\Competitions.cshtml"
      if (Model.TotalCompetitions > (Model.CompetitionFilter.PageNumber * Model.CompetitionFilter.PageSize))
     {
         var query = HttpUtility.ParseQueryString(Request.Url.Query);
@@ -407,15 +418,15 @@ WriteLiteral("    </dl>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2996), Tuple.Create("\"", 3023)
-, Tuple.Create(Tuple.Create("", 3003), Tuple.Create("/competitions?", 3003), true)
+WriteAttribute("href", Tuple.Create(" href=\"", 3072), Tuple.Create("\"", 3099)
+, Tuple.Create(Tuple.Create("", 3079), Tuple.Create("/competitions?", 3079), true)
             
-            #line 56 "..\..\Views\Competitions.cshtml"
-, Tuple.Create(Tuple.Create("", 3017), Tuple.Create<System.Object, System.Int32>(query
+            #line 57 "..\..\Views\Competitions.cshtml"
+, Tuple.Create(Tuple.Create("", 3093), Tuple.Create<System.Object, System.Int32>(query
             
             #line default
             #line hidden
-, 3017), false)
+, 3093), false)
 );
 
 WriteLiteral(" class=\"btn btn-secondary\"");
@@ -423,7 +434,7 @@ WriteLiteral(" class=\"btn btn-secondary\"");
 WriteLiteral(">Next page</a></p>\r\n");
 
             
-            #line 57 "..\..\Views\Competitions.cshtml"
+            #line 58 "..\..\Views\Competitions.cshtml"
     }
 
             

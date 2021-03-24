@@ -75,18 +75,29 @@ namespace ASP
             #line hidden
 WriteLiteral("\r\n");
 
+DefineSection("canonical", () => {
+
+            
+            #line 12 "..\..\Views\BowlingFigures.cshtml"
+               Write(Html.Partial("_CanonicalUrl", new[] { "page" }));
+
+            
+            #line default
+            #line hidden
+});
+
 DefineSection("head", () => {
 
 WriteLiteral("\r\n");
 
             
-            #line 13 "..\..\Views\BowlingFigures.cshtml"
+            #line 14 "..\..\Views\BowlingFigures.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 13 "..\..\Views\BowlingFigures.cshtml"
+            #line 14 "..\..\Views\BowlingFigures.cshtml"
      if (Model.StatisticsFilter.PageNumber == 1)
     {
 
@@ -102,7 +113,7 @@ WriteLiteral(" content=\"index, nofollow\"");
 WriteLiteral(">\r\n");
 
             
-            #line 16 "..\..\Views\BowlingFigures.cshtml"
+            #line 17 "..\..\Views\BowlingFigures.cshtml"
     }
     else
     {
@@ -119,7 +130,7 @@ WriteLiteral(" content=\"noindex, nofollow\"");
 WriteLiteral(">\r\n");
 
             
-            #line 20 "..\..\Views\BowlingFigures.cshtml"
+            #line 21 "..\..\Views\BowlingFigures.cshtml"
     }
 
             
@@ -134,7 +145,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>Best bowling figures");
 
             
-            #line 23 "..\..\Views\BowlingFigures.cshtml"
+            #line 24 "..\..\Views\BowlingFigures.cshtml"
                         Write(Model.StatisticsFilter);
 
             
@@ -145,7 +156,7 @@ WriteLiteral("</h1>\r\n\r\n");
 WriteLiteral("    ");
 
             
-            #line 25 "..\..\Views\BowlingFigures.cshtml"
+            #line 26 "..\..\Views\BowlingFigures.cshtml"
 Write(Html.Partial("_StatisticsBasis"));
 
             
@@ -156,7 +167,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 26 "..\..\Views\BowlingFigures.cshtml"
+            #line 27 "..\..\Views\BowlingFigures.cshtml"
 Write(Html.Partial("_BowlingFigures"));
 
             

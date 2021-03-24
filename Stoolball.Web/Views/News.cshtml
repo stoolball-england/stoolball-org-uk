@@ -5,7 +5,7 @@
 @using Umbraco.Core.Composing;
 @using Stoolball.Dates;
 @using Humanizer;
-@{ 
+@{
     var formatter = Current.Factory.GetInstance<IDateTimeFormatter>();
     Html.RequiresCss("~/css/news.min.css");
 }
@@ -15,6 +15,7 @@
         return new BlockListModel(blockList.Where(x => x.Settings != null && x.Settings.Value<bool>("includeInSummary")).ToList());
     }
 }
+@section canonical {@Html.Partial("_CanonicalUrl", new[] { "page" })}
 <div class="container-xl">
     <h1>@Model.Name</h1>
 

@@ -2743,6 +2743,7 @@
     </Content>
     <Content Include="Views\TournamentsRss.cshtml" />
     <Content Include="Views\TournamentTweets.cshtml" />
+    <Content Include="Views\Partials\_CanonicalUrl.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

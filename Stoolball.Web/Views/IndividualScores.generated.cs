@@ -75,18 +75,29 @@ namespace ASP
             #line hidden
 WriteLiteral("\r\n");
 
+DefineSection("canonical", () => {
+
+            
+            #line 12 "..\..\Views\IndividualScores.cshtml"
+               Write(Html.Partial("_CanonicalUrl", new[] { "page" }));
+
+            
+            #line default
+            #line hidden
+});
+
 DefineSection("head", () => {
 
 WriteLiteral("\r\n");
 
             
-            #line 13 "..\..\Views\IndividualScores.cshtml"
+            #line 14 "..\..\Views\IndividualScores.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 13 "..\..\Views\IndividualScores.cshtml"
+            #line 14 "..\..\Views\IndividualScores.cshtml"
      if (Model.StatisticsFilter.PageNumber == 1)
     {
 
@@ -102,7 +113,7 @@ WriteLiteral(" content=\"index, nofollow\"");
 WriteLiteral(">\r\n");
 
             
-            #line 16 "..\..\Views\IndividualScores.cshtml"
+            #line 17 "..\..\Views\IndividualScores.cshtml"
     }
     else
     {
@@ -119,7 +130,7 @@ WriteLiteral(" content=\"noindex, nofollow\"");
 WriteLiteral(">\r\n");
 
             
-            #line 20 "..\..\Views\IndividualScores.cshtml"
+            #line 21 "..\..\Views\IndividualScores.cshtml"
     }
 
             
@@ -134,7 +145,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>Highest individual scores");
 
             
-            #line 23 "..\..\Views\IndividualScores.cshtml"
+            #line 24 "..\..\Views\IndividualScores.cshtml"
                              Write(Model.StatisticsFilter);
 
             
@@ -145,7 +156,7 @@ WriteLiteral("</h1>\r\n\r\n");
 WriteLiteral("    ");
 
             
-            #line 25 "..\..\Views\IndividualScores.cshtml"
+            #line 26 "..\..\Views\IndividualScores.cshtml"
 Write(Html.Partial("_StatisticsBasis"));
 
             
@@ -156,7 +167,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 26 "..\..\Views\IndividualScores.cshtml"
+            #line 27 "..\..\Views\IndividualScores.cshtml"
 Write(Html.Partial("_IndividualScores"));
 
             

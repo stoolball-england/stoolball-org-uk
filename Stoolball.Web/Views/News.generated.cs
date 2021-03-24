@@ -92,7 +92,7 @@ namespace ASP
         {
             
             #line 8 "..\..\Views\News.cshtml"
-   
+  
     var formatter = Current.Factory.GetInstance<IDateTimeFormatter>();
     Html.RequiresCss("~/css/news.min.css");
 
@@ -101,6 +101,17 @@ namespace ASP
             #line hidden
 WriteLiteral("\r\n");
 
+DefineSection("canonical", () => {
+
+            
+            #line 18 "..\..\Views\News.cshtml"
+               Write(Html.Partial("_CanonicalUrl", new[] { "page" }));
+
+            
+            #line default
+            #line hidden
+});
+
 WriteLiteral("<div");
 
 WriteLiteral(" class=\"container-xl\"");
@@ -108,7 +119,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 19 "..\..\Views\News.cshtml"
+            #line 20 "..\..\Views\News.cshtml"
    Write(Model.Name);
 
             
@@ -117,13 +128,13 @@ WriteLiteral(">\r\n    <h1>");
 WriteLiteral("</h1>\r\n\r\n");
 
             
-            #line 21 "..\..\Views\News.cshtml"
+            #line 22 "..\..\Views\News.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 21 "..\..\Views\News.cshtml"
+            #line 22 "..\..\Views\News.cshtml"
      foreach (var story in Model.Stories)
     {
 
@@ -132,20 +143,20 @@ WriteLiteral("</h1>\r\n\r\n");
             #line hidden
 WriteLiteral("        <article>\r\n            <h2><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 764), Tuple.Create("\"", 783)
+WriteAttribute("href", Tuple.Create(" href=\"", 834), Tuple.Create("\"", 853)
             
-            #line 24 "..\..\Views\News.cshtml"
-, Tuple.Create(Tuple.Create("", 771), Tuple.Create<System.Object, System.Int32>(story.Url()
+            #line 25 "..\..\Views\News.cshtml"
+, Tuple.Create(Tuple.Create("", 841), Tuple.Create<System.Object, System.Int32>(story.Url()
             
             #line default
             #line hidden
-, 771), false)
+, 841), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 24 "..\..\Views\News.cshtml"
+            #line 25 "..\..\Views\News.cshtml"
                                   Write(story.Name);
 
             
@@ -158,7 +169,7 @@ WriteLiteral(" class=\"news__date\"");
 WriteLiteral(">");
 
             
-            #line 25 "..\..\Views\News.cshtml"
+            #line 26 "..\..\Views\News.cshtml"
                               Write(formatter.FormatDate(story.DisplayDate == DateTime.MinValue ? story.CreateDate : story.DisplayDate).Humanize(LetterCasing.Title));
 
             
@@ -169,7 +180,7 @@ WriteLiteral("</p>\r\n");
 WriteLiteral("            ");
 
             
-            #line 26 "..\..\Views\News.cshtml"
+            #line 27 "..\..\Views\News.cshtml"
        Write(Html.GetBlockListHtml(FilterBlockList(story.BlockList)));
 
             
@@ -178,7 +189,7 @@ WriteLiteral("            ");
 WriteLiteral("\r\n        </article>\r\n");
 
             
-            #line 28 "..\..\Views\News.cshtml"
+            #line 29 "..\..\Views\News.cshtml"
     }
 
             
@@ -187,13 +198,13 @@ WriteLiteral("\r\n        </article>\r\n");
 WriteLiteral("\r\n");
 
             
-            #line 30 "..\..\Views\News.cshtml"
+            #line 31 "..\..\Views\News.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 30 "..\..\Views\News.cshtml"
+            #line 31 "..\..\Views\News.cshtml"
      if (Model.TotalStories > (Model.PageNumber * Model.PageSize))
     {
         var query = HttpUtility.ParseQueryString(Request.Url.Query);
@@ -204,22 +215,22 @@ WriteLiteral("\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1344), Tuple.Create("\"", 1370)
+WriteAttribute("href", Tuple.Create(" href=\"", 1414), Tuple.Create("\"", 1440)
             
-            #line 34 "..\..\Views\News.cshtml"
-, Tuple.Create(Tuple.Create("", 1351), Tuple.Create<System.Object, System.Int32>(Model.Url()
-            
-            #line default
-            #line hidden
-, 1351), false)
-, Tuple.Create(Tuple.Create("", 1363), Tuple.Create("?", 1363), true)
-            
-            #line 34 "..\..\Views\News.cshtml"
-, Tuple.Create(Tuple.Create("", 1364), Tuple.Create<System.Object, System.Int32>(query
+            #line 35 "..\..\Views\News.cshtml"
+, Tuple.Create(Tuple.Create("", 1421), Tuple.Create<System.Object, System.Int32>(Model.Url()
             
             #line default
             #line hidden
-, 1364), false)
+, 1421), false)
+, Tuple.Create(Tuple.Create("", 1433), Tuple.Create("?", 1433), true)
+            
+            #line 35 "..\..\Views\News.cshtml"
+, Tuple.Create(Tuple.Create("", 1434), Tuple.Create<System.Object, System.Int32>(query
+            
+            #line default
+            #line hidden
+, 1434), false)
 );
 
 WriteLiteral(" class=\"btn btn-secondary\"");
@@ -227,7 +238,7 @@ WriteLiteral(" class=\"btn btn-secondary\"");
 WriteLiteral(">Next page</a></p>\r\n");
 
             
-            #line 35 "..\..\Views\News.cshtml"
+            #line 36 "..\..\Views\News.cshtml"
     }
 
             

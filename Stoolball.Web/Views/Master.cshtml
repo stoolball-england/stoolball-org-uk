@@ -43,10 +43,11 @@
     <link rel="manifest" href="~/Status/offline.json" />
     <link rel="icon" type="image/svg+xml" href="~/images/logos/stoolball-england-icon.svg" />
     <link rel="alternate icon" href="~/favicon.ico" />
+    @RenderSection("canonical", required: false)
+    @if (!IsSectionDefined("canonical")) {@Html.Partial("_CanonicalUrl", Array.Empty<string>())}
     @RenderSection("head", false)
     @Html.RenderCssHere()
 </head>
-
 <body>
     @Html.Partial("_Header")
     <main>

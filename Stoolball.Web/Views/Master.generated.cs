@@ -187,6 +187,43 @@ WriteLiteral("    ");
 
             
             #line 46 "..\..\Views\Master.cshtml"
+Write(RenderSection("canonical", required: false));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
+            
+            #line 47 "..\..\Views\Master.cshtml"
+    
+            
+            #line default
+            #line hidden
+            
+            #line 47 "..\..\Views\Master.cshtml"
+     if (!IsSectionDefined("canonical")) {
+            
+            #line default
+            #line hidden
+            
+            #line 47 "..\..\Views\Master.cshtml"
+                                     Write(Html.Partial("_CanonicalUrl", Array.Empty<string>()));
+
+            
+            #line default
+            #line hidden
+            
+            #line 47 "..\..\Views\Master.cshtml"
+                                                                                               }
+
+            
+            #line default
+            #line hidden
+WriteLiteral("    ");
+
+            
+            #line 48 "..\..\Views\Master.cshtml"
 Write(RenderSection("head", false));
 
             
@@ -197,18 +234,18 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 47 "..\..\Views\Master.cshtml"
+            #line 49 "..\..\Views\Master.cshtml"
 Write(Html.RenderCssHere());
 
             
             #line default
             #line hidden
-WriteLiteral("\r\n</head>\r\n\r\n<body>\r\n");
+WriteLiteral("\r\n</head>\r\n<body>\r\n");
 
 WriteLiteral("    ");
 
             
-            #line 51 "..\..\Views\Master.cshtml"
+            #line 52 "..\..\Views\Master.cshtml"
 Write(Html.Partial("_Header"));
 
             
@@ -219,7 +256,7 @@ WriteLiteral("\r\n    <main>\r\n");
 WriteLiteral("        ");
 
             
-            #line 53 "..\..\Views\Master.cshtml"
+            #line 54 "..\..\Views\Master.cshtml"
    Write(Html.Partial("_Breadcrumb", Model.Breadcrumbs));
 
             
@@ -230,7 +267,7 @@ WriteLiteral("\r\n");
 WriteLiteral("        ");
 
             
-            #line 54 "..\..\Views\Master.cshtml"
+            #line 55 "..\..\Views\Master.cshtml"
    Write(RenderBody());
 
             
@@ -241,7 +278,7 @@ WriteLiteral("\r\n    </main>\r\n");
 WriteLiteral("    ");
 
             
-            #line 56 "..\..\Views\Master.cshtml"
+            #line 57 "..\..\Views\Master.cshtml"
 Write(Html.Partial("_Footer"));
 
             
@@ -252,7 +289,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 57 "..\..\Views\Master.cshtml"
+            #line 58 "..\..\Views\Master.cshtml"
 Write(Html.RenderJsHere());
 
             
@@ -261,13 +298,13 @@ Write(Html.RenderJsHere());
 WriteLiteral("\r\n");
 
             
-            #line 58 "..\..\Views\Master.cshtml"
+            #line 59 "..\..\Views\Master.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 58 "..\..\Views\Master.cshtml"
+            #line 59 "..\..\Views\Master.cshtml"
      if (Request.Url.Host != "localhost")
     {
 
@@ -283,7 +320,7 @@ WriteLiteral("\r\n            data-cf-beacon=\'{\"token\": \"4b73271c7ec547e2a9c
 WriteLiteral("></script>\r\n");
 
             
-            #line 62 "..\..\Views\Master.cshtml"
+            #line 63 "..\..\Views\Master.cshtml"
     }
 
             

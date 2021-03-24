@@ -9,6 +9,7 @@
         Model.ShowPlayerColumn = false;
     }
 }
+@section canonical {@Html.Partial("_CanonicalUrl", new[] { "page" })}
 @section head {
     @if (Model.StatisticsFilter.PageNumber == 1)
     {

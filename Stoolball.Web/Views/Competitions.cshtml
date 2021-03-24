@@ -1,6 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.CompetitionsViewModel>
 @using Humanizer
 @using System.Text.RegularExpressions
+@section canonical {@Html.Partial("_CanonicalUrl", new[] { "page", "q" })}
 <div class="container-xl">
     <h1>
         @Stoolball.Constants.Pages.Competitions
