@@ -1192,6 +1192,7 @@
     <Content Include="Views\MatchesRss.cshtml" />
     <Content Include="Views\MatchTweets.cshtml" />
     <Content Include="Views\CreateTrainingSession.cshtml" />
+    <Content Include="Views\Matches.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -1362,6 +1363,7 @@
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
     <Compile Include="ContentPage\CookiesController.cs" />
+    <Compile Include="Matches\MatchesController.cs" />
     <Compile Include="Matches\CreateTrainingSessionSurfaceController.cs" />
     <Compile Include="Matches\CreateTrainingSessionController.cs" />
     <Compile Include="Matches\EditTrainingSessionViewModel.cs" />

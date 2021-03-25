@@ -39,39 +39,49 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> DeleteMatch([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] MatchingTextConfirmation model)
+        public async Task<ActionResult> DeleteMatch([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] MatchingTextConfirmation postedModel)
         {
-            if (model is null)
+            if (postedModel is null)
             {
-                throw new ArgumentNullException(nameof(model));
+                throw new ArgumentNullException(nameof(postedModel));
             }
 
-            var viewModel = new DeleteMatchViewModel(CurrentPage, Services.UserService)
+            var model = new DeleteMatchViewModel(CurrentPage, Services.UserService)
             {
                 Match = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false),
                 DateTimeFormatter = _dateTimeFormatter
             };
-            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Match);
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
 
-            if (viewModel.IsAuthorized[AuthorizedAction.DeleteMatch] && ModelState.IsValid)
+            if (model.IsAuthorized[AuthorizedAction.DeleteMatch] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
-                await _matchRepository.DeleteMatch(viewModel.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                viewModel.Deleted = true;
+                await _matchRepository.DeleteMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                model.Deleted = true;
             }
             else
             {
-                viewModel.TotalComments = await _matchCommentsDataSource.ReadTotalComments(viewModel.Match.MatchId.Value).ConfigureAwait(false);
+                model.TotalComments = await _matchCommentsDataSource.ReadTotalComments(model.Match.MatchId.Value).ConfigureAwait(false);
             }
 
-            viewModel.Metadata.PageTitle = "Delete " + viewModel.Match.MatchFullName(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false)) + " - stoolball match";
+            model.Metadata.PageTitle = "Delete " + model.Match.MatchFullName(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false)) + " - stoolball match";
 
-            if (!viewModel.Deleted)
+            if (model.Match.Season != null)
             {
-                viewModel.Breadcrumbs.Add(new Breadcrumb { Name = viewModel.Match.MatchName, Url = new Uri(viewModel.Match.MatchRoute, UriKind.Relative) });
+                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
+                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.Season.Competition.CompetitionName, Url = new Uri(model.Match.Season.Competition.CompetitionRoute, UriKind.Relative) });
+                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.Season.SeasonName(), Url = new Uri(model.Match.Season.SeasonRoute, UriKind.Relative) });
+            }
+            else
+            {
+                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Matches, Url = new Uri(Constants.Pages.MatchesUrl, UriKind.Relative) });
+            }
+            if (!model.Deleted)
+            {
+                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.MatchName, Url = new Uri(model.Match.MatchRoute, UriKind.Relative) });
             }
 
-            return View("DeleteMatch", viewModel);
+            return View("DeleteMatch", model);
         }
     }
 }

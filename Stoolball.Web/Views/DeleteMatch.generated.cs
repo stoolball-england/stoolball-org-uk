@@ -611,35 +611,37 @@ WriteLiteral("</a></p>\r\n");
             }
             else
             {
-                
-            
-            #line default
-            #line hidden
-            
-            #line 106 "..\..\Views\DeleteMatch.cshtml"
-                                                                                                                                      
 
             
             #line default
             #line hidden
 WriteLiteral("                <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 5041), Tuple.Create("\"", 5072)
+WriteLiteral(" class=\"btn btn-primary btn-back\"");
+
+WriteAttribute("href", Tuple.Create(" href=\"", 4938), Tuple.Create("\"", 4972)
             
-            #line 107 "..\..\Views\DeleteMatch.cshtml"
-, Tuple.Create(Tuple.Create("", 5048), Tuple.Create<System.Object, System.Int32>(Constants.Pages.HomeUrl
+            #line 106 "..\..\Views\DeleteMatch.cshtml"
+, Tuple.Create(Tuple.Create("", 4945), Tuple.Create<System.Object, System.Int32>(Constants.Pages.MatchesUrl
             
             #line default
             #line hidden
-, 5048), false)
+, 4945), false)
 );
 
-WriteLiteral(" class=\"btn btn-primary btn-back\"");
-
-WriteLiteral(">Go back to the home page</a></p>\r\n");
+WriteLiteral(">Back to ");
 
             
-            #line 108 "..\..\Views\DeleteMatch.cshtml"
+            #line 106 "..\..\Views\DeleteMatch.cshtml"
+                                                                                             Write(Constants.Pages.Matches);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</a></p>\r\n");
+
+            
+            #line 107 "..\..\Views\DeleteMatch.cshtml"
             }
         }
     }
@@ -650,14 +652,14 @@ WriteLiteral(">Go back to the home page</a></p>\r\n");
             #line default
             #line hidden
             
-            #line 113 "..\..\Views\DeleteMatch.cshtml"
+            #line 112 "..\..\Views\DeleteMatch.cshtml"
    Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 113 "..\..\Views\DeleteMatch.cshtml"
+            #line 112 "..\..\Views\DeleteMatch.cshtml"
                                
     }
 

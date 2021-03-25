@@ -1,0 +1,15 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Matches.MatchListingViewModel>
+@section canonical {@Html.Partial("_CanonicalUrl", new[] { "page", "q" })}
+<div class="container-xl">
+    <h1>@Stoolball.Constants.Pages.Matches</h1>
+
+    @if (Model.Matches.Count > 0)
+    {
+        @Html.Partial("_MatchList", Model)
+    }
+    else
+    {
+        <p>There are no matches yet this season.</p>
+    }
+    <p><a type="application/rss+xml" href="/matches.rss@(Request.Url.Query)">New and updated matches – subscribe with RSS</a></p>
+</div>

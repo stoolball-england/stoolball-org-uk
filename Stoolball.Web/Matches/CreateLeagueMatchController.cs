@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
+using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Web.Routing;
@@ -119,6 +120,7 @@ namespace Stoolball.Web.Matches
 
             _editMatchHelper.ConfigureAddMatchModelMetadata(model);
 
+            model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Matches, Url = new Uri(Constants.Pages.MatchesUrl, UriKind.Relative) });
             return CurrentTemplate(model);
         }
 

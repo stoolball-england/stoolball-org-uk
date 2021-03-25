@@ -4,8 +4,9 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Moq;
-using Stoolball.Competitions;
-using Stoolball.Web.Competitions;
+using Stoolball.Dates;
+using Stoolball.Matches;
+using Stoolball.Web.Matches;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -14,20 +15,22 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Competitions
+namespace Stoolball.Web.Tests.Matches
 {
-    public class CompetitionsControllerTests : UmbracoBaseTest
+    public class MatchesControllerTests : UmbracoBaseTest
     {
-        private class TestController : CompetitionsController
+        private class TestController : MatchesController
         {
-            public TestController(ICompetitionDataSource competitionDataSource, string queryString = "")
+            public TestController(IMatchListingDataSource matchesDataSource, string queryString = "")
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, competitionDataSource)
+                null,
+                matchesDataSource,
+                Mock.Of<IDateTimeFormatter>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -41,33 +44,33 @@ namespace Stoolball.Web.Tests.Competitions
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("Competitions", model);
+                return View("Matches", model);
             }
         }
 
         [Fact]
-        public async Task Returns_CompetitionsViewModel()
+        public async Task Returns_MatchListingViewModel()
         {
-            var dataSource = new Mock<ICompetitionDataSource>();
+            var dataSource = new Mock<IMatchListingDataSource>();
 
             using (var controller = new TestController(dataSource.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<CompetitionsViewModel>(((ViewResult)result).Model);
+                Assert.IsType<MatchListingViewModel>(((ViewResult)result).Model);
             }
         }
 
         [Fact]
         public async Task Reads_query_from_querystring_into_view_model()
         {
-            var dataSource = new Mock<ICompetitionDataSource>();
+            var dataSource = new Mock<IMatchListingDataSource>();
 
             using (var controller = new TestController(dataSource.Object, "q=example"))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Equal("example", ((CompetitionsViewModel)((ViewResult)result).Model).CompetitionFilter.Query);
+                Assert.Equal("example", ((MatchListingViewModel)((ViewResult)result).Model).MatchFilter.Query);
             }
         }
 
@@ -75,13 +78,13 @@ namespace Stoolball.Web.Tests.Competitions
         [Fact]
         public async Task Reads_query_from_querystring_into_page_title()
         {
-            var dataSource = new Mock<ICompetitionDataSource>();
+            var dataSource = new Mock<IMatchListingDataSource>();
 
             using (var controller = new TestController(dataSource.Object, "q=example"))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Contains("example", ((CompetitionsViewModel)((ViewResult)result).Model).Metadata.PageTitle, StringComparison.Ordinal);
+                Assert.Contains("example", ((MatchListingViewModel)((ViewResult)result).Model).Metadata.PageTitle, StringComparison.Ordinal);
             }
         }
     }

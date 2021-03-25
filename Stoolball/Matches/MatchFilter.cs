@@ -6,6 +6,7 @@ namespace Stoolball.Matches
 {
     public class MatchFilter
     {
+        public string Query { get; set; }
         public List<Guid> TeamIds { get; internal set; } = new List<Guid>();
         public List<Guid> CompetitionIds { get; internal set; } = new List<Guid>();
         public List<Guid> SeasonIds { get; internal set; } = new List<Guid>();
@@ -19,5 +20,7 @@ namespace Stoolball.Matches
         public DateTimeOffset? UntilDate { get; set; }
         public Guid? TournamentId { get; set; }
         public List<Guid> MatchLocationIds { get; internal set; } = new List<Guid>();
+        public int PageNumber { get; set; } = 1;
+        public int? PageSize { get; set; }
     }
 }

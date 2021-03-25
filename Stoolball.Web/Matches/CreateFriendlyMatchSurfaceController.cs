@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using Humanizer;
 using Stoolball.Competitions;
 using Stoolball.Matches;
+using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Web.Security;
@@ -93,6 +94,8 @@ namespace Stoolball.Web.Matches
             {
                 model.AwayTeamName = Request.Form["AwayTeamName"];
             }
+
+            model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Matches, Url = new Uri(Constants.Pages.MatchesUrl, UriKind.Relative) });
 
             return View("CreateFriendlyMatch", model);
         }
