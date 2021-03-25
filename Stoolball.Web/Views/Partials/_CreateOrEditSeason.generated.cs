@@ -318,10 +318,10 @@ WriteLiteral(" type=\"checkbox\"");
 
 WriteLiteral(" name=\"Season.MatchTypes\"");
 
-WriteAttribute("value", Tuple.Create(" value=\"", 2823), Tuple.Create("\"", 2850)
+WriteAttribute("value", Tuple.Create(" value=\"", 2823), Tuple.Create("\"", 2857)
             
             #line 36 "..\..\Views\Partials\_CreateOrEditSeason.cshtml"
-, Tuple.Create(Tuple.Create("", 2831), Tuple.Create<System.Object, System.Int32>(MatchType.Practice
+, Tuple.Create(Tuple.Create("", 2831), Tuple.Create<System.Object, System.Int32>(MatchType.TrainingSession
             
             #line default
             #line hidden
@@ -330,23 +330,23 @@ WriteAttribute("value", Tuple.Create(" value=\"", 2823), Tuple.Create("\"", 2850
 
 WriteLiteral(" class=\"custom-control-input\"");
 
-WriteLiteral(" id=\"match-type-practice\"");
+WriteLiteral(" id=\"match-type-training\"");
 
-WriteAttribute("checked", Tuple.Create(" checked=\"", 2905), Tuple.Create("\"", 2968)
+WriteAttribute("checked", Tuple.Create(" checked=\"", 2912), Tuple.Create("\"", 2982)
             
             #line 36 "..\..\Views\Partials\_CreateOrEditSeason.cshtml"
-                                                                   , Tuple.Create(Tuple.Create("", 2915), Tuple.Create<System.Object, System.Int32>(Model.Season.MatchTypes.Contains(MatchType.Practice)
+                                                                          , Tuple.Create(Tuple.Create("", 2922), Tuple.Create<System.Object, System.Int32>(Model.Season.MatchTypes.Contains(MatchType.TrainingSession)
             
             #line default
             #line hidden
-, 2915), false)
+, 2922), false)
 );
 
 WriteLiteral(" aria-describedby=\"match-types-validation\"");
 
 WriteLiteral(" />\r\n        <label");
 
-WriteLiteral(" for=\"match-type-practice\"");
+WriteLiteral(" for=\"match-type-training\"");
 
 WriteLiteral(" class=\"custom-control-label\"");
 
@@ -354,7 +354,7 @@ WriteLiteral(">");
 
             
             #line 37 "..\..\Views\Partials\_CreateOrEditSeason.cshtml"
-                                                                 Write(MatchType.Practice.ToString().Humanize(LetterCasing.Sentence));
+                                                                 Write(MatchType.TrainingSession.ToString().Humanize(LetterCasing.Sentence));
 
             
             #line default

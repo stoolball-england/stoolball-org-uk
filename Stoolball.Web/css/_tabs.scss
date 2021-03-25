@@ -58,9 +58,16 @@ $selected_background: #555;
 }
 
 // Align to the .container-xl margin 
-// .nav-item-admin-sm-last is used on the last visible child when a following sibling is hidden at the sm breakpoint
-.nav-item-admin:last-child, .nav-item-admin-sm-last {
+// .nav-item-admin-*-last is used on the last visible child when a following sibling is hidden at the equivalent breakpoint
+.nav-item-admin:last-child, .nav-item-admin-sm-last, .nav-item-admin-md-last {
     right: 0;
+}
+
+@include media-breakpoint-only(md) {
+    body .nav-tabs > .nav-item-admin-md-last .nav-link {
+        padding-right: $grid-gutter-width/2;
+        margin-right: -($grid-gutter-width/2);
+    }
 }
 
 // Hide the text of admin items (and ensure it doesn't wrap when hidden), leaving a minimum-clickable-size button with a background icon.
@@ -134,6 +141,7 @@ $selected_background: #555;
         text-align: initial;
         display: inherit;
     }
+
     // Now we show the button text as well as the icon, and reversed is the hover/focus/active style
     .nav-tabs > .nav-item-admin .nav-link {
         width: auto;

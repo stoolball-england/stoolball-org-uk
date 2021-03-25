@@ -26,7 +26,7 @@ A `MatchLocation` is anywhere where a stoolball match is played, which typically
 
 ## Matches
 
-A `Match` takes place between _up to_ two `Teams`. (A practice `Match` might be just one team, and the final of a knockout competition might not have any teams, until they qualify for it.) It happens at a `MatchLocation` at a specific date and time, and it has a series of `MatchInnings` - usually only one per side, but there can be more, like a Test match in cricket.
+A `Match` takes place between _up to_ two `Teams`. (A training session `Match` might be just one team, and the final of a knockout competition might not have any teams, until they qualify for it.) It happens at a `MatchLocation` at a specific date and time, and it has a series of `MatchInnings` - usually only one per side, but there can be more, like a Test match in cricket.
 
 A `Match` might stand alone, it might be part of a league or other `Competition`, or it might be part of a `Tournament`.
 

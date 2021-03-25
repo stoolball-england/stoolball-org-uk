@@ -34,9 +34,9 @@
                 {
                     continue; // don't tweet tournaments until 8am or matches until 4pm
                 }
-                if (listing.MatchType == MatchType.Practice)
+                if (listing.MatchType == MatchType.TrainingSession)
                 {
-                    tweetTitle = "It's practice night - come and join us! #stoolball";
+                    tweetTitle = "It's training night - come and join us! #stoolball";
                 }
                 else
                 {
@@ -47,9 +47,9 @@
             else
             {
                 string matchType;
-                if (listing.MatchType == MatchType.Practice)
+                if (listing.MatchType == MatchType.TrainingSession)
                 {
-                    matchType = "practice";
+                    matchType = "training session";
                     tweetTitle = listing.MatchLocation.NameAndLocalityOrTownIfDifferent();
                 }
                 else

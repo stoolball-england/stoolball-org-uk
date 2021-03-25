@@ -1,0 +1,197 @@
+﻿@model EditTrainingSessionViewModel
+@using Stoolball.Web.Matches
+@using Stoolball.Web.HtmlHelpers
+@using Stoolball.Teams
+@Html.AntiForgeryToken()
+@Html.ValidationSummary(true)
+
+@if (Model.Season != null)
+{
+    @Html.HiddenFor(m => Model.Match.Season.SeasonId)
+}
+else if (Model.PossibleSeasons.Count > 0)
+{
+    <div class="form-group">
+        @Html.LabelFor(m => Model.Match.Season.SeasonId, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+        @Html.DropDownListFor(m => Model.Match.Season.SeasonId, Model.PossibleSeasons, "None", new { @class = "form-control", aria_describedby = "match-season" })
+        @Html.ValidationMessageFor(m => Model.Match.Season.SeasonId, null, new { id = "match-season" })
+    </div>
+}
+else
+{
+    <div class="form-group related-item">
+        @Html.LabelFor(m => Model.Match.Season.SeasonId, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+        @if (Model.Match.Season != null)
+        {
+            <div class="single-related-item__selected">
+                <div class="related-item__selected__section">
+                    @Html.TextBoxFor(m => Model.SeasonFullName, new { @class = "form-control", @readonly = "readonly" })
+                </div>
+                <div class="related-item__delete related-item__selected__section">
+                    @Html.HiddenFor(m => Model.Match.Season.SeasonId, new { @class = "related-item__data related-item__id" })
+                    <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove this match from {Model.SeasonFullName}")</button>
+                </div>
+            </div>
+            Model.SeasonFullName = string.Empty;
+            @Html.TextBoxFor(m => Model.SeasonFullName, new
+            {
+                @class = "form-control related-item__search",
+                placeholder = "Type the season name",
+                autocomplete = "off",
+                type = "search",
+                data_url = "/api/seasons/autocomplete?matchType=TrainingSession",
+                data_template = "season-template",
+                aria_label = "Type a season name and press down arrow to select from the matching choices",
+                disabled = "disabled"
+            })
+        }
+        else
+        {
+            @Html.TextBoxFor(m => Model.SeasonFullName, new
+            {
+                @class = "form-control related-item__search",
+                placeholder = "Type the season name",
+                autocomplete = "off",
+                type = "search",
+                data_url = "/api/seasons/autocomplete",
+                data_template = "season-template",
+                aria_label = "Type a season name and press down arrow to select from the matching choices"
+            })
+        }
+    </div>
+    <script type="text/x-template" id="season-template">
+        <div class="single-related-item__selected">
+            <div class="related-item__selected__section">
+                <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="SeasonFullName" name="SeasonFullName" />
+            </div>
+            <div class="related-item__delete related-item__selected__section">
+                <input name="Match.Season.SeasonId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
+                <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove this match from {{value}}")</button>
+            </div>
+        </div>
+    </script>
+}
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.MatchDate)
+    @Html.TextBox(nameof(Model.MatchDate), Model.MatchDate.HasValue ? Model.MatchDate.Value.LocalDateTime.ToString("yyyy-MM-dd") : string.Empty, new { @type = "date", @class = "form-control", required = "required", aria_describedby = "match-date", data_val_date = "Enter a date in YYYY-MM-DD format." })
+    @Html.ValidationMessageFor(m => Model.MatchDate, null, new { id = "match-date" })
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.StartTime, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+    @Html.TextBoxFor(m => Model.StartTime, "{0:HH:mm}", new { @type = "time", @class = "form-control", aria_describedby = "start-time" })
+    @Html.ValidationMessageFor(m => Model.StartTime, null, new { id = "start-time" })
+</div>
+
+<div class="form-group">
+    <table class="table table-hover related-items" aria-describedby="invited-teams-validation" aria-labelledby="invited-teams-caption">
+        <thead class="thead-dark">
+            <tr><th scope="col" id="invited-teams-caption">Invite teams</th><th scope="col"></th></tr>
+        </thead>
+        <tbody>
+            @for (var i = 0; i < Model.Match.Teams.Count; i++)
+            {
+                var displayName = Model.Match.Teams[i].Team.UntilYear.HasValue ? Model.Match.Teams[i].Team.TeamName + " (no longer active)" : Model.Match.Teams[i].Team.TeamName;
+                <tr class="related-item__selected">
+                    <td class="related-item__selected__section"><div class="related-item__animate">@displayName</div></td>
+                    <td class="related-item__delete related-item__selected__section">
+                        <div class="related-item__animate">
+                            @Html.Hidden($"Match.Teams[{i}].Team.TeamId", Model.Match.Teams[i].Team.TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Match.Teams[i].Team.TeamId })
+                            @Html.Hidden($"Match.Teams[{i}].Team.TeamName", displayName, new { @class = "related-item__data", data_item = Model.Match.Teams[i].Team.TeamId })
+                            <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Match.Teams[i].Team.TeamName} from this training session")</button>
+                        </div>
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td colspan="2">
+                    @Html.Label("team-autocomplete", "Add a team", new { @class = "sr-only" })
+                    @Html.TextBox("team-autocomplete", string.Empty, new
+               {
+                   @class = "form-control related-item__search",
+                   placeholder = "Add a team",
+                   autocomplete = "off",
+                   type = "search",
+                   data_url = $"/api/teams/autocomplete?teamType={TeamType.LimitedMembership.ToString()}&teamType={TeamType.Occasional.ToString()}&teamType={TeamType.Regular.ToString()}&teamType={TeamType.Representative.ToString()}&teamType={TeamType.SchoolAgeGroup.ToString()}&teamType={TeamType.SchoolClub.ToString()}&teamType={TeamType.SchoolOther.ToString()}",
+                   data_template = "team-template",
+                   aria_label = "Type a team name and press down arrow to select the team"
+               })
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <script type="text/x-template" id="team-template">
+    <table>
+        <tr class="related-item__selected">
+            <td class="related-item__selected__section"><div class="related-item__animate">{{value}}</div></td>
+            <td class="related-item__delete related-item__selected__section">
+                <div class="related-item__animate">
+                    <input name="Match.Teams[0].Team.TeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
+                    <input name="Match.Teams[0].Team.TeamName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
+                    <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this training session")</button>
+                </div>
+            </td>
+    </tr>
+    </table>
+    </script>
+    @Html.ValidationMessageFor(m => Model.Match.Teams, string.Empty, new { id = "invited-teams-validation" })
+</div>
+
+<div class="form-group related-item">
+    @Html.LabelFor(m => Model.MatchLocationName, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+    @if (Model.MatchLocationId.HasValue)
+    {
+        <div class="single-related-item__selected">
+            <div class="related-item__selected__section">
+                @Html.TextBoxFor(m => Model.MatchLocationName, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+            <div class="related-item__delete related-item__selected__section">
+                @Html.HiddenFor(m => Model.MatchLocationId, new { @class = "related-item__data related-item__id" })
+                <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.MatchLocationName} from this match")</button>
+            </div>
+        </div>
+        Model.MatchLocationName = string.Empty;
+        @Html.TextBoxFor(m => Model.MatchLocationName, new
+        {
+            @class = "form-control related-item__search",
+            placeholder = "Type the ground or sports centre name",
+            autocomplete = "off",
+            type = "search",
+            data_url = "/api/locations/autocomplete",
+            data_template = "location-template",
+            aria_label = "Type a ground or sports centre name add and press down arrow to select from the matching choices",
+            disabled = "disabled"
+        })
+    }
+    else
+    {
+        @Html.TextBoxFor(m => Model.MatchLocationName, new
+        {
+            @class = "form-control related-item__search",
+            placeholder = "Type the ground or sports centre name",
+            autocomplete = "off",
+            type = "search",
+            data_url = "/api/locations/autocomplete",
+            data_template = "location-template",
+            aria_label = "Type a ground or sports centre name add and press down arrow to select from the matching choices"
+        })
+    }
+</div>
+<script type="text/x-template" id="location-template">
+    <div class="single-related-item__selected">
+        <div class="related-item__selected__section">
+            <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="MatchLocationName" name="MatchLocationName" />
+        </div>
+        <div class="related-item__delete related-item__selected__section">
+            <input name="MatchLocationId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
+            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this match")</button>
+        </div>
+    </div>
+</script>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.Match.MatchNotes, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+    @Html.TextAreaFor(m => Model.Match.MatchNotes, new { @class = "form-control", aria_describedby = "notes-validation" })
+    @Html.ValidationMessageFor(m => Model.Match.MatchNotes, null, new { id = "notes-validation" })
+</div>

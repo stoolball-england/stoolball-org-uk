@@ -80,7 +80,7 @@ namespace Stoolball.UnitTests.Matches
         [Theory]
         [InlineData("", null)]
         [InlineData("?type=0", MatchType.LeagueMatch)]
-        [InlineData("?type=3", MatchType.Practice)]
+        [InlineData("?type=3", MatchType.TrainingSession)]
         [InlineData("?type=4", MatchType.FriendlyMatch)]
         [InlineData("?type=5", MatchType.KnockoutMatch)]
         public void MatchType_filter_is_parsed_correctly(string queryString, MatchType? expectedMatchType)

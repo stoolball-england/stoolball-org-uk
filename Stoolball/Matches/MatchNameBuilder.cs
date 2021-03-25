@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Humanizer;
 
 namespace Stoolball.Matches
 {
@@ -22,9 +23,9 @@ namespace Stoolball.Matches
             var awayTeam = match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.Team;
             var awayTeamName = awayTeam?.TeamName ?? tbc;
 
-            if ((homeTeam?.TeamId == awayTeam?.TeamId && homeTeamName != tbc) || match.MatchType == MatchType.Practice)
+            if (match.MatchType == MatchType.TrainingSession)
             {
-                return homeTeamName + " (practice)";
+                return "Training session" + (match.Teams.Any() ? " for " + match.Teams.Select(x => x.Team.TeamName).ToList().Humanize() : string.Empty);
             }
 
             if (!match.MatchResultType.HasValue)

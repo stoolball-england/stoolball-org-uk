@@ -1264,7 +1264,7 @@ namespace Stoolball.Data.SqlServer
             }
             else if (match.Teams.Count > 0)
             {
-                baseRoute = string.Join(" ", match.Teams.OrderBy(x => x.TeamRole).Select(x => x.Team.TeamName));
+                baseRoute = string.Join(" ", match.Teams.OrderBy(x => x.TeamRole).Select(x => x.Team.TeamName).Take(2));
             }
             else if (!string.IsNullOrEmpty(match.MatchName))
             {

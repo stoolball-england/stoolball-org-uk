@@ -234,14 +234,14 @@ WriteLiteral("\r\n");
             #line hidden
             
             #line 61 "..\..\Views\Match.cshtml"
-        Write(Model.Match.Teams.Count > 1 ? "between " : "involving ");
+        Write(Model.Match.MatchType == MatchType.TrainingSession ? "for " : (Model.Match.Teams.Count > 1 ? "between " : "involving "));
 
             
             #line default
             #line hidden
             
             #line 61 "..\..\Views\Match.cshtml"
-                                                                      
+                                                                                                                                      
             
             
             #line default
@@ -307,14 +307,14 @@ WriteLiteral("    </p>\r\n\r\n    <p>\r\n        When:\r\n");
             #line hidden
 WriteLiteral("            <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3183), Tuple.Create("\"", 3229)
+WriteAttribute("href", Tuple.Create(" href=\"", 3247), Tuple.Create("\"", 3293)
             
             #line 72 "..\..\Views\Match.cshtml"
-, Tuple.Create(Tuple.Create("", 3190), Tuple.Create<System.Object, System.Int32>(Model.Match.Tournament.TournamentRoute
+, Tuple.Create(Tuple.Create("", 3254), Tuple.Create<System.Object, System.Int32>(Model.Match.Tournament.TournamentRoute
             
             #line default
             #line hidden
-, 3190), false)
+, 3254), false)
 );
 
 WriteLiteral(">");
@@ -401,14 +401,14 @@ WriteLiteral("    </p>\r\n\r\n");
             #line hidden
 WriteLiteral("        <p>Where: <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3968), Tuple.Create("\"", 4020)
+WriteAttribute("href", Tuple.Create(" href=\"", 4032), Tuple.Create("\"", 4084)
             
             #line 87 "..\..\Views\Match.cshtml"
-, Tuple.Create(Tuple.Create("", 3975), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchLocation.MatchLocationRoute
+, Tuple.Create(Tuple.Create("", 4039), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchLocation.MatchLocationRoute
             
             #line default
             #line hidden
-, 3975), false)
+, 4039), false)
 );
 
 WriteLiteral(">");
@@ -439,7 +439,7 @@ WriteLiteral("\r\n");
             #line hidden
             
             #line 90 "..\..\Views\Match.cshtml"
-     if (Model.Match.StartTime <= DateTime.UtcNow)
+     if (Model.Match.StartTime <= DateTime.UtcNow && Model.Match.MatchType != MatchType.TrainingSession)
     {
 
             
@@ -474,27 +474,27 @@ WriteLiteral(" class=\"update-result\"");
 
 WriteLiteral(">\r\n            <a");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 4394), Tuple.Create("\"", 4455)
-, Tuple.Create(Tuple.Create("", 4402), Tuple.Create("btn", 4402), true)
-, Tuple.Create(Tuple.Create(" ", 4405), Tuple.Create("btn-secondary", 4406), true)
+WriteAttribute("class", Tuple.Create(" class=\"", 4512), Tuple.Create("\"", 4573)
+, Tuple.Create(Tuple.Create("", 4520), Tuple.Create("btn", 4520), true)
+, Tuple.Create(Tuple.Create(" ", 4523), Tuple.Create("btn-secondary", 4524), true)
             
             #line 96 "..\..\Views\Match.cshtml"
-, Tuple.Create(Tuple.Create("", 4419), Tuple.Create<System.Object, System.Int32>(resultRequired ? " btn-lg" : null
+, Tuple.Create(Tuple.Create("", 4537), Tuple.Create<System.Object, System.Int32>(resultRequired ? " btn-lg" : null
             
             #line default
             #line hidden
-, 4419), false)
+, 4537), false)
 );
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4456), Tuple.Create("\"", 4505)
+WriteAttribute("href", Tuple.Create(" href=\"", 4574), Tuple.Create("\"", 4623)
             
             #line 96 "..\..\Views\Match.cshtml"
-   , Tuple.Create(Tuple.Create("", 4463), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
+   , Tuple.Create(Tuple.Create("", 4581), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
             
             #line default
             #line hidden
-, 4463), false)
-, Tuple.Create(Tuple.Create("", 4486), Tuple.Create("/edit/start-of-play", 4486), true)
+, 4581), false)
+, Tuple.Create(Tuple.Create("", 4604), Tuple.Create("/edit/start-of-play", 4604), true)
 );
 
 WriteLiteral(">Edit result</a>\r\n        </div>\r\n");
@@ -643,14 +643,14 @@ WriteLiteral("</dt>\r\n");
             #line hidden
 WriteLiteral("                    <dd>\r\n                        <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 6470), Tuple.Create("\"", 6517)
+WriteAttribute("href", Tuple.Create(" href=\"", 6588), Tuple.Create("\"", 6635)
             
             #line 144 "..\..\Views\Match.cshtml"
-, Tuple.Create(Tuple.Create("", 6477), Tuple.Create<System.Object, System.Int32>(award.PlayerIdentity.Player.PlayerRoute
+, Tuple.Create(Tuple.Create("", 6595), Tuple.Create<System.Object, System.Int32>(award.PlayerIdentity.Player.PlayerRoute
             
             #line default
             #line hidden
-, 6477), false)
+, 6595), false)
 );
 
 WriteLiteral(">");

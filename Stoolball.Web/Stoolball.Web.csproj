@@ -1191,6 +1191,7 @@
     </Content>
     <Content Include="Views\MatchesRss.cshtml" />
     <Content Include="Views\MatchTweets.cshtml" />
+    <Content Include="Views\CreateTrainingSession.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -1361,6 +1362,9 @@
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
     <Compile Include="ContentPage\CookiesController.cs" />
+    <Compile Include="Matches\CreateTrainingSessionSurfaceController.cs" />
+    <Compile Include="Matches\CreateTrainingSessionController.cs" />
+    <Compile Include="Matches\EditTrainingSessionViewModel.cs" />
     <Compile Include="Matches\MatchesRssController.cs" />
     <Compile Include="Matches\TournamentsRssController.cs" />
     <Compile Include="Matches\OnlySportCsvExportComponent.cs" />
@@ -1369,6 +1373,11 @@
     <Compile Include="Teams\SpogoCsvExportComponent.cs" />
     <Compile Include="Teams\SpogoCsvExportTask.cs" />
     <Compile Include="Teams\SpogoCsvRecord.cs" />
+    <Compile Include="Views\Partials\_CreateOrEditTrainingSession.generated.cs">
+      <DependentUpon>_CreateOrEditTrainingSession.cshtml</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="WebApi\CsvHandler.cs" />
     <Compile Include="DapperComposer.cs" />
     <Compile Include="HtmlHelpers\LabelExtensions.cs" />
@@ -2744,6 +2753,10 @@
     <Content Include="Views\TournamentsRss.cshtml" />
     <Content Include="Views\TournamentTweets.cshtml" />
     <Content Include="Views\Partials\_CanonicalUrl.cshtml" />
+    <Content Include="Views\Partials\_CreateOrEditTrainingSession.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_CreateOrEditTrainingSession.generated.cs</LastGenOutput>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

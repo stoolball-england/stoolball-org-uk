@@ -33,8 +33,8 @@
         <label for="match-type-friendly" class="custom-control-label">@MatchType.FriendlyMatch.ToString().Humanize(LetterCasing.Sentence)</label>
     </div>
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" name="Season.MatchTypes" value="@MatchType.Practice" class="custom-control-input" id="match-type-practice" checked="@Model.Season.MatchTypes.Contains(MatchType.Practice)" aria-describedby="match-types-validation" />
-        <label for="match-type-practice" class="custom-control-label">@MatchType.Practice.ToString().Humanize(LetterCasing.Sentence)</label>
+        <input type="checkbox" name="Season.MatchTypes" value="@MatchType.TrainingSession" class="custom-control-input" id="match-type-training" checked="@Model.Season.MatchTypes.Contains(MatchType.TrainingSession)" aria-describedby="match-types-validation" />
+        <label for="match-type-training" class="custom-control-label">@MatchType.TrainingSession.ToString().Humanize(LetterCasing.Sentence)</label>
     </div>
     @Html.ValidationMessageFor(m => Model.Season.MatchTypes, null, new { id = "match-types-validation" })
 </fieldset>

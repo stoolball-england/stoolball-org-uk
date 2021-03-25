@@ -26,7 +26,7 @@
             <ul>
                 @if (Model.Match.Teams.Count > 0)
                 {
-                    <li>remove this match from match listings for @Model.Match.Teams.Humanize(x => x.Team.TeamName)</li>
+                    <li>remove this @Model.Match.MatchType.Humanize(LetterCasing.LowerCase) from match listings for @Model.Match.Teams.Humanize(x => x.Team.TeamName)</li>
                 }
                 else
                 {
@@ -34,7 +34,7 @@
                 }
                 @if (Model.Match.Season != null)
                 {
-                    <li>remove this match from the @Model.Match.Season.SeasonFullName()</li>
+                    <li>remove this @Model.Match.MatchType.Humanize(LetterCasing.LowerCase) from the @Model.Match.Season.SeasonFullName()</li>
                 }
                 else
                 {
@@ -52,7 +52,7 @@
                     var playersAtRisk = Model.PlayerIdentities.Where(x => x.TotalMatches == 1).ToList();
                     if (playersAtRisk.Count > 0)
                     {
-                        <li>delete @("player".ToQuantity(playersAtRisk.Count)) involved in only this match: @playersAtRisk.Humanize(x => x.PlayerIdentityName)</li>
+                        <li>delete @("player".ToQuantity(playersAtRisk.Count)) involved in only this @Model.Match.MatchType.Humanize(LetterCasing.LowerCase): @playersAtRisk.Humanize(x => x.PlayerIdentityName)</li>
                     }
                     else
                     {

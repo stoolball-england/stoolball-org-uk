@@ -68,6 +68,7 @@ namespace ASP
     {
         matchMenu.MatchTypes.Add(MatchType.KnockoutMatch);
     }
+    matchMenu.MatchTypes.Add(MatchType.TrainingSession);
     matchMenu.MatchTypes.Add(MatchType.FriendlyMatch);
 
             
@@ -94,7 +95,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 21 "..\..\Views\MatchesForTeam.cshtml"
+            #line 22 "..\..\Views\MatchesForTeam.cshtml"
    Write(Model.Team.TeamNameLocationAndPlayerType());
 
             
@@ -103,13 +104,13 @@ WriteLiteral(">\r\n    <h1>");
 WriteLiteral("</h1>\r\n\r\n");
 
             
-            #line 23 "..\..\Views\MatchesForTeam.cshtml"
+            #line 24 "..\..\Views\MatchesForTeam.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 23 "..\..\Views\MatchesForTeam.cshtml"
+            #line 24 "..\..\Views\MatchesForTeam.cshtml"
      if (Model.Team.UntilYear.HasValue)
     {
 
@@ -124,7 +125,7 @@ WriteLiteral(">\r\n            <p><strong>This team is no longer active.</strong
 "div>\r\n");
 
             
-            #line 28 "..\..\Views\MatchesForTeam.cshtml"
+            #line 29 "..\..\Views\MatchesForTeam.cshtml"
     }
 
             
@@ -142,14 +143,14 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 991), Tuple.Create("\"", 1019)
+WriteAttribute("href", Tuple.Create(" href=\"", 1049), Tuple.Create("\"", 1077)
             
-            #line 32 "..\..\Views\MatchesForTeam.cshtml"
-, Tuple.Create(Tuple.Create("", 998), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
+            #line 33 "..\..\Views\MatchesForTeam.cshtml"
+, Tuple.Create(Tuple.Create("", 1056), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
             
             #line default
             #line hidden
-, 998), false)
+, 1056), false)
 );
 
 WriteLiteral(">Summary</a>\r\n        </li>\r\n        <li");
@@ -168,15 +169,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1211), Tuple.Create("\"", 1250)
+WriteAttribute("href", Tuple.Create(" href=\"", 1269), Tuple.Create("\"", 1308)
             
-            #line 38 "..\..\Views\MatchesForTeam.cshtml"
-, Tuple.Create(Tuple.Create("", 1218), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
+            #line 39 "..\..\Views\MatchesForTeam.cshtml"
+, Tuple.Create(Tuple.Create("", 1276), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
             
             #line default
             #line hidden
-, 1218), false)
-, Tuple.Create(Tuple.Create("", 1239), Tuple.Create("/statistics", 1239), true)
+, 1276), false)
+, Tuple.Create(Tuple.Create("", 1297), Tuple.Create("/statistics", 1297), true)
 );
 
 WriteLiteral(">Statistics</a>\r\n        </li>\r\n");
@@ -184,7 +185,7 @@ WriteLiteral(">Statistics</a>\r\n        </li>\r\n");
 WriteLiteral("        ");
 
             
-            #line 40 "..\..\Views\MatchesForTeam.cshtml"
+            #line 41 "..\..\Views\MatchesForTeam.cshtml"
    Write(Html.Partial("_AddMatchMenu", matchMenu));
 
             
@@ -193,13 +194,13 @@ WriteLiteral("        ");
 WriteLiteral("\r\n    </ul>\r\n\r\n");
 
             
-            #line 43 "..\..\Views\MatchesForTeam.cshtml"
+            #line 44 "..\..\Views\MatchesForTeam.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 43 "..\..\Views\MatchesForTeam.cshtml"
+            #line 44 "..\..\Views\MatchesForTeam.cshtml"
      if (Model.Matches.Matches.Count > 0)
     {
         
@@ -207,14 +208,14 @@ WriteLiteral("\r\n    </ul>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 45 "..\..\Views\MatchesForTeam.cshtml"
+            #line 46 "..\..\Views\MatchesForTeam.cshtml"
    Write(Html.Partial("_MatchList", Model.Matches));
 
             
             #line default
             #line hidden
             
-            #line 45 "..\..\Views\MatchesForTeam.cshtml"
+            #line 46 "..\..\Views\MatchesForTeam.cshtml"
                                                   
     }
     else
@@ -226,7 +227,7 @@ WriteLiteral("\r\n    </ul>\r\n\r\n");
 WriteLiteral("        <p>There are no matches for this team this season.</p>\r\n");
 
             
-            #line 50 "..\..\Views\MatchesForTeam.cshtml"
+            #line 51 "..\..\Views\MatchesForTeam.cshtml"
     }
 
             
@@ -236,15 +237,15 @@ WriteLiteral("    <p><a");
 
 WriteLiteral(" type=\"application/rss+xml\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1580), Tuple.Create("\"", 1620)
+WriteAttribute("href", Tuple.Create(" href=\"", 1638), Tuple.Create("\"", 1678)
             
-            #line 51 "..\..\Views\MatchesForTeam.cshtml"
-, Tuple.Create(Tuple.Create("", 1587), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
+            #line 52 "..\..\Views\MatchesForTeam.cshtml"
+, Tuple.Create(Tuple.Create("", 1645), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
             
             #line default
             #line hidden
-, 1587), false)
-, Tuple.Create(Tuple.Create("", 1608), Tuple.Create("/matches.rss", 1608), true)
+, 1645), false)
+, Tuple.Create(Tuple.Create("", 1666), Tuple.Create("/matches.rss", 1666), true)
 );
 
 WriteLiteral(">New and updated matches – subscribe with RSS</a></p>\r\n</div>");

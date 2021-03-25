@@ -7,7 +7,6 @@ using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Statistics;
-using Stoolball.Teams;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -75,12 +74,15 @@ namespace Stoolball.Web.Matches
 
                 // Find the player identities in the match, then reselect them with details of how many matches they've played
                 model.PlayerIdentities = _playerIdentityFinder.PlayerIdentitiesInMatch(model.Match).ToList();
-                model.PlayerIdentities = await _playerDataSource.ReadPlayerIdentities(
-                    new PlayerIdentityFilter
-                    {
-                        PlayerIdentityIds = model.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList()
-                    }
-                ).ConfigureAwait(false);
+                if (model.PlayerIdentities.Any())
+                {
+                    model.PlayerIdentities = await _playerDataSource.ReadPlayerIdentities(
+                        new PlayerIdentityFilter
+                        {
+                            PlayerIdentityIds = model.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList()
+                        }
+                    ).ConfigureAwait(false);
+                }
 
                 model.ConfirmDeleteRequest.RequiredText = model.Match.MatchName;
 

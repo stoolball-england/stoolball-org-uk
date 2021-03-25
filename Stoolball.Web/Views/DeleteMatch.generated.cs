@@ -168,11 +168,20 @@ WriteLiteral("            <ul>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                    <li>remove this match from match listings for ");
+WriteLiteral("                    <li>remove this ");
 
             
             #line 29 "..\..\Views\DeleteMatch.cshtml"
-                                                             Write(Model.Match.Teams.Humanize(x => x.Team.TeamName));
+                               Write(Model.Match.MatchType.Humanize(LetterCasing.LowerCase));
+
+            
+            #line default
+            #line hidden
+WriteLiteral(" from match listings for ");
+
+            
+            #line 29 "..\..\Views\DeleteMatch.cshtml"
+                                                                                                               Write(Model.Match.Teams.Humanize(x => x.Team.TeamName));
 
             
             #line default
@@ -207,11 +216,20 @@ WriteLiteral("                ");
             
             #line default
             #line hidden
-WriteLiteral("                    <li>remove this match from the ");
+WriteLiteral("                    <li>remove this ");
 
             
             #line 37 "..\..\Views\DeleteMatch.cshtml"
-                                              Write(Model.Match.Season.SeasonFullName());
+                               Write(Model.Match.MatchType.Humanize(LetterCasing.LowerCase));
+
+            
+            #line default
+            #line hidden
+WriteLiteral(" from the ");
+
+            
+            #line 37 "..\..\Views\DeleteMatch.cshtml"
+                                                                                                Write(Model.Match.Season.SeasonFullName());
 
             
             #line default
@@ -298,11 +316,20 @@ WriteLiteral("                        <li>delete ");
             
             #line default
             #line hidden
-WriteLiteral(" involved in only this match: ");
+WriteLiteral(" involved in only this ");
 
             
             #line 55 "..\..\Views\DeleteMatch.cshtml"
-                                                                                                       Write(playersAtRisk.Humanize(x => x.PlayerIdentityName));
+                                                                                                Write(Model.Match.MatchType.Humanize(LetterCasing.LowerCase));
+
+            
+            #line default
+            #line hidden
+WriteLiteral(": ");
+
+            
+            #line 55 "..\..\Views\DeleteMatch.cshtml"
+                                                                                                                                                         Write(playersAtRisk.Humanize(x => x.PlayerIdentityName));
 
             
             #line default
@@ -558,14 +585,14 @@ WriteLiteral("                <p><a");
 
 WriteLiteral(" class=\"btn btn-primary\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4592), Tuple.Create("\"", 4630)
+WriteAttribute("href", Tuple.Create(" href=\"", 4742), Tuple.Create("\"", 4780)
             
             #line 102 "..\..\Views\DeleteMatch.cshtml"
-, Tuple.Create(Tuple.Create("", 4599), Tuple.Create<System.Object, System.Int32>(Model.Match.Season.SeasonRoute
+, Tuple.Create(Tuple.Create("", 4749), Tuple.Create<System.Object, System.Int32>(Model.Match.Season.SeasonRoute
             
             #line default
             #line hidden
-, 4599), false)
+, 4749), false)
 );
 
 WriteLiteral(">Back to ");
@@ -597,14 +624,14 @@ WriteLiteral("</a></p>\r\n");
             #line hidden
 WriteLiteral("                <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4891), Tuple.Create("\"", 4922)
+WriteAttribute("href", Tuple.Create(" href=\"", 5041), Tuple.Create("\"", 5072)
             
             #line 107 "..\..\Views\DeleteMatch.cshtml"
-, Tuple.Create(Tuple.Create("", 4898), Tuple.Create<System.Object, System.Int32>(Constants.Pages.HomeUrl
+, Tuple.Create(Tuple.Create("", 5048), Tuple.Create<System.Object, System.Int32>(Constants.Pages.HomeUrl
             
             #line default
             #line hidden
-, 4898), false)
+, 5048), false)
 );
 
 WriteLiteral(" class=\"btn btn-primary btn-back\"");

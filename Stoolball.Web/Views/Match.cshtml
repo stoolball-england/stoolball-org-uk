@@ -58,7 +58,7 @@
         @Model.Match.MatchType.Humanize(LetterCasing.Sentence)
         @if (Model.Match.Teams.Count > 0)
         {
-            @(Model.Match.Teams.Count > 1 ? "between " : "involving ")
+            @(Model.Match.MatchType == MatchType.TrainingSession ? "for " : (Model.Match.Teams.Count > 1 ? "between " : "involving "))
             @Html.Raw(Model.Match.Teams.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>"))
         }
     </p>
@@ -87,7 +87,7 @@
         <p>Where: <a href="@Model.Match.MatchLocation.MatchLocationRoute">@Model.Match.MatchLocation.NameAndLocalityOrTown()</a></p>
     }
 
-    @if (Model.Match.StartTime <= DateTime.UtcNow)
+    @if (Model.Match.StartTime <= DateTime.UtcNow && Model.Match.MatchType != MatchType.TrainingSession)
     {
         <p class="match-result"><strong>Result: @ResultDescription()</strong></p>
 

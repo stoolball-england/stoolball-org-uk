@@ -11,9 +11,9 @@
         LeagueMatch,
 
         /// <summary>
-        /// A practice session, rather than a real match
+        /// A training session, rather than a real match
         /// </summary>
-        Practice,
+        TrainingSession,
 
         /// <summary>
         /// A one-off friendly match
