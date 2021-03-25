@@ -51,6 +51,7 @@ $offset-container-padding: -(($grid-gutter-width/2)-$space-for-header-focus-ring
     margin: 0 $spacer/2 -100px 0; // -100px is just "plenty" to avoid it having an effect on surrounding elements. $spacer creates space between this and the next visible item within .header_inner.
     border-radius: 0 0 $border-radius*2 $border-radius*2;
     align-self: start;
+    box-shadow: rgba(0,0,0,.3) 3px 3px 6px 2px
 }
 
 @include media-breakpoint-up(sm) {
