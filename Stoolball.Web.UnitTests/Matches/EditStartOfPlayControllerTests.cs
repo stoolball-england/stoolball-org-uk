@@ -93,7 +93,12 @@ namespace Stoolball.Web.Tests.Matches
         public async Task Route_matching_match_in_the_past_returns_EditStartOfPlayViewModel()
         {
             var matchDataSource = new Mock<IMatchDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { StartTime = DateTime.UtcNow.AddHours(-1), Season = new Season(), MatchRoute = "/matches/example" });
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
+            {
+                StartTime = DateTime.UtcNow.AddHours(-1),
+                Season = new Season { Competition = new Competition { CompetitionName = "Example competition", CompetitionRoute = "/competitions/example" }, SeasonRoute = "/competitions/example/2021" },
+                MatchRoute = "/matches/example"
+            });
 
             using (var controller = new TestController(matchDataSource.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper))
             {

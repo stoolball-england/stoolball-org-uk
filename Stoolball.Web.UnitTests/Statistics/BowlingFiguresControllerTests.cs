@@ -63,6 +63,7 @@ namespace Stoolball.Web.Tests.Statistics
         {
             var statisticsDataSource = new Mock<IStatisticsDataSource>();
             var urlParser = new Mock<IStatisticsFilterUrlParser>();
+            urlParser.Setup(x => x.ParseUrl(It.IsAny<Uri>())).Returns(Task.FromResult(new StatisticsFilter()));
 
             var playerId = Guid.NewGuid();
             var results = new List<StatisticsResult<BowlingFigures>>();

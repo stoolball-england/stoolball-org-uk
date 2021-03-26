@@ -123,7 +123,7 @@ namespace Stoolball.Web.Tests.Matches
             matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
             {
                 StartTime = DateTime.UtcNow.AddHours(-1),
-                Season = new Season(),
+                Season = new Season { Competition = new Competition { CompetitionName = "Example competition", CompetitionRoute = "/competitions/example" }, SeasonRoute = "/competitions/example/2021" },
                 MatchResultType = matchResultType,
                 MatchRoute = "/matches/example"
             });

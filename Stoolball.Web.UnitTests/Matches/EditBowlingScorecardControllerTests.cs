@@ -157,7 +157,7 @@ namespace Stoolball.Web.Tests.Matches
             matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
             {
                 StartTime = DateTime.UtcNow.AddHours(-1),
-                Season = new Season(),
+                Season = new Season { Competition = new Competition { CompetitionName = "Example competition", CompetitionRoute = "/competitions/example" }, SeasonRoute = "/competitions/example/2021" },
                 MatchResultType = matchResultType,
                 MatchInnings = new List<MatchInnings> {
                     new MatchInnings{ InningsOrderInMatch = 1 }
@@ -183,7 +183,7 @@ namespace Stoolball.Web.Tests.Matches
             matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
             {
                 StartTime = DateTime.UtcNow.AddHours(-1),
-                Season = new Season(),
+                Season = new Season { Competition = new Competition { CompetitionName = "Example competition", CompetitionRoute = "/competitions/example" }, SeasonRoute = "/competitions/example/2021" },
                 MatchResultType = MatchResultType.HomeWin,
                 MatchInnings = new List<MatchInnings> {
                     new MatchInnings{ InningsOrderInMatch = 1 }
@@ -209,7 +209,7 @@ namespace Stoolball.Web.Tests.Matches
             matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
             {
                 StartTime = DateTime.UtcNow.AddHours(-1),
-                Season = new Season(),
+                Season = new Season { Competition = new Competition { CompetitionName = "Example competition", CompetitionRoute = "/competitions/example" }, SeasonRoute = "/competitions/example/2021" },
                 MatchResultType = MatchResultType.HomeWin,
                 MatchInnings = new List<MatchInnings> {
                     new MatchInnings{ InningsOrderInMatch = 1 }
@@ -236,7 +236,7 @@ namespace Stoolball.Web.Tests.Matches
             matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
             {
                 StartTime = DateTime.UtcNow.AddHours(-1),
-                Season = new Season(),
+                Season = new Season { Competition = new Competition { CompetitionName = "Example competition", CompetitionRoute = "/competitions/example" }, SeasonRoute = "/competitions/example/2021" },
                 MatchResultType = MatchResultType.HomeWin,
                 MatchInnings = new List<MatchInnings> {
                     new MatchInnings{ InningsOrderInMatch = 1, OverSets = new List<OverSet>{ new OverSet { Overs = 9 } }, OversBowled = new List<Over>() }
