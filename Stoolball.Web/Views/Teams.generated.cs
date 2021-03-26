@@ -412,47 +412,16 @@ WriteLiteral("</dd>\r\n");
             #line hidden
 WriteLiteral("    </dl>\r\n");
 
+WriteLiteral("    ");
+
             
             #line 99 "..\..\Views\Teams.cshtml"
-    
-            
-            #line default
-            #line hidden
-            
-            #line 99 "..\..\Views\Teams.cshtml"
-     if (Model.TotalTeams > (Model.TeamFilter.PageNumber * Model.TeamFilter.PageSize))
-    {
-        var query = HttpUtility.ParseQueryString(Request.Url.Query);
-        query["page"] = (Model.TeamFilter.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+Write(Html.Partial("_Paging", Model.TeamFilter.Paging));
 
             
             #line default
             #line hidden
-WriteLiteral("        <p><a");
-
-WriteAttribute("href", Tuple.Create(" href=\"", 4759), Tuple.Create("\"", 4779)
-, Tuple.Create(Tuple.Create("", 4766), Tuple.Create("/teams?", 4766), true)
-            
-            #line 103 "..\..\Views\Teams.cshtml"
-, Tuple.Create(Tuple.Create("", 4773), Tuple.Create<System.Object, System.Int32>(query
-            
-            #line default
-            #line hidden
-, 4773), false)
-);
-
-WriteLiteral(" class=\"btn btn-secondary\"");
-
-WriteLiteral(">Next page</a></p>\r\n");
-
-            
-            #line 104 "..\..\Views\Teams.cshtml"
-    }
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</div>");
+WriteLiteral("\r\n</div>");
 
         }
     }

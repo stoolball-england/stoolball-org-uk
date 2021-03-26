@@ -2085,10 +2085,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>_StatisticsBasis.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Partials\_StatisticsPaging.generated.cs">
+    <Compile Include="Views\Partials\_Paging.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>_StatisticsPaging.cshtml</DependentUpon>
+      <DependentUpon>_Paging.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\Partials\_TeamList.generated.cs">
       <AutoGen>True</AutoGen>
@@ -2744,9 +2744,9 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_BowlingFigures.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\Partials\_StatisticsPaging.cshtml">
+    <Content Include="Views\Partials\_Paging.cshtml">
       <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_StatisticsPaging.generated.cs</LastGenOutput>
+      <LastGenOutput>_Paging.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\Partials\_InningsStatistics.cshtml">
       <Generator>RazorGenerator</Generator>

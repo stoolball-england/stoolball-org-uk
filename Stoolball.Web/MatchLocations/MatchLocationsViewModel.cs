@@ -14,6 +14,5 @@ namespace Stoolball.Web.MatchLocations
 
         public MatchLocationFilter MatchLocationFilter { get; set; } = new MatchLocationFilter();
         public List<MatchLocation> MatchLocations { get; internal set; } = new List<MatchLocation>();
-        public int TotalMatchLocations { get; set; }
     }
 }

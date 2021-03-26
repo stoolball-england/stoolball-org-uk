@@ -45,12 +45,14 @@ namespace Stoolball.Web.Teams
                 {
                     Query = Request.QueryString["q"]?.Trim(),
                     IncludeClubTeams = false,
-                    TeamTypes = new List<TeamType> { TeamType.LimitedMembership, TeamType.Occasional, TeamType.Regular, TeamType.Representative, TeamType.SchoolClub },
-                    PageNumber = pageNumber > 0 ? pageNumber : 1
+                    TeamTypes = new List<TeamType> { TeamType.LimitedMembership, TeamType.Occasional, TeamType.Regular, TeamType.Representative, TeamType.SchoolClub }
                 }
             };
 
-            model.TotalTeams = await _teamDataSource.ReadTotalTeams(model.TeamFilter).ConfigureAwait(false);
+            model.TeamFilter.Paging.PageUrl = Request.Url;
+            model.TeamFilter.Paging.PageSize = Constants.Defaults.PageSize;
+            model.TeamFilter.Paging.PageNumber = pageNumber > 0 ? pageNumber : 1;
+            model.TeamFilter.Paging.Total = await _teamDataSource.ReadTotalTeams(model.TeamFilter).ConfigureAwait(false);
             model.Teams = await _teamDataSource.ReadTeamListings(model.TeamFilter).ConfigureAwait(false);
 
             model.Metadata.PageTitle = Constants.Pages.Teams;

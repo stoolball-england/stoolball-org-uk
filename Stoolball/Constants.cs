@@ -78,5 +78,11 @@ namespace Stoolball
             public const string Match = "https://www.stoolball.org.uk/id/match/";
             public const string Tournament = "https://www.stoolball.org.uk/id/tournament/";
         }
+
+        [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Not a typical class. This is creating a set of constants accessible with IntelliSense.")]
+        public static class Defaults
+        {
+            public const int PageSize = 50;
+        }
     }
 }

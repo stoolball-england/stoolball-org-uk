@@ -42,12 +42,14 @@ namespace Stoolball.Web.Competitions
             {
                 CompetitionFilter = new CompetitionFilter
                 {
-                    Query = Request.QueryString["q"]?.Trim(),
-                    PageNumber = pageNumber > 0 ? pageNumber : 1
+                    Query = Request.QueryString["q"]?.Trim()
                 }
             };
 
-            model.TotalCompetitions = await _competitionDataSource.ReadTotalCompetitions(model.CompetitionFilter).ConfigureAwait(false);
+            model.CompetitionFilter.Paging.PageNumber = pageNumber > 0 ? pageNumber : 1;
+            model.CompetitionFilter.Paging.PageSize = Constants.Defaults.PageSize;
+            model.CompetitionFilter.Paging.PageUrl = Request.Url;
+            model.CompetitionFilter.Paging.Total = await _competitionDataSource.ReadTotalCompetitions(model.CompetitionFilter).ConfigureAwait(false);
             model.Competitions = await _competitionDataSource.ReadCompetitions(model.CompetitionFilter).ConfigureAwait(false);
 
             model.Metadata.PageTitle = Constants.Pages.Competitions;

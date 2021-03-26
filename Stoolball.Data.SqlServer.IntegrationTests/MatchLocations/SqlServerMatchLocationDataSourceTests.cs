@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using Stoolball.MatchLocations;
+using Stoolball.Navigation;
 using Stoolball.Routing;
 using Stoolball.Teams;
 using Xunit;
@@ -207,7 +208,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var results = await matchLocationDataSource.ReadMatchLocations(new MatchLocationFilter { PageSize = _databaseFixture.MatchLocations.Count }).ConfigureAwait(false);
+            var results = await matchLocationDataSource.ReadMatchLocations(new MatchLocationFilter { Paging = new Paging { PageSize = _databaseFixture.MatchLocations.Count } }).ConfigureAwait(false);
 
             foreach (var location in _databaseFixture.MatchLocations)
             {
@@ -230,7 +231,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var results = await matchLocationDataSource.ReadMatchLocations(new MatchLocationFilter { PageSize = _databaseFixture.MatchLocations.Count }).ConfigureAwait(false);
+            var results = await matchLocationDataSource.ReadMatchLocations(new MatchLocationFilter { Paging = new Paging { PageSize = _databaseFixture.MatchLocations.Count } }).ConfigureAwait(false);
 
             foreach (var location in _databaseFixture.MatchLocations)
             {
@@ -257,7 +258,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var results = await matchLocationDataSource.ReadMatchLocations(new MatchLocationFilter { PageSize = _databaseFixture.MatchLocations.Count }).ConfigureAwait(false);
+            var results = await matchLocationDataSource.ReadMatchLocations(new MatchLocationFilter { Paging = new Paging { PageSize = _databaseFixture.MatchLocations.Count } }).ConfigureAwait(false);
 
             var expectedActiveStatus = true;
             foreach (var matchLocation in results)
@@ -278,7 +279,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
-            var result = await matchLocationDataSource.ReadMatchLocations(new MatchLocationFilter { PageSize = _databaseFixture.MatchLocations.Count }).ConfigureAwait(false);
+            var result = await matchLocationDataSource.ReadMatchLocations(new MatchLocationFilter { Paging = new Paging { PageSize = _databaseFixture.MatchLocations.Count } }).ConfigureAwait(false);
 
             Assert.Equal(_databaseFixture.MatchLocations.Count, result.Count);
             foreach (var location in _databaseFixture.MatchLocations)
@@ -292,7 +293,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new MatchLocationFilter { PageSize = _databaseFixture.MatchLocations.Count, Query = "SeCoNdArY" };
+            var query = new MatchLocationFilter { Paging = new Paging { PageSize = _databaseFixture.MatchLocations.Count }, Query = "SeCoNdArY" };
 
             var result = await matchLocationDataSource.ReadMatchLocations(query).ConfigureAwait(false);
 
@@ -309,7 +310,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new MatchLocationFilter { PageSize = _databaseFixture.MatchLocations.Count, Query = "PrImArY" };
+            var query = new MatchLocationFilter { Paging = new Paging { PageSize = _databaseFixture.MatchLocations.Count }, Query = "PrImArY" };
 
             var result = await matchLocationDataSource.ReadMatchLocations(query).ConfigureAwait(false);
 
@@ -327,7 +328,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new MatchLocationFilter { PageSize = _databaseFixture.MatchLocations.Count, Query = "LoCaLiTy" };
+            var query = new MatchLocationFilter { Paging = new Paging { PageSize = _databaseFixture.MatchLocations.Count }, Query = "LoCaLiTy" };
 
             var result = await matchLocationDataSource.ReadMatchLocations(query).ConfigureAwait(false);
 
@@ -344,7 +345,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new MatchLocationFilter { PageSize = _databaseFixture.MatchLocations.Count, Query = "ToWn" };
+            var query = new MatchLocationFilter { Paging = new Paging { PageSize = _databaseFixture.MatchLocations.Count }, Query = "ToWn" };
 
             var result = await matchLocationDataSource.ReadMatchLocations(query).ConfigureAwait(false);
 
@@ -363,7 +364,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
             var query = new MatchLocationFilter
             {
-                PageSize = _databaseFixture.MatchLocations.Count,
+                Paging = new Paging
+                {
+                    PageSize = _databaseFixture.MatchLocations.Count
+                },
                 ExcludeMatchLocationIds = new List<Guid> { _databaseFixture.MatchLocationWithMinimalDetails.MatchLocationId.Value }
             };
 
@@ -380,7 +384,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
             var query = new MatchLocationFilter
             {
-                PageSize = _databaseFixture.MatchLocations.Count,
+                Paging = new Paging
+                {
+                    PageSize = _databaseFixture.MatchLocations.Count
+                },
                 HasActiveTeams = true
             };
 
@@ -401,7 +408,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var matchLocationDataSource = new SqlServerMatchLocationDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
             var query = new MatchLocationFilter
             {
-                PageSize = _databaseFixture.MatchLocations.Count,
+                Paging = new Paging
+                {
+                    PageSize = _databaseFixture.MatchLocations.Count
+                },
                 TeamTypes = new List<TeamType> { TeamType.Regular }
             };
 
@@ -425,7 +435,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
             var remaining = _databaseFixture.MatchLocations.Count;
             while (remaining > 0)
             {
-                var result = await matchLocationDataSource.ReadMatchLocations(new MatchLocationFilter { PageNumber = pageNumber, PageSize = pageSize }).ConfigureAwait(false);
+                var result = await matchLocationDataSource.ReadMatchLocations(new MatchLocationFilter { Paging = new Paging { PageNumber = pageNumber, PageSize = pageSize } }).ConfigureAwait(false);
 
                 var expected = pageSize > remaining ? remaining : pageSize;
                 Assert.Equal(expected, result.Count);

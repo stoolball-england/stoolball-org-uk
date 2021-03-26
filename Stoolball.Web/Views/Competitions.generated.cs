@@ -400,47 +400,16 @@ WriteLiteral(". No longer played.</dd>\r\n");
             #line hidden
 WriteLiteral("    </dl>\r\n");
 
+WriteLiteral("    ");
+
             
             #line 53 "..\..\Views\Competitions.cshtml"
-    
-            
-            #line default
-            #line hidden
-            
-            #line 53 "..\..\Views\Competitions.cshtml"
-     if (Model.TotalCompetitions > (Model.CompetitionFilter.PageNumber * Model.CompetitionFilter.PageSize))
-    {
-        var query = HttpUtility.ParseQueryString(Request.Url.Query);
-        query["page"] = (Model.CompetitionFilter.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+Write(Html.Partial("_Paging", Model.CompetitionFilter.Paging));
 
             
             #line default
             #line hidden
-WriteLiteral("        <p><a");
-
-WriteAttribute("href", Tuple.Create(" href=\"", 3072), Tuple.Create("\"", 3099)
-, Tuple.Create(Tuple.Create("", 3079), Tuple.Create("/competitions?", 3079), true)
-            
-            #line 57 "..\..\Views\Competitions.cshtml"
-, Tuple.Create(Tuple.Create("", 3093), Tuple.Create<System.Object, System.Int32>(query
-            
-            #line default
-            #line hidden
-, 3093), false)
-);
-
-WriteLiteral(" class=\"btn btn-secondary\"");
-
-WriteLiteral(">Next page</a></p>\r\n");
-
-            
-            #line 58 "..\..\Views\Competitions.cshtml"
-    }
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</div>");
+WriteLiteral("\r\n</div>");
 
         }
     }

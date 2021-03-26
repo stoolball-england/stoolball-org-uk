@@ -110,9 +110,9 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of match locations based on a query
         /// </summary>
         /// <returns>A list of <see cref="MatchLocation"/> objects. An empty list if no match locations are found.</returns>
-        public async Task<List<MatchLocation>> ReadMatchLocations(MatchLocationFilter matchLocationQuery)
+        public async Task<List<MatchLocation>> ReadMatchLocations(MatchLocationFilter filter)
         {
-            if (matchLocationQuery == null) matchLocationQuery = new MatchLocationFilter();
+            if (filter == null) filter = new MatchLocationFilter();
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -151,7 +151,7 @@ namespace Stoolball.Data.SqlServer
 
                                 ) AS DistinctIdsForPaging 
                                     ORDER BY HasActiveTeams DESC, ComparableName
-                                    OFFSET {(matchLocationQuery.PageNumber - 1) * matchLocationQuery.PageSize} ROWS FETCH NEXT {matchLocationQuery.PageSize} ROWS ONLY
+                                    OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY
                             )
                             ORDER BY 
                                 CASE WHEN (
@@ -166,11 +166,14 @@ namespace Stoolball.Data.SqlServer
                                 ) > 0 THEN 1 ELSE 0 END DESC,
                             ml2.ComparableName";
 
-                var (filteredSql, parameters) = BuildMatchLocationQuery(matchLocationQuery, sql, new[] { Tables.TeamMatchLocation, Tables.Team, Tables.TeamVersion });
+                var (filteredSql, parameters) = BuildMatchLocationQuery(filter, sql, new[] { Tables.TeamMatchLocation, Tables.Team, Tables.TeamVersion });
 
-                filteredSql = filteredSql.Replace("<<WHERE-T2-TYPE>>", matchLocationQuery.TeamTypes.Count > 0 ? "AND t2.TeamType IN @TeamTypes" : string.Empty);
-                filteredSql = filteredSql.Replace("<<WHERE-T3-TYPE>>", matchLocationQuery.TeamTypes.Count > 0 ? "AND t3.TeamType IN @TeamTypes" : string.Empty);
-                filteredSql = filteredSql.Replace("<<WHERE-T4-TYPE>>", matchLocationQuery.TeamTypes.Count > 0 ? "AND t4.TeamType IN @TeamTypes" : string.Empty);
+                parameters.Add("@PageOffset", (filter.Paging.PageNumber - 1) * filter.Paging.PageSize);
+                parameters.Add("@PageSize", filter.Paging.PageSize);
+
+                filteredSql = filteredSql.Replace("<<WHERE-T2-TYPE>>", filter.TeamTypes.Count > 0 ? "AND t2.TeamType IN @TeamTypes" : string.Empty);
+                filteredSql = filteredSql.Replace("<<WHERE-T3-TYPE>>", filter.TeamTypes.Count > 0 ? "AND t3.TeamType IN @TeamTypes" : string.Empty);
+                filteredSql = filteredSql.Replace("<<WHERE-T4-TYPE>>", filter.TeamTypes.Count > 0 ? "AND t4.TeamType IN @TeamTypes" : string.Empty);
 
                 var locations = await connection.QueryAsync<MatchLocation, Team, MatchLocation>(filteredSql,
                               (location, team) =>

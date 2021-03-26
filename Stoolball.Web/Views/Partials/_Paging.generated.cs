@@ -35,17 +35,17 @@ namespace ASP
     using Umbraco.Web.PublishedModels;
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("RazorGenerator", "2.0.0.0")]
-    [System.Web.WebPages.PageVirtualPathAttribute("~/Views/Partials/_StatisticsPaging.cshtml")]
-    public partial class _Views_Partials__StatisticsPaging_cshtml : System.Web.Mvc.WebViewPage<dynamic>
+    [System.Web.WebPages.PageVirtualPathAttribute("~/Views/Partials/_Paging.cshtml")]
+    public partial class _Views_Partials__Paging_cshtml : System.Web.Mvc.WebViewPage<Stoolball.Navigation.Paging>
     {
-        public _Views_Partials__StatisticsPaging_cshtml()
+        public _Views_Partials__Paging_cshtml()
         {
         }
         public override void Execute()
         {
             
-            #line 1 "..\..\Views\Partials\_StatisticsPaging.cshtml"
- if (Model.TotalResults > Model.StatisticsFilter.PageSize)
+            #line 2 "..\..\Views\Partials\_Paging.cshtml"
+ if (Model.Total > Model.PageSize)
 {
 
             
@@ -54,39 +54,39 @@ namespace ASP
 WriteLiteral("    <p>\r\n");
 
             
-            #line 4 "..\..\Views\Partials\_StatisticsPaging.cshtml"
+            #line 5 "..\..\Views\Partials\_Paging.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 4 "..\..\Views\Partials\_StatisticsPaging.cshtml"
-     if (Model.StatisticsFilter.PageNumber > 1)
+            #line 5 "..\..\Views\Partials\_Paging.cshtml"
+     if (Model.PageNumber > 1)
     {
-        var query = HttpUtility.ParseQueryString(Request.Url.Query);
-        query["page"] = (Model.StatisticsFilter.PageNumber - 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var query = HttpUtility.ParseQueryString(Model.PageUrl.Query);
+        query["page"] = (Model.PageNumber - 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             
             #line default
             #line hidden
 WriteLiteral("        <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 334), Tuple.Create("\"", 361)
+WriteAttribute("href", Tuple.Create(" href=\"", 314), Tuple.Create("\"", 355)
             
-            #line 8 "..\..\Views\Partials\_StatisticsPaging.cshtml"
-, Tuple.Create(Tuple.Create("", 341), Tuple.Create<System.Object, System.Int32>(Request.Path
-            
-            #line default
-            #line hidden
-, 341), false)
-, Tuple.Create(Tuple.Create("", 354), Tuple.Create("?", 354), true)
-            
-            #line 8 "..\..\Views\Partials\_StatisticsPaging.cshtml"
-, Tuple.Create(Tuple.Create("", 355), Tuple.Create<System.Object, System.Int32>(query
+            #line 9 "..\..\Views\Partials\_Paging.cshtml"
+, Tuple.Create(Tuple.Create("", 321), Tuple.Create<System.Object, System.Int32>(Model.PageUrl.AbsolutePath
             
             #line default
             #line hidden
-, 355), false)
+, 321), false)
+, Tuple.Create(Tuple.Create("", 348), Tuple.Create("?", 348), true)
+            
+            #line 9 "..\..\Views\Partials\_Paging.cshtml"
+, Tuple.Create(Tuple.Create("", 349), Tuple.Create<System.Object, System.Int32>(query
+            
+            #line default
+            #line hidden
+, 349), false)
 );
 
 WriteLiteral(" class=\"btn btn-secondary btn-back\"");
@@ -94,7 +94,7 @@ WriteLiteral(" class=\"btn btn-secondary btn-back\"");
 WriteLiteral(">Previous page</a>\r\n");
 
             
-            #line 9 "..\..\Views\Partials\_StatisticsPaging.cshtml"
+            #line 10 "..\..\Views\Partials\_Paging.cshtml"
     }
 
             
@@ -103,33 +103,33 @@ WriteLiteral(">Previous page</a>\r\n");
 WriteLiteral("    ");
 
             
-            #line 10 "..\..\Views\Partials\_StatisticsPaging.cshtml"
-     if (Model.TotalResults > (Model.StatisticsFilter.PageNumber * Model.StatisticsFilter.PageSize))
+            #line 11 "..\..\Views\Partials\_Paging.cshtml"
+     if (Model.Total > (Model.PageNumber * Model.PageSize))
     {
-        var query = HttpUtility.ParseQueryString(Request.Url.Query);
-        query["page"] = (Model.StatisticsFilter.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var query = HttpUtility.ParseQueryString(Model.PageUrl.Query);
+        query["page"] = (Model.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             
             #line default
             #line hidden
 WriteLiteral("        <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 739), Tuple.Create("\"", 766)
+WriteAttribute("href", Tuple.Create(" href=\"", 677), Tuple.Create("\"", 718)
             
-            #line 14 "..\..\Views\Partials\_StatisticsPaging.cshtml"
-, Tuple.Create(Tuple.Create("", 746), Tuple.Create<System.Object, System.Int32>(Request.Path
-            
-            #line default
-            #line hidden
-, 746), false)
-, Tuple.Create(Tuple.Create("", 759), Tuple.Create("?", 759), true)
-            
-            #line 14 "..\..\Views\Partials\_StatisticsPaging.cshtml"
-, Tuple.Create(Tuple.Create("", 760), Tuple.Create<System.Object, System.Int32>(query
+            #line 15 "..\..\Views\Partials\_Paging.cshtml"
+, Tuple.Create(Tuple.Create("", 684), Tuple.Create<System.Object, System.Int32>(Model.PageUrl.AbsolutePath
             
             #line default
             #line hidden
-, 760), false)
+, 684), false)
+, Tuple.Create(Tuple.Create("", 711), Tuple.Create("?", 711), true)
+            
+            #line 15 "..\..\Views\Partials\_Paging.cshtml"
+, Tuple.Create(Tuple.Create("", 712), Tuple.Create<System.Object, System.Int32>(query
+            
+            #line default
+            #line hidden
+, 712), false)
 );
 
 WriteLiteral(" class=\"btn btn-secondary\"");
@@ -137,7 +137,7 @@ WriteLiteral(" class=\"btn btn-secondary\"");
 WriteLiteral(">Next page</a>\r\n");
 
             
-            #line 15 "..\..\Views\Partials\_StatisticsPaging.cshtml"
+            #line 16 "..\..\Views\Partials\_Paging.cshtml"
     }
 
             
@@ -146,7 +146,7 @@ WriteLiteral(">Next page</a>\r\n");
 WriteLiteral("    </p>\r\n");
 
             
-            #line 17 "..\..\Views\Partials\_StatisticsPaging.cshtml"
+            #line 18 "..\..\Views\Partials\_Paging.cshtml"
 }
 
             

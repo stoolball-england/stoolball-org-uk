@@ -18,6 +18,5 @@ namespace Stoolball.Web.Matches
         public List<MatchType> MatchTypesToLabel { get; internal set; } = new List<MatchType>();
         public bool ShowMatchDate { get; set; } = true;
         public bool HighlightNextMatch { get; set; } = true;
-        public int TotalMatches { get; set; }
     }
 }

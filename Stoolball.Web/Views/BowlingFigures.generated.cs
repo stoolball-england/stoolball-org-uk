@@ -98,7 +98,7 @@ WriteLiteral("\r\n");
             #line hidden
             
             #line 14 "..\..\Views\BowlingFigures.cshtml"
-     if (Model.StatisticsFilter.PageNumber == 1)
+     if (Model.StatisticsFilter.Paging.PageNumber == 1)
     {
 
             

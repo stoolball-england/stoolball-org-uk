@@ -47,6 +47,7 @@ namespace Stoolball.Web.Statistics
 
             var model = new StatisticsViewModel<BowlingFigures>(contentModel.Content, Services?.UserService) { ShowCaption = false };
             model.StatisticsFilter = await _statisticsFilterUrlParser.ParseUrl(new Uri(Request.Url, Request.RawUrl)).ConfigureAwait(false);
+            model.StatisticsFilter.Paging.PageSize = Constants.Defaults.PageSize;
             model.Results = (await _statisticsDataSource.ReadBowlingFigures(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
             if (!model.Results.Any())
@@ -55,7 +56,8 @@ namespace Stoolball.Web.Statistics
             }
             else
             {
-                model.TotalResults = await _statisticsDataSource.ReadTotalBowlingFigures(model.StatisticsFilter).ConfigureAwait(false);
+                model.StatisticsFilter.Paging.PageUrl = Request.Url;
+                model.StatisticsFilter.Paging.Total = await _statisticsDataSource.ReadTotalBowlingFigures(model.StatisticsFilter).ConfigureAwait(false);
 
                 _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.StatisticsFilter);
                 model.Metadata.PageTitle = "Best bowling figures" + model.StatisticsFilter.ToString();

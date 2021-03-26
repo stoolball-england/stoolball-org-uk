@@ -39,7 +39,7 @@ namespace Stoolball.Web.Matches
         {
             if (contentModel is null)
             {
-                throw new System.ArgumentNullException(nameof(contentModel));
+                throw new ArgumentNullException(nameof(contentModel));
             }
 
             _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
@@ -48,13 +48,15 @@ namespace Stoolball.Web.Matches
                 MatchFilter = new MatchFilter
                 {
                     Query = Request.QueryString["q"]?.Trim(),
-                    PageNumber = pageNumber > 0 ? pageNumber : 1,
                     FromDate = DateTimeOffset.UtcNow.Date
                 },
                 DateTimeFormatter = _dateTimeFormatter
             };
 
-            model.TotalMatches = await _matchesDataSource.ReadTotalMatches(model.MatchFilter).ConfigureAwait(false);
+            model.MatchFilter.Paging.PageNumber = pageNumber > 0 ? pageNumber : 1;
+            model.MatchFilter.Paging.PageSize = Constants.Defaults.PageSize;
+            model.MatchFilter.Paging.PageUrl = Request.Url;
+            model.MatchFilter.Paging.Total = await _matchesDataSource.ReadTotalMatches(model.MatchFilter).ConfigureAwait(false);
             model.Matches = await _matchesDataSource.ReadMatchListings(model.MatchFilter, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
             model.Metadata.PageTitle = Constants.Pages.Matches;

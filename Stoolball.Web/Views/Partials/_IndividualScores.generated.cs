@@ -205,7 +205,7 @@ WriteLiteral(">");
 
             
             #line 42 "..\..\Views\Partials\_IndividualScores.cshtml"
-                                                          Write(equalToPrevious ? "=" : ((Model.StatisticsFilter.PageSize * (Model.StatisticsFilter.PageNumber - 1)) + i + 1).ToString());
+                                                          Write(equalToPrevious ? "=" : ((Model.StatisticsFilter.Paging.PageSize * (Model.StatisticsFilter.Paging.PageNumber - 1)) + i + 1).ToString());
 
             
             #line default
@@ -238,14 +238,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Player</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1994), Tuple.Create("\"", 2037)
+WriteAttribute("href", Tuple.Create(" href=\"", 2008), Tuple.Create("\"", 2051)
             
             #line 45 "..\..\Views\Partials\_IndividualScores.cshtml"
-                                                   , Tuple.Create(Tuple.Create("", 2001), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Player.PlayerRoute
+                                                   , Tuple.Create(Tuple.Create("", 2015), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Player.PlayerRoute
             
             #line default
             #line hidden
-, 2001), false)
+, 2015), false)
 );
 
 WriteLiteral(">");
@@ -278,14 +278,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Match</span><div><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2240), Tuple.Create("\"", 2281)
+WriteAttribute("href", Tuple.Create(" href=\"", 2254), Tuple.Create("\"", 2295)
             
             #line 47 "..\..\Views\Partials\_IndividualScores.cshtml"
-                                                   , Tuple.Create(Tuple.Create("", 2247), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
+                                                   , Tuple.Create(Tuple.Create("", 2261), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
             
             #line default
             #line hidden
-, 2247), false)
+, 2261), false)
 );
 
 WriteLiteral(">");
@@ -486,15 +486,15 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3936), Tuple.Create("\"", 3976)
+WriteAttribute("href", Tuple.Create(" href=\"", 3950), Tuple.Create("\"", 3990)
             
             #line 72 "..\..\Views\Partials\_IndividualScores.cshtml"
-, Tuple.Create(Tuple.Create("", 3943), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
+, Tuple.Create(Tuple.Create("", 3957), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
             
             #line default
             #line hidden
-, 3943), false)
-, Tuple.Create(Tuple.Create("", 3958), Tuple.Create("/individual-scores", 3958), true)
+, 3957), false)
+, Tuple.Create(Tuple.Create("", 3972), Tuple.Create("/individual-scores", 3972), true)
 );
 
 WriteLiteral(">Individual scores – view all</a></p>\r\n");
@@ -510,14 +510,14 @@ WriteLiteral(">Individual scores – view all</a></p>\r\n");
             #line hidden
             
             #line 76 "..\..\Views\Partials\_IndividualScores.cshtml"
-   Write(Html.Partial("_StatisticsPaging"));
+   Write(Html.Partial("_Paging", Model.StatisticsFilter.Paging));
 
             
             #line default
             #line hidden
             
             #line 76 "..\..\Views\Partials\_IndividualScores.cshtml"
-                                          
+                                                               
     }
 }
             

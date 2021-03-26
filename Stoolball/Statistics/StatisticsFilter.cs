@@ -5,6 +5,7 @@ using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
+using Stoolball.Navigation;
 using Stoolball.Teams;
 
 namespace Stoolball.Statistics
@@ -33,8 +34,7 @@ namespace Stoolball.Statistics
         public bool? BattingFirst { get; set; }
         public bool SwapBattingFirstFilter { get; set; }
         public bool? PlayerOfTheMatch { get; set; }
-        public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; } = 50;
+        public Paging Paging { get; set; } = new Paging();
         public int? MaxResultsAllowingExtraResultsIfValuesAreEqual { get; set; }
 
         public override string ToString()

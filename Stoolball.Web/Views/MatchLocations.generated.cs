@@ -298,47 +298,16 @@ WriteLiteral("            </dd>\r\n");
             #line hidden
 WriteLiteral("    </dl>\r\n");
 
+WriteLiteral("    ");
+
             
             #line 47 "..\..\Views\MatchLocations.cshtml"
-    
-            
-            #line default
-            #line hidden
-            
-            #line 47 "..\..\Views\MatchLocations.cshtml"
-     if (Model.TotalMatchLocations > (Model.MatchLocationFilter.PageNumber * Model.MatchLocationFilter.PageSize))
-    {
-        var query = HttpUtility.ParseQueryString(Request.Url.Query);
-        query["page"] = (Model.MatchLocationFilter.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+Write(Html.Partial("_Paging", Model.MatchLocationFilter.Paging));
 
             
             #line default
             #line hidden
-WriteLiteral("        <p><a");
-
-WriteAttribute("href", Tuple.Create(" href=\"", 2371), Tuple.Create("\"", 2395)
-, Tuple.Create(Tuple.Create("", 2378), Tuple.Create("/locations?", 2378), true)
-            
-            #line 51 "..\..\Views\MatchLocations.cshtml"
-, Tuple.Create(Tuple.Create("", 2389), Tuple.Create<System.Object, System.Int32>(query
-            
-            #line default
-            #line hidden
-, 2389), false)
-);
-
-WriteLiteral(" class=\"btn btn-secondary\"");
-
-WriteLiteral(">Next page</a></p>\r\n");
-
-            
-            #line 52 "..\..\Views\MatchLocations.cshtml"
-    }
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</div>");
+WriteLiteral("\r\n</div>");
 
         }
     }

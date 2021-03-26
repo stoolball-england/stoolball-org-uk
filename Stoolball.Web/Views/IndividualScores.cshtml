@@ -11,7 +11,7 @@
 }
 @section canonical {@Html.Partial("_CanonicalUrl", new[] { "page" })}
 @section head {
-    @if (Model.StatisticsFilter.PageNumber == 1)
+    @if (Model.StatisticsFilter.Paging.PageNumber == 1)
     {
         <meta name="robots" content="index, nofollow">
     }

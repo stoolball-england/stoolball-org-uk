@@ -45,12 +45,14 @@ namespace Stoolball.Web.MatchLocations
                 MatchLocationFilter = new MatchLocationFilter
                 {
                     Query = Request.QueryString["q"]?.Trim(),
-                    TeamTypes = new List<TeamType> { TeamType.LimitedMembership, TeamType.Occasional, TeamType.Regular, TeamType.Representative, TeamType.SchoolAgeGroup, TeamType.SchoolAgeGroup, TeamType.SchoolClub, TeamType.SchoolOther },
-                    PageNumber = pageNumber > 0 ? pageNumber : 1
+                    TeamTypes = new List<TeamType> { TeamType.LimitedMembership, TeamType.Occasional, TeamType.Regular, TeamType.Representative, TeamType.SchoolAgeGroup, TeamType.SchoolAgeGroup, TeamType.SchoolClub, TeamType.SchoolOther }
                 }
             };
 
-            model.TotalMatchLocations = await _matchLocationDataSource.ReadTotalMatchLocations(model.MatchLocationFilter).ConfigureAwait(false);
+            model.MatchLocationFilter.Paging.PageNumber = pageNumber > 0 ? pageNumber : 1;
+            model.MatchLocationFilter.Paging.PageSize = Constants.Defaults.PageSize;
+            model.MatchLocationFilter.Paging.PageUrl = Request.Url;
+            model.MatchLocationFilter.Paging.Total = await _matchLocationDataSource.ReadTotalMatchLocations(model.MatchLocationFilter).ConfigureAwait(false);
             model.MatchLocations = await _matchLocationDataSource.ReadMatchLocations(model.MatchLocationFilter).ConfigureAwait(false);
 
             model.Metadata.PageTitle = Constants.Pages.MatchLocations;

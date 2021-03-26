@@ -14,7 +14,5 @@ namespace Stoolball.Web.Competitions
 
         public CompetitionFilter CompetitionFilter { get; set; } = new CompetitionFilter();
         public List<Competition> Competitions { get; internal set; } = new List<Competition>();
-
-        public int TotalCompetitions { get; set; }
     }
 }

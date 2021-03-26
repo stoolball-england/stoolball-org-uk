@@ -1,0 +1,18 @@
+﻿@model Stoolball.Navigation.Paging
+@if (Model.Total > Model.PageSize)
+{
+    <p>
+    @if (Model.PageNumber > 1)
+    {
+        var query = HttpUtility.ParseQueryString(Model.PageUrl.Query);
+        query["page"] = (Model.PageNumber - 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        <a href="@Model.PageUrl.AbsolutePath?@query" class="btn btn-secondary btn-back">Previous page</a>
+    }
+    @if (Model.Total > (Model.PageNumber * Model.PageSize))
+    {
+        var query = HttpUtility.ParseQueryString(Model.PageUrl.Query);
+        query["page"] = (Model.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        <a href="@Model.PageUrl.AbsolutePath?@query" class="btn btn-secondary">Next page</a>
+    }
+    </p>
+}

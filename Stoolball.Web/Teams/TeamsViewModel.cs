@@ -15,6 +15,5 @@ namespace Stoolball.Web.Teams
 
         public TeamFilter TeamFilter { get; set; } = new TeamFilter();
         public List<TeamListing> Teams { get; internal set; } = new List<TeamListing>();
-        public int TotalTeams { get; set; }
     }
 }

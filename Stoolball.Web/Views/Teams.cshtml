@@ -96,10 +96,5 @@
             <dd class="list-results__detail">@detail</dd>
         }
     </dl>
-    @if (Model.TotalTeams > (Model.TeamFilter.PageNumber * Model.TeamFilter.PageSize))
-    {
-        var query = HttpUtility.ParseQueryString(Request.Url.Query);
-        query["page"] = (Model.TeamFilter.PageNumber + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
-        <p><a href="/teams?@query" class="btn btn-secondary">Next page</a></p>
-    }
+    @Html.Partial("_Paging", Model.TeamFilter.Paging)
 </div>

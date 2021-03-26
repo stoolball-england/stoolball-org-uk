@@ -121,7 +121,7 @@ namespace Stoolball.Data.SqlServer
                                                 AND (ctn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = ct.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR ctn.TeamVersionId IS NULL)
                                             ) AS MatchingRecords
                                         ORDER BY Active DESC, ComparableName
-                                        OFFSET {(teamQuery.PageNumber - 1) * teamQuery.PageSize} ROWS FETCH NEXT {teamQuery.PageSize} ROWS ONLY) AS MatchingIds";
+                                        OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY) AS MatchingIds";
 
                 // Now that the inner query can select just the paged ids we need, the outer query can use them to select complete data sets including multiple rows
                 // based on the matching ids rather than directly on the paging criteria.
@@ -151,6 +151,9 @@ namespace Stoolball.Data.SqlServer
                                 AND cn.ClubVersionId = (SELECT TOP 1 ClubVersionId FROM {Tables.ClubVersion} WHERE ClubId = c.ClubId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                 AND (ctn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = ct.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR ctn.TeamVersionId IS NULL)
                                 ORDER BY Active DESC, ComparableName";
+
+                parameters.Add("@PageOffset", (teamQuery.Paging.PageNumber - 1) * teamQuery.Paging.PageSize);
+                parameters.Add("@PageSize", teamQuery.Paging.PageSize);
 
                 var teamListings = await connection.QueryAsync<TeamListing, string, MatchLocation, TeamListing>(outerQuery,
                     (teamListing, playerType, matchLocation) =>

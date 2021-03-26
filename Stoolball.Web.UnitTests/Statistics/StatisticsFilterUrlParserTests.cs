@@ -59,7 +59,7 @@ namespace Stoolball.Web.Tests.Statistics
 
             var result = await parser.ParseUrl(new Uri("https://example.org")).ConfigureAwait(false);
 
-            Assert.Equal(1, result.PageNumber);
+            Assert.Equal(1, result.Paging.PageNumber);
         }
 
         [Fact]
@@ -70,7 +70,7 @@ namespace Stoolball.Web.Tests.Statistics
 
             var result = await parser.ParseUrl(new Uri("https://example.org?page=5")).ConfigureAwait(false);
 
-            Assert.Equal(5, result.PageNumber);
+            Assert.Equal(5, result.Paging.PageNumber);
         }
 
         [Fact]

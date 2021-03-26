@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Stoolball.Navigation;
 using Stoolball.Statistics;
 using Xunit;
 
@@ -117,7 +118,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { PageSize = int.MaxValue }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
+            var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
             var expected = _databaseFixture.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.BowlingFigures).ToList();
             foreach (var expectedBowler in expected)
@@ -137,7 +138,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { PageSize = int.MaxValue }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
+            var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
             var expected = _databaseFixture.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.BowlingFigures).ToList();
             foreach (var expectedBowler in expected)
@@ -157,7 +158,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { PageSize = int.MaxValue }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
+            var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
             var expected = _databaseFixture.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.BowlingFigures).ToList();
             foreach (var expectedBowler in expected)
@@ -175,7 +176,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { PageSize = int.MaxValue }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
+            var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
             var matchInnings = _databaseFixture.Matches.SelectMany(x => x.MatchInnings);
             foreach (var innings in matchInnings)
@@ -196,7 +197,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { PageSize = int.MaxValue }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
+            var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
             foreach (var match in _databaseFixture.Matches)
             {
@@ -220,7 +221,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { PageSize = int.MaxValue }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
+            var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
             var expected = _databaseFixture.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.BowlingFigures).ToList();
             Assert.Equal(expected.Count, results.Count());
@@ -237,7 +238,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter
             {
-                PageSize = int.MaxValue,
+                Paging = new Paging
+                {
+                    PageSize = int.MaxValue
+                },
                 Player = _databaseFixture.BowlerWithMultipleIdentities
             },
             StatisticsSortOrder.BestFirst).ConfigureAwait(false);
@@ -259,7 +263,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter
             {
-                PageSize = int.MaxValue,
+                Paging = new Paging
+                {
+                    PageSize = int.MaxValue
+                },
                 Club = _databaseFixture.TeamWithClub.Club
             },
             StatisticsSortOrder.BestFirst).ConfigureAwait(false);
@@ -282,7 +289,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter
             {
-                PageSize = int.MaxValue,
+                Paging = new Paging
+                {
+                    PageSize = int.MaxValue
+                },
                 Team = _databaseFixture.TeamWithClub
             },
             StatisticsSortOrder.BestFirst).ConfigureAwait(false);
@@ -305,7 +315,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter
             {
-                PageSize = int.MaxValue,
+                Paging = new Paging
+                {
+                    PageSize = int.MaxValue
+                },
                 MatchLocation = _databaseFixture.MatchLocations.First()
             },
             StatisticsSortOrder.BestFirst).ConfigureAwait(false);
@@ -328,7 +341,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter
             {
-                PageSize = int.MaxValue,
+                Paging = new Paging
+                {
+                    PageSize = int.MaxValue
+                },
                 Competition = _databaseFixture.Competitions.First()
             },
             StatisticsSortOrder.BestFirst).ConfigureAwait(false);
@@ -351,7 +367,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter
             {
-                PageSize = int.MaxValue,
+                Paging = new Paging
+                {
+                    PageSize = int.MaxValue
+                },
                 Season = _databaseFixture.Competitions.First().Seasons.First()
             },
             StatisticsSortOrder.BestFirst).ConfigureAwait(false);
@@ -372,7 +391,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { PageSize = int.MaxValue }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
+            var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
             var previousWickets = int.MaxValue;
             int? previousRunsConceded = int.MinValue;
@@ -395,7 +414,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { PageSize = int.MaxValue }, StatisticsSortOrder.LatestFirst).ConfigureAwait(false);
+            var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } }, StatisticsSortOrder.LatestFirst).ConfigureAwait(false);
 
             var previousStartTime = DateTimeOffset.MaxValue;
             foreach (var result in results)
@@ -415,7 +434,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var remaining = _databaseFixture.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.BowlingFigures).Count();
             while (remaining > 0)
             {
-                var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { PageNumber = pageNumber, PageSize = pageSize }, StatisticsSortOrder.LatestFirst).ConfigureAwait(false);
+                var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { Paging = new Paging { PageNumber = pageNumber, PageSize = pageSize } }, StatisticsSortOrder.LatestFirst).ConfigureAwait(false);
 
                 var expected = pageSize > remaining ? remaining : pageSize;
                 Assert.Equal(expected, results.Count());

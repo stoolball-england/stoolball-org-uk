@@ -30,16 +30,16 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of seasons based on a query
         /// </summary>
         /// <returns>A list of <see cref="Season"/> objects. An empty list if no seasons are found.</returns>
-        public async Task<List<Season>> ReadSeasons(CompetitionFilter competitionQuery)
+        public async Task<List<Season>> ReadSeasons(CompetitionFilter filter)
         {
-            if (competitionQuery is null)
+            if (filter is null)
             {
-                competitionQuery = new CompetitionFilter();
+                filter = new CompetitionFilter();
             }
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var (where, parameters) = BuildWhereClause(competitionQuery);
+                var (where, parameters) = BuildWhereClause(filter);
 
                 var sql = $@"SELECT s2.SeasonId, s2.FromYear, s2.UntilYear,
                             cv2.CompetitionName, YEAR(cv2.UntilDate) AS UntilYear
@@ -55,11 +55,14 @@ namespace Stoolball.Data.SqlServer
                                 AND cv.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = co.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                                 ORDER BY CASE WHEN cv.UntilDate IS NULL THEN 0
                                           WHEN cv.UntilDate IS NOT NULL THEN 1 END, s.FromYear DESC, s.UntilYear DESC, cv.ComparableName
-                                OFFSET {(competitionQuery.PageNumber - 1) * competitionQuery.PageSize} ROWS FETCH NEXT {competitionQuery.PageSize} ROWS ONLY
+                                OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY
                             )
                             AND cv2.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = s2.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                             ORDER BY CASE WHEN cv2.UntilDate IS NULL THEN 0
                                           WHEN cv2.UntilDate IS NOT NULL THEN 1 END, s2.FromYear DESC, s2.UntilYear DESC, cv2.ComparableName";
+
+                parameters.Add("@PageOffset", (filter.Paging.PageNumber - 1) * filter.Paging.PageSize);
+                parameters.Add("@PageSize", filter.Paging.PageSize);
 
                 var seasons = await connection.QueryAsync<Season, Competition, Season>(sql,
                     (season, competition) =>

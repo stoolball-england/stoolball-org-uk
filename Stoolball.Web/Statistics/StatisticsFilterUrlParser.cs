@@ -5,6 +5,7 @@ using System.Web;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.MatchLocations;
+using Stoolball.Navigation;
 using Stoolball.Routing;
 using Stoolball.Statistics;
 using Stoolball.Teams;
@@ -46,7 +47,7 @@ namespace Stoolball.Web.Statistics
             var queryString = HttpUtility.ParseQueryString(url.Query);
             _ = int.TryParse(queryString["page"], out var pageNumber);
 
-            var filter = new StatisticsFilter { PageNumber = pageNumber > 0 ? pageNumber : 1 };
+            var filter = new StatisticsFilter { Paging = new Paging { PageNumber = pageNumber > 0 ? pageNumber : 1 } };
             if (url.AbsolutePath.StartsWith("/players/", StringComparison.OrdinalIgnoreCase))
             {
                 filter.Player = await _playerDataSource.ReadPlayerByRoute(_routeNormaliser.NormaliseRouteToEntity(url.AbsolutePath, "players")).ConfigureAwait(false);

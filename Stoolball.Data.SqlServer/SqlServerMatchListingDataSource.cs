@@ -91,34 +91,34 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of matches and tournaments based on a query
         /// </summary>
         /// <returns>A list of <see cref="MatchListing"/> objects. An empty list if no matches or tournaments are found.</returns>
-        public async Task<List<MatchListing>> ReadMatchListings(MatchFilter matchQuery, MatchSortOrder sortOrder)
+        public async Task<List<MatchListing>> ReadMatchListings(MatchFilter filter, MatchSortOrder sortOrder)
         {
-            if (matchQuery is null)
+            if (filter is null)
             {
-                matchQuery = new MatchFilter();
+                filter = new MatchFilter();
             }
 
-            if (!matchQuery.IncludeMatches && !matchQuery.IncludeTournaments)
+            if (!filter.IncludeMatches && !filter.IncludeTournaments)
             {
                 return new List<MatchListing>();
             }
 
-            if (ExcludeTournamentsDueToMatchTypeFilter(matchQuery.MatchResultTypes))
+            if (ExcludeTournamentsDueToMatchTypeFilter(filter.MatchResultTypes))
             {
-                matchQuery.IncludeTournaments = false;
+                filter.IncludeTournaments = false;
             }
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var sql = new StringBuilder();
+                var selectSql = new StringBuilder();
+                var whereSql = new StringBuilder();
                 var parameters = new Dictionary<string, object>();
                 var orderBy = new List<string>();
 
-                if (matchQuery.IncludeMatches)
+                if (filter.IncludeMatches)
                 {
                     // Join to MatchInnings only happens if there's a batting team, because otherwise all you get from it is extra rows to process with just a MatchInningsId
-                    var (matchSql, matchParameters) = BuildMatchQuery(matchQuery,
-                        $@"SELECT m.MatchId, m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, m.PlayersPerTeam, m.MatchResultType,
+                    var matchSelectSql = $@"SELECT m.MatchId, m.MatchName, m.MatchRoute, m.StartTime, m.StartTimeIsKnown, m.MatchType, m.PlayerType, m.PlayersPerTeam, m.MatchResultType,
                                 NULL AS TournamentQualificationType, NULL AS SpacesInTournament, m.OrderInTournament,
                                 (SELECT TOP 1 AuditDate FROM {Tables.Audit} WHERE EntityUri = CONCAT('{Constants.EntityUriPrefixes.Match}', m.MatchId) ORDER BY AuditDate ASC) AS FirstAuditDate,
                                 (SELECT TOP 1 AuditDate FROM {Tables.Audit} WHERE EntityUri = CONCAT('{Constants.EntityUriPrefixes.Match}', m.MatchId) ORDER BY AuditDate DESC) AS LastAuditDate,
@@ -129,27 +129,34 @@ namespace Stoolball.Data.SqlServer
                                 FROM { Tables.Match } AS m
                                 LEFT JOIN {Tables.MatchTeam} AS mt ON m.MatchId = mt.MatchId
                                 LEFT JOIN {Tables.MatchInnings} AS i ON m.MatchId = i.MatchId AND i.BattingMatchTeamId = mt.MatchTeamId
-                                LEFT JOIN {Tables.MatchLocation} AS ml ON m.MatchLocationId = ml.MatchLocationId
-                                <<JOIN>>
-                                <<WHERE>> ");
-                    sql.Append(matchSql);
+                                LEFT JOIN {Tables.MatchLocation} AS ml ON m.MatchLocationId = ml.MatchLocationId ";
+
+                    selectSql.Append(matchSelectSql);
+
+                    var (matchWhereSql, matchParameters) = BuildMatchQuery(filter,
+                        $@"SELECT m.MatchId, m.StartTime
+                           FROM {Tables.Match} AS m
+                           <<JOIN>>
+                           <<WHERE>> ");
+                    whereSql.Append(matchWhereSql);
+
                     parameters = matchParameters;
 
-                    if (matchQuery.TournamentId != null)
+                    if (filter.TournamentId != null)
                     {
                         orderBy.Add("OrderInTournament");
                     }
                 }
 
-                if (matchQuery.IncludeMatches && matchQuery.IncludeTournaments)
+                if (filter.IncludeMatches && filter.IncludeTournaments)
                 {
-                    sql.Append(" UNION ");
+                    selectSql.Append(" UNION ");
+                    whereSql.Append(" UNION ");
                 }
 
-                if (matchQuery.IncludeTournaments)
+                if (filter.IncludeTournaments)
                 {
-                    var (tournamentSql, tournamentParameters) = BuildTournamentQuery(matchQuery,
-                        $@"SELECT tourney.TournamentId AS MatchId, tourney.TournamentName AS MatchName, tourney.TournamentRoute AS MatchRoute, tourney.StartTime, tourney.StartTimeIsKnown, 
+                    var tournamentSelectSql = $@"SELECT tourney.TournamentId AS MatchId, tourney.TournamentName AS MatchName, tourney.TournamentRoute AS MatchRoute, tourney.StartTime, tourney.StartTimeIsKnown, 
                                 NULL AS MatchType, tourney.PlayerType, tourney.PlayersPerTeam, NULL AS MatchResultType,
                                 tourney.QualificationType AS TournamentQualificationType, tourney.SpacesInTournament, NULL AS OrderInTournament, 
                                 (SELECT TOP 1 AuditDate FROM {Tables.Audit} WHERE EntityUri = CONCAT('{Constants.EntityUriPrefixes.Tournament}', tourney.TournamentId) ORDER BY AuditDate ASC) AS FirstAuditDate,
@@ -159,10 +166,18 @@ namespace Stoolball.Data.SqlServer
                                 NULL AS MatchInningsId, NULL AS Runs, NULL AS Wickets,
                                 ml.MatchLocationId, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, ml.Locality, ml.Town, ml.Latitude, ml.Longitude
                                 FROM { Tables.Tournament} AS tourney
-                                LEFT JOIN {Tables.MatchLocation} AS ml ON tourney.MatchLocationId = ml.MatchLocationId
-                                <<JOIN>>
-                                <<WHERE>> ");
-                    sql.Append(tournamentSql);
+                                LEFT JOIN {Tables.MatchLocation} AS ml ON tourney.MatchLocationId = ml.MatchLocationId ";
+
+                    selectSql.Append(tournamentSelectSql);
+
+                    var (tournamentWhereSql, tournamentParameters) = BuildTournamentQuery(filter,
+                        $@"SELECT tourney.TournamentId AS MatchId, tourney.StartTime
+                           FROM {Tables.Tournament} AS tourney
+                           <<JOIN>>
+                           <<WHERE>> ");
+
+                    whereSql.Append(tournamentWhereSql);
+
                     foreach (var key in tournamentParameters.Keys)
                     {
                         if (!parameters.ContainsKey(key))
@@ -180,9 +195,20 @@ namespace Stoolball.Data.SqlServer
                 {
                     orderBy.Add("LastAuditDate DESC");
                 }
-                sql.Append(" ORDER BY ").Append(string.Join(", ", orderBy.ToArray()));
 
-                var matches = await connection.QueryAsync<MatchListing, TeamInMatch, Team, MatchInnings, MatchLocation, MatchListing>(sql.ToString(),
+                var pagedSql = $@"SELECT * FROM ({selectSql}) AS UnfilteredResults 
+                                  WHERE MatchId IN 
+                                  (
+                                      SELECT MatchId FROM ({whereSql}) AS MatchingRecords 
+                                      ORDER BY {string.Join(", ", orderBy.ToArray())}
+                                      OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY
+                                  ) 
+                                  ORDER BY {string.Join(", ", orderBy.ToArray())}";
+
+                parameters.Add("@PageOffset", (filter.Paging.PageNumber - 1) * filter.Paging.PageSize);
+                parameters.Add("@PageSize", filter.Paging.PageSize);
+
+                var matches = await connection.QueryAsync<MatchListing, TeamInMatch, Team, MatchInnings, MatchLocation, MatchListing>(pagedSql,
                 (matchListing, teamInMatch, team, matchInnings, location) =>
                 {
                     if (teamInMatch != null)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Stoolball.Matches;
+using Stoolball.Navigation;
 using Stoolball.Teams;
 using Xunit;
 
@@ -655,6 +656,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             Assert.Single(results);
             Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.TournamentRoute, results.Single().MatchRoute);
+        }
+
+        [Fact]
+        public async Task Read_match_listings_pages_results()
+        {
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            const int pageSize = 10;
+            var pageNumber = 1;
+            var remaining = _databaseFixture.MatchListings.Count;
+            while (remaining > 0)
+            {
+                var result = await matchDataSource.ReadMatchListings(new MatchFilter { Paging = new Paging { PageNumber = pageNumber, PageSize = pageSize } }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
+
+                var expected = pageSize > remaining ? remaining : pageSize;
+                Assert.Equal(expected, result.Count);
+
+                pageNumber++;
+                remaining -= pageSize;
+            }
         }
     }
 }

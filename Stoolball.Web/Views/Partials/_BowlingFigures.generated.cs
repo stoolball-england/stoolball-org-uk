@@ -198,7 +198,7 @@ WriteLiteral(">");
 
             
             #line 40 "..\..\Views\Partials\_BowlingFigures.cshtml"
-                                                          Write(equalToPrevious ? "=" : ((Model.StatisticsFilter.PageSize * (Model.StatisticsFilter.PageNumber - 1)) + i + 1).ToString());
+                                                          Write(equalToPrevious ? "=" : ((Model.StatisticsFilter.Paging.PageSize * (Model.StatisticsFilter.Paging.PageNumber - 1)) + i + 1).ToString());
 
             
             #line default
@@ -231,14 +231,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Player</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1876), Tuple.Create("\"", 1919)
+WriteAttribute("href", Tuple.Create(" href=\"", 1890), Tuple.Create("\"", 1933)
             
             #line 43 "..\..\Views\Partials\_BowlingFigures.cshtml"
-                                                   , Tuple.Create(Tuple.Create("", 1883), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Player.PlayerRoute
+                                                   , Tuple.Create(Tuple.Create("", 1897), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Player.PlayerRoute
             
             #line default
             #line hidden
-, 1883), false)
+, 1897), false)
 );
 
 WriteLiteral(">");
@@ -271,14 +271,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Match</span><div><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2122), Tuple.Create("\"", 2163)
+WriteAttribute("href", Tuple.Create(" href=\"", 2136), Tuple.Create("\"", 2177)
             
             #line 45 "..\..\Views\Partials\_BowlingFigures.cshtml"
-                                                   , Tuple.Create(Tuple.Create("", 2129), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
+                                                   , Tuple.Create(Tuple.Create("", 2143), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
             
             #line default
             #line hidden
-, 2129), false)
+, 2143), false)
 );
 
 WriteLiteral(">");
@@ -420,15 +420,15 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3363), Tuple.Create("\"", 3401)
+WriteAttribute("href", Tuple.Create(" href=\"", 3377), Tuple.Create("\"", 3415)
             
             #line 63 "..\..\Views\Partials\_BowlingFigures.cshtml"
-, Tuple.Create(Tuple.Create("", 3370), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
+, Tuple.Create(Tuple.Create("", 3384), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
             
             #line default
             #line hidden
-, 3370), false)
-, Tuple.Create(Tuple.Create("", 3385), Tuple.Create("/bowling-figures", 3385), true)
+, 3384), false)
+, Tuple.Create(Tuple.Create("", 3399), Tuple.Create("/bowling-figures", 3399), true)
 );
 
 WriteLiteral(">Bowling figures – view all</a></p>\r\n");
@@ -444,14 +444,14 @@ WriteLiteral(">Bowling figures – view all</a></p>\r\n");
             #line hidden
             
             #line 67 "..\..\Views\Partials\_BowlingFigures.cshtml"
-   Write(Html.Partial("_StatisticsPaging"));
+   Write(Html.Partial("_Paging", Model.StatisticsFilter.Paging));
 
             
             #line default
             #line hidden
             
             #line 67 "..\..\Views\Partials\_BowlingFigures.cshtml"
-                                          
+                                                               
     }
 }
             

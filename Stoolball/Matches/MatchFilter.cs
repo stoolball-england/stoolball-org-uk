@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Stoolball.Navigation;
 using Stoolball.Teams;
 
 namespace Stoolball.Matches
@@ -20,7 +21,6 @@ namespace Stoolball.Matches
         public DateTimeOffset? UntilDate { get; set; }
         public Guid? TournamentId { get; set; }
         public List<Guid> MatchLocationIds { get; internal set; } = new List<Guid>();
-        public int PageNumber { get; set; } = 1;
-        public int? PageSize { get; set; }
+        public Paging Paging { get; set; } = new Paging();
     }
 }

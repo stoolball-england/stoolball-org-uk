@@ -129,8 +129,9 @@ namespace Stoolball.Data.SqlServer
             }
             else
             {
-                offsetPaging = OffsetByPage(filter);
-
+                offsetPaging = $"OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
+                parameters.Add("@PageOffset", filter.Paging.PageSize * (filter.Paging.PageNumber - 1));
+                parameters.Add("@PageSize", filter.Paging.PageSize);
             }
 
             var sql = $"{preQuery} {select} FROM {Tables.PlayerInMatchStatistics} {where} {offsetWithExtraResults} {orderBy} {offsetPaging}";
@@ -317,15 +318,6 @@ namespace Stoolball.Data.SqlServer
             }
 
             return (where.Count > 0 ? " AND " + string.Join(" AND ", where) : string.Empty, parameters);
-        }
-
-        /// <summary> 
-        /// Generates a LIMIT clause if appropriate
-        /// </summary> 
-        private static string OffsetByPage(StatisticsFilter filter)
-        {
-            // Limit main query to just the current page
-            return $"OFFSET {(filter.PageSize * (filter.PageNumber - 1))} ROWS FETCH NEXT {filter.PageSize} ROWS ONLY";
         }
     }
 }
