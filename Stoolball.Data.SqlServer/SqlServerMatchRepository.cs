@@ -834,6 +834,13 @@ namespace Stoolball.Data.SqlServer
                         }
                     }
 
+                    // Batting scorecard can also add wicket-taking bowlers, so make sure they have ids too
+                    foreach (var figures in auditableInnings.BowlingFigures)
+                    {
+                        figures.Bowler.Team = auditableInnings.BowlingTeam.Team;
+                        figures.Bowler = await _playerRepository.CreateOrMatchPlayerIdentity(figures.Bowler, memberKey, memberName, transaction).ConfigureAwait(false);
+                    }
+
                     var comparison = _battingScorecardComparer.CompareScorecards(inningsBefore, auditableInnings.PlayerInnings);
 
                     // Now got lists of:
