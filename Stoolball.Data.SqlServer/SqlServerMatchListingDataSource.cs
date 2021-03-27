@@ -134,7 +134,7 @@ namespace Stoolball.Data.SqlServer
                     selectSql.Append(matchSelectSql);
 
                     var (matchWhereSql, matchParameters) = BuildMatchQuery(filter,
-                        $@"SELECT m.MatchId, m.StartTime
+                        $@"SELECT m.MatchId, m.OrderInTournament, m.StartTime
                            FROM {Tables.Match} AS m
                            <<JOIN>>
                            <<WHERE>> ");
@@ -171,7 +171,7 @@ namespace Stoolball.Data.SqlServer
                     selectSql.Append(tournamentSelectSql);
 
                     var (tournamentWhereSql, tournamentParameters) = BuildTournamentQuery(filter,
-                        $@"SELECT tourney.TournamentId AS MatchId, tourney.StartTime
+                        $@"SELECT tourney.TournamentId AS MatchId, NULL AS OrderInTournament, tourney.StartTime
                            FROM {Tables.Tournament} AS tourney
                            <<JOIN>>
                            <<WHERE>> ");
