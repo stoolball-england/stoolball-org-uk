@@ -1363,6 +1363,7 @@
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
     <Compile Include="ContentPage\CookiesController.cs" />
+    <Compile Include="Matches\TournamentsController.cs" />
     <Compile Include="Matches\MatchesController.cs" />
     <Compile Include="Matches\CreateTrainingSessionSurfaceController.cs" />
     <Compile Include="Matches\CreateTrainingSessionController.cs" />
@@ -2759,6 +2760,7 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_CreateOrEditTrainingSession.generated.cs</LastGenOutput>
     </Content>
+    <Content Include="Views\Tournaments.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

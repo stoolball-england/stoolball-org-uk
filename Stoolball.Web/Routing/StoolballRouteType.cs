@@ -59,6 +59,7 @@
         EditBowlingScorecard,
         EditCloseOfPlay,
         DeleteMatch,
+        Tournaments,
         TournamentsRss,
         Tournament,
         TournamentActions,

@@ -42,49 +42,50 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> DeleteTournament([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] MatchingTextConfirmation model)
+        public async Task<ActionResult> DeleteTournament([Bind(Prefix = "ConfirmDeleteRequest", Include = "RequiredText,ConfirmationText")] MatchingTextConfirmation postedModel)
         {
-            if (model is null)
+            if (postedModel is null)
             {
-                throw new ArgumentNullException(nameof(model));
+                throw new ArgumentNullException(nameof(postedModel));
             }
 
-            var viewModel = new DeleteTournamentViewModel(CurrentPage, Services.UserService)
+            var model = new DeleteTournamentViewModel(CurrentPage, Services.UserService)
             {
                 Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.RawUrl).ConfigureAwait(false),
                 DateTimeFormatter = _dateTimeFormatter
             };
-            viewModel.IsAuthorized = _authorizationPolicy.IsAuthorized(viewModel.Tournament);
+            model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament);
 
-            if (viewModel.IsAuthorized[AuthorizedAction.DeleteTournament] && ModelState.IsValid)
+            if (model.IsAuthorized[AuthorizedAction.DeleteTournament] && ModelState.IsValid)
             {
                 var currentMember = Members.GetCurrentMember();
-                await _tournamentRepository.DeleteTournament(viewModel.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
-                viewModel.Deleted = true;
+                await _tournamentRepository.DeleteTournament(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                model.Deleted = true;
             }
             else
             {
-                viewModel.TotalComments = await _commentsDataSource.ReadTotalComments(viewModel.Tournament.TournamentId.Value).ConfigureAwait(false);
+                model.TotalComments = await _commentsDataSource.ReadTotalComments(model.Tournament.TournamentId.Value).ConfigureAwait(false);
 
-                viewModel.Matches = new MatchListingViewModel(CurrentPage, Services?.UserService)
+                model.Matches = new MatchListingViewModel(CurrentPage, Services?.UserService)
                 {
                     Matches = await _matchListingDataSource.ReadMatchListings(new MatchFilter
                     {
-                        TournamentId = viewModel.Tournament.TournamentId,
+                        TournamentId = model.Tournament.TournamentId,
                         IncludeTournamentMatches = true,
                         IncludeTournaments = false
                     }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false)
                 };
             }
 
-            viewModel.Metadata.PageTitle = "Delete " + viewModel.Tournament.TournamentFullNameAndPlayerType(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false));
+            model.Metadata.PageTitle = "Delete " + model.Tournament.TournamentFullNameAndPlayerType(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false));
 
-            if (!viewModel.Deleted)
+            model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Tournaments, Url = new Uri(Constants.Pages.TournamentsUrl, UriKind.Relative) });
+            if (!model.Deleted)
             {
-                viewModel.Breadcrumbs.Add(new Breadcrumb { Name = viewModel.Tournament.TournamentName, Url = new Uri(viewModel.Tournament.TournamentRoute, UriKind.Relative) });
+                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Tournament.TournamentName, Url = new Uri(model.Tournament.TournamentRoute, UriKind.Relative) });
             }
 
-            return View("DeleteTournament", viewModel);
+            return View("DeleteTournament", model);
         }
     }
 }

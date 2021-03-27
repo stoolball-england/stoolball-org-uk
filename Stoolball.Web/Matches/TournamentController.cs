@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Matches;
+using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -36,11 +38,11 @@ namespace Stoolball.Web.Matches
            IEmailProtector emailProtector)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _tournamentDataSource = tournamentDataSource ?? throw new System.ArgumentNullException(nameof(tournamentDataSource));
-            _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
-            _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
-            _dateFormatter = dateFormatter ?? throw new System.ArgumentNullException(nameof(dateFormatter));
-            _emailProtector = emailProtector ?? throw new System.ArgumentNullException(nameof(emailProtector));
+            _tournamentDataSource = tournamentDataSource ?? throw new ArgumentNullException(nameof(tournamentDataSource));
+            _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
+            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
+            _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
+            _emailProtector = emailProtector ?? throw new ArgumentNullException(nameof(emailProtector));
         }
 
         [HttpGet]
@@ -49,7 +51,7 @@ namespace Stoolball.Web.Matches
         {
             if (contentModel is null)
             {
-                throw new System.ArgumentNullException(nameof(contentModel));
+                throw new ArgumentNullException(nameof(contentModel));
             }
 
             var model = new TournamentViewModel(contentModel.Content, Services?.UserService)
@@ -83,6 +85,8 @@ namespace Stoolball.Web.Matches
                 model.Metadata.Description = model.Tournament.Description();
 
                 model.Tournament.TournamentNotes = _emailProtector.ProtectEmailAddresses(model.Tournament.TournamentNotes, User.Identity.IsAuthenticated);
+
+                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Tournaments, Url = new Uri(Constants.Pages.TournamentsUrl, UriKind.Relative) });
 
                 return CurrentTemplate(model);
             }

@@ -57,6 +57,7 @@ namespace Stoolball.Web.Routing
                 { $"competitions{OPTIONAL_SLASH}", StoolballRouteType.Competitions },
                 { $"teams{OPTIONAL_SLASH}", StoolballRouteType.Teams },
                 { $"matches{OPTIONAL_SLASH}", StoolballRouteType.Matches },
+                { $"tournaments{OPTIONAL_SLASH}", StoolballRouteType.Tournaments },
                 { $"locations{OPTIONAL_SLASH}", StoolballRouteType.MatchLocations },
 
                 // Match /matches/rss, /tournaments/all/rss, /tournaments/ladies/rss, /tournaments/mixed/rss, /tournaments/junior/rss but nothing else, in upper, lower or mixed case

@@ -1,14 +1,14 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Matches.MatchListingViewModel>
 @section canonical {@Html.Partial("_CanonicalUrl", new[] { "page", "q" })}
 <div class="container-xl">
-    <h1>@Stoolball.Constants.Pages.Matches</h1>
+    <h1>@Stoolball.Constants.Pages.Tournaments</h1>
 
     <ul class="nav nav-tabs nav-tabs-has-add">
         <li class="nav-item">
-            <em class="nav-link active">Matches</em>
+            <a href="/matches" class="nav-link">Matches</a>
         </li>
         <li class="nav-item">
-            <a href="/tournaments" class="nav-link">Tournaments</a>
+            <em class="nav-link active">Tournaments</em>
         </li>
     </ul>
 
@@ -18,7 +18,7 @@
     }
     else
     {
-        <p>There are no matches yet this season.</p>
+        <p>There are no tournaments yet this season.</p>
     }
 
     @Html.Partial("_Paging", Model.MatchFilter.Paging)
@@ -27,5 +27,5 @@
         var query = HttpUtility.ParseQueryString(Request.Url.Query);
         query.Remove("page");
     }
-    <p><a type="application/rss+xml" href="/matches.rss@(query.Count > 0 ? "?" : string.Empty)@(query)">New and updated matches – subscribe with RSS</a></p>
+    <p><a type="application/rss+xml" href="/tournaments.rss@(query.Count > 0 ? "?" : string.Empty)@(query)">New and updated tournaments – subscribe with RSS</a></p>
 </div>

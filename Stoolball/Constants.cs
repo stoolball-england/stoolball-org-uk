@@ -26,11 +26,11 @@ namespace Stoolball
             public const string CompetitionsUrl = "/competitions";
             public const string Teams = "Clubs and teams";
             public const string TeamsUrl = "/teams";
-            public const string Matches = "Matches";
+            public const string Matches = "Matches and tournaments";
             public const string MatchesUrl = "/matches";
             public const string MatchLocations = "Grounds and sports centres";
             public const string MatchLocationsUrl = "/locations";
-            public const string Tournaments = "Tournaments";
+            public const string Tournaments = "Matches and tournaments";
             public const string TournamentsUrl = "/tournaments";
             public const string Statistics = "Statistics";
             public const string StatisticsUrl = "/play/statistics";

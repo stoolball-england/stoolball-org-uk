@@ -459,37 +459,33 @@ WriteLiteral("            <p>");
             #line hidden
 WriteLiteral(" has been deleted.</p>\r\n");
 
-            
-            #line 88 "..\..\Views\DeleteTournament.cshtml"
-            
-            
-            #line default
-            #line hidden
-            
-            #line 88 "..\..\Views\DeleteTournament.cshtml"
-                                                                                                                                          
-
-            
-            #line default
-            #line hidden
 WriteLiteral("            <p><a");
-
-WriteAttribute("href", Tuple.Create(" href=\"", 4370), Tuple.Create("\"", 4401)
-            
-            #line 89 "..\..\Views\DeleteTournament.cshtml"
-, Tuple.Create(Tuple.Create("", 4377), Tuple.Create<System.Object, System.Int32>(Constants.Pages.HomeUrl
-            
-            #line default
-            #line hidden
-, 4377), false)
-);
 
 WriteLiteral(" class=\"btn btn-primary btn-back\"");
 
-WriteLiteral(">Go back to the home page</a></p>\r\n");
+WriteAttribute("href", Tuple.Create(" href=\"", 4263), Tuple.Create("\"", 4301)
+            
+            #line 88 "..\..\Views\DeleteTournament.cshtml"
+, Tuple.Create(Tuple.Create("", 4270), Tuple.Create<System.Object, System.Int32>(Constants.Pages.TournamentsUrl
+            
+            #line default
+            #line hidden
+, 4270), false)
+);
+
+WriteLiteral(">Back to ");
 
             
-            #line 90 "..\..\Views\DeleteTournament.cshtml"
+            #line 88 "..\..\Views\DeleteTournament.cshtml"
+                                                                                             Write(Constants.Pages.Tournaments);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</a></p>\r\n");
+
+            
+            #line 89 "..\..\Views\DeleteTournament.cshtml"
         }
     }
     else
@@ -499,14 +495,14 @@ WriteLiteral(">Go back to the home page</a></p>\r\n");
             #line default
             #line hidden
             
-            #line 94 "..\..\Views\DeleteTournament.cshtml"
+            #line 93 "..\..\Views\DeleteTournament.cshtml"
    Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 94 "..\..\Views\DeleteTournament.cshtml"
+            #line 93 "..\..\Views\DeleteTournament.cshtml"
                                
     }
 

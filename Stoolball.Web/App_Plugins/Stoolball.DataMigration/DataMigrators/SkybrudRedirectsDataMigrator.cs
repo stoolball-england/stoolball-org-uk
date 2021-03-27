@@ -78,6 +78,9 @@ namespace Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/matches/all", transaction).ConfigureAwait(false);
                     await _redirectsRepository.InsertRedirect("/matches/all", "/matches", null, transaction).ConfigureAwait(false);
 
+                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/tournaments/all", transaction).ConfigureAwait(false);
+                    await _redirectsRepository.InsertRedirect("/tournaments/all", "/tournaments", null, transaction).ConfigureAwait(false);
+
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix("/about", transaction).ConfigureAwait(false);
                     await _redirectsRepository.InsertRedirect("/about/privacy-notice-match-results-and-comments", "/privacy/privacy-notice-match-results-and-comments", null, transaction).ConfigureAwait(false);
                     await _redirectsRepository.InsertRedirect("/about/privacy-notice-registering-with-stoolball-england", "/privacy/privacy-notice-your-stoolball-england-account", null, transaction).ConfigureAwait(false);

@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
+using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Teams;
 using Stoolball.Web.Security;
@@ -128,6 +129,8 @@ namespace Stoolball.Web.Matches
                 // Redirect to the tournament
                 return Redirect(createdTournament.TournamentRoute);
             }
+
+            model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Tournaments, Url = new Uri(Constants.Pages.TournamentsUrl, UriKind.Relative) });
 
             return View("CreateTournament", model);
         }
