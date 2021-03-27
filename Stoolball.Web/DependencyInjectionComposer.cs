@@ -1,6 +1,14 @@
-﻿using Ganss.XSS;
+﻿using System;
+using Ganss.XSS;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
+using Polly;
+using Polly.Caching;
+using Polly.Caching.Memory;
+using Polly.Registry;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
+using Stoolball.Data.Cache;
 using Stoolball.Data.SqlServer;
 using Stoolball.Dates;
 using Stoolball.Email;
@@ -33,6 +41,11 @@ namespace Stoolball.Web
     {
         public void Compose(Composition composition)
         {
+            if (composition is null)
+            {
+                throw new ArgumentNullException(nameof(composition));
+            }
+
             // Utility classes
             composition.Register<ILogger, UmbracoLogWrapper>();
             composition.Register<Email.IEmailFormatter, Email.EmailFormatter>();
@@ -70,6 +83,7 @@ namespace Stoolball.Web
             composition.Register<IStatisticsBreadcrumbBuilder, StatisticsBreadcrumbBuilder>();
             composition.Register<IContactDetailsParser, ContactDetailsParser>();
             composition.Register<IMatchesRssQueryStringParser, MatchesRssQueryStringParser>();
+            composition.Register<IStatisticsFilterSerializer, StatisticsFilterQueryStringSerializer>();
 
             // Data migration from the old Stoolball England website
             composition.Register<IAuditHistoryBuilder, AuditHistoryBuilder>();
@@ -94,6 +108,25 @@ namespace Stoolball.Web
             composition.Register<IStoolballRouteTypeMapper, StoolballRouteTypeMapper>();
             composition.Register<IStoolballRouterController, StoolballRouterController>();
 
+            // Caching with Polly
+            composition.Register<IMemoryCache, MemoryCache>(Lifetime.Singleton);
+            composition.Register<IOptions<MemoryCacheOptions>, MemoryCacheOptions>(Lifetime.Singleton);
+            composition.Register<IAsyncCacheProvider, MemoryCacheProvider>(Lifetime.Singleton);
+            composition.Register<IReadOnlyPolicyRegistry<string>>((serviceProvider) =>
+            {
+                var registry = new PolicyRegistry();
+                var memoryCacheProvider = serviceProvider.GetInstance<IAsyncCacheProvider>();
+                var logger = serviceProvider.GetInstance<ILogger>();
+                var cachePolicy = Policy.CacheAsync(memoryCacheProvider, TimeSpan.FromMinutes(120), (context, key, ex) =>
+                {
+                    logger.Error(typeof(IAsyncCacheProvider), ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
+                });
+
+                registry.Add("statistics", cachePolicy);
+                return registry;
+
+            }, Lifetime.Singleton);
+
             // Data sources for stoolball data.
             composition.Register<IDatabaseConnectionFactory, UmbracoDatabaseConnectionFactory>();
             composition.Register<IRedirectsRepository, SkybrudRedirectsRepository>();
@@ -117,7 +150,7 @@ namespace Stoolball.Web
             composition.Register<IMatchRepository, SqlServerMatchRepository>();
             composition.Register<ITournamentDataSource, SqlServerTournamentDataSource>();
             composition.Register<ITournamentRepository, SqlServerTournamentRepository>();
-            composition.Register<IStatisticsDataSource, SqlServerStatisticsDataSource>();
+            composition.Register<IStatisticsDataSource, CachedStatisticsDataSource>();
             composition.Register<IStatisticsRepository, SqlServerStatisticsRepository>();
             composition.Register<IInningsStatisticsDataSource, SqlServerInningsStatisticsDataSource>();
 

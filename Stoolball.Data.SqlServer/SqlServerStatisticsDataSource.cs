@@ -18,14 +18,14 @@ namespace Stoolball.Data.SqlServer
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
         }
 
-        public async Task<int> ReadTotalPlayerInnings(StatisticsFilter filter)
+        public async virtual Task<int> ReadTotalPlayerInnings(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
 
             return await ReadTotalBestFiguresInAMatch("RunsScored", 0, filter).ConfigureAwait(false);
         }
 
-        public async Task<int> ReadTotalBowlingFigures(StatisticsFilter filter)
+        public async virtual Task<int> ReadTotalBowlingFigures(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -47,7 +47,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        public async Task<IEnumerable<StatisticsResult<PlayerInnings>>> ReadPlayerInnings(StatisticsFilter filter, StatisticsSortOrder sortOrder)
+        public async virtual Task<IEnumerable<StatisticsResult<PlayerInnings>>> ReadPlayerInnings(StatisticsFilter filter, StatisticsSortOrder sortOrder)
         {
             filter = filter ?? new StatisticsFilter();
 
@@ -69,7 +69,7 @@ namespace Stoolball.Data.SqlServer
             return await ReadBestFiguresInAMatch<PlayerInnings>("RunsScored", "PlayerWasDismissed", new[] { "PlayerInningsId", "DismissalType", "BallsFaced" }, orderByFields, 0, filter).ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<StatisticsResult<BowlingFigures>>> ReadBowlingFigures(StatisticsFilter filter, StatisticsSortOrder sortOrder)
+        public async virtual Task<IEnumerable<StatisticsResult<BowlingFigures>>> ReadBowlingFigures(StatisticsFilter filter, StatisticsSortOrder sortOrder)
         {
             filter = filter ?? new StatisticsFilter();
 
