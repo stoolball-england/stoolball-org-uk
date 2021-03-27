@@ -48,7 +48,10 @@ namespace Stoolball.Web.Matches
                 MatchFilter = new MatchFilter
                 {
                     Query = Request.QueryString["q"]?.Trim(),
-                    FromDate = DateTimeOffset.UtcNow.Date
+                    FromDate = DateTimeOffset.UtcNow.Date,
+                    IncludeMatches = true,
+                    IncludeTournamentMatches = false,
+                    IncludeTournaments = false
                 },
                 DateTimeFormatter = _dateTimeFormatter
             };

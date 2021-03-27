@@ -27,5 +27,5 @@
         var query = HttpUtility.ParseQueryString(Request.Url.Query);
         query.Remove("page");
     }
-    <p><a type="application/rss+xml" href="/matches.rss@(query.Count > 0 ? "?" : string.Empty)@(query)">New and updated matches – subscribe with RSS</a></p>
+    <p><a type="application/rss+xml" href="/matches.rss@(query.Count > 0 ? "?" : string.Empty)@(query)">New and updated matches and tournaments – subscribe with RSS</a></p>
 </div>
