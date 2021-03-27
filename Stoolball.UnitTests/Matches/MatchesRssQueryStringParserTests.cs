@@ -17,8 +17,8 @@ namespace Stoolball.UnitTests.Matches
 
             var result = parser.ParseFilterFromQueryString(new NameValueCollection());
 
-            Assert.Equal(DateTimeOffset.UtcNow.Date.AddDays(-1), result.FromDate);
-            Assert.Equal(DateTimeOffset.UtcNow.Date.AddDays(366), result.UntilDate);
+            Assert.Equal(((DateTimeOffset)DateTimeOffset.UtcNow.Date).AddDays(-1), result.FromDate);
+            Assert.Equal(((DateTimeOffset)DateTimeOffset.UtcNow.Date).AddDays(366), result.UntilDate);
         }
 
         [Fact]
@@ -30,7 +30,7 @@ namespace Stoolball.UnitTests.Matches
             var result = parser.ParseFilterFromQueryString(parsedQueryString);
 
             Assert.Equal(DateTimeOffset.UtcNow.Date, result.FromDate);
-            Assert.Equal(DateTimeOffset.UtcNow.Date.AddDays(1), result.UntilDate);
+            Assert.Equal(((DateTimeOffset)DateTimeOffset.UtcNow.Date).AddDays(1), result.UntilDate);
         }
 
         [Theory]

@@ -36,8 +36,8 @@ namespace Stoolball.Matches
             // Support date filters that were linked from the old website
             if (bool.TryParse(queryString["today"], out var today) && today)
             {
-                filter.FromDate = DateTimeOffset.Now.Date;
-                filter.UntilDate = DateTimeOffset.Now.Date;
+                filter.FromDate = DateTimeOffset.UtcNow.Date;
+                filter.UntilDate = DateTimeOffset.UtcNow.Date;
             }
             else
             {
