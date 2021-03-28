@@ -147,7 +147,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="UmbracoCms.Core">
-      <Version>8.11.1</Version>
+      <Version>8.11.2</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />
