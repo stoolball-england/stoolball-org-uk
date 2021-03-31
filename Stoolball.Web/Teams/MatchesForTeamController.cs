@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
@@ -24,9 +22,9 @@ namespace Stoolball.Web.Teams
     public class MatchesForTeamController : RenderMvcControllerAsync
     {
         private readonly ITeamDataSource _teamDataSource;
+        private readonly IMatchFilterFactory _matchFilterFactory;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
-        private readonly ISeasonEstimator _seasonEstimator;
         private readonly ICreateMatchSeasonSelector _createMatchSeasonSelector;
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
 
@@ -37,17 +35,17 @@ namespace Stoolball.Web.Teams
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            ITeamDataSource teamDataSource,
+           IMatchFilterFactory matchFilterFactory,
            IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
-           ISeasonEstimator seasonEstimator,
            ICreateMatchSeasonSelector createMatchSeasonSelector,
            IAuthorizationPolicy<Team> authorizationPolicy)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
+            _matchFilterFactory = matchFilterFactory ?? throw new ArgumentNullException(nameof(matchFilterFactory));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
-            _seasonEstimator = seasonEstimator ?? throw new ArgumentNullException(nameof(seasonEstimator));
             _createMatchSeasonSelector = createMatchSeasonSelector ?? throw new ArgumentNullException(nameof(createMatchSeasonSelector));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
         }
@@ -69,16 +67,13 @@ namespace Stoolball.Web.Teams
             }
             else
             {
+                var filter = _matchFilterFactory.MatchesForTeam(team.TeamId.Value);
                 var model = new TeamViewModel(contentModel.Content, Services?.UserService)
                 {
                     Team = team,
                     Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
                     {
-                        Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
-                        {
-                            TeamIds = new List<Guid> { team.TeamId.Value },
-                            FromDate = _seasonEstimator.EstimateSeasonDates(DateTimeOffset.UtcNow).fromDate
-                        }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false),
+                        Matches = await _matchDataSource.ReadMatchListings(filter.filter, filter.sortOrder).ConfigureAwait(false),
                         DateTimeFormatter = _dateFormatter
                     },
                 };

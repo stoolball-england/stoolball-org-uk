@@ -23,14 +23,14 @@ namespace Stoolball.Data.Cache
         public async override Task<IEnumerable<StatisticsResult<PlayerInnings>>> ReadPlayerInnings(StatisticsFilter filter, StatisticsSortOrder sortOrder)
         {
             filter = filter ?? new StatisticsFilter();
-            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>("statistics");
+            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
             return await cachePolicy.ExecuteAsync(async context => await base.ReadPlayerInnings(filter, sortOrder), new Context(nameof(ReadPlayerInnings) + _statisticsFilterSerializer.Serialize(filter) + sortOrder.ToString()));
         }
 
         public async override Task<IEnumerable<StatisticsResult<BowlingFigures>>> ReadBowlingFigures(StatisticsFilter filter, StatisticsSortOrder sortOrder)
         {
             filter = filter ?? new StatisticsFilter();
-            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>("statistics");
+            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
             return await cachePolicy.ExecuteAsync(async context => await base.ReadBowlingFigures(filter, sortOrder), new Context(nameof(ReadBowlingFigures) + _statisticsFilterSerializer.Serialize(filter) + sortOrder.ToString()));
         }
     }

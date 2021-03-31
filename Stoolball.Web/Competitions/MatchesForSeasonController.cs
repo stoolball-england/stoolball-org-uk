@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
@@ -21,6 +20,7 @@ namespace Stoolball.Web.Competitions
 {
     public class MatchesForSeasonController : RenderMvcControllerAsync
     {
+        private readonly IMatchFilterFactory _matchFilterFactory;
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
@@ -32,12 +32,14 @@ namespace Stoolball.Web.Competitions
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
+           IMatchFilterFactory matchFilterFactory,
            ISeasonDataSource seasonDataSource,
            IMatchListingDataSource matchDataSource,
            IAuthorizationPolicy<Competition> authorizationPolicy,
            IDateTimeFormatter dateFormatter)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
+            _matchFilterFactory = matchFilterFactory ?? throw new ArgumentNullException(nameof(matchFilterFactory));
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
@@ -61,15 +63,13 @@ namespace Stoolball.Web.Competitions
             }
             else
             {
+                var filter = _matchFilterFactory.MatchesForSeason(season.SeasonId.Value);
                 var model = new SeasonViewModel(contentModel.Content, Services?.UserService)
                 {
                     Season = season,
                     Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
                     {
-                        Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
-                        {
-                            SeasonIds = new List<Guid> { season.SeasonId.Value }
-                        }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false),
+                        Matches = await _matchDataSource.ReadMatchListings(filter.filter, filter.sortOrder).ConfigureAwait(false),
                         DateTimeFormatter = _dateFormatter
                     },
                 };

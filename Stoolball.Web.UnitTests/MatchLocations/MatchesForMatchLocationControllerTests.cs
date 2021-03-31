@@ -5,7 +5,6 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Moq;
-using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
@@ -38,10 +37,11 @@ namespace Stoolball.Web.Tests.MatchLocations
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
+                Mock.Of<IMatchFilterFactory>(),
                 matchLocationDataSource,
                 matchDataSource,
                 Mock.Of<IAuthorizationPolicy<MatchLocation>>(),
-                Mock.Of<IDateTimeFormatter>(), Mock.Of<ISeasonEstimator>())
+                Mock.Of<IDateTimeFormatter>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));

@@ -83,6 +83,7 @@ namespace Stoolball.Web
             composition.Register<IStatisticsBreadcrumbBuilder, StatisticsBreadcrumbBuilder>();
             composition.Register<IContactDetailsParser, ContactDetailsParser>();
             composition.Register<IMatchesRssQueryStringParser, MatchesRssQueryStringParser>();
+            composition.Register<IMatchFilterSerializer, MatchFilterQueryStringSerializer>();
             composition.Register<IStatisticsFilterSerializer, StatisticsFilterQueryStringSerializer>();
 
             // Data migration from the old Stoolball England website
@@ -122,7 +123,8 @@ namespace Stoolball.Web
                     logger.Error(typeof(IAsyncCacheProvider), ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
                 });
 
-                registry.Add("statistics", cachePolicy);
+                registry.Add(CacheConstants.StatisticsPolicy, cachePolicy);
+                registry.Add(CacheConstants.MatchesPolicy, cachePolicy);
                 return registry;
 
             }, Lifetime.Singleton);
@@ -144,15 +146,16 @@ namespace Stoolball.Web
             composition.Register<ISeasonDataSource, SqlServerSeasonDataSource>();
             composition.Register<ISeasonRepository, SqlServerSeasonRepository>();
             composition.Register<IMatchDataSource, SqlServerMatchDataSource>();
-            composition.Register<IMatchListingDataSource, SqlServerMatchListingDataSource>();
+            composition.Register<IMatchListingDataSource, CachedMatchListingDataSource>();
             composition.Register<ICommentsDataSource<Match>, SqlServerMatchCommentsDataSource>();
             composition.Register<ICommentsDataSource<Tournament>, SqlServerTournamentCommentsDataSource>();
-            composition.Register<IMatchRepository, SqlServerMatchRepository>();
+            composition.Register<IMatchRepository, CacheClearingMatchRepository>();
             composition.Register<ITournamentDataSource, SqlServerTournamentDataSource>();
             composition.Register<ITournamentRepository, SqlServerTournamentRepository>();
             composition.Register<IStatisticsDataSource, CachedStatisticsDataSource>();
             composition.Register<IStatisticsRepository, SqlServerStatisticsRepository>();
             composition.Register<IInningsStatisticsDataSource, SqlServerInningsStatisticsDataSource>();
+            composition.Register<IMatchFilterFactory, MatchFilterFactory>();
 
             // Security checks
             composition.Register<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>();

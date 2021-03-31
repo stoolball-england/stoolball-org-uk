@@ -210,7 +210,7 @@ namespace Stoolball.Data.SqlServer
         /// <summary>
         /// Creates a stoolball match
         /// </summary>
-        public async Task<Match> CreateMatch(Match match, Guid memberKey, string memberName)
+        public async virtual Task<Match> CreateMatch(Match match, Guid memberKey, string memberName)
         {
             if (match is null)
             {
@@ -414,7 +414,7 @@ namespace Stoolball.Data.SqlServer
         /// <summary>
         /// Updates a stoolball match
         /// </summary>
-        public async Task<Match> UpdateMatch(Match match, Guid memberKey, string memberName)
+        public async virtual Task<Match> UpdateMatch(Match match, Guid memberKey, string memberName)
         {
             if (match is null)
             {
@@ -572,7 +572,7 @@ namespace Stoolball.Data.SqlServer
         /// <summary>
         /// Updates details known at the start of play - the location, who won the toss, who is batting, or why cancellation occurred
         /// </summary>
-        public async Task<Match> UpdateStartOfPlay(Match match, Guid memberKey, string memberName)
+        public async virtual Task<Match> UpdateStartOfPlay(Match match, Guid memberKey, string memberName)
         {
             if (match is null)
             {
@@ -1123,7 +1123,7 @@ namespace Stoolball.Data.SqlServer
         /// <summary>
         /// Updates details known at the close of play - the winning team and any awards
         /// </summary>
-        public async Task<Match> UpdateCloseOfPlay(Match match, Guid memberKey, string memberName)
+        public async virtual Task<Match> UpdateCloseOfPlay(Match match, Guid memberKey, string memberName)
         {
             if (match is null)
             {
@@ -1323,7 +1323,7 @@ namespace Stoolball.Data.SqlServer
         /// <summary>
         /// Deletes a stoolball match
         /// </summary>
-        public async Task DeleteMatch(Match match, Guid memberKey, string memberName)
+        public async virtual Task DeleteMatch(Match match, Guid memberKey, string memberName)
         {
             if (match is null)
             {

@@ -37,6 +37,7 @@ namespace Stoolball.Web.Tests.Competitions
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
+                Mock.Of<IMatchFilterFactory>(),
                 seasonDataSource,
                 matchDataSource,
                 Mock.Of<IAuthorizationPolicy<Competition>>(),

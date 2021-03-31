@@ -38,9 +38,10 @@ namespace Stoolball.Web.Tests.Teams
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
-                teamDataSource, matchDataSource,
+                teamDataSource,
+                Mock.Of<IMatchFilterFactory>(),
+                matchDataSource,
                 Mock.Of<IDateTimeFormatter>(),
-                Mock.Of<ISeasonEstimator>(),
                 createMatchSeasonSelector,
                 Mock.Of<IAuthorizationPolicy<Team>>())
             {
