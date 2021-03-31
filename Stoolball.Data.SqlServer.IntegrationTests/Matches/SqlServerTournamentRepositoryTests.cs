@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AngleSharp.Dom.Css;
+using AngleSharp.Css.Dom;
 using Dapper;
 using Ganss.XSS;
 using Moq;
