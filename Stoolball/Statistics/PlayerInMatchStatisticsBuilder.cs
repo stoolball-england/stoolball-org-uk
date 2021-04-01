@@ -54,12 +54,17 @@ namespace Stoolball.Statistics
 
             foreach (var innings in match.MatchInnings)
             {
-                if (innings.BattingTeam == null || innings.BowlingTeam == null)
+                if (!innings.BattingMatchTeamId.HasValue && innings.BattingTeam?.MatchTeamId != null)
                 {
-                    throw new ArgumentException($"{nameof(match)} must have the BattingTeam and BowlingTeam set for each MatchInnings");
+                    innings.BattingMatchTeamId = innings.BattingTeam.MatchTeamId;
                 }
 
-                var homeTeamIsBatting = innings.BattingTeam.MatchTeamId == homeTeam.MatchTeamId;
+                if (!innings.BattingMatchTeamId.HasValue)
+                {
+                    throw new ArgumentException($"{nameof(match)} must have the BattingMatchTeamId for each MatchInnings");
+                }
+
+                var homeTeamIsBatting = innings.BattingMatchTeamId == homeTeam.MatchTeamId;
                 var batters = homeTeamIsBatting ? homePlayers : awayPlayers;
                 var fielders = homeTeamIsBatting ? awayPlayers : homePlayers;
 
@@ -80,7 +85,7 @@ namespace Stoolball.Statistics
 
                 if (match.InningsOrderIsKnown)
                 {
-                    playerRecord.BattedFirst = match.MatchInnings[0].BattingTeam.MatchTeamId == homeTeam.MatchTeamId;
+                    playerRecord.BattedFirst = match.MatchInnings[0].BattingMatchTeamId == homeTeam.MatchTeamId;
                 }
                 playerRecord.WonToss = homeTeam.WonToss;
                 playerRecord.WonMatch = DidThePlayerWinTheMatch(homeTeam.MatchTeamId.Value, match);
@@ -93,7 +98,7 @@ namespace Stoolball.Statistics
 
                 if (match.InningsOrderIsKnown)
                 {
-                    playerRecord.BattedFirst = match.MatchInnings[0].BattingTeam.MatchTeamId == awayTeam.MatchTeamId;
+                    playerRecord.BattedFirst = match.MatchInnings[0].BattingMatchTeamId == awayTeam.MatchTeamId;
                 }
                 playerRecord.WonToss = awayTeam.WonToss;
                 playerRecord.WonMatch = DidThePlayerWinTheMatch(awayTeam.MatchTeamId.Value, match);
@@ -232,7 +237,7 @@ namespace Stoolball.Statistics
 
         private static PlayerInMatchStatisticsRecord CreateRecordForPlayerInInningsPair(Match match, MatchInnings innings, PlayerIdentity identity, TeamInMatch team, TeamInMatch opposition)
         {
-            var isOnBattingTeam = team.MatchTeamId == innings.BattingTeam.MatchTeamId;
+            var isOnBattingTeam = team.MatchTeamId == innings.BattingMatchTeamId;
             var pairedInnings = match.MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
 
             return new PlayerInMatchStatisticsRecord

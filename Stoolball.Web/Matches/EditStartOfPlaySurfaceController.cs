@@ -63,18 +63,12 @@ namespace Stoolball.Web.Matches
 
             var model = new EditStartOfPlayViewModel(CurrentPage, Services.UserService)
             {
-                Match = postedMatch,
+                Match = beforeUpdate,
                 DateFormatter = _dateTimeFormatter
             };
-            model.Match.MatchId = beforeUpdate.MatchId;
-            model.Match.MatchType = beforeUpdate.MatchType;
-            model.Match.StartTime = beforeUpdate.StartTime;
-            model.Match.MatchRoute = beforeUpdate.MatchRoute;
-            model.Match.UpdateMatchNameAutomatically = beforeUpdate.UpdateMatchNameAutomatically;
-            model.Match.Teams = beforeUpdate.Teams;
-            model.Match.MatchInnings = beforeUpdate.MatchInnings;
+            model.Match.MatchResultType = postedMatch.MatchResultType;
 
-            await AddMissingTeamsFromRequest(model, beforeUpdate.Season?.SeasonRoute, ModelState).ConfigureAwait(false);
+            await AddMissingTeamsFromRequest(model, ModelState).ConfigureAwait(false);
 
             ReadMatchLocationFromRequest(model);
 
@@ -163,11 +157,16 @@ namespace Stoolball.Web.Matches
             return View("EditStartOfPlay", model);
         }
 
-        private async Task AddMissingTeamsFromRequest(EditStartOfPlayViewModel model, string seasonRoute, ModelStateDictionary modelState)
+        private async Task AddMissingTeamsFromRequest(EditStartOfPlayViewModel model, ModelStateDictionary modelState)
         {
-            if (model.Match.MatchType == MatchType.KnockoutMatch && !string.IsNullOrEmpty(seasonRoute))
+            if (model.Match.MatchType == MatchType.KnockoutMatch &&
+                !string.IsNullOrEmpty(model.Match.Season?.SeasonRoute) &&
+                (
+                    model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home) == null ||
+                    model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away) == null
+                ))
             {
-                var season = await _seasonDataSource.ReadSeasonByRoute(seasonRoute, true).ConfigureAwait(false);
+                var season = await _seasonDataSource.ReadSeasonByRoute(model.Match.Season?.SeasonRoute, true).ConfigureAwait(false);
                 if (season != null)
                 {
                     model.PossibleHomeTeams = _editMatchHelper.PossibleTeamsAsListItems(season.Teams);
@@ -191,7 +190,7 @@ namespace Stoolball.Web.Matches
                 model.Match.Teams.Count == 2 &&
                 model.Match.Teams[0].Team.TeamId == model.Match.Teams[1].Team.TeamId)
             {
-                ModelState.AddModelError("AwayTeamId", "The away team cannot be the same as the home team");
+                modelState.AddModelError("AwayTeamId", "The away team cannot be the same as the home team");
             }
         }
 
