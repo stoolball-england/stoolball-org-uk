@@ -152,21 +152,30 @@ WriteAttribute("href", Tuple.Create(" href=\"", 945), Tuple.Create("\"", 996)
 , Tuple.Create(Tuple.Create("", 985), Tuple.Create("/edit/teams", 985), true)
 );
 
-WriteLiteral(">Teams in the ");
+WriteLiteral(">Teams</a></dt>\r\n");
 
+WriteLiteral("                <dd>Set how many teams you want, and which teams have confirmed t" +
+"hey\'re playing.</dd>\r\n");
+
+WriteLiteral("                <dt><a");
+
+WriteAttribute("href", Tuple.Create(" href=\"", 1139), Tuple.Create("\"", 1192)
             
-            #line 17 "..\..\Views\TournamentActions.cshtml"
-                                                                                   Write(Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false)));
-
+            #line 19 "..\..\Views\TournamentActions.cshtml"
+, Tuple.Create(Tuple.Create("", 1146), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
             
             #line default
             #line hidden
-WriteLiteral("</a></dt>\r\n");
+, 1146), false)
+, Tuple.Create(Tuple.Create("", 1179), Tuple.Create("/edit/seasons", 1179), true)
+);
 
-WriteLiteral("                <dd>Set which teams are playing in the tournament.</dd>\r\n");
+WriteLiteral(">Where to list the tournament</a></dt>\r\n");
+
+WriteLiteral("                <dd>Set which competitions to list this tournament in.</dd>\r\n");
 
             
-            #line 19 "..\..\Views\TournamentActions.cshtml"
+            #line 21 "..\..\Views\TournamentActions.cshtml"
             }
 
             
@@ -175,7 +184,7 @@ WriteLiteral("                <dd>Set which teams are playing in the tournament.
 WriteLiteral("            ");
 
             
-            #line 20 "..\..\Views\TournamentActions.cshtml"
+            #line 22 "..\..\Views\TournamentActions.cshtml"
              if (Model.IsAuthorized[AuthorizedAction.DeleteTournament])
             {
 
@@ -184,21 +193,21 @@ WriteLiteral("            ");
             #line hidden
 WriteLiteral("                <dt><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1327), Tuple.Create("\"", 1374)
+WriteAttribute("href", Tuple.Create(" href=\"", 1435), Tuple.Create("\"", 1482)
             
-            #line 22 "..\..\Views\TournamentActions.cshtml"
-, Tuple.Create(Tuple.Create("", 1334), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
+            #line 24 "..\..\Views\TournamentActions.cshtml"
+, Tuple.Create(Tuple.Create("", 1442), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
             
             #line default
             #line hidden
-, 1334), false)
-, Tuple.Create(Tuple.Create("", 1367), Tuple.Create("/delete", 1367), true)
+, 1442), false)
+, Tuple.Create(Tuple.Create("", 1475), Tuple.Create("/delete", 1475), true)
 );
 
 WriteLiteral(">Delete ");
 
             
-            #line 22 "..\..\Views\TournamentActions.cshtml"
+            #line 24 "..\..\Views\TournamentActions.cshtml"
                                                                          Write(Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false)));
 
             
@@ -210,7 +219,7 @@ WriteLiteral("                <dd>Matches and match statistics will be lost. Pla
 "that only feature in this tournament will be deleted.</dd>\r\n");
 
             
-            #line 24 "..\..\Views\TournamentActions.cshtml"
+            #line 26 "..\..\Views\TournamentActions.cshtml"
             }
 
             
@@ -219,7 +228,7 @@ WriteLiteral("                <dd>Matches and match statistics will be lost. Pla
 WriteLiteral("        </dl>\r\n");
 
             
-            #line 26 "..\..\Views\TournamentActions.cshtml"
+            #line 28 "..\..\Views\TournamentActions.cshtml"
     }
     else
     {
@@ -228,14 +237,14 @@ WriteLiteral("        </dl>\r\n");
             #line default
             #line hidden
             
-            #line 29 "..\..\Views\TournamentActions.cshtml"
+            #line 31 "..\..\Views\TournamentActions.cshtml"
    Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 29 "..\..\Views\TournamentActions.cshtml"
+            #line 31 "..\..\Views\TournamentActions.cshtml"
                                
     }
 

@@ -363,7 +363,55 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
         }
 
         [Fact]
-        public async Task Read_seasons_supports_case_insensitive_filter_by_player_type()
+        public async Task Read_seasons_supports_filter_by_from_year()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await seasonDataSource.ReadSeasons(new CompetitionFilter { FromYear = DateTimeOffset.UtcNow.Year }).ConfigureAwait(false);
+
+            var expected = _databaseFixture.Seasons.Where(x => x.FromYear == DateTimeOffset.UtcNow.Year);
+            Assert.Equal(expected.Count(), result.Count);
+            foreach (var season in expected)
+            {
+                Assert.NotNull(result.SingleOrDefault(x => x.SeasonId == season.SeasonId));
+            }
+        }
+
+        [Fact]
+        public async Task Read_seasons_supports_filter_by_until_year()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await seasonDataSource.ReadSeasons(new CompetitionFilter { UntilYear = DateTimeOffset.UtcNow.Year }).ConfigureAwait(false);
+
+            var expected = _databaseFixture.Seasons.Where(x => x.UntilYear == DateTimeOffset.UtcNow.Year);
+            Assert.Equal(expected.Count(), result.Count);
+            foreach (var season in expected)
+            {
+                Assert.NotNull(result.SingleOrDefault(x => x.SeasonId == season.SeasonId));
+            }
+        }
+
+        [Fact]
+        public async Task Read_seasons_supports_filter_by_tournaments_enabled()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await seasonDataSource.ReadSeasons(new CompetitionFilter { EnableTournaments = true }).ConfigureAwait(false);
+
+            var expected = _databaseFixture.Seasons.Where(x => x.EnableTournaments);
+            Assert.Equal(expected.Count(), result.Count);
+            foreach (var season in expected)
+            {
+                Assert.NotNull(result.SingleOrDefault(x => x.SeasonId == season.SeasonId));
+            }
+        }
+
+        [Fact]
+        public async Task Read_seasons_supports_case_insensitive_filter_by_player_type_query()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
@@ -379,7 +427,23 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
         }
 
         [Fact]
-        public async Task Read_seasons_supports_case_insensitive_filter_by_match_type()
+        public async Task Read_seasons_supports_filter_by_player_type()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await seasonDataSource.ReadSeasons(new CompetitionFilter { PlayerTypes = new List<PlayerType> { PlayerType.Mixed } }).ConfigureAwait(false);
+
+            var expected = _databaseFixture.Seasons.Where(x => x.Competition.PlayerType == PlayerType.Mixed);
+            Assert.Equal(expected.Count(), result.Count);
+            foreach (var season in expected)
+            {
+                Assert.NotNull(result.SingleOrDefault(x => x.SeasonId == season.SeasonId));
+            }
+        }
+
+        [Fact]
+        public async Task Read_seasons_supports_filter_by_match_type()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);

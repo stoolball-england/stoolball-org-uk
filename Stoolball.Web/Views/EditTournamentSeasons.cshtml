@@ -1,0 +1,50 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<EditTournamentViewModel>
+@using Stoolball.Web.Matches
+@using Stoolball.Security
+@using Humanizer
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+}
+<div class="container-xl">
+    <h1>Where to list @Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.EditTournament])
+    {
+        if (Model.PossibleSeasons.Any())
+        {
+            using (Html.BeginUmbracoForm<EditTournamentSeasonsSurfaceController>("UpdateSeasons"))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+
+                <div class="form-group">
+                    @foreach (var season in Model.PossibleSeasons)
+                    {
+                        var checkSeason = Model.Tournament.Seasons.Select(x => x.SeasonId.Value).Contains(season.SeasonId.Value) ? " checked=\"checked\"" : string.Empty;
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="@season.SeasonId" name="Tournament.Seasons" @checkSeason value="@season.SeasonId" />
+                            <label class="custom-control-label" for="@season.SeasonId">@season.SeasonFullName()</label>
+                        </div>
+                    }
+                </div>
+
+                <p>You can also list your tournament on the <a href="https://www.facebook.com/groups/1451559361817258/" target="_blank">Sussex Stoolball tournaments Facebook group</a>.</p>
+
+                <button class="btn btn-primary">Save seasons</button>
+            }
+        }
+        else
+        {
+            <p>Unfortunately we don't have details of any @Model.Tournament.PlayerType.Humanize(LetterCasing.LowerCase) competitions in @Model.Tournament.StartTime.ToString("MMMM yyyy") to list your tournament in.</p>
+            <button class="btn btn-primary btn-back">Back to Edit tournament</button>
+        }
+    }
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

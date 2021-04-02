@@ -548,10 +548,92 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(SqlServerTournamentRepository.UpdateTeams));
+                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(UpdateTeams));
                 }
             }
 
+
+            return auditableTournament;
+        }
+
+        /// <summary>
+        /// Updates the seasons a stoolball tournament is listed in
+        /// </summary>
+        public async Task<Tournament> UpdateSeasons(Tournament tournament, Guid memberKey, string memberUsername, string memberName)
+        {
+            if (tournament is null)
+            {
+                throw new ArgumentNullException(nameof(tournament));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberUsername))
+            {
+                throw new ArgumentException($"'{nameof(memberUsername)}' cannot be null or whitespace", nameof(memberUsername));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            var auditableTournament = CreateAuditableCopy(tournament);
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var currentSeasons = await connection.QueryAsync<(Guid tournamentSeasonId, Guid seasonId)>(
+                            $@"SELECT TournamentSeasonId, SeasonId
+                                   FROM {Tables.TournamentSeason} 
+                                   WHERE TournamentId = @TournamentId", new { auditableTournament.TournamentId }, transaction
+                        ).ConfigureAwait(false);
+
+                    foreach (var season in auditableTournament.Seasons)
+                    {
+                        // Season added
+                        if (!currentSeasons.Any(x => x.seasonId == season.SeasonId))
+                        {
+                            await connection.ExecuteAsync($@"INSERT INTO {Tables.TournamentSeason} 
+                                    (TournamentSeasonId, TournamentId, SeasonId) 
+                                    VALUES (@TournamentSeasonId, @TournamentId, @SeasonId)",
+                                    new
+                                    {
+                                        TournamentSeasonId = Guid.NewGuid(),
+                                        auditableTournament.TournamentId,
+                                        season.SeasonId
+                                    },
+                                    transaction).ConfigureAwait(false);
+                        }
+                    }
+
+                    // Season removed?
+                    var tournamentSeasonIds = auditableTournament.Seasons.Select(x => x.SeasonId);
+                    var seasonsToRemove = currentSeasons.Where(x => !tournamentSeasonIds.Contains(x.seasonId));
+                    foreach (var season in seasonsToRemove)
+                    {
+                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET SeasonId = NULL WHERE SeasonId = @SeasonId AND TournamentId = @TournamentId", new { season.seasonId, auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"UPDATE {Tables.Match} SET SeasonId = NULL WHERE SeasonId = @SeasonId AND TournamentId = @TournamentId", new { season.seasonId, auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"DELETE FROM {Tables.TournamentSeason} WHERE TournamentSeasonId = @TournamentSeasonId", new { season.tournamentSeasonId }, transaction).ConfigureAwait(false);
+                    }
+
+                    var redacted = CreateRedactedCopy(auditableTournament);
+                    await _auditRepository.CreateAudit(new AuditRecord
+                    {
+                        Action = AuditAction.Update,
+                        MemberKey = memberKey,
+                        ActorName = memberName,
+                        EntityUri = auditableTournament.EntityUri,
+                        State = JsonConvert.SerializeObject(auditableTournament),
+                        RedactedState = JsonConvert.SerializeObject(redacted),
+                        AuditDate = DateTime.UtcNow
+                    },
+                    transaction).ConfigureAwait(false);
+
+                    transaction.Commit();
+
+                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(UpdateSeasons));
+                }
+            }
 
             return auditableTournament;
         }

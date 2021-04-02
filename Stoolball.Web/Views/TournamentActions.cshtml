@@ -14,8 +14,10 @@
             {
                 <dt><a href="@Model.Tournament.TournamentRoute/edit/tournament">Edit @Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
                 <dd>Set the name, date, time and location of the tournament, who can play, the match format and the notes.</dd>
-                <dt><a href="@Model.Tournament.TournamentRoute/edit/teams">Teams in the @Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</a></dt>
-                <dd>Set which teams are playing in the tournament.</dd>
+                <dt><a href="@Model.Tournament.TournamentRoute/edit/teams">Teams</a></dt>
+                <dd>Set how many teams you want, and which teams have confirmed they're playing.</dd>
+                <dt><a href="@Model.Tournament.TournamentRoute/edit/seasons">Where to list the tournament</a></dt>
+                <dd>Set which competitions to list this tournament in.</dd>
             }
             @if (Model.IsAuthorized[AuthorizedAction.DeleteTournament])
             {

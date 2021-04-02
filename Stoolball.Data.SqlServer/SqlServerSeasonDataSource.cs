@@ -77,21 +77,45 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private static (string sql, Dictionary<string, object> parameters) BuildWhereClause(CompetitionFilter competitionQuery)
+        private static (string sql, Dictionary<string, object> parameters) BuildWhereClause(CompetitionFilter filter)
         {
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();
 
-            if (!string.IsNullOrEmpty(competitionQuery.Query))
+            if (!string.IsNullOrEmpty(filter.Query))
             {
                 where.Add("(CONCAT(CompetitionName, ', ', s.FromYear, ' season') LIKE @Query OR CONCAT(CompetitionName, ', ', s.FromYear, '/', RIGHT(s.UntilYear,2), ' season') LIKE @Query OR co.PlayerType LIKE @Query)");
-                parameters.Add("@Query", $"%{competitionQuery.Query}%");
+                parameters.Add("@Query", $"%{filter.Query}%");
             }
 
-            if (competitionQuery.MatchTypes?.Count > 0)
+            if (filter.PlayerTypes?.Count > 0)
+            {
+                where.Add("co.PlayerType IN @PlayerTypes");
+                parameters.Add("@PlayerTypes", filter.PlayerTypes.Select(x => x.ToString()));
+            }
+
+            if (filter.MatchTypes?.Count > 0)
             {
                 where.Add($"s.SeasonId IN (SELECT SeasonId FROM {Tables.SeasonMatchType} WHERE MatchType IN @MatchTypes)");
-                parameters.Add("@MatchTypes", competitionQuery.MatchTypes.Select(x => x.ToString()));
+                parameters.Add("@MatchTypes", filter.MatchTypes.Select(x => x.ToString()));
+            }
+
+            if (filter.FromYear.HasValue)
+            {
+                where.Add("s.FromYear = @FromYear");
+                parameters.Add("@FromYear", filter.FromYear.Value);
+            }
+
+            if (filter.UntilYear.HasValue)
+            {
+                where.Add("s.UntilYear = @UntilYear");
+                parameters.Add("@UntilYear", filter.UntilYear.Value);
+            }
+
+            if (filter.EnableTournaments.HasValue)
+            {
+                where.Add("s.EnableTournaments = @EnableTournaments");
+                parameters.Add("@EnableTournaments", filter.EnableTournaments.Value);
             }
 
             return (where.Count > 0 ? $@"WHERE " + string.Join(" AND ", where) : "WHERE 1=1", parameters); // There must always be a WHERE clause so it can be appended to

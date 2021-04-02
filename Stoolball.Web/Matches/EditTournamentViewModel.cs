@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Stoolball.Competitions;
 using Stoolball.Dates;
@@ -18,6 +19,8 @@ namespace Stoolball.Web.Matches
         public Tournament Tournament { get; set; }
         public Team Team { get; set; }
         public Season Season { get; set; }
+
+        public List<Season> PossibleSeasons { get; internal set; } = new List<Season>();
 
         [Display(Name = "Tournament date")]
         [Required]

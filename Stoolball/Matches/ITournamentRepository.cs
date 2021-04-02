@@ -21,6 +21,11 @@ namespace Stoolball.Matches
         Task<Tournament> UpdateTeams(Tournament tournament, Guid memberKey, string memberUsername, string memberName);
 
         /// <summary>
+        /// Updates the seasons a stoolball tournament is listed in
+        /// </summary>
+        Task<Tournament> UpdateSeasons(Tournament tournament, Guid memberKey, string memberUsername, string memberName);
+
+        /// <summary>
         /// Deletes a stoolball tournament
         /// </summary>
         Task DeleteTournament(Tournament tournament, Guid memberKey, string memberName);

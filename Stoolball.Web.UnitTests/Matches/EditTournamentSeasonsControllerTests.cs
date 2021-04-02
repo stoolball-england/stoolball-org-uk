@@ -18,14 +18,14 @@ using Xunit;
 
 namespace Stoolball.Web.Tests.Matches
 {
-    public class EditTournamentTeamsControllerTests : UmbracoBaseTest
+    public class EditTournamentSeasonsControllerTests : UmbracoBaseTest
     {
-        public EditTournamentTeamsControllerTests()
+        public EditTournamentSeasonsControllerTests()
         {
             Setup();
         }
 
-        private class TestController : EditTournamentTeamsController
+        private class TestController : EditTournamentSeasonsController
         {
             public TestController(ITournamentDataSource tournamentDataSource, Uri requestUrl, UmbracoHelper umbracoHelper)
            : base(
@@ -53,7 +53,7 @@ namespace Stoolball.Web.Tests.Matches
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("EditTournamentTeams", model);
+                return View("EditTournamentSeasons", model);
             }
         }
 

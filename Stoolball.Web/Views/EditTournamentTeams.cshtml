@@ -30,8 +30,6 @@
             @Html.AntiForgeryToken()
             @Html.ValidationSummary(true)
 
-            <button class="sr-only">Save tournament</button>
-
             @* Include hidden fields to pass validation *@
             @Html.HiddenFor(m => m.Tournament.TournamentName)
             @Html.HiddenFor(m => m.Tournament.QualificationType)
@@ -58,7 +56,7 @@
                                 <div class="related-item__animate">
                                     @Html.Hidden($"Tournament.Teams[{i}].Team.TeamId", Model.Tournament.Teams[i].Team.TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Tournament.Teams[i].Team.TeamId })
                                     @Html.Hidden($"Tournament.Teams[{i}].Team.TeamName", displayName, new { @class = "related-item__data", data_item = Model.Tournament.Teams[i].Team.TeamId })
-                                    <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Tournament.Teams[i].Team.TeamName} from this tournament")</button>
+                                    <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Tournament.Teams[i].Team.TeamName} from this tournament")</button>
                                 </div>
                             </td>
                         </tr>
@@ -89,7 +87,7 @@
                         <div class="related-item__animate">
                             <input name="Tournament.Teams[0].Team.TeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
                             <input name="Tournament.Teams[0].Team.TeamName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
-                            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this tournament")</button>
+                            <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this tournament")</button>
                         </div>
                     </td>
                 </tr>
