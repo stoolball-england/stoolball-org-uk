@@ -28,7 +28,7 @@
             ("UpdateTeams"))
         {
             @Html.AntiForgeryToken()
-            @Html.ValidationSummary(false)
+            @Html.ValidationSummary(true)
 
             <div class="form-group">
                 @Html.LabelFor(m => Model.Tournament.MaximumTeamsInTournament, RequiredFieldStatus.Optional, new { @class = "has-form-text" })

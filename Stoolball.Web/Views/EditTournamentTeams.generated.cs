@@ -150,14 +150,14 @@ WriteLiteral("</h1>\r\n\r\n");
             #line hidden
             
             #line 31 "..\..\Views\EditTournamentTeams.cshtml"
-       Write(Html.ValidationSummary(false));
+       Write(Html.ValidationSummary(true));
 
             
             #line default
             #line hidden
             
             #line 31 "..\..\Views\EditTournamentTeams.cshtml"
-                                          
+                                         
 
 
             
