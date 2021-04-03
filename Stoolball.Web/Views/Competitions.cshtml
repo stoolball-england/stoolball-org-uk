@@ -24,7 +24,7 @@
     {
         <p class="alert alert-info alert-tip">Try searching for <a href="/competitions?q=ladies">ladies competitions</a>, <a href="/competitions?q=mixed">mixed competitions</a> or <a href="/competitions?q=junior">junior competitions</a>.</p>
     }
-    <form method="get" action="@Request.Url" class="form-inline form-search">
+    <form method="get" action="@Request.Url.AbsolutePath" class="form-inline form-search">
         <label class="sr-only" for="competition-search">Competition name</label>
         <input type="search" class="form-control" id="competition-search" name="q" value="@Model.CompetitionFilter.Query" />
         <button type="submit" class="btn btn-primary">Search</button>

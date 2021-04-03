@@ -20,7 +20,7 @@
         </li>
     </ul>
 
-    <form method="get" action="@Request.Url" class="form-inline form-search">
+    <form method="get" action="@Request.Url.AbsolutePath" class="form-inline form-search">
         <label class="sr-only" for="location-search">Match location name</label>
         <input type="search" class="form-control" id="location-search" name="q" value="@Model.MatchLocationFilter.Query" />
         <button type="submit" class="btn btn-primary">Search</button>

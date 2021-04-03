@@ -121,7 +121,7 @@ WriteLiteral("\r\n\r\n");
             #line 25 "..\..\Views\Partials\_Login.cshtml"
                                                                                   
     }
-    loginModel.RedirectUrl = Request.Url.ToString();
+    loginModel.RedirectUrl = Request.Url.AbsolutePath;
 }
 
             

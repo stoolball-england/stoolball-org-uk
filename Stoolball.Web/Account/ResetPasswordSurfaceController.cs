@@ -130,7 +130,7 @@ namespace Stoolball.Web.Account
         /// </summary>
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1055:Uri return values should not be strings", Justification = "It's only a partial URI")]
-        protected virtual string GetRequestUrlAuthority() => Request.Url.Authority;
+        protected virtual string GetRequestUrlAuthority() => Request.Url.Host == "localhost" ? Request.Url.Authority : "www.stoolball.org.uk";
 
         [HttpPost]
         [ValidateAntiForgeryToken()]

@@ -5,19 +5,19 @@
 @{
     Layout = null;
     Response.ContentType = "application/rss+xml";
-    var canonicalUrl = $"{Request.Url.Scheme}://{Request.Url.Authority}{Request.Url.AbsolutePath.Substring(0, Request.Url.AbsolutePath.Length - 4).Replace("/all", string.Empty)}.rss{Request.Url.Query}";
+    var canonicalUrl = $"{Request.Url.Scheme}://www.stoolball.org.uk{Request.Url.AbsolutePath.Substring(0, Request.Url.AbsolutePath.Length - 4).Replace("/all", string.Empty)}.rss{Request.Url.Query}";
     Response.Headers.Add("Link", $"<{canonicalUrl}>; rel=\"canonical\"");
 }<?xml version="1.0" encoding="utf-8" ?>
 <rss xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
 <channel>
     <title>@Model.Metadata.PageTitle</title>
-    <link>https://@Request.Url.Authority/tournaments</link>
+    <link>https://www.stoolball.org.uk/tournaments</link>
     <description>@Model.Metadata.Description</description>
     <pubDate>@DateTimeOffset.UtcNow.ToRFC822()</pubDate>
     <image>
-        <url>https://@Request.Url.Authority/images/logos/stoolball-england-rss.gif</url>
+        <url>https://www.stoolball.org.uk/images/logos/stoolball-england-rss.gif</url>
         <title>@Model.Metadata.PageTitle</title>
-        <link>https://@Request.Url.Authority/tournaments</link>
+        <link>https://www.stoolball.org.uk/tournaments</link>
     </image>
     <language>en-GB</language>
     <docs>http://blogs.law.harvard.edu/tech/rss</docs>
@@ -26,7 +26,7 @@
     @:<item>
         <title><![CDATA[@tournament.MatchName, @Model.DateTimeFormatter.FormatDate(tournament.StartTime.LocalDateTime, true, false,false)]]></title>
         <description><![CDATA[@tournament.Description()]]></description>
-        <link>@:https://@Request.Url.Authority@tournament.MatchRoute</link>
+        <link>@:https://www.stoolball.org.uk@tournament.MatchRoute</link>
         <pubDate>@tournament.LastAuditDate.Value.ToRFC822()</pubDate>
         <guid isPermaLink="false">@Stoolball.Constants.EntityUriPrefixes.Tournament@tournament.MatchId</guid>
 		<source url="@canonicalUrl" />

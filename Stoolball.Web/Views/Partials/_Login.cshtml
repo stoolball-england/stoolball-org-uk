@@ -24,7 +24,7 @@
     {
         @Html.ProtectEmailAddresses(loginPage.Value<IHtmlString>("loginRequired"))
     }
-    loginModel.RedirectUrl = Request.Url.ToString();
+    loginModel.RedirectUrl = Request.Url.AbsolutePath;
 }
 
 @using (Html.BeginUmbracoForm<LoginMemberSurfaceController>("Login"))

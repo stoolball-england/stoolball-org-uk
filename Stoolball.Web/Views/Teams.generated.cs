@@ -259,10 +259,10 @@ WriteLiteral("    <form");
 
 WriteLiteral(" method=\"get\"");
 
-WriteAttribute("action", Tuple.Create(" action=\"", 2011), Tuple.Create("\"", 2032)
+WriteAttribute("action", Tuple.Create(" action=\"", 2011), Tuple.Create("\"", 2045)
             
             #line 44 "..\..\Views\Teams.cshtml"
-, Tuple.Create(Tuple.Create("", 2020), Tuple.Create<System.Object, System.Int32>(Request.Url
+, Tuple.Create(Tuple.Create("", 2020), Tuple.Create<System.Object, System.Int32>(Request.Url.AbsolutePath
             
             #line default
             #line hidden
@@ -287,14 +287,14 @@ WriteLiteral(" id=\"team-search\"");
 
 WriteLiteral(" name=\"q\"");
 
-WriteAttribute("value", Tuple.Create(" value=\"", 2211), Tuple.Create("\"", 2242)
+WriteAttribute("value", Tuple.Create(" value=\"", 2224), Tuple.Create("\"", 2255)
             
             #line 46 "..\..\Views\Teams.cshtml"
-   , Tuple.Create(Tuple.Create("", 2219), Tuple.Create<System.Object, System.Int32>(Model.TeamFilter.Query
+   , Tuple.Create(Tuple.Create("", 2232), Tuple.Create<System.Object, System.Int32>(Model.TeamFilter.Query
             
             #line default
             #line hidden
-, 2219), false)
+, 2232), false)
 );
 
 WriteLiteral(" />\r\n        <button");
@@ -367,14 +367,14 @@ WriteLiteral(" class=\"list-results__title\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4327), Tuple.Create("\"", 4358)
+WriteAttribute("href", Tuple.Create(" href=\"", 4340), Tuple.Create("\"", 4371)
             
             #line 95 "..\..\Views\Teams.cshtml"
-, Tuple.Create(Tuple.Create("", 4334), Tuple.Create<System.Object, System.Int32>(listing.ClubOrTeamRoute
+, Tuple.Create(Tuple.Create("", 4347), Tuple.Create<System.Object, System.Int32>(listing.ClubOrTeamRoute
             
             #line default
             #line hidden
-, 4334), false)
+, 4347), false)
 );
 
 WriteLiteral(">");
