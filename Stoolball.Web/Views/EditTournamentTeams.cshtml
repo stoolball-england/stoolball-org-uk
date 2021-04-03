@@ -28,11 +28,7 @@
             ("UpdateTeams"))
         {
             @Html.AntiForgeryToken()
-            @Html.ValidationSummary(true)
-
-            @* Include hidden fields to pass validation *@
-            @Html.HiddenFor(m => m.Tournament.TournamentName)
-            @Html.HiddenFor(m => m.Tournament.QualificationType)
+            @Html.ValidationSummary(false)
 
             <div class="form-group">
                 @Html.LabelFor(m => Model.Tournament.MaximumTeamsInTournament, RequiredFieldStatus.Optional, new { @class = "has-form-text" })

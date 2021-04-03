@@ -52,11 +52,14 @@ namespace Stoolball.Web.Matches
             postedTournament.DefaultOverSets.RemoveAll(x => !x.Overs.HasValue);
             var model = new EditTournamentViewModel(CurrentPage, Services.UserService)
             {
-                Tournament = postedTournament,
+                Tournament = beforeUpdate,
                 DateFormatter = _dateTimeFormatter
             };
-            model.Tournament.TournamentId = beforeUpdate.TournamentId;
-            model.Tournament.TournamentRoute = beforeUpdate.TournamentRoute;
+            model.Tournament.TournamentName = postedTournament.TournamentName;
+            model.Tournament.QualificationType = postedTournament.QualificationType;
+            model.Tournament.PlayerType = postedTournament.PlayerType;
+            model.Tournament.PlayersPerTeam = postedTournament.PlayersPerTeam;
+            model.Tournament.DefaultOverSets = postedTournament.DefaultOverSets;
 
             // get this from the unvalidated form instead of via modelbinding so that HTML can be allowed
             model.Tournament.TournamentNotes = Request.Unvalidated.Form["Tournament.TournamentNotes"];

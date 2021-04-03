@@ -38,7 +38,7 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true)]
-        public async Task<ActionResult> UpdateTeams([Bind(Prefix = "Tournament", Include = "TournamentName,QualificationType,MaximumTeamsInTournament,Teams")] Tournament postedTournament)
+        public async Task<ActionResult> UpdateTeams([Bind(Prefix = "Tournament", Include = "MaximumTeamsInTournament,Teams")] Tournament postedTournament)
         {
             if (postedTournament is null)
             {
@@ -49,20 +49,14 @@ namespace Stoolball.Web.Matches
 
             var model = new EditTournamentViewModel(CurrentPage, Services.UserService)
             {
-                Tournament = postedTournament,
+                Tournament = beforeUpdate,
                 DateFormatter = _dateTimeFormatter
             };
-            model.Tournament.TournamentId = beforeUpdate.TournamentId;
-            model.Tournament.TournamentRoute = beforeUpdate.TournamentRoute;
-            model.Tournament.TournamentName = beforeUpdate.TournamentName;
-            model.Tournament.StartTime = beforeUpdate.StartTime;
+            model.Tournament.MaximumTeamsInTournament = postedTournament.MaximumTeamsInTournament;
+            model.Tournament.Teams = postedTournament.Teams;
 
-            // Populate properties that will be inherited by any new transient teams
-            model.Tournament.TournamentLocation = beforeUpdate.TournamentLocation;
-            model.Tournament.PlayerType = beforeUpdate.PlayerType;
-
-            // We're not interested in validating the details of the selected teams
-            foreach (var key in ModelState.Keys.Where(x => x.StartsWith("Tournament.Teams", StringComparison.OrdinalIgnoreCase)))
+            // We're not interested in validating other details of the tournament or the selected teams
+            foreach (var key in ModelState.Keys.Where(x => x != "Tournament.MaximumTeamsInTournament"))
             {
                 ModelState[key].Errors.Clear();
             }
