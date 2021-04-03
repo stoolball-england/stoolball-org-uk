@@ -9,7 +9,7 @@ using Stoolball.Teams;
 
 namespace Stoolball.Data.SqlServer
 {
-    public class SqlServerStatisticsDataSource : IStatisticsDataSource
+    public class SqlServerStatisticsDataSource : IStatisticsDataSource, ICacheableStatisticsDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
 

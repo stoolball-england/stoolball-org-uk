@@ -147,12 +147,14 @@ namespace Stoolball.Web
             composition.Register<ISeasonRepository, SqlServerSeasonRepository>();
             composition.Register<IMatchDataSource, SqlServerMatchDataSource>();
             composition.Register<IMatchListingDataSource, CachedMatchListingDataSource>();
+            composition.Register<ICacheableMatchListingDataSource, SqlServerMatchListingDataSource>();
             composition.Register<ICommentsDataSource<Match>, SqlServerMatchCommentsDataSource>();
             composition.Register<ICommentsDataSource<Tournament>, SqlServerTournamentCommentsDataSource>();
             composition.Register<IMatchRepository, CacheClearingMatchRepository>();
             composition.Register<ITournamentDataSource, SqlServerTournamentDataSource>();
             composition.Register<ITournamentRepository, SqlServerTournamentRepository>();
             composition.Register<IStatisticsDataSource, CachedStatisticsDataSource>();
+            composition.Register<ICacheableStatisticsDataSource, SqlServerStatisticsDataSource>();
             composition.Register<IStatisticsRepository, SqlServerStatisticsRepository>();
             composition.Register<IInningsStatisticsDataSource, SqlServerInningsStatisticsDataSource>();
             composition.Register<IMatchFilterFactory, MatchFilterFactory>();

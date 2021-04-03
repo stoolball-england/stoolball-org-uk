@@ -13,7 +13,7 @@ namespace Stoolball.Data.SqlServer
     /// <summary>
     /// Gets stoolball match data from the Umbraco database
     /// </summary>
-    public class SqlServerMatchListingDataSource : IMatchListingDataSource
+    public class SqlServerMatchListingDataSource : IMatchListingDataSource, ICacheableMatchListingDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
 
