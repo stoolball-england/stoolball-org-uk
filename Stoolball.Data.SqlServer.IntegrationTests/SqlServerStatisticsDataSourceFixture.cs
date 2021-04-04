@@ -124,8 +124,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     foreach (var innings in Matches[i].MatchInnings.Where(x => x.InningsOrderInMatch % 2 == 1))
                     {
                         var pairedInnings = Matches[i].MatchInnings.Single(x => x.InningsPair() == innings.InningsPair() && x.MatchInningsId != innings.MatchInningsId);
-                        CreateRandomScorecardData(randomiser, innings, teamAInMatch, teamBInMatch, teamAPlayers, teamBPlayers);
-                        CreateRandomScorecardData(randomiser, pairedInnings, teamBInMatch, teamAInMatch, teamBPlayers, teamAPlayers);
+                        CreateRandomScorecardData(randomiser, Matches[i], innings, teamAInMatch, teamBInMatch, teamAPlayers, teamBPlayers);
+                        CreateRandomScorecardData(randomiser, Matches[i], pairedInnings, teamBInMatch, teamAInMatch, teamBPlayers, teamAPlayers);
                     }
 
                     // Most matches have a match location
@@ -152,14 +152,41 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                                  .ToList(); // make it possible to access innings by index
 
                 // Make the sixth innings the same as the fifth, including anything that might affect the out/not out status.
-                // If there are more, make sure they're worse so we know what to assert.
                 inningsForPlayerWithAtLeast6Scores[5].DismissalType = inningsForPlayerWithAtLeast6Scores[4].DismissalType;
                 inningsForPlayerWithAtLeast6Scores[5].DismissedBy = inningsForPlayerWithAtLeast6Scores[4].DismissedBy;
                 inningsForPlayerWithAtLeast6Scores[5].Bowler = inningsForPlayerWithAtLeast6Scores[4].Bowler;
                 inningsForPlayerWithAtLeast6Scores[5].RunsScored = inningsForPlayerWithAtLeast6Scores[4].RunsScored;
+
+                // The assertion expects the fifth and sixth innings to be the same, but to be different that any that come before or after in the
+                // result set. So make sure those others are different.
+
+                // Step 1: Make room below if required
+                if (inningsForPlayerWithAtLeast6Scores.Count > 6 && inningsForPlayerWithAtLeast6Scores[5].RunsScored == 0)
+                {
+                    inningsForPlayerWithAtLeast6Scores[4].RunsScored++;
+                    inningsForPlayerWithAtLeast6Scores[5].RunsScored++;
+                }
+
+                // Step 2: Ensure earlier scores are higher
+                for (var i = 0; i < 4; i++)
+                {
+                    if (inningsForPlayerWithAtLeast6Scores[i].RunsScored == inningsForPlayerWithAtLeast6Scores[4].RunsScored)
+                    {
+                        inningsForPlayerWithAtLeast6Scores[i].RunsScored++;
+                    }
+                }
+
+                // Step 3: Ensure later scores are lower, but not below 0
                 for (var i = 6; i < inningsForPlayerWithAtLeast6Scores.Count; i++)
                 {
-                    inningsForPlayerWithAtLeast6Scores[i].RunsScored--;
+                    if (inningsForPlayerWithAtLeast6Scores[i].RunsScored > 0)
+                    {
+                        inningsForPlayerWithAtLeast6Scores[i].RunsScored--;
+                    }
+                    else
+                    {
+                        inningsForPlayerWithAtLeast6Scores[i].RunsScored = 0;
+                    }
                 }
 
                 PlayerWithFifthAndSixthInningsTheSame = inningsForPlayerWithAtLeast6Scores.First().Batter.Player;
@@ -283,7 +310,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             };
         }
 
-        private static void CreateRandomScorecardData(Random randomiser, MatchInnings innings, TeamInMatch battingTeam, TeamInMatch bowlingTeam, List<PlayerIdentity> battingPlayers, List<PlayerIdentity> bowlingPlayers)
+        private static void CreateRandomScorecardData(Random randomiser, Match match, MatchInnings innings, TeamInMatch battingTeam, TeamInMatch bowlingTeam, List<PlayerIdentity> battingPlayers, List<PlayerIdentity> bowlingPlayers)
         {
             innings.BattingMatchTeamId = battingTeam.MatchTeamId;
             innings.BowlingMatchTeamId = bowlingTeam.MatchTeamId;
@@ -294,13 +321,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             {
                 var fielderOrMissingData = randomiser.Next(2) == 0 ? bowlingPlayers[randomiser.Next(bowlingPlayers.Count)] : null;
                 var bowlerOrMissingData = randomiser.Next(2) == 0 ? bowlingPlayers[randomiser.Next(bowlingPlayers.Count)] : null;
-                innings.PlayerInnings.Add(CreateRandomPlayerInnings(randomiser, p + 1, battingPlayers[p], fielderOrMissingData, bowlerOrMissingData));
+                innings.PlayerInnings.Add(CreateRandomPlayerInnings(randomiser, match, p + 1, battingPlayers[p], fielderOrMissingData, bowlerOrMissingData));
             }
 
             // sometimes pick a random player to bat twice in the innings
             if (randomiser.Next(2) == 0)
             {
-                innings.PlayerInnings.Add(CreateRandomPlayerInnings(randomiser, battingPlayers.Count, battingPlayers[randomiser.Next(battingPlayers.Count)], bowlingPlayers[randomiser.Next(bowlingPlayers.Count)], bowlingPlayers[randomiser.Next(bowlingPlayers.Count)]));
+                innings.PlayerInnings.Add(CreateRandomPlayerInnings(randomiser, match, battingPlayers.Count, battingPlayers[randomiser.Next(battingPlayers.Count)], bowlingPlayers[randomiser.Next(bowlingPlayers.Count)], bowlingPlayers[randomiser.Next(bowlingPlayers.Count)]));
             }
 
             // pick 4 players to bowl - note there may be other bowlers recorded as taking wickets on the batting card above
@@ -365,7 +392,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             };
         }
 
-        private static PlayerInnings CreateRandomPlayerInnings(Random randomiser, int battingPosition, PlayerIdentity batter, PlayerIdentity fielderOrMissingData, PlayerIdentity bowlerOrMissingData)
+        private static PlayerInnings CreateRandomPlayerInnings(Random randomiser, Match match, int battingPosition, PlayerIdentity batter, PlayerIdentity fielderOrMissingData, PlayerIdentity bowlerOrMissingData)
         {
             var dismissalTypes = Enum.GetValues(typeof(DismissalType));
             var dismissal = (DismissalType)dismissalTypes.GetValue(randomiser.Next(dismissalTypes.Length));
@@ -388,6 +415,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             return new PlayerInnings
             {
                 PlayerInningsId = Guid.NewGuid(),
+                Match = match,
                 BattingPosition = battingPosition,
                 Batter = batter,
                 DismissalType = dismissal,

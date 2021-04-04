@@ -224,6 +224,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var results = await dataSource.ReadPlayerInnings(new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
             var expected = _databaseFixture.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).Where(x => x.RunsScored.HasValue).ToList();
+
+            var mystery = expected.Where(x => !results.Select(y => y.Result.PlayerInningsId).ToList().Contains(x.PlayerInningsId)).ToList();
+
             Assert.Equal(expected.Count, results.Count());
             foreach (var expectedInnings in expected)
             {
