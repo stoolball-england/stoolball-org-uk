@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Moq;
+using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Security;
@@ -27,7 +29,7 @@ namespace Stoolball.Web.Tests.Matches
 
         private class TestController : EditTournamentSeasonsController
         {
-            public TestController(ITournamentDataSource tournamentDataSource, Uri requestUrl, UmbracoHelper umbracoHelper)
+            public TestController(ITournamentDataSource tournamentDataSource, ISeasonDataSource seasonDataSource, Uri requestUrl, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -36,7 +38,9 @@ namespace Stoolball.Web.Tests.Matches
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
                 tournamentDataSource,
+                seasonDataSource,
                 Mock.Of<IAuthorizationPolicy<Tournament>>(),
+                Mock.Of<ISeasonEstimator>(),
                 Mock.Of<IDateTimeFormatter>())
             {
                 var request = new Mock<HttpRequestBase>();
@@ -63,7 +67,9 @@ namespace Stoolball.Web.Tests.Matches
             var tournamentDataSource = new Mock<ITournamentDataSource>();
             tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).Returns(Task.FromResult<Tournament>(null));
 
-            using (var controller = new TestController(tournamentDataSource.Object, new Uri("https://example.org/not-a-match"), UmbracoHelper))
+            var seasonDataSource = new Mock<ISeasonDataSource>();
+
+            using (var controller = new TestController(tournamentDataSource.Object, seasonDataSource.Object, new Uri("https://example.org/not-a-match"), UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -78,7 +84,10 @@ namespace Stoolball.Web.Tests.Matches
             var tournamentDataSource = new Mock<ITournamentDataSource>();
             tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentName = "Example tournament", TournamentRoute = "/tournaments/example" });
 
-            using (var controller = new TestController(tournamentDataSource.Object, new Uri("https://example.org/tournaments/example-tournament"), UmbracoHelper))
+            var seasonDataSource = new Mock<ISeasonDataSource>();
+            seasonDataSource.Setup(x => x.ReadSeasons(It.IsAny<CompetitionFilter>())).Returns(Task.FromResult(new List<Season>()));
+
+            using (var controller = new TestController(tournamentDataSource.Object, seasonDataSource.Object, new Uri("https://example.org/tournaments/example-tournament"), UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
