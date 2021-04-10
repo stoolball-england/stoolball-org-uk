@@ -1,0 +1,5 @@
+﻿@model  Stoolball.Web.Matches.MatchListSubscriptionsViewModel
+<ul class="list-unstyled">
+    <li><a type="text/calendar" href="webcal://@(Request.Url.Host == "localhost" ? Request.Url.Authority : "www.stoolball.org.uk")@Model.BaseRoute/@(Model.FilenameWithoutExtension).ics" rel="nofollow">Add to calendar</a></li>
+    <li><a type="application/rss+xml" href="@Model.BaseRoute/@(Model.FilenameWithoutExtension).rss" rel="nofollow">Subscribe with RSS</a></li>
+</ul>

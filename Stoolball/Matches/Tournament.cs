@@ -129,5 +129,22 @@ namespace Stoolball.Matches
         /// Gets or sets the unique identifier of the member who owns the tournament
         /// </summary>
         public Guid? MemberKey { get; set; }
+
+        public MatchListing ToMatchListing()
+        {
+            return new MatchListing
+            {
+                MatchId = TournamentId.Value,
+                MatchName = TournamentName,
+                MatchRoute = TournamentRoute,
+                StartTime = StartTime,
+                StartTimeIsKnown = StartTimeIsKnown,
+                PlayerType = PlayerType,
+                PlayersPerTeam = PlayersPerTeam,
+                TournamentQualificationType = QualificationType,
+                SpacesInTournament = SpacesInTournament,
+                MatchLocation = TournamentLocation
+            };
+        }
     }
 }

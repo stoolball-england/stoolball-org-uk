@@ -1,4 +1,5 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Matches.MatchListingViewModel>
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<MatchListingViewModel>
+@using Stoolball.Web.Matches
 @section canonical {@Html.Partial("_CanonicalUrl", new[] { "page", "q" })}
 <div class="container-xl">
     <h1>@Stoolball.Constants.Pages.Matches</h1>
@@ -22,10 +23,5 @@
     }
 
     @Html.Partial("_Paging", Model.MatchFilter.Paging)
-
-    @{
-        var query = HttpUtility.ParseQueryString(Request.Url.Query);
-        query.Remove("page");
-    }
-    <p><a type="application/rss+xml" href="/matches.rss@(query.Count > 0 ? "?" : string.Empty)@(query)">New and updated matches and tournaments – subscribe with RSS</a></p>
+    @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel())
 </div>

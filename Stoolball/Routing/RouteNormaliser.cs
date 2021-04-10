@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace Stoolball.Routing
@@ -62,6 +63,7 @@ namespace Stoolball.Routing
                 {
                     if (entityRoute.Length > 0) { entityRoute += "/"; }
                     entityRoute += splitRoute[i];
+                    entityRoute = Path.ChangeExtension(entityRoute, string.Empty).TrimEnd('.');
 
                     if (Regex.IsMatch(entityRoute, entityRouteRegex))
                     {

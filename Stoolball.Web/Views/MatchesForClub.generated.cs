@@ -27,6 +27,12 @@ namespace ASP
     using System.Web.UI;
     using System.Web.WebPages;
     using Examine;
+    
+    #line 2 "..\..\Views\MatchesForClub.cshtml"
+    using Stoolball.Web.Matches;
+    
+    #line default
+    #line hidden
     using Umbraco.Core;
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
@@ -62,7 +68,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 6 "..\..\Views\MatchesForClub.cshtml"
+            #line 7 "..\..\Views\MatchesForClub.cshtml"
    Write(Model.Club.ClubName);
 
             
@@ -80,14 +86,14 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 309), Tuple.Create("\"", 337)
+WriteAttribute("href", Tuple.Create(" href=\"", 339), Tuple.Create("\"", 367)
             
-            #line 10 "..\..\Views\MatchesForClub.cshtml"
-, Tuple.Create(Tuple.Create("", 316), Tuple.Create<System.Object, System.Int32>(Model.Club.ClubRoute
+            #line 11 "..\..\Views\MatchesForClub.cshtml"
+, Tuple.Create(Tuple.Create("", 346), Tuple.Create<System.Object, System.Int32>(Model.Club.ClubRoute
             
             #line default
             #line hidden
-, 316), false)
+, 346), false)
 );
 
 WriteLiteral(">Summary</a>\r\n        </li>\r\n        <li");
@@ -106,27 +112,27 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 529), Tuple.Create("\"", 568)
+WriteAttribute("href", Tuple.Create(" href=\"", 559), Tuple.Create("\"", 598)
             
-            #line 16 "..\..\Views\MatchesForClub.cshtml"
-, Tuple.Create(Tuple.Create("", 536), Tuple.Create<System.Object, System.Int32>(Model.Club.ClubRoute
+            #line 17 "..\..\Views\MatchesForClub.cshtml"
+, Tuple.Create(Tuple.Create("", 566), Tuple.Create<System.Object, System.Int32>(Model.Club.ClubRoute
             
             #line default
             #line hidden
-, 536), false)
-, Tuple.Create(Tuple.Create("", 557), Tuple.Create("/statistics", 557), true)
+, 566), false)
+, Tuple.Create(Tuple.Create("", 587), Tuple.Create("/statistics", 587), true)
 );
 
 WriteLiteral(">Statistics</a>\r\n        </li>\r\n    </ul>\r\n\r\n");
 
             
-            #line 20 "..\..\Views\MatchesForClub.cshtml"
+            #line 21 "..\..\Views\MatchesForClub.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 20 "..\..\Views\MatchesForClub.cshtml"
+            #line 21 "..\..\Views\MatchesForClub.cshtml"
      if (Model.Matches.Matches.Count > 0)
     {
         
@@ -134,14 +140,14 @@ WriteLiteral(">Statistics</a>\r\n        </li>\r\n    </ul>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 22 "..\..\Views\MatchesForClub.cshtml"
+            #line 23 "..\..\Views\MatchesForClub.cshtml"
    Write(Html.Partial("_MatchList", Model.Matches));
 
             
             #line default
             #line hidden
             
-            #line 22 "..\..\Views\MatchesForClub.cshtml"
+            #line 23 "..\..\Views\MatchesForClub.cshtml"
                                                   
     }
     else
@@ -153,28 +159,22 @@ WriteLiteral(">Statistics</a>\r\n        </li>\r\n    </ul>\r\n\r\n");
 WriteLiteral("        <p>There are no matches for this club this season.</p>\r\n");
 
             
-            #line 27 "..\..\Views\MatchesForClub.cshtml"
+            #line 28 "..\..\Views\MatchesForClub.cshtml"
     }
 
             
             #line default
             #line hidden
-WriteLiteral("    <p><a");
+WriteLiteral("    ");
 
-WriteLiteral(" type=\"application/rss+xml\"");
-
-WriteAttribute("href", Tuple.Create(" href=\"", 847), Tuple.Create("\"", 887)
             
-            #line 28 "..\..\Views\MatchesForClub.cshtml"
-, Tuple.Create(Tuple.Create("", 854), Tuple.Create<System.Object, System.Int32>(Model.Club.ClubRoute
+            #line 29 "..\..\Views\MatchesForClub.cshtml"
+Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.Club.ClubRoute }));
+
             
             #line default
             #line hidden
-, 854), false)
-, Tuple.Create(Tuple.Create("", 875), Tuple.Create("/matches.rss", 875), true)
-);
-
-WriteLiteral(">New and updated matches – subscribe with RSS</a></p>\r\n</div>");
+WriteLiteral("\r\n</div>");
 
         }
     }

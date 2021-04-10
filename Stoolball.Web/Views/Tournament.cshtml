@@ -2,11 +2,12 @@
 @using Humanizer
 @using Innovative.SolarCalculator
 @using Stoolball.Matches
-@using Stoolball.Web.Competitions
+@using ClientDependency.Core.Mvc
 @using Stoolball.Web.Matches
 @using Stoolball.Security
-@{ 
+@{
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTournament] || Model.IsAuthorized[AuthorizedAction.DeleteTournament];
+    Html.RequiresCss("~/matches/match.min.css");
 }
 <div class="container-xl">
     <h1>@Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
@@ -32,7 +33,12 @@
             var solarTimes = new SolarTimes(Model.Tournament.StartTime.LocalDateTime, Model.Tournament.TournamentLocation.Latitude, Model.Tournament.TournamentLocation.Longitude);
             @: (sunset @Model.DateTimeFormatter.FormatTime(solarTimes.Sunset))
         }
+        @if (Model.Tournament.StartTime > DateTimeOffset.UtcNow)
+        {
+            <a type="text/calendar" href="webcal://@(Request.Url.Host == "localhost" ? Request.Url.Authority : "www.stoolball.org.uk")@(Model.Tournament.TournamentRoute).ics" rel="nofollow" class="calendar__inline">Add to calendar</a>
+        }
     </p>
+
 
     @if (Model.Tournament.TournamentLocation != null)
     {
@@ -41,7 +47,7 @@
 
     @if (Model.Tournament.DefaultOverSets.Any())
     {
-        <p>Matches are @Model.Tournament.DefaultOverSets.Sum(x =>x.Overs) overs.</p>
+        <p>Matches are @Model.Tournament.DefaultOverSets.Sum(x => x.Overs) overs.</p>
     }
     @{
         var showSpacesLeft = (Model.Tournament.SpacesInTournament.HasValue &&

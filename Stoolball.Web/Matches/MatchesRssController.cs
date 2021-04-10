@@ -8,6 +8,7 @@ using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
+using Stoolball.MatchLocations;
 using Stoolball.Teams;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -25,6 +26,7 @@ namespace Stoolball.Web.Matches
         private readonly IClubDataSource _clubDataSource;
         private readonly ITeamDataSource _teamDataSource;
         private readonly ICompetitionDataSource _competitionDataSource;
+        private readonly IMatchLocationDataSource _matchLocationDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly IMatchesRssQueryStringParser _queryStringParser;
@@ -38,6 +40,7 @@ namespace Stoolball.Web.Matches
            IClubDataSource clubDataSource,
            ITeamDataSource teamDataSource,
            ICompetitionDataSource competitionDataSource,
+           IMatchLocationDataSource matchLocationDataSource,
            IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
            IMatchesRssQueryStringParser queryStringParser)
@@ -46,6 +49,7 @@ namespace Stoolball.Web.Matches
             _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
+            _matchLocationDataSource = matchLocationDataSource ?? throw new ArgumentNullException(nameof(matchLocationDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
             _queryStringParser = queryStringParser ?? throw new ArgumentNullException(nameof(queryStringParser));
@@ -66,27 +70,37 @@ namespace Stoolball.Web.Matches
                 DateTimeFormatter = _dateFormatter
             };
 
+            string pageTitle = "Stoolball matches";
             if (Request.RawUrl.StartsWith("/clubs/", StringComparison.OrdinalIgnoreCase))
             {
                 var club = await _clubDataSource.ReadClubByRoute(Request.RawUrl).ConfigureAwait(false);
                 if (club == null) { return new HttpNotFoundResult(); }
+                pageTitle += " for " + club.ClubName;
                 model.MatchFilter.TeamIds.AddRange(club.Teams.Select(x => x.TeamId.Value));
             }
             else if (Request.RawUrl.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
                 var team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl).ConfigureAwait(false);
                 if (team == null) { return new HttpNotFoundResult(); }
+                pageTitle += " for " + team.TeamName;
                 model.MatchFilter.TeamIds.Add(team.TeamId.Value);
             }
             else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
                 var competition = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false);
                 if (competition == null) { return new HttpNotFoundResult(); }
+                pageTitle += " in the " + competition.CompetitionName;
                 model.MatchFilter.CompetitionIds.Add(competition.CompetitionId.Value);
             }
+            else if (Request.RawUrl.StartsWith("/locations/", StringComparison.OrdinalIgnoreCase))
+            {
+                var location = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl).ConfigureAwait(false);
+                if (location == null) { return new HttpNotFoundResult(); }
+                pageTitle += " at " + location.NameAndLocalityOrTown();
+                model.MatchFilter.MatchLocationIds.Add(location.MatchLocationId.Value);
+            }
 
-
-            model.Metadata.PageTitle = "Stoolball matches";
+            model.Metadata.PageTitle = pageTitle;
             model.Metadata.Description = $"New or updated stoolball matches on the Stoolball England website";
             if (model.MatchFilter.PlayerTypes.Any())
             {

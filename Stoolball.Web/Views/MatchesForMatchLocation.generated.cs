@@ -27,6 +27,12 @@ namespace ASP
     using System.Web.UI;
     using System.Web.WebPages;
     using Examine;
+    
+    #line 2 "..\..\Views\MatchesForMatchLocation.cshtml"
+    using Stoolball.Web.Matches;
+    
+    #line default
+    #line hidden
     using Umbraco.Core;
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
@@ -62,7 +68,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 6 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 7 "..\..\Views\MatchesForMatchLocation.cshtml"
    Write(Model.MatchLocation.NameAndLocalityOrTownIfDifferent());
 
             
@@ -80,14 +86,14 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 362), Tuple.Create("\"", 408)
+WriteAttribute("href", Tuple.Create(" href=\"", 392), Tuple.Create("\"", 438)
             
-            #line 10 "..\..\Views\MatchesForMatchLocation.cshtml"
-, Tuple.Create(Tuple.Create("", 369), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
+            #line 11 "..\..\Views\MatchesForMatchLocation.cshtml"
+, Tuple.Create(Tuple.Create("", 399), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
             
             #line default
             #line hidden
-, 369), false)
+, 399), false)
 );
 
 WriteLiteral(">Summary</a>\r\n        </li>\r\n        <li");
@@ -106,27 +112,27 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 600), Tuple.Create("\"", 657)
+WriteAttribute("href", Tuple.Create(" href=\"", 630), Tuple.Create("\"", 687)
             
-            #line 16 "..\..\Views\MatchesForMatchLocation.cshtml"
-, Tuple.Create(Tuple.Create("", 607), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
+            #line 17 "..\..\Views\MatchesForMatchLocation.cshtml"
+, Tuple.Create(Tuple.Create("", 637), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
             
             #line default
             #line hidden
-, 607), false)
-, Tuple.Create(Tuple.Create("", 646), Tuple.Create("/statistics", 646), true)
+, 637), false)
+, Tuple.Create(Tuple.Create("", 676), Tuple.Create("/statistics", 676), true)
 );
 
 WriteLiteral(">Statistics</a>\r\n        </li>\r\n    </ul>\r\n\r\n");
 
             
-            #line 20 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 21 "..\..\Views\MatchesForMatchLocation.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 20 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 21 "..\..\Views\MatchesForMatchLocation.cshtml"
      if (Model.Matches.Matches.Count > 0)
     {
         
@@ -134,14 +140,14 @@ WriteLiteral(">Statistics</a>\r\n        </li>\r\n    </ul>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 22 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 23 "..\..\Views\MatchesForMatchLocation.cshtml"
    Write(Html.Partial("_MatchList", Model.Matches));
 
             
             #line default
             #line hidden
             
-            #line 22 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 23 "..\..\Views\MatchesForMatchLocation.cshtml"
                                                   
     }
     else
@@ -153,13 +159,22 @@ WriteLiteral(">Statistics</a>\r\n        </li>\r\n    </ul>\r\n\r\n");
 WriteLiteral("        <p>There are no matches at this location this season.</p>\r\n");
 
             
-            #line 27 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 28 "..\..\Views\MatchesForMatchLocation.cshtml"
     }
 
             
             #line default
             #line hidden
-WriteLiteral("</div>");
+WriteLiteral("    ");
+
+            
+            #line 29 "..\..\Views\MatchesForMatchLocation.cshtml"
+Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.MatchLocation.MatchLocationRoute }));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n</div>");
 
         }
     }

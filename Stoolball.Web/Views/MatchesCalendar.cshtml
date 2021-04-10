@@ -1,0 +1,48 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<MatchListingViewModel>
+@using Constants = Stoolball.Constants
+@using Stoolball.Web.Matches
+@{
+    Layout = null;
+    Response.ContentType = "text/calendar; charset=utf-8";
+    var canonicalUrl = new Uri($"https://www.stoolball.org.uk{Request.Url.AbsolutePath.Substring(0, Request.Url.AbsolutePath.Length - 4)}.ics{Request.Url.Query}");
+    Response.Headers.Add("Link", $"<{canonicalUrl}>; rel=\"canonical\"");
+    Response.Headers.Add("Content-Disposition", "attachment; filename=stoolball" + Request.Url.AbsolutePath.Replace('/', '-').Replace("-ics", string.Empty) + ".ics");
+}BEGIN:VCALENDAR
+X-ORIGINAL-URL:@canonicalUrl
+X-WR-CALNAME;CHARSET=UTF-8:@Model.Metadata.PageTitle.Replace(",", @"\,") - Stoolball England
+VERSION:2.0
+METHOD:PUBLISH
+BEGIN:VTIMEZONE
+TZID:UK
+X-LIC-LOCATION:Europe/London
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0000
+TZOFFSETTO:+0100
+TZNAME:BST
+DTSTART:19700329T010000
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=3
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0000
+TZNAME:GMT
+DTSTART:19701025T020000
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10
+END:STANDARD
+END:VTIMEZONE
+@foreach (var listing in Model.Matches)
+{
+@:BEGIN:VEVENT
+@:LOCATION;LANGUAGE=en;CHARSET=UTF-8:@(listing.MatchLocation?.NameAndLocalityOrTown())
+@:SUMMARY;LANGUAGE=en;CHARSET=UTF-8:@listing.MatchName.Replace(",", @"\,") - @(listing.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(listing.StartTime.LocalDateTime, true, false) : Model.DateTimeFormatter.FormatDate(listing.StartTime.LocalDateTime,true, false))
+@:UID:@(listing.MatchType == null ? Constants.EntityUriPrefixes.Tournament : Constants.EntityUriPrefixes.Match)@listing.MatchId
+@:DTSTART:@listing.StartTime.ToString("O").Substring(0,19).Replace("-",string.Empty).Replace(":", string.Empty)Z 
+@:DTEND:@listing.EstimatedEndTime().ToString("O").Substring(0,19).Replace("-",string.Empty).Replace(":", string.Empty)Z
+@:DTSTAMP:@DateTimeOffset.UtcNow.ToString("O").Substring(0,19).Replace("-",string.Empty).Replace(":", string.Empty)Z
+@:X-MICROSOFT-CDO-INTENDEDSTATUS:FREE
+@:X-MICROSOFT-CDO-BUSYSTATUS:FREE
+@:TRANSP:TRANSPARENT
+@:END:VEVENT
+}
+
+END:VCALENDAR

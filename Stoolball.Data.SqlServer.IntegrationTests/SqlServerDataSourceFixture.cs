@@ -88,13 +88,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 MatchInThePastWithMinimalDetails = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
                 repo.CreateMatch(MatchInThePastWithMinimalDetails);
                 Matches.Add(MatchInThePastWithMinimalDetails);
-                MatchListings.Add(MatchToMatchListing(MatchInThePastWithMinimalDetails));
+                MatchListings.Add(MatchInThePastWithMinimalDetails.ToMatchListing());
 
                 MatchInTheFutureWithMinimalDetails = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
                 MatchInTheFutureWithMinimalDetails.StartTime = DateTime.UtcNow.AddMonths(1);
                 repo.CreateMatch(MatchInTheFutureWithMinimalDetails);
                 Matches.Add(MatchInTheFutureWithMinimalDetails);
-                MatchListings.Add(MatchToMatchListing(MatchInTheFutureWithMinimalDetails));
+                MatchListings.Add(MatchInTheFutureWithMinimalDetails.ToMatchListing());
 
                 MatchInThePastWithFullDetails = seedDataGenerator.CreateMatchInThePastWithFullDetails();
                 repo.CreateMatchLocation(MatchInThePastWithFullDetails.MatchLocation);
@@ -117,17 +117,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 Seasons.Add(MatchInThePastWithFullDetails.Season);
                 MatchLocations.Add(MatchInThePastWithFullDetails.MatchLocation);
                 Matches.Add(MatchInThePastWithFullDetails);
-                MatchListings.Add(MatchToMatchListing(MatchInThePastWithFullDetails));
+                MatchListings.Add(MatchInThePastWithFullDetails.ToMatchListing());
                 PlayerIdentities.AddRange(playerIdentityFinder.PlayerIdentitiesInMatch(MatchInThePastWithFullDetails));
 
                 TournamentInThePastWithMinimalDetails = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
                 repo.CreateTournament(TournamentInThePastWithMinimalDetails);
-                MatchListings.Add(TournamentToMatchListing(TournamentInThePastWithMinimalDetails));
+                MatchListings.Add(TournamentInThePastWithMinimalDetails.ToMatchListing());
 
                 TournamentInTheFutureWithMinimalDetails = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
                 TournamentInTheFutureWithMinimalDetails.StartTime = DateTime.UtcNow.AddMonths(1);
                 repo.CreateTournament(TournamentInTheFutureWithMinimalDetails);
-                MatchListings.Add(TournamentToMatchListing(TournamentInTheFutureWithMinimalDetails));
+                MatchListings.Add(TournamentInTheFutureWithMinimalDetails.ToMatchListing());
 
                 TournamentInThePastWithFullDetails = seedDataGenerator.CreateTournamentInThePastWithFullDetails();
                 Teams.AddRange(TournamentInThePastWithFullDetails.Teams.Select(x => x.Team));
@@ -151,7 +151,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     repo.AddTournamentToSeason(TournamentInThePastWithFullDetails, season);
                     Seasons.Add(season);
                 }
-                MatchListings.Add(TournamentToMatchListing(TournamentInThePastWithFullDetails));
+                MatchListings.Add(TournamentInThePastWithFullDetails.ToMatchListing());
                 for (var i = 0; i < 5; i++)
                 {
                     var tournamentMatch = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
@@ -160,7 +160,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     tournamentMatch.OrderInTournament = i + 1;
                     repo.CreateMatch(tournamentMatch);
                     Matches.Add(tournamentMatch);
-                    TournamentMatchListings.Add(MatchToMatchListing(tournamentMatch));
+                    TournamentMatchListings.Add(tournamentMatch.ToMatchListing());
                 }
 
                 MatchInThePastWithFullDetailsAndTournament = seedDataGenerator.CreateMatchInThePastWithFullDetails();
@@ -184,7 +184,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 Competitions.Add(MatchInThePastWithFullDetailsAndTournament.Season.Competition);
                 MatchLocations.Add(MatchInThePastWithFullDetailsAndTournament.MatchLocation);
                 Matches.Add(MatchInThePastWithFullDetailsAndTournament);
-                TournamentMatchListings.Add(MatchToMatchListing(MatchInThePastWithFullDetailsAndTournament));
+                TournamentMatchListings.Add(MatchInThePastWithFullDetailsAndTournament.ToMatchListing());
                 Seasons.Add(MatchInThePastWithFullDetailsAndTournament.Season);
                 PlayerIdentities.AddRange(playerIdentityFinder.PlayerIdentitiesInMatch(MatchInThePastWithFullDetailsAndTournament));
 
@@ -251,50 +251,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     match.PlayerType = (i % 3 == 0) ? PlayerType.Mixed : PlayerType.Ladies;
                     repo.CreateMatch(match);
                     Matches.Add(match);
-                    MatchListings.Add(MatchToMatchListing(match));
+                    MatchListings.Add(match.ToMatchListing());
 
                     var tournament = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
                     tournament.TournamentLocation = matchLocation;
                     tournament.StartTime = DateTime.UtcNow.AddMonths(i - 20).AddDays(5);
                     repo.CreateTournament(tournament);
-                    MatchListings.Add(TournamentToMatchListing(tournament));
+                    MatchListings.Add(tournament.ToMatchListing());
                 }
             }
         }
-        private static MatchListing TournamentToMatchListing(Tournament tournament)
-        {
-            return new MatchListing
-            {
-                MatchId = tournament.TournamentId.Value,
-                MatchName = tournament.TournamentName,
-                MatchRoute = tournament.TournamentRoute,
-                StartTime = tournament.StartTime,
-                StartTimeIsKnown = tournament.StartTimeIsKnown,
-                PlayerType = tournament.PlayerType,
-                PlayersPerTeam = tournament.PlayersPerTeam,
-                TournamentQualificationType = tournament.QualificationType,
-                SpacesInTournament = tournament.SpacesInTournament,
-                MatchLocation = tournament.TournamentLocation
-            };
-        }
 
-        private static MatchListing MatchToMatchListing(Match match)
-        {
-            return new MatchListing
-            {
-                MatchId = match.MatchId.Value,
-                MatchInnings = match.MatchInnings,
-                MatchName = match.MatchName,
-                MatchRoute = match.MatchRoute,
-                MatchResultType = match.MatchResultType,
-                MatchType = match.MatchType,
-                PlayerType = match.PlayerType,
-                PlayersPerTeam = match.PlayersPerTeam,
-                StartTime = match.StartTime,
-                StartTimeIsKnown = match.StartTimeIsKnown,
-                Teams = match.Teams,
-                MatchLocation = match.MatchLocation
-            };
-        }
+
     }
 }

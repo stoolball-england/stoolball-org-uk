@@ -80,6 +80,10 @@ namespace Stoolball.Matches
 
         private static void ParseMatchTypeFilter(NameValueCollection queryString, MatchFilter filter)
         {
+            filter.IncludeMatches = true;
+            filter.IncludeTournaments = false;
+            filter.IncludeTournamentMatches = false;
+
             if (int.TryParse(queryString["type"], out var matchTypeId) && (matchTypeId < 6))
             {
                 if (matchTypeId == 1)
@@ -92,9 +96,6 @@ namespace Stoolball.Matches
                 {
                     var matchTypeFilter = (MatchType)(matchTypeId > 2 ? matchTypeId - 2 : 0);
                     filter.MatchTypes.Add(matchTypeFilter);
-                    filter.IncludeMatches = true;
-                    filter.IncludeTournaments = false;
-                    filter.IncludeTournamentMatches = false;
                 }
             }
         }

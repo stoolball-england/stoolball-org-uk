@@ -13,6 +13,23 @@ namespace Stoolball.Matches
         public string MatchName { get; set; }
         public DateTimeOffset StartTime { get; set; }
         public bool StartTimeIsKnown { get; set; }
+
+        /// <summary>
+        /// Gets an estimated end time for the match or tournament based on the start time and a typical duration
+        /// </summary>
+        /// <returns></returns>
+        public DateTimeOffset EstimatedEndTime()
+        {
+            if (StartTimeIsKnown)
+            {
+                return (MatchType == null) ? StartTime.AddHours(7) : StartTime.AddMinutes(90);
+            }
+            else
+            {
+                return StartTime.AddDays(1);
+            }
+        }
+
         public MatchType? MatchType { get; set; }
         public PlayerType PlayerType { get; set; }
         public int? PlayersPerTeam { get; set; }

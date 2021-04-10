@@ -1,4 +1,5 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.MatchLocations.MatchLocationViewModel>
+@using Stoolball.Web.Matches
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -25,4 +26,5 @@
     {
         <p>There are no matches at this location this season.</p>
     }
+    @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.MatchLocation.MatchLocationRoute })
 </div>

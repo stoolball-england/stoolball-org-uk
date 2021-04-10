@@ -30,7 +30,7 @@
 	@:<item>
 		<title><![CDATA[@prefix #stoolball tournament: @tournament.MatchName, @Model.DateTimeFormatter.FormatDate(tournament.StartTime.LocalDateTime, true, true, true) #@(tournament.MatchLocation?.LocalityOrTown().Humanize(LetterCasing.Title).Replace(" ",string.Empty)) ]]></title>
 		<description><![CDATA[@tournament.Description()]]></description>
-		<link>@:https://www.stoolball.org.uk@tournament.MatchRoute</link>
+		<link>@:https://www.stoolball.org.uk@(tournament.MatchRoute)</link>
 		<pubDate>@tournament.LastAuditDate.Value.ToRFC822()</pubDate>
         <guid isPermaLink="false">@Stoolball.Constants.EntityUriPrefixes.Tournament@tournament.MatchId</guid>
 		<source url="@Request.Url.Scheme://www.stoolball.org.uk@(Request.Url.AbsolutePath.Substring(0,Request.Url.AbsolutePath.Length-4)).rss@(Request.Url.Query)" />

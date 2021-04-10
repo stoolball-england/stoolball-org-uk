@@ -26,7 +26,7 @@
     @:<item>
         <title><![CDATA[@tournament.MatchName, @Model.DateTimeFormatter.FormatDate(tournament.StartTime.LocalDateTime, true, false,false)]]></title>
         <description><![CDATA[@tournament.Description()]]></description>
-        <link>@:https://www.stoolball.org.uk@tournament.MatchRoute</link>
+        <link>@:https://www.stoolball.org.uk@(tournament.MatchRoute)</link>
         <pubDate>@tournament.LastAuditDate.Value.ToRFC822()</pubDate>
         <guid isPermaLink="false">@Stoolball.Constants.EntityUriPrefixes.Tournament@tournament.MatchId</guid>
 		<source url="@canonicalUrl" />

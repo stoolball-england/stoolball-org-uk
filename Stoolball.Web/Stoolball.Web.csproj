@@ -761,6 +761,7 @@
     <Content Include="css\rules.page.min.css">
       <DependentUpon>rules.page.css</DependentUpon>
     </Content>
+    <Content Include="images\icons\iconmonstr-calendar-5.svg" />
     <Content Include="images\icons\iconmonstr-rss-feed-3.svg" />
     <Content Include="images\logos\stoolball-england-rss.gif" />
     <Content Include="js\libs\markerclustererplus.1.0.3.min.js" />
@@ -1215,6 +1216,7 @@
     <Content Include="Views\CreateTrainingSession.cshtml" />
     <Content Include="Views\Matches.cshtml" />
     <Content Include="Views\EditTournamentSeasons.cshtml" />
+    <Content Include="Views\MatchesCalendar.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -1387,6 +1389,8 @@
     <Compile Include="ContentPage\CookiesController.cs" />
     <Compile Include="Matches\EditTournamentSeasonsController.cs" />
     <Compile Include="Matches\EditTournamentSeasonsSurfaceController.cs" />
+    <Compile Include="Matches\MatchesCalendarController.cs" />
+    <Compile Include="Matches\MatchListSubscriptionsViewModel.cs" />
     <Compile Include="Matches\TournamentsController.cs" />
     <Compile Include="Matches\MatchesController.cs" />
     <Compile Include="Matches\CreateTrainingSessionSurfaceController.cs" />
@@ -2785,6 +2789,7 @@
       <LastGenOutput>_CreateOrEditTrainingSession.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\Tournaments.cshtml" />
+    <Content Include="Views\Partials\_MatchListSubscriptions.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

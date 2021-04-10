@@ -60,14 +60,20 @@ namespace Stoolball.Web.Routing
                 { $"tournaments{OPTIONAL_SLASH}", StoolballRouteType.Tournaments },
                 { $"locations{OPTIONAL_SLASH}", StoolballRouteType.MatchLocations },
 
-                // Match /matches/rss, /tournaments/all/rss, /tournaments/ladies/rss, /tournaments/mixed/rss, /tournaments/junior/rss but nothing else, in upper, lower or mixed case
+                // Match /matches/rss, /matches/ics, /tournaments/ics
+                // /tournaments/all/rss, /tournaments/ladies/rss, /tournaments/mixed/rss, /tournaments/junior/rss 
+                // /tournaments/all/calendar/ics, /tournaments/ladies/calendar/ics, /tournaments/mixed/calendar/ics, /tournaments/junior/calendar/ics
+                // but nothing else, in upper, lower or mixed case
                 // Important for these to be before the rules that match individual matches and tournaments.
-                { $@"tournaments{SLASH}(all|ladies|mixed|junior){SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.TournamentsRss }, // old site
-                { $@"tournaments{SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.TournamentsRss }, // preferred URL
-                { $@"matches{SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.MatchesRss },
-                { $@"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.MatchesRss },
-                { $@"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.MatchesRss },
-                { $@"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.MatchesRss },
+                { $"tournaments{SLASH}(all|ladies|mixed|junior){SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.TournamentsRss }, // old site
+                { $"tournaments{SLASH}(all|ladies|mixed|junior){SLASH}calendar{SLASH}ics{OPTIONAL_SLASH}", StoolballRouteType.MatchesCalendar }, // old site
+                { $"tournaments{SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.TournamentsRss }, // preferred URL
+                { $"matches{SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.MatchesRss },
+                { $"(matches|tournaments){SLASH}ics{OPTIONAL_SLASH}", StoolballRouteType.MatchesCalendar },
+                { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.MatchesRss },
+                { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.MatchesRss },
+                { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.MatchesRss },
+                { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}rss{OPTIONAL_SLASH}", StoolballRouteType.MatchesRss },
 
                 // Match /prefix/example-entity or /prefix/action, but not /prefix, /prefix/, or /prefix/example-entity/invalid, 
                 // in upper, lower or mixed case
@@ -81,7 +87,9 @@ namespace Stoolball.Web.Routing
                 { $"competitions{SLASH}add{OPTIONAL_SLASH}", StoolballRouteType.CreateCompetition },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Competition },
                 { $"matches{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Match },
+                { $"matches{SLASH}{ANY_VALID_ROUTE}{SLASH}ics{OPTIONAL_SLASH}", StoolballRouteType.MatchesCalendar },
                 { $"tournaments{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Tournament },
+                { $"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}ics{OPTIONAL_SLASH}", StoolballRouteType.MatchesCalendar },
                 { $"players{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Player },
                 { $"players{SLASH}{ANY_VALID_ROUTE}{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores },
                 { $"players{SLASH}{ANY_VALID_ROUTE}{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures },
@@ -113,6 +121,7 @@ namespace Stoolball.Web.Routing
                 // Match /teams/example-team/valid or /teams/example-team/valid/ but not /teams, /teams/
                 // /teams/example-team, /teams/example-team/ or /teams/example-team/invalid in upper, lower or mixed case
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForClub },
+                { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}ics{OPTIONAL_SLASH}", StoolballRouteType.MatchesCalendar },
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.ClubStatistics },
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores},
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures},
@@ -123,6 +132,7 @@ namespace Stoolball.Web.Routing
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}club{OPTIONAL_SLASH}", StoolballRouteType.EditClub },
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}delete{OPTIONAL_SLASH}", StoolballRouteType.DeleteClub },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForTeam },
+                { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}ics{OPTIONAL_SLASH}", StoolballRouteType.MatchesCalendar },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}add{SLASH}training{OPTIONAL_SLASH}", StoolballRouteType.CreateTrainingSession },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}add{SLASH}friendly{OPTIONAL_SLASH}", StoolballRouteType.CreateFriendlyMatch },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}add{SLASH}knockout{OPTIONAL_SLASH}", StoolballRouteType.CreateKnockoutMatch },
@@ -132,12 +142,14 @@ namespace Stoolball.Web.Routing
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}team{OPTIONAL_SLASH}", StoolballRouteType.EditTeam },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}delete{OPTIONAL_SLASH}", StoolballRouteType.DeleteTeam },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForMatchLocation },
+                { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}ics{OPTIONAL_SLASH}", StoolballRouteType.MatchesCalendar },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.MatchLocationStatistics },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.MatchLocationActions },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}location{OPTIONAL_SLASH}", StoolballRouteType.EditMatchLocation },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}delete{OPTIONAL_SLASH}", StoolballRouteType.DeleteMatchLocation },
+                { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}ics{OPTIONAL_SLASH}", StoolballRouteType.MatchesCalendar },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.CompetitionStatistics },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures },

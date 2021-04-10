@@ -1,6 +1,6 @@
-﻿using Stoolball.Routing;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Stoolball.Routing;
 using Xunit;
 
 namespace Stoolball.UnitTests.Routing
@@ -11,6 +11,7 @@ namespace Stoolball.UnitTests.Routing
         [InlineData("prefix/route-value", "prefix")]
         [InlineData("/prefix/route-value/", "prefix")]
         [InlineData("/prefix/route-value/sub-route", "prefix")]
+        [InlineData("/prefix/route-value.extension", "prefix")]
         [InlineData("/PREFIX/ROUTE-VALUE", "prefix")]
         [InlineData("prefix/route-value", "/prefix/")]
         public void Route_should_normalise_to_prefix_routevalue(string route, string expectedPrefix)

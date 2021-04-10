@@ -28,12 +28,25 @@ a:focus, a:active {
 }
 
 a[type='application/rss+xml'] {
-    padding-left: 20px;
+    padding-left: 22px;
     background: left center / 16px url(/images/icons/iconmonstr-rss-feed-3.svg) no-repeat;
     border: none;
     text-decoration: underline;
     text-underline-offset: 3px;
     text-decoration-skip-ink: auto;
+}
+
+a[type='text/calendar'] {
+    padding-left: 22px;
+    background: left center / 16px url(/images/icons/iconmonstr-calendar-5.svg) no-repeat;
+    border: none;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-skip-ink: auto;
+}
+
+a[type='text/calendar'].calendar__inline {
+    margin-left: $spacer;
 }
 
 blockquote {

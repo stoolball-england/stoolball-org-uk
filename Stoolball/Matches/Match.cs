@@ -168,5 +168,23 @@ namespace Stoolball.Matches
 
             return groups;
         }
+        public MatchListing ToMatchListing()
+        {
+            return new MatchListing
+            {
+                MatchId = MatchId.Value,
+                MatchInnings = MatchInnings,
+                MatchName = MatchName,
+                MatchRoute = MatchRoute,
+                MatchResultType = MatchResultType,
+                MatchType = MatchType,
+                PlayerType = PlayerType,
+                PlayersPerTeam = PlayersPerTeam,
+                StartTime = StartTime,
+                StartTimeIsKnown = StartTimeIsKnown,
+                Teams = Teams,
+                MatchLocation = MatchLocation
+            };
+        }
     }
 }

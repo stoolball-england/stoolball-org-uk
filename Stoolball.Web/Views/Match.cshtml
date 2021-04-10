@@ -80,14 +80,19 @@
             var solarTimes = new SolarTimes(Model.Match.StartTime.LocalDateTime, Model.Match.MatchLocation.Latitude, Model.Match.MatchLocation.Longitude);
             @: (sunset @Model.DateTimeFormatter.FormatTime(solarTimes.Sunset))
         }
+        @if (Model.Match.StartTime > DateTimeOffset.UtcNow)
+        {
+            <a type="text/calendar" href="webcal://@(Request.Url.Host == "localhost" ? Request.Url.Authority : "www.stoolball.org.uk")@(Model.Match.MatchRoute).ics" rel="nofollow" class="calendar__inline">Add to calendar</a>
+        }
     </p>
+
 
     @if (Model.Match.MatchLocation != null)
     {
         <p>Where: <a href="@Model.Match.MatchLocation.MatchLocationRoute">@Model.Match.MatchLocation.NameAndLocalityOrTown()</a></p>
     }
 
-    @if (Model.Match.StartTime <= DateTime.UtcNow && Model.Match.MatchType != MatchType.TrainingSession)
+    @if (Model.Match.StartTime <= DateTimeOffset.UtcNow && Model.Match.MatchType != MatchType.TrainingSession)
     {
         <p class="match-result"><strong>Result: @ResultDescription()</strong></p>
 

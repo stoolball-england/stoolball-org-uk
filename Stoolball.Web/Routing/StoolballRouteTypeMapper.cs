@@ -51,6 +51,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.MatchesForSeason, typeof(MatchesForSeasonController) },
             { StoolballRouteType.SeasonResultsTable, typeof(SeasonResultsTableController) },
             { StoolballRouteType.Matches, typeof(MatchesController) },
+            { StoolballRouteType.MatchesCalendar, typeof(MatchesCalendarController) },
             { StoolballRouteType.MatchesRss, typeof(MatchesRssController) },
             { StoolballRouteType.Match, typeof(MatchController) },
             { StoolballRouteType.MatchActions, typeof(MatchActionsController) },

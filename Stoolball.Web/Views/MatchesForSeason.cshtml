@@ -42,5 +42,5 @@
     {
         <p>There are no matches for this season.</p>
     }
-    <p><a type="application/rss+xml" href="@Model.Season.Competition.CompetitionRoute/matches.rss">New and updated matches – subscribe with RSS</a></p>
+    @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.Season.Competition.CompetitionRoute })
 </div>

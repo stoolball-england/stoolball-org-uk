@@ -40,6 +40,7 @@
         DeleteCompetition,
         Competitions,
         Matches,
+        MatchesCalendar,
         MatchesRss,
         MatchesForClub,
         MatchesForTeam,

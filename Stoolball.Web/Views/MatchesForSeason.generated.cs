@@ -240,22 +240,16 @@ WriteLiteral("        <p>There are no matches for this season.</p>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("    <p><a");
+WriteLiteral("    ");
 
-WriteLiteral(" type=\"application/rss+xml\"");
-
-WriteAttribute("href", Tuple.Create(" href=\"", 1654), Tuple.Create("\"", 1715)
             
             #line 45 "..\..\Views\MatchesForSeason.cshtml"
-, Tuple.Create(Tuple.Create("", 1661), Tuple.Create<System.Object, System.Int32>(Model.Season.Competition.CompetitionRoute
+Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.Season.Competition.CompetitionRoute }));
+
             
             #line default
             #line hidden
-, 1661), false)
-, Tuple.Create(Tuple.Create("", 1703), Tuple.Create("/matches.rss", 1703), true)
-);
-
-WriteLiteral(">New and updated matches – subscribe with RSS</a></p>\r\n</div>");
+WriteLiteral("\r\n</div>");
 
         }
     }
