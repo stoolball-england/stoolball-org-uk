@@ -1401,6 +1401,7 @@
     <Compile Include="Matches\OnlySportCsvExportComponent.cs" />
     <Compile Include="Matches\OnlySportCsvExportTask.cs" />
     <Compile Include="Matches\OnlySportCsvRecord.cs" />
+    <Compile Include="Routing\RedirectBareDomainModule.cs" />
     <Compile Include="Teams\SpogoCsvExportComponent.cs" />
     <Compile Include="Teams\SpogoCsvExportTask.cs" />
     <Compile Include="Teams\SpogoCsvRecord.cs" />
