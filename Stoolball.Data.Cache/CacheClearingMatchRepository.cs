@@ -1,31 +1,21 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Ganss.XSS;
 using Microsoft.Extensions.Caching.Memory;
-using Stoolball.Data.SqlServer;
-using Stoolball.Logging;
 using Stoolball.Matches;
-using Stoolball.Routing;
-using Stoolball.Security;
-using Stoolball.Statistics;
 
 namespace Stoolball.Data.Cache
 {
-    public class CacheClearingMatchRepository : SqlServerMatchRepository
+    public class CacheClearingMatchRepository : IMatchRepository
     {
+        private readonly IWrappableMatchRepository _matchRepository;
         private readonly IMatchFilterFactory _matchFilterFactory;
         private readonly IMatchFilterSerializer _matchFilterSerializer;
         private readonly IMemoryCache _memoryCache;
 
-        public CacheClearingMatchRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
-            IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser, IMatchNameBuilder matchNameBuilder, IPlayerTypeSelector playerTypeSelector,
-            IBowlingScorecardComparer bowlingScorecardComparer, IBattingScorecardComparer battingScorecardComparer, IPlayerRepository playerRepository, IDataRedactor dataRedactor,
-            IStatisticsRepository statisticsRepository, IOversHelper oversHelper, IPlayerInMatchStatisticsBuilder playerInMatchStatisticsBuilder,
-            IMatchFilterFactory matchFilterFactory, IMatchFilterSerializer matchFilterSerializer, IMemoryCache memoryCache)
-            : base(databaseConnectionFactory, auditRepository, logger, routeGenerator, redirectsRepository, htmlSanitiser, matchNameBuilder, playerTypeSelector, bowlingScorecardComparer,
-                  battingScorecardComparer, playerRepository, dataRedactor, statisticsRepository, oversHelper, playerInMatchStatisticsBuilder)
+        public CacheClearingMatchRepository(IWrappableMatchRepository matchRepository, IMatchFilterFactory matchFilterFactory, IMatchFilterSerializer matchFilterSerializer, IMemoryCache memoryCache)
         {
+            _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
             _matchFilterFactory = matchFilterFactory ?? throw new ArgumentNullException(nameof(matchFilterFactory));
             _matchFilterSerializer = matchFilterSerializer ?? throw new ArgumentNullException(nameof(matchFilterSerializer));
             _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
@@ -56,38 +46,48 @@ namespace Stoolball.Data.Cache
             }
         }
 
-        public async override Task<Match> CreateMatch(Match match, Guid memberKey, string memberName)
+        public async Task<Match> CreateMatch(Match match, Guid memberKey, string memberName)
         {
-            var createdMatch = await base.CreateMatch(match, memberKey, memberName).ConfigureAwait(false);
+            var createdMatch = await _matchRepository.CreateMatch(match, memberKey, memberName).ConfigureAwait(false);
             ClearImportantCachesForMatch(createdMatch);
             return createdMatch;
         }
 
-        public async override Task<Match> UpdateMatch(Match match, Guid memberKey, string memberName)
+        public async Task<Match> UpdateMatch(Match match, Guid memberKey, string memberName)
         {
-            var updatedMatch = await base.UpdateMatch(match, memberKey, memberName).ConfigureAwait(false);
+            var updatedMatch = await _matchRepository.UpdateMatch(match, memberKey, memberName).ConfigureAwait(false);
             ClearImportantCachesForMatch(updatedMatch);
             return updatedMatch;
         }
 
-        public async override Task<Match> UpdateStartOfPlay(Match match, Guid memberKey, string memberName)
+        public async Task<Match> UpdateStartOfPlay(Match match, Guid memberKey, string memberName)
         {
-            var updatedMatch = await base.UpdateStartOfPlay(match, memberKey, memberName).ConfigureAwait(false);
+            var updatedMatch = await _matchRepository.UpdateStartOfPlay(match, memberKey, memberName).ConfigureAwait(false);
             ClearImportantCachesForMatch(updatedMatch);
             return updatedMatch;
         }
 
-        public async override Task<Match> UpdateCloseOfPlay(Match match, Guid memberKey, string memberName)
+        public async Task<Match> UpdateCloseOfPlay(Match match, Guid memberKey, string memberName)
         {
-            var updatedMatch = await base.UpdateCloseOfPlay(match, memberKey, memberName).ConfigureAwait(false);
+            var updatedMatch = await _matchRepository.UpdateCloseOfPlay(match, memberKey, memberName).ConfigureAwait(false);
             ClearImportantCachesForMatch(updatedMatch);
             return updatedMatch;
         }
 
-        public async override Task DeleteMatch(Match match, Guid memberKey, string memberName)
+        public async Task DeleteMatch(Match match, Guid memberKey, string memberName)
         {
-            await base.DeleteMatch(match, memberKey, memberName).ConfigureAwait(false);
+            await _matchRepository.DeleteMatch(match, memberKey, memberName).ConfigureAwait(false);
             ClearImportantCachesForMatch(match);
+        }
+
+        public async Task<MatchInnings> UpdateBowlingScorecard(Match match, Guid matchInningsId, Guid memberKey, string memberName)
+        {
+            return await _matchRepository.UpdateBowlingScorecard(match, matchInningsId, memberKey, memberName).ConfigureAwait(false);
+        }
+
+        public async Task<MatchInnings> UpdateBattingScorecard(Match match, Guid matchInningsId, Guid memberKey, string memberName)
+        {
+            return await _matchRepository.UpdateBattingScorecard(match, matchInningsId, memberKey, memberName).ConfigureAwait(false);
         }
     }
 }

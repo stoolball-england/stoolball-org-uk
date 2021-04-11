@@ -151,6 +151,7 @@ namespace Stoolball.Web
             composition.Register<ICommentsDataSource<Match>, SqlServerMatchCommentsDataSource>();
             composition.Register<ICommentsDataSource<Tournament>, SqlServerTournamentCommentsDataSource>();
             composition.Register<IMatchRepository, CacheClearingMatchRepository>();
+            composition.Register<IWrappableMatchRepository, SqlServerMatchRepository>();
             composition.Register<ITournamentDataSource, SqlServerTournamentDataSource>();
             composition.Register<ITournamentRepository, CacheClearingTournamentRepository>();
             composition.Register<IStatisticsDataSource, CachedStatisticsDataSource>();
