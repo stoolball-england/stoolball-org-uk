@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -67,7 +68,7 @@ namespace Stoolball.Web.Teams
             }
             else
             {
-                var filter = _matchFilterFactory.MatchesForTeam(team.TeamId.Value);
+                var filter = _matchFilterFactory.MatchesForTeams(new List<Guid> { team.TeamId.Value });
                 var model = new TeamViewModel(contentModel.Content, Services?.UserService)
                 {
                     Team = team,

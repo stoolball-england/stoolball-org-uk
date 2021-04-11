@@ -34,6 +34,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public List<Match> Matches { get; internal set; } = new List<Match>();
         public List<MatchListing> MatchListings { get; internal set; } = new List<MatchListing>();
         public List<MatchLocation> MatchLocations { get; internal set; } = new List<MatchLocation>();
+        public List<Club> Clubs { get; internal set; } = new List<Club>();
         public List<Team> Teams { get; internal set; } = new List<Team>();
 
         public List<PlayerIdentity> PlayerIdentities { get; internal set; } = new List<PlayerIdentity>();
@@ -58,9 +59,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 ClubWithMinimalDetails = seedDataGenerator.CreateClubWithMinimalDetails();
                 repo.CreateClub(ClubWithMinimalDetails);
+                Clubs.Add(ClubWithMinimalDetails);
 
                 ClubWithTeams = seedDataGenerator.CreateClubWithTeams();
                 repo.CreateClub(ClubWithTeams);
+                Clubs.Add(ClubWithTeams);
                 Teams.AddRange(ClubWithTeams.Teams);
 
                 TeamWithMinimalDetails = seedDataGenerator.CreateTeamWithMinimalDetails("Team minimal");

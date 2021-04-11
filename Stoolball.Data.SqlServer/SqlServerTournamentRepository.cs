@@ -18,7 +18,7 @@ namespace Stoolball.Data.SqlServer
     /// <summary>
     /// Writes stoolball tournament data to the Umbraco database
     /// </summary>
-    public class SqlServerTournamentRepository : ITournamentRepository
+    public class SqlServerTournamentRepository : ITournamentRepository, IWrappableTournamentRepository
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IAuditRepository _auditRepository;
@@ -88,7 +88,7 @@ namespace Stoolball.Data.SqlServer
         /// <summary>
         /// Creates a stoolball tournament
         /// </summary>
-        public async virtual Task<Tournament> CreateTournament(Tournament tournament, Guid memberKey, string memberName)
+        public async Task<Tournament> CreateTournament(Tournament tournament, Guid memberKey, string memberName)
         {
             if (tournament is null)
             {
@@ -233,7 +233,7 @@ namespace Stoolball.Data.SqlServer
         /// <summary>
         /// Updates a stoolball tournament
         /// </summary>
-        public async virtual Task<Tournament> UpdateTournament(Tournament tournament, Guid memberKey, string memberName)
+        public async Task<Tournament> UpdateTournament(Tournament tournament, Guid memberKey, string memberName)
         {
             if (tournament is null)
             {
@@ -408,7 +408,7 @@ namespace Stoolball.Data.SqlServer
         /// <summary>
         /// Updates teams in a stoolball tournament
         /// </summary>
-        public async virtual Task<Tournament> UpdateTeams(Tournament tournament, Guid memberKey, string memberUsername, string memberName)
+        public async Task<Tournament> UpdateTeams(Tournament tournament, Guid memberKey, string memberUsername, string memberName)
         {
             if (tournament is null)
             {
@@ -559,7 +559,7 @@ namespace Stoolball.Data.SqlServer
         /// <summary>
         /// Updates the seasons a stoolball tournament is listed in
         /// </summary>
-        public async virtual Task<Tournament> UpdateSeasons(Tournament tournament, Guid memberKey, string memberUsername, string memberName)
+        public async Task<Tournament> UpdateSeasons(Tournament tournament, Guid memberKey, string memberUsername, string memberName)
         {
             if (tournament is null)
             {
@@ -641,7 +641,7 @@ namespace Stoolball.Data.SqlServer
         /// <summary>
         /// Deletes a stoolball tournament
         /// </summary>
-        public async virtual Task DeleteTournament(Tournament tournament, Guid memberKey, string memberName)
+        public async Task DeleteTournament(Tournament tournament, Guid memberKey, string memberName)
         {
             if (tournament is null)
             {

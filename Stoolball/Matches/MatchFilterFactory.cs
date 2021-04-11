@@ -13,11 +13,11 @@ namespace Stoolball.Matches
             _seasonEstimator = seasonEstimator ?? throw new ArgumentNullException(nameof(seasonEstimator));
         }
 
-        public (MatchFilter filter, MatchSortOrder sortOrder) MatchesForTeam(Guid teamId)
+        public (MatchFilter filter, MatchSortOrder sortOrder) MatchesForTeams(List<Guid> teamIds)
         {
             return (new MatchFilter
             {
-                TeamIds = new List<Guid> { teamId },
+                TeamIds = teamIds ?? new List<Guid>(),
                 FromDate = _seasonEstimator.EstimateSeasonDates(DateTimeOffset.UtcNow).fromDate
             }, MatchSortOrder.MatchDateEarliestFirst);
         }

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Clubs;
-using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
@@ -25,7 +24,7 @@ namespace Stoolball.Web.Clubs
         private readonly IClubDataSource _clubDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
-        private readonly ISeasonEstimator _seasonEstimator;
+        private readonly IMatchFilterFactory _matchFilterFactory;
         private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
 
         public MatchesForClubController(IGlobalSettings globalSettings,
@@ -37,14 +36,14 @@ namespace Stoolball.Web.Clubs
            IClubDataSource clubDataSource,
            IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
-           ISeasonEstimator seasonEstimator,
+           IMatchFilterFactory matchFilterFactory,
            IAuthorizationPolicy<Club> authorizationPolicy)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
-            _seasonEstimator = seasonEstimator ?? throw new ArgumentNullException(nameof(seasonEstimator));
+            _matchFilterFactory = matchFilterFactory ?? throw new ArgumentNullException(nameof(matchFilterFactory));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
         }
 
@@ -77,11 +76,8 @@ namespace Stoolball.Web.Clubs
                 // Only get matches if there are teams, otherwise matches for all teams will be returned
                 if (model.Club.Teams.Count > 0)
                 {
-                    model.Matches.Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
-                    {
-                        TeamIds = club.Teams.Select(team => team.TeamId.Value).ToList(),
-                        FromDate = _seasonEstimator.EstimateSeasonDates(DateTimeOffset.UtcNow).fromDate
-                    }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
+                    var filter = _matchFilterFactory.MatchesForTeams(club.Teams.Select(team => team.TeamId.Value).ToList());
+                    model.Matches.Matches = await _matchDataSource.ReadMatchListings(filter.filter, filter.sortOrder).ConfigureAwait(false);
                 }
 
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Club);
