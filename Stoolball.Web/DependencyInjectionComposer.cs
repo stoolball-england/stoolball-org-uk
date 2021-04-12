@@ -158,7 +158,8 @@ namespace Stoolball.Web
             composition.Register<IStatisticsDataSource, CachedStatisticsDataSource>();
             composition.Register<ICacheableStatisticsDataSource, SqlServerStatisticsDataSource>();
             composition.Register<IStatisticsRepository, SqlServerStatisticsRepository>();
-            composition.Register<IInningsStatisticsDataSource, SqlServerInningsStatisticsDataSource>();
+            composition.Register<IInningsStatisticsDataSource, CachedInningsStatisticsDataSource>();
+            composition.Register<ICacheableInningsStatisticsDataSource, SqlServerInningsStatisticsDataSource>();
             composition.Register<IMatchFilterFactory, MatchFilterFactory>();
 
             // Security checks

@@ -7,7 +7,7 @@ namespace Stoolball.Data.SqlServer
     /// <summary>
     /// Gets statistics about team performances from the Umbraco database
     /// </summary>
-    public class SqlServerInningsStatisticsDataSource : IInningsStatisticsDataSource
+    public class SqlServerInningsStatisticsDataSource : IInningsStatisticsDataSource, ICacheableInningsStatisticsDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         public SqlServerInningsStatisticsDataSource(IDatabaseConnectionFactory databaseConnectionFactory)
