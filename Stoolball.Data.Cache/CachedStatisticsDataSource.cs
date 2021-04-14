@@ -8,13 +8,13 @@ using Stoolball.Statistics;
 
 namespace Stoolball.Data.Cache
 {
-    public class CachedStatisticsDataSource : IStatisticsDataSource
+    public class CachedStatisticsDataSource : IBestPerformanceInAMatchStatisticsDataSource
     {
-        private readonly ICacheableStatisticsDataSource _statisticsDataSource;
+        private readonly ICacheableBestPerformanceInAMatchStatisticsDataSource _statisticsDataSource;
         private readonly IReadOnlyPolicyRegistry<string> _policyRegistry;
         private readonly IStatisticsFilterSerializer _statisticsFilterSerializer;
 
-        public CachedStatisticsDataSource(IReadOnlyPolicyRegistry<string> policyRegistry, ICacheableStatisticsDataSource statisticsDataSource, IStatisticsFilterSerializer statisticsFilterSerializer)
+        public CachedStatisticsDataSource(IReadOnlyPolicyRegistry<string> policyRegistry, ICacheableBestPerformanceInAMatchStatisticsDataSource statisticsDataSource, IStatisticsFilterSerializer statisticsFilterSerializer)
         {
             _policyRegistry = policyRegistry ?? throw new ArgumentNullException(nameof(policyRegistry));
             _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));

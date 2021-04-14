@@ -25,7 +25,7 @@ namespace Stoolball.Web.Tests.Statistics
 
         private class TestController : StatisticsController
         {
-            public TestController(IStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
+            public TestController(IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -56,7 +56,7 @@ namespace Stoolball.Web.Tests.Statistics
         [Fact]
         public async Task Index_returns_StatisticsSummaryViewModel()
         {
-            var dataSource = new Mock<IStatisticsDataSource>();
+            var dataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
 
             using (var controller = new TestController(dataSource.Object, UmbracoHelper))
             {

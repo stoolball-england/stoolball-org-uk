@@ -20,7 +20,7 @@ namespace Stoolball.Web.MatchLocations
     public class MatchLocationStatisticsController : RenderMvcControllerAsync
     {
         private readonly IMatchLocationDataSource _matchLocationDataSource;
-        private readonly IStatisticsDataSource _statisticsDataSource;
+        private readonly IBestPerformanceInAMatchStatisticsDataSource _statisticsDataSource;
 
         public MatchLocationStatisticsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -29,7 +29,7 @@ namespace Stoolball.Web.MatchLocations
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IMatchLocationDataSource matchLocationDataSource,
-           IStatisticsDataSource statisticsDataSource)
+           IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchLocationDataSource = matchLocationDataSource ?? throw new ArgumentNullException(nameof(matchLocationDataSource));

@@ -29,7 +29,7 @@ namespace Stoolball.Web.Tests.Competitions
 
         private class TestController : SeasonStatisticsController
         {
-            public TestController(ISeasonDataSource seasonDataSource, IStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
+            public TestController(ISeasonDataSource seasonDataSource, IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -63,7 +63,7 @@ namespace Stoolball.Web.Tests.Competitions
         {
             var seasonDataSource = new Mock<ISeasonDataSource>();
             seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Season>(null));
-            var statisticsDataSource = new Mock<IStatisticsDataSource>();
+            var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
 
             using (var controller = new TestController(seasonDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
             {
@@ -86,7 +86,7 @@ namespace Stoolball.Web.Tests.Competitions
                     CompetitionRoute = "/competitions/example-competition"
                 }
             });
-            var statisticsDataSource = new Mock<IStatisticsDataSource>();
+            var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
             statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new StatisticsResult<PlayerInnings>[] { new StatisticsResult<PlayerInnings>() } as IEnumerable<StatisticsResult<PlayerInnings>>));
 
             using (var controller = new TestController(seasonDataSource.Object, statisticsDataSource.Object, UmbracoHelper))

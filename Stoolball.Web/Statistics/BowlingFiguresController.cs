@@ -17,7 +17,7 @@ namespace Stoolball.Web.Statistics
     public class BowlingFiguresController : RenderMvcControllerAsync
     {
         private readonly IStatisticsFilterUrlParser _statisticsFilterUrlParser;
-        private readonly IStatisticsDataSource _statisticsDataSource;
+        private readonly IBestPerformanceInAMatchStatisticsDataSource _statisticsDataSource;
         private readonly IStatisticsBreadcrumbBuilder _statisticsBreadcrumbBuilder;
 
         public BowlingFiguresController(IGlobalSettings globalSettings,
@@ -27,7 +27,7 @@ namespace Stoolball.Web.Statistics
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IStatisticsFilterUrlParser statisticsFilterUrlParser,
-           IStatisticsDataSource statisticsDataSource,
+           IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource,
            IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {

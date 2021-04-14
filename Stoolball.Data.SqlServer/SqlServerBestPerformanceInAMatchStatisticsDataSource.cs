@@ -9,11 +9,11 @@ using Stoolball.Teams;
 
 namespace Stoolball.Data.SqlServer
 {
-    public class SqlServerStatisticsDataSource : IStatisticsDataSource, ICacheableStatisticsDataSource
+    public class SqlServerBestPerformanceInAMatchStatisticsDataSource : IBestPerformanceInAMatchStatisticsDataSource, ICacheableBestPerformanceInAMatchStatisticsDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
 
-        public SqlServerStatisticsDataSource(IDatabaseConnectionFactory databaseConnectionFactory)
+        public SqlServerBestPerformanceInAMatchStatisticsDataSource(IDatabaseConnectionFactory databaseConnectionFactory)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
         }

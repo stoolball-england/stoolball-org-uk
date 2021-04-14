@@ -20,7 +20,7 @@ namespace Stoolball.Web.Competitions
     public class CompetitionStatisticsController : RenderMvcControllerAsync
     {
         private readonly ICompetitionDataSource _competitionDataSource;
-        private readonly IStatisticsDataSource _statisticsDataSource;
+        private readonly IBestPerformanceInAMatchStatisticsDataSource _statisticsDataSource;
 
         public CompetitionStatisticsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -29,7 +29,7 @@ namespace Stoolball.Web.Competitions
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            ICompetitionDataSource competitionDataSource,
-           IStatisticsDataSource statisticsDataSource)
+           IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));

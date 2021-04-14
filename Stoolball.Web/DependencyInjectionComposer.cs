@@ -155,12 +155,14 @@ namespace Stoolball.Web
             composition.Register<ITournamentDataSource, SqlServerTournamentDataSource>();
             composition.Register<ITournamentRepository, CacheClearingTournamentRepository>();
             composition.Register<IWrappableTournamentRepository, SqlServerTournamentRepository>();
-            composition.Register<IStatisticsDataSource, CachedStatisticsDataSource>();
-            composition.Register<ICacheableStatisticsDataSource, SqlServerStatisticsDataSource>();
+            composition.Register<IBestPerformanceInAMatchStatisticsDataSource, CachedStatisticsDataSource>();
+            composition.Register<ICacheableBestPerformanceInAMatchStatisticsDataSource, SqlServerBestPerformanceInAMatchStatisticsDataSource>();
             composition.Register<IStatisticsRepository, SqlServerStatisticsRepository>();
             composition.Register<IInningsStatisticsDataSource, CachedInningsStatisticsDataSource>();
             composition.Register<ICacheableInningsStatisticsDataSource, SqlServerInningsStatisticsDataSource>();
             composition.Register<IMatchFilterFactory, MatchFilterFactory>();
+            composition.Register<IPlayerSummaryStatisticsDataSource, CachedPlayerSummaryStatisticsDataSource>();
+            composition.Register<ICacheablePlayerSummaryStatisticsDataSource, SqlServerPlayerSummaryStatisticsDataSource>();
 
             // Security checks
             composition.Register<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>();

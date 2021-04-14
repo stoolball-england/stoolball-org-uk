@@ -29,7 +29,7 @@ namespace Stoolball.Web.Tests.Teams
 
         private class TestController : TeamStatisticsController
         {
-            public TestController(ITeamDataSource teamDataSource, IStatisticsDataSource statisticsDataSource, IInningsStatisticsDataSource inningsStatisticsDataSource, UmbracoHelper umbracoHelper)
+            public TestController(ITeamDataSource teamDataSource, IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource, IInningsStatisticsDataSource inningsStatisticsDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -64,7 +64,7 @@ namespace Stoolball.Web.Tests.Teams
         {
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Team>(null));
-            var statisticsDataSource = new Mock<IStatisticsDataSource>();
+            var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
             var inningsDataSource = new Mock<IInningsStatisticsDataSource>();
 
             using (var controller = new TestController(teamDataSource.Object, statisticsDataSource.Object, inningsDataSource.Object, UmbracoHelper))
@@ -80,7 +80,7 @@ namespace Stoolball.Web.Tests.Teams
         {
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team { TeamId = Guid.NewGuid() });
-            var statisticsDataSource = new Mock<IStatisticsDataSource>();
+            var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
             statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new StatisticsResult<PlayerInnings>[] { new StatisticsResult<PlayerInnings>() } as IEnumerable<StatisticsResult<PlayerInnings>>));
             var inningsDataSource = new Mock<IInningsStatisticsDataSource>();
 

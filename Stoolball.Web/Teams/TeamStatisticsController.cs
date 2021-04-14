@@ -20,7 +20,7 @@ namespace Stoolball.Web.Teams
     public class TeamStatisticsController : RenderMvcControllerAsync
     {
         private readonly ITeamDataSource _teamDataSource;
-        private readonly IStatisticsDataSource _statisticsDataSource;
+        private readonly IBestPerformanceInAMatchStatisticsDataSource _statisticsDataSource;
         private readonly IInningsStatisticsDataSource _inningsStatisticsDataSource;
 
         public TeamStatisticsController(IGlobalSettings globalSettings,
@@ -30,7 +30,7 @@ namespace Stoolball.Web.Teams
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            ITeamDataSource teamDataSource,
-           IStatisticsDataSource statisticsDataSource,
+           IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource,
            IInningsStatisticsDataSource inningsStatisticsDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {

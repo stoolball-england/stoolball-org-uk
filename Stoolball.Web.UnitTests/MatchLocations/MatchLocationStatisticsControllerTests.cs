@@ -29,7 +29,7 @@ namespace Stoolball.Web.Tests.MatchLocations
 
         private class TestController : MatchLocationStatisticsController
         {
-            public TestController(IMatchLocationDataSource matchLocationDataSource, IStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
+            public TestController(IMatchLocationDataSource matchLocationDataSource, IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -63,7 +63,7 @@ namespace Stoolball.Web.Tests.MatchLocations
         {
             var locationDataSource = new Mock<IMatchLocationDataSource>();
             locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<MatchLocation>(null));
-            var statisticsDataSource = new Mock<IStatisticsDataSource>();
+            var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
 
             using (var controller = new TestController(locationDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
             {
@@ -78,7 +78,7 @@ namespace Stoolball.Web.Tests.MatchLocations
         {
             var locationDataSource = new Mock<IMatchLocationDataSource>();
             locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).ReturnsAsync(new MatchLocation { MatchLocationId = Guid.NewGuid() });
-            var statisticsDataSource = new Mock<IStatisticsDataSource>();
+            var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
             statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new StatisticsResult<PlayerInnings>[] { new StatisticsResult<PlayerInnings>() } as IEnumerable<StatisticsResult<PlayerInnings>>));
 
             using (var controller = new TestController(locationDataSource.Object, statisticsDataSource.Object, UmbracoHelper))

@@ -29,7 +29,7 @@ namespace Stoolball.Web.Tests.Competitions
 
         private class TestController : CompetitionStatisticsController
         {
-            public TestController(ICompetitionDataSource competitionDataSource, IStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
+            public TestController(ICompetitionDataSource competitionDataSource, IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -63,7 +63,7 @@ namespace Stoolball.Web.Tests.Competitions
         {
             var competitionDataSource = new Mock<ICompetitionDataSource>();
             competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).Returns(Task.FromResult<Competition>(null));
-            var statisticsDataSource = new Mock<IStatisticsDataSource>();
+            var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
 
             using (var controller = new TestController(competitionDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
             {
@@ -78,7 +78,7 @@ namespace Stoolball.Web.Tests.Competitions
         {
             var competitionDataSource = new Mock<ICompetitionDataSource>();
             competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionId = Guid.NewGuid() });
-            var statisticsDataSource = new Mock<IStatisticsDataSource>();
+            var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
             statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new StatisticsResult<PlayerInnings>[] { new StatisticsResult<PlayerInnings>() } as IEnumerable<StatisticsResult<PlayerInnings>>));
 
             using (var controller = new TestController(competitionDataSource.Object, statisticsDataSource.Object, UmbracoHelper))

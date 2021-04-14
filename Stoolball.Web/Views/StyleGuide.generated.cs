@@ -236,8 +236,28 @@ WriteLiteral(@">
         </tbody>
     </table>
     <p>A paragraph following a table.</p>
-    <dl>
-        <dt><a");
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Table heading</th>
+                <th>Table heading</th>
+                <th>Table heading</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Table heading</th>
+                <td>Table data</td>
+                <td>Table data</td>
+            </tr>
+        </tbody>
+    </table>
+    <p");
+
+WriteLiteral(" class=\"table-small-print\"");
+
+WriteLiteral("><small>Small print following a table</small></p>\r\n\r\n    <dl>\r\n        <dt><a");
 
 WriteLiteral(" href=\"https://example.org\"");
 
@@ -249,7 +269,7 @@ WriteLiteral(" href=\"https://example.org\"");
 WriteLiteral(">Definition list title</a> ");
 
             
-            #line 67 "..\..\Views\StyleGuide.cshtml"
+            #line 86 "..\..\Views\StyleGuide.cshtml"
                                                                Write(Html.Partial("_AdminOnly"));
 
             
@@ -311,7 +331,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("        ");
 
             
-            #line 91 "..\..\Views\StyleGuide.cshtml"
+            #line 110 "..\..\Views\StyleGuide.cshtml"
    Write(Html.GetBlockListHtml(Model, "productBlockList", "BlockList"));
 
             
@@ -322,7 +342,7 @@ WriteLiteral("\r\n    </ul>\r\n");
 WriteLiteral("    ");
 
             
-            #line 93 "..\..\Views\StyleGuide.cshtml"
+            #line 112 "..\..\Views\StyleGuide.cshtml"
 Write(Html.GetBlockListHtml(Model, "cookiesBlockList"));
 
             

@@ -21,7 +21,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_total_bowling_figures_supports_no_filter()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var result = await dataSource.ReadTotalBowlingFigures(null).ConfigureAwait(false);
 
@@ -32,7 +32,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_total_bowling_figures_supports_filter_by_player_id()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var result = await dataSource.ReadTotalBowlingFigures(new StatisticsFilter { Player = _databaseFixture.BowlerWithMultipleIdentities }).ConfigureAwait(false);
 
@@ -45,7 +45,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_total_bowling_figures_supports_filter_by_club_id()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var result = await dataSource.ReadTotalBowlingFigures(new StatisticsFilter { Club = _databaseFixture.TeamWithClub.Club }).ConfigureAwait(false);
 
@@ -59,7 +59,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_total_bowling_figures_supports_filter_by_team_id()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var result = await dataSource.ReadTotalBowlingFigures(new StatisticsFilter { Team = _databaseFixture.TeamWithClub }).ConfigureAwait(false);
 
@@ -73,7 +73,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_total_bowling_figures_supports_filter_by_match_location_id()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var result = await dataSource.ReadTotalBowlingFigures(new StatisticsFilter { MatchLocation = _databaseFixture.MatchLocations.First() }).ConfigureAwait(false);
 
@@ -87,7 +87,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_total_bowling_figures_supports_filter_by_competition_id()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var result = await dataSource.ReadTotalBowlingFigures(new StatisticsFilter { Competition = _databaseFixture.Competitions.First() }).ConfigureAwait(false);
 
@@ -102,7 +102,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_total_bowling_figures_supports_filter_by_season_id()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var result = await dataSource.ReadTotalBowlingFigures(new StatisticsFilter { Season = _databaseFixture.Competitions.First().Seasons.First() }).ConfigureAwait(false);
 
@@ -116,7 +116,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_bowling_figures_returns_player()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
@@ -136,7 +136,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_bowling_figures_returns_figures()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
@@ -156,7 +156,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_bowling_figures_returns_team()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
@@ -174,7 +174,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_bowling_figures_returns_opposition_team()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
@@ -195,7 +195,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_bowling_figures_returns_match()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
@@ -219,7 +219,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_bowling_figures_supports_no_filter()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
@@ -234,7 +234,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_bowling_figures_supports_filter_by_player_id()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter
             {
@@ -259,7 +259,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_bowling_figures_supports_filter_by_club_id()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter
             {
@@ -285,7 +285,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_bowling_figures_supports_filter_by_team_id()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter
             {
@@ -311,7 +311,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_bowling_figures_supports_filter_by_match_location_id()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter
             {
@@ -337,7 +337,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_bowling_figures_supports_filter_by_competition_id()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter
             {
@@ -363,7 +363,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_bowling_figures_supports_filter_by_season_id()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter
             {
@@ -389,7 +389,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_best_bowling_figures_sorts_by_most_wickets_for_fewest_runs_with_null_runs_last()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } }, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
@@ -412,7 +412,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_latest_bowling_figures_sorts_by_most_recent_first()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var results = await dataSource.ReadBowlingFigures(new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } }, StatisticsSortOrder.LatestFirst).ConfigureAwait(false);
 
@@ -427,7 +427,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_bowling_figures_pages_results()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             const int pageSize = 10;
             var pageNumber = 1;
@@ -447,7 +447,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_bowling_figures_with_MaxResultsAllowingExtraResultsIfValuesAreEqual_returns_results_equal_to_the_max()
         {
-            var dataSource = new SqlServerStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
             var results = (await dataSource.ReadBowlingFigures(new StatisticsFilter
             {

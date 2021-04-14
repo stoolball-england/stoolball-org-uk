@@ -26,7 +26,7 @@ namespace Stoolball.Web.Tests.Statistics
 
         private class TestController : BowlingFiguresController
         {
-            public TestController(IStatisticsFilterUrlParser statisticsFilterUrlParser, IStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper, string queryString)
+            public TestController(IStatisticsFilterUrlParser statisticsFilterUrlParser, IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper, string queryString)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -61,7 +61,7 @@ namespace Stoolball.Web.Tests.Statistics
         [Fact]
         public async Task Player_with_no_bowling_returns_404()
         {
-            var statisticsDataSource = new Mock<IStatisticsDataSource>();
+            var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
             var urlParser = new Mock<IStatisticsFilterUrlParser>();
             urlParser.Setup(x => x.ParseUrl(It.IsAny<Uri>())).Returns(Task.FromResult(new StatisticsFilter()));
 
@@ -80,7 +80,7 @@ namespace Stoolball.Web.Tests.Statistics
         [Fact]
         public async Task Player_with_bowling_returns_StatisticsViewModel()
         {
-            var statisticsDataSource = new Mock<IStatisticsDataSource>();
+            var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
             var urlParser = new Mock<IStatisticsFilterUrlParser>();
             urlParser.Setup(x => x.ParseUrl(It.IsAny<Uri>())).Returns(Task.FromResult(new StatisticsFilter()));
 

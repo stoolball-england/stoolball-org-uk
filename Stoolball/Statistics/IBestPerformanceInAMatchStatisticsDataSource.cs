@@ -4,7 +4,7 @@ using Stoolball.Matches;
 
 namespace Stoolball.Statistics
 {
-    public interface IStatisticsDataSource
+    public interface IBestPerformanceInAMatchStatisticsDataSource
     {
         Task<IEnumerable<StatisticsResult<PlayerInnings>>> ReadPlayerInnings(StatisticsFilter filter, StatisticsSortOrder sortOrder);
         Task<int> ReadTotalPlayerInnings(StatisticsFilter filter);

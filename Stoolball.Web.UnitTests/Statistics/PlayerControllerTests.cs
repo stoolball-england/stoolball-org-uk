@@ -34,7 +34,7 @@ namespace Stoolball.Web.Tests.Statistics
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
                 playerDataSource,
-                Mock.Of<IStatisticsDataSource>())
+                Mock.Of<IBestPerformanceInAMatchStatisticsDataSource>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));

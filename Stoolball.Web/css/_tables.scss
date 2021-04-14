@@ -93,6 +93,11 @@ th.numeric {
     color: $table-dark-color;
 }
 
+// Explanatory paragraph immediately following a table
+.table-small-print {
+    margin-top: -.5em;
+}
+
 @include media-breakpoint-up(sm) {
     // When .table-as-cards is in use, it might only be appropriate to apply .numeric when the table returns to a standard display
     td.numeric-sm,

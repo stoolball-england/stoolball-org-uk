@@ -13,6 +13,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
     {
         public Player BowlerWithMultipleIdentities { get; private set; }
 
+        public List<Player> Players { get; private set; } = new List<Player>();
+        public List<PlayerInnings> PlayerInnings { get; private set; } = new List<PlayerInnings>();
         public List<PlayerIdentity> PlayerIdentities { get; private set; } = new List<PlayerIdentity>();
         public List<Match> Matches { get; private set; } = new List<Match>();
         public Player PlayerWithFifthAndSixthInningsTheSame { get; private set; }
@@ -245,13 +247,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 BowlerWithMultipleIdentities.PlayerIdentities.Clear();
                 BowlerWithMultipleIdentities.PlayerIdentities.AddRange(PlayerIdentities.Where(x => x.Player.PlayerId == BowlerWithMultipleIdentities.PlayerId));
 
+                // Get all players that were used and their batting records
+                Players = poolOfTeams.SelectMany(x => x.identities).Select(x => x.Player).Distinct(new PlayerEqualityComparer()).ToList();
+                PlayerInnings = Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();
+
                 // Remove any entities that didn't get used
                 MatchLocations.RemoveAll(x => !Matches.Select(m => m.MatchLocation?.MatchLocationId).Contains(x.MatchLocationId));
                 Competitions.RemoveAll(x => !Matches.Select(m => m.Season?.Competition?.CompetitionId).Contains(x.CompetitionId));
 
                 // Add all of that to the database
-                var distinctPlayers = poolOfTeams.SelectMany(x => x.identities).Select(x => x.Player).Distinct(new PlayerEqualityComparer());
-                foreach (var player in distinctPlayers)
+                foreach (var player in Players)
                 {
                     repo.CreatePlayer(player);
                 }
