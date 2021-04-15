@@ -21,7 +21,6 @@ using Stoolball.Security;
 using Stoolball.SocialMedia;
 using Stoolball.Statistics;
 using Stoolball.Teams;
-using Stoolball.Web.AppPlugins.Stoolball.DataMigration.DataMigrators;
 using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
 using Stoolball.Web.Configuration;
@@ -85,24 +84,6 @@ namespace Stoolball.Web
             composition.Register<IMatchesRssQueryStringParser, MatchesRssQueryStringParser>();
             composition.Register<IMatchFilterSerializer, MatchFilterQueryStringSerializer>();
             composition.Register<IStatisticsFilterSerializer, StatisticsFilterQueryStringSerializer>();
-
-            // Data migration from the old Stoolball England website
-            composition.Register<IAuditHistoryBuilder, AuditHistoryBuilder>();
-            composition.Register<IRedirectsDataMigrator, SkybrudRedirectsDataMigrator>();
-            composition.Register<IClubDataMigrator, SqlServerClubDataMigrator>();
-            composition.Register<ISchoolDataMigrator, SqlServerSchoolDataMigrator>();
-            composition.Register<IMatchLocationDataMigrator, SqlServerMatchLocationDataMigrator>();
-            composition.Register<ITeamDataMigrator, SqlServerTeamDataMigrator>();
-            composition.Register<ICompetitionDataMigrator, SqlServerCompetitionDataMigrator>();
-            composition.Register<IMatchDataMigrator, SqlServerMatchDataMigrator>();
-            composition.Register<ITournamentDataMigrator, SqlServerTournamentDataMigrator>();
-            composition.Register<IPlayerDataMigrator, SqlServerPlayerDataMigrator>();
-            composition.Register<IPlayerPerformanceDataMigrator, SqlServerPlayerPerformanceDataMigrator>();
-            composition.Register<IMatchAwardDataMigrator, SqlServerMatchAwardDataMigrator>();
-            composition.Register<IMatchCommentDataMigrator, SqlServerMatchCommentDataMigrator>();
-            composition.Register<IMatchCommentSubscriptionDataMigrator, SqlServerMatchCommentSubscriptionDataMigrator>();
-            composition.Register<ICompetitionSubscriptionDataMigrator, SqlServerCompetitionSubscriptionDataMigrator>();
-            composition.Register<IUmbracoFormsDataMigrator, UmbracoFormsDataMigrator>();
 
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 
             // be injected anywhere except the one place where it's serving a page of content.
