@@ -50,7 +50,7 @@
                 matchClass = "match-list__match ";
                 matchClass += (match.StartTime <= DateTime.UtcNow.AddHours(-6)) ? "match-list__past" : "match-list__future";
                 if (!dateOfNextMatch.HasValue && matchClass.Contains("match-list__future")) { dateOfNextMatch = match.StartTime.Date; }
-                if (dateOfNextMatch == match.StartTime.Date && Model.HighlightNextMatch) { matchClass += " match-list__next"; }
+                if (dateOfNextMatch == match.StartTime.Date && Model.HighlightNextMatch && Model.MatchFilter.Paging.PageNumber == 1) { matchClass += " match-list__next"; }
             }
 
             <li class="@matchClass">
@@ -71,7 +71,7 @@
                 matchClass = "match-list__match ";
                 matchClass += (match.StartTime <= DateTime.UtcNow.AddHours(-2)) ? "match-list__past" : "match-list__future";
                 if (!dateOfNextMatch.HasValue && matchClass.Contains("match-list__future")) { dateOfNextMatch = match.StartTime.Date; }
-                if (dateOfNextMatch == match.StartTime.Date && Model.HighlightNextMatch) { matchClass += " match-list__next"; }
+                if (dateOfNextMatch == match.StartTime.Date && Model.HighlightNextMatch && Model.MatchFilter.Paging.PageNumber == 1) { matchClass += " match-list__next"; }
             }
 
             string matchType = null;
