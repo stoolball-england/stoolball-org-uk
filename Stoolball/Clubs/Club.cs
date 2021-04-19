@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Stoolball.Logging;
+using Stoolball.MatchLocations;
 using Stoolball.Teams;
 
 namespace Stoolball.Clubs
@@ -62,6 +64,19 @@ namespace Stoolball.Clubs
                 description.Append(", but it does not have any active teams.");
             }
             return description.ToString();
+        }
+
+        public TeamListing ToTeamListing()
+        {
+            return new TeamListing
+            {
+                TeamListingId = ClubId,
+                ClubOrTeamName = ClubName,
+                ClubOrTeamRoute = ClubRoute,
+                Active = Teams.Any(x => !x.UntilYear.HasValue),
+                PlayerTypes = Teams.Select(x => x.PlayerType).Distinct().ToList(),
+                MatchLocations = Teams.SelectMany(x => x.MatchLocations).Distinct(new MatchLocationEqualityComparer()).ToList()
+            };
         }
     }
 }

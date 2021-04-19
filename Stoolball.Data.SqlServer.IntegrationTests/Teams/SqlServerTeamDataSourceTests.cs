@@ -71,15 +71,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         [Fact]
         public async Task Read_team_by_route_returns_club()
         {
-            var teamWithAClub = _databaseFixture.ClubWithTeams.Teams.First();
+            var teamWithAClub = _databaseFixture.ClubWithTeamsAndMatchLocation.Teams.First();
             var routeNormaliser = new Mock<IRouteNormaliser>();
             routeNormaliser.Setup(x => x.NormaliseRouteToEntity(teamWithAClub.TeamRoute, It.IsAny<Dictionary<string, string>>())).Returns(teamWithAClub.TeamRoute);
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
 
             var result = await teamDataSource.ReadTeamByRoute(teamWithAClub.TeamRoute, true).ConfigureAwait(false);
 
-            Assert.Equal(_databaseFixture.ClubWithTeams.ClubName, result.Club.ClubName);
-            Assert.Equal(_databaseFixture.ClubWithTeams.ClubRoute, result.Club.ClubRoute);
+            Assert.Equal(_databaseFixture.ClubWithTeamsAndMatchLocation.ClubName, result.Club.ClubName);
+            Assert.Equal(_databaseFixture.ClubWithTeamsAndMatchLocation.ClubRoute, result.Club.ClubRoute);
         }
 
         [Fact]
@@ -224,7 +224,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamFilter { TeamTypes = new List<TeamType> { TeamType.Representative } };
+            var query = new TeamFilter { TeamTypes = new List<TeamType?> { TeamType.Representative } };
 
             var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
 
@@ -462,7 +462,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
             var teamDataSource = new SqlServerTeamDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
-            var query = new TeamFilter { TeamTypes = new List<TeamType> { TeamType.Representative } };
+            var query = new TeamFilter { TeamTypes = new List<TeamType?> { TeamType.Representative } };
 
             var result = await teamDataSource.ReadTeams(query).ConfigureAwait(false);
 

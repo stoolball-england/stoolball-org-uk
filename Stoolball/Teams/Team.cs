@@ -216,5 +216,19 @@ namespace Stoolball.Teams
             description.Append('.');
             return description.ToString();
         }
+
+        public TeamListing ToTeamListing()
+        {
+            return new TeamListing
+            {
+                TeamListingId = TeamId,
+                ClubOrTeamName = TeamName,
+                ClubOrTeamRoute = TeamRoute,
+                TeamType = TeamType,
+                Active = !UntilYear.HasValue,
+                PlayerTypes = new List<PlayerType> { PlayerType },
+                MatchLocations = MatchLocations
+            };
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace Stoolball.Web.Teams
         }
         public string GoogleMapsApiKey { get; set; }
 
-        public TeamFilter TeamFilter { get; set; } = new TeamFilter();
+        public TeamListingFilter TeamFilter { get; set; } = new TeamListingFilter();
         public List<TeamListing> Teams { get; internal set; } = new List<TeamListing>();
     }
 }

@@ -76,11 +76,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         FromDate = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero),
                         UntilDate = club.UntilDate
                     });
-
-            foreach (var team in club.Teams)
-            {
-                CreateTeam(team);
-            }
         }
 
         public void CreateMatch(Match match)

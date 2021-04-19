@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Stoolball.Clubs;
@@ -26,7 +26,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public MatchLocation MatchLocationWithMinimalDetails { get; private set; }
         public MatchLocation MatchLocationWithFullDetails { get; private set; }
         public Club ClubWithMinimalDetails { get; private set; }
-        public Club ClubWithTeams { get; private set; }
+        public Club ClubWithTeamsAndMatchLocation { get; private set; }
+        public MatchLocation MatchLocationForClub { get; private set; }
         public Team TeamWithMinimalDetails { get; private set; }
         public Team TeamWithFullDetails { get; private set; }
         public List<Competition> Competitions { get; internal set; } = new List<Competition>();
@@ -36,10 +37,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public List<MatchLocation> MatchLocations { get; internal set; } = new List<MatchLocation>();
         public List<Club> Clubs { get; internal set; } = new List<Club>();
         public List<Team> Teams { get; internal set; } = new List<Team>();
-
+        public List<TeamListing> TeamListings { get; internal set; } = new List<TeamListing>();
         public List<PlayerIdentity> PlayerIdentities { get; internal set; } = new List<PlayerIdentity>();
         public Season SeasonWithFullDetails { get; private set; }
         public List<MatchListing> TournamentMatchListings { get; private set; } = new List<MatchListing>();
+        public Club ClubWithOneTeam { get; private set; }
 
         public SqlServerDataSourceFixture() : base("StoolballDataSourceIntegrationTests")
         {
@@ -61,10 +63,36 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 repo.CreateClub(ClubWithMinimalDetails);
                 Clubs.Add(ClubWithMinimalDetails);
 
-                ClubWithTeams = seedDataGenerator.CreateClubWithTeams();
-                repo.CreateClub(ClubWithTeams);
-                Clubs.Add(ClubWithTeams);
-                Teams.AddRange(ClubWithTeams.Teams);
+                ClubWithOneTeam = seedDataGenerator.CreateClubWithMinimalDetails();
+                repo.CreateClub(ClubWithOneTeam);
+                Clubs.Add(ClubWithOneTeam);
+                var onlyTeamInClub = seedDataGenerator.CreateTeamWithMinimalDetails("Only team in the club");
+                ClubWithOneTeam.Teams.Add(onlyTeamInClub);
+                onlyTeamInClub.Club = ClubWithOneTeam;
+                repo.CreateTeam(onlyTeamInClub);
+                Teams.Add(onlyTeamInClub);
+
+                ClubWithTeamsAndMatchLocation = seedDataGenerator.CreateClubWithTeams();
+                MatchLocationForClub = seedDataGenerator.CreateMatchLocationWithMinimalDetails();
+                MatchLocationForClub.PrimaryAddressableObjectName = "Club PAON";
+                MatchLocationForClub.SecondaryAddressableObjectName = "Club SAON";
+                MatchLocationForClub.Locality = "Club locality";
+                MatchLocationForClub.Town = "Club town";
+                MatchLocationForClub.AdministrativeArea = "Club area";
+                teamWithMatchLocation.MatchLocations.Add(MatchLocationForClub);
+                repo.CreateClub(ClubWithTeamsAndMatchLocation);
+                Clubs.Add(ClubWithTeamsAndMatchLocation);
+                foreach (var team in ClubWithTeamsAndMatchLocation.Teams)
+                {
+                    repo.CreateTeam(team);
+                    foreach (var matchLocation in team.MatchLocations)
+                    {
+                        repo.CreateMatchLocation(matchLocation);
+                        repo.AddTeamToMatchLocation(team, matchLocation);
+                        MatchLocations.Add(matchLocation);
+                    }
+                }
+                Teams.AddRange(ClubWithTeamsAndMatchLocation.Teams);
 
                 TeamWithMinimalDetails = seedDataGenerator.CreateTeamWithMinimalDetails("Team minimal");
                 repo.CreateTeam(TeamWithMinimalDetails);
@@ -235,6 +263,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 repo.CreateMatchLocation(MatchLocationWithFullDetails);
                 Teams.AddRange(MatchLocationWithFullDetails.Teams);
                 MatchLocations.Add(MatchLocationWithFullDetails);
+
+                foreach (var team in Teams.Where(t => t.Club == null || t.Club.ClubId == ClubWithOneTeam.ClubId)) { TeamListings.Add(team.ToTeamListing()); }
+                foreach (var club in Clubs.Where(c => c.Teams.Count == 0 || c.Teams.Count > 1)) { TeamListings.Add(club.ToTeamListing()); }
 
 
                 for (var i = 0; i < 30; i++)

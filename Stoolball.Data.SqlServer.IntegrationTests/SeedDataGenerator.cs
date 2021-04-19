@@ -41,12 +41,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
             var inactiveAlphabeticallyFirst = CreateTeamWithMinimalDetails("Inactive team");
             inactiveAlphabeticallyFirst.Club = club;
+            inactiveAlphabeticallyFirst.TeamType = TeamType.Representative;
             inactiveAlphabeticallyFirst.UntilYear = 2019;
 
             var activeAlphabeticallySecond = CreateTeamWithMinimalDetails("Sort me first in club");
+            activeAlphabeticallySecond.TeamType = TeamType.Regular;
             activeAlphabeticallySecond.Club = club;
 
             var activeAlphabeticallyThird = CreateTeamWithMinimalDetails("Sort me second in club");
+            activeAlphabeticallyThird.TeamType = TeamType.Occasional;
             activeAlphabeticallyThird.Club = club;
 
             // Teams should come back with active sorted before inactive, alphabetically within those groups

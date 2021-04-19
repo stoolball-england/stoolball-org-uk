@@ -20,7 +20,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public Player PlayerWithFifthAndSixthInningsTheSame { get; private set; }
         public Player PlayerWithFifthAndSixthBowlingFiguresTheSame { get; private set; }
         public Team TeamWithClub { get; set; }
-        public List<Team> Teams { get; set; }
+        public List<Team> Teams { get; set; } = new List<Team>();
         public List<MatchLocation> MatchLocations { get; private set; } = new List<MatchLocation>();
         public List<Competition> Competitions { get; private set; } = new List<Competition>();
         public List<Player> PlayersWithMultipleIdentities { get; private set; } = new List<Player>();

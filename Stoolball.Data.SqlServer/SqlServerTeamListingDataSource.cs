@@ -26,12 +26,14 @@ namespace Stoolball.Data.SqlServer
         /// Gets the number of clubs and teams that match a query
         /// </summary>
         /// <returns></returns>
-        public async Task<int> ReadTotalTeams(TeamFilter teamQuery)
+        public async Task<int> ReadTotalTeams(TeamListingFilter filter)
         {
+            if (filter is null) { filter = new TeamListingFilter(); }
+
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var (teamWhere, teamParameters) = BuildTeamWhereClause(teamQuery);
-                var (clubWhere, clubParameters) = BuildClubWhereQuery(teamQuery);
+                var (teamWhere, teamParameters) = BuildTeamWhereClause(filter);
+                var (clubWhere, clubParameters) = BuildClubWhereQuery(filter);
 
                 var parameters = teamParameters;
                 foreach (var key in clubParameters.Keys)
@@ -69,17 +71,14 @@ namespace Stoolball.Data.SqlServer
         /// Gets a list of clubs and teams based on a query
         /// </summary>
         /// <returns>A list of <see cref="TeamListing"/> objects. An empty list if no clubs or teams are found.</returns>
-        public async Task<List<TeamListing>> ReadTeamListings(TeamFilter teamQuery)
+        public async Task<List<TeamListing>> ReadTeamListings(TeamListingFilter filter)
         {
-            if (teamQuery is null)
-            {
-                throw new ArgumentNullException(nameof(teamQuery));
-            }
+            if (filter is null) { filter = new TeamListingFilter(); }
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var (teamWhere, teamParameters) = BuildTeamWhereClause(teamQuery);
-                var (clubWhere, clubParameters) = BuildClubWhereQuery(teamQuery);
+                var (teamWhere, teamParameters) = BuildTeamWhereClause(filter);
+                var (clubWhere, clubParameters) = BuildClubWhereQuery(filter);
 
                 var parameters = teamParameters;
                 foreach (var key in clubParameters.Keys)
@@ -152,8 +151,8 @@ namespace Stoolball.Data.SqlServer
                                 AND (ctn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = ct.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR ctn.TeamVersionId IS NULL)
                                 ORDER BY Active DESC, ComparableName";
 
-                parameters.Add("@PageOffset", (teamQuery.Paging.PageNumber - 1) * teamQuery.Paging.PageSize);
-                parameters.Add("@PageSize", teamQuery.Paging.PageSize);
+                parameters.Add("@PageOffset", (filter.Paging.PageNumber - 1) * filter.Paging.PageSize);
+                parameters.Add("@PageSize", filter.Paging.PageSize);
 
                 var teamListings = await connection.QueryAsync<TeamListing, string, MatchLocation, TeamListing>(outerQuery,
                     (teamListing, playerType, matchLocation) =>
@@ -183,7 +182,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private static (string where, Dictionary<string, object> parameters) BuildTeamWhereClause(TeamFilter teamQuery)
+        private static (string where, Dictionary<string, object> parameters) BuildTeamWhereClause(TeamListingFilter teamQuery)
         {
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();
@@ -201,7 +200,7 @@ namespace Stoolball.Data.SqlServer
             }
 
             // For listings, clubs with one active team are treated like a team without a club, so that the team is returned
-            if (teamQuery != null && !teamQuery.IncludeClubTeams)
+            if (teamQuery != null)
             {
                 where.Add($"(t.ClubId IS NULL OR (SELECT COUNT({Tables.Team}.TeamId) FROM {Tables.Team} INNER JOIN {Tables.TeamVersion} ON {Tables.Team}.TeamId = {Tables.TeamVersion}.TeamId WHERE ClubId = t.ClubId AND {Tables.TeamVersion}.UntilDate IS NULL) = 1)");
             }
@@ -209,25 +208,37 @@ namespace Stoolball.Data.SqlServer
             return (where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : "WHERE 1=1", parameters); // Always have a where clause so that it can be appended to
         }
 
-        private static (string where, Dictionary<string, object> parameters) BuildClubWhereQuery(TeamFilter teamQuery)
+        private static (string where, Dictionary<string, object> parameters) BuildClubWhereQuery(TeamListingFilter filter)
         {
             var where = new List<string>();
             var parameters = new Dictionary<string, object>();
 
-            if (!string.IsNullOrEmpty(teamQuery?.Query))
+            if (!string.IsNullOrEmpty(filter.Query))
             {
                 where.Add("(cn.ClubName LIKE @Query OR ct.PlayerType LIKE @Query OR ml.Locality LIKE @Query OR ml.Town LIKE @Query OR ml.AdministrativeArea LIKE @Query)");
-                parameters.Add("@Query", $"%{teamQuery.Query}%");
+                parameters.Add("@Query", $"%{filter.Query}%");
             }
 
-            if (teamQuery?.TeamTypes?.Count > 0)
+            if (filter.TeamTypes?.Count > 0)
             {
-                where.Add("(ct.TeamType IN @TeamTypes OR ct.TeamType IS NULL)");
-                parameters.Add("@TeamTypes", teamQuery.TeamTypes.Select(x => x.ToString()));
+                if (filter.TeamTypes.Contains(null) && filter.TeamTypes.Count == 1)
+                {
+                    where.Add("ct.TeamType IS NULL");
+                }
+                else if (!filter.TeamTypes.Contains(null) && filter.TeamTypes.Count == 1)
+                {
+                    where.Add("ct.TeamType IN @TeamTypes");
+                    parameters.Add("@TeamTypes", filter.TeamTypes.Where(x => x.HasValue).Select(x => x.ToString()));
+                }
+                else
+                {
+                    where.Add("(ct.TeamType IN @TeamTypes OR ct.TeamType IS NULL)");
+                    parameters.Add("@TeamTypes", filter.TeamTypes.Where(x => x.HasValue).Select(x => x.ToString()));
+                }
             }
 
             // For listings, clubs with one active team are treated like a team without a club, so that the team is returned
-            if (teamQuery != null && !teamQuery.IncludeClubTeams)
+            if (filter != null)
             {
                 where.Add($"(SELECT COUNT({Tables.Team}.TeamId) FROM {Tables.Team} INNER JOIN {Tables.TeamVersion} ON {Tables.Team}.TeamId = {Tables.TeamVersion}.TeamId WHERE ClubId = c.ClubId AND {Tables.TeamVersion}.UntilDate IS NULL) != 1");
             }

@@ -41,11 +41,10 @@ namespace Stoolball.Web.Teams
             _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
             var model = new TeamsViewModel(contentModel.Content, Services?.UserService)
             {
-                TeamFilter = new TeamFilter
+                TeamFilter = new TeamListingFilter
                 {
                     Query = Request.QueryString["q"]?.Trim(),
-                    IncludeClubTeams = false,
-                    TeamTypes = new List<TeamType> { TeamType.LimitedMembership, TeamType.Occasional, TeamType.Regular, TeamType.Representative, TeamType.SchoolClub }
+                    TeamTypes = new List<TeamType?> { TeamType.LimitedMembership, TeamType.Occasional, TeamType.Regular, TeamType.Representative, TeamType.SchoolClub, null }
                 }
             };
 

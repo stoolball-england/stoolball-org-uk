@@ -35,6 +35,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
                 ClubWithTeamsForDelete = seedDataGenerator.CreateClubWithTeams();
                 repo.CreateClub(ClubWithTeamsForDelete);
+                foreach (var team in ClubWithTeamsForDelete.Teams)
+                {
+                    repo.CreateTeam(team);
+                }
 
                 TeamWithFullDetailsForDelete = seedDataGenerator.CreateTeamWithFullDetails();
                 repo.CreateTeam(TeamWithFullDetailsForDelete);
