@@ -289,11 +289,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             }
         }
 
-        [Fact(Skip = "Not implemented")]
+        [Fact]
         public async Task Read_match_listings_returns_audit_dates_for_match()
         {
-            // first and last dates expected
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(null, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
+
+            var result = results.SingleOrDefault(x => x.MatchId == _databaseFixture.MatchInThePastWithFullDetails.MatchId);
+            Assert.NotNull(result);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.History.First().AuditDate.AccurateToTheMinute(), result.FirstAuditDate.Value.AccurateToTheMinute());
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.History.Last().AuditDate.AccurateToTheMinute(), result.LastAuditDate.Value.AccurateToTheMinute());
         }
 
         [Fact]
@@ -360,11 +366,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             }
         }
 
-        [Fact(Skip = "Not implemented")]
+        [Fact]
         public async Task Read_match_listings_returns_audit_dates_for_tournament()
         {
-            // first and last dates expected
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(null, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
+
+            var result = results.SingleOrDefault(x => x.MatchId == _databaseFixture.TournamentInThePastWithFullDetails.TournamentId);
+            Assert.NotNull(result);
+            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.History.First().AuditDate.AccurateToTheMinute(), result.FirstAuditDate.Value.AccurateToTheMinute());
+            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.History.Last().AuditDate.AccurateToTheMinute(), result.LastAuditDate.Value.AccurateToTheMinute());
         }
 
         [Fact]
@@ -382,10 +394,22 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             }
         }
 
-        [Fact(Skip = "Not implemented")]
+        [Fact]
         public async Task Read_match_listings_supports_sort_by_last_audit()
         {
-            throw new NotImplementedException();
+            var matchDataSource = new SqlServerMatchListingDataSource(_databaseFixture.ConnectionFactory);
+
+            var results = await matchDataSource.ReadMatchListings(null, MatchSortOrder.LatestUpdateFirst).ConfigureAwait(false);
+
+            var dataWithAuditHistory = _databaseFixture.Matches.Where(x => x.History.Any()).Select(x => x.MatchId.Value).Union(new[] { _databaseFixture.TournamentInThePastWithFullDetails.TournamentId.Value });
+            var resultsWithAuditHistoryExpected = results.Where(x => dataWithAuditHistory.Contains(x.MatchId));
+
+            var previousUpdate = DateTimeOffset.MaxValue;
+            foreach (var result in resultsWithAuditHistoryExpected)
+            {
+                Assert.True(result.LastAuditDate <= previousUpdate);
+                previousUpdate = result.LastAuditDate.Value;
+            }
         }
 
         [Fact]

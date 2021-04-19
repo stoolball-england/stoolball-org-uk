@@ -4,6 +4,7 @@ using Dapper;
 using Stoolball.Awards;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
+using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Statistics;
@@ -245,6 +246,25 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     i++;
                 }
             }
+        }
+
+        internal void CreateAudit(AuditRecord audit)
+        {
+            _connection.Execute($@"INSERT INTO {Tables.Audit} 
+                    (AuditId, MemberKey, ActorName, Action, EntityUri, State, RedactedState, AuditDate)
+                    VALUES
+                    (@AuditId, @MemberKey, @ActorName, @Action, @EntityUri, @State, @RedactedState, @AuditDate)",
+            new
+            {
+                AuditId = Guid.NewGuid(),
+                audit.MemberKey,
+                audit.ActorName,
+                Action = audit.Action.ToString(),
+                EntityUri = audit.EntityUri.ToString(),
+                audit.State,
+                audit.RedactedState,
+                audit.AuditDate
+            });
         }
 
         public void AddTournamentToSeason(Tournament tournament, Season season)
