@@ -8,7 +8,10 @@
         @:<a href="@content.ProductPage.Url()">
     }
     <figure class="tile__link">
-        <img src="@content.Photo.MediaUrl()?width=180&height=180&mode=pad&bgcolor=fff&upscale=false" alt="@content.ProductName" width="180" height="180" />
+        @if (content.Photo != null)
+        {
+            <img src="@content.Photo.MediaUrl()?width=180&height=180&mode=pad&bgcolor=fff&upscale=false" alt="@content.ProductName" width="180" height="180" />
+        }
         <figcaption class="product-preview__detail">
             <p class="product-preview__title">@content.ProductName</p>
             @if (!string.IsNullOrWhiteSpace(content.Description))

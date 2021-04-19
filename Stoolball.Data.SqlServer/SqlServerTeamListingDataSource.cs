@@ -13,7 +13,7 @@ namespace Stoolball.Data.SqlServer
     /// <summary>
     /// Gets stoolball club and team data from the Umbraco database
     /// </summary>
-    public class SqlServerTeamListingDataSource : ITeamListingDataSource
+    public class SqlServerTeamListingDataSource : ITeamListingDataSource, ICacheableTeamListingDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
 

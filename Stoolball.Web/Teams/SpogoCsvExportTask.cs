@@ -43,7 +43,7 @@ namespace Stoolball.Web.Teams
             var teams = (await _teamDataSource.ReadTeams(new TeamFilter
             {
                 ActiveTeams = true,
-                TeamTypes = new List<TeamType> { TeamType.Regular }
+                TeamTypes = new List<TeamType?> { TeamType.Regular }
             }).ConfigureAwait(false)).Select(x => new SpogoCsvRecord
             {
                 TeamId = x.TeamId.Value.GetHashCode() > 0 ? x.TeamId.Value.GetHashCode() : x.TeamId.Value.GetHashCode() * -1,

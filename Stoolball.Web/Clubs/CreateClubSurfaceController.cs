@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Caching;
 using Stoolball.Clubs;
+using Stoolball.Data.Cache;
 using Stoolball.Navigation;
 using Stoolball.Routing;
 using Stoolball.Security;
@@ -23,15 +25,17 @@ namespace Stoolball.Web.Clubs
         private readonly IClubRepository _clubRepository;
         private readonly IRouteGenerator _routeGenerator;
         private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
+        private readonly ICacheOverride _cacheOverride;
 
         public CreateClubSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IClubRepository clubRepository, IRouteGenerator routeGenerator,
-            IAuthorizationPolicy<Club> authorizationPolicy)
+            IAuthorizationPolicy<Club> authorizationPolicy, ICacheOverride cacheOverride)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _clubRepository = clubRepository ?? throw new System.ArgumentNullException(nameof(clubRepository));
             _routeGenerator = routeGenerator ?? throw new System.ArgumentNullException(nameof(routeGenerator));
             _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
+            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
         }
 
         [HttpPost]
@@ -88,6 +92,8 @@ namespace Stoolball.Web.Clubs
 
                 // Create the club
                 var createdClub = await _clubRepository.CreateClub(club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+
+                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix);
 
                 // Redirect to the club
                 return Redirect(createdClub.ClubRoute);

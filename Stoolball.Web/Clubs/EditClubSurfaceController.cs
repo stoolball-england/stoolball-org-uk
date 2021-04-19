@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Caching;
 using Stoolball.Clubs;
+using Stoolball.Data.Cache;
 using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Web.Security;
@@ -20,15 +22,17 @@ namespace Stoolball.Web.Clubs
         private readonly IClubDataSource _clubDataSource;
         private readonly IClubRepository _clubRepository;
         private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
+        private readonly ICacheOverride _cacheOverride;
 
         public EditClubSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IClubDataSource clubDataSource, IClubRepository clubRepository,
-            IAuthorizationPolicy<Club> authorizationPolicy)
+            IAuthorizationPolicy<Club> authorizationPolicy, ICacheOverride cacheOverride)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _clubDataSource = clubDataSource ?? throw new System.ArgumentNullException(nameof(clubDataSource));
             _clubRepository = clubRepository ?? throw new System.ArgumentNullException(nameof(clubRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
+            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
         }
 
         [HttpPost]
@@ -58,6 +62,8 @@ namespace Stoolball.Web.Clubs
             {
                 var currentMember = Members.GetCurrentMember();
                 var updatedClub = await _clubRepository.UpdateClub(club, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+
+                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix);
 
                 // redirect back to the club actions page that led here
                 return Redirect(updatedClub.ClubRoute + "/edit");

@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Caching;
+using Stoolball.Data.Cache;
 using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Teams;
@@ -19,14 +21,16 @@ namespace Stoolball.Web.Teams
     {
         private readonly ITeamRepository _teamRepository;
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
+        private readonly ICacheOverride _cacheOverride;
 
         public CreateTeamSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITeamRepository teamRepository,
-            IAuthorizationPolicy<Team> authorizationPolicy)
+            IAuthorizationPolicy<Team> authorizationPolicy, ICacheOverride cacheOverride)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _teamRepository = teamRepository ?? throw new System.ArgumentNullException(nameof(teamRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
+            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
         }
 
         [HttpPost]
@@ -70,6 +74,8 @@ namespace Stoolball.Web.Teams
                 // Create the team
                 var currentMember = Members.GetCurrentMember();
                 var createdTeam = await _teamRepository.CreateTeam(team, currentMember.Key, Members.CurrentUserName, currentMember.Name).ConfigureAwait(false);
+
+                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix);
 
                 // Redirect to the team
                 return Redirect(createdTeam.TeamRoute);

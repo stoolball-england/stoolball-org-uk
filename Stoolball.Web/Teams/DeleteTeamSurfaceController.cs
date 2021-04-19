@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Caching;
+using Stoolball.Data.Cache;
 using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
@@ -25,17 +27,19 @@ namespace Stoolball.Web.Teams
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IPlayerDataSource _playerDataSource;
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
+        private readonly ICacheOverride _cacheOverride;
 
         public DeleteTeamSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITeamDataSource teamDataSource, ITeamRepository teamRepository,
-            IMatchListingDataSource matchDataSource, IPlayerDataSource playerDataSource, IAuthorizationPolicy<Team> authorizationPolicy)
+            IMatchListingDataSource matchDataSource, IPlayerDataSource playerDataSource, IAuthorizationPolicy<Team> authorizationPolicy, ICacheOverride cacheOverride)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
-            _teamDataSource = teamDataSource;
+            _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
+            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
         }
 
         [HttpPost]
@@ -65,6 +69,7 @@ namespace Stoolball.Web.Teams
 
                 var currentMember = Members.GetCurrentMember();
                 await _teamRepository.DeleteTeam(model.Team, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix);
                 model.Deleted = true;
             }
             else

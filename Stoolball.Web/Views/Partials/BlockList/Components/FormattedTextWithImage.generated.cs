@@ -79,7 +79,7 @@ namespace ASP
 
     var imagePosition = content.ImagePosition?.ToLowerInvariant() ?? "left";
 
-    var imageWidth = content.Image.Value<int>("umbracoWidth");
+    var imageWidth = content.Image?.Value<int>("umbracoWidth");
     var widthClass = "extra-small";
     if (imageWidth > 200) { widthClass = "small"; }
     if (imageWidth > 400) { widthClass = "medium"; }
@@ -102,24 +102,24 @@ WriteLiteral("\r\n");
             #line hidden
 WriteLiteral("    <div");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 1186), Tuple.Create("\"", 1291)
-, Tuple.Create(Tuple.Create("", 1194), Tuple.Create("block__text-with-image", 1194), true)
-, Tuple.Create(Tuple.Create(" ", 1216), Tuple.Create("block__text-with-image__", 1217), true)
+WriteAttribute("class", Tuple.Create(" class=\"", 1187), Tuple.Create("\"", 1292)
+, Tuple.Create(Tuple.Create("", 1195), Tuple.Create("block__text-with-image", 1195), true)
+, Tuple.Create(Tuple.Create(" ", 1217), Tuple.Create("block__text-with-image__", 1218), true)
             
             #line 26 "..\..\Views\Partials\BlockList\Components\FormattedTextWithImage.cshtml"
-, Tuple.Create(Tuple.Create("", 1241), Tuple.Create<System.Object, System.Int32>(imagePosition
+, Tuple.Create(Tuple.Create("", 1242), Tuple.Create<System.Object, System.Int32>(imagePosition
             
             #line default
             #line hidden
-, 1241), false)
-, Tuple.Create(Tuple.Create(" ", 1255), Tuple.Create("block__text-with-image__", 1256), true)
+, 1242), false)
+, Tuple.Create(Tuple.Create(" ", 1256), Tuple.Create("block__text-with-image__", 1257), true)
             
             #line 26 "..\..\Views\Partials\BlockList\Components\FormattedTextWithImage.cshtml"
-                      , Tuple.Create(Tuple.Create("", 1280), Tuple.Create<System.Object, System.Int32>(widthClass
+                      , Tuple.Create(Tuple.Create("", 1281), Tuple.Create<System.Object, System.Int32>(widthClass
             
             #line default
             #line hidden
-, 1280), false)
+, 1281), false)
 );
 
 WriteLiteral(">\r\n        <div");
@@ -157,86 +157,86 @@ WriteLiteral(">\r\n");
             #line hidden
 WriteLiteral("                <img");
 
-WriteAttribute("srcset", Tuple.Create(" srcset=\"", 1466), Tuple.Create("\"", 1844)
+WriteAttribute("srcset", Tuple.Create(" srcset=\"", 1467), Tuple.Create("\"", 1845)
             
             #line 31 "..\..\Views\Partials\BlockList\Components\FormattedTextWithImage.cshtml"
-, Tuple.Create(Tuple.Create("", 1475), Tuple.Create<System.Object, System.Int32>(content.Image.MediaUrl()
+, Tuple.Create(Tuple.Create("", 1476), Tuple.Create<System.Object, System.Int32>(content.Image.MediaUrl()
             
             #line default
             #line hidden
-, 1475), false)
-, Tuple.Create(Tuple.Create("", 1500), Tuple.Create("?width=150&height=150&mode=max&upscale=false", 1500), true)
-, Tuple.Create(Tuple.Create(" ", 1544), Tuple.Create("576w,", 1545), true)
+, 1476), false)
+, Tuple.Create(Tuple.Create("", 1501), Tuple.Create("?width=150&height=150&mode=max&upscale=false", 1501), true)
+, Tuple.Create(Tuple.Create(" ", 1545), Tuple.Create("576w,", 1546), true)
             
             #line 32 "..\..\Views\Partials\BlockList\Components\FormattedTextWithImage.cshtml"
-, Tuple.Create(Tuple.Create("\r\n                     ", 1550), Tuple.Create<System.Object, System.Int32>(content.Image.MediaUrl()
+, Tuple.Create(Tuple.Create("\r\n                     ", 1551), Tuple.Create<System.Object, System.Int32>(content.Image.MediaUrl()
             
             #line default
             #line hidden
-, 1573), false)
-, Tuple.Create(Tuple.Create("", 1598), Tuple.Create("?width=300&height=300&mode=max&upscale=false", 1598), true)
-, Tuple.Create(Tuple.Create(" ", 1642), Tuple.Create("768w,", 1643), true)
+, 1574), false)
+, Tuple.Create(Tuple.Create("", 1599), Tuple.Create("?width=300&height=300&mode=max&upscale=false", 1599), true)
+, Tuple.Create(Tuple.Create(" ", 1643), Tuple.Create("768w,", 1644), true)
             
             #line 33 "..\..\Views\Partials\BlockList\Components\FormattedTextWithImage.cshtml"
-, Tuple.Create(Tuple.Create("\r\n                     ", 1648), Tuple.Create<System.Object, System.Int32>(content.Image.MediaUrl()
+, Tuple.Create(Tuple.Create("\r\n                     ", 1649), Tuple.Create<System.Object, System.Int32>(content.Image.MediaUrl()
             
             #line default
             #line hidden
-, 1671), false)
-, Tuple.Create(Tuple.Create("", 1696), Tuple.Create("?width=400&height=400&mode=max&upscale=false", 1696), true)
-, Tuple.Create(Tuple.Create(" ", 1740), Tuple.Create("992w,", 1741), true)
+, 1672), false)
+, Tuple.Create(Tuple.Create("", 1697), Tuple.Create("?width=400&height=400&mode=max&upscale=false", 1697), true)
+, Tuple.Create(Tuple.Create(" ", 1741), Tuple.Create("992w,", 1742), true)
             
             #line 34 "..\..\Views\Partials\BlockList\Components\FormattedTextWithImage.cshtml"
-, Tuple.Create(Tuple.Create("\r\n                     ", 1746), Tuple.Create<System.Object, System.Int32>(content.Image.MediaUrl()
+, Tuple.Create(Tuple.Create("\r\n                     ", 1747), Tuple.Create<System.Object, System.Int32>(content.Image.MediaUrl()
             
             #line default
             #line hidden
-, 1769), false)
-, Tuple.Create(Tuple.Create("", 1794), Tuple.Create("?width=500&height=500&mode=max&upscale=false", 1794), true)
-, Tuple.Create(Tuple.Create(" ", 1838), Tuple.Create("1200w", 1839), true)
+, 1770), false)
+, Tuple.Create(Tuple.Create("", 1795), Tuple.Create("?width=500&height=500&mode=max&upscale=false", 1795), true)
+, Tuple.Create(Tuple.Create(" ", 1839), Tuple.Create("1200w", 1840), true)
 );
 
-WriteAttribute("src", Tuple.Create("\r\n                     src=\"", 1845), Tuple.Create("\"", 1942)
+WriteAttribute("src", Tuple.Create("\r\n                     src=\"", 1846), Tuple.Create("\"", 1943)
             
             #line 35 "..\..\Views\Partials\BlockList\Components\FormattedTextWithImage.cshtml"
-, Tuple.Create(Tuple.Create("", 1873), Tuple.Create<System.Object, System.Int32>(content.Image.MediaUrl()
+, Tuple.Create(Tuple.Create("", 1874), Tuple.Create<System.Object, System.Int32>(content.Image.MediaUrl()
             
             #line default
             #line hidden
-, 1873), false)
-, Tuple.Create(Tuple.Create("", 1898), Tuple.Create("?width=500&height=500&mode=max&upscale=false", 1898), true)
+, 1874), false)
+, Tuple.Create(Tuple.Create("", 1899), Tuple.Create("?width=500&height=500&mode=max&upscale=false", 1899), true)
 );
 
 WriteLiteral("\r\n                     sizes=\"100vw\"");
 
-WriteAttribute("alt", Tuple.Create("\r\n                     alt=\"", 1979), Tuple.Create("\"", 2026)
+WriteAttribute("alt", Tuple.Create("\r\n                     alt=\"", 1980), Tuple.Create("\"", 2027)
             
             #line 37 "..\..\Views\Partials\BlockList\Components\FormattedTextWithImage.cshtml"
-, Tuple.Create(Tuple.Create("", 2007), Tuple.Create<System.Object, System.Int32>(content.Image.Name
+, Tuple.Create(Tuple.Create("", 2008), Tuple.Create<System.Object, System.Int32>(content.Image.Name
             
             #line default
             #line hidden
-, 2007), false)
+, 2008), false)
 );
 
-WriteAttribute("width", Tuple.Create("\r\n                     width=\"", 2027), Tuple.Create("\"", 2070)
+WriteAttribute("width", Tuple.Create("\r\n                     width=\"", 2028), Tuple.Create("\"", 2071)
             
             #line 38 "..\..\Views\Partials\BlockList\Components\FormattedTextWithImage.cshtml"
-, Tuple.Create(Tuple.Create("", 2057), Tuple.Create<System.Object, System.Int32>(imageWidth
+, Tuple.Create(Tuple.Create("", 2058), Tuple.Create<System.Object, System.Int32>(imageWidth
             
             #line default
             #line hidden
-, 2057), false)
+, 2058), false)
 );
 
-WriteAttribute("height", Tuple.Create(" height=\"", 2071), Tuple.Create("\"", 2124)
+WriteAttribute("height", Tuple.Create(" height=\"", 2072), Tuple.Create("\"", 2125)
             
             #line 38 "..\..\Views\Partials\BlockList\Components\FormattedTextWithImage.cshtml"
-, Tuple.Create(Tuple.Create("", 2080), Tuple.Create<System.Object, System.Int32>(content.Image.Value<int>("umbracoHeight")
+, Tuple.Create(Tuple.Create("", 2081), Tuple.Create<System.Object, System.Int32>(content.Image.Value<int>("umbracoHeight")
             
             #line default
             #line hidden
-, 2080), false)
+, 2081), false)
 );
 
 WriteLiteral(" />\r\n");

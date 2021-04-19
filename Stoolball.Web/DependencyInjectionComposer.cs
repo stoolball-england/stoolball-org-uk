@@ -6,6 +6,7 @@ using Polly;
 using Polly.Caching;
 using Polly.Caching.Memory;
 using Polly.Registry;
+using Stoolball.Caching;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Data.Cache;
@@ -21,6 +22,7 @@ using Stoolball.Security;
 using Stoolball.SocialMedia;
 using Stoolball.Statistics;
 using Stoolball.Teams;
+using Stoolball.Web.Caching;
 using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
 using Stoolball.Web.Configuration;
@@ -84,6 +86,8 @@ namespace Stoolball.Web
             composition.Register<IMatchesRssQueryStringParser, MatchesRssQueryStringParser>();
             composition.Register<IMatchFilterSerializer, MatchFilterQueryStringSerializer>();
             composition.Register<IStatisticsFilterSerializer, StatisticsFilterQueryStringSerializer>();
+            composition.Register<ITeamListingFilterSerializer, TeamListingFilterQueryStringSerializer>();
+            composition.Register<ICacheOverride, CacheOverride>();
 
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 
             // be injected anywhere except the one place where it's serving a page of content.
@@ -94,18 +98,27 @@ namespace Stoolball.Web
             composition.Register<IMemoryCache, MemoryCache>(Lifetime.Singleton);
             composition.Register<IOptions<MemoryCacheOptions>, MemoryCacheOptions>(Lifetime.Singleton);
             composition.Register<IAsyncCacheProvider, MemoryCacheProvider>(Lifetime.Singleton);
+            composition.Register<ISyncCacheProvider, MemoryCacheProvider>(Lifetime.Singleton);
             composition.Register<IReadOnlyPolicyRegistry<string>>((serviceProvider) =>
             {
                 var registry = new PolicyRegistry();
-                var memoryCacheProvider = serviceProvider.GetInstance<IAsyncCacheProvider>();
+                var asyncMemoryCacheProvider = serviceProvider.GetInstance<IAsyncCacheProvider>();
                 var logger = serviceProvider.GetInstance<ILogger>();
-                var cachePolicy = Policy.CacheAsync(memoryCacheProvider, TimeSpan.FromMinutes(120), (context, key, ex) =>
+                var cachePolicy = Policy.CacheAsync(asyncMemoryCacheProvider, TimeSpan.FromMinutes(120), (context, key, ex) =>
                 {
                     logger.Error(typeof(IAsyncCacheProvider), ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
                 });
 
+                var syncMemoryCacheProvider = serviceProvider.GetInstance<ISyncCacheProvider>();
+                var slidingPolicy = Policy.Cache(syncMemoryCacheProvider, new SlidingTtl(TimeSpan.FromMinutes(120)), (context, key, ex) =>
+                {
+                    logger.Error(typeof(ISyncCacheProvider), ex, "Cache provider for key {key}, threw exception: {ex}.", key, ex.Message);
+                });
+
                 registry.Add(CacheConstants.StatisticsPolicy, cachePolicy);
                 registry.Add(CacheConstants.MatchesPolicy, cachePolicy);
+                registry.Add(CacheConstants.TeamsPolicy, cachePolicy);
+                registry.Add(CacheConstants.MemberOverridePolicy, slidingPolicy);
                 return registry;
 
             }, Lifetime.Singleton);
@@ -116,7 +129,8 @@ namespace Stoolball.Web
             composition.Register<IClubDataSource, SqlServerClubDataSource>();
             composition.Register<IClubRepository, SqlServerClubRepository>();
             composition.Register<ITeamDataSource, SqlServerTeamDataSource>();
-            composition.Register<ITeamListingDataSource, SqlServerTeamListingDataSource>();
+            composition.Register<ITeamListingDataSource, CachedTeamListingDataSource>();
+            composition.Register<ICacheableTeamListingDataSource, SqlServerTeamListingDataSource>();
             composition.Register<ITeamRepository, SqlServerTeamRepository>();
             composition.Register<IPlayerDataSource, SqlServerPlayerDataSource>();
             composition.Register<IPlayerRepository, SqlServerPlayerRepository>();

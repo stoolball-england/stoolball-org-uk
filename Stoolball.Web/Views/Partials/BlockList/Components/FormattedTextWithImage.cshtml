@@ -13,7 +13,7 @@
 
     var imagePosition = content.ImagePosition?.ToLowerInvariant() ?? "left";
 
-    var imageWidth = content.Image.Value<int>("umbracoWidth");
+    var imageWidth = content.Image?.Value<int>("umbracoWidth");
     var widthClass = "extra-small";
     if (imageWidth > 200) { widthClass = "small"; }
     if (imageWidth > 400) { widthClass = "medium"; }

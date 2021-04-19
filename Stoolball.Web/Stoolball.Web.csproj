@@ -1221,6 +1221,7 @@
       <DependentUpon>HtmlTable.cshtml</DependentUpon>
     </Compile>
     <Compile Include="App_Start\RazorGeneratorMvcStart.cs" />
+    <Compile Include="Caching\CacheOverride.cs" />
     <Compile Include="Clubs\ClubAuthorizationPolicy.cs" />
     <Compile Include="Clubs\DeleteClubViewModel.cs" />
     <Compile Include="Clubs\DeleteClubController.cs" />

@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Caching;
+using Stoolball.Data.Cache;
 using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Teams;
@@ -20,15 +22,17 @@ namespace Stoolball.Web.Teams
         private readonly ITeamDataSource _teamDataSource;
         private readonly ITeamRepository _teamRepository;
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
+        private readonly ICacheOverride _cacheOverride;
 
         public EditTeamSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITeamDataSource teamDataSource, ITeamRepository teamRepository,
-            IAuthorizationPolicy<Team> authorizationPolicy)
+            IAuthorizationPolicy<Team> authorizationPolicy, ICacheOverride cacheOverride)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource;
             _teamRepository = teamRepository ?? throw new System.ArgumentNullException(nameof(teamRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
+            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
         }
 
         [HttpPost]
@@ -75,6 +79,8 @@ namespace Stoolball.Web.Teams
             {
                 var currentMember = Members.GetCurrentMember();
                 var updatedTeam = await _teamRepository.UpdateTeam(team, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+
+                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.TeamListingsCacheKeyPrefix);
 
                 // redirect back to the team actions
                 return Redirect(updatedTeam.TeamRoute + "/edit");
