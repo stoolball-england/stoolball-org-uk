@@ -1,3 +1,10 @@
 ﻿.block__image {
     max-width: 200px;
 }
+
+/* Images are restricted to 200px, but if they're physically bigger then the default class applied restricts the space allowed for text. 
+   Allow that space to grow, knowing the max-width is 200px.
+*/
+.block__text-with-image .block__text {
+    flex-basis: auto;
+}
