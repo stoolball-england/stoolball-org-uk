@@ -8,6 +8,7 @@
 @{
     Html.RequiresCss("/statistics/statistics.min.css");
 
+    var totalMatches = Model.Player.PlayerIdentities.Sum(x => x.TotalMatches);
     var firstMatchYear = Model.Player.PlayerIdentities.Min(x => x.FirstPlayed).Value.Year;
     var lastMatchYear = Model.Player.PlayerIdentities.Min(x => x.LastPlayed).Value.Year;
     var matchYears = (firstMatchYear == lastMatchYear) ? $"in {firstMatchYear}" : $"from {firstMatchYear} to {lastMatchYear}";
@@ -19,8 +20,8 @@
 <div class="container-xl">
     <h1>@(Model.Player?.PlayerName())</h1>
     <p>
-        @(Model.Player?.PlayerName()) has played @Model.Player.PlayerIdentities.Sum(x => x.TotalMatches)
-        matches for @Html.Raw(Model.Player.PlayerIdentities.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.
+        @(Model.Player?.PlayerName()) played @totalMatches
+        @(totalMatches > 1 ? "matches" : "match") for @Html.Raw(Model.Player.PlayerIdentities.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.
     </p>
 
     <table class="table-as-cards table-as-cards-reset-sm">
