@@ -70,6 +70,7 @@ namespace Stoolball.Data.SqlServer
                 Introduction = team.Introduction,
                 PlayingTimes = team.PlayingTimes,
                 Cost = team.Cost,
+                ClubMark = team.ClubMark,
                 MatchLocations = team.MatchLocations.Select(x => new MatchLocation { MatchLocationId = x.MatchLocationId }).ToList(),
                 PublicContactDetails = team.PublicContactDetails,
                 PrivateContactDetails = team.PrivateContactDetails,
@@ -198,9 +199,9 @@ namespace Stoolball.Data.SqlServer
             }
 
             await transaction.Connection.ExecuteAsync(
-                $@"INSERT INTO {Tables.Team} (TeamId, TeamType, AgeRangeLower, AgeRangeUpper, PlayerType, Introduction, 
-                                PlayingTimes, Cost, PublicContactDetails, PrivateContactDetails, Facebook, Twitter, Instagram, YouTube, Website, TeamRoute, MemberGroupKey, MemberGroupName) 
-                                VALUES (@TeamId, @TeamType, @AgeRangeLower, @AgeRangeUpper, @PlayerType, @Introduction, @PlayingTimes, @Cost, 
+                $@"INSERT INTO {Tables.Team} (TeamId, TeamType, AgeRangeLower, AgeRangeUpper, PlayerType, Introduction, PlayingTimes, Cost, ClubMark,
+                                PublicContactDetails, PrivateContactDetails, Facebook, Twitter, Instagram, YouTube, Website, TeamRoute, MemberGroupKey, MemberGroupName) 
+                                VALUES (@TeamId, @TeamType, @AgeRangeLower, @AgeRangeUpper, @PlayerType, @Introduction, @PlayingTimes, @Cost, @ClubMark,
                                 @PublicContactDetails, @PrivateContactDetails, @Facebook, @Twitter, @Instagram, @YouTube, @Website, @TeamRoute, @MemberGroupKey, @MemberGroupName)",
                 new
                 {
@@ -212,6 +213,7 @@ namespace Stoolball.Data.SqlServer
                     auditableTeam.Introduction,
                     auditableTeam.PlayingTimes,
                     auditableTeam.Cost,
+                    auditableTeam.ClubMark,
                     auditableTeam.PublicContactDetails,
                     auditableTeam.PrivateContactDetails,
                     auditableTeam.Facebook,
