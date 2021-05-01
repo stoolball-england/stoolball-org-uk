@@ -150,7 +150,7 @@ namespace Stoolball.Web
             composition.Register<ITournamentDataSource, SqlServerTournamentDataSource>();
             composition.Register<ITournamentRepository, CacheClearingTournamentRepository>();
             composition.Register<IWrappableTournamentRepository, SqlServerTournamentRepository>();
-            composition.Register<IBestPerformanceInAMatchStatisticsDataSource, CachedStatisticsDataSource>();
+            composition.Register<IBestPerformanceInAMatchStatisticsDataSource, CachedBestPerformanceInAMatchStatisticsDataSource>();
             composition.Register<ICacheableBestPerformanceInAMatchStatisticsDataSource, SqlServerBestPerformanceInAMatchStatisticsDataSource>();
             composition.Register<IStatisticsRepository, SqlServerStatisticsRepository>();
             composition.Register<IInningsStatisticsDataSource, CachedInningsStatisticsDataSource>();
