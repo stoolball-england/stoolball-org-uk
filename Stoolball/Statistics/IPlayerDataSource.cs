@@ -12,7 +12,7 @@ namespace Stoolball.Statistics
         /// Gets a list of player identities based on a query
         /// </summary>
         /// <returns>A list of <see cref="PlayerIdentity"/> objects. An empty list if no player identities are found.</returns>
-        Task<List<PlayerIdentity>> ReadPlayerIdentities(PlayerIdentityFilter playerQuery);
+        Task<List<PlayerIdentity>> ReadPlayerIdentities(PlayerIdentityFilter filter);
 
         /// <summary>
         /// Read a single player by their route

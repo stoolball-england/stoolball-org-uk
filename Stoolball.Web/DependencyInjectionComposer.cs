@@ -132,7 +132,8 @@ namespace Stoolball.Web
             composition.Register<ITeamListingDataSource, CachedTeamListingDataSource>();
             composition.Register<ICacheableTeamListingDataSource, SqlServerTeamListingDataSource>();
             composition.Register<ITeamRepository, SqlServerTeamRepository>();
-            composition.Register<IPlayerDataSource, SqlServerPlayerDataSource>();
+            composition.Register<IPlayerDataSource, CachedPlayerDataSource>();
+            composition.Register<ICacheablePlayerDataSource, SqlServerPlayerDataSource>();
             composition.Register<IPlayerRepository, SqlServerPlayerRepository>();
             composition.Register<IMatchLocationDataSource, SqlServerMatchLocationDataSource>();
             composition.Register<IMatchLocationRepository, SqlServerMatchLocationRepository>();

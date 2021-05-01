@@ -12,7 +12,7 @@ namespace Stoolball.Data.SqlServer
     /// <summary>
     /// Gets stoolball player data from the Umbraco database
     /// </summary>
-    public class SqlServerPlayerDataSource : IPlayerDataSource
+    public class SqlServerPlayerDataSource : IPlayerDataSource, ICacheablePlayerDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IRouteNormaliser _routeNormaliser;
