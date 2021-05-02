@@ -72,6 +72,7 @@
         Statistics,
         EditStatistics,
         Player,
+        PlayerBowling,
         ClubStatistics,
         TeamStatistics,
         MatchLocationStatistics,

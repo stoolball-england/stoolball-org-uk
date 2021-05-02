@@ -1,0 +1,23 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<PlayerViewModel>
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.Statistics
+@using Stoolball.Statistics
+@{
+    Html.RequiresCss("/statistics/statistics.min.css");
+
+    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = false, StatisticsFilter = Model.StatisticsFilter };
+    bowlingFigures.Results.AddRange(Model.BowlingFigures);}
+<div class="container-xl">
+    @Html.Partial("_PlayerHeader")
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Player.PlayerRoute">Batting</a>
+        </li>
+        <li class="nav-item">
+            <em class="nav-link active">Bowling</em>
+        </li>
+    </ul>
+
+    @Html.Partial("_BowlingFigures", bowlingFigures)
+</div>

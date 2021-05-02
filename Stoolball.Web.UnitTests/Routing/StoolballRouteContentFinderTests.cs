@@ -221,6 +221,8 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/players/example-NAME/Individual-Scores/", StoolballRouteType.IndividualScores)]
         [InlineData("https://example.org/players/example-name/bowling-figures", StoolballRouteType.BowlingFigures)]
         [InlineData("https://example.org/players/example-NAME/Bowling-Figures/", StoolballRouteType.BowlingFigures)]
+        [InlineData("https://example.org/players/example-name/bowling", StoolballRouteType.PlayerBowling)]
+        [InlineData("https://example.org/players/example-NAME/Bowling/", StoolballRouteType.PlayerBowling)]
         [InlineData("https://example.org/players/example-name/", StoolballRouteType.Player)]
         [InlineData("https://example.org/players/example-NAME", StoolballRouteType.Player)]
         public void Correct_route_should_match(string route, StoolballRouteType expectedType)

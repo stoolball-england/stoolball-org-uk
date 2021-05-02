@@ -16,13 +16,13 @@ using Umbraco.Web.Models;
 
 namespace Stoolball.Web.Statistics
 {
-    public class PlayerController : RenderMvcControllerAsync
+    public class PlayerBowlingController : RenderMvcControllerAsync
     {
         private readonly IPlayerDataSource _playerDataSource;
         private readonly IPlayerSummaryStatisticsDataSource _summaryStatisticsDataSource;
         private readonly IBestPerformanceInAMatchStatisticsDataSource _bestPerformanceDataSource;
 
-        public PlayerController(IGlobalSettings globalSettings,
+        public PlayerBowlingController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
@@ -60,8 +60,7 @@ namespace Stoolball.Web.Statistics
             {
                 model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 5 };
                 model.StatisticsFilter.Player = model.Player;
-                model.BattingStatistics = await _summaryStatisticsDataSource.ReadBattingStatistics(model.StatisticsFilter).ConfigureAwait(false);
-                model.PlayerInnings = (await _bestPerformanceDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+                model.BowlingFigures = (await _bestPerformanceDataSource.ReadBowlingFigures(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Statistics, Url = new Uri(Constants.Pages.StatisticsUrl, UriKind.Relative) });
 

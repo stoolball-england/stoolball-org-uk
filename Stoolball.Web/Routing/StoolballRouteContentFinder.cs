@@ -91,6 +91,7 @@ namespace Stoolball.Web.Routing
                 { $"tournaments{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Tournament },
                 { $"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}ics{OPTIONAL_SLASH}", StoolballRouteType.MatchesCalendar },
                 { $"players{SLASH}{ANY_VALID_ROUTE}{OPTIONAL_SLASH}", StoolballRouteType.Player },
+                { $"players{SLASH}{ANY_VALID_ROUTE}{SLASH}bowling{OPTIONAL_SLASH}", StoolballRouteType.PlayerBowling },
                 { $"players{SLASH}{ANY_VALID_ROUTE}{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores },
                 { $"players{SLASH}{ANY_VALID_ROUTE}{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures },
 

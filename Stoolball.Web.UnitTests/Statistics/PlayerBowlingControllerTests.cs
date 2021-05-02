@@ -16,14 +16,14 @@ using Xunit;
 
 namespace Stoolball.Web.Tests.Statistics
 {
-    public class PlayerControllerTests : UmbracoBaseTest
+    public class PlayerBowlingControllerTests : UmbracoBaseTest
     {
-        public PlayerControllerTests()
+        public PlayerBowlingControllerTests()
         {
             Setup();
         }
 
-        private class TestController : PlayerController
+        private class TestController : PlayerBowlingController
         {
             public TestController(IPlayerDataSource playerDataSource, UmbracoHelper umbracoHelper)
            : base(
@@ -35,7 +35,8 @@ namespace Stoolball.Web.Tests.Statistics
                 umbracoHelper,
                 playerDataSource,
                 Mock.Of<IPlayerSummaryStatisticsDataSource>(),
-                Mock.Of<IBestPerformanceInAMatchStatisticsDataSource>())
+                Mock.Of<IBestPerformanceInAMatchStatisticsDataSource>()
+                )
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -51,7 +52,7 @@ namespace Stoolball.Web.Tests.Statistics
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("Player", model);
+                return View("PlayerBowling", model);
             }
         }
 

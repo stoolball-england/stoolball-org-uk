@@ -1,31 +1,26 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<PlayerViewModel>
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Statistics
-@using System.Linq
 @using Stoolball.Matches
-@using Stoolball.Statistics
-@using Humanizer
 @{
     Html.RequiresCss("/statistics/statistics.min.css");
 
-    var totalMatches = Model.Player.PlayerIdentities.Sum(x => x.TotalMatches);
-    var firstMatchYear = Model.Player.PlayerIdentities.Min(x => x.FirstPlayed).Value.Year;
-    var lastMatchYear = Model.Player.PlayerIdentities.Min(x => x.LastPlayed).Value.Year;
-    var matchYears = (firstMatchYear == lastMatchYear) ? $"in {firstMatchYear}" : $"from {firstMatchYear} to {lastMatchYear}";
     var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = false, StatisticsFilter = Model.StatisticsFilter };
     individualScores.Results.AddRange(Model.PlayerInnings);
-    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = false, StatisticsFilter = Model.StatisticsFilter };
-    bowlingFigures.Results.AddRange(Model.BowlingFigures);
 }
 <div class="container-xl">
-    <h1>@(Model.Player?.PlayerName())</h1>
-    <p>
-        @(Model.Player?.PlayerName()) played @totalMatches
-        @(totalMatches > 1 ? "matches" : "match") for @Html.Raw(Model.Player.PlayerIdentities.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>")) @matchYears.
-    </p>
+    @Html.Partial("_PlayerHeader")
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <em class="nav-link active">Batting</em>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Player.PlayerRoute/bowling">Bowling</a>
+        </li>
+    </ul>
 
     <table class="table-as-cards table-as-cards-reset-sm">
-        <caption>Batting</caption>
         <thead>
             <tr>
                 <th scope="col">Innings</th>
@@ -68,5 +63,4 @@
     }
 
     @Html.Partial("_IndividualScores", individualScores)
-    @Html.Partial("_BowlingFigures", bowlingFigures)
 </div>
