@@ -102,7 +102,7 @@ namespace Stoolball.UnitTests.Matches
             {
                 Assert.Empty(result.MatchTypes);
                 Assert.True(result.IncludeMatches);
-                Assert.True(result.IncludeTournaments);
+                Assert.False(result.IncludeTournaments);
                 Assert.False(result.IncludeTournamentMatches);
             }
         }

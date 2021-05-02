@@ -6,7 +6,6 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Moq;
 using Stoolball.Clubs;
-using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Security;
@@ -41,7 +40,7 @@ namespace Stoolball.Web.Tests.Clubs
                 clubDataSource,
                 matchDataSource,
                 Mock.Of<IDateTimeFormatter>(),
-                Mock.Of<ISeasonEstimator>(),
+                Mock.Of<IMatchFilterFactory>(),
                 Mock.Of<IAuthorizationPolicy<Club>>())
             {
                 var request = new Mock<HttpRequestBase>();
