@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Matches;
 using Stoolball.Statistics;
 using Xunit;
@@ -46,12 +47,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            foreach (var player in _databaseFixture.Players)
+            foreach (var player in _databaseFixture.TestData.Players)
             {
                 var result = await dataSource.ReadBattingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
                 Assert.NotNull(result);
-                Assert.Equal(_databaseFixture.PlayerInnings.Count(x => x.Batter.Player.PlayerId == player.PlayerId && x.DismissalType != DismissalType.DidNotBat), result.TotalInnings);
+                Assert.Equal(_databaseFixture.TestData.PlayerInnings.Count(x => x.Batter.Player.PlayerId == player.PlayerId && x.DismissalType != DismissalType.DidNotBat), result.TotalInnings);
             }
         }
 
@@ -60,12 +61,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            foreach (var player in _databaseFixture.Players)
+            foreach (var player in _databaseFixture.TestData.Players)
             {
                 var result = await dataSource.ReadBattingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
                 Assert.NotNull(result);
-                Assert.Equal(_databaseFixture.PlayerInnings.Count(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored.HasValue), result.TotalInningsWithRunsScored);
+                Assert.Equal(_databaseFixture.TestData.PlayerInnings.Count(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored.HasValue), result.TotalInningsWithRunsScored);
             }
         }
 
@@ -74,12 +75,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            foreach (var player in _databaseFixture.Players)
+            foreach (var player in _databaseFixture.TestData.Players)
             {
                 var result = await dataSource.ReadBattingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
                 Assert.NotNull(result);
-                Assert.Equal(_databaseFixture.PlayerInnings.Count(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored.HasValue && x.BallsFaced.HasValue), result.TotalInningsWithRunsScoredAndBallsFaced);
+                Assert.Equal(_databaseFixture.TestData.PlayerInnings.Count(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored.HasValue && x.BallsFaced.HasValue), result.TotalInningsWithRunsScoredAndBallsFaced);
             }
         }
 
@@ -88,12 +89,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            foreach (var player in _databaseFixture.Players)
+            foreach (var player in _databaseFixture.TestData.Players)
             {
                 var result = await dataSource.ReadBattingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
                 Assert.NotNull(result);
-                Assert.Equal(_databaseFixture.PlayerInnings.Count(x => x.Batter.Player.PlayerId == player.PlayerId &&
+                Assert.Equal(_databaseFixture.TestData.PlayerInnings.Count(x => x.Batter.Player.PlayerId == player.PlayerId &&
                     (x.DismissalType == DismissalType.NotOut || x.DismissalType == DismissalType.Retired || x.DismissalType == DismissalType.RetiredHurt)), result.NotOuts);
             }
         }
@@ -103,12 +104,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            foreach (var player in _databaseFixture.Players)
+            foreach (var player in _databaseFixture.TestData.Players)
             {
                 var result = await dataSource.ReadBattingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
                 Assert.NotNull(result);
-                Assert.Equal(_databaseFixture.PlayerInnings.Where(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored.HasValue).Sum(x => x.RunsScored), result.TotalRunsScored);
+                Assert.Equal(_databaseFixture.TestData.PlayerInnings.Where(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored.HasValue).Sum(x => x.RunsScored), result.TotalRunsScored);
             }
         }
 
@@ -117,12 +118,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            foreach (var player in _databaseFixture.Players)
+            foreach (var player in _databaseFixture.TestData.Players)
             {
                 var result = await dataSource.ReadBattingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
                 Assert.NotNull(result);
-                Assert.Equal(_databaseFixture.PlayerInnings.Count(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored >= 50), result.Fifties);
+                Assert.Equal(_databaseFixture.TestData.PlayerInnings.Count(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored >= 50), result.Fifties);
             }
         }
 
@@ -131,12 +132,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            foreach (var player in _databaseFixture.Players)
+            foreach (var player in _databaseFixture.TestData.Players)
             {
                 var result = await dataSource.ReadBattingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
                 Assert.NotNull(result);
-                Assert.Equal(_databaseFixture.PlayerInnings.Count(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored >= 100), result.Hundreds);
+                Assert.Equal(_databaseFixture.TestData.PlayerInnings.Count(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored >= 100), result.Hundreds);
             }
         }
 
@@ -145,15 +146,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            foreach (var player in _databaseFixture.Players)
+            foreach (var player in _databaseFixture.TestData.Players)
             {
                 var result = await dataSource.ReadBattingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
                 Assert.NotNull(result);
 
-                var bestRunsScored = _databaseFixture.PlayerInnings.Where(x => x.Batter.Player.PlayerId == player.PlayerId).Max(x => x.RunsScored);
+                var bestRunsScored = _databaseFixture.TestData.PlayerInnings.Where(x => x.Batter.Player.PlayerId == player.PlayerId).Max(x => x.RunsScored);
                 Assert.Equal(bestRunsScored, result.BestInningsRunsScored);
-                Assert.Equal(_databaseFixture.PlayerInnings.Where(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored == bestRunsScored)
+                Assert.Equal(_databaseFixture.TestData.PlayerInnings.Where(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored == bestRunsScored)
                     .Any(x => x.DismissalType == DismissalType.NotOut || x.DismissalType == DismissalType.Retired || x.DismissalType == DismissalType.RetiredHurt), !result.BestInningsWasDismissed);
             }
         }
@@ -163,14 +164,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            foreach (var player in _databaseFixture.Players)
+            foreach (var player in _databaseFixture.TestData.Players)
             {
                 var result = await dataSource.ReadBattingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
                 Assert.NotNull(result);
 
-                var totalRunsScored = _databaseFixture.PlayerInnings.Where(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored.HasValue && x.BallsFaced.HasValue).Sum(x => x.RunsScored);
-                var totalBallsFaced = _databaseFixture.PlayerInnings.Where(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored.HasValue && x.BallsFaced.HasValue).Sum(x => x.BallsFaced);
+                var totalRunsScored = _databaseFixture.TestData.PlayerInnings.Where(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored.HasValue && x.BallsFaced.HasValue).Sum(x => x.RunsScored);
+                var totalBallsFaced = _databaseFixture.TestData.PlayerInnings.Where(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored.HasValue && x.BallsFaced.HasValue).Sum(x => x.BallsFaced);
                 if (totalBallsFaced > 0)
                 {
                     var strikeRate = (((decimal)totalRunsScored) / totalBallsFaced.Value) * 100;
@@ -188,14 +189,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            foreach (var player in _databaseFixture.Players)
+            foreach (var player in _databaseFixture.TestData.Players)
             {
                 var result = await dataSource.ReadBattingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
                 Assert.NotNull(result);
 
-                var totalRunsScored = _databaseFixture.PlayerInnings.Where(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored.HasValue).Sum(x => x.RunsScored);
-                var totalOuts = _databaseFixture.PlayerInnings.Count(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored.HasValue && x.DismissalType != DismissalType.NotOut && x.DismissalType != DismissalType.Retired && x.DismissalType != DismissalType.RetiredHurt);
+                var totalRunsScored = _databaseFixture.TestData.PlayerInnings.Where(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored.HasValue).Sum(x => x.RunsScored);
+                var totalOuts = _databaseFixture.TestData.PlayerInnings.Count(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored.HasValue && x.DismissalType != DismissalType.NotOut && x.DismissalType != DismissalType.Retired && x.DismissalType != DismissalType.RetiredHurt);
                 if (totalOuts > 0)
                 {
                     var average = ((decimal)totalRunsScored) / totalOuts;
@@ -205,6 +206,196 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     Assert.Null(result.Average);
                 }
+            }
+        }
+
+        [Fact]
+        public async Task Read_bowling_statistics_throws_ArgumentNullException_with_no_filter()
+        {
+            var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await dataSource.ReadBowlingStatistics(null).ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task Read_bowling_statistics_throws_ArgumentException_with_no_player()
+        {
+            var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await dataSource.ReadBowlingStatistics(new StatisticsFilter()).ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task Read_bowling_statistics_throws_ArgumentException_with_no_player_id()
+        {
+            var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            await Assert.ThrowsAsync<ArgumentException>(async () => await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = new Player() }).ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task Read_bowling_statistics_returns_TotalInnings()
+        {
+            var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            foreach (var player in _databaseFixture.TestData.Players)
+            {
+                var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
+
+                Assert.NotNull(result);
+
+
+                var count = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).Count(x =>
+                        x.OversBowled.Any(o => o.Bowler.Player.PlayerId == player.PlayerId) ||
+                        x.PlayerInnings.Any(pi => pi.Bowler?.Player.PlayerId == player.PlayerId)
+                    );
+
+                var innings = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).Where(x =>
+                        x.OversBowled.Any(o => o.Bowler.Player.PlayerId == player.PlayerId) ||
+                        x.PlayerInnings.Any(pi => pi.Bowler?.Player.PlayerId == player.PlayerId)
+                    );
+
+                Assert.Equal(count, result.TotalInnings);
+            }
+        }
+
+        [Fact]
+        public async Task Read_bowling_statistics_returns_TotalInningsWithRunsConceded()
+        {
+            var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            foreach (var player in _databaseFixture.TestData.Players)
+            {
+                var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
+
+                Assert.NotNull(result);
+                throw new NotImplementedException();
+            }
+        }
+
+        [Fact]
+        public async Task Read_bowling_statistics_returns_TotalOvers()
+        {
+            var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            foreach (var player in _databaseFixture.TestData.Players)
+            {
+                var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
+
+                Assert.NotNull(result);
+                throw new NotImplementedException();
+            }
+        }
+
+        [Fact]
+        public async Task Read_bowling_statistics_returns_TotalMaidens()
+        {
+            var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            foreach (var player in _databaseFixture.TestData.Players)
+            {
+                var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
+
+                Assert.NotNull(result);
+                throw new NotImplementedException();
+            }
+        }
+
+        [Fact]
+        public async Task Read_bowling_statistics_returns_TotalRunsConceded()
+        {
+            var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            foreach (var player in _databaseFixture.TestData.Players)
+            {
+                var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
+
+                Assert.NotNull(result);
+                throw new NotImplementedException();
+            }
+        }
+
+        [Fact]
+        public async Task Read_bowling_statistics_returns_TotalWickets()
+        {
+            var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            foreach (var player in _databaseFixture.TestData.Players)
+            {
+                var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
+
+                Assert.NotNull(result);
+                throw new NotImplementedException();
+            }
+        }
+
+        [Fact]
+        public async Task Read_bowling_statistics_returns_FiveWicketInnings()
+        {
+            var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            foreach (var player in _databaseFixture.TestData.Players)
+            {
+                var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
+
+                Assert.NotNull(result);
+                throw new NotImplementedException();
+            }
+        }
+
+        [Fact]
+        public async Task Read_bowling_statistics_returns_BestBowling()
+        {
+            var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            foreach (var player in _databaseFixture.TestData.Players)
+            {
+                var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
+
+                Assert.NotNull(result);
+                throw new NotImplementedException();
+            }
+        }
+
+        [Fact]
+        public async Task Read_bowling_statistics_returns_Economy()
+        {
+            var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            foreach (var player in _databaseFixture.TestData.Players)
+            {
+                var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
+
+                Assert.NotNull(result);
+                throw new NotImplementedException();
+            }
+        }
+
+        [Fact]
+        public async Task Read_bowling_statistics_returns_StrikeRate()
+        {
+            var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            foreach (var player in _databaseFixture.TestData.Players)
+            {
+                var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
+
+                Assert.NotNull(result);
+                throw new NotImplementedException();
+            }
+        }
+
+        [Fact]
+        public async Task Read_bowling_statistics_returns_Average()
+        {
+            var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            foreach (var player in _databaseFixture.TestData.Players)
+            {
+                var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
+
+                Assert.NotNull(result);
+                throw new NotImplementedException();
             }
         }
     }

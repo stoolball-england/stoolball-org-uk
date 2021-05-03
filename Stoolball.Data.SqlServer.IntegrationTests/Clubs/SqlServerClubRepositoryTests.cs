@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Moq;
 using Stoolball.Clubs;
+using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Logging;
 using Stoolball.Routing;
 using Xunit;

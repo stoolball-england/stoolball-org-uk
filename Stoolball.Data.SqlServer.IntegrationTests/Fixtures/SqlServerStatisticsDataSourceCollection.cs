@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace Stoolball.Data.SqlServer.IntegrationTests
+namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 {
     [CollectionDefinition(IntegrationTestConstants.StatisticsDataSourceIntegrationTestCollection)]
     public class SqlServerStatisticsDataSourceCollection : ICollectionFixture<SqlServerStatisticsDataSourceFixture>

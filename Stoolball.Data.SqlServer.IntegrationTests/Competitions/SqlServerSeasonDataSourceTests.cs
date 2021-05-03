@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using Stoolball.Competitions;
+using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Teams;

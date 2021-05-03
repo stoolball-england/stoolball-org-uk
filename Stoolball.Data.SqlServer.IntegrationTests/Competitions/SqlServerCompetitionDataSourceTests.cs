@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using Stoolball.Competitions;
+using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Navigation;
 using Stoolball.Routing;
 using Xunit;

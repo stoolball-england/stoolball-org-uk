@@ -49,5 +49,37 @@ namespace Stoolball.Data.SqlServer
                 .ConfigureAwait(false);
             }
         }
+
+        public async Task<BowlingStatistics> ReadBowlingStatistics(StatisticsFilter statisticsFilter)
+        {
+            if (statisticsFilter == null) { throw new ArgumentNullException(nameof(statisticsFilter)); }
+            if (statisticsFilter?.Player?.PlayerId == null) { throw new ArgumentException("Player.PlayerId must be specified", nameof(statisticsFilter)); }
+
+            // A player can have multiple sets of bowling figures per innings if they have multiple identities in that innings,
+            // which could happen if 'John Smith' was also entered as 'John', for example.
+            // 
+            // This query groups sets of bowling figures by MatchId and counts how many MatchInningsPairs there are, ie how many innings per match with bowling figures.
+            // Because MatchInningsPair is not a unique value they have to be grouped by MatchId, which means one result per team per match, so SUM them to get a single total.
+            var totalInningsSql = $@"SELECT SUM(BowlingFiguresPerInnings) FROM (
+                                         SELECT COUNT(DISTINCT MatchInningsPair) AS BowlingFiguresPerInnings 
+                                         FROM {Tables.PlayerInMatchStatistics} 
+                                         WHERE PlayerId = @PlayerId AND BowlingFiguresId IS NOT NULL 
+                                         GROUP BY MatchTeamId
+                                    ) AS BowlingFiguresPerInnings";
+
+            var sql = $@"SELECT TotalInnings
+                         FROM (
+	                        SELECT ({totalInningsSql}) AS TotalInnings
+	                     ) AS BowlingStatistics";
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                return await connection.QuerySingleAsync<BowlingStatistics>(sql, new
+                {
+                    statisticsFilter.Player.PlayerId
+                })
+                .ConfigureAwait(false);
+            }
+        }
     }
 }

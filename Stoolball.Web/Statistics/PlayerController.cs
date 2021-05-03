@@ -47,7 +47,7 @@ namespace Stoolball.Web.Statistics
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new PlayerViewModel(contentModel.Content, Services?.UserService)
+            var model = new PlayerBattingViewModel(contentModel.Content, Services?.UserService)
             {
                 Player = await _playerDataSource.ReadPlayerByRoute(Request.RawUrl).ConfigureAwait(false),
             };

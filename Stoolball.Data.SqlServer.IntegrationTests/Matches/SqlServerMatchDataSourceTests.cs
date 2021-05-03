@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Moq;
+using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Matches;
 using Stoolball.Routing;
 using Xunit;

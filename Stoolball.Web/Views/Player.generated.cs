@@ -54,7 +54,7 @@ namespace ASP
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("RazorGenerator", "2.0.0.0")]
     [System.Web.WebPages.PageVirtualPathAttribute("~/Views/Player.cshtml")]
-    public partial class _Views_Player_cshtml : Umbraco.Web.Mvc.UmbracoViewPage<PlayerViewModel>
+    public partial class _Views_Player_cshtml : Umbraco.Web.Mvc.UmbracoViewPage<PlayerBattingViewModel>
     {
         public _Views_Player_cshtml()
         {
@@ -107,15 +107,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 728), Tuple.Create("\"", 768)
+WriteAttribute("href", Tuple.Create(" href=\"", 735), Tuple.Create("\"", 775)
             
             #line 19 "..\..\Views\Player.cshtml"
-, Tuple.Create(Tuple.Create("", 735), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
+, Tuple.Create(Tuple.Create("", 742), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
             
             #line default
             #line hidden
-, 735), false)
-, Tuple.Create(Tuple.Create("", 760), Tuple.Create("/bowling", 760), true)
+, 742), false)
+, Tuple.Create(Tuple.Create("", 767), Tuple.Create("/bowling", 767), true)
 );
 
 WriteLiteral(">Bowling</a>\r\n        </li>\r\n    </ul>\r\n\r\n    <table");

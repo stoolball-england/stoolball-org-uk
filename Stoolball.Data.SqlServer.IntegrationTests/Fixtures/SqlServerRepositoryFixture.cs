@@ -5,7 +5,7 @@ using Stoolball.MatchLocations;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 
-namespace Stoolball.Data.SqlServer.IntegrationTests
+namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 {
     public sealed class SqlServerRepositoryFixture : BaseSqlServerFixture
     {
@@ -20,12 +20,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public SqlServerRepositoryFixture() : base("StoolballRepositoryIntegrationTests")
         {
             // Populate seed data so that there's a consistent baseline for each test run
-            SeedDatabase();
+            GenerateSeedData();
         }
 
-        protected override void SeedDatabase()
+        private void GenerateSeedData()
         {
-            var seedDataGenerator = new SeedDataGenerator();
+            var seedDataGenerator = new FixedSeedDataGenerator();
             using (var connection = ConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();

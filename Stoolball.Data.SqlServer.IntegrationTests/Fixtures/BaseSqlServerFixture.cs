@@ -5,7 +5,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.SqlServer.Dac;
 using Microsoft.SqlServer.Management.Smo;
 
-namespace Stoolball.Data.SqlServer.IntegrationTests
+namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 {
     public abstract class BaseSqlServerFixture : IDisposable
     {
@@ -61,8 +61,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             }
         }
 
-        protected abstract void SeedDatabase();
-
         public void Dispose()
         {
             Dispose(true);
@@ -72,7 +70,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         {
             if (_isDisposed) { return; }
 
-            RemoveIntegrationTestsDatabaseIfExists();
+            //RemoveIntegrationTestsDatabaseIfExists();
 
             _isDisposed = true;
         }

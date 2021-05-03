@@ -70,7 +70,7 @@ namespace Stoolball.Web.Tests.Statistics
         }
 
         [Fact]
-        public async Task Route_matching_player_returns_PlayerViewModel()
+        public async Task Route_matching_player_returns_PlayerBattingViewModel()
         {
             var dataSource = new Mock<IPlayerDataSource>();
             dataSource.Setup(x => x.ReadPlayerByRoute(It.IsAny<string>())).Returns(Task.FromResult<Player>(new Player()));
@@ -79,7 +79,7 @@ namespace Stoolball.Web.Tests.Statistics
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<PlayerViewModel>(((ViewResult)result).Model);
+                Assert.IsType<PlayerBattingViewModel>(((ViewResult)result).Model);
             }
         }
     }

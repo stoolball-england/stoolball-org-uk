@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Moq;
+using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
 using Stoolball.Routing;

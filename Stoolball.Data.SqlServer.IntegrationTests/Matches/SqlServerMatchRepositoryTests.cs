@@ -5,6 +5,7 @@ using AngleSharp.Css.Dom;
 using Dapper;
 using Ganss.XSS;
 using Moq;
+using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.Routing;

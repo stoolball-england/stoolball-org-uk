@@ -24,5 +24,12 @@ namespace Stoolball.Data.Cache
             var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
             return await cachePolicy.ExecuteAsync(async context => await _playerSummaryStatisticsDataSource.ReadBattingStatistics(filter).ConfigureAwait(false), new Context(nameof(ReadBattingStatistics) + _statisticsFilterSerializer.Serialize(filter)));
         }
+
+        public async Task<BowlingStatistics> ReadBowlingStatistics(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
+            return await cachePolicy.ExecuteAsync(async context => await _playerSummaryStatisticsDataSource.ReadBowlingStatistics(filter).ConfigureAwait(false), new Context(nameof(ReadBowlingStatistics) + _statisticsFilterSerializer.Serialize(filter)));
+        }
     }
 }

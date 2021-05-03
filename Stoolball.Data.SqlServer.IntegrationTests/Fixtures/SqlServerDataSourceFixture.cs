@@ -9,7 +9,7 @@ using Stoolball.MatchLocations;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 
-namespace Stoolball.Data.SqlServer.IntegrationTests
+namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 {
     public sealed class SqlServerDataSourceFixture : BaseSqlServerFixture
     {
@@ -47,12 +47,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
         public SqlServerDataSourceFixture() : base("StoolballDataSourceIntegrationTests")
         {
             // Populate seed data so that there's a consistent baseline for each test run
-            SeedDatabase();
+            GenerateSeedData();
         }
 
-        protected override void SeedDatabase()
+        private void GenerateSeedData()
         {
-            var seedDataGenerator = new SeedDataGenerator();
+            var seedDataGenerator = new FixedSeedDataGenerator();
             var playerIdentityFinder = new PlayerIdentityFinder();
             using (var connection = ConnectionFactory.CreateDatabaseConnection())
             {
@@ -314,8 +314,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     var match = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
                     match.MatchLocation = matchLocation;
                     match.StartTime = DateTime.UtcNow.AddMonths(i - 15);
-                    match.MatchType = (i % 2 == 0) ? MatchType.FriendlyMatch : MatchType.LeagueMatch;
-                    match.PlayerType = (i % 3 == 0) ? PlayerType.Mixed : PlayerType.Ladies;
+                    match.MatchType = i % 2 == 0 ? MatchType.FriendlyMatch : MatchType.LeagueMatch;
+                    match.PlayerType = i % 3 == 0 ? PlayerType.Mixed : PlayerType.Ladies;
                     repo.CreateMatch(match);
                     Matches.Add(match);
                     MatchListings.Add(match.ToMatchListing());

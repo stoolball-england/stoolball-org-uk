@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Navigation;
 using Stoolball.Teams;
 using Xunit;

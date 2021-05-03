@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Statistics;
 using Xunit;
 
@@ -23,7 +24,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
             var result = await dataSource.ReadInningsStatistics(null).ConfigureAwait(false);
 
-            var innings = _databaseFixture.Matches.SelectMany(x => x.MatchInnings);
+            var innings = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings);
             var expectedAverageRuns = ((decimal)innings.Where(x => x.Runs.HasValue).Average(x => x.Runs)).AccurateToTwoDecimalPlaces();
             var expectedHighestRuns = innings.Where(x => x.Runs.HasValue).Max(x => x.Runs);
             var expectedLowestRuns = innings.Where(x => x.Runs.HasValue).Min(x => x.Runs);
@@ -46,11 +47,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerInningsStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            foreach (var team in _databaseFixture.Teams)
+            foreach (var team in _databaseFixture.TestData.Teams)
             {
                 var result = await dataSource.ReadInningsStatistics(new StatisticsFilter { Team = team }).ConfigureAwait(false);
 
-                var matchesForTeam = _databaseFixture.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(team.TeamId.Value));
+                var matchesForTeam = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(team.TeamId.Value));
                 var inningsForTeam = matchesForTeam.SelectMany(m => m.MatchInnings.Where(x => x.BattingTeam.Team.TeamId == team.TeamId.Value));
 
                 var expectedAverageRuns = ((decimal)inningsForTeam.Average(x => x.Runs)).AccurateToTwoDecimalPlaces();
@@ -82,10 +83,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerInningsStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
-            var result = await dataSource.ReadInningsStatistics(new StatisticsFilter { Club = _databaseFixture.TeamWithClub.Club }).ConfigureAwait(false);
+            var result = await dataSource.ReadInningsStatistics(new StatisticsFilter { Club = _databaseFixture.TestData.TeamWithClub.Club }).ConfigureAwait(false);
 
-            var matchesForClub = _databaseFixture.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TeamWithClub.TeamId.Value));
-            var inningsForClub = matchesForClub.SelectMany(m => m.MatchInnings.Where(x => x.BattingTeam.Team.TeamId == _databaseFixture.TeamWithClub.TeamId.Value));
+            var matchesForClub = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithClub.TeamId.Value));
+            var inningsForClub = matchesForClub.SelectMany(m => m.MatchInnings.Where(x => x.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithClub.TeamId.Value));
 
             var expectedAverageRuns = ((decimal)inningsForClub.Average(x => x.Runs)).AccurateToTwoDecimalPlaces();
             var expectedHighestRuns = inningsForClub.Where(x => x.Runs.HasValue).Max(x => x.Runs);
@@ -97,7 +98,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             Assert.Equal(expectedLowestRuns, result.LowestRunsScored.Value);
             Assert.Equal(expectedAverageWickets, result.AverageWicketsLost.Value.AccurateToTwoDecimalPlaces());
 
-            var inningsForOpposition = matchesForClub.SelectMany(m => m.MatchInnings.Where(x => x.BattingTeam.Team.TeamId != _databaseFixture.TeamWithClub.TeamId.Value));
+            var inningsForOpposition = matchesForClub.SelectMany(m => m.MatchInnings.Where(x => x.BattingTeam.Team.TeamId != _databaseFixture.TestData.TeamWithClub.TeamId.Value));
             var expectedOppositionAverageRuns = ((decimal)inningsForOpposition.Average(x => x.Runs)).AccurateToTwoDecimalPlaces();
             var expectedOppositionHighestRuns = inningsForOpposition.Where(x => x.Runs.HasValue).Max(x => x.Runs);
             var expectedOppositionLowestRuns = inningsForOpposition.Where(x => x.Runs.HasValue).Min(x => x.Runs);

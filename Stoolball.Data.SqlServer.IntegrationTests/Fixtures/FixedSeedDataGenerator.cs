@@ -10,9 +10,9 @@ using Stoolball.MatchLocations;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 
-namespace Stoolball.Data.SqlServer.IntegrationTests
+namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 {
-    public class SeedDataGenerator
+    public class FixedSeedDataGenerator
     {
         private readonly OversHelper _oversHelper = new OversHelper();
 
@@ -653,7 +653,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     OverId = Guid.NewGuid(),
                     OverSet = _oversHelper.OverSetForOver(overSets, i + 1),
                     OverNumber = i + 1,
-                    Bowler = (i % 2 == 0) ? bowlingTeam[5] : bowlingTeam[3],
+                    Bowler = i % 2 == 0 ? bowlingTeam[5] : bowlingTeam[3],
                     BallsBowled = 8,
                     NoBalls = 1,
                     Wides = 0,

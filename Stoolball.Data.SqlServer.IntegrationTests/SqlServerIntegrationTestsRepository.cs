@@ -21,6 +21,57 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
         }
 
+        public void CreateTestData(TestData data)
+        {
+            if (data is null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            var playerIdentityFinder = new PlayerIdentityFinder();
+            var statisticsBuilder = new PlayerInMatchStatisticsBuilder(playerIdentityFinder, new OversHelper());
+
+            foreach (var player in data.Players)
+            {
+                CreatePlayer(player);
+            }
+
+            foreach (var team in data.Teams)
+            {
+                if (team.Club != null)
+                {
+                    CreateClub(team.Club);
+                }
+                CreateTeam(team);
+            }
+            foreach (var playerIdentity in data.PlayerIdentities)
+            {
+                CreatePlayerIdentity(playerIdentity);
+            }
+            foreach (var location in data.MatchLocations)
+            {
+                CreateMatchLocation(location);
+            }
+            foreach (var competition in data.Competitions)
+            {
+                CreateCompetition(competition);
+                foreach (var season in competition.Seasons)
+                {
+                    CreateSeason(season, competition.CompetitionId.Value);
+                }
+            }
+            foreach (var match in data.Matches)
+            {
+                CreateMatch(match);
+
+                var statisticsRecords = statisticsBuilder.BuildStatisticsForMatch(match);
+                foreach (var record in statisticsRecords)
+                {
+                    CreatePlayerInMatchStatisticsRecord(record);
+                }
+            }
+        }
+
         public void CreateTournament(Tournament tournament)
         {
             _connection.Execute($@"INSERT INTO {Tables.Tournament} 
