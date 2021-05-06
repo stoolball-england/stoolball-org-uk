@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Stoolball.Matches;
-using Stoolball.Teams;
 
 namespace Stoolball.Statistics
 {
@@ -11,6 +10,13 @@ namespace Stoolball.Statistics
     /// </summary>
     public class BowlingFiguresCalculator : IBowlingFiguresCalculator
     {
+        private readonly IOversHelper _oversHelper;
+
+        public BowlingFiguresCalculator(IOversHelper oversHelper)
+        {
+            _oversHelper = oversHelper ?? throw new ArgumentNullException(nameof(oversHelper));
+        }
+
         /// <summary>
         /// Calculate bowling figures (overs, maidens, runs, wickets) from data in a <see cref="MatchInnings"/>.
         /// </summary>
@@ -84,6 +90,70 @@ namespace Stoolball.Statistics
             }
 
             return bowlingFigures;
+        }
+
+        /// <summary>
+        /// Gets the number of runs conceded per wicket taken for a bowling performance
+        /// </summary>
+        /// <returns></returns>
+        public decimal? BowlingAverage(BowlingFigures bowlingFigures)
+        {
+            if (bowlingFigures is null)
+            {
+                throw new ArgumentNullException(nameof(bowlingFigures));
+            }
+
+            if (bowlingFigures.Wickets > 0 && bowlingFigures.RunsConceded.HasValue)
+            {
+                return Math.Round((decimal)bowlingFigures.RunsConceded / bowlingFigures.Wickets, 2);
+            }
+
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the average number of runs conceded per over
+        /// </summary>
+        /// <returns></returns>
+        public decimal? BowlingEconomy(BowlingFigures bowlingFigures)
+        {
+            if (bowlingFigures is null)
+            {
+                throw new ArgumentNullException(nameof(bowlingFigures));
+            }
+
+            if (bowlingFigures.Overs > 0 && bowlingFigures.RunsConceded.HasValue)
+            {
+                var oversInDecimal = ((decimal)_oversHelper.OversToBallsBowled(bowlingFigures.Overs.Value)) / StatisticsConstants.BALLS_PER_OVER;
+                return Math.Round((decimal)bowlingFigures.RunsConceded / oversInDecimal, 2);
+            }
+
+            else return null;
+        }
+
+        /// <summary>
+        /// Gets the number of balls bowled per wicket
+        /// </summary>
+        /// <returns></returns>
+        public decimal? BowlingStrikeRate(BowlingFigures bowlingFigures)
+        {
+            if (bowlingFigures is null)
+            {
+                throw new ArgumentNullException(nameof(bowlingFigures));
+            }
+
+            if (bowlingFigures.Overs > 0 && bowlingFigures.Wickets > 0)
+            {
+                return Math.Round((decimal)_oversHelper.OversToBallsBowled(bowlingFigures.Overs.Value) / bowlingFigures.Wickets, 2);
+            }
+
+            else
+            {
+                return null;
+            }
         }
     }
 }

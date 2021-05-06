@@ -203,7 +203,7 @@ namespace Stoolball.UnitTests.Statistics
                 MemberKey = Guid.NewGuid(),
             };
 
-            var bowlingFigures = new BowlingFiguresCalculator();
+            var bowlingFigures = new BowlingFiguresCalculator(new OversHelper());
             foreach (var innings in Match.MatchInnings)
             {
                 innings.BowlingFigures = bowlingFigures.CalculateBowlingFigures(innings);

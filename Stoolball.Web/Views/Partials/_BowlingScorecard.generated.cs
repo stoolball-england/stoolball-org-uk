@@ -280,7 +280,7 @@ WriteLiteral(">");
 
             
             #line 28 "..\..\Views\Partials\_BowlingScorecard.cshtml"
-                                                                                                                                                                      Write(bowler.BowlingEconomy()?.ToString() ?? "–");
+                                                                                                                                                                      Write(bowler.BowlingEconomy?.ToString() ?? "–");
 
             
             #line default
@@ -305,7 +305,7 @@ WriteLiteral(">");
 
             
             #line 29 "..\..\Views\Partials\_BowlingScorecard.cshtml"
-                                                                                                                                                                      Write(bowler.BowlingAverage()?.ToString() ?? "–");
+                                                                                                                                                                      Write(bowler.BowlingAverage?.ToString() ?? "–");
 
             
             #line default
@@ -330,7 +330,7 @@ WriteLiteral(">");
 
             
             #line 30 "..\..\Views\Partials\_BowlingScorecard.cshtml"
-                                                                                                                                                                          Write(bowler.BowlingStrikeRate()?.ToString() ?? "–");
+                                                                                                                                                                          Write(bowler.BowlingStrikeRate?.ToString() ?? "–");
 
             
             #line default
@@ -440,14 +440,14 @@ WriteLiteral(" class=\"player-name\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3658), Tuple.Create("\"", 3696)
+WriteAttribute("href", Tuple.Create(" href=\"", 3652), Tuple.Create("\"", 3690)
             
             #line 60 "..\..\Views\Partials\_BowlingScorecard.cshtml"
-, Tuple.Create(Tuple.Create("", 3665), Tuple.Create<System.Object, System.Int32>(over.Bowler.Player.PlayerRoute
+, Tuple.Create(Tuple.Create("", 3659), Tuple.Create<System.Object, System.Int32>(over.Bowler.Player.PlayerRoute
             
             #line default
             #line hidden
-, 3665), false)
+, 3659), false)
 );
 
 WriteLiteral(">");

@@ -41,7 +41,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         {
             var testData = new TestData();
             var playerIdentityFinder = new PlayerIdentityFinder();
-            var bowlingFigures = new BowlingFiguresCalculator();
+            var bowlingFigures = new BowlingFiguresCalculator(new OversHelper());
             var teamComparer = new TeamEqualityComparer();
             var playerComparer = new PlayerEqualityComparer();
 

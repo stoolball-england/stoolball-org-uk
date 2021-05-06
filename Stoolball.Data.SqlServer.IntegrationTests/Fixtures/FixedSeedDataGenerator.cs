@@ -481,7 +481,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 MemberKey = Guid.NewGuid(),
             };
 
-            var bowlingFigures = new BowlingFiguresCalculator();
+            var bowlingFigures = new BowlingFiguresCalculator(new OversHelper());
             foreach (var innings in match.MatchInnings)
             {
                 innings.BowlingFigures = bowlingFigures.CalculateBowlingFigures(innings);

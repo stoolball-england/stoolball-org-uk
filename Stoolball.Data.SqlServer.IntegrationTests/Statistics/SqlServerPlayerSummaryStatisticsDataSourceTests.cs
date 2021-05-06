@@ -243,19 +243,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
                 Assert.NotNull(result);
-
-
-                var count = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).Count(x =>
+                Assert.Equal(_databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).Count(x =>
                         x.OversBowled.Any(o => o.Bowler.Player.PlayerId == player.PlayerId) ||
                         x.PlayerInnings.Any(pi => pi.Bowler?.Player.PlayerId == player.PlayerId)
-                    );
-
-                var innings = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).Where(x =>
-                        x.OversBowled.Any(o => o.Bowler.Player.PlayerId == player.PlayerId) ||
-                        x.PlayerInnings.Any(pi => pi.Bowler?.Player.PlayerId == player.PlayerId)
-                    );
-
-                Assert.Equal(count, result.TotalInnings);
+                    ), result.TotalInnings);
             }
         }
 
@@ -277,13 +268,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         public async Task Read_bowling_statistics_returns_TotalOvers()
         {
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var oversHelper = new OversHelper();
 
             foreach (var player in _databaseFixture.TestData.Players)
             {
                 var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
+                var ballsBowled = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings)
+                        .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId && o.Overs.HasValue))
+                        .Sum(o => oversHelper.OversToBallsBowled(o.Overs.Value));
+
                 Assert.NotNull(result);
-                throw new NotImplementedException();
+                Assert.Equal(oversHelper.BallsBowledToOvers(ballsBowled), result.TotalOvers);
             }
         }
 

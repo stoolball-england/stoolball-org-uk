@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Moq;
 using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Teams;
@@ -13,7 +14,7 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Throws_ArgumentNullException_when_MatchInnings_is_null()
         {
-            var calculator = new BowlingFiguresCalculator();
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
 
             Assert.Throws<ArgumentNullException>(() => calculator.CalculateBowlingFigures(null));
         }
@@ -21,7 +22,7 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Bowlers_are_sorted_by_their_first_OverNumber()
         {
-            var calculator = new BowlingFiguresCalculator();
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
             var firstBowler = "Bowler 1";
             var secondBowler = "Bowler 2";
             var thirdBowler = "Bowler 3";
@@ -56,7 +57,7 @@ namespace Stoolball.UnitTests.Statistics
         [InlineData(null, false)]
         public void Wicket_takers_with_no_overs_are_included_for_valid_dismissals(DismissalType? dismissalType, bool creditedToBowler)
         {
-            var calculator = new BowlingFiguresCalculator();
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
             var bowler1 = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "Bowler 1" };
             var bowler2 = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "Bowler 2" };
 
@@ -96,7 +97,7 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Wicket_is_not_included_if_bowler_is_null()
         {
-            var calculator = new BowlingFiguresCalculator();
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
             var innings = new MatchInnings
             {
                 PlayerInnings = new List<PlayerInnings> {
@@ -115,7 +116,7 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Overs_total_is_correct()
         {
-            var calculator = new BowlingFiguresCalculator();
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
             var firstBowler = "Bowler 1";
             var secondBowler = "Bowler 2";
             var thirdBowler = "Bowler 3";
@@ -150,7 +151,7 @@ namespace Stoolball.UnitTests.Statistics
         /// </remarks>
         public void Overs_total_assumes_8_ball_overs()
         {
-            var calculator = new BowlingFiguresCalculator();
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
             var bowler = "Bowler 1";
             var innings = new MatchInnings
             {
@@ -168,7 +169,7 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Maidens_total_is_correct()
         {
-            var calculator = new BowlingFiguresCalculator();
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
             var firstBowler = "Bowler 1";
             var secondBowler = "Bowler 2";
             var innings = new MatchInnings
@@ -197,7 +198,7 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void RunsConceded_total_is_correct()
         {
-            var calculator = new BowlingFiguresCalculator();
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
             var firstBowler = "Bowler 1";
             var secondBowler = "Bowler 2";
             var innings = new MatchInnings
@@ -224,7 +225,7 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void Wickets_total_is_correct()
         {
-            var calculator = new BowlingFiguresCalculator();
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
             var firstBowler = "Bowler 1";
             var secondBowler = "Bowler 2";
             var thirdBowler = "Bowler 3";
@@ -261,7 +262,7 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void PlayerIdentityId_should_be_preserved()
         {
-            var calculator = new BowlingFiguresCalculator();
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
             var bowler1 = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "Bowler 1" };
             var bowler2 = new PlayerIdentity { PlayerIdentityId = Guid.NewGuid(), PlayerIdentityName = "Bowler 2" };
             var innings = new MatchInnings
@@ -287,7 +288,7 @@ namespace Stoolball.UnitTests.Statistics
         [Fact]
         public void TeamId_should_be_preserved()
         {
-            var calculator = new BowlingFiguresCalculator();
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
             var teamId1 = Guid.NewGuid();
             var teamId2 = Guid.NewGuid();
             var bowler1 = new PlayerIdentity { PlayerIdentityName = "Bowler 1", Team = new Team { TeamId = teamId1 } };
@@ -309,6 +310,199 @@ namespace Stoolball.UnitTests.Statistics
 
             Assert.Equal(teamId1.ToString(), result[0].Bowler.Team.TeamId.ToString());
             Assert.Equal(teamId2.ToString(), result[1].Bowler.Team.TeamId.ToString());
+        }
+
+        [Fact]
+        public void BowlingAverage_is_null_when_wickets_is_0()
+        {
+            var bowlingFigures = new BowlingFigures
+            {
+                RunsConceded = 10,
+                Wickets = 0
+            };
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
+
+            var result = calculator.BowlingAverage(bowlingFigures);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void BowlingAverage_is_correct_for_integers()
+        {
+            var bowlingFigures = new BowlingFigures
+            {
+                RunsConceded = 30,
+                Wickets = 2
+            };
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
+
+            var result = calculator.BowlingAverage(bowlingFigures);
+
+            Assert.Equal(15, result);
+        }
+
+        [Fact]
+        public void BowlingAverage_is_correct_to_two_decimal_places_when_returning_fractions()
+        {
+            var bowlingFigures = new BowlingFigures
+            {
+                RunsConceded = 32,
+                Wickets = 3
+            };
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
+
+            var result = calculator.BowlingAverage(bowlingFigures);
+
+            Assert.Equal(10.67M, result);
+        }
+
+        [Fact]
+        public void BowlingEconomy_is_null_when_overs_is_0()
+        {
+            var bowlingFigures = new BowlingFigures
+            {
+                Overs = 0,
+                RunsConceded = 10
+            };
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
+
+            var result = calculator.BowlingEconomy(bowlingFigures);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void BowlingEconomy_is_correct_for_integers()
+        {
+            var bowlingFigures = new BowlingFigures
+            {
+                Overs = 3,
+                RunsConceded = 30
+            };
+            var oversHelper = new Mock<IOversHelper>();
+            oversHelper.Setup(x => x.OversToBallsBowled(bowlingFigures.Overs.Value)).Returns(24);
+            var calculator = new BowlingFiguresCalculator(oversHelper.Object);
+
+            var result = calculator.BowlingEconomy(bowlingFigures);
+
+            Assert.Equal(10, result);
+        }
+
+        [Fact]
+        public void BowlingEconomy_is_correct_to_two_decimal_places_when_returning_fractions()
+        {
+            var bowlingFigures = new BowlingFigures
+            {
+                Overs = 4,
+                RunsConceded = 41
+            };
+            var oversHelper = new Mock<IOversHelper>();
+            oversHelper.Setup(x => x.OversToBallsBowled(bowlingFigures.Overs.Value)).Returns(32);
+            var calculator = new BowlingFiguresCalculator(oversHelper.Object);
+
+            var result = calculator.BowlingEconomy(bowlingFigures);
+
+            Assert.Equal(10.25M, result);
+        }
+
+        [Fact]
+        public void BowlingEconomy_is_correct_for_incomplete_overs()
+        {
+            var bowlingFigures = new BowlingFigures
+            {
+                Overs = 3.4M,
+                RunsConceded = 28
+            };
+            var oversHelper = new Mock<IOversHelper>();
+            oversHelper.Setup(x => x.OversToBallsBowled(bowlingFigures.Overs.Value)).Returns(28);
+            var calculator = new BowlingFiguresCalculator(oversHelper.Object);
+
+            var result = calculator.BowlingEconomy(bowlingFigures);
+
+            Assert.Equal(8, result);
+        }
+
+        [Fact]
+        public void BowlingStrikeRate_is_null_when_overs_is_0()
+        {
+            var bowlingFigures = new BowlingFigures
+            {
+                Overs = 0,
+                Wickets = 5
+            };
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
+
+            var result = calculator.BowlingStrikeRate(bowlingFigures);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void BowlingStrikeRate_is_null_when_wickets_is_0()
+        {
+            var bowlingFigures = new BowlingFigures
+            {
+                Overs = 5,
+                Wickets = 0
+            };
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
+
+            var result = calculator.BowlingStrikeRate(bowlingFigures);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void BowlingStrikeRate_is_correct_for_integers()
+        {
+            var bowlingFigures = new BowlingFigures
+            {
+                Overs = 2,
+                Wickets = 2
+            };
+            var oversHelper = new Mock<IOversHelper>();
+            oversHelper.Setup(x => x.OversToBallsBowled(bowlingFigures.Overs.Value)).Returns(16);
+            var calculator = new BowlingFiguresCalculator(oversHelper.Object);
+
+            var result = calculator.BowlingStrikeRate(bowlingFigures);
+
+            Assert.Equal(8, result);
+        }
+
+
+        [Fact]
+        public void BowlingStrikeRate_is_correct_for_incomplete_overs()
+        {
+            var bowlingFigures = new BowlingFigures
+            {
+                Overs = 2.4M,
+                Wickets = 2
+            };
+            var oversHelper = new Mock<IOversHelper>();
+            oversHelper.Setup(x => x.OversToBallsBowled(bowlingFigures.Overs.Value)).Returns(20);
+            var calculator = new BowlingFiguresCalculator(oversHelper.Object);
+
+            var result = calculator.BowlingStrikeRate(bowlingFigures);
+
+            Assert.Equal(10, result);
+        }
+
+        [Fact]
+        public void BowlingStrikeRate_is_correct_to_two_decimal_places_when_returning_fractions()
+        {
+            var bowlingFigures = new BowlingFigures
+            {
+                Overs = 10,
+                Wickets = 9
+            };
+            var oversHelper = new Mock<IOversHelper>();
+            oversHelper.Setup(x => x.OversToBallsBowled(bowlingFigures.Overs.Value)).Returns(80);
+            var calculator = new BowlingFiguresCalculator(oversHelper.Object);
+
+            var result = calculator.BowlingStrikeRate(bowlingFigures);
+
+            Assert.Equal(8.89M, result);
         }
     }
 }

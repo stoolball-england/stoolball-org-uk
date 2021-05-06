@@ -67,9 +67,11 @@ namespace Stoolball.Data.SqlServer
                                          GROUP BY MatchTeamId
                                     ) AS BowlingFiguresPerInnings";
 
-            var sql = $@"SELECT TotalInnings
+            var sql = $@"SELECT TotalInnings, TotalOvers
                          FROM (
-	                        SELECT ({totalInningsSql}) AS TotalInnings
+	                        SELECT 
+                                ({totalInningsSql}) AS TotalInnings,
+                                (SELECT SUM(BallsBowled)/{StatisticsConstants.BALLS_PER_OVER} + CAST((SUM(BallsBowled)%{StatisticsConstants.BALLS_PER_OVER})AS DECIMAL) / 10 FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalOvers
 	                     ) AS BowlingStatistics";
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
