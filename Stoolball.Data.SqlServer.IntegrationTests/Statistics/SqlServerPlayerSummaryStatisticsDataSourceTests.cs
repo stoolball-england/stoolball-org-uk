@@ -310,8 +310,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
+                var runsConceded = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings)
+                       .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId && o.RunsConceded.HasValue))
+                       .Sum(x => x.RunsConceded);
+
                 Assert.NotNull(result);
-                throw new NotImplementedException();
+                Assert.Equal(runsConceded, result.TotalRunsConceded);
             }
         }
 
