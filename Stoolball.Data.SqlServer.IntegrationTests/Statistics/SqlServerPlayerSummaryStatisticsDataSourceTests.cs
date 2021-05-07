@@ -292,8 +292,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
+                var maidens = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings)
+                        .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId && o.Maidens.HasValue))
+                        .Sum(x => x.Maidens);
+
                 Assert.NotNull(result);
-                throw new NotImplementedException();
+                Assert.Equal(maidens, result.TotalMaidens);
             }
         }
 
