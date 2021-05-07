@@ -328,8 +328,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
+                var wickets = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings)
+                       .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId))
+                       .Sum(x => x.Wickets);
+
                 Assert.NotNull(result);
-                throw new NotImplementedException();
+                Assert.Equal(wickets, result.TotalWickets);
             }
         }
 
