@@ -69,10 +69,14 @@ namespace Stoolball.Statistics
                     // Any overs without balls bowled must be counted as a complete over
                     overs += oversByThisBowler.Count(x => !x.BallsBowled.HasValue);
 
-                    // Only completed overs count as maidens
-                    maidens = oversByThisBowler.Count(x => x.BallsBowled.HasValue && x.BallsBowled >= StatisticsConstants.BALLS_PER_OVER && x.RunsConceded == 0);
+                    // Can only have maidens and runs conceded if there are any runs conceded
+                    if (oversByThisBowler.Any(x => x.RunsConceded.HasValue))
+                    {
+                        // Only completed overs count as maidens
+                        maidens = oversByThisBowler.Count(x => x.BallsBowled.HasValue && x.BallsBowled >= StatisticsConstants.BALLS_PER_OVER && x.RunsConceded == 0);
 
-                    runsConceded = oversByThisBowler.Any(x => x.RunsConceded.HasValue) ? oversByThisBowler.Where(x => x.RunsConceded.HasValue).Sum(x => x.RunsConceded) : null;
+                        runsConceded = oversByThisBowler.Where(x => x.RunsConceded.HasValue).Sum(x => x.RunsConceded);
+                    }
                 }
 
                 // Wickets taken comes from the batting data

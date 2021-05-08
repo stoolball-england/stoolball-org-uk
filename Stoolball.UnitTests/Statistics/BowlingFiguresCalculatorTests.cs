@@ -196,6 +196,24 @@ namespace Stoolball.UnitTests.Statistics
         }
 
         [Fact]
+        public void Maidens_is_null_if_RunsConceded_is_all_null()
+        {
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
+            var firstBowler = "Bowler 1";
+            var innings = new MatchInnings
+            {
+                OversBowled = new List<Over> {
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = firstBowler }, BallsBowled = 8, RunsConceded = null },
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = firstBowler }, BallsBowled = 8, RunsConceded = null }
+                }
+            };
+
+            var result = calculator.CalculateBowlingFigures(innings);
+
+            Assert.Null(result.Single(x => x.Bowler.PlayerIdentityName == firstBowler).Maidens);
+        }
+
+        [Fact]
         public void RunsConceded_total_is_correct()
         {
             var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
