@@ -262,7 +262,7 @@ namespace Stoolball.Data.SqlServer
 
                     // Add bowling figures
                     var bowlingFigures = await connection.QueryAsync<BowlingFigures, MatchInnings, PlayerIdentity, Player, Team, BowlingFigures>
-                        ($@"SELECT bf.Overs, bf.Maidens, bf.RunsConceded, bf.Wickets,
+                        ($@"SELECT bf.BowlingFiguresId, bf.Overs, bf.Maidens, bf.RunsConceded, bf.Wickets,
                             bf.MatchInningsId,
                             pi.PlayerIdentityId, pi.PlayerIdentityName,
                             p.PlayerId, p.PlayerRoute,

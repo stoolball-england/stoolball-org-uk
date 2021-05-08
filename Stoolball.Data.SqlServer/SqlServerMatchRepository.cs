@@ -157,6 +157,7 @@ namespace Stoolball.Data.SqlServer
                 }).ToList(),
                 BowlingFigures = innings.BowlingFigures.Select(x => new BowlingFigures
                 {
+                    BowlingFiguresId = x.BowlingFiguresId,
                     Bowler = CreateAuditableCopy(x.Bowler),
                     Overs = x.Overs,
                     Maidens = x.Maidens,
