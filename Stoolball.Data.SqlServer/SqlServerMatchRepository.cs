@@ -148,6 +148,7 @@ namespace Stoolball.Data.SqlServer
                 OversBowled = innings.OversBowled.Select(x => new Over
                 {
                     OverId = x.OverId,
+                    OverNumber = x.OverNumber,
                     Bowler = CreateAuditableCopy(x.Bowler),
                     BallsBowled = x.BallsBowled,
                     NoBalls = x.NoBalls,
