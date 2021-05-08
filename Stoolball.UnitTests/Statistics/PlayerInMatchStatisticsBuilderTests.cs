@@ -742,7 +742,7 @@ namespace Stoolball.UnitTests.Statistics
 
                     if (bowlerOversData.Any())
                     {
-                        Assert.Equal(bowlerOversData.Sum(x => x.BallsBowled), playerRecord.BallsBowled);
+                        Assert.Equal(bowlerOversData.Where(x => x.BallsBowled.HasValue).Sum(x => x.BallsBowled) + bowlerOversData.Count(x => !x.BallsBowled.HasValue) * StatisticsConstants.BALLS_PER_OVER, playerRecord.BallsBowled);
                     }
                     else if (figures.Overs.HasValue)
                     {

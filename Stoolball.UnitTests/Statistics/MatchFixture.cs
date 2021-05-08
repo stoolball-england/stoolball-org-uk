@@ -389,6 +389,13 @@ namespace Stoolball.UnitTests.Statistics
                     RunsConceded = 10
                 }); ;
             }
+
+            // One over has a known bowler with missing data
+            oversBowled[10].BallsBowled = null;
+            oversBowled[10].Wides = null;
+            oversBowled[10].NoBalls = null;
+            oversBowled[10].RunsConceded = null;
+
             return oversBowled;
         }
     }

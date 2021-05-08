@@ -131,7 +131,7 @@ namespace Stoolball.UnitTests.Statistics
                 OversBowled = new List<Over> {
                     new Over { Bowler = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = 8 }, // complete over counted
                     new Over { Bowler = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = 8 }, // multiple complete overs counted
-                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = null }, // over with missing balls data not counted
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = secondBowler }, BallsBowled = null }, // over with missing balls data counted as a complete over
                     new Over { Bowler = new PlayerIdentity { PlayerIdentityName = thirdBowler }, BallsBowled = 8 }, // complete over counted
                     new Over { Bowler = new PlayerIdentity { PlayerIdentityName = thirdBowler }, BallsBowled = 4 } // partial over counted
                 }
@@ -140,7 +140,7 @@ namespace Stoolball.UnitTests.Statistics
             var result = calculator.CalculateBowlingFigures(innings);
 
             Assert.Null(result.Single(x => x.Bowler.PlayerIdentityName == firstBowler).Overs); // from wickets only, no bowling
-            Assert.Equal(2, result.Single(x => x.Bowler.PlayerIdentityName == secondBowler).Overs); // whole overs only
+            Assert.Equal(3, result.Single(x => x.Bowler.PlayerIdentityName == secondBowler).Overs); // whole overs only
             Assert.Equal((decimal)1.4, result.Single(x => x.Bowler.PlayerIdentityName == thirdBowler).Overs); // with partial over
         }
 
@@ -220,6 +220,24 @@ namespace Stoolball.UnitTests.Statistics
 
             Assert.Null(result.Single(x => x.Bowler.PlayerIdentityName == firstBowler).RunsConceded); // from wickets only, no bowling
             Assert.Equal(20, result.Single(x => x.Bowler.PlayerIdentityName == secondBowler).RunsConceded); // sum of multiple overs, including missing data
+        }
+
+        [Fact]
+        public void Overs_without_RunsConceded_set_RunsConceded_to_be_null()
+        {
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
+            var firstBowler = "Bowler 1";
+            var innings = new MatchInnings
+            {
+                OversBowled = new List<Over> {
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = firstBowler }, RunsConceded = null },
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = firstBowler }, RunsConceded = null },
+                }
+            };
+
+            var result = calculator.CalculateBowlingFigures(innings);
+
+            Assert.Null(result.Single(x => x.Bowler.PlayerIdentityName == firstBowler).RunsConceded);
         }
 
         [Fact]

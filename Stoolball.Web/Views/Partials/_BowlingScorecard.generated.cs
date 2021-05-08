@@ -230,7 +230,7 @@ WriteLiteral(">");
 
             
             #line 26 "..\..\Views\Partials\_BowlingScorecard.cshtml"
-                                                                                                                                                                  Write(bowler.RunsConceded);
+                                                                                                                                                                   Write(bowler.RunsConceded?.ToString() ?? "–");
 
             
             #line default
@@ -440,14 +440,14 @@ WriteLiteral(" class=\"player-name\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3652), Tuple.Create("\"", 3690)
+WriteAttribute("href", Tuple.Create(" href=\"", 3673), Tuple.Create("\"", 3711)
             
             #line 60 "..\..\Views\Partials\_BowlingScorecard.cshtml"
-, Tuple.Create(Tuple.Create("", 3659), Tuple.Create<System.Object, System.Int32>(over.Bowler.Player.PlayerRoute
+, Tuple.Create(Tuple.Create("", 3680), Tuple.Create<System.Object, System.Int32>(over.Bowler.Player.PlayerRoute
             
             #line default
             #line hidden
-, 3659), false)
+, 3680), false)
 );
 
 WriteLiteral(">");

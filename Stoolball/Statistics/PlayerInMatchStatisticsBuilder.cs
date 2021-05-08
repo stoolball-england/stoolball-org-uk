@@ -128,7 +128,7 @@ namespace Stoolball.Statistics
             record.OverNumberOfFirstOverBowled = innings.OversBowled.OrderBy(x => x.OverNumber).FirstOrDefault(x => x.Bowler.PlayerIdentityId == fielder.PlayerIdentityId)?.OverNumber;
             if (oversBowled.Any())
             {
-                record.BallsBowled = oversBowled.Sum(x => x.BallsBowled);
+                record.BallsBowled = oversBowled.Where(x => x.BallsBowled.HasValue).Sum(x => x.BallsBowled) + (oversBowled.Count(x => !x.BallsBowled.HasValue) * StatisticsConstants.BALLS_PER_OVER);
                 record.NoBalls = oversBowled.Sum(x => x.NoBalls);
                 record.Wides = oversBowled.Sum(x => x.Wides);
             }
