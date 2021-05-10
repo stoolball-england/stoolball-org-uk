@@ -137,7 +137,34 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 matches.Add(CreateMatchBetween(teamA, teamAPlayers, teamB, teamBPlayers, homeTeamBatsFirst));
             }
 
+            matches.Add(CreateMatchWithDifferentTeamsWhereSomeonePlaysOnBothTeams());
+
+            // Ensure there's always an intra-club match to test
+            // matches.Add(CreateMatchBetween(_teams[0].team, _teams[0].identities, _teams[0].team, _teams[0].identities, _randomiser.Next(2) == 0));
+
             return matches;
+        }
+
+        private Match CreateMatchWithDifferentTeamsWhereSomeonePlaysOnBothTeams()
+        {
+            // Ensure there's always a match to test where someone swaps sides during the innings (eg a batter is loaned as a fielder and takes a wicket)
+
+            // 1. Find any player with identities on two teams
+            var anyPlayerWithIdentitiesOnMultipleTeams = _teams.SelectMany(x => x.identities)
+                .GroupBy(x => x.Player.PlayerId, x => x, (playerId, playerIdentities) => new Player { PlayerId = playerId, PlayerIdentities = playerIdentities.ToList() })
+                .Where(x => x.PlayerIdentities.Select(t => t.Team.TeamId.Value).Distinct().Count() > 1)
+                .First();
+
+            // 2. Create a match between those teams
+            var teamsForPlayer = _teams.Where(t => anyPlayerWithIdentitiesOnMultipleTeams.PlayerIdentities.Select(x => x.Team.TeamId).Contains(t.team.TeamId)).ToList();
+            var match = CreateMatchBetween(teamsForPlayer[0].team, teamsForPlayer[0].identities, teamsForPlayer[1].team, teamsForPlayer[1].identities, FiftyFiftyChance());
+
+            // 3. We know they'll be recorded as a batter in both innings. Ensure they take a wicket too.
+            var wicketTaken = match.MatchInnings.First().PlayerInnings.First();
+            wicketTaken.DismissalType = DismissalType.CaughtAndBowled;
+            wicketTaken.Bowler = anyPlayerWithIdentitiesOnMultipleTeams.PlayerIdentities.First(x => x.Team.TeamId == match.MatchInnings.First().BowlingTeam.Team.TeamId);
+
+            return match;
         }
 
         private bool FiftyFiftyChance()
