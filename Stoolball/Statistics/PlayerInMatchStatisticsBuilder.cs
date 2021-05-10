@@ -33,22 +33,20 @@ namespace Stoolball.Statistics
                 throw new ArgumentException($"{nameof(match)} {match.MatchId} must have a home and away team");
             }
 
-            var allPlayers = _playerIdentityFinder.PlayerIdentitiesInMatch(match);
+            var homeTeam = match.Teams.Single(t => t.TeamRole == TeamRole.Home);
+            var awayTeam = match.Teams.Single(t => t.TeamRole == TeamRole.Away);
+            var homePlayers = _playerIdentityFinder.PlayerIdentitiesInMatch(match, TeamRole.Home);
+            var awayPlayers = _playerIdentityFinder.PlayerIdentitiesInMatch(match, TeamRole.Away);
 
-            if (allPlayers.Any(x => !x.PlayerIdentityId.HasValue))
+            if (homePlayers.Any(x => !x.PlayerIdentityId.HasValue) || awayPlayers.Any(x => !x.PlayerIdentityId.HasValue))
             {
                 throw new ArgumentException($"All player identities in match {match.MatchId} must have a PlayerIdentityId");
             }
 
-            if (allPlayers.Any(x => x.Player?.PlayerId == null))
+            if (homePlayers.Any(x => x.Player?.PlayerId == null) || awayPlayers.Any(x => x.Player?.PlayerId == null))
             {
                 throw new ArgumentException($"All player identities in match {match.MatchId} must have a PlayerId. Player identity ");
             }
-
-            var homeTeam = match.Teams.Single(t => t.TeamRole == TeamRole.Home);
-            var awayTeam = match.Teams.Single(t => t.TeamRole == TeamRole.Away);
-            var homePlayers = allPlayers.Where(x => x.Team.TeamId == homeTeam.Team.TeamId);
-            var awayPlayers = allPlayers.Where(x => x.Team.TeamId == awayTeam.Team.TeamId);
 
             var records = new List<PlayerInMatchStatisticsRecord>();
 
@@ -110,7 +108,7 @@ namespace Stoolball.Statistics
 
         private void FindOrCreateInningsRecordForFielder(List<PlayerInMatchStatisticsRecord> records, Match match, TeamInMatch homeTeam, TeamInMatch awayTeam, MatchInnings innings, bool homeTeamIsBatting, PlayerIdentity fielder)
         {
-            var record = records.SingleOrDefault(x => x.MatchId == match.MatchId && x.PlayerIdentityId == fielder.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
+            var record = records.SingleOrDefault(x => x.MatchTeamId == innings.BowlingMatchTeamId && x.PlayerIdentityId == fielder.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
             if (record == null)
             {
                 record = CreateRecordForPlayerInInningsPair(match, innings, fielder, homeTeamIsBatting ? awayTeam : homeTeam, homeTeamIsBatting ? homeTeam : awayTeam);
@@ -150,7 +148,7 @@ namespace Stoolball.Statistics
             var firstPlayerInningsForThisPlayer = allPlayerInningsForThisPlayer.FirstOrDefault();
 
             // Find or add a record every batting team member in this innings regardless of whether they are recorded as batting
-            var record = records.SingleOrDefault(x => x.MatchId == match.MatchId && x.PlayerIdentityId == batter.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
+            var record = records.SingleOrDefault(x => x.MatchTeamId == innings.BattingMatchTeamId && x.PlayerIdentityId == batter.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && (x.PlayerInningsNumber == 1 || x.PlayerInningsNumber == null));
             if (record == null)
             {
                 record = CreateRecordForPlayerInInningsPair(match, innings, batter, homeTeamIsBatting ? homeTeam : awayTeam, homeTeamIsBatting ? awayTeam : homeTeam);
@@ -165,7 +163,7 @@ namespace Stoolball.Statistics
             // Add extra records for any players who batted multiple times in the same innings
             for (var i = 1; i < allPlayerInningsForThisPlayer.Count; i++)
             {
-                var extraBattingRecord = records.SingleOrDefault(x => x.MatchId == match.MatchId && x.PlayerIdentityId == batter.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && x.PlayerInningsNumber == i + 1);
+                var extraBattingRecord = records.SingleOrDefault(x => x.MatchTeamId == innings.BattingMatchTeamId && x.PlayerIdentityId == batter.PlayerIdentityId && x.MatchInningsPair == innings.InningsPair() && x.PlayerInningsNumber == i + 1);
                 if (extraBattingRecord == null)
                 {
                     extraBattingRecord = CreateRecordForPlayerInInningsPair(match, innings, batter, homeTeamIsBatting ? homeTeam : awayTeam, homeTeamIsBatting ? awayTeam : homeTeam);

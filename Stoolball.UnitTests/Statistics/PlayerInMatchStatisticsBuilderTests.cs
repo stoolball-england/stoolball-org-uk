@@ -89,7 +89,8 @@ namespace Stoolball.UnitTests.Statistics
             var batters = _matchFixture.Match.MatchInnings.SelectMany(i => i.PlayerInnings.Select(pi => pi.Batter));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var batter in batters)
@@ -111,7 +112,8 @@ namespace Stoolball.UnitTests.Statistics
             var batters = _matchFixture.Match.MatchInnings.SelectMany(i => i.PlayerInnings.Select(pi => pi.Batter));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in batters)
@@ -135,7 +137,8 @@ namespace Stoolball.UnitTests.Statistics
             var fielders = _matchFixture.Match.MatchInnings.SelectMany(i => i.PlayerInnings.Where(pi => pi.DismissedBy != null).Select(pi => pi.DismissedBy));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in fielders)
@@ -157,7 +160,8 @@ namespace Stoolball.UnitTests.Statistics
             var fielders = _matchFixture.Match.MatchInnings.SelectMany(i => i.PlayerInnings.Where(pi => pi.DismissedBy != null).Select(pi => pi.DismissedBy));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in fielders)
@@ -181,7 +185,8 @@ namespace Stoolball.UnitTests.Statistics
             var wicketTakers = _matchFixture.Match.MatchInnings.SelectMany(i => i.PlayerInnings.Where(pi => pi.Bowler != null).Select(pi => pi.Bowler));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in wicketTakers)
@@ -203,7 +208,8 @@ namespace Stoolball.UnitTests.Statistics
             var wicketTakers = _matchFixture.Match.MatchInnings.SelectMany(i => i.PlayerInnings.Where(pi => pi.Bowler != null).Select(pi => pi.Bowler));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in wicketTakers)
@@ -227,7 +233,8 @@ namespace Stoolball.UnitTests.Statistics
             var bowlers = _matchFixture.Match.MatchInnings.SelectMany(i => i.BowlingFigures.Select(pi => pi.Bowler));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in bowlers)
@@ -249,7 +256,8 @@ namespace Stoolball.UnitTests.Statistics
             var bowlers = _matchFixture.Match.MatchInnings.SelectMany(i => i.BowlingFigures.Select(pi => pi.Bowler));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in bowlers)
@@ -273,7 +281,8 @@ namespace Stoolball.UnitTests.Statistics
             var bowlers = _matchFixture.Match.MatchInnings.SelectMany(i => i.OversBowled.Select(pi => pi.Bowler));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in bowlers)
@@ -295,7 +304,8 @@ namespace Stoolball.UnitTests.Statistics
             var bowlers = _matchFixture.Match.MatchInnings.SelectMany(i => i.OversBowled.Select(pi => pi.Bowler));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in bowlers)
@@ -319,7 +329,8 @@ namespace Stoolball.UnitTests.Statistics
             var winners = _matchFixture.Match.Awards.Select(pi => pi.PlayerIdentity);
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in winners)
@@ -341,7 +352,8 @@ namespace Stoolball.UnitTests.Statistics
             var winners = _matchFixture.Match.Awards.Select(pi => pi.PlayerIdentity);
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in winners)
@@ -363,7 +375,8 @@ namespace Stoolball.UnitTests.Statistics
         public void Only_players_who_bat_again_in_an_innings_should_have_multiple_records_for_an_innings_pair()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in _playerIdentities)
@@ -391,7 +404,8 @@ namespace Stoolball.UnitTests.Statistics
             var batters = _matchFixture.Match.MatchInnings.SelectMany(i => i.PlayerInnings.Select(pi => pi.Batter));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in batters)
@@ -424,7 +438,8 @@ namespace Stoolball.UnitTests.Statistics
             var missingBatters = _playerIdentities.Where(x => !batters.Contains(x.PlayerIdentityId.Value));
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
             foreach (var identity in missingBatters)
@@ -447,7 +462,8 @@ namespace Stoolball.UnitTests.Statistics
         public void Second_batter_in_batting_innings_should_have_position_set_to_1()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
 
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
@@ -465,7 +481,8 @@ namespace Stoolball.UnitTests.Statistics
         public void Each_dismissal_credited_to_a_bowler_should_have_bowler_details()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
 
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
@@ -506,7 +523,8 @@ namespace Stoolball.UnitTests.Statistics
         public void Each_caught_dismissal_should_have_catcher_details()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
 
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
@@ -553,7 +571,8 @@ namespace Stoolball.UnitTests.Statistics
         public void Each_run_out_dismissal_should_have_fielder_details()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
 
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
@@ -594,7 +613,8 @@ namespace Stoolball.UnitTests.Statistics
         public void Bowlers_should_have_first_over_from_overs_data()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
 
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
@@ -617,7 +637,8 @@ namespace Stoolball.UnitTests.Statistics
         public void Bowlers_should_have_no_balls_and_wides_from_overs_data()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
 
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
@@ -640,7 +661,8 @@ namespace Stoolball.UnitTests.Statistics
         public void Bowlers_should_have_figures_from_bowling_figures_data()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
 
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
@@ -665,7 +687,8 @@ namespace Stoolball.UnitTests.Statistics
         public void Players_without_bowling_figures_should_have_null_data()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
 
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
@@ -694,7 +717,8 @@ namespace Stoolball.UnitTests.Statistics
         public void Bowlers_with_bowling_figures_have_wickets_with_bowling_if_they_have_overs_data()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
 
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
@@ -727,7 +751,8 @@ namespace Stoolball.UnitTests.Statistics
             oversHelper.Setup(x => x.OversToBallsBowled(It.IsAny<decimal>())).Returns(MOCK_RESULT_OF_OVERS_TO_BALLS_BOWLED);
 
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
 
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, oversHelper.Object).BuildStatisticsForMatch(_matchFixture.Match);
 
@@ -760,7 +785,8 @@ namespace Stoolball.UnitTests.Statistics
         public void All_players_should_have_catches_and_run_outs()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
 
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
@@ -784,7 +810,8 @@ namespace Stoolball.UnitTests.Statistics
         public void Every_record_should_record_whether_the_toss_was_won()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
 
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
@@ -809,7 +836,8 @@ namespace Stoolball.UnitTests.Statistics
         public void Every_record_should_record_whether_the_match_was_won()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
 
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 
@@ -848,7 +876,8 @@ namespace Stoolball.UnitTests.Statistics
         public void Every_record_should_record_whether_the_player_was_player_of_the_match()
         {
             var finder = new Mock<IPlayerIdentityFinder>();
-            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match)).Returns(_playerIdentities);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Home)).Returns(_matchFixture.HomePlayers);
+            finder.Setup(x => x.PlayerIdentitiesInMatch(_matchFixture.Match, TeamRole.Away)).Returns(_matchFixture.AwayPlayers);
 
             var result = new PlayerInMatchStatisticsBuilder(finder.Object, Mock.Of<IOversHelper>()).BuildStatisticsForMatch(_matchFixture.Match);
 

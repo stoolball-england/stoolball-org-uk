@@ -64,7 +64,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Assert.Equal(expectedLowestRuns, result.LowestRunsScored.Value);
                 Assert.Equal(expectedAverageWickets, result.AverageWicketsLost.Value.AccurateToTwoDecimalPlaces());
 
-                var inningsForOpposition = matchesForTeam.SelectMany(m => m.MatchInnings.Where(x => x.BattingTeam.Team.TeamId != team.TeamId.Value));
+                var inningsForOpposition = matchesForTeam.SelectMany(m => m.MatchInnings.Where(x => x.BowlingTeam.Team.TeamId == team.TeamId.Value));
                 var expectedOppositionAverageRuns = ((decimal)inningsForOpposition.Average(x => x.Runs)).AccurateToTwoDecimalPlaces();
                 var expectedOppositionHighestRuns = inningsForOpposition.Where(x => x.Runs.HasValue).Max(x => x.Runs);
                 var expectedOppositionLowestRuns = inningsForOpposition.Where(x => x.Runs.HasValue).Min(x => x.Runs);
@@ -98,7 +98,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             Assert.Equal(expectedLowestRuns, result.LowestRunsScored.Value);
             Assert.Equal(expectedAverageWickets, result.AverageWicketsLost.Value.AccurateToTwoDecimalPlaces());
 
-            var inningsForOpposition = matchesForClub.SelectMany(m => m.MatchInnings.Where(x => x.BattingTeam.Team.TeamId != _databaseFixture.TestData.TeamWithClub.TeamId.Value));
+            var inningsForOpposition = matchesForClub.SelectMany(m => m.MatchInnings.Where(x => x.BowlingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithClub.TeamId.Value));
             var expectedOppositionAverageRuns = ((decimal)inningsForOpposition.Average(x => x.Runs)).AccurateToTwoDecimalPlaces();
             var expectedOppositionHighestRuns = inningsForOpposition.Where(x => x.Runs.HasValue).Max(x => x.Runs);
             var expectedOppositionLowestRuns = inningsForOpposition.Where(x => x.Runs.HasValue).Min(x => x.Runs);

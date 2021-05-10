@@ -140,7 +140,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             matches.Add(CreateMatchWithDifferentTeamsWhereSomeonePlaysOnBothTeams());
 
             // Ensure there's always an intra-club match to test
-            // matches.Add(CreateMatchBetween(_teams[0].team, _teams[0].identities, _teams[0].team, _teams[0].identities, _randomiser.Next(2) == 0));
+            matches.Add(CreateMatchBetween(_teams[0].team, _teams[0].identities, _teams[0].team, _teams[0].identities, FiftyFiftyChance()));
 
             return matches;
         }
