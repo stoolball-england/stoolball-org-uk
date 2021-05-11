@@ -56,7 +56,7 @@ namespace Stoolball.Web.Matches
 
             var model = new TournamentViewModel(contentModel.Content, Services?.UserService)
             {
-                Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.RawUrl).ConfigureAwait(false),
+                Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.Url.AbsolutePath).ConfigureAwait(false),
                 DateTimeFormatter = _dateFormatter
             };
 
