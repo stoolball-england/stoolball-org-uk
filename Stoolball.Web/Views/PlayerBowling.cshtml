@@ -28,7 +28,7 @@
                 <th scope="col">Runs</th>
                 <th scope="col">Wickets</th>
                 <th scope="col">5 wickets</th>
-                @*<th scope="col">Best</th>*@
+                <th scope="col">Best</th>
                 <th scope="col">Economy</th>
                 <th scope="col">Average</th>
                 <th scope="col" class="text-wrap">Strike rate</th>
@@ -42,7 +42,7 @@
                 <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Runs</span>@Model.BowlingStatistics.TotalRunsConceded</td>
                 <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Wickets</span>@Model.BowlingStatistics.TotalWickets</td>
                 <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">5 wickets</span>@Model.BowlingStatistics.FiveWicketInnings</td>
-                @*<td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Best</span>@Model.BowlingStatistics.BestInningsWickets@(Model.BowlingStatistics.BestInningsRunsConceded.HasValue ? Model.BowlingStatistics.BestInningsRunsConceded.Value.ToString() : "–")</td>*@
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Best</span>@(Model.BowlingStatistics.BestInningsWickets.HasValue ? Model.BowlingStatistics.BestInningsWickets + "/" + (Model.BowlingStatistics.BestInningsRunsConceded.HasValue ? Model.BowlingStatistics.BestInningsRunsConceded.Value.ToString() : "–") : "–")</td>
                 <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Economy</span>@(Model.BowlingStatistics.Economy.HasValue ? Math.Round(Model.BowlingStatistics.Economy.Value, 2).ToString() : "–")</td>
                 <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Average</span>@(Model.BowlingStatistics.Average.HasValue ? Math.Round(Model.BowlingStatistics.Average.Value, 2).ToString() : "–")</td>
                 <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Strike rate</span>@(Model.BowlingStatistics.StrikeRate.HasValue ? Math.Round(Model.BowlingStatistics.StrikeRate.Value, 2).ToString() : "–")</td>

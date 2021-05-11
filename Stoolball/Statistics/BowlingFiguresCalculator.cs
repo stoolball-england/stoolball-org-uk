@@ -88,6 +88,7 @@ namespace Stoolball.Statistics
                 bowlingFigures.Add(new BowlingFigures
                 {
                     BowlingFiguresId = Guid.NewGuid(),
+                    MatchInnings = innings,
                     Bowler = bowler,
                     Overs = overs,
                     Maidens = maidens,

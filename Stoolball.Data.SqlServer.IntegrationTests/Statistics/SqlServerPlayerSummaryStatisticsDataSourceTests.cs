@@ -386,8 +386,36 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
+                var best = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings) // get all innings...
+                .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId)) // ...where this player bowled, and select their bowling figures
+                .GroupBy(x => x.MatchInnings.MatchInningsId, x => x, (matchInningsId, bowlingFigures) => new BowlingFigures // combine any multiple identities for the player into new bowling figures
+                {
+                    Wickets = bowlingFigures.Sum(bf => bf.Wickets),
+                    RunsConceded = bowlingFigures.Any(bf => bf.RunsConceded.HasValue) ? bowlingFigures.Sum(bf => bf.RunsConceded) : null
+                })
+                .OrderByDescending(x => x.Wickets).ThenByDescending(x => x.RunsConceded.HasValue ? 1 : 0).ThenBy(x => x.RunsConceded) // then sort them by best bowling first
+                .FirstOrDefault(); // and select the top one, if there is one
+
                 Assert.NotNull(result);
-                throw new NotImplementedException();
+                if (best != null)
+                {
+                    Assert.NotNull(result.BestInningsWickets);
+                    Assert.Equal(best.Wickets, result.BestInningsWickets.Value);
+
+                    if (best.RunsConceded.HasValue)
+                    {
+                        Assert.Equal(best.RunsConceded, result.BestInningsRunsConceded.Value);
+                    }
+                    else
+                    {
+                        Assert.Null(result.BestInningsRunsConceded);
+                    }
+                }
+                else
+                {
+                    Assert.Null(result.BestInningsWickets);
+                    Assert.Null(result.BestInningsRunsConceded);
+                }
             }
         }
 

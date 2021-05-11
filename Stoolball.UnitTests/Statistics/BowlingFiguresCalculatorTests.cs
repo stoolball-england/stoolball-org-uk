@@ -20,6 +20,23 @@ namespace Stoolball.UnitTests.Statistics
         }
 
         [Fact]
+        public void MatchInnings_property_is_set()
+        {
+            var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
+            var firstBowler = "Bowler 1";
+            var innings = new MatchInnings
+            {
+                OversBowled = new List<Over> {
+                    new Over { Bowler = new PlayerIdentity { PlayerIdentityName = firstBowler } }
+                }
+            };
+
+            var result = calculator.CalculateBowlingFigures(innings);
+
+            Assert.Equal(innings, result[0].MatchInnings);
+        }
+
+        [Fact]
         public void Bowlers_are_sorted_by_their_first_OverNumber()
         {
             var calculator = new BowlingFiguresCalculator(Mock.Of<IOversHelper>());
