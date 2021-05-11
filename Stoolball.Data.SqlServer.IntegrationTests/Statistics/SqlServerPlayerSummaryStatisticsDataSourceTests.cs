@@ -267,6 +267,22 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
+        public async Task Read_bowling_statistics_returns_TotalInningsWithBallsBowled()
+        {
+            var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+
+            foreach (var player in _databaseFixture.TestData.Players)
+            {
+                var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
+
+                Assert.NotNull(result);
+                Assert.Equal(_databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).Count(x =>
+                        x.BowlingFigures.Any(o => o.Bowler.Player.PlayerId == player.PlayerId && o.Overs.HasValue)),
+                        result.TotalInningsWithBallsBowled);
+            }
+        }
+
+        [Fact]
         public async Task Read_bowling_statistics_returns_TotalOvers()
         {
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
@@ -393,13 +409,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         public async Task Read_bowling_statistics_returns_StrikeRate()
         {
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var oversHelper = new OversHelper();
 
             foreach (var player in _databaseFixture.TestData.Players)
             {
                 var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
+                var dataForStrikeRate = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings)
+                        .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId && o.Overs.HasValue));
+                var expectedStrikeRate = dataForStrikeRate.Sum(x => x.Wickets) > 0 ? (decimal)dataForStrikeRate.Sum(x => oversHelper.OversToBallsBowled(x.Overs.Value)) / dataForStrikeRate.Sum(x => x.Wickets) : (decimal?)null;
+
                 Assert.NotNull(result);
-                throw new NotImplementedException();
+                if (expectedStrikeRate.HasValue)
+                {
+                    Assert.NotNull(result.StrikeRate);
+                    Assert.Equal(expectedStrikeRate.Value.AccurateToTwoDecimalPlaces(), result.StrikeRate.Value.AccurateToTwoDecimalPlaces());
+                }
+                else
+                {
+                    Assert.Null(result.StrikeRate);
+                }
             }
         }
 

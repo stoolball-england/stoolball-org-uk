@@ -31,7 +31,7 @@
                 @*<th scope="col">Best</th>
                     <th scope="col">Economy</th>*@
                 <th scope="col">Average</th>
-                    @*<th scope="col" class="text-wrap">Strike rate</th>*@
+                <th scope="col" class="text-wrap">Strike rate</th>
             </tr>
         </thead>
         <tbody>
@@ -45,13 +45,14 @@
                 @*<td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Best</span>@Model.BowlingStatistics.BestInningsWickets@(Model.BowlingStatistics.BestInningsRunsConceded.HasValue ? Model.BowlingStatistics.BestInningsRunsConceded.Value.ToString() : "–")</td>
                     <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Economy</span>@(Model.BowlingStatistics.Economy.HasValue ? Math.Round(Model.BowlingStatistics.Economy.Value, 2).ToString() : "–")</td>*@
                 <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Average</span>@(Model.BowlingStatistics.Average.HasValue ? Math.Round(Model.BowlingStatistics.Average.Value, 2).ToString() : "–")</td>
-                   @* <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Strike rate</span>@(Model.BowlingStatistics.StrikeRate.HasValue ? Math.Round(Model.BowlingStatistics.StrikeRate.Value, 2).ToString() : "–")</td>*@
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Strike rate</span>@(Model.BowlingStatistics.StrikeRate.HasValue ? Math.Round(Model.BowlingStatistics.StrikeRate.Value, 2).ToString() : "–")</td>
             </tr>
         </tbody>
     </table>
 
     @if ((Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithRunsConceded && Model.BowlingStatistics.Average.HasValue) ||
-       (Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithRunsConceded && Model.BowlingStatistics.Economy.HasValue))
+       (Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithRunsConceded && Model.BowlingStatistics.Economy.HasValue) ||
+       (Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithBallsBowled && Model.BowlingStatistics.StrikeRate.HasValue))
     {
         <p class="table-small-print">
             <small>
@@ -62,6 +63,10 @@
                 @if (Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithRunsConceded && Model.BowlingStatistics.Average.HasValue)
                 {
                     @:The average is based on @(Model.BowlingStatistics.TotalInningsWithRunsConceded) innings with runs and wickets recorded.
+                }
+                @if (Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithBallsBowled && Model.BowlingStatistics.StrikeRate.HasValue)
+                {
+                    @:The strike rate is based on @(Model.BowlingStatistics.TotalInningsWithBallsBowled) innings with overs and wickets recorded.
                 }
             </small>
         </p>

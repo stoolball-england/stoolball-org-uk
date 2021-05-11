@@ -4,6 +4,7 @@
     {
         public int TotalInnings { get; set; }
         public int TotalInningsWithRunsConceded { get; set; }
+        public int TotalInningsWithBallsBowled { get; set; }
         public decimal TotalOvers { get; set; }
         public int TotalMaidens { get; set; }
         public int TotalRunsConceded { get; set; }
