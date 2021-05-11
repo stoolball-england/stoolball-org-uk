@@ -67,15 +67,24 @@ namespace Stoolball.Data.SqlServer
                                          GROUP BY MatchTeamId
                                     ) AS BowlingFiguresPerInnings";
 
-            var sql = $@"SELECT TotalInnings, TotalOvers, TotalMaidens, TotalRunsConceded, TotalWickets, FiveWicketInnings
+            var totalInningsWithRunsSql = $@"SELECT SUM(BowlingFiguresPerInnings) FROM (
+                                                SELECT COUNT(DISTINCT MatchInningsPair) AS BowlingFiguresPerInnings 
+                                                FROM {Tables.PlayerInMatchStatistics} 
+                                                WHERE PlayerId = @PlayerId AND BowlingFiguresId IS NOT NULL AND RunsConceded IS NOT NULL
+                                                GROUP BY MatchTeamId
+                                        ) AS BowlingFiguresWithRunsPerInnings";
+
+            var sql = $@"SELECT TotalInnings, TotalInningsWithRunsConceded, TotalOvers, TotalMaidens, TotalRunsConceded, TotalWickets, FiveWicketInnings, Average
                          FROM (
 	                        SELECT 
                                 ({totalInningsSql}) AS TotalInnings,
+                                ({totalInningsWithRunsSql}) AS TotalInningsWithRunsConceded,
                                 (SELECT SUM(BallsBowled)/{StatisticsConstants.BALLS_PER_OVER} + CAST((SUM(BallsBowled)%{StatisticsConstants.BALLS_PER_OVER})AS DECIMAL) / 10 FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalOvers,
                                 (SELECT SUM(Maidens) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalMaidens,
                                 (SELECT SUM(RunsConceded) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalRunsConceded,
                                 (SELECT SUM(Wickets) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalWickets,
-                                (SELECT COUNT(MatchTeamId) FROM (SELECT MatchTeamId FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId GROUP BY MatchTeamId, MatchInningsPair HAVING SUM(Wickets) >= 5) AS FiveWicketInnings) AS FiveWicketInnings
+                                (SELECT COUNT(MatchTeamId) FROM (SELECT MatchTeamId FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId GROUP BY MatchTeamId, MatchInningsPair HAVING SUM(Wickets) >= 5) AS FiveWicketInnings) AS FiveWicketInnings,
+                                (SELECT CASE WHEN SUM(Wickets) > 0 THEN CAST(SUM(RunsConceded) AS DECIMAL)/SUM(Wickets) ELSE NULL END FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId AND RunsConceded IS NOT NULL) AS Average
 	                     ) AS BowlingStatistics";
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())

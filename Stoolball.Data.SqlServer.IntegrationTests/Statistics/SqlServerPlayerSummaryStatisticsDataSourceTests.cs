@@ -260,7 +260,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
                 Assert.NotNull(result);
-                throw new NotImplementedException();
+                Assert.Equal(_databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings).Count(x =>
+                        x.OversBowled.Any(o => o.Bowler.Player.PlayerId == player.PlayerId && o.RunsConceded.HasValue)),
+                        result.TotalInningsWithRunsConceded);
             }
         }
 
@@ -410,8 +412,20 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             {
                 var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
+                var dataForAverage = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings)
+                        .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId && o.RunsConceded.HasValue));
+                var expectedAverage = dataForAverage.Sum(x => x.Wickets) > 0 ? (decimal)dataForAverage.Sum(x => x.RunsConceded) / dataForAverage.Sum(x => x.Wickets) : (decimal?)null;
+
                 Assert.NotNull(result);
-                throw new NotImplementedException();
+                if (expectedAverage.HasValue)
+                {
+                    Assert.NotNull(result.Average);
+                    Assert.Equal(expectedAverage.Value.AccurateToTwoDecimalPlaces(), result.Average.Value.AccurateToTwoDecimalPlaces());
+                }
+                else
+                {
+                    Assert.Null(result.Average);
+                }
             }
         }
     }
