@@ -81,7 +81,7 @@ namespace Stoolball.Data.SqlServer
                                                 GROUP BY MatchTeamId
                                         ) AS BowlingFiguresWithOvers";
 
-            var sql = $@"SELECT TotalInnings, TotalInningsWithRunsConceded, TotalInningsWithBallsBowled, TotalOvers, TotalMaidens, TotalRunsConceded, TotalWickets, FiveWicketInnings, Average, StrikeRate
+            var sql = $@"SELECT TotalInnings, TotalInningsWithRunsConceded, TotalInningsWithBallsBowled, TotalOvers, TotalMaidens, TotalRunsConceded, TotalWickets, FiveWicketInnings, Economy, Average, StrikeRate
                          FROM (
 	                        SELECT 
                                 ({totalInningsSql}) AS TotalInnings,
@@ -92,6 +92,7 @@ namespace Stoolball.Data.SqlServer
                                 (SELECT SUM(RunsConceded) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalRunsConceded,
                                 (SELECT SUM(Wickets) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalWickets,
                                 (SELECT COUNT(MatchTeamId) FROM (SELECT MatchTeamId FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId GROUP BY MatchTeamId, MatchInningsPair HAVING SUM(Wickets) >= 5) AS FiveWicketInnings) AS FiveWicketInnings,
+                                (SELECT CASE WHEN SUM(BallsBowled) > 0 THEN SUM(RunsConceded)/(CAST(SUM(BallsBowled) AS DECIMAL)/{StatisticsConstants.BALLS_PER_OVER}) ELSE NULL END FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId AND RunsConceded IS NOT NULL) AS Economy,
                                 (SELECT CASE WHEN SUM(Wickets) > 0 THEN CAST(SUM(RunsConceded) AS DECIMAL)/SUM(Wickets) ELSE NULL END FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId AND RunsConceded IS NOT NULL) AS Average,
                                 (SELECT CASE WHEN SUM(Wickets) > 0 THEN CAST(SUM(BallsBowled) AS DECIMAL)/SUM(Wickets) ELSE NULL END FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId AND BallsBowled IS NOT NULL) AS StrikeRate
 	                     ) AS BowlingStatistics";

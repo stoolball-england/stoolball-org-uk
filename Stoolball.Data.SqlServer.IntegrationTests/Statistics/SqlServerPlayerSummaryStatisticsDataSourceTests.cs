@@ -395,13 +395,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         public async Task Read_bowling_statistics_returns_Economy()
         {
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
+            var oversHelper = new OversHelper();
 
             foreach (var player in _databaseFixture.TestData.Players)
             {
                 var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
+                var dataForEconomy = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings)
+                     .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId && o.RunsConceded.HasValue));
+                var expectedEconomy = dataForEconomy.Sum(x => x.Overs) > 0 ? (decimal)dataForEconomy.Sum(x => x.RunsConceded.Value) / dataForEconomy.Sum(x => (decimal)oversHelper.OversToBallsBowled(x.Overs.Value) / StatisticsConstants.BALLS_PER_OVER) : (decimal?)null;
+
                 Assert.NotNull(result);
-                throw new NotImplementedException();
+                if (expectedEconomy.HasValue)
+                {
+                    Assert.NotNull(result.Economy);
+                    Assert.Equal(expectedEconomy.Value.AccurateToTwoDecimalPlaces(), result.Economy.Value.AccurateToTwoDecimalPlaces());
+                }
+                else
+                {
+                    Assert.Null(result.Economy);
+                }
             }
         }
 
