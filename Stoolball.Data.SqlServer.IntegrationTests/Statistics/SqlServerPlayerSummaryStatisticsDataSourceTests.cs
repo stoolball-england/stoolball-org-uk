@@ -342,13 +342,21 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var dataSource = new SqlServerPlayerSummaryStatisticsDataSource(_databaseFixture.ConnectionFactory);
 
+            var totalFiveWicketHaulsFound = 0;
             foreach (var player in _databaseFixture.TestData.Players)
             {
                 var result = await dataSource.ReadBowlingStatistics(new StatisticsFilter { Player = player }).ConfigureAwait(false);
 
+                var wicketHauls = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings)
+                        .SelectMany(x => x.BowlingFigures.Where(o => o.Bowler.Player.PlayerId == player.PlayerId))
+                        .Count(x => x.Wickets >= 5);
+                if (wicketHauls > 0) { totalFiveWicketHaulsFound++; }
+
                 Assert.NotNull(result);
-                throw new NotImplementedException();
+                Assert.Equal(wicketHauls, result.FiveWicketInnings);
             }
+
+            Assert.True(totalFiveWicketHaulsFound > 0);
         }
 
         [Fact]

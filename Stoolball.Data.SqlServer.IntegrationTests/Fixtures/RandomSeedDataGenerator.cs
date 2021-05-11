@@ -137,10 +137,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 matches.Add(CreateMatchBetween(teamA, teamAPlayers, teamB, teamBPlayers, homeTeamBatsFirst));
             }
 
+            // Pick any innings and create a five-wicket haul for someone
+            var inningsWithFiveWicketHaul = matches.SelectMany(x => x.MatchInnings).Where(x => x.PlayerInnings.Any(pi => pi.Bowler != null)).First();
+            var bowlerWithFiveWicketHaul = inningsWithFiveWicketHaul.PlayerInnings.First(x => x.Bowler != null).Bowler;
+            for (var i = 0; i < _randomiser.Next(5, 7); i++)
+            {
+                inningsWithFiveWicketHaul.PlayerInnings[i].DismissalType = StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER[_randomiser.Next(StatisticsConstants.DISMISSALS_CREDITED_TO_BOWLER.Count)];
+                inningsWithFiveWicketHaul.PlayerInnings[i].Bowler = bowlerWithFiveWicketHaul;
+            }
+            inningsWithFiveWicketHaul.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(inningsWithFiveWicketHaul);
+
             matches.Add(CreateMatchWithDifferentTeamsWhereSomeonePlaysOnBothTeams());
 
             // Ensure there's always an intra-club match to test
             matches.Add(CreateMatchBetween(_teams[0].team, _teams[0].identities, _teams[0].team, _teams[0].identities, FiftyFiftyChance()));
+
+            // Generate bowling figures for each innings
+            foreach (var innings in matches.SelectMany(x => x.MatchInnings))
+            {
+                innings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(innings);
+            }
 
             return matches;
         }
@@ -294,8 +310,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     if (i >= 6 && i % 2 == 0) { innings.OversBowled.Add(CreateRandomOver(innings.OverSets[0], i, bowlers[3])); }
                 }
             }
-
-            innings.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(innings);
         }
 
         private Over CreateRandomOver(OverSet overSet, int overNumber, PlayerIdentity playerIdentity)

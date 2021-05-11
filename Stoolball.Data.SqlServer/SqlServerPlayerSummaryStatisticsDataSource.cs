@@ -67,14 +67,15 @@ namespace Stoolball.Data.SqlServer
                                          GROUP BY MatchTeamId
                                     ) AS BowlingFiguresPerInnings";
 
-            var sql = $@"SELECT TotalInnings, TotalOvers, TotalMaidens, TotalRunsConceded, TotalWickets
+            var sql = $@"SELECT TotalInnings, TotalOvers, TotalMaidens, TotalRunsConceded, TotalWickets, FiveWicketInnings
                          FROM (
 	                        SELECT 
                                 ({totalInningsSql}) AS TotalInnings,
                                 (SELECT SUM(BallsBowled)/{StatisticsConstants.BALLS_PER_OVER} + CAST((SUM(BallsBowled)%{StatisticsConstants.BALLS_PER_OVER})AS DECIMAL) / 10 FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalOvers,
                                 (SELECT SUM(Maidens) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalMaidens,
                                 (SELECT SUM(RunsConceded) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalRunsConceded,
-                                (SELECT SUM(Wickets) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalWickets
+                                (SELECT SUM(Wickets) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalWickets,
+                                (SELECT COUNT(MatchTeamId) FROM (SELECT MatchTeamId FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId GROUP BY MatchTeamId, MatchInningsPair HAVING SUM(Wickets) >= 5) AS FiveWicketInnings) AS FiveWicketInnings
 	                     ) AS BowlingStatistics";
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
