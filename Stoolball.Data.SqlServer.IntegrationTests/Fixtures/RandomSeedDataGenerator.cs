@@ -110,14 +110,28 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 _competitions[_competitions.Count - 1].Seasons.Add(_fixedSeedDataGenerator.CreateSeasonWithMinimalDetails(_competitions[_competitions.Count - 1], DateTime.Now.Year - i, DateTime.Now.Year - i));
             }
 
-            // Randomly assign at least one player from each team a second identity.
-            // Half the time it should be from the same team, to ensure we always have lots of teams with multiple identities for the same player.
+            // Randomly assign at least two players from each team a second identity - one on the same team, one on a different team.
+            // This ensure we always have lots of teams with multiple identities for the same player for both scenarios.
             foreach (var (team, playerIdentities) in _teams)
             {
+                // On the same team
                 var player1 = playerIdentities[_randomiser.Next(playerIdentities.Count)];
-                var (targetTeam, targetIdentities) = FiftyFiftyChance() ? (team, playerIdentities) : _teams[_randomiser.Next(_teams.Count)];
-                var player2 = targetIdentities[_randomiser.Next(targetIdentities.Count)];
+                PlayerIdentity player2;
+                do
+                {
+                    player2 = playerIdentities[_randomiser.Next(playerIdentities.Count)];
+                } while (player1.PlayerIdentityId == player2.PlayerIdentityId);
                 player2.Player = player1.Player;
+
+                // On a different team
+                var player3 = playerIdentities[_randomiser.Next(playerIdentities.Count)];
+                (Team targetTeam, List<PlayerIdentity> targetIdentities) = (null, null);
+                do
+                {
+                    (targetTeam, targetIdentities) = _teams[_randomiser.Next(_teams.Count)];
+                } while (targetTeam.TeamId == team.TeamId);
+                var player4 = targetIdentities[_randomiser.Next(targetIdentities.Count)];
+                player4.Player = player3.Player;
             }
 
             // Create matches for them to play in, with scorecards
