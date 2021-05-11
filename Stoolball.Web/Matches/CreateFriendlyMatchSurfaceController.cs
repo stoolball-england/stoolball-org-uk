@@ -24,10 +24,11 @@ namespace Stoolball.Web.Matches
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly ICreateMatchSeasonSelector _createMatchSeasonSelector;
         private readonly IEditMatchHelper _editMatchHelper;
+        private readonly IMatchValidator _matchValidator;
 
         public CreateFriendlyMatchSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchRepository matchRepository, ITeamDataSource teamDataSource,
-            ISeasonDataSource seasonDataSource, ICreateMatchSeasonSelector createMatchSeasonSelector, IEditMatchHelper editMatchHelper)
+            ISeasonDataSource seasonDataSource, ICreateMatchSeasonSelector createMatchSeasonSelector, IEditMatchHelper editMatchHelper, IMatchValidator matchValidator)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
@@ -35,6 +36,7 @@ namespace Stoolball.Web.Matches
             _seasonDataSource = seasonDataSource;
             _createMatchSeasonSelector = createMatchSeasonSelector;
             _editMatchHelper = editMatchHelper ?? throw new ArgumentNullException(nameof(editMatchHelper));
+            _matchValidator = matchValidator ?? throw new ArgumentNullException(nameof(matchValidator));
         }
 
         [HttpPost]
@@ -56,10 +58,8 @@ namespace Stoolball.Web.Matches
             }
             _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form, ModelState);
 
-            if (!model.HomeTeamId.HasValue && !model.AwayTeamId.HasValue)
-            {
-                ModelState.AddModelError("HomeTeamId", "Please select at least one team");
-            }
+            _matchValidator.MatchDateIsValidForSqlServer(model, ModelState);
+            _matchValidator.AtLeastOneTeamId(model, ModelState);
 
             model.IsAuthorized[AuthorizedAction.CreateMatch] = User.Identity.IsAuthenticated;
 

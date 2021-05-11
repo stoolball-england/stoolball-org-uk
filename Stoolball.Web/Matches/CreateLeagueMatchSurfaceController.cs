@@ -25,10 +25,11 @@ namespace Stoolball.Web.Matches
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly ICreateMatchSeasonSelector _createMatchSeasonSelector;
         private readonly IEditMatchHelper _editMatchHelper;
+        private readonly IMatchValidator _matchValidator;
 
         public CreateLeagueMatchSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchRepository matchRepository, ITeamDataSource teamDataSource,
-            ISeasonDataSource seasonDataSource, ICreateMatchSeasonSelector createMatchSeasonSelector, IEditMatchHelper editMatchHelper)
+            ISeasonDataSource seasonDataSource, ICreateMatchSeasonSelector createMatchSeasonSelector, IEditMatchHelper editMatchHelper, IMatchValidator matchValidator)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
@@ -36,6 +37,7 @@ namespace Stoolball.Web.Matches
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _createMatchSeasonSelector = createMatchSeasonSelector ?? throw new ArgumentNullException(nameof(createMatchSeasonSelector));
             _editMatchHelper = editMatchHelper ?? throw new ArgumentNullException(nameof(editMatchHelper));
+            _matchValidator = matchValidator ?? throw new ArgumentNullException(nameof(matchValidator));
         }
 
         [HttpPost]
@@ -53,10 +55,8 @@ namespace Stoolball.Web.Matches
             model.Match.MatchType = MatchType.LeagueMatch;
             _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form, ModelState);
 
-            if (model.HomeTeamId.HasValue && model.HomeTeamId == model.AwayTeamId)
-            {
-                ModelState.AddModelError("AwayTeamId", "The away team cannot be the same as the home team");
-            }
+            _matchValidator.MatchDateIsValidForSqlServer(model, ModelState);
+            _matchValidator.TeamsMustBeDifferent(model, ModelState);
 
             model.IsAuthorized[AuthorizedAction.CreateMatch] = User.Identity.IsAuthenticated;
 

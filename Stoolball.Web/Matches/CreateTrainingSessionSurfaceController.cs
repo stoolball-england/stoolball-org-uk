@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Humanizer;
@@ -25,17 +24,19 @@ namespace Stoolball.Web.Matches
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly ICreateMatchSeasonSelector _createMatchSeasonSelector;
         private readonly IEditMatchHelper _editMatchHelper;
+        private readonly IMatchValidator _matchValidator;
 
         public CreateTrainingSessionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchRepository matchRepository, ITeamDataSource teamDataSource,
-            ISeasonDataSource seasonDataSource, ICreateMatchSeasonSelector createMatchSeasonSelector, IEditMatchHelper editMatchHelper)
+            ISeasonDataSource seasonDataSource, ICreateMatchSeasonSelector createMatchSeasonSelector, IEditMatchHelper editMatchHelper, IMatchValidator matchValidator)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
-            _seasonDataSource = seasonDataSource;
-            _createMatchSeasonSelector = createMatchSeasonSelector;
+            _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
+            _createMatchSeasonSelector = createMatchSeasonSelector ?? throw new ArgumentNullException(nameof(createMatchSeasonSelector));
             _editMatchHelper = editMatchHelper ?? throw new ArgumentNullException(nameof(editMatchHelper));
+            _matchValidator = matchValidator ?? throw new ArgumentNullException(nameof(matchValidator));
         }
 
         [HttpPost]
@@ -57,15 +58,8 @@ namespace Stoolball.Web.Matches
             }
             _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form, ModelState);
 
-            // We're not interested in validating the details of the selected teams
-            foreach (var key in ModelState.Keys.Where(x => x.StartsWith("Match.Teams", StringComparison.OrdinalIgnoreCase)))
-            {
-                ModelState[key].Errors.Clear();
-            }
-            if (!model.Match.Teams.Any())
-            {
-                ModelState.AddModelError("Match.Teams", "Please invite at least one team.");
-            }
+            _matchValidator.MatchDateIsValidForSqlServer(model, ModelState);
+            _matchValidator.AtLeastOneTeamInMatch(model.Match.Teams, ModelState);
 
             foreach (var team in model.Match.Teams)
             {

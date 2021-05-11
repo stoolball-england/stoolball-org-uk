@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Data.SqlTypes;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -110,11 +108,6 @@ namespace Stoolball.Web.Matches
             {
                 model.MatchDate = parsedDate;
                 model.Match.StartTime = model.MatchDate.Value;
-
-                if (model.MatchDate < SqlDateTime.MinValue.Value.Date || model.MatchDate > SqlDateTime.MaxValue.Value.Date)
-                {
-                    modelState.AddModelError("MatchDate", $"The match date must be between {SqlDateTime.MinValue.Value.Date.ToString("d MMMM yyyy", CultureInfo.CurrentCulture)} and {SqlDateTime.MaxValue.Value.Date.ToString("d MMMM yyyy", CultureInfo.CurrentCulture)}.");
-                }
 
                 if (!string.IsNullOrEmpty(formData["StartTime"]))
                 {
