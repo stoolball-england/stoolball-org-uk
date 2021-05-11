@@ -420,15 +420,15 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3377), Tuple.Create("\"", 3415)
+WriteAttribute("href", Tuple.Create(" href=\"", 3377), Tuple.Create("\"", 3435)
             
             #line 63 "..\..\Views\Partials\_BowlingFigures.cshtml"
-, Tuple.Create(Tuple.Create("", 3384), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
+, Tuple.Create(Tuple.Create("", 3384), Tuple.Create<System.Object, System.Int32>(Request.RawUrl.TrimEnd("/bowling")
             
             #line default
             #line hidden
 , 3384), false)
-, Tuple.Create(Tuple.Create("", 3399), Tuple.Create("/bowling-figures", 3399), true)
+, Tuple.Create(Tuple.Create("", 3419), Tuple.Create("/bowling-figures", 3419), true)
 );
 
 WriteLiteral(">Bowling figures – view all</a></p>\r\n");

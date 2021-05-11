@@ -60,7 +60,7 @@
     </table>
     if (Model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
     {
-        <p><a href="@Request.RawUrl/bowling-figures">Bowling figures – view all</a></p>
+        <p><a href="@Request.RawUrl.TrimEnd("/bowling")/bowling-figures">Bowling figures – view all</a></p>
     }
     else
     {
