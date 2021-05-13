@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Data.SqlTypes;
-using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Dates;
@@ -24,16 +23,18 @@ namespace Stoolball.Web.Matches
         private readonly ITournamentRepository _tournamentRepository;
         private readonly IAuthorizationPolicy<Tournament> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateTimeFormatter;
+        private readonly IMatchValidator _matchValidator;
 
         public EditTournamentSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITournamentDataSource tournamentDataSource,
-            ITournamentRepository tournamentRepository, IAuthorizationPolicy<Tournament> authorizationPolicy, IDateTimeFormatter dateTimeFormatter)
+            ITournamentRepository tournamentRepository, IAuthorizationPolicy<Tournament> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IMatchValidator matchValidator)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _tournamentDataSource = tournamentDataSource ?? throw new ArgumentNullException(nameof(tournamentDataSource));
             _tournamentRepository = tournamentRepository ?? throw new ArgumentNullException(nameof(tournamentRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
+            _matchValidator = matchValidator ?? throw new ArgumentNullException(nameof(matchValidator));
         }
 
         [HttpPost]
@@ -69,11 +70,6 @@ namespace Stoolball.Web.Matches
                 model.TournamentDate = parsedDate;
                 model.Tournament.StartTime = model.TournamentDate.Value;
 
-                if (model.TournamentDate < SqlDateTime.MinValue.Value.Date || model.TournamentDate > SqlDateTime.MaxValue.Value.Date)
-                {
-                    ModelState.AddModelError("TournamentDate", $"The tournament date must be between {SqlDateTime.MinValue.Value.Date.ToString("d MMMM yyyy", CultureInfo.CurrentCulture)} and {SqlDateTime.MaxValue.Value.Date.ToString("d MMMM yyyy", CultureInfo.CurrentCulture)}.");
-                }
-
                 if (!string.IsNullOrEmpty(Request.Form["StartTime"]))
                 {
                     if (DateTimeOffset.TryParse(Request.Form["StartTime"], out var parsedTime))
@@ -105,6 +101,9 @@ namespace Stoolball.Web.Matches
                 // the field label as it would confuse the majority, so only reveal it here.
                 ModelState.AddModelError("TournamentDate", "Enter a date in YYYY-MM-DD format.");
             }
+
+            _matchValidator.DateIsValidForSqlServer(() => model.TournamentDate, ModelState, "TournamentDate", "tournament");
+            _matchValidator.DateIsWithinTheSeason(() => model.TournamentDate, model.Tournament.Seasons.FirstOrDefault(), ModelState, "TournamentDate", "tournament");
 
             if (!string.IsNullOrEmpty(Request.Form["TournamentLocationId"]))
             {

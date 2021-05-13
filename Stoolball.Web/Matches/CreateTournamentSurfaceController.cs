@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Data.SqlTypes;
-using System.Globalization;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
@@ -24,15 +22,17 @@ namespace Stoolball.Web.Matches
         private readonly ITournamentRepository _tournamentRepository;
         private readonly ITeamDataSource _teamDataSource;
         private readonly ISeasonDataSource _seasonDataSource;
+        private readonly IMatchValidator _matchValidator;
 
         public CreateTournamentSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITournamentRepository tournamentRepository,
-            ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource)
+            ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource, IMatchValidator matchValidator)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _tournamentRepository = tournamentRepository ?? throw new ArgumentNullException(nameof(tournamentRepository));
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
+            _matchValidator = matchValidator ?? throw new ArgumentNullException(nameof(matchValidator));
         }
 
         [HttpPost]
@@ -55,11 +55,6 @@ namespace Stoolball.Web.Matches
             {
                 model.TournamentDate = parsedDate;
                 model.Tournament.StartTime = model.TournamentDate.Value;
-
-                if (model.TournamentDate < SqlDateTime.MinValue.Value.Date || model.TournamentDate > SqlDateTime.MaxValue.Value.Date)
-                {
-                    ModelState.AddModelError("TournamentDate", $"The tournament date must be between {SqlDateTime.MinValue.Value.Date.ToString("d MMMM yyyy", CultureInfo.CurrentCulture)} and {SqlDateTime.MaxValue.Value.Date.ToString("d MMMM yyyy", CultureInfo.CurrentCulture)}.");
-                }
 
                 if (!string.IsNullOrEmpty(Request.Form["StartTime"]))
                 {
@@ -93,16 +88,7 @@ namespace Stoolball.Web.Matches
                 ModelState.AddModelError("TournamentDate", "Enter a date in YYYY-MM-DD format.");
             }
 
-
-            if (!string.IsNullOrEmpty(Request.Form["TournamentLocationId"]))
-            {
-                model.TournamentLocationId = new Guid(Request.Form["TournamentLocationId"]);
-                model.TournamentLocationName = Request.Form["TournamentLocationName"];
-                model.Tournament.TournamentLocation = new MatchLocation
-                {
-                    MatchLocationId = model.TournamentLocationId
-                };
-            }
+            _matchValidator.DateIsValidForSqlServer(() => model.TournamentDate, ModelState, "TournamentDate", "tournament");
 
             if (Request.RawUrl.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
@@ -115,6 +101,18 @@ namespace Stoolball.Web.Matches
                 model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, false).ConfigureAwait(false);
                 model.Tournament.Seasons.Add(model.Season);
                 model.Metadata.PageTitle = $"Add a tournament in the {model.Season.SeasonFullName()}";
+
+                _matchValidator.DateIsWithinTheSeason(() => model.TournamentDate, model.Season, ModelState, "TournamentDate", "tournament");
+            }
+
+            if (!string.IsNullOrEmpty(Request.Form["TournamentLocationId"]))
+            {
+                model.TournamentLocationId = new Guid(Request.Form["TournamentLocationId"]);
+                model.TournamentLocationName = Request.Form["TournamentLocationName"];
+                model.Tournament.TournamentLocation = new MatchLocation
+                {
+                    MatchLocationId = model.TournamentLocationId
+                };
             }
 
             model.IsAuthorized[AuthorizedAction.CreateTournament] = User.Identity.IsAuthenticated;
@@ -126,7 +124,6 @@ namespace Stoolball.Web.Matches
                 var currentMember = Members.GetCurrentMember();
                 var createdTournament = await _tournamentRepository.CreateTournament(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                // Redirect to the tournament
                 return Redirect(createdTournament.TournamentRoute);
             }
 

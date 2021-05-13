@@ -78,11 +78,11 @@ namespace Stoolball.Web.Matches
             }
         }
 
-        public void MatchDateIsValidForSqlServer(IEditMatchViewModel model, ModelStateDictionary modelState)
+        public void DateIsValidForSqlServer(Func<DateTimeOffset?> dateToValidate, ModelStateDictionary modelState, string fieldName, string dateOfWhat)
         {
-            if (model is null)
+            if (dateToValidate is null)
             {
-                throw new ArgumentNullException(nameof(model));
+                throw new ArgumentNullException(nameof(dateToValidate));
             }
 
             if (modelState is null)
@@ -90,17 +90,17 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(modelState));
             }
 
-            if (model.MatchDate < SqlDateTime.MinValue.Value.Date || model.MatchDate > SqlDateTime.MaxValue.Value.Date)
+            if (dateToValidate() < SqlDateTime.MinValue.Value.Date || dateToValidate() > SqlDateTime.MaxValue.Value.Date)
             {
-                modelState.AddModelError("MatchDate", $"The match date must be between {SqlDateTime.MinValue.Value.Date.ToString("d MMMM yyyy", CultureInfo.CurrentCulture)} and {SqlDateTime.MaxValue.Value.Date.ToString("d MMMM yyyy", CultureInfo.CurrentCulture)}.");
+                modelState.AddModelError(fieldName, $"The {dateOfWhat} date must be between {SqlDateTime.MinValue.Value.Date.ToString("d MMMM yyyy", CultureInfo.CurrentCulture)} and {SqlDateTime.MaxValue.Value.Date.ToString("d MMMM yyyy", CultureInfo.CurrentCulture)}.");
             }
         }
 
-        public void MatchDateIsWithinTheSeason(IEditMatchViewModel model, ModelStateDictionary modelState)
+        public void DateIsWithinTheSeason(Func<DateTimeOffset?> dateToValidate, Season season, ModelStateDictionary modelState, string fieldName, string dateOfWhat)
         {
-            if (model is null)
+            if (dateToValidate is null)
             {
-                throw new ArgumentNullException(nameof(model));
+                throw new ArgumentNullException(nameof(dateToValidate));
             }
 
             if (modelState is null)
@@ -108,12 +108,12 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(modelState));
             }
 
-            if (model.MatchDate.HasValue && model.Match != null && model.Match.Season != null)
+            if (dateToValidate().HasValue && season != null)
             {
-                var seasonForMatch = _seasonEstimator.EstimateSeasonDates(model.MatchDate.Value);
-                if (seasonForMatch.fromDate.Year != model.Match.Season.FromYear || seasonForMatch.untilDate.Year != model.Match.Season.UntilYear)
+                var seasonForMatch = _seasonEstimator.EstimateSeasonDates(dateToValidate().Value);
+                if (seasonForMatch.fromDate.Year != season.FromYear || seasonForMatch.untilDate.Year != season.UntilYear)
                 {
-                    modelState.AddModelError("MatchDate", $"The match date is not in the {model.Match.Season.SeasonFullName()}");
+                    modelState.AddModelError(fieldName, $"The {dateOfWhat} date is not in the {season.SeasonFullName()}");
                 }
             }
         }
