@@ -23,6 +23,51 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
         }
 
         [Fact]
+        public async Task Read_season_by_id_returns_basic_fields()
+        {
+            var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, Mock.Of<IRouteNormaliser>());
+
+            var result = await seasonDataSource.ReadSeasonById(_databaseFixture.SeasonWithMinimalDetails.SeasonId.Value).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.SeasonWithMinimalDetails.SeasonId, result.SeasonId);
+            Assert.Equal(_databaseFixture.SeasonWithMinimalDetails.FromYear, result.FromYear);
+            Assert.Equal(_databaseFixture.SeasonWithMinimalDetails.UntilYear, result.UntilYear);
+            Assert.Equal(_databaseFixture.SeasonWithMinimalDetails.Results, result.Results);
+            Assert.Equal(_databaseFixture.SeasonWithMinimalDetails.SeasonRoute, result.SeasonRoute);
+            Assert.Equal(_databaseFixture.SeasonWithMinimalDetails.EnableTournaments, result.EnableTournaments);
+            Assert.Equal(_databaseFixture.SeasonWithMinimalDetails.PlayersPerTeam, result.PlayersPerTeam);
+        }
+
+        [Fact]
+        public async Task Read_season_by_id_returns_competition()
+        {
+            var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, Mock.Of<IRouteNormaliser>());
+
+            var result = await seasonDataSource.ReadSeasonById(_databaseFixture.SeasonWithMinimalDetails.SeasonId.Value).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.SeasonWithMinimalDetails.Competition.CompetitionName, result.Competition.CompetitionName);
+            Assert.Equal(_databaseFixture.SeasonWithMinimalDetails.Competition.PlayerType, result.Competition.PlayerType);
+            Assert.Equal(_databaseFixture.SeasonWithMinimalDetails.Competition.UntilYear, result.Competition.UntilYear);
+            Assert.Equal(_databaseFixture.SeasonWithMinimalDetails.Competition.CompetitionRoute, result.Competition.CompetitionRoute);
+            Assert.Equal(_databaseFixture.SeasonWithMinimalDetails.Competition.MemberGroupName, result.Competition.MemberGroupName);
+        }
+
+
+        [Fact]
+        public async Task Read_season_by_id_returns_match_types()
+        {
+            var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, Mock.Of<IRouteNormaliser>());
+
+            var result = await seasonDataSource.ReadSeasonById(_databaseFixture.SeasonWithMinimalDetails.SeasonId.Value).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.SeasonWithMinimalDetails.MatchTypes.Count, result.MatchTypes.Count);
+            foreach (var matchType in _databaseFixture.SeasonWithMinimalDetails.MatchTypes)
+            {
+                Assert.Contains(matchType, result.MatchTypes);
+            }
+        }
+
+        [Fact]
         public async Task Read_season_by_route_returns_basic_fields()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();

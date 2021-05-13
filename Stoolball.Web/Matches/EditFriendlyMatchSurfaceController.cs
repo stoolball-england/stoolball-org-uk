@@ -67,10 +67,20 @@ namespace Stoolball.Web.Matches
             model.Match.MatchId = beforeUpdate.MatchId;
             model.Match.MatchRoute = beforeUpdate.MatchRoute;
             model.Match.UpdateMatchNameAutomatically = beforeUpdate.UpdateMatchNameAutomatically;
-
             _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form, ModelState);
 
+            if (model.Match.Season != null && !model.Match.Season.SeasonId.HasValue)
+            {
+                model.Match.Season = null;
+            }
+            else if (model.Match.Season != null)
+            {
+                // Get the season, to support validation against season dates
+                model.Match.Season = await _seasonDataSource.ReadSeasonById(model.Match.Season.SeasonId.Value).ConfigureAwait(false);
+            }
+
             _matchValidator.MatchDateIsValidForSqlServer(model, ModelState);
+            _matchValidator.MatchDateIsWithinTheSeason(model, ModelState);
             _matchValidator.AtLeastOneTeamId(model, ModelState);
 
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
@@ -82,7 +92,6 @@ namespace Stoolball.Web.Matches
                 var currentMember = Members.GetCurrentMember();
                 var updatedMatch = await _matchRepository.UpdateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                // Redirect to the match
                 return Redirect(updatedMatch.MatchRoute);
             }
 

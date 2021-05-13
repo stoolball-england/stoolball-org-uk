@@ -16,6 +16,12 @@ namespace Stoolball.Competitions
         Task<List<Season>> ReadSeasons(CompetitionFilter competitionQuery);
 
         /// <summary>
+        /// Gets a single stoolball season based on its id
+        /// </summary>
+        /// <returns>A matching <see cref="Season"/> or <c>null</c> if not found</returns>
+        Task<Season> ReadSeasonById(Guid seasonId);
+
+        /// <summary>
         /// Gets a single stoolball season based on its route
         /// </summary>
         /// <param name="route">/competitions/example-competition/2020</param>

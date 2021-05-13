@@ -13,5 +13,6 @@ namespace Stoolball.Web.Matches
         void AtLeastOneTeamId(IEditMatchViewModel model, ModelStateDictionary modelState);
         void AtLeastOneTeamInMatch(IEnumerable<TeamInMatch> model, ModelStateDictionary modelState);
         void MatchDateIsValidForSqlServer(IEditMatchViewModel model, ModelStateDictionary modelState);
+        void MatchDateIsWithinTheSeason(IEditMatchViewModel model, ModelStateDictionary modelState);
     }
 }

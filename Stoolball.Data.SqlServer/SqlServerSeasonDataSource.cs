@@ -132,10 +132,24 @@ namespace Stoolball.Data.SqlServer
             return await (includeRelated ? ReadSeasonWithRelatedDataByRoute(route) : ReadSeasonByRoute(route)).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Gets a single stoolball season based on its id
+        /// </summary>
+        /// <returns>A matching <see cref="Season"/> or <c>null</c> if not found</returns>
+        public async Task<Season> ReadSeasonById(Guid seasonId)
+        {
+            return await ReadSeason("s.SeasonId = @seasonId", new { seasonId }).ConfigureAwait(false);
+        }
+
         private async Task<Season> ReadSeasonByRoute(string route)
         {
             var normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "competitions", @"^[a-z0-9-]+\/[0-9]{4}(-[0-9]{2})?$");
 
+            return await ReadSeason("LOWER(s.SeasonRoute) = @Route", new { Route = normalisedRoute }).ConfigureAwait(false);
+        }
+
+        private async Task<Season> ReadSeason(string where, object parameters)
+        {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var seasons = await connection.QueryAsync<Season, Competition, string, Season>(
@@ -146,7 +160,7 @@ namespace Stoolball.Data.SqlServer
                             INNER JOIN {Tables.Competition} AS co ON co.CompetitionId = s.CompetitionId
                             INNER JOIN {Tables.CompetitionVersion} AS cv ON co.CompetitionId = cv.CompetitionId
                             LEFT JOIN {Tables.SeasonMatchType} AS smt ON s.SeasonId = smt.SeasonId
-                            WHERE LOWER(s.SeasonRoute) = @Route
+                            WHERE {where}
                             AND cv.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = co.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)",
                     (season, competition, matchType) =>
                     {
@@ -157,7 +171,7 @@ namespace Stoolball.Data.SqlServer
                         }
                         return season;
                     },
-                    new { Route = normalisedRoute },
+                    parameters,
                     splitOn: "CompetitionName, MatchType").ConfigureAwait(false);
 
 

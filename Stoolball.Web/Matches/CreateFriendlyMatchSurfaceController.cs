@@ -52,13 +52,24 @@ namespace Stoolball.Web.Matches
 
             var model = new EditFriendlyMatchViewModel(CurrentPage, Services.UserService) { Match = postedMatch };
             model.Match.MatchType = MatchType.FriendlyMatch;
-            if (model.Match.Season != null && !model.Match.Season.SeasonId.HasValue)
+            _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form, ModelState);
+
+            if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
+            {
+                model.Season = model.Match.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, false).ConfigureAwait(false);
+            }
+            else if (model.Match.Season != null && !model.Match.Season.SeasonId.HasValue)
             {
                 model.Match.Season = null;
             }
-            _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form, ModelState);
+            else if (model.Match.Season != null)
+            {
+                // Get the season, to support validation against season dates
+                model.Match.Season = await _seasonDataSource.ReadSeasonById(model.Match.Season.SeasonId.Value).ConfigureAwait(false);
+            }
 
             _matchValidator.MatchDateIsValidForSqlServer(model, ModelState);
+            _matchValidator.MatchDateIsWithinTheSeason(model, ModelState);
             _matchValidator.AtLeastOneTeamId(model, ModelState);
 
             model.IsAuthorized[AuthorizedAction.CreateMatch] = User.Identity.IsAuthenticated;
@@ -69,20 +80,18 @@ namespace Stoolball.Web.Matches
                 var currentMember = Members.GetCurrentMember();
                 var createdMatch = await _matchRepository.CreateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                // Redirect to the match
                 return Redirect(createdMatch.MatchRoute);
             }
 
             if (Request.RawUrl.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
-                model.Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, true).ConfigureAwait(false);
+                model.Team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl, false).ConfigureAwait(false);
                 var possibleSeasons = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, model.Match.MatchType);
                 model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(possibleSeasons);
                 model.Metadata.PageTitle = $"Add a {MatchType.FriendlyMatch.Humanize(LetterCasing.LowerCase)} for {model.Team.TeamName}";
             }
             else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
-                model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false);
                 model.Metadata.PageTitle = $"Add a {MatchType.FriendlyMatch.Humanize(LetterCasing.LowerCase)} in the {model.Season.SeasonFullName()}";
             }
 

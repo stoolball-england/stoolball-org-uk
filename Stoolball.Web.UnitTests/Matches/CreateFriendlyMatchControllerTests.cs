@@ -1,14 +1,14 @@
-﻿using Moq;
-using Stoolball.Competitions;
-using Stoolball.Matches;
-using Stoolball.Teams;
-using Stoolball.Web.Matches;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Moq;
+using Stoolball.Competitions;
+using Stoolball.Matches;
+using Stoolball.Teams;
+using Stoolball.Web.Matches;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -110,7 +110,7 @@ namespace Stoolball.Web.Tests.Matches
             var teamDataSource = new Mock<ITeamDataSource>();
 
             var seasonDataSource = new Mock<ISeasonDataSource>();
-            seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Season>(new Season
+            seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Season>(new Season
             {
                 MatchTypes = new List<MatchType> { MatchType.FriendlyMatch }
             }));

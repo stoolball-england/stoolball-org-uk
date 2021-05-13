@@ -276,7 +276,7 @@ WriteLiteral("</button>\r\n                </div>\r\n            </div>\r\n");
                 placeholder = "Type the season name",
                 autocomplete = "off",
                 type = "search",
-                data_url = "/api/seasons/autocomplete",
+                data_url = "/api/seasons/autocomplete?matchType=FriendlyMatch",
                 data_template = "season-template",
                 aria_label = "Type a season name and press down arrow to select from the matching choices"
             }));

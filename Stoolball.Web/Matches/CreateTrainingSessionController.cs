@@ -75,7 +75,7 @@ namespace Stoolball.Web.Matches
             }
             else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
-                model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false);
+                model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, false).ConfigureAwait(false);
                 if (model.Season == null || !model.Season.MatchTypes.Contains(MatchType.TrainingSession))
                 {
                     return new HttpNotFoundResult();

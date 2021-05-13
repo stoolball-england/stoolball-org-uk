@@ -110,7 +110,7 @@ namespace Stoolball.Web.Tests.Matches
             var teamDataSource = new Mock<ITeamDataSource>();
 
             var seasonDataSource = new Mock<ISeasonDataSource>();
-            seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult<Season>(new Season
+            seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Season>(new Season
             {
                 MatchTypes = new List<MatchType> { MatchType.TrainingSession }
             }));

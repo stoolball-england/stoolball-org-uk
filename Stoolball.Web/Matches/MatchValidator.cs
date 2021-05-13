@@ -4,6 +4,7 @@ using System.Data.SqlTypes;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
+using Stoolball.Competitions;
 using Stoolball.Matches;
 
 namespace Stoolball.Web.Matches
@@ -11,6 +12,13 @@ namespace Stoolball.Web.Matches
     /// <inheritdoc/>
     public class MatchValidator : IMatchValidator
     {
+        private readonly ISeasonEstimator _seasonEstimator;
+
+        public MatchValidator(ISeasonEstimator seasonEstimator)
+        {
+            _seasonEstimator = seasonEstimator ?? throw new ArgumentNullException(nameof(seasonEstimator));
+        }
+
         public void TeamsMustBeDifferent(IEditMatchViewModel model, ModelStateDictionary modelState)
         {
             if (model is null)
@@ -85,6 +93,28 @@ namespace Stoolball.Web.Matches
             if (model.MatchDate < SqlDateTime.MinValue.Value.Date || model.MatchDate > SqlDateTime.MaxValue.Value.Date)
             {
                 modelState.AddModelError("MatchDate", $"The match date must be between {SqlDateTime.MinValue.Value.Date.ToString("d MMMM yyyy", CultureInfo.CurrentCulture)} and {SqlDateTime.MaxValue.Value.Date.ToString("d MMMM yyyy", CultureInfo.CurrentCulture)}.");
+            }
+        }
+
+        public void MatchDateIsWithinTheSeason(IEditMatchViewModel model, ModelStateDictionary modelState)
+        {
+            if (model is null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            if (modelState is null)
+            {
+                throw new ArgumentNullException(nameof(modelState));
+            }
+
+            if (model.MatchDate.HasValue && model.Match != null && model.Match.Season != null)
+            {
+                var seasonForMatch = _seasonEstimator.EstimateSeasonDates(model.MatchDate.Value);
+                if (seasonForMatch.fromDate.Year != model.Match.Season.FromYear || seasonForMatch.untilDate.Year != model.Match.Season.UntilYear)
+                {
+                    modelState.AddModelError("MatchDate", $"The match date is not in the {model.Match.Season.SeasonFullName()}");
+                }
             }
         }
     }

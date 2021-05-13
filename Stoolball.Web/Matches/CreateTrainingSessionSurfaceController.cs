@@ -52,13 +52,24 @@ namespace Stoolball.Web.Matches
 
             var model = new EditTrainingSessionViewModel(CurrentPage, Services.UserService) { Match = postedMatch };
             model.Match.MatchType = MatchType.TrainingSession;
-            if (model.Match.Season != null && !model.Match.Season.SeasonId.HasValue)
+            _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form, ModelState);
+
+            if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
+            {
+                model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, false).ConfigureAwait(false);
+            }
+            else if (model.Match.Season != null && !model.Match.Season.SeasonId.HasValue)
             {
                 model.Match.Season = null;
             }
-            _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form, ModelState);
+            else if (model.Match.Season != null && model.Match.Season.SeasonId.HasValue)
+            {
+                // Get the season, to support validation against season dates
+                model.Match.Season = await _seasonDataSource.ReadSeasonById(model.Match.Season.SeasonId.Value).ConfigureAwait(false);
+            }
 
             _matchValidator.MatchDateIsValidForSqlServer(model, ModelState);
+            _matchValidator.MatchDateIsWithinTheSeason(model, ModelState);
             _matchValidator.AtLeastOneTeamInMatch(model.Match.Teams, ModelState);
 
             foreach (var team in model.Match.Teams)
@@ -87,7 +98,6 @@ namespace Stoolball.Web.Matches
             }
             else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
-                model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false);
                 model.Metadata.PageTitle = $"Add a {MatchType.TrainingSession.Humanize(LetterCasing.LowerCase)} in the {model.Season.SeasonFullName()}";
             }
 

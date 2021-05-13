@@ -55,7 +55,18 @@ namespace Stoolball.Web.Matches
             model.Match.MatchType = MatchType.KnockoutMatch;
             _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form, ModelState);
 
+            if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
+            {
+                model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false);
+            }
+            else if (model.Match.Season != null && model.Match.Season.SeasonId.HasValue)
+            {
+                // Get the season, to support validation against season dates
+                model.Match.Season = await _seasonDataSource.ReadSeasonById(model.Match.Season.SeasonId.Value).ConfigureAwait(false);
+            }
+
             _matchValidator.MatchDateIsValidForSqlServer(model, ModelState);
+            _matchValidator.MatchDateIsWithinTheSeason(model, ModelState);
             _matchValidator.TeamsMustBeDifferent(model, ModelState);
 
             model.IsAuthorized[AuthorizedAction.CreateMatch] = User.Identity.IsAuthenticated;
@@ -67,7 +78,6 @@ namespace Stoolball.Web.Matches
                 var currentMember = Members.GetCurrentMember();
                 var createdMatch = await _matchRepository.CreateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                // Redirect to the match
                 return Redirect(createdMatch.MatchRoute);
             }
 
@@ -85,7 +95,6 @@ namespace Stoolball.Web.Matches
             }
             else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
-                model.Match.Season = model.Season = await _seasonDataSource.ReadSeasonByRoute(Request.RawUrl, true).ConfigureAwait(false);
                 model.PossibleSeasons = _editMatchHelper.PossibleSeasonsAsListItems(new[] { model.Match.Season });
                 model.PossibleHomeTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season?.Teams);
                 model.PossibleAwayTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Season?.Teams);

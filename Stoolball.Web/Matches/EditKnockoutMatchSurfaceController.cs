@@ -72,6 +72,7 @@ namespace Stoolball.Web.Matches
             _editMatchHelper.ConfigureModelFromRequestData(model, Request.Unvalidated.Form, Request.Form, ModelState);
 
             _matchValidator.MatchDateIsValidForSqlServer(model, ModelState);
+            _matchValidator.MatchDateIsWithinTheSeason(model, ModelState);
             _matchValidator.TeamsMustBeDifferent(model, ModelState);
 
             model.IsAuthorized = _authorizationPolicy.IsAuthorized(beforeUpdate);
@@ -83,7 +84,6 @@ namespace Stoolball.Web.Matches
                 var currentMember = Members.GetCurrentMember();
                 var updatedMatch = await _matchRepository.UpdateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                // Redirect to the match
                 return Redirect(updatedMatch.MatchRoute);
             }
 
