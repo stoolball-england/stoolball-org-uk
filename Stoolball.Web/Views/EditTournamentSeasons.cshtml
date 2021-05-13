@@ -40,7 +40,7 @@
         else
         {
             <p>Unfortunately we don't have details of any @Model.Tournament.PlayerType.Humanize(LetterCasing.LowerCase) competitions in @Model.Tournament.StartTime.ToString("MMMM yyyy") to list your tournament in.</p>
-            <button class="btn btn-primary btn-back">Back to Edit tournament</button>
+            <a class="btn btn-primary btn-back" href="@Model.Tournament.TournamentRoute/edit">Back to Edit tournament</a>
         }
     }
     else
