@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Dapper;
+using Stoolball.Comments;
 using Stoolball.Matches;
 using static Stoolball.Constants;
 

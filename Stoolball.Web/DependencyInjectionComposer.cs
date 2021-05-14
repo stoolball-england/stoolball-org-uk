@@ -8,6 +8,7 @@ using Polly.Caching.Memory;
 using Polly.Registry;
 using Stoolball.Caching;
 using Stoolball.Clubs;
+using Stoolball.Comments;
 using Stoolball.Competitions;
 using Stoolball.Data.Cache;
 using Stoolball.Data.SqlServer;

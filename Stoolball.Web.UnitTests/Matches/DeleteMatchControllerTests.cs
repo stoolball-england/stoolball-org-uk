@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Moq;
+using Stoolball.Comments;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Security;

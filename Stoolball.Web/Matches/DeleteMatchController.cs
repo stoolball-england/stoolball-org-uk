@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Comments;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;

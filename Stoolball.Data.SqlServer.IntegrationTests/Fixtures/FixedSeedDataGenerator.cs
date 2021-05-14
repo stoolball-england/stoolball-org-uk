@@ -4,6 +4,7 @@ using System.Linq;
 using Humanizer;
 using Stoolball.Awards;
 using Stoolball.Clubs;
+using Stoolball.Comments;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
@@ -479,6 +480,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 MatchNotes = "<p>This is a test match, not a Test Match.</p>",
                 MatchRoute = "/matches/team-a-vs-team-b-1jul2020-" + Guid.NewGuid(),
                 MemberKey = Guid.NewGuid(),
+                Comments = CreateComments(10)
             };
 
             var bowlingFigures = new BowlingFiguresCalculator(new OversHelper());
@@ -541,7 +543,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 {
                     CreateSeasonWithMinimalDetails(competition1, 2020, 2020),
                     CreateSeasonWithMinimalDetails(competition2, 2020, 2020)
-                }
+                },
+                Comments = CreateComments(10)
             };
             foreach (var season in tournament.Seasons)
             {
@@ -679,6 +682,23 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     }
                 }
             };
+        }
+
+        public List<HtmlComment> CreateComments(int howMany)
+        {
+            var comments = new List<HtmlComment>();
+            for (var i = howMany; i > 0; i--)
+            {
+                comments.Add(new HtmlComment
+                {
+                    CommentId = Guid.NewGuid(),
+                    MemberKey = Guid.NewGuid(),
+                    MemberName = "John Smith",
+                    CommentDate = DateTimeOffset.UtcNow.AddDays(i * -1),
+                    Comment = $"<p>This is comment number <b>{i}</b>.</p>"
+                });
+            }
+            return comments;
         }
     }
 }

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using Humanizer;
+using Stoolball.Comments;
 using Stoolball.Competitions;
 using Stoolball.Logging;
 using Stoolball.MatchLocations;
@@ -85,6 +86,7 @@ namespace Stoolball.Matches
         public string MatchNotes { get; set; }
         public string MatchRoute { get; set; }
         public Season Season { get; set; }
+        public List<HtmlComment> Comments { get; internal set; } = new List<HtmlComment>();
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
         public Uri EntityUri {
             get { return new Uri($"{Constants.EntityUriPrefixes.Match}{MatchId}"); }

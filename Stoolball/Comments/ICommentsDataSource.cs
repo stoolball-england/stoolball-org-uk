@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Stoolball.Matches
+namespace Stoolball.Comments
 {
     /// <summary>
     /// Get comments on a stoolball entity from a data source

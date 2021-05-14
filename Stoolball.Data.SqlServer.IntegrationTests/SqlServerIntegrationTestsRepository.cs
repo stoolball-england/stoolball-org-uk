@@ -99,6 +99,23 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             {
                 CreateOverSet(overSet, null, null, tournament.TournamentId);
             }
+
+            foreach (var comment in tournament.Comments)
+            {
+                _connection.Execute($@"INSERT INTO {Tables.Comment} 
+                                      (CommentId, TournamentId, MemberKey, MemberName, CommentDate, Comment) 
+                                       VALUES 
+                                      (@CommentId, @TournamentId, @MemberKey, @MemberName, @CommentDate, @Comment)",
+                    new
+                    {
+                        comment.CommentId,
+                        tournament.TournamentId,
+                        comment.MemberKey,
+                        comment.MemberName,
+                        comment.CommentDate,
+                        comment.Comment
+                    });
+            }
         }
 
         public void CreateClub(Club club)
@@ -296,6 +313,23 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                   });
                     i++;
                 }
+            }
+
+            foreach (var comment in match.Comments)
+            {
+                _connection.Execute($@"INSERT INTO {Tables.Comment} 
+                                      (CommentId, MatchId, MemberKey, MemberName, CommentDate, Comment) 
+                                       VALUES 
+                                      (@CommentId, @MatchId, @MemberKey, @MemberName, @CommentDate, @Comment)",
+                    new
+                    {
+                        comment.CommentId,
+                        match.MatchId,
+                        comment.MemberKey,
+                        comment.MemberName,
+                        comment.CommentDate,
+                        comment.Comment
+                    });
             }
         }
 
