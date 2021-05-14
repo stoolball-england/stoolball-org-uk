@@ -25,8 +25,15 @@ namespace Stoolball.Web.Competitions
 
             var authorizations = new Dictionary<AuthorizedAction, bool>();
             authorizations[AuthorizedAction.CreateCompetition] = _membershipHelper.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.AllMembers }, null);
-            authorizations[AuthorizedAction.EditCompetition] = _membershipHelper.IsMemberAuthorized(null, new[] { Groups.Administrators, competition.MemberGroupName }, null);
             authorizations[AuthorizedAction.DeleteCompetition] = _membershipHelper.IsMemberAuthorized(null, new[] { Groups.Administrators }, null);
+            if (!string.IsNullOrEmpty(competition.MemberGroupName))
+            {
+                authorizations[AuthorizedAction.EditCompetition] = _membershipHelper.IsMemberAuthorized(null, new[] { Groups.Administrators, competition.MemberGroupName }, null);
+            }
+            else
+            {
+                authorizations[AuthorizedAction.EditCompetition] = authorizations[AuthorizedAction.DeleteCompetition];
+            }
             return authorizations;
         }
     }

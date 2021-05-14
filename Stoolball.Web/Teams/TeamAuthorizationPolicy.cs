@@ -24,8 +24,15 @@ namespace Stoolball.Web.Teams
 
             var authorizations = new Dictionary<AuthorizedAction, bool>();
             authorizations[AuthorizedAction.CreateTeam] = _membershipHelper.IsMemberAuthorized(null, new[] { Groups.Administrators, Groups.AllMembers }, null);
-            authorizations[AuthorizedAction.EditTeam] = _membershipHelper.IsMemberAuthorized(null, new[] { Groups.Administrators, team.MemberGroupName }, null);
             authorizations[AuthorizedAction.DeleteTeam] = _membershipHelper.IsMemberAuthorized(null, new[] { Groups.Administrators }, null);
+            if (!string.IsNullOrEmpty(team.MemberGroupName))
+            {
+                authorizations[AuthorizedAction.EditTeam] = _membershipHelper.IsMemberAuthorized(null, new[] { Groups.Administrators, team.MemberGroupName }, null);
+            }
+            else
+            {
+                authorizations[AuthorizedAction.EditTeam] = authorizations[AuthorizedAction.DeleteTeam];
+            }
             return authorizations;
         }
     }
