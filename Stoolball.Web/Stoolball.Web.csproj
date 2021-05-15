@@ -1284,6 +1284,8 @@
     <Compile Include="Matches\OnlySportCsvRecord.cs" />
     <Compile Include="Routing\RedirectBareDomainModule.cs" />
     <Compile Include="Statistics\BasePlayerViewModel.cs" />
+    <Compile Include="Statistics\PlayerFieldingViewModel.cs" />
+    <Compile Include="Statistics\PlayerFieldingController.cs" />
     <Compile Include="Statistics\PlayerBowlingViewModel.cs" />
     <Compile Include="Statistics\PlayerBowlingController.cs" />
     <Compile Include="Teams\SpogoCsvExportComponent.cs" />
@@ -2677,6 +2679,7 @@
     <Content Include="Views\Partials\_MatchListSubscriptions.cshtml" />
     <Content Include="Views\PlayerBowling.cshtml" />
     <Content Include="Views\Partials\_PlayerHeader.cshtml" />
+    <Content Include="Views\PlayerFielding.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

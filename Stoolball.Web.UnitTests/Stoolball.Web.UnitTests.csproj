@@ -117,6 +117,7 @@
     <Compile Include="Routing\PostSaveRedirectorTests.cs" />
     <Compile Include="MatchLocations\MatchLocationStatisticsControllerTests.cs" />
     <Compile Include="Statistics\BowlingFiguresControllerTests.cs" />
+    <Compile Include="Statistics\PlayerFieldingControllerTests.cs" />
     <Compile Include="Statistics\PlayerBowlingControllerTests.cs" />
     <Compile Include="Statistics\StatisticsFilterUrlParserTests.cs" />
     <Compile Include="Teams\TeamStatisticsControllerTests.cs" />

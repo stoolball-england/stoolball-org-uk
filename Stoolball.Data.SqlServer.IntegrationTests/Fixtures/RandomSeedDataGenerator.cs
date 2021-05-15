@@ -161,6 +161,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             }
             inningsWithFiveWicketHaul.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(inningsWithFiveWicketHaul);
 
+            matches.Add(CreateMatchWithFieldingByMultipleIdentities());
+
             matches.Add(CreateMatchWithDifferentTeamsWhereSomeonePlaysOnBothTeams());
 
             // Ensure there's always an intra-club match to test
@@ -173,6 +175,48 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             }
 
             return matches;
+        }
+
+        private Match CreateMatchWithFieldingByMultipleIdentities()
+        {
+            var anyTeam1 = _teams[_randomiser.Next(_teams.Count)];
+            var anyTeam2 = _teams[_randomiser.Next(_teams.Count)];
+            var match = CreateMatchBetween(anyTeam1.team, anyTeam1.identities, anyTeam2.team, anyTeam2.identities, FiftyFiftyChance());
+
+            // in the first innings a fielder should take catches under multiple identities
+            var firstInnings = match.MatchInnings[0];
+            var firstInningsPlayers = firstInnings.BowlingTeam.Team.TeamId == anyTeam1.team.TeamId ? anyTeam1.identities : anyTeam2.identities;
+
+            var catcherWithMultipleIdentities = firstInningsPlayers.FirstOrDefault(x => firstInningsPlayers.Count(p => p.Player.PlayerId == x.Player.PlayerId) > 1).Player.PlayerId;
+            var catcherIdentities = firstInningsPlayers.Where(x => x.Player.PlayerId == catcherWithMultipleIdentities).ToList();
+
+            for (var i = 0; i < 6; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    firstInnings.PlayerInnings[i].DismissalType = DismissalType.Caught;
+                    firstInnings.PlayerInnings[i].DismissedBy = catcherIdentities[0];
+                }
+                else
+                {
+                    firstInnings.PlayerInnings[i].DismissalType = DismissalType.CaughtAndBowled;
+                    firstInnings.PlayerInnings[i].DismissedBy = null;
+                    firstInnings.PlayerInnings[i].Bowler = catcherIdentities[1];
+                }
+            }
+
+            // in the second innings a fielder should complete run-outs under multiple identities
+            var secondInnings = match.MatchInnings[1];
+            var secondInningsPlayers = secondInnings.BowlingTeam.Team.TeamId == anyTeam1.team.TeamId ? anyTeam1.identities : anyTeam2.identities;
+
+            for (var i = 0; i < 6; i++)
+            {
+                secondInnings.PlayerInnings[i].DismissalType = DismissalType.RunOut;
+                secondInnings.PlayerInnings[i].DismissedBy = catcherIdentities[i % 2];
+                secondInnings.PlayerInnings[i].Bowler = null;
+            }
+
+            return match;
         }
 
         private Match CreateMatchWithDifferentTeamsWhereSomeonePlaysOnBothTeams()
@@ -242,18 +286,23 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             }
 
             // Most matches have a match location
-            if (_randomiser.Next(4) != 0)
+            if (OneInFourChance())
             {
                 match.MatchLocation = _matchLocations[_randomiser.Next(_matchLocations.Count)];
             }
 
             // Most matches have a season and competition
-            if (_randomiser.Next(4) != 0)
+            if (OneInFourChance())
             {
                 match.Season = _competitions[_randomiser.Next(_competitions.Count)].Seasons.First();
             }
 
             return match;
+        }
+
+        private bool OneInFourChance()
+        {
+            return _randomiser.Next(4) != 0;
         }
 
         private MatchInnings CreateMatchInnings(int inningsOrderInMatch)
@@ -286,7 +335,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             }
 
             // sometimes pick a random player to bat twice in the innings
-            if (_randomiser.Next(2) == 0)
+            if (FiftyFiftyChance())
             {
                 innings.PlayerInnings.Add(CreateRandomPlayerInnings(match, battingPlayers.Count, battingPlayers[_randomiser.Next(battingPlayers.Count)], bowlingPlayers[_randomiser.Next(bowlingPlayers.Count)], bowlingPlayers[_randomiser.Next(bowlingPlayers.Count)]));
             }

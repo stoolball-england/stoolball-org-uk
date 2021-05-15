@@ -17,10 +17,10 @@ namespace Stoolball.Data.SqlServer
             _databaseConnectionFactory = databaseConnectionFactory;
         }
 
-        public async Task<BattingStatistics> ReadBattingStatistics(StatisticsFilter statisticsFilter)
+        public async Task<BattingStatistics> ReadBattingStatistics(StatisticsFilter filter)
         {
-            if (statisticsFilter == null) { throw new ArgumentNullException(nameof(statisticsFilter)); }
-            if (statisticsFilter?.Player?.PlayerId == null) { throw new ArgumentException("Player.PlayerId must be specified", nameof(statisticsFilter)); }
+            if (filter == null) { throw new ArgumentNullException(nameof(filter)); }
+            if (filter?.Player?.PlayerId == null) { throw new ArgumentException("Player.PlayerId must be specified", nameof(filter)); }
 
             var sql = $@"SELECT TotalInnings, TotalInningsWithRunsScored, TotalInningsWithRunsScoredAndBallsFaced, NotOuts, TotalRunsScored, Fifties, Hundreds, BestInningsRunsScored, BestInningsWasDismissed, StrikeRate,
                          CASE WHEN DismissalsWithRunsScored > 0 THEN CAST(TotalRunsScored AS DECIMAL)/DismissalsWithRunsScored ELSE NULL END AS Average
@@ -44,16 +44,16 @@ namespace Stoolball.Data.SqlServer
             {
                 return await connection.QuerySingleAsync<BattingStatistics>(sql, new
                 {
-                    statisticsFilter.Player.PlayerId
+                    filter.Player.PlayerId
                 })
                 .ConfigureAwait(false);
             }
         }
 
-        public async Task<BowlingStatistics> ReadBowlingStatistics(StatisticsFilter statisticsFilter)
+        public async Task<BowlingStatistics> ReadBowlingStatistics(StatisticsFilter filter)
         {
-            if (statisticsFilter == null) { throw new ArgumentNullException(nameof(statisticsFilter)); }
-            if (statisticsFilter?.Player?.PlayerId == null) { throw new ArgumentException("Player.PlayerId must be specified", nameof(statisticsFilter)); }
+            if (filter == null) { throw new ArgumentNullException(nameof(filter)); }
+            if (filter?.Player?.PlayerId == null) { throw new ArgumentException("Player.PlayerId must be specified", nameof(filter)); }
 
             // A player can have multiple sets of bowling figures per innings if they have multiple identities in that innings,
             // which could happen if 'John Smith' was also entered as 'John', for example.
@@ -110,7 +110,31 @@ namespace Stoolball.Data.SqlServer
             {
                 return await connection.QuerySingleAsync<BowlingStatistics>(sql, new
                 {
-                    statisticsFilter.Player.PlayerId
+                    filter.Player.PlayerId
+                })
+                .ConfigureAwait(false);
+            }
+        }
+
+        public async Task<FieldingStatistics> ReadFieldingStatistics(StatisticsFilter filter)
+        {
+            if (filter == null) { throw new ArgumentNullException(nameof(filter)); }
+            if (filter?.Player?.PlayerId == null) { throw new ArgumentException("Player.PlayerId must be specified", nameof(filter)); }
+
+            var sql = $@"SELECT TotalCatches, MostCatches, TotalRunOuts, MostRunOuts
+                         FROM (
+	                        SELECT 
+                                (SELECT SUM(Catches) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalCatches,
+                                (SELECT SUM(RunOuts) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalRunOuts,
+                                (SELECT MAX(Catches) FROM (SELECT SUM(Catches) AS Catches FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId GROUP BY MatchTeamId, MatchInningsPair) AS CatchesPerInnings) AS MostCatches,
+                                (SELECT MAX(RunOuts) FROM (SELECT SUM(RunOuts) AS RunOuts FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId GROUP BY MatchTeamId, MatchInningsPair) AS RunOutsPerInnings) AS MostRunOuts
+	                     ) AS FieldingStatistics";
+
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                return await connection.QuerySingleAsync<FieldingStatistics>(sql, new
+                {
+                    filter.Player.PlayerId
                 })
                 .ConfigureAwait(false);
             }

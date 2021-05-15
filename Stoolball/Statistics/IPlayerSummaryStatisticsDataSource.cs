@@ -4,7 +4,8 @@ namespace Stoolball.Statistics
 {
     public interface IPlayerSummaryStatisticsDataSource
     {
-        Task<BattingStatistics> ReadBattingStatistics(StatisticsFilter statisticsFilter);
-        Task<BowlingStatistics> ReadBowlingStatistics(StatisticsFilter statisticsFilter);
+        Task<BattingStatistics> ReadBattingStatistics(StatisticsFilter filter);
+        Task<BowlingStatistics> ReadBowlingStatistics(StatisticsFilter filter);
+        Task<FieldingStatistics> ReadFieldingStatistics(StatisticsFilter filter);
     }
 }

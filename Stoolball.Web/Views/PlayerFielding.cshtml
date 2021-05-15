@@ -1,0 +1,40 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<PlayerFieldingViewModel>
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.Statistics
+@{
+    Html.RequiresCss("/statistics/statistics.min.css");
+}
+<div class="container-xl">
+    @Html.Partial("_PlayerHeader")
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Player.PlayerRoute">Batting</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Player.PlayerRoute/bowling">Bowling</a>
+        </li>
+        <li class="nav-item">
+            <em class="nav-link active">Fielding</em>
+        </li>
+    </ul>
+
+    <table class="table-as-cards table-as-cards-reset-sm">
+        <thead>
+            <tr>
+                <th scope="col">Catches</th>
+                <th scope="col">Most catches</th>
+                <th scope="col">Run-outs</th>
+                <th scope="col">Most run-outs</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Catches</span>@Model.FieldingStatistics.TotalCatches</td>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Most catches</span>@Model.FieldingStatistics.MostCatches</td>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Run-outs</span>@Model.FieldingStatistics.TotalRunOuts</td>
+                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Most run-outs</span>@Model.FieldingStatistics.MostRunOuts</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
