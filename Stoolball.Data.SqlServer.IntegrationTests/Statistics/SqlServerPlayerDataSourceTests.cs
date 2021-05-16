@@ -42,6 +42,24 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
+        public async Task Read_player_identities_returns_player()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var playerDataSource = new SqlServerPlayerDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var results = await playerDataSource.ReadPlayerIdentities(null).ConfigureAwait(false);
+
+            foreach (var identity in _databaseFixture.TestData.PlayerIdentities)
+            {
+                var result = results.SingleOrDefault(x => x.PlayerIdentityId == identity.PlayerIdentityId);
+                Assert.NotNull(result);
+
+                Assert.Equal(identity.Player.PlayerId, result.Player.PlayerId);
+                Assert.Equal(identity.Player.PlayerRoute, result.Player.PlayerRoute);
+            }
+        }
+
+        [Fact]
         public async Task Read_player_identities_returns_team()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();

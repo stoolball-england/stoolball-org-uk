@@ -1291,6 +1291,7 @@
     <Compile Include="Teams\SpogoCsvExportComponent.cs" />
     <Compile Include="Teams\SpogoCsvExportTask.cs" />
     <Compile Include="Teams\SpogoCsvRecord.cs" />
+    <Compile Include="Teams\PlayersForTeamController.cs" />
     <Compile Include="Views\Partials\_CreateOrEditTrainingSession.generated.cs">
       <DependentUpon>_CreateOrEditTrainingSession.cshtml</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2680,6 +2681,8 @@
     <Content Include="Views\PlayerBowling.cshtml" />
     <Content Include="Views\Partials\_PlayerHeader.cshtml" />
     <Content Include="Views\PlayerFielding.cshtml" />
+    <Content Include="Views\PlayersForTeam.cshtml" />
+    <Content Include="Views\Partials\_PlayerList.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

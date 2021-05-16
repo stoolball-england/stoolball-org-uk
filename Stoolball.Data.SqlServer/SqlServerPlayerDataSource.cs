@@ -34,10 +34,11 @@ namespace Stoolball.Data.SqlServer
                 var sql = $@"SELECT stats.PlayerIdentityId, stats.PlayerIdentityName, 
                             COUNT(DISTINCT MatchId) AS TotalMatches, MIN(MatchStartTime) AS FirstPlayed,  MAX(MatchStartTime) AS LastPlayed,
                             COUNT(DISTINCT MatchId) -(SELECT COUNT(DISTINCT MatchId) * 5 FROM {Tables.PlayerInMatchStatistics} WHERE TeamId = stats.TeamId AND MatchStartTime > MAX(stats.MatchStartTime)) AS Probability,
+                            stats.PlayerId, stats.PlayerRoute,
                             stats.TeamId, stats.TeamName
                             FROM {Tables.PlayerInMatchStatistics} AS stats 
                             <<WHERE>>
-                            GROUP BY stats.PlayerIdentityId, stats.PlayerIdentityName, stats.TeamId, stats.TeamName
+                            GROUP BY stats.PlayerId, stats.PlayerRoute, stats.PlayerIdentityId, stats.PlayerIdentityName, stats.TeamId, stats.TeamName
                             ORDER BY stats.TeamId ASC, Probability DESC, stats.PlayerIdentityName ASC";
 
                 var where = new List<string>();
@@ -63,14 +64,15 @@ namespace Stoolball.Data.SqlServer
 
                 sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
 
-                return (await connection.QueryAsync<PlayerIdentity, Team, PlayerIdentity>(sql,
-                    (player, team) =>
+                return (await connection.QueryAsync<PlayerIdentity, Player, Team, PlayerIdentity>(sql,
+                    (identity, player, team) =>
                     {
-                        player.Team = team;
-                        return player;
+                        identity.Team = team;
+                        identity.Player = player;
+                        return identity;
                     },
                     new DynamicParameters(parameters),
-                    splitOn: "TeamId").ConfigureAwait(false)).ToList();
+                    splitOn: "PlayerId, TeamId").ConfigureAwait(false)).ToList();
             }
         }
 

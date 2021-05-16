@@ -169,7 +169,7 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1269), Tuple.Create("\"", 1308)
+WriteAttribute("href", Tuple.Create(" href=\"", 1269), Tuple.Create("\"", 1305)
             
             #line 39 "..\..\Views\MatchesForTeam.cshtml"
 , Tuple.Create(Tuple.Create("", 1276), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
@@ -177,7 +177,26 @@ WriteAttribute("href", Tuple.Create(" href=\"", 1269), Tuple.Create("\"", 1308)
             #line default
             #line hidden
 , 1276), false)
-, Tuple.Create(Tuple.Create("", 1297), Tuple.Create("/statistics", 1297), true)
+, Tuple.Create(Tuple.Create("", 1297), Tuple.Create("/players", 1297), true)
+);
+
+WriteLiteral(">Players</a>\r\n        </li>\r\n        <li");
+
+WriteLiteral(" class=\"nav-item\"");
+
+WriteLiteral(">\r\n            <a");
+
+WriteLiteral(" class=\"nav-link\"");
+
+WriteAttribute("href", Tuple.Create(" href=\"", 1397), Tuple.Create("\"", 1436)
+            
+            #line 42 "..\..\Views\MatchesForTeam.cshtml"
+, Tuple.Create(Tuple.Create("", 1404), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
+            
+            #line default
+            #line hidden
+, 1404), false)
+, Tuple.Create(Tuple.Create("", 1425), Tuple.Create("/statistics", 1425), true)
 );
 
 WriteLiteral(">Statistics</a>\r\n        </li>\r\n");
@@ -185,7 +204,7 @@ WriteLiteral(">Statistics</a>\r\n        </li>\r\n");
 WriteLiteral("        ");
 
             
-            #line 41 "..\..\Views\MatchesForTeam.cshtml"
+            #line 44 "..\..\Views\MatchesForTeam.cshtml"
    Write(Html.Partial("_AddMatchMenu", matchMenu));
 
             
@@ -194,13 +213,13 @@ WriteLiteral("        ");
 WriteLiteral("\r\n    </ul>\r\n\r\n");
 
             
-            #line 44 "..\..\Views\MatchesForTeam.cshtml"
+            #line 47 "..\..\Views\MatchesForTeam.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 44 "..\..\Views\MatchesForTeam.cshtml"
+            #line 47 "..\..\Views\MatchesForTeam.cshtml"
      if (Model.Matches.Matches.Count > 0)
     {
         
@@ -208,14 +227,14 @@ WriteLiteral("\r\n    </ul>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 46 "..\..\Views\MatchesForTeam.cshtml"
+            #line 49 "..\..\Views\MatchesForTeam.cshtml"
    Write(Html.Partial("_MatchList", Model.Matches));
 
             
             #line default
             #line hidden
             
-            #line 46 "..\..\Views\MatchesForTeam.cshtml"
+            #line 49 "..\..\Views\MatchesForTeam.cshtml"
                                                   
     }
     else
@@ -227,7 +246,7 @@ WriteLiteral("\r\n    </ul>\r\n\r\n");
 WriteLiteral("        <p>There are no matches for this team this season.</p>\r\n");
 
             
-            #line 51 "..\..\Views\MatchesForTeam.cshtml"
+            #line 54 "..\..\Views\MatchesForTeam.cshtml"
     }
 
             
@@ -236,7 +255,7 @@ WriteLiteral("        <p>There are no matches for this team this season.</p>\r\n
 WriteLiteral("    ");
 
             
-            #line 52 "..\..\Views\MatchesForTeam.cshtml"
+            #line 55 "..\..\Views\MatchesForTeam.cshtml"
 Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.Team.TeamRoute }));
 
             

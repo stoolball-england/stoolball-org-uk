@@ -97,6 +97,25 @@ li {
     }
 }
 
+// .list-columns-wide is similar to .list-columns, but for items which need a bit more space
+@media screen {
+    .list-columns-wide > li { 
+        margin-bottom: $spacer/4;
+    }
+
+    @include media-breakpoint-up(sm) {
+        .list-columns-wide {
+            columns: 2;
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+        .list-columns-wide {
+            columns: 3;
+        }
+    }
+}
+
 
 // Title and detail styles for listings - competitions, teams, matches and locations.
 .list-results__title {

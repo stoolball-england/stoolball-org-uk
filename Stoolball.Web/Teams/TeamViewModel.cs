@@ -1,4 +1,6 @@
-﻿using Stoolball.Teams;
+﻿using System.Collections.Generic;
+using Stoolball.Statistics;
+using Stoolball.Teams;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
 using Umbraco.Core.Models.PublishedContent;
@@ -15,5 +17,6 @@ namespace Stoolball.Web.Teams
         public MatchListingViewModel Matches { get; set; }
         public bool IsInACurrentLeague { get; set; }
         public bool IsInACurrentKnockoutCompetition { get; set; }
+        public IList<Player> Players { get; internal set; } = new List<Player>();
     }
 }

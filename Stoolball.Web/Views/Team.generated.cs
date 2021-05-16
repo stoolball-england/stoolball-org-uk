@@ -180,7 +180,7 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1066), Tuple.Create("\"", 1105)
+WriteAttribute("href", Tuple.Create(" href=\"", 1066), Tuple.Create("\"", 1102)
             
             #line 30 "..\..\Views\Team.cshtml"
 , Tuple.Create(Tuple.Create("", 1073), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
@@ -188,19 +188,38 @@ WriteAttribute("href", Tuple.Create(" href=\"", 1066), Tuple.Create("\"", 1105)
             #line default
             #line hidden
 , 1073), false)
-, Tuple.Create(Tuple.Create("", 1094), Tuple.Create("/statistics", 1094), true)
+, Tuple.Create(Tuple.Create("", 1094), Tuple.Create("/players", 1094), true)
+);
+
+WriteLiteral(">Players</a>\r\n        </li>\r\n        <li");
+
+WriteLiteral(" class=\"nav-item\"");
+
+WriteLiteral(">\r\n            <a");
+
+WriteLiteral(" class=\"nav-link\"");
+
+WriteAttribute("href", Tuple.Create(" href=\"", 1194), Tuple.Create("\"", 1233)
+            
+            #line 33 "..\..\Views\Team.cshtml"
+, Tuple.Create(Tuple.Create("", 1201), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
+            
+            #line default
+            #line hidden
+, 1201), false)
+, Tuple.Create(Tuple.Create("", 1222), Tuple.Create("/statistics", 1222), true)
 );
 
 WriteLiteral(">Statistics</a>\r\n        </li>\r\n");
 
             
-            #line 32 "..\..\Views\Team.cshtml"
+            #line 35 "..\..\Views\Team.cshtml"
         
             
             #line default
             #line hidden
             
-            #line 32 "..\..\Views\Team.cshtml"
+            #line 35 "..\..\Views\Team.cshtml"
          if (authorizedToEdit)
         {
 
@@ -215,21 +234,21 @@ WriteLiteral(">\r\n                <a");
 
 WriteLiteral(" class=\"nav-link nav-link-edit\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1280), Tuple.Create("\"", 1313)
+WriteAttribute("href", Tuple.Create(" href=\"", 1408), Tuple.Create("\"", 1441)
             
-            #line 35 "..\..\Views\Team.cshtml"
-, Tuple.Create(Tuple.Create("", 1287), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
+            #line 38 "..\..\Views\Team.cshtml"
+, Tuple.Create(Tuple.Create("", 1415), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
             
             #line default
             #line hidden
-, 1287), false)
-, Tuple.Create(Tuple.Create("", 1308), Tuple.Create("/edit", 1308), true)
+, 1415), false)
+, Tuple.Create(Tuple.Create("", 1436), Tuple.Create("/edit", 1436), true)
 );
 
 WriteLiteral(">Edit team</a>\r\n            </li>\r\n");
 
             
-            #line 37 "..\..\Views\Team.cshtml"
+            #line 40 "..\..\Views\Team.cshtml"
         }
 
             
@@ -240,7 +259,7 @@ WriteLiteral("    </ul>\r\n\r\n");
 WriteLiteral("    ");
 
             
-            #line 40 "..\..\Views\Team.cshtml"
+            #line 43 "..\..\Views\Team.cshtml"
 Write(Html.Raw(Model.Team.Introduction));
 
             
@@ -249,13 +268,13 @@ Write(Html.Raw(Model.Team.Introduction));
 WriteLiteral("\r\n\r\n");
 
             
-            #line 42 "..\..\Views\Team.cshtml"
+            #line 45 "..\..\Views\Team.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 42 "..\..\Views\Team.cshtml"
+            #line 45 "..\..\Views\Team.cshtml"
      if (Model.Team.MatchLocations.Count > 0 || !string.IsNullOrWhiteSpace(Model.Team.PlayingTimes))
     {
 
@@ -265,7 +284,7 @@ WriteLiteral("\r\n\r\n");
 WriteLiteral("        <h2>When and where</h2>\r\n");
 
             
-            #line 45 "..\..\Views\Team.cshtml"
+            #line 48 "..\..\Views\Team.cshtml"
         if (Model.Team.MatchLocations.Count > 0)
         {
 
@@ -275,7 +294,7 @@ WriteLiteral("        <h2>When and where</h2>\r\n");
 WriteLiteral("            <p>This team plays at ");
 
             
-            #line 47 "..\..\Views\Team.cshtml"
+            #line 50 "..\..\Views\Team.cshtml"
                              Write(Html.Raw(Model.Team.MatchLocations.Humanize(x => $"<a href=\"{Html.Encode(x.MatchLocationRoute)}\">{Html.Encode(x.NameAndLocalityOrTownIfDifferent())}</a>")));
 
             
@@ -284,7 +303,7 @@ WriteLiteral("            <p>This team plays at ");
 WriteLiteral(".</p>\r\n");
 
             
-            #line 48 "..\..\Views\Team.cshtml"
+            #line 51 "..\..\Views\Team.cshtml"
         }
         if (!string.IsNullOrWhiteSpace(Model.Team.PlayingTimes))
         {
@@ -293,14 +312,14 @@ WriteLiteral(".</p>\r\n");
             #line default
             #line hidden
             
-            #line 51 "..\..\Views\Team.cshtml"
+            #line 54 "..\..\Views\Team.cshtml"
        Write(Html.Raw(Model.Team.PlayingTimes));
 
             
             #line default
             #line hidden
             
-            #line 51 "..\..\Views\Team.cshtml"
+            #line 54 "..\..\Views\Team.cshtml"
                                               
         }
     }
@@ -311,13 +330,13 @@ WriteLiteral(".</p>\r\n");
 WriteLiteral("\r\n");
 
             
-            #line 55 "..\..\Views\Team.cshtml"
+            #line 58 "..\..\Views\Team.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 55 "..\..\Views\Team.cshtml"
+            #line 58 "..\..\Views\Team.cshtml"
       
         var seasonListModel = new SeasonListViewModel
         {
@@ -338,14 +357,14 @@ WriteLiteral("\r\n");
             #line default
             #line hidden
             
-            #line 70 "..\..\Views\Team.cshtml"
+            #line 73 "..\..\Views\Team.cshtml"
    Write(Html.Partial("_SeasonListExpandable", seasonListModel));
 
             
             #line default
             #line hidden
             
-            #line 70 "..\..\Views\Team.cshtml"
+            #line 73 "..\..\Views\Team.cshtml"
                                                                ;
     
             
@@ -354,13 +373,13 @@ WriteLiteral("\r\n");
 WriteLiteral("\r\n\r\n");
 
             
-            #line 73 "..\..\Views\Team.cshtml"
+            #line 76 "..\..\Views\Team.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 73 "..\..\Views\Team.cshtml"
+            #line 76 "..\..\Views\Team.cshtml"
      if (!string.IsNullOrWhiteSpace(Model.Team.Cost))
     {
 
@@ -370,20 +389,20 @@ WriteLiteral("\r\n\r\n");
 WriteLiteral("        <h2>How much does it cost?</h2>\r\n");
 
             
-            #line 76 "..\..\Views\Team.cshtml"
+            #line 79 "..\..\Views\Team.cshtml"
         
             
             #line default
             #line hidden
             
-            #line 76 "..\..\Views\Team.cshtml"
+            #line 79 "..\..\Views\Team.cshtml"
    Write(Html.Raw(Model.Team.Cost));
 
             
             #line default
             #line hidden
             
-            #line 76 "..\..\Views\Team.cshtml"
+            #line 79 "..\..\Views\Team.cshtml"
                                   
     }
 
@@ -393,13 +412,13 @@ WriteLiteral("        <h2>How much does it cost?</h2>\r\n");
 WriteLiteral("\r\n    <h2>Contact details</h2>\r\n");
 
             
-            #line 80 "..\..\Views\Team.cshtml"
+            #line 83 "..\..\Views\Team.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 80 "..\..\Views\Team.cshtml"
+            #line 83 "..\..\Views\Team.cshtml"
       
         var socialMedia = new SocialMedia
         {
@@ -416,14 +435,14 @@ WriteLiteral("\r\n    <h2>Contact details</h2>\r\n");
             #line default
             #line hidden
             
-            #line 91 "..\..\Views\Team.cshtml"
+            #line 94 "..\..\Views\Team.cshtml"
        Write(Html.Raw(Model.Team.PublicContactDetails));
 
             
             #line default
             #line hidden
             
-            #line 91 "..\..\Views\Team.cshtml"
+            #line 94 "..\..\Views\Team.cshtml"
                                                       
 
             if (!string.IsNullOrWhiteSpace(Model.Team.Website))
@@ -434,20 +453,20 @@ WriteLiteral("\r\n    <h2>Contact details</h2>\r\n");
             #line hidden
 WriteLiteral("                <p>Visit <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3568), Tuple.Create("\"", 3594)
+WriteAttribute("href", Tuple.Create(" href=\"", 3696), Tuple.Create("\"", 3722)
             
-            #line 95 "..\..\Views\Team.cshtml"
-, Tuple.Create(Tuple.Create("", 3575), Tuple.Create<System.Object, System.Int32>(Model.Team.Website
+            #line 98 "..\..\Views\Team.cshtml"
+, Tuple.Create(Tuple.Create("", 3703), Tuple.Create<System.Object, System.Int32>(Model.Team.Website
             
             #line default
             #line hidden
-, 3575), false)
+, 3703), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 95 "..\..\Views\Team.cshtml"
+            #line 98 "..\..\Views\Team.cshtml"
                                                   Write(Model.Team.TeamName);
 
             
@@ -456,7 +475,7 @@ WriteLiteral(">");
 WriteLiteral("\'s website</a>.</p>\r\n");
 
             
-            #line 96 "..\..\Views\Team.cshtml"
+            #line 99 "..\..\Views\Team.cshtml"
             }
 
             
@@ -464,14 +483,14 @@ WriteLiteral("\'s website</a>.</p>\r\n");
             #line default
             #line hidden
             
-            #line 98 "..\..\Views\Team.cshtml"
+            #line 101 "..\..\Views\Team.cshtml"
        Write(Html.Partial("_SocialMedia", socialMedia));
 
             
             #line default
             #line hidden
             
-            #line 98 "..\..\Views\Team.cshtml"
+            #line 101 "..\..\Views\Team.cshtml"
                                                       
         }
         else if (Model.Team.TeamType != TeamType.Representative)
@@ -482,14 +501,14 @@ WriteLiteral("\'s website</a>.</p>\r\n");
             #line default
             #line hidden
             
-            #line 103 "..\..\Views\Team.cshtml"
+            #line 106 "..\..\Views\Team.cshtml"
        Write(Html.Partial("_ContactDetailsMissing", "team"));
 
             
             #line default
             #line hidden
             
-            #line 103 "..\..\Views\Team.cshtml"
+            #line 106 "..\..\Views\Team.cshtml"
                                                            
         }
     
@@ -499,13 +518,13 @@ WriteLiteral("\'s website</a>.</p>\r\n");
 WriteLiteral("\r\n\r\n");
 
             
-            #line 107 "..\..\Views\Team.cshtml"
+            #line 110 "..\..\Views\Team.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 107 "..\..\Views\Team.cshtml"
+            #line 110 "..\..\Views\Team.cshtml"
      if (Model.Team.ClubMark)
     {
         
@@ -513,14 +532,14 @@ WriteLiteral("\r\n\r\n");
             #line default
             #line hidden
             
-            #line 109 "..\..\Views\Team.cshtml"
+            #line 112 "..\..\Views\Team.cshtml"
    Write(Html.Partial("_ClubMark"));
 
             
             #line default
             #line hidden
             
-            #line 109 "..\..\Views\Team.cshtml"
+            #line 112 "..\..\Views\Team.cshtml"
                                   
     }
 

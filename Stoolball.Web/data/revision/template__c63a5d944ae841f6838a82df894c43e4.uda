@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/PlayersForTeam.cshtml",
+  "Master": null,
+  "Udi": "umb://template/c63a5d944ae841f6838a82df894c43e4",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/PlayersForTeam.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Players for Team",
+  "Alias": "PlayersForTeam",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "4.1.2"
+}

@@ -133,6 +133,7 @@ namespace Stoolball.Web.Routing
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.ClubActions },
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}club{OPTIONAL_SLASH}", StoolballRouteType.EditClub },
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}delete{OPTIONAL_SLASH}", StoolballRouteType.DeleteClub },
+                { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}players{OPTIONAL_SLASH}", StoolballRouteType.PlayersForTeam },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForTeam },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}ics{OPTIONAL_SLASH}", StoolballRouteType.MatchesCalendar },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}add{SLASH}training{OPTIONAL_SLASH}", StoolballRouteType.CreateTrainingSession },

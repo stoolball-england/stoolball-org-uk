@@ -120,6 +120,7 @@
     <Compile Include="Statistics\PlayerFieldingControllerTests.cs" />
     <Compile Include="Statistics\PlayerBowlingControllerTests.cs" />
     <Compile Include="Statistics\StatisticsFilterUrlParserTests.cs" />
+    <Compile Include="Teams\PlayersForTeamControllerTests.cs" />
     <Compile Include="Teams\TeamStatisticsControllerTests.cs" />
     <Compile Include="Statistics\StatisticsControllerTests.cs" />
     <Compile Include="Statistics\IndividualScoresControllerTests.cs" />

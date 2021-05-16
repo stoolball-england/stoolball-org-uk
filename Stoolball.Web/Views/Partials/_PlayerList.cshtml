@@ -1,0 +1,9 @@
+﻿@model List<Player>
+@using Stoolball.Statistics
+<ul class="list-columns-wide">
+    @foreach (var player in Model.OrderBy(x => x.PlayerName()))
+    {
+        var totalMatches = player.PlayerIdentities.Sum(x => x.TotalMatches);
+        <li><div><a href="@player.PlayerRoute">@player.PlayerName()</a> <span class="text-nowrap">(@totalMatches @(totalMatches > 1 ? "matches" : "match"))</span></div></li>
+    }
+</ul>

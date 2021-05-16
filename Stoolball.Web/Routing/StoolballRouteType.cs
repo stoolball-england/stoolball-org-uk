@@ -74,6 +74,7 @@
         Player,
         PlayerBowling,
         PlayerFielding,
+        PlayersForTeam,
         ClubStatistics,
         TeamStatistics,
         MatchLocationStatistics,
