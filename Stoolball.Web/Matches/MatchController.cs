@@ -65,7 +65,7 @@ namespace Stoolball.Web.Matches
             {
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
 
-                model.Metadata.PageTitle = model.Match.MatchFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false)) + " - stoolball match";
+                model.Metadata.PageTitle = model.Match.MatchFullName(x => _dateFormatter.FormatDate(x, false, false, false)) + " - stoolball match";
                 model.Metadata.Description = model.Match.Description();
 
                 model.Match.MatchNotes = _emailProtector.ProtectEmailAddresses(model.Match.MatchNotes, User.Identity.IsAuthenticated);

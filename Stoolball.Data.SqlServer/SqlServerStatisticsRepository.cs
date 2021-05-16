@@ -140,7 +140,7 @@ namespace Stoolball.Data.SqlServer
                             record.PlayerIdentityName,
                             record.PlayerRoute,
                             record.MatchId,
-                            record.MatchStartTime,
+                            MatchStartTime = record.MatchStartTime.UtcDateTime,
                             MatchType = record.MatchType.ToString(),
                             MatchPlayerType = record.MatchPlayerType.ToString(),
                             record.MatchName,

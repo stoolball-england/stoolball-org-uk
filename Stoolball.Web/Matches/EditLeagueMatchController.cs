@@ -83,14 +83,14 @@ namespace Stoolball.Web.Matches
                 model.MatchDate = model.Match.StartTime;
                 if (model.Match.StartTimeIsKnown)
                 {
-                    model.StartTime = model.Match.StartTime.LocalDateTime;
+                    model.StartTime = model.Match.StartTime;
                 }
                 model.HomeTeamId = model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.Team.TeamId;
                 model.AwayTeamId = model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.Team.TeamId;
                 model.MatchLocationId = model.Match.MatchLocation?.MatchLocationId;
                 model.MatchLocationName = model.Match.MatchLocation?.NameAndLocalityOrTownIfDifferent();
 
-                model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
+                model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateFormatter.FormatDate(x, false, false, false));
 
                 if (model.Match.Season != null)
                 {

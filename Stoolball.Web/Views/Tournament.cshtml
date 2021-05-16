@@ -10,7 +10,7 @@
     Html.RequiresCss("~/matches/match.min.css");
 }
 <div class="container-xl">
-    <h1>@Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
+    <h1>@Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x, false))</h1>
 
     @* authorizedToEdit only needs to protect the last tab, but there's no point having only one tab *@
     @if (authorizedToEdit)
@@ -27,10 +27,10 @@
 
     <p>
         When:
-        @(Model.Tournament.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(Model.Tournament.StartTime.LocalDateTime) : Model.DateTimeFormatter.FormatDate(Model.Tournament.StartTime.LocalDateTime))
+        @(Model.Tournament.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(Model.Tournament.StartTime) : Model.DateTimeFormatter.FormatDate(Model.Tournament.StartTime))
         @if (Model.Tournament.TournamentLocation?.Latitude != null && Model.Tournament.TournamentLocation?.Longitude != null)
         {
-            var solarTimes = new SolarTimes(Model.Tournament.StartTime.LocalDateTime, Model.Tournament.TournamentLocation.Latitude, Model.Tournament.TournamentLocation.Longitude);
+            var solarTimes = new SolarTimes(Model.Tournament.StartTime, Model.Tournament.TournamentLocation.Latitude, Model.Tournament.TournamentLocation.Longitude);
             @: (sunset @Model.DateTimeFormatter.FormatTime(solarTimes.Sunset))
         }
         @if (Model.Tournament.StartTime > DateTimeOffset.UtcNow)

@@ -313,7 +313,7 @@ WriteLiteral(">When</span>");
 
             
             #line 48 "..\..\Views\Partials\_IndividualScores.cshtml"
-                                                                                                                                    Write(dateTimeFormatter.FormatDate(Model.Results[i].Match.StartTime.LocalDateTime, false, true, false));
+                                                                                                                                    Write(dateTimeFormatter.FormatDate(Model.Results[i].Match.StartTime, false, true, false));
 
             
             #line default
@@ -486,15 +486,15 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3950), Tuple.Create("\"", 3990)
+WriteAttribute("href", Tuple.Create(" href=\"", 3936), Tuple.Create("\"", 3976)
             
             #line 72 "..\..\Views\Partials\_IndividualScores.cshtml"
-, Tuple.Create(Tuple.Create("", 3957), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
+, Tuple.Create(Tuple.Create("", 3943), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
             
             #line default
             #line hidden
-, 3957), false)
-, Tuple.Create(Tuple.Create("", 3972), Tuple.Create("/individual-scores", 3972), true)
+, 3943), false)
+, Tuple.Create(Tuple.Create("", 3958), Tuple.Create("/individual-scores", 3958), true)
 );
 
 WriteLiteral(">Individual scores – view all</a></p>\r\n");

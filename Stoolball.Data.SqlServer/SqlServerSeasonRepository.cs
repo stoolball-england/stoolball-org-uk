@@ -229,7 +229,7 @@ namespace Stoolball.Data.SqlServer
                             new
                             {
                                 previousSeason.SeasonId,
-                                FromDate = new DateTime(auditableSeason.FromYear, 12, 31)
+                                FromDate = new DateTime(auditableSeason.FromYear, 12, 31).ToUniversalTime()
                             },
                             transaction).ConfigureAwait(false);
 
@@ -490,7 +490,7 @@ namespace Stoolball.Data.SqlServer
                                     SeasonTeamId = Guid.NewGuid(),
                                     auditableSeason.SeasonId,
                                     team.Team.TeamId,
-                                    team.WithdrawnDate
+                                    WithdrawnDate = team.WithdrawnDate.HasValue ? TimeZoneInfo.ConvertTimeToUtc(team.WithdrawnDate.Value.Date, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)) : (DateTime?)null
                                 },
                                 transaction).ConfigureAwait(false);
                     }

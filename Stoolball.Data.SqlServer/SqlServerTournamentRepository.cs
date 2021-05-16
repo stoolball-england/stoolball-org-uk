@@ -135,7 +135,7 @@ namespace Stoolball.Data.SqlServer
                         PlayerType = auditableTournament.PlayerType.ToString(),
                         auditableTournament.PlayersPerTeam,
                         QualificationType = auditableTournament.QualificationType.ToString(),
-                        StartTime = auditableTournament.StartTime.UtcDateTime,
+                        StartTime = TimeZoneInfo.ConvertTimeToUtc(auditableTournament.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)),
                         auditableTournament.StartTimeIsKnown,
                         auditableTournament.TournamentNotes,
                         auditableTournament.TournamentRoute,
@@ -287,7 +287,7 @@ namespace Stoolball.Data.SqlServer
                         PlayerType = auditableTournament.PlayerType.ToString(),
                         auditableTournament.PlayersPerTeam,
                         QualificationType = auditableTournament.QualificationType.ToString(),
-                        StartTime = auditableTournament.StartTime.UtcDateTime,
+                        StartTime = TimeZoneInfo.ConvertTimeToUtc(auditableTournament.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)),
                         auditableTournament.StartTimeIsKnown,
                         auditableTournament.TournamentNotes,
                         auditableTournament.TournamentRoute,
@@ -318,7 +318,7 @@ namespace Stoolball.Data.SqlServer
                             auditableTournament.TournamentLocation?.MatchLocationId,
                             PlayerType = auditableTournament.PlayerType.ToString(),
                             auditableTournament.PlayersPerTeam,
-                            auditableTournament.StartTime,
+                            StartTime = TimeZoneInfo.ConvertTimeToUtc(auditableTournament.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)),
                             auditableTournament.TournamentId
                         },
                         transaction).ConfigureAwait(false);
@@ -347,7 +347,7 @@ namespace Stoolball.Data.SqlServer
                                 WHERE TeamId IN @transientTeamIds",
                             new
                             {
-                                UntilDate = new DateTime(tournament.StartTime.Year, 12, 31),
+                                UntilDate = new DateTime(tournament.StartTime.Year, 12, 31).ToUniversalTime(),
                                 transientTeamIds
                             }, transaction).ConfigureAwait(false);
 
@@ -364,7 +364,7 @@ namespace Stoolball.Data.SqlServer
                                         TeamMatchLocationId = Guid.NewGuid(),
                                         TeamId = transientTeam,
                                         auditableTournament.TournamentLocation.MatchLocationId,
-                                        FromDate = auditableTournament.StartTime.UtcDateTime.Date
+                                        FromDate = TimeZoneInfo.ConvertTimeToUtc(auditableTournament.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)).Date
                                     }, transaction).ConfigureAwait(false);
                             }
                         }

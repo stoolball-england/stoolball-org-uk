@@ -112,7 +112,7 @@ WriteLiteral(">\r\n    <h1>Delete ");
 
             
             #line 18 "..\..\Views\DeleteTournament.cshtml"
-          Write(Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false)));
+          Write(Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x, false)));
 
             
             #line default
@@ -139,7 +139,7 @@ WriteLiteral("            <p>If you delete ");
 
             
             #line 24 "..\..\Views\DeleteTournament.cshtml"
-                        Write(Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false)));
+                        Write(Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x, false)));
 
             
             #line default
@@ -463,14 +463,14 @@ WriteLiteral("            <p><a");
 
 WriteLiteral(" class=\"btn btn-primary btn-back\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4263), Tuple.Create("\"", 4301)
+WriteAttribute("href", Tuple.Create(" href=\"", 4235), Tuple.Create("\"", 4273)
             
             #line 88 "..\..\Views\DeleteTournament.cshtml"
-, Tuple.Create(Tuple.Create("", 4270), Tuple.Create<System.Object, System.Int32>(Constants.Pages.TournamentsUrl
+, Tuple.Create(Tuple.Create("", 4242), Tuple.Create<System.Object, System.Int32>(Constants.Pages.TournamentsUrl
             
             #line default
             #line hidden
-, 4270), false)
+, 4242), false)
 );
 
 WriteLiteral(">Back to ");

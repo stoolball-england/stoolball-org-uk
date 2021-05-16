@@ -28,7 +28,7 @@
             prefix = "New " + prefix.ToLower(CultureInfo.CurrentCulture);
         }
 	@:<item>
-		<title><![CDATA[@prefix #stoolball tournament: @tournament.MatchName, @Model.DateTimeFormatter.FormatDate(tournament.StartTime.LocalDateTime, true, true, true) #@(tournament.MatchLocation?.LocalityOrTown().Humanize(LetterCasing.Title).Replace(" ",string.Empty)) ]]></title>
+		<title><![CDATA[@prefix #stoolball tournament: @tournament.MatchName, @Model.DateTimeFormatter.FormatDate(tournament.StartTime, true, true, true) #@(tournament.MatchLocation?.LocalityOrTown().Humanize(LetterCasing.Title).Replace(" ",string.Empty)) ]]></title>
 		<description><![CDATA[@tournament.Description()]]></description>
 		<link>@:https://www.stoolball.org.uk@(tournament.MatchRoute)</link>
 		<pubDate>@tournament.LastAuditDate.Value.ToRFC822()</pubDate>

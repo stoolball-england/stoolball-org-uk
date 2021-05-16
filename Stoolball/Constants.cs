@@ -84,5 +84,7 @@ namespace Stoolball
         {
             public const int PageSize = 50;
         }
+
+        public const string UkTimeZone = "GMT Standard Time";
     }
 }

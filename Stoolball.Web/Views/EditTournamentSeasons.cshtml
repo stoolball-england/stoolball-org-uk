@@ -10,7 +10,7 @@
     Html.EnableUnobtrusiveJavaScript();
 }
 <div class="container-xl">
-    <h1>Where to list @Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
+    <h1>Where to list @Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateFormatter.FormatDate(x, false, false, false))</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.EditTournament])
     {

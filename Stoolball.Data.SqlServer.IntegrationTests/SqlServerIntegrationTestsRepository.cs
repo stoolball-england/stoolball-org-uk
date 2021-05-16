@@ -112,7 +112,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         tournament.TournamentId,
                         comment.MemberKey,
                         comment.MemberName,
-                        comment.CommentDate,
+                        CommentDate = comment.CommentDate.UtcDateTime,
                         comment.Comment
                     });
             }
@@ -143,7 +143,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         club.ClubName,
                         ComparableName = club.ComparableName(),
                         FromDate = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero),
-                        UntilDate = club.UntilDate
+                        UntilDate = club.UntilDate?.UtcDateTime
                     });
         }
 
@@ -327,7 +327,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         match.MatchId,
                         comment.MemberKey,
                         comment.MemberName,
-                        comment.CommentDate,
+                        CommentDate = comment.CommentDate.UtcDateTime,
                         comment.Comment
                     });
             }

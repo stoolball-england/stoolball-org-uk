@@ -110,7 +110,7 @@ WriteLiteral(">\r\n    <h1>Teams in the ");
 
             
             #line 23 "..\..\Views\EditTournamentTeams.cshtml"
-                Write(Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false)));
+                Write(Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateFormatter.FormatDate(x, false, false, false)));
 
             
             #line default

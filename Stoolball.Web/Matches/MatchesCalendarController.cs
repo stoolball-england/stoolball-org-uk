@@ -117,14 +117,14 @@ namespace Stoolball.Web.Matches
             {
                 var tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.RawUrl).ConfigureAwait(false);
                 if (tournament == null) { return new HttpNotFoundResult(); }
-                pageTitle = tournament.TournamentFullName(x => tournament.StartTimeIsKnown ? _dateFormatter.FormatDateTime(tournament.StartTime.LocalDateTime, true, false) : _dateFormatter.FormatDate(tournament.StartTime.LocalDateTime, true, false));
+                pageTitle = tournament.TournamentFullName(x => tournament.StartTimeIsKnown ? _dateFormatter.FormatDateTime(tournament.StartTime, true, false) : _dateFormatter.FormatDate(tournament.StartTime, true, false));
                 model.Matches.Add(tournament.ToMatchListing());
             }
             else if (Request.RawUrl.StartsWith("/matches/", StringComparison.OrdinalIgnoreCase))
             {
                 var match = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false);
                 if (match == null) { return new HttpNotFoundResult(); }
-                pageTitle = match.MatchFullName(x => match.StartTimeIsKnown ? _dateFormatter.FormatDateTime(match.StartTime.LocalDateTime, true, false) : _dateFormatter.FormatDate(match.StartTime.LocalDateTime, true, false));
+                pageTitle = match.MatchFullName(x => match.StartTimeIsKnown ? _dateFormatter.FormatDateTime(match.StartTime, true, false) : _dateFormatter.FormatDate(match.StartTime, true, false));
                 model.Matches.Add(match.ToMatchListing());
             }
             else if (Request.RawUrl.StartsWith("/clubs/", StringComparison.OrdinalIgnoreCase))

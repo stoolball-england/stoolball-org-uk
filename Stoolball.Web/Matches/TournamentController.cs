@@ -81,7 +81,7 @@ namespace Stoolball.Web.Matches
                     DateTimeFormatter = _dateFormatter
                 };
 
-                model.Metadata.PageTitle = model.Tournament.TournamentFullNameAndPlayerType(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
+                model.Metadata.PageTitle = model.Tournament.TournamentFullNameAndPlayerType(x => _dateFormatter.FormatDate(x, false, false, false));
                 model.Metadata.Description = model.Tournament.Description();
 
                 model.Tournament.TournamentNotes = _emailProtector.ProtectEmailAddresses(model.Tournament.TournamentNotes, User.Identity.IsAuthenticated);

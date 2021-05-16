@@ -21,7 +21,7 @@ namespace Stoolball.Data.SqlServer
         {
             if (value != null)
             {
-                return DateTime.SpecifyKind((DateTime)value, DateTimeKind.Utc);
+                return TimeZoneInfo.ConvertTimeBySystemTimeZoneId(new DateTimeOffset((DateTime)value, TimeSpan.Zero), "GMT Standard Time");
             }
 
             return new DateTimeOffset();

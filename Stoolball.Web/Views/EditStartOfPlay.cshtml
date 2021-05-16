@@ -25,7 +25,7 @@
     Html.RequiresJs("~/matches/close-of-play.js");
 }
 <div class="container-xl">
-    <h1>Edit @Html.MatchFullName(Model.Match, x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false))</h1>
+    <h1>Edit @Html.MatchFullName(Model.Match, x => Model.DateFormatter.FormatDate(x, false, false, false))</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.EditMatchResult])
     {

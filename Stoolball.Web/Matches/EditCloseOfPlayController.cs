@@ -94,7 +94,7 @@ namespace Stoolball.Web.Matches
                     model.Match.MatchResultType = _matchResultEvaluator.EvaluateMatchResult(model.Match);
                 }
 
-                model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
+                model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateFormatter.FormatDate(x, false, false, false));
 
                 if (model.Match.Season != null)
                 {

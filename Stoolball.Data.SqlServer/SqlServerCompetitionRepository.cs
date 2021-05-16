@@ -269,7 +269,7 @@ namespace Stoolball.Data.SqlServer
                         {
                             auditableCompetition.CompetitionName,
                             ComparableName = auditableCompetition.ComparableName(),
-                            UntilDate = auditableCompetition.UntilYear.HasValue ? new DateTime(auditableCompetition.UntilYear.Value, 12, 31) : (DateTime?)null,
+                            UntilDate = auditableCompetition.UntilYear.HasValue ? new DateTime(auditableCompetition.UntilYear.Value, 12, 31).ToUniversalTime() : (DateTime?)null,
                             auditableCompetition.CompetitionId
                         },
                         transaction).ConfigureAwait(false);

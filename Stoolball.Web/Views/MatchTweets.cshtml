@@ -26,11 +26,11 @@
             string tweetTitle;
             if (Request.QueryString["today"] =="true")
             {
-                if (listing.MatchType == null && DateTimeOffset.UtcNow.LocalDateTime.Hour >= 8)
+                if (listing.MatchType == null && TimeZoneInfo.ConvertTimeFromUtc(DateTimeOffset.UtcNow.DateTime, TimeZoneInfo.FindSystemTimeZoneById(Stoolball.Constants.UkTimeZone)).Hour >= 8)
                 {
                     tweetTitle = $"We're off to {listing.MatchName}! #stoolball";
                 }
-                else if (DateTimeOffset.UtcNow.LocalDateTime.Hour < 16)
+                else if (TimeZoneInfo.ConvertTimeFromUtc(DateTimeOffset.UtcNow.DateTime, TimeZoneInfo.FindSystemTimeZoneById(Stoolball.Constants.UkTimeZone)).Hour < 16)
                 {
                     continue; // don't tweet tournaments until 8am or matches until 4pm
                 }

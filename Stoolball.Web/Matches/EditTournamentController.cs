@@ -65,7 +65,7 @@ namespace Stoolball.Web.Matches
                 model.TournamentDate = model.Tournament.StartTime;
                 if (model.Tournament.StartTimeIsKnown)
                 {
-                    model.StartTime = model.Tournament.StartTime.LocalDateTime;
+                    model.StartTime = model.Tournament.StartTime;
                 }
                 model.TournamentLocationId = model.Tournament.TournamentLocation?.MatchLocationId;
                 model.TournamentLocationName = model.Tournament.TournamentLocation?.NameAndLocalityOrTownIfDifferent();
@@ -74,7 +74,7 @@ namespace Stoolball.Web.Matches
                     model.Tournament.DefaultOverSets.Add(new OverSet());
                 }
 
-                model.Metadata.PageTitle = "Edit " + model.Tournament.TournamentFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
+                model.Metadata.PageTitle = "Edit " + model.Tournament.TournamentFullName(x => _dateFormatter.FormatDate(x, false, false, false));
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Tournaments, Url = new Uri(Constants.Pages.TournamentsUrl, UriKind.Relative) });
                 model.Breadcrumbs.Add(new Breadcrumb { Name = model.Tournament.TournamentName, Url = new Uri(model.Tournament.TournamentRoute, UriKind.Relative) });

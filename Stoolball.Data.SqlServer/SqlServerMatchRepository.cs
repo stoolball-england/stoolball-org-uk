@@ -287,7 +287,7 @@ namespace Stoolball.Data.SqlServer
                         PlayerType = auditableMatch.PlayerType.ToString(),
                         auditableMatch.PlayersPerTeam,
                         auditableMatch.InningsOrderIsKnown,
-                        StartTime = auditableMatch.StartTime.UtcDateTime,
+                        StartTime = TimeZoneInfo.ConvertTimeToUtc(auditableMatch.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)),
                         auditableMatch.StartTimeIsKnown,
                         auditableMatch.LastPlayerBatsOn,
                         auditableMatch.EnableBonusOrPenaltyRuns,
@@ -461,7 +461,7 @@ namespace Stoolball.Data.SqlServer
                         auditableMatch.MatchName,
                         auditableMatch.UpdateMatchNameAutomatically,
                         auditableMatch.MatchLocation?.MatchLocationId,
-                        StartTime = auditableMatch.StartTime.UtcDateTime,
+                        StartTime = TimeZoneInfo.ConvertTimeToUtc(auditableMatch.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)),
                         auditableMatch.StartTimeIsKnown,
                         auditableMatch.Season?.SeasonId,
                         auditableMatch.MatchNotes,
@@ -1285,7 +1285,7 @@ namespace Stoolball.Data.SqlServer
             }
 
 
-            var generatedRoute = _routeGenerator.GenerateRoute("/matches", baseRoute + " " + match.StartTime.LocalDateTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.MatchRoute);
+            var generatedRoute = _routeGenerator.GenerateRoute("/matches", baseRoute + " " + match.StartTime.Date.ToString("dMMMyyyy", CultureInfo.CurrentCulture), NoiseWords.MatchRoute);
             if (string.IsNullOrEmpty(routeBeforeUpdate) || !_routeGenerator.IsMatchingRoute(routeBeforeUpdate, generatedRoute))
             {
                 match.MatchRoute = generatedRoute;

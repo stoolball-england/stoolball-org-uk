@@ -235,7 +235,7 @@ namespace Stoolball.Data.SqlServer
                     auditableTeam.TeamName,
                     ComparableName = auditableTeam.ComparableName(),
                     FromDate = DateTime.UtcNow.Date,
-                    UntilDate = auditableTeam.UntilYear.HasValue ? new DateTime(auditableTeam.UntilYear.Value, 12, 31) : (DateTime?)null
+                    UntilDate = auditableTeam.UntilYear.HasValue ? new DateTime(auditableTeam.UntilYear.Value, 12, 31).ToUniversalTime() : (DateTime?)null
                 }, transaction).ConfigureAwait(false);
 
             foreach (var location in auditableTeam.MatchLocations)
@@ -346,7 +346,7 @@ namespace Stoolball.Data.SqlServer
                         {
                             auditableTeam.TeamName,
                             ComparableName = auditableTeam.ComparableName(),
-                            UntilDate = auditableTeam.UntilYear.HasValue ? new DateTime(auditableTeam.UntilYear.Value, 12, 31) : (DateTime?)null,
+                            UntilDate = auditableTeam.UntilYear.HasValue ? new DateTime(auditableTeam.UntilYear.Value, 12, 31).ToUniversalTime() : (DateTime?)null,
                             auditableTeam.TeamId
                         },
                         transaction).ConfigureAwait(false);

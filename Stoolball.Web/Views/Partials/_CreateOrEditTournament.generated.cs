@@ -141,7 +141,7 @@ WriteLiteral("    ");
 
             
             #line 17 "..\..\Views\Partials\_CreateOrEditTournament.cshtml"
-Write(Html.TextBox(nameof(Model.TournamentDate), Model.TournamentDate.HasValue ? Model.TournamentDate.Value.LocalDateTime.ToString("yyyy-MM-dd") : string.Empty, new { @type = "date", @class = "form-control", required = "required", aria_describedby = "match-date", data_val_date = "Enter a date in YYYY-MM-DD format." }));
+Write(Html.TextBox(nameof(Model.TournamentDate), Model.TournamentDate.HasValue ? Model.TournamentDate.Value.ToString("yyyy-MM-dd") : string.Empty, new { @type = "date", @class = "form-control", required = "required", aria_describedby = "match-date", data_val_date = "Enter a date in YYYY-MM-DD format." }));
 
             
             #line default
@@ -375,14 +375,14 @@ WriteLiteral("        ");
             #line hidden
 WriteLiteral("\r\n        <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 4521), Tuple.Create("\"", 4581)
+WriteAttribute("for", Tuple.Create(" for=\"", 4507), Tuple.Create("\"", 4567)
             
             #line 83 "..\..\Views\Partials\_CreateOrEditTournament.cshtml"
-, Tuple.Create(Tuple.Create("", 4527), Tuple.Create<System.Object, System.Int32>(TournamentQualificationType.OpenTournament.ToString()
+, Tuple.Create(Tuple.Create("", 4513), Tuple.Create<System.Object, System.Int32>(TournamentQualificationType.OpenTournament.ToString()
             
             #line default
             #line hidden
-, 4527), false)
+, 4513), false)
 );
 
 WriteLiteral(" class=\"custom-control-label\"");
@@ -404,14 +404,14 @@ WriteLiteral("        ");
             #line hidden
 WriteLiteral("\r\n        <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 4975), Tuple.Create("\"", 5037)
+WriteAttribute("for", Tuple.Create(" for=\"", 4961), Tuple.Create("\"", 5023)
             
             #line 87 "..\..\Views\Partials\_CreateOrEditTournament.cshtml"
-, Tuple.Create(Tuple.Create("", 4981), Tuple.Create<System.Object, System.Int32>(TournamentQualificationType.ClosedTournament.ToString()
+, Tuple.Create(Tuple.Create("", 4967), Tuple.Create<System.Object, System.Int32>(TournamentQualificationType.ClosedTournament.ToString()
             
             #line default
             #line hidden
-, 4981), false)
+, 4967), false)
 );
 
 WriteLiteral(" class=\"custom-control-label\"");

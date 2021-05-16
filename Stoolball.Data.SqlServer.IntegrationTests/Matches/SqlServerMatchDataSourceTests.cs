@@ -55,7 +55,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchName, result.MatchName);
             Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchType, result.MatchType);
             Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.PlayerType, result.PlayerType);
-            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.StartTime.LocalDateTime, result.StartTime.LocalDateTime);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.StartTime, result.StartTime);
             Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.StartTimeIsKnown, result.StartTimeIsKnown);
             Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.MatchResultType, result.MatchResultType);
             Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.PlayersPerTeam, result.PlayersPerTeam);

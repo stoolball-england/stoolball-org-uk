@@ -65,7 +65,7 @@ namespace Stoolball.Web.Matches
                 model.TotalComments = await _matchCommentsDataSource.ReadTotalComments(model.Match.MatchId.Value).ConfigureAwait(false);
             }
 
-            model.Metadata.PageTitle = "Delete " + model.Match.MatchFullName(x => _dateTimeFormatter.FormatDate(x.LocalDateTime, false, false, false)) + " - stoolball match";
+            model.Metadata.PageTitle = "Delete " + model.Match.MatchFullName(x => _dateTimeFormatter.FormatDate(x, false, false, false)) + " - stoolball match";
 
             if (model.Match.Season != null)
             {

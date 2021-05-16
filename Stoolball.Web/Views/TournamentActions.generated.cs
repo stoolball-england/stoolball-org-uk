@@ -75,7 +75,7 @@ WriteLiteral(">\r\n    <h1>Edit ");
 
             
             #line 8 "..\..\Views\TournamentActions.cshtml"
-        Write(Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false)));
+        Write(Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x, false)));
 
             
             #line default
@@ -114,22 +114,22 @@ WriteLiteral("        <dl>\r\n");
             #line hidden
 WriteLiteral("                <dt><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 613), Tuple.Create("\"", 669)
+WriteAttribute("href", Tuple.Create(" href=\"", 599), Tuple.Create("\"", 655)
             
             #line 15 "..\..\Views\TournamentActions.cshtml"
-, Tuple.Create(Tuple.Create("", 620), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
+, Tuple.Create(Tuple.Create("", 606), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
             
             #line default
             #line hidden
-, 620), false)
-, Tuple.Create(Tuple.Create("", 653), Tuple.Create("/edit/tournament", 653), true)
+, 606), false)
+, Tuple.Create(Tuple.Create("", 639), Tuple.Create("/edit/tournament", 639), true)
 );
 
 WriteLiteral(">Edit ");
 
             
             #line 15 "..\..\Views\TournamentActions.cshtml"
-                                                                                Write(Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false)));
+                                                                                Write(Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x, false)));
 
             
             #line default
@@ -141,15 +141,15 @@ WriteLiteral("                <dd>Set the name, date, time and location of the t
 
 WriteLiteral("                <dt><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 945), Tuple.Create("\"", 996)
+WriteAttribute("href", Tuple.Create(" href=\"", 917), Tuple.Create("\"", 968)
             
             #line 17 "..\..\Views\TournamentActions.cshtml"
-, Tuple.Create(Tuple.Create("", 952), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
+, Tuple.Create(Tuple.Create("", 924), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
             
             #line default
             #line hidden
-, 952), false)
-, Tuple.Create(Tuple.Create("", 985), Tuple.Create("/edit/teams", 985), true)
+, 924), false)
+, Tuple.Create(Tuple.Create("", 957), Tuple.Create("/edit/teams", 957), true)
 );
 
 WriteLiteral(">Teams</a></dt>\r\n");
@@ -159,15 +159,15 @@ WriteLiteral("                <dd>Set how many teams you want, and which teams h
 
 WriteLiteral("                <dt><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1139), Tuple.Create("\"", 1192)
+WriteAttribute("href", Tuple.Create(" href=\"", 1111), Tuple.Create("\"", 1164)
             
             #line 19 "..\..\Views\TournamentActions.cshtml"
-, Tuple.Create(Tuple.Create("", 1146), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
+, Tuple.Create(Tuple.Create("", 1118), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
             
             #line default
             #line hidden
-, 1146), false)
-, Tuple.Create(Tuple.Create("", 1179), Tuple.Create("/edit/seasons", 1179), true)
+, 1118), false)
+, Tuple.Create(Tuple.Create("", 1151), Tuple.Create("/edit/seasons", 1151), true)
 );
 
 WriteLiteral(">Where to list the tournament</a></dt>\r\n");
@@ -193,22 +193,22 @@ WriteLiteral("            ");
             #line hidden
 WriteLiteral("                <dt><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1435), Tuple.Create("\"", 1482)
+WriteAttribute("href", Tuple.Create(" href=\"", 1407), Tuple.Create("\"", 1454)
             
             #line 24 "..\..\Views\TournamentActions.cshtml"
-, Tuple.Create(Tuple.Create("", 1442), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
+, Tuple.Create(Tuple.Create("", 1414), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
             
             #line default
             #line hidden
-, 1442), false)
-, Tuple.Create(Tuple.Create("", 1475), Tuple.Create("/delete", 1475), true)
+, 1414), false)
+, Tuple.Create(Tuple.Create("", 1447), Tuple.Create("/delete", 1447), true)
 );
 
 WriteLiteral(">Delete ");
 
             
             #line 24 "..\..\Views\TournamentActions.cshtml"
-                                                                         Write(Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false)));
+                                                                         Write(Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x, false)));
 
             
             #line default

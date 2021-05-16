@@ -118,7 +118,7 @@ WriteLiteral(">\r\n    <h1>Delete ");
 
             
             #line 19 "..\..\Views\DeleteMatch.cshtml"
-          Write(Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false)));
+          Write(Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false)));
 
             
             #line default
@@ -145,7 +145,7 @@ WriteLiteral("            <p>If you delete ");
 
             
             #line 25 "..\..\Views\DeleteMatch.cshtml"
-                        Write(Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false)));
+                        Write(Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false)));
 
             
             #line default
@@ -585,14 +585,14 @@ WriteLiteral("                <p><a");
 
 WriteLiteral(" class=\"btn btn-primary\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4742), Tuple.Create("\"", 4780)
+WriteAttribute("href", Tuple.Create(" href=\"", 4714), Tuple.Create("\"", 4752)
             
             #line 102 "..\..\Views\DeleteMatch.cshtml"
-, Tuple.Create(Tuple.Create("", 4749), Tuple.Create<System.Object, System.Int32>(Model.Match.Season.SeasonRoute
+, Tuple.Create(Tuple.Create("", 4721), Tuple.Create<System.Object, System.Int32>(Model.Match.Season.SeasonRoute
             
             #line default
             #line hidden
-, 4749), false)
+, 4721), false)
 );
 
 WriteLiteral(">Back to ");
@@ -619,14 +619,14 @@ WriteLiteral("                <p><a");
 
 WriteLiteral(" class=\"btn btn-primary btn-back\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4938), Tuple.Create("\"", 4972)
+WriteAttribute("href", Tuple.Create(" href=\"", 4910), Tuple.Create("\"", 4944)
             
             #line 106 "..\..\Views\DeleteMatch.cshtml"
-, Tuple.Create(Tuple.Create("", 4945), Tuple.Create<System.Object, System.Int32>(Constants.Pages.MatchesUrl
+, Tuple.Create(Tuple.Create("", 4917), Tuple.Create<System.Object, System.Int32>(Constants.Pages.MatchesUrl
             
             #line default
             #line hidden
-, 4945), false)
+, 4917), false)
 );
 
 WriteLiteral(">Back to ");

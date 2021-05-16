@@ -110,7 +110,7 @@ WriteLiteral(">\r\n");
             }
 
             var fullstop = false;
-            var tournamentDetail = new StringBuilder(match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(match.StartTime.LocalDateTime) : Model.DateTimeFormatter.FormatDate(match.StartTime.LocalDateTime));
+            var tournamentDetail = new StringBuilder(match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(match.StartTime) : Model.DateTimeFormatter.FormatDate(match.StartTime));
             if (match.TournamentQualificationType == TournamentQualificationType.OpenTournament)
             {
                 tournamentDetail.Append(". ");
@@ -150,36 +150,36 @@ WriteLiteral(">\r\n");
             #line hidden
 WriteLiteral("            <li");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 2554), Tuple.Create("\"", 2573)
+WriteAttribute("class", Tuple.Create(" class=\"", 2526), Tuple.Create("\"", 2545)
             
             #line 56 "..\..\Views\Partials\_MatchList.cshtml"
-, Tuple.Create(Tuple.Create("", 2562), Tuple.Create<System.Object, System.Int32>(matchClass
+, Tuple.Create(Tuple.Create("", 2534), Tuple.Create<System.Object, System.Int32>(matchClass
             
             #line default
             #line hidden
-, 2562), false)
+, 2534), false)
 );
 
 WriteLiteral(">\r\n                <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2595), Tuple.Create("\"", 2619)
+WriteAttribute("href", Tuple.Create(" href=\"", 2567), Tuple.Create("\"", 2591)
             
             #line 57 "..\..\Views\Partials\_MatchList.cshtml"
-, Tuple.Create(Tuple.Create("", 2602), Tuple.Create<System.Object, System.Int32>(match.MatchRoute
+, Tuple.Create(Tuple.Create("", 2574), Tuple.Create<System.Object, System.Int32>(match.MatchRoute
             
             #line default
             #line hidden
-, 2602), false)
+, 2574), false)
 );
 
-WriteAttribute("class", Tuple.Create(" class=\"", 2620), Tuple.Create("\"", 2681)
+WriteAttribute("class", Tuple.Create(" class=\"", 2592), Tuple.Create("\"", 2653)
             
             #line 57 "..\..\Views\Partials\_MatchList.cshtml"
-, Tuple.Create(Tuple.Create("", 2628), Tuple.Create<System.Object, System.Int32>(Model.ShowMatchDate ? "list-results__title" : null
+, Tuple.Create(Tuple.Create("", 2600), Tuple.Create<System.Object, System.Int32>(Model.ShowMatchDate ? "list-results__title" : null
             
             #line default
             #line hidden
-, 2628), false)
+, 2600), false)
 );
 
 WriteLiteral(">");
@@ -200,14 +200,14 @@ WriteLiteral(">");
             #line hidden
 WriteLiteral("</a>\r\n                <p");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 2734), Tuple.Create("\"", 2796)
+WriteAttribute("class", Tuple.Create(" class=\"", 2706), Tuple.Create("\"", 2768)
             
             #line 58 "..\..\Views\Partials\_MatchList.cshtml"
-, Tuple.Create(Tuple.Create("", 2742), Tuple.Create<System.Object, System.Int32>(Model.ShowMatchDate ? "list-results__detail" : null
+, Tuple.Create(Tuple.Create("", 2714), Tuple.Create<System.Object, System.Int32>(Model.ShowMatchDate ? "list-results__detail" : null
             
             #line default
             #line hidden
-, 2742), false)
+, 2714), false)
 );
 
 WriteLiteral(">\r\n");
@@ -277,38 +277,38 @@ WriteLiteral("                </p>\r\n            </li>\r\n");
             #line hidden
 WriteLiteral("            <li");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 4058), Tuple.Create("\"", 4077)
+WriteAttribute("class", Tuple.Create(" class=\"", 4030), Tuple.Create("\"", 4049)
             
             #line 83 "..\..\Views\Partials\_MatchList.cshtml"
-, Tuple.Create(Tuple.Create("", 4066), Tuple.Create<System.Object, System.Int32>(matchClass
+, Tuple.Create(Tuple.Create("", 4038), Tuple.Create<System.Object, System.Int32>(matchClass
             
             #line default
             #line hidden
-, 4066), false)
+, 4038), false)
 );
 
 WriteLiteral(">\r\n                <p");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 4099), Tuple.Create("\"", 4160)
+WriteAttribute("class", Tuple.Create(" class=\"", 4071), Tuple.Create("\"", 4132)
             
             #line 84 "..\..\Views\Partials\_MatchList.cshtml"
-, Tuple.Create(Tuple.Create("", 4107), Tuple.Create<System.Object, System.Int32>(Model.ShowMatchDate ? "list-results__title" : null
+, Tuple.Create(Tuple.Create("", 4079), Tuple.Create<System.Object, System.Int32>(Model.ShowMatchDate ? "list-results__title" : null
             
             #line default
             #line hidden
-, 4107), false)
+, 4079), false)
 );
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4164), Tuple.Create("\"", 4188)
+WriteAttribute("href", Tuple.Create(" href=\"", 4136), Tuple.Create("\"", 4160)
             
             #line 84 "..\..\Views\Partials\_MatchList.cshtml"
-          , Tuple.Create(Tuple.Create("", 4171), Tuple.Create<System.Object, System.Int32>(match.MatchRoute
+          , Tuple.Create(Tuple.Create("", 4143), Tuple.Create<System.Object, System.Int32>(match.MatchRoute
             
             #line default
             #line hidden
-, 4171), false)
+, 4143), false)
 );
 
 WriteLiteral(">");
@@ -380,7 +380,7 @@ WriteLiteral(">");
 
             
             #line 89 "..\..\Views\Partials\_MatchList.cshtml"
-                                                Write(match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(match.StartTime.LocalDateTime) : Model.DateTimeFormatter.FormatDate(match.StartTime.LocalDateTime));
+                                                Write(match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(match.StartTime) : Model.DateTimeFormatter.FormatDate(match.StartTime));
 
             
             #line default

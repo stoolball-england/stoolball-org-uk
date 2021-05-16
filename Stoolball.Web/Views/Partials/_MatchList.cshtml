@@ -19,7 +19,7 @@
             }
 
             var fullstop = false;
-            var tournamentDetail = new StringBuilder(match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(match.StartTime.LocalDateTime) : Model.DateTimeFormatter.FormatDate(match.StartTime.LocalDateTime));
+            var tournamentDetail = new StringBuilder(match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(match.StartTime) : Model.DateTimeFormatter.FormatDate(match.StartTime));
             if (match.TournamentQualificationType == TournamentQualificationType.OpenTournament)
             {
                 tournamentDetail.Append(". ");
@@ -86,7 +86,7 @@
                 </p>
                 @if (Model.ShowMatchDate)
                 {
-                    <p class="list-results__detail">@(match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(match.StartTime.LocalDateTime) : Model.DateTimeFormatter.FormatDate(match.StartTime.LocalDateTime))</p>
+                    <p class="list-results__detail">@(match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(match.StartTime) : Model.DateTimeFormatter.FormatDate(match.StartTime))</p>
                 }
             </li>
         }

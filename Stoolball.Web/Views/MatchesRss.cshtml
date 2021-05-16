@@ -24,7 +24,7 @@
     @foreach (var listing in Model.Matches)
     {
     @:<item>
-        <title><![CDATA[@listing.MatchName, @Model.DateTimeFormatter.FormatDate(listing.StartTime.LocalDateTime, true, false,false)]]></title>
+        <title><![CDATA[@listing.MatchName, @Model.DateTimeFormatter.FormatDate(listing.StartTime, true, false,false)]]></title>
         <description><![CDATA[@listing.Description()]]></description>
         <link>@:https://www.stoolball.org.uk@(listing.MatchRoute)</link>
         <pubDate>@listing.LastAuditDate.Value.ToRFC822()</pubDate>

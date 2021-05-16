@@ -96,7 +96,7 @@ namespace Stoolball.Web.Matches
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament);
 
                 model.TournamentDate = model.Tournament.StartTime;
-                model.Metadata.PageTitle = "Where to list " + model.Tournament.TournamentFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
+                model.Metadata.PageTitle = "Where to list " + model.Tournament.TournamentFullName(x => _dateFormatter.FormatDate(x, false, false, false));
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Tournaments, Url = new Uri(Constants.Pages.TournamentsUrl, UriKind.Relative) });
                 model.Breadcrumbs.Add(new Breadcrumb { Name = model.Tournament.TournamentName, Url = new Uri(model.Tournament.TournamentRoute, UriKind.Relative) });

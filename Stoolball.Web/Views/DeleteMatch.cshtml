@@ -16,13 +16,13 @@
     <meta name="robots" content="noindex,follow" />
 }
 <div class="container-xl">
-    <h1>Delete @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
+    <h1>Delete @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false))</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.DeleteMatch])
     {
         if (!Model.Deleted)
         {
-            <p>If you delete @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false)) you will:</p>
+            <p>If you delete @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false)) you will:</p>
             <ul>
                 @if (Model.Match.Teams.Count > 0)
                 {

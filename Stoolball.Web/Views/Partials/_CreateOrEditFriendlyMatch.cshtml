@@ -74,7 +74,7 @@ else
 
 <div class="form-group">
     @Html.LabelFor(m => Model.MatchDate)
-    @Html.TextBox(nameof(Model.MatchDate), Model.MatchDate.HasValue ? Model.MatchDate.Value.LocalDateTime.ToString("yyyy-MM-dd") : string.Empty, new { @type = "date", @class = "form-control", required = "required", aria_describedby = "match-date", data_val_date= "Enter a date in YYYY-MM-DD format." })
+    @Html.TextBox(nameof(Model.MatchDate), Model.MatchDate.HasValue ? Model.MatchDate.Value.ToString("yyyy-MM-dd") : string.Empty, new { @type = "date", @class = "form-control", required = "required", aria_describedby = "match-date", data_val_date= "Enter a date in YYYY-MM-DD format." })
     @Html.ValidationMessageFor(m => Model.MatchDate, null, new { id = "match-date" })
 </div>
 

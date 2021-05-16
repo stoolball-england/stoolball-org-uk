@@ -103,7 +103,7 @@ namespace Stoolball.Web.Matches
                     RunsConceded = x.RunsConceded
                 }));
 
-                model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateFormatter.FormatDate(x.LocalDateTime, false, false, false));
+                model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateFormatter.FormatDate(x, false, false, false));
 
                 if (model.Match.Season != null)
                 {

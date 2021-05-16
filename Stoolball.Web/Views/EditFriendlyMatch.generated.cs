@@ -101,7 +101,7 @@ WriteLiteral(">\r\n    <h1>Edit ");
 
             
             #line 24 "..\..\Views\EditFriendlyMatch.cshtml"
-        Write(Html.MatchFullName(Model.Match, x => Model.DateFormatter.FormatDate(x.LocalDateTime, false, false, false)));
+        Write(Html.MatchFullName(Model.Match, x => Model.DateFormatter.FormatDate(x, false, false, false)));
 
             
             #line default

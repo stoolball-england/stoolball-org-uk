@@ -15,13 +15,13 @@
     <meta name="robots" content="noindex,follow" />
 }
 <div class="container-xl">
-    <h1>Delete @Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false))</h1>
+    <h1>Delete @Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x, false))</h1>
 
     @if (Model.IsAuthorized[AuthorizedAction.DeleteTournament])
     {
         if (!Model.Deleted)
         {
-            <p>If you delete @Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x.LocalDateTime, false)) you will:</p>
+            <p>If you delete @Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x, false)) you will:</p>
             <ul>
                 @if (Model.Tournament.Teams.Count > 0)
                 {

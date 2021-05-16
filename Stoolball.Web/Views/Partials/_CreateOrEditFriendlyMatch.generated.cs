@@ -346,7 +346,7 @@ WriteLiteral("    ");
 
             
             #line 77 "..\..\Views\Partials\_CreateOrEditFriendlyMatch.cshtml"
-Write(Html.TextBox(nameof(Model.MatchDate), Model.MatchDate.HasValue ? Model.MatchDate.Value.LocalDateTime.ToString("yyyy-MM-dd") : string.Empty, new { @type = "date", @class = "form-control", required = "required", aria_describedby = "match-date", data_val_date= "Enter a date in YYYY-MM-DD format." }));
+Write(Html.TextBox(nameof(Model.MatchDate), Model.MatchDate.HasValue ? Model.MatchDate.Value.ToString("yyyy-MM-dd") : string.Empty, new { @type = "date", @class = "form-control", required = "required", aria_describedby = "match-date", data_val_date= "Enter a date in YYYY-MM-DD format." }));
 
             
             #line default

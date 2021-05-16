@@ -24,7 +24,7 @@
     @foreach (var tournament in Model.Matches)
     {
     @:<item>
-        <title><![CDATA[@tournament.MatchName, @Model.DateTimeFormatter.FormatDate(tournament.StartTime.LocalDateTime, true, false,false)]]></title>
+        <title><![CDATA[@tournament.MatchName, @Model.DateTimeFormatter.FormatDate(tournament.StartTime, true, false,false)]]></title>
         <description><![CDATA[@tournament.Description()]]></description>
         <link>@:https://www.stoolball.org.uk@(tournament.MatchRoute)</link>
         <pubDate>@tournament.LastAuditDate.Value.ToRFC822()</pubDate>

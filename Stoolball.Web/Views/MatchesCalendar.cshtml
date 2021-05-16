@@ -34,7 +34,7 @@ END:VTIMEZONE
 {
 @:BEGIN:VEVENT
 @:LOCATION;LANGUAGE=en;CHARSET=UTF-8:@(listing.MatchLocation?.NameAndLocalityOrTown())
-@:SUMMARY;LANGUAGE=en;CHARSET=UTF-8:@listing.MatchName.Replace(",", @"\,") - @(listing.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(listing.StartTime.LocalDateTime, true, false) : Model.DateTimeFormatter.FormatDate(listing.StartTime.LocalDateTime,true, false))
+@:SUMMARY;LANGUAGE=en;CHARSET=UTF-8:@listing.MatchName.Replace(",", @"\,") - @(listing.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(listing.StartTime, true, false) : Model.DateTimeFormatter.FormatDate(listing.StartTime,true, false))
 @:UID:@(listing.MatchType == null ? Constants.EntityUriPrefixes.Tournament : Constants.EntityUriPrefixes.Match)@listing.MatchId
 @:DTSTART:@listing.StartTime.ToString("O").Substring(0,19).Replace("-",string.Empty).Replace(":", string.Empty)Z 
 @:DTEND:@listing.EstimatedEndTime().ToString("O").Substring(0,19).Replace("-",string.Empty).Replace(":", string.Empty)Z
