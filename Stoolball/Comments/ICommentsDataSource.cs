@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Stoolball.Comments
@@ -13,5 +14,10 @@ namespace Stoolball.Comments
         /// </summary>
         /// <returns></returns>
         Task<int> ReadTotalComments(Guid entityId);
+
+        /// <summary>
+        /// Gets the comments on an entity, with the newest first
+        /// </summary>
+        Task<List<HtmlComment>> ReadComments(Guid entityId);
     }
 }
