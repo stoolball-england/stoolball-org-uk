@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Moq;
+using Stoolball.Comments;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Matches;
@@ -29,7 +30,7 @@ namespace Stoolball.Web.Tests.Matches
 
         private class TestController : TournamentController
         {
-            public TestController(ITournamentDataSource tournamentDataSource, IMatchListingDataSource matchDataSource, UmbracoHelper umbracoHelper)
+            public TestController(ITournamentDataSource tournamentDataSource, IMatchListingDataSource matchDataSource, ICommentsDataSource<Tournament> commentsDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -37,7 +38,9 @@ namespace Stoolball.Web.Tests.Matches
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
-                tournamentDataSource, matchDataSource,
+                tournamentDataSource,
+                matchDataSource,
+                commentsDataSource,
                 Mock.Of<IAuthorizationPolicy<Tournament>>(),
                 Mock.Of<IDateTimeFormatter>(), Mock.Of<IEmailProtector>())
             {
@@ -64,8 +67,9 @@ namespace Stoolball.Web.Tests.Matches
         {
             var tournamentDataSource = new Mock<ITournamentDataSource>();
             tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).Returns(Task.FromResult<Tournament>(null));
+            var commentsDataSource = new Mock<ICommentsDataSource<Tournament>>();
 
-            using (var controller = new TestController(tournamentDataSource.Object, Mock.Of<IMatchListingDataSource>(), UmbracoHelper))
+            using (var controller = new TestController(tournamentDataSource.Object, Mock.Of<IMatchListingDataSource>(), commentsDataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -77,16 +81,38 @@ namespace Stoolball.Web.Tests.Matches
         public async Task Route_matching_tournament_returns_TournamentViewModel()
         {
             var tournamentDataSource = new Mock<ITournamentDataSource>();
-            tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentName = "Example tournament" });
+            tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentId = Guid.NewGuid(), TournamentName = "Example tournament" });
 
             var matchDataSource = new Mock<IMatchListingDataSource>();
             matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
 
-            using (var controller = new TestController(tournamentDataSource.Object, matchDataSource.Object, UmbracoHelper))
+            var commentsDataSource = new Mock<ICommentsDataSource<Tournament>>();
+
+            using (var controller = new TestController(tournamentDataSource.Object, matchDataSource.Object, commentsDataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
                 Assert.IsType<TournamentViewModel>(((ViewResult)result).Model);
+            }
+        }
+
+        [Fact]
+        public async Task Route_matching_tournament_reads_comments()
+        {
+            var tournamentId = Guid.NewGuid();
+            var tournamentDataSource = new Mock<ITournamentDataSource>();
+            tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentId = tournamentId, TournamentName = "Example tournament" });
+
+            var matchDataSource = new Mock<IMatchListingDataSource>();
+            matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
+
+            var commentsDataSource = new Mock<ICommentsDataSource<Tournament>>();
+
+            using (var controller = new TestController(tournamentDataSource.Object, matchDataSource.Object, commentsDataSource.Object, UmbracoHelper))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                commentsDataSource.Verify(x => x.ReadComments(tournamentId), Times.Once);
             }
         }
     }

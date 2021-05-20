@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Comments;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Matches;
@@ -21,6 +22,7 @@ namespace Stoolball.Web.Matches
     {
         private readonly ITournamentDataSource _tournamentDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
+        private readonly ICommentsDataSource<Tournament> _commentsDataSource;
         private readonly IAuthorizationPolicy<Tournament> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly IEmailProtector _emailProtector;
@@ -33,6 +35,7 @@ namespace Stoolball.Web.Matches
            UmbracoHelper umbracoHelper,
            ITournamentDataSource tournamentDataSource,
            IMatchListingDataSource matchDataSource,
+           ICommentsDataSource<Tournament> commentsDataSource,
            IAuthorizationPolicy<Tournament> authorizationPolicy,
            IDateTimeFormatter dateFormatter,
            IEmailProtector emailProtector)
@@ -40,6 +43,7 @@ namespace Stoolball.Web.Matches
         {
             _tournamentDataSource = tournamentDataSource ?? throw new ArgumentNullException(nameof(tournamentDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
+            _commentsDataSource = commentsDataSource ?? throw new ArgumentNullException(nameof(commentsDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
             _emailProtector = emailProtector ?? throw new ArgumentNullException(nameof(emailProtector));
@@ -67,6 +71,8 @@ namespace Stoolball.Web.Matches
             else
             {
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament);
+
+                model.Tournament.Comments = await _commentsDataSource.ReadComments(model.Tournament.TournamentId.Value).ConfigureAwait(false);
 
                 model.Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
                 {
