@@ -62,5 +62,9 @@
   {
     "outputFile": "Statistics/statistics.css",
     "inputFile": "Statistics/statistics.scss"
+  },
+  {
+    "outputFile": "css/comments.css",
+    "inputFile": "css/comments.scss"
   }
 ]

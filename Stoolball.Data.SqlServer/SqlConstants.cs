@@ -40,5 +40,8 @@
         public const string AwardedTo = _tablePrefix + "AwardedTo";
         public const string NotificationSubscription = _tablePrefix + "NotificationSubscription";
         public const string PlayerInMatchStatistics = _tablePrefix + "PlayerInMatch" + _statisticsSuffix;
+
+        public const string UmbracoNode = "umbracoNode";
+        public const string UmbracoMember = "cmsMember";
     }
 }

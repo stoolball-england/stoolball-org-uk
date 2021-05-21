@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -7,6 +8,7 @@ using Moq;
 using Stoolball.Comments;
 using Stoolball.Dates;
 using Stoolball.Email;
+using Stoolball.Html;
 using Stoolball.Matches;
 using Stoolball.Security;
 using Stoolball.Web.Matches;
@@ -40,7 +42,9 @@ namespace Stoolball.Web.Tests.Matches
                 matchDataSource,
                 commentsDataSource,
                 Mock.Of<IAuthorizationPolicy<Stoolball.Matches.Match>>(),
-                Mock.Of<IDateTimeFormatter>(), Mock.Of<IEmailProtector>())
+                Mock.Of<IDateTimeFormatter>(),
+                Mock.Of<IEmailProtector>(),
+                Mock.Of<IBadLanguageFilter>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -77,10 +81,12 @@ namespace Stoolball.Web.Tests.Matches
         [Fact]
         public async Task Route_matching_match_returns_MatchViewModel()
         {
+            var matchId = Guid.NewGuid();
             var matchDataSource = new Mock<IMatchDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { MatchId = Guid.NewGuid() });
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { MatchId = matchId });
 
             var commentsDataSource = new Mock<ICommentsDataSource<Stoolball.Matches.Match>>();
+            commentsDataSource.Setup(x => x.ReadComments(matchId)).Returns(Task.FromResult(new List<HtmlComment>()));
 
             using (var controller = new TestController(matchDataSource.Object, commentsDataSource.Object, UmbracoHelper))
             {
@@ -98,6 +104,7 @@ namespace Stoolball.Web.Tests.Matches
             matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { MatchId = matchId });
 
             var commentsDataSource = new Mock<ICommentsDataSource<Stoolball.Matches.Match>>();
+            commentsDataSource.Setup(x => x.ReadComments(matchId)).Returns(Task.FromResult(new List<HtmlComment>()));
 
             using (var controller = new TestController(matchDataSource.Object, commentsDataSource.Object, UmbracoHelper))
             {

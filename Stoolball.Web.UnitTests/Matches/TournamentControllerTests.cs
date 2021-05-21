@@ -8,6 +8,7 @@ using Moq;
 using Stoolball.Comments;
 using Stoolball.Dates;
 using Stoolball.Email;
+using Stoolball.Html;
 using Stoolball.Matches;
 using Stoolball.Security;
 using Stoolball.Web.Matches;
@@ -42,7 +43,9 @@ namespace Stoolball.Web.Tests.Matches
                 matchDataSource,
                 commentsDataSource,
                 Mock.Of<IAuthorizationPolicy<Tournament>>(),
-                Mock.Of<IDateTimeFormatter>(), Mock.Of<IEmailProtector>())
+                Mock.Of<IDateTimeFormatter>(),
+                Mock.Of<IEmailProtector>(),
+                Mock.Of<IBadLanguageFilter>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -80,13 +83,15 @@ namespace Stoolball.Web.Tests.Matches
         [Fact]
         public async Task Route_matching_tournament_returns_TournamentViewModel()
         {
+            var tournamentId = Guid.NewGuid();
             var tournamentDataSource = new Mock<ITournamentDataSource>();
-            tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentId = Guid.NewGuid(), TournamentName = "Example tournament" });
+            tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentId = tournamentId, TournamentName = "Example tournament" });
 
             var matchDataSource = new Mock<IMatchListingDataSource>();
             matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
 
             var commentsDataSource = new Mock<ICommentsDataSource<Tournament>>();
+            commentsDataSource.Setup(x => x.ReadComments(tournamentId)).Returns(Task.FromResult(new List<HtmlComment>()));
 
             using (var controller = new TestController(tournamentDataSource.Object, matchDataSource.Object, commentsDataSource.Object, UmbracoHelper))
             {
@@ -107,6 +112,7 @@ namespace Stoolball.Web.Tests.Matches
             matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
 
             var commentsDataSource = new Mock<ICommentsDataSource<Tournament>>();
+            commentsDataSource.Setup(x => x.ReadComments(tournamentId)).Returns(Task.FromResult(new List<HtmlComment>()));
 
             using (var controller = new TestController(tournamentDataSource.Object, matchDataSource.Object, commentsDataSource.Object, UmbracoHelper))
             {

@@ -9,6 +9,7 @@
     Html.RequiresCss("~/matches/match.min.css");
     Html.RequiresCss("~/matches/scorecards.min.css");
     Html.RequiresJs("~/matches/match.js");
+    Html.RequiresCss("~/css/comments.min.css");
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditMatch] || Model.IsAuthorized[AuthorizedAction.DeleteMatch];
 }
 @functions{
@@ -162,4 +163,6 @@
         <h2>Notes</h2>
         @Html.Raw(Model.Match.MatchNotes)
     }
+
+    @Html.Partial("_Comments", Model.Match.Comments)
 </div>

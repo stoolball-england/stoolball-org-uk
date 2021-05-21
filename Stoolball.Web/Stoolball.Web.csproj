@@ -649,6 +649,12 @@
     <Content Include="css\base.min.css">
       <DependentUpon>base.css</DependentUpon>
     </Content>
+    <Content Include="css\comments.css">
+      <DependentUpon>comments.scss</DependentUpon>
+    </Content>
+    <Content Include="css\comments.min.css">
+      <DependentUpon>comments.css</DependentUpon>
+    </Content>
     <Content Include="css\cookies.page.css">
       <DependentUpon>cookies.page.scss</DependentUpon>
     </Content>
@@ -836,6 +842,7 @@
     <Content Include="Content\bootstrap\bootstrap.scss" />
     <Content Include="Content\bootstrap\bootstrap-reboot.scss" />
     <Content Include="Content\bootstrap\bootstrap-grid.scss" />
+    <Content Include="css\comments.scss" />
     <None Include="css\tinymce.scss" />
     <Content Include="css\tinymce.css">
       <DependentUpon>tinymce.scss</DependentUpon>
@@ -2683,6 +2690,7 @@
     <Content Include="Views\PlayerFielding.cshtml" />
     <Content Include="Views\PlayersForTeam.cshtml" />
     <Content Include="Views\Partials\_PlayerList.cshtml" />
+    <Content Include="Views\Partials\_Comments.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

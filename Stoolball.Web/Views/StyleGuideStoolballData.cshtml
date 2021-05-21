@@ -1,6 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.StyleGuide>
 @using ContentModels = Umbraco.Web.PublishedModels;
 @using ClientDependency.Core.Mvc;
+@using Stoolball.Comments
 @using Stoolball.Teams
 @using Stoolball.Competitions
 @using Stoolball.Matches
@@ -24,6 +25,8 @@
     Html.RequiresJs("~/matches/player-autocomplete.js", 70);
     Html.RequiresJs("~/matches/edit-batting-scorecard.js");
     Html.RequiresJs("~/matches/edit-bowling-scorecard.js");
+
+    Html.RequiresCss("~/css/comments.min.css");
 }
 <div class="container-xl">
     <h1 data-show-consent="true">@Model.Name</h1>
@@ -261,4 +264,31 @@
     @Html.Partial("_BowlingScorecard", innings.CurrentInnings.MatchInnings)
     @Html.Partial("_EditBattingScorecard", innings)
     @Html.Partial("_EditBowlingScorecard", innings)
+    @{ 
+        var comments = new List<HtmlComment> {
+            new HtmlComment
+            {
+                MemberName = "Member One",
+                MemberEmail = "member.one@example.org",
+                CommentDate = DateTimeOffset.UtcNow,
+                Comment = "<p>This is a comment.</p>"
+            },
+            new HtmlComment
+            {
+                MemberName = "Member Two",
+                MemberEmail = "member.two@example.org",
+                CommentDate = DateTimeOffset.UtcNow.AddDays(-5),
+                Comment = "<p>This is a comment <i>with formatting</i>.</p>"
+            }
+            ,
+            new HtmlComment
+            {
+                MemberName = "Member Three",
+                MemberEmail = "member.three@example.org",
+                CommentDate = DateTimeOffset.UtcNow.AddDays(-10),
+                Comment = "<p>This is a comment with paragraphs.</p><p>This is a comment with paragraphs.</p>"
+            }
+        };
+    }
+    @Html.Partial("_Comments", comments)
 </div>

@@ -90,6 +90,7 @@ namespace Stoolball.Web
             composition.Register<IStatisticsFilterSerializer, StatisticsFilterQueryStringSerializer>();
             composition.Register<ITeamListingFilterSerializer, TeamListingFilterQueryStringSerializer>();
             composition.Register<ICacheOverride, CacheOverride>();
+            composition.Register<IBadLanguageFilter, BadLanguageFilter>();
 
 
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 

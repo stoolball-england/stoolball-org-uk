@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using Stoolball.Comments;
 using Stoolball.Dates;
 using Stoolball.Email;
+using Stoolball.Html;
 using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
@@ -26,6 +27,7 @@ namespace Stoolball.Web.Matches
         private readonly IAuthorizationPolicy<Tournament> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly IEmailProtector _emailProtector;
+        private readonly IBadLanguageFilter _badLanguageFilter;
 
         public TournamentController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -38,7 +40,8 @@ namespace Stoolball.Web.Matches
            ICommentsDataSource<Tournament> commentsDataSource,
            IAuthorizationPolicy<Tournament> authorizationPolicy,
            IDateTimeFormatter dateFormatter,
-           IEmailProtector emailProtector)
+           IEmailProtector emailProtector,
+           IBadLanguageFilter badLanguageFilter)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _tournamentDataSource = tournamentDataSource ?? throw new ArgumentNullException(nameof(tournamentDataSource));
@@ -47,6 +50,7 @@ namespace Stoolball.Web.Matches
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
             _emailProtector = emailProtector ?? throw new ArgumentNullException(nameof(emailProtector));
+            _badLanguageFilter = badLanguageFilter ?? throw new ArgumentNullException(nameof(badLanguageFilter));
         }
 
         [HttpGet]
@@ -73,6 +77,11 @@ namespace Stoolball.Web.Matches
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament);
 
                 model.Tournament.Comments = await _commentsDataSource.ReadComments(model.Tournament.TournamentId.Value).ConfigureAwait(false);
+                foreach (var comment in model.Tournament.Comments)
+                {
+                    comment.Comment = _emailProtector.ProtectEmailAddresses(comment.Comment, User.Identity.IsAuthenticated);
+                    comment.Comment = _badLanguageFilter.Filter(comment.Comment);
+                }
 
                 model.Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
                 {

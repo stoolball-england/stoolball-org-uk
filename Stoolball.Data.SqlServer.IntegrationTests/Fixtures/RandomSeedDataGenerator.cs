@@ -9,10 +9,6 @@ using Stoolball.Teams;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 {
-    // TODO: Situations not yet being consistently recreated 
-    // 1. A team plays itself (never generated)
-    // 2. A player with multiple identities is recorded with two identities in the same innings
-    // 3. A player with multiple identities *on different sides in the match* is recorded with two identities in the same innings
     public class RandomSeedDataGenerator
     {
         private readonly Random _randomiser = new Random();

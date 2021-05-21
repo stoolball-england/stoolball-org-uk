@@ -40,37 +40,43 @@ namespace ASP
     #line hidden
     using Examine;
     
-    #line 5 "..\..\Views\StyleGuideStoolballData.cshtml"
-    using Stoolball.Competitions;
+    #line 4 "..\..\Views\StyleGuideStoolballData.cshtml"
+    using Stoolball.Comments;
     
     #line default
     #line hidden
     
     #line 6 "..\..\Views\StyleGuideStoolballData.cshtml"
-    using Stoolball.Matches;
-    
-    #line default
-    #line hidden
-    
-    #line 9 "..\..\Views\StyleGuideStoolballData.cshtml"
-    using Stoolball.Statistics;
-    
-    #line default
-    #line hidden
-    
-    #line 4 "..\..\Views\StyleGuideStoolballData.cshtml"
-    using Stoolball.Teams;
-    
-    #line default
-    #line hidden
-    
-    #line 8 "..\..\Views\StyleGuideStoolballData.cshtml"
-    using Stoolball.Web.Competitions;
+    using Stoolball.Competitions;
     
     #line default
     #line hidden
     
     #line 7 "..\..\Views\StyleGuideStoolballData.cshtml"
+    using Stoolball.Matches;
+    
+    #line default
+    #line hidden
+    
+    #line 10 "..\..\Views\StyleGuideStoolballData.cshtml"
+    using Stoolball.Statistics;
+    
+    #line default
+    #line hidden
+    
+    #line 5 "..\..\Views\StyleGuideStoolballData.cshtml"
+    using Stoolball.Teams;
+    
+    #line default
+    #line hidden
+    
+    #line 9 "..\..\Views\StyleGuideStoolballData.cshtml"
+    using Stoolball.Web.Competitions;
+    
+    #line default
+    #line hidden
+    
+    #line 8 "..\..\Views\StyleGuideStoolballData.cshtml"
     using Stoolball.Web.Matches;
     
     #line default
@@ -92,7 +98,7 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 10 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 11 "..\..\Views\StyleGuideStoolballData.cshtml"
   
     Html.RequiresJs("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey, 50);
     Html.RequiresJs("/js/maps.js", 90);
@@ -111,6 +117,8 @@ namespace ASP
     Html.RequiresJs("~/matches/edit-batting-scorecard.js");
     Html.RequiresJs("~/matches/edit-bowling-scorecard.js");
 
+    Html.RequiresCss("~/css/comments.min.css");
+
             
             #line default
             #line hidden
@@ -125,7 +133,7 @@ WriteLiteral(" data-show-consent=\"true\"");
 WriteLiteral(">");
 
             
-            #line 29 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 32 "..\..\Views\StyleGuideStoolballData.cshtml"
                             Write(Model.Name);
 
             
@@ -143,14 +151,14 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1260), Tuple.Create("\"", 1301)
+WriteAttribute("href", Tuple.Create(" href=\"", 1338), Tuple.Create("\"", 1379)
             
-            #line 32 "..\..\Views\StyleGuideStoolballData.cshtml"
-, Tuple.Create(Tuple.Create("", 1267), Tuple.Create<System.Object, System.Int32>(Umbraco.AssignedContentItem.Url()
+            #line 35 "..\..\Views\StyleGuideStoolballData.cshtml"
+, Tuple.Create(Tuple.Create("", 1345), Tuple.Create<System.Object, System.Int32>(Umbraco.AssignedContentItem.Url()
             
             #line default
             #line hidden
-, 1267), false)
+, 1345), false)
 );
 
 WriteLiteral(">Umbraco content</a>\r\n        </li>\r\n        <li");
@@ -161,15 +169,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1401), Tuple.Create("\"", 1470)
+WriteAttribute("href", Tuple.Create(" href=\"", 1479), Tuple.Create("\"", 1548)
             
-            #line 35 "..\..\Views\StyleGuideStoolballData.cshtml"
-, Tuple.Create(Tuple.Create("", 1408), Tuple.Create<System.Object, System.Int32>(Umbraco.AssignedContentItem.Url()
+            #line 38 "..\..\Views\StyleGuideStoolballData.cshtml"
+, Tuple.Create(Tuple.Create("", 1486), Tuple.Create<System.Object, System.Int32>(Umbraco.AssignedContentItem.Url()
             
             #line default
             #line hidden
-, 1408), false)
-, Tuple.Create(Tuple.Create("", 1442), Tuple.Create("?alttemplate=styleguideforms", 1442), true)
+, 1486), false)
+, Tuple.Create(Tuple.Create("", 1520), Tuple.Create("?alttemplate=styleguideforms", 1520), true)
 );
 
 WriteLiteral(">Forms</a>\r\n        </li>\r\n        <li");
@@ -595,7 +603,7 @@ WriteLiteral(">\r\n        <p>Two alerts together.</p>\r\n    </div>\r\n    <h2>
 WriteLiteral("    ");
 
             
-            #line 133 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 136 "..\..\Views\StyleGuideStoolballData.cshtml"
 Write(Html.Partial("_TeamList", new List<Team> {
         new Team { TeamName = "Team A", TeamRoute = "/teams/team-a" },
         new Team { TeamName = "Team B", TeamRoute = "/teams/team-b" }
@@ -607,13 +615,13 @@ Write(Html.Partial("_TeamList", new List<Team> {
 WriteLiteral("\r\n    <p>This is a list of matches.</p>\r\n");
 
             
-            #line 138 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 141 "..\..\Views\StyleGuideStoolballData.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 138 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 141 "..\..\Views\StyleGuideStoolballData.cshtml"
       
         var matchListing = new MatchListingViewModel(Umbraco.AssignedContentItem, Services.UserService)
         {
@@ -650,7 +658,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 166 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 169 "..\..\Views\StyleGuideStoolballData.cshtml"
 Write(Html.Partial("_MatchList", matchListing));
 
             
@@ -659,13 +667,13 @@ Write(Html.Partial("_MatchList", matchListing));
 WriteLiteral("\r\n\r\n    <p>This is a list of seasons.</p>\r\n");
 
             
-            #line 169 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 172 "..\..\Views\StyleGuideStoolballData.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 169 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 172 "..\..\Views\StyleGuideStoolballData.cshtml"
       
         var seasonList = new SeasonListViewModel
         {
@@ -685,7 +693,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 180 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 183 "..\..\Views\StyleGuideStoolballData.cshtml"
 Write(Html.Partial("_SeasonList", seasonList));
 
             
@@ -713,13 +721,13 @@ WriteLiteral(">Map of Maresfield Recreation Ground, Maresfield on Google Maps</a
 "v>\r\n    <h2>Scorecards</h2>\r\n");
 
             
-            #line 185 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 188 "..\..\Views\StyleGuideStoolballData.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 185 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 188 "..\..\Views\StyleGuideStoolballData.cshtml"
       
         var innings = new EditScorecardViewModel(Model, Services.UserService)
         {
@@ -801,7 +809,7 @@ WriteLiteral("\r\n\r\n\r\n");
 WriteLiteral("        ");
 
             
-            #line 260 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 263 "..\..\Views\StyleGuideStoolballData.cshtml"
    Write(Html.Partial("_BattingScorecard", innings.CurrentInnings.MatchInnings));
 
             
@@ -812,7 +820,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 261 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 264 "..\..\Views\StyleGuideStoolballData.cshtml"
 Write(Html.Partial("_BowlingScorecard", innings.CurrentInnings.MatchInnings));
 
             
@@ -823,7 +831,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 262 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 265 "..\..\Views\StyleGuideStoolballData.cshtml"
 Write(Html.Partial("_EditBattingScorecard", innings));
 
             
@@ -834,8 +842,58 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 263 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 266 "..\..\Views\StyleGuideStoolballData.cshtml"
 Write(Html.Partial("_EditBowlingScorecard", innings));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
+            
+            #line 267 "..\..\Views\StyleGuideStoolballData.cshtml"
+    
+            
+            #line default
+            #line hidden
+            
+            #line 267 "..\..\Views\StyleGuideStoolballData.cshtml"
+       
+        var comments = new List<HtmlComment> {
+            new HtmlComment
+            {
+                MemberName = "Member One",
+                MemberEmail = "member.one@example.org",
+                CommentDate = DateTimeOffset.UtcNow,
+                Comment = "<p>This is a comment.</p>"
+            },
+            new HtmlComment
+            {
+                MemberName = "Member Two",
+                MemberEmail = "member.two@example.org",
+                CommentDate = DateTimeOffset.UtcNow.AddDays(-5),
+                Comment = "<p>This is a comment <i>with formatting</i>.</p>"
+            }
+            ,
+            new HtmlComment
+            {
+                MemberName = "Member Three",
+                MemberEmail = "member.three@example.org",
+                CommentDate = DateTimeOffset.UtcNow.AddDays(-10),
+                Comment = "<p>This is a comment with paragraphs.</p><p>This is a comment with paragraphs.</p>"
+            }
+        };
+    
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
+WriteLiteral("    ");
+
+            
+            #line 293 "..\..\Views\StyleGuideStoolballData.cshtml"
+Write(Html.Partial("_Comments", comments));
 
             
             #line default

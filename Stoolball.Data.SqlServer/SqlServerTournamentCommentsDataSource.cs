@@ -37,7 +37,12 @@ namespace Stoolball.Data.SqlServer
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                return (await connection.QueryAsync<HtmlComment>($"SELECT CommentId, MemberName, CommentDate, Comment FROM {Tables.Comment} WHERE TournamentId = @TournamentId ORDER BY CommentDate DESC", new { TournamentId = entityId }).ConfigureAwait(false)).ToList();
+                return (await connection.QueryAsync<HtmlComment>(
+                            $@"SELECT c.CommentId, c.CommentDate, c.Comment, 
+                               n.text AS MemberName, m.Email AS MemberEmail
+                               FROM {Tables.Comment} c LEFT JOIN {Tables.UmbracoNode} n ON c.MemberKey = n.uniqueId 
+                               LEFT JOIN {Tables.UmbracoMember} m ON n.id = m.nodeId
+                               WHERE TournamentId = @TournamentId ORDER BY CommentDate DESC", new { TournamentId = entityId }).ConfigureAwait(false)).ToList();
             }
         }
     }

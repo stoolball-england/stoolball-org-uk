@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using Stoolball.Comments;
 using Stoolball.Dates;
 using Stoolball.Email;
+using Stoolball.Html;
 using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
@@ -25,6 +26,7 @@ namespace Stoolball.Web.Matches
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly IEmailProtector _emailProtector;
+        private readonly IBadLanguageFilter _badLanguageFilter;
 
         public MatchController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -36,7 +38,8 @@ namespace Stoolball.Web.Matches
            ICommentsDataSource<Match> commentsDataSource,
            IAuthorizationPolicy<Match> authorizationPolicy,
            IDateTimeFormatter dateFormatter,
-           IEmailProtector emailProtector)
+           IEmailProtector emailProtector,
+           IBadLanguageFilter badLanguageFilter)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
@@ -44,6 +47,7 @@ namespace Stoolball.Web.Matches
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
             _emailProtector = emailProtector ?? throw new ArgumentNullException(nameof(emailProtector));
+            _badLanguageFilter = badLanguageFilter ?? throw new ArgumentNullException(nameof(badLanguageFilter));
         }
 
         [HttpGet]
@@ -70,6 +74,11 @@ namespace Stoolball.Web.Matches
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
 
                 model.Match.Comments = await _commentsDataSource.ReadComments(model.Match.MatchId.Value).ConfigureAwait(false);
+                foreach (var comment in model.Match.Comments)
+                {
+                    comment.Comment = _emailProtector.ProtectEmailAddresses(comment.Comment, User.Identity.IsAuthenticated);
+                    comment.Comment = _badLanguageFilter.Filter(comment.Comment);
+                }
 
                 model.Metadata.PageTitle = model.Match.MatchFullName(x => _dateFormatter.FormatDate(x, false, false, false)) + " - stoolball match";
                 model.Metadata.Description = model.Match.Description();

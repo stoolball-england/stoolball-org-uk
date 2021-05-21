@@ -8,6 +8,7 @@
 @{
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTournament] || Model.IsAuthorized[AuthorizedAction.DeleteTournament];
     Html.RequiresCss("~/matches/match.min.css");
+    Html.RequiresCss("~/css/comments.min.css");
 }
 <div class="container-xl">
     <h1>@Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x, false))</h1>
@@ -124,4 +125,6 @@
             }
         </ul>
     }
+
+    @Html.Partial("_Comments", Model.Tournament.Comments)
 </div>

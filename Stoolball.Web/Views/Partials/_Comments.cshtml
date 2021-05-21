@@ -1,0 +1,30 @@
+﻿@model List<HtmlComment>
+@using Stoolball.Comments
+@using Stoolball.Web.Account
+@using Umbraco.Core.Composing
+@using Stoolball.Dates
+@{ 
+    var dateFormatter = (IDateTimeFormatter)Current.Factory.GetInstance(typeof(IDateTimeFormatter));
+}
+@if (Model.Any())
+{
+    <h2 class="comments">Comments</h2>
+    <ol class="list-unstyled">
+        @foreach (var comment in Model)
+        {
+        <li class="comment">
+            <h3 class="comment__credit">
+                    @if (!string.IsNullOrEmpty(comment.MemberEmail))
+                    {
+                        var gravatar = new Gravatar(comment.MemberEmail);
+                        <img src="@gravatar.Url" alt="" width="@gravatar.Size" height="@gravatar.Size" class="comment__account-image" />
+                    }
+                    @comment.MemberName at @dateFormatter.FormatDateTime(comment.CommentDate, true, true, true)
+            </h3>
+            @Html.Raw(comment.Comment)
+        </li>
+
+        }
+    </ol>
+    <p class="alert alert-info">Comments are now closed.</p>
+}
