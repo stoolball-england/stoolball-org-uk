@@ -104,15 +104,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             foreach (var comment in tournament.Comments)
             {
                 _connection.Execute($@"INSERT INTO {Tables.Comment} 
-                                      (CommentId, TournamentId, MemberKey, MemberName, CommentDate, Comment) 
+                                      (CommentId, TournamentId, MemberKey, CommentDate, Comment) 
                                        VALUES 
-                                      (@CommentId, @TournamentId, @MemberKey, @MemberName, @CommentDate, @Comment)",
+                                      (@CommentId, @TournamentId, @MemberKey, @CommentDate, @Comment)",
                     new
                     {
                         comment.CommentId,
                         tournament.TournamentId,
                         comment.MemberKey,
-                        comment.MemberName,
                         CommentDate = comment.CommentDate.UtcDateTime,
                         comment.Comment
                     });
@@ -319,15 +318,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             foreach (var comment in match.Comments)
             {
                 _connection.Execute($@"INSERT INTO {Tables.Comment} 
-                                      (CommentId, MatchId, MemberKey, MemberName, CommentDate, Comment) 
+                                      (CommentId, MatchId, MemberKey, CommentDate, Comment) 
                                        VALUES 
-                                      (@CommentId, @MatchId, @MemberKey, @MemberName, @CommentDate, @Comment)",
+                                      (@CommentId, @MatchId, @MemberKey, @CommentDate, @Comment)",
                     new
                     {
                         comment.CommentId,
                         match.MatchId,
                         comment.MemberKey,
-                        comment.MemberName,
                         CommentDate = comment.CommentDate.UtcDateTime,
                         comment.Comment
                     });

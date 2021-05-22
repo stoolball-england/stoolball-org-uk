@@ -44,7 +44,9 @@ namespace Stoolball.Data.UmbracoMigrations
                 .To<CommentAddTable>(typeof(CommentAddTable).ToString())
                 .To<PlayerInMatchStatisticsAddTable>(typeof(PlayerInMatchStatisticsAddTable).ToString())
                 .To<AuditAddTable>(typeof(AuditAddTable).ToString())
-                .To<NotificationSubscriptionAddTable>(typeof(NotificationSubscriptionAddTable).ToString());
+                .To<NotificationSubscriptionAddTable>(typeof(NotificationSubscriptionAddTable).ToString())
+                // Initial state when website launched Easter 2021
+                .To<CommentRemoveMemberNameAndMakeMemberKeyNullable>(typeof(CommentRemoveMemberNameAndMakeMemberKeyNullable).ToString());
         }
     }
 }
