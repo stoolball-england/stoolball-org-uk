@@ -61,6 +61,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 
                 var repo = new SqlServerIntegrationTestsRepository(connection);
 
+                repo.CreateUmbracoBaseRecords();
+                var members = seedDataGenerator.CreateMembers();
+                foreach (var member in members)
+                {
+                    repo.CreateMember(member);
+                }
+
                 ClubWithMinimalDetails = seedDataGenerator.CreateClubWithMinimalDetails();
                 repo.CreateClub(ClubWithMinimalDetails);
                 Clubs.Add(ClubWithMinimalDetails);
@@ -131,7 +138,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 Matches.Add(MatchInTheFutureWithMinimalDetails);
                 MatchListings.Add(MatchInTheFutureWithMinimalDetails.ToMatchListing());
 
-                MatchInThePastWithFullDetails = seedDataGenerator.CreateMatchInThePastWithFullDetails();
+                MatchInThePastWithFullDetails = seedDataGenerator.CreateMatchInThePastWithFullDetails(members);
                 repo.CreateMatchLocation(MatchInThePastWithFullDetails.MatchLocation);
                 var playersForMatchInThePastWithFullDetails = playerIdentityFinder.PlayerIdentitiesInMatch(MatchInThePastWithFullDetails);
                 MatchInThePastWithFullDetails.Teams[0].Team.UntilYear = 2020;
@@ -181,7 +188,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 Tournaments.Add(TournamentInTheFutureWithMinimalDetails);
                 MatchListings.Add(TournamentInTheFutureWithMinimalDetails.ToMatchListing());
 
-                TournamentInThePastWithFullDetails = seedDataGenerator.CreateTournamentInThePastWithFullDetails();
+                TournamentInThePastWithFullDetails = seedDataGenerator.CreateTournamentInThePastWithFullDetails(members);
                 Teams.AddRange(TournamentInThePastWithFullDetails.Teams.Select(x => x.Team));
                 MatchInThePastWithFullDetails.Teams[0].Team.UntilYear = 2020;
                 foreach (var team in TournamentInThePastWithFullDetails.Teams)
@@ -231,7 +238,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     repo.CreateAudit(audit);
                 }
 
-                MatchInThePastWithFullDetailsAndTournament = seedDataGenerator.CreateMatchInThePastWithFullDetails();
+                MatchInThePastWithFullDetailsAndTournament = seedDataGenerator.CreateMatchInThePastWithFullDetails(members);
                 MatchInThePastWithFullDetailsAndTournament.Tournament = TournamentInThePastWithMinimalDetails;
                 MatchInThePastWithFullDetailsAndTournament.Season.FromYear = MatchInThePastWithFullDetailsAndTournament.Season.UntilYear = 2018;
                 repo.CreateMatchLocation(MatchInThePastWithFullDetailsAndTournament.MatchLocation);
@@ -304,7 +311,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 foreach (var team in Teams.Where(t => t.Club == null || t.Club.ClubId == ClubWithOneTeam.ClubId)) { TeamListings.Add(team.ToTeamListing()); }
                 foreach (var club in Clubs.Where(c => c.Teams.Count == 0 || c.Teams.Count > 1)) { TeamListings.Add(club.ToTeamListing()); }
 
-
                 for (var i = 0; i < 30; i++)
                 {
                     var competition = seedDataGenerator.CreateCompetitionWithMinimalDetails();
@@ -320,7 +326,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     match.StartTime = DateTime.UtcNow.AddMonths(i - 15);
                     match.MatchType = i % 2 == 0 ? MatchType.FriendlyMatch : MatchType.LeagueMatch;
                     match.PlayerType = i % 3 == 0 ? PlayerType.Mixed : PlayerType.Ladies;
-                    match.Comments = seedDataGenerator.CreateComments(i);
+                    match.Comments = seedDataGenerator.CreateComments(i, members);
                     repo.CreateMatch(match);
                     Matches.Add(match);
                     MatchListings.Add(match.ToMatchListing());
@@ -328,7 +334,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     var tournament = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
                     tournament.TournamentLocation = matchLocation;
                     tournament.StartTime = DateTime.UtcNow.AddMonths(i - 20).AddDays(5);
-                    tournament.Comments = seedDataGenerator.CreateComments(i);
+                    tournament.Comments = seedDataGenerator.CreateComments(i, members);
                     repo.CreateTournament(tournament);
                     Tournaments.Add(tournament);
                     MatchListings.Add(tournament.ToMatchListing());

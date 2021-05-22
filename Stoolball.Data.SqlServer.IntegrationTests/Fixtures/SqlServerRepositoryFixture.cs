@@ -33,6 +33,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 var repo = new SqlServerIntegrationTestsRepository(connection);
                 var playerIdentityFinder = new PlayerIdentityFinder();
 
+                repo.CreateUmbracoBaseRecords();
+                var members = seedDataGenerator.CreateMembers();
+                foreach (var member in members)
+                {
+                    repo.CreateMember(member);
+                }
+
                 ClubWithTeamsForDelete = seedDataGenerator.CreateClubWithTeams();
                 repo.CreateClub(ClubWithTeamsForDelete);
                 foreach (var team in ClubWithTeamsForDelete.Teams)
@@ -54,7 +61,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     repo.AddTeamToSeason(season);
                 }
 
-                MatchWithFullDetailsForDelete = seedDataGenerator.CreateMatchInThePastWithFullDetails();
+                MatchWithFullDetailsForDelete = seedDataGenerator.CreateMatchInThePastWithFullDetails(members);
                 repo.CreateMatchLocation(MatchWithFullDetailsForDelete.MatchLocation);
                 foreach (var team in MatchWithFullDetailsForDelete.Teams)
                 {
@@ -70,7 +77,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 repo.CreateSeason(MatchWithFullDetailsForDelete.Season, MatchWithFullDetailsForDelete.Season.Competition.CompetitionId.Value);
                 repo.CreateMatch(MatchWithFullDetailsForDelete);
 
-                TournamentWithFullDetailsForDelete = seedDataGenerator.CreateTournamentInThePastWithFullDetails();
+                TournamentWithFullDetailsForDelete = seedDataGenerator.CreateTournamentInThePastWithFullDetails(members);
                 foreach (var team in TournamentWithFullDetailsForDelete.Teams)
                 {
                     repo.CreateTeam(team.Team);

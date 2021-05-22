@@ -297,7 +297,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             };
         }
 
-        public Match CreateMatchInThePastWithFullDetails()
+        public Match CreateMatchInThePastWithFullDetails(List<(Guid memberId, string memberName)> members)
         {
             // Note: Team names would sort the away team first alphabetically
             var homeTeam = new TeamInMatch
@@ -480,7 +480,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 MatchNotes = "<p>This is a test match, not a Test Match.</p>",
                 MatchRoute = "/matches/team-a-vs-team-b-1jul2020-" + Guid.NewGuid(),
                 MemberKey = Guid.NewGuid(),
-                Comments = CreateComments(10)
+                Comments = CreateComments(10, members)
             };
 
             var bowlingFigures = new BowlingFiguresCalculator(new OversHelper());
@@ -489,6 +489,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 innings.BowlingFigures = bowlingFigures.CalculateBowlingFigures(innings);
             }
             return match;
+        }
+
+        public List<(Guid memberId, string memberName)> CreateMembers()
+        {
+            return new List<(Guid memberId, string memberName)> {
+                (Guid.NewGuid(), "Jane Smith"),
+                (Guid.NewGuid(), "Joe Bloggs"),
+                (Guid.NewGuid(), "George Jones"),
+                (Guid.NewGuid(), "Jo Bloggs"),
+                (Guid.NewGuid(), "John Doe"),
+            };
         }
 
         private static List<OverSet> CreateOverSets()
@@ -508,7 +519,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             };
         }
 
-        public Tournament CreateTournamentInThePastWithFullDetails()
+        public Tournament CreateTournamentInThePastWithFullDetails(List<(Guid memberId, string memberName)> members)
         {
             var competition1 = CreateCompetitionWithMinimalDetails();
             var competition2 = CreateCompetitionWithMinimalDetails();
@@ -544,7 +555,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     CreateSeasonWithMinimalDetails(competition1, 2020, 2020),
                     CreateSeasonWithMinimalDetails(competition2, 2020, 2020)
                 },
-                Comments = CreateComments(10)
+                Comments = CreateComments(10, members)
             };
             foreach (var season in tournament.Seasons)
             {
@@ -684,16 +695,19 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             };
         }
 
-        public List<HtmlComment> CreateComments(int howMany)
+        public List<HtmlComment> CreateComments(int howMany, List<(Guid memberId, string memberName)> members)
         {
+            var randomiser = new Random();
             var comments = new List<HtmlComment>();
             for (var i = howMany; i > 0; i--)
             {
+                var member = members[randomiser.Next(members.Count)];
+
                 comments.Add(new HtmlComment
                 {
                     CommentId = Guid.NewGuid(),
-                    MemberKey = Guid.NewGuid(),
-                    MemberName = "John Smith",
+                    MemberKey = member.memberId,
+                    MemberName = member.memberName,
                     CommentDate = DateTimeOffset.UtcNow.AddDays(i * -1),
                     Comment = $"<p>This is comment number <b>{i}</b>.</p>"
                 });
