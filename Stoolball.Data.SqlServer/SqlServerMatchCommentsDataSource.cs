@@ -11,7 +11,7 @@ namespace Stoolball.Data.SqlServer
     /// <summary>
     /// Gets stoolball match comments from the Umbraco database
     /// </summary>
-    public class SqlServerMatchCommentsDataSource : ICommentsDataSource<Match>
+    public class SqlServerMatchCommentsDataSource : ICommentsDataSource<Match>, ICacheableCommentsDataSource<Match>
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
 

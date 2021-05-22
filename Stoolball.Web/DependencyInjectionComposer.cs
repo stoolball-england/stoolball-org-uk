@@ -121,6 +121,7 @@ namespace Stoolball.Web
 
                 registry.Add(CacheConstants.StatisticsPolicy, cachePolicy);
                 registry.Add(CacheConstants.MatchesPolicy, cachePolicy);
+                registry.Add(CacheConstants.CommentsPolicy, cachePolicy);
                 registry.Add(CacheConstants.TeamsPolicy, cachePolicy);
                 registry.Add(CacheConstants.MemberOverridePolicy, slidingPolicy);
                 return registry;
@@ -148,8 +149,10 @@ namespace Stoolball.Web
             composition.Register<IMatchDataSource, SqlServerMatchDataSource>();
             composition.Register<IMatchListingDataSource, CachedMatchListingDataSource>();
             composition.Register<ICacheableMatchListingDataSource, SqlServerMatchListingDataSource>();
-            composition.Register<ICommentsDataSource<Match>, SqlServerMatchCommentsDataSource>();
-            composition.Register<ICommentsDataSource<Tournament>, SqlServerTournamentCommentsDataSource>();
+            composition.Register<ICommentsDataSource<Match>, CachedCommentsDataSource<Match>>();
+            composition.Register<ICommentsDataSource<Tournament>, CachedCommentsDataSource<Tournament>>();
+            composition.Register<ICacheableCommentsDataSource<Match>, SqlServerMatchCommentsDataSource>();
+            composition.Register<ICacheableCommentsDataSource<Tournament>, SqlServerTournamentCommentsDataSource>();
             composition.Register<IMatchRepository, CacheClearingMatchRepository>();
             composition.Register<IWrappableMatchRepository, SqlServerMatchRepository>();
             composition.Register<ITournamentDataSource, SqlServerTournamentDataSource>();

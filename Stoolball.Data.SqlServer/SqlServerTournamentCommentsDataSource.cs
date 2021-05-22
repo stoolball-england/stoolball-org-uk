@@ -11,7 +11,7 @@ namespace Stoolball.Data.SqlServer
     /// <summary>
     /// Gets stoolball tournament comments from the Umbraco database
     /// </summary>
-    public class SqlServerTournamentCommentsDataSource : ICommentsDataSource<Tournament>
+    public class SqlServerTournamentCommentsDataSource : ICommentsDataSource<Tournament>, ICacheableCommentsDataSource<Tournament>
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
 
