@@ -437,7 +437,7 @@ WriteLiteral("Any ");
 
             
             #line 77 "..\..\Views\Tournament.cshtml"
-                 Write(Model.Tournament.PlayerType.Humanize(LetterCasing.LowerCase));
+                 Write(Model.Tournament.PlayerType.Humanize(LetterCasing.LowerCase).Replace("men", "men's"));
 
             
             #line default
@@ -651,14 +651,14 @@ WriteLiteral("        <p>This tournament is listed in ");
             #line hidden
 WriteLiteral(" <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4780), Tuple.Create("\"", 4806)
+WriteAttribute("href", Tuple.Create(" href=\"", 4804), Tuple.Create("\"", 4830)
             
             #line 115 "..\..\Views\Tournament.cshtml"
-, Tuple.Create(Tuple.Create("", 4787), Tuple.Create<System.Object, System.Int32>(season.SeasonRoute
+, Tuple.Create(Tuple.Create("", 4811), Tuple.Create<System.Object, System.Int32>(season.SeasonRoute
             
             #line default
             #line hidden
-, 4787), false)
+, 4811), false)
 );
 
 WriteLiteral(">");
@@ -708,14 +708,14 @@ WriteLiteral("        <ul>\r\n");
             #line hidden
 WriteLiteral("                <li><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 5091), Tuple.Create("\"", 5117)
+WriteAttribute("href", Tuple.Create(" href=\"", 5115), Tuple.Create("\"", 5141)
             
             #line 124 "..\..\Views\Tournament.cshtml"
-, Tuple.Create(Tuple.Create("", 5098), Tuple.Create<System.Object, System.Int32>(season.SeasonRoute
+, Tuple.Create(Tuple.Create("", 5122), Tuple.Create<System.Object, System.Int32>(season.SeasonRoute
             
             #line default
             #line hidden
-, 5098), false)
+, 5122), false)
 );
 
 WriteLiteral(">");

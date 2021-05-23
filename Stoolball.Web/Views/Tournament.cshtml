@@ -74,7 +74,7 @@
             }
             @if (Model.Tournament.QualificationType == TournamentQualificationType.OpenTournament)
             {
-                @:Any @Model.Tournament.PlayerType.Humanize(LetterCasing.LowerCase) team may enter this tournament.
+                @:Any @Model.Tournament.PlayerType.Humanize(LetterCasing.LowerCase).Replace("men", "men's") team may enter this tournament.
             }
             else if (Model.Tournament.QualificationType == TournamentQualificationType.ClosedTournament)
             {
