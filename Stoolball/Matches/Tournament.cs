@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Humanizer;
 using Stoolball.Comments;
 using Stoolball.Competitions;
@@ -41,7 +42,7 @@ namespace Stoolball.Matches
 
             var saysTournament = TournamentName.ToUpperInvariant().Contains("TOURNAMENT");
             var playerType = PlayerType.Humanize(LetterCasing.Sentence);
-            var saysPlayerType = TournamentName.Replace("'", string.Empty).ToUpperInvariant().Contains(playerType.ToUpperInvariant());
+            var saysPlayerType = Regex.IsMatch(TournamentName.Replace("'", string.Empty), $"\b{playerType}\b", RegexOptions.IgnoreCase); // Check for word boundaries to avoid "tournament" matching the player type "men"
 
             if (includePlayerType && !saysTournament && !saysPlayerType)
             {
