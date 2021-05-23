@@ -1,5 +1,6 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Teams.TeamsViewModel>
 @using Humanizer
+@using System.Globalization
 @using Stoolball.Teams
 @section canonical {@Html.Partial("_CanonicalUrl", new[] { "page","q" })}
     <div class="container-xl">
@@ -70,7 +71,7 @@
                 }
                 else
                 {
-                    detail = listing.TeamType.Humanize(LetterCasing.Sentence) + $" {playerTypes.Humanize(LetterCasing.LowerCase)} team. ";
+                    detail = listing.TeamType.Humanize(LetterCasing.Sentence) + $" {playerTypes.ToLower(CultureInfo.CurrentCulture)} team. ";
                 }
                 if (!listing.Active)
                 {
@@ -81,7 +82,8 @@
             {
                 if (listing.PlayerTypes.Count > 0)
                 {
-                    detail = $"Club with {(listing.PlayerTypes.Count > 1 ? string.Empty : "one ")}{playerTypes.Humanize(LetterCasing.LowerCase)} {(listing.PlayerTypes.Count > 1 ? "teams" : "team")}. ";
+                    // Don't use Humanizer for conversion to lowercase due to https://github.com/Humanizr/Humanizer/issues/958
+                    detail = $"Club with {(listing.PlayerTypes.Count > 1 ? string.Empty : "one ")}{playerTypes.ToLower(CultureInfo.CurrentCulture)} {(listing.PlayerTypes.Count > 1 ? "teams" : "team")}. ";
                     if (!listing.Active)
                     {
                         detail += $"No longer active.";
