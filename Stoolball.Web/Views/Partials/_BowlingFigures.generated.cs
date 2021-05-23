@@ -388,7 +388,7 @@ WriteLiteral("                            <td");
 
 WriteLiteral(" data-stackable=\"true\"");
 
-WriteLiteral(" class=\"numeric-md missing-data\"");
+WriteLiteral(" class=\"numeric-md table-as-cards__missing-data\"");
 
 WriteLiteral(">–</td>\r\n");
 
@@ -420,15 +420,15 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3363), Tuple.Create("\"", 3421)
+WriteAttribute("href", Tuple.Create(" href=\"", 3379), Tuple.Create("\"", 3437)
             
             #line 63 "..\..\Views\Partials\_BowlingFigures.cshtml"
-, Tuple.Create(Tuple.Create("", 3370), Tuple.Create<System.Object, System.Int32>(Request.RawUrl.TrimEnd("/bowling")
+, Tuple.Create(Tuple.Create("", 3386), Tuple.Create<System.Object, System.Int32>(Request.RawUrl.TrimEnd("/bowling")
             
             #line default
             #line hidden
-, 3370), false)
-, Tuple.Create(Tuple.Create("", 3405), Tuple.Create("/bowling-figures", 3405), true)
+, 3386), false)
+, Tuple.Create(Tuple.Create("", 3421), Tuple.Create("/bowling-figures", 3421), true)
 );
 
 WriteLiteral(">Bowling figures – view all</a></p>\r\n");

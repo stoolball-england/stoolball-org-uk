@@ -28,32 +28,32 @@ namespace ASP
     using System.Web.WebPages;
     using Examine;
     
-    #line 2 "..\..\Views\Partials\_Catches.cshtml"
+    #line 2 "..\..\Views\Partials\_RunOuts.cshtml"
     using Humanizer;
     
     #line default
     #line hidden
     
-    #line 3 "..\..\Views\Partials\_Catches.cshtml"
+    #line 3 "..\..\Views\Partials\_RunOuts.cshtml"
     using Stoolball.Dates;
     
     #line default
     #line hidden
     
-    #line 4 "..\..\Views\Partials\_Catches.cshtml"
+    #line 4 "..\..\Views\Partials\_RunOuts.cshtml"
     using Stoolball.Matches;
     
     #line default
     #line hidden
     
-    #line 5 "..\..\Views\Partials\_Catches.cshtml"
+    #line 5 "..\..\Views\Partials\_RunOuts.cshtml"
     using Stoolball.Web.Statistics;
     
     #line default
     #line hidden
     using Umbraco.Core;
     
-    #line 6 "..\..\Views\Partials\_Catches.cshtml"
+    #line 6 "..\..\Views\Partials\_RunOuts.cshtml"
     using Umbraco.Core.Composing;
     
     #line default
@@ -65,16 +65,16 @@ namespace ASP
     using Umbraco.Web.PublishedModels;
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("RazorGenerator", "2.0.0.0")]
-    [System.Web.WebPages.PageVirtualPathAttribute("~/Views/Partials/_Catches.cshtml")]
-    public partial class _Views_Partials__Catches_cshtml : Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<PlayerInnings>>
+    [System.Web.WebPages.PageVirtualPathAttribute("~/Views/Partials/_RunOuts.cshtml")]
+    public partial class _Views_Partials__RunOuts_cshtml : Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<PlayerInnings>>
     {
-        public _Views_Partials__Catches_cshtml()
+        public _Views_Partials__RunOuts_cshtml()
         {
         }
         public override void Execute()
         {
             
-            #line 7 "..\..\Views\Partials\_Catches.cshtml"
+            #line 7 "..\..\Views\Partials\_RunOuts.cshtml"
   
     var dateTimeFormatter = Current.Factory.CreateInstance<DateTimeFormatter>();
 
@@ -84,7 +84,7 @@ namespace ASP
 WriteLiteral("\r\n");
 
             
-            #line 10 "..\..\Views\Partials\_Catches.cshtml"
+            #line 10 "..\..\Views\Partials\_RunOuts.cshtml"
  if (Model.Results.Any())
 {
 
@@ -93,28 +93,28 @@ WriteLiteral("\r\n");
             #line hidden
 WriteLiteral("    <table");
 
-WriteLiteral(" class=\"statistics table-as-cards table-as-cards-reset-md\"");
+WriteLiteral(" class=\"statistics table-as-cards table-as-cards-reset-sm\"");
 
 WriteLiteral(">\r\n");
 
             
-            #line 13 "..\..\Views\Partials\_Catches.cshtml"
+            #line 13 "..\..\Views\Partials\_RunOuts.cshtml"
         
             
             #line default
             #line hidden
             
-            #line 13 "..\..\Views\Partials\_Catches.cshtml"
+            #line 13 "..\..\Views\Partials\_RunOuts.cshtml"
          if (Model.ShowCaption)
         {
 
             
             #line default
             #line hidden
-WriteLiteral("            <caption>Catches, most recent first</caption>\r\n");
+WriteLiteral("            <caption>Run-outs, most recent first</caption>\r\n");
 
             
-            #line 16 "..\..\Views\Partials\_Catches.cshtml"
+            #line 16 "..\..\Views\Partials\_RunOuts.cshtml"
         }
 
             
@@ -128,7 +128,7 @@ WriteLiteral(">Match</th>\r\n                <th");
 
 WriteLiteral(" scope=\"col\"");
 
-WriteLiteral(" class=\"d-none d-md-table-cell\"");
+WriteLiteral(" class=\"d-none d-sm-table-cell\"");
 
 WriteLiteral(">When</th>\r\n                <th");
 
@@ -138,26 +138,18 @@ WriteLiteral(">Batter</th>\r\n                <th");
 
 WriteLiteral(" scope=\"col\"");
 
-WriteLiteral(">How out</th>\r\n                <th");
-
-WriteLiteral(" scope=\"col\"");
-
-WriteLiteral(">Bowler</th>\r\n                <th");
-
-WriteLiteral(" scope=\"col\"");
-
 WriteLiteral(" class=\"numeric\"");
 
 WriteLiteral(">Runs</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody>\r\n");
 
             
-            #line 28 "..\..\Views\Partials\_Catches.cshtml"
+            #line 26 "..\..\Views\Partials\_RunOuts.cshtml"
             
             
             #line default
             #line hidden
             
-            #line 28 "..\..\Views\Partials\_Catches.cshtml"
+            #line 26 "..\..\Views\Partials\_RunOuts.cshtml"
               
                 var previousMatchRoute = string.Empty;
                 for (var i = 0; i < Model.Results.Count(); i++)
@@ -169,13 +161,13 @@ WriteLiteral(">Runs</th>\r\n            </tr>\r\n        </thead>\r\n        <tb
 WriteLiteral("                    <tr>\r\n");
 
             
-            #line 33 "..\..\Views\Partials\_Catches.cshtml"
+            #line 31 "..\..\Views\Partials\_RunOuts.cshtml"
                         
             
             #line default
             #line hidden
             
-            #line 33 "..\..\Views\Partials\_Catches.cshtml"
+            #line 31 "..\..\Views\Partials\_RunOuts.cshtml"
                            
                             var rowspan = 1;
                             var row = i+1;
@@ -198,13 +190,13 @@ WriteLiteral("                    <tr>\r\n");
 WriteLiteral("\r\n\r\n");
 
             
-            #line 50 "..\..\Views\Partials\_Catches.cshtml"
+            #line 48 "..\..\Views\Partials\_RunOuts.cshtml"
                         
             
             #line default
             #line hidden
             
-            #line 50 "..\..\Views\Partials\_Catches.cshtml"
+            #line 48 "..\..\Views\Partials\_RunOuts.cshtml"
                          if (Model.Results[i].Match.MatchRoute != previousMatchRoute)
                         {
 
@@ -213,34 +205,34 @@ WriteLiteral("\r\n\r\n");
             #line hidden
 WriteLiteral("                            <td");
 
-WriteAttribute("rowspan", Tuple.Create(" rowspan=\"", 1944), Tuple.Create("\"", 1962)
+WriteAttribute("rowspan", Tuple.Create(" rowspan=\"", 1854), Tuple.Create("\"", 1872)
             
-            #line 52 "..\..\Views\Partials\_Catches.cshtml"
-, Tuple.Create(Tuple.Create("", 1954), Tuple.Create<System.Object, System.Int32>(rowspan
+            #line 50 "..\..\Views\Partials\_RunOuts.cshtml"
+, Tuple.Create(Tuple.Create("", 1864), Tuple.Create<System.Object, System.Int32>(rowspan
             
             #line default
             #line hidden
-, 1954), false)
+, 1864), false)
 );
 
-WriteLiteral(" class=\"table-as-cards__header-md match__stacked\"");
+WriteLiteral(" class=\"table-as-cards__header-sm match__stacked\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2015), Tuple.Create("\"", 2056)
+WriteAttribute("href", Tuple.Create(" href=\"", 1925), Tuple.Create("\"", 1966)
             
-            #line 52 "..\..\Views\Partials\_Catches.cshtml"
-                             , Tuple.Create(Tuple.Create("", 2022), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
+            #line 50 "..\..\Views\Partials\_RunOuts.cshtml"
+                             , Tuple.Create(Tuple.Create("", 1932), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
             
             #line default
             #line hidden
-, 2022), false)
+, 1932), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 52 "..\..\Views\Partials\_Catches.cshtml"
+            #line 50 "..\..\Views\Partials\_RunOuts.cshtml"
                                                                                                                                             Write(Model.Results[i].Match.MatchName);
 
             
@@ -248,7 +240,7 @@ WriteLiteral(">");
             #line hidden
 WriteLiteral("<span");
 
-WriteLiteral(" class=\"d-md-none\"");
+WriteLiteral(" class=\"d-sm-none\"");
 
 WriteLiteral(">, <span");
 
@@ -257,7 +249,7 @@ WriteLiteral(" class=\"text-nowrap\"");
 WriteLiteral(">");
 
             
-            #line 52 "..\..\Views\Partials\_Catches.cshtml"
+            #line 50 "..\..\Views\Partials\_RunOuts.cshtml"
                                                                                                                                                                                                                                   Write(dateTimeFormatter.FormatDate(Model.Results[i].Match.StartTime, false, true, true));
 
             
@@ -267,16 +259,16 @@ WriteLiteral("</span></span></a></td>\r\n");
 
 WriteLiteral("                            <td");
 
-WriteLiteral(" class=\"text-nowrap d-none d-md-table-cell\"");
+WriteLiteral(" class=\"text-nowrap d-none d-sm-table-cell\"");
 
-WriteAttribute("rowspan", Tuple.Create(" rowspan=\"", 2326), Tuple.Create("\"", 2344)
+WriteAttribute("rowspan", Tuple.Create(" rowspan=\"", 2236), Tuple.Create("\"", 2254)
             
-            #line 53 "..\..\Views\Partials\_Catches.cshtml"
-    , Tuple.Create(Tuple.Create("", 2336), Tuple.Create<System.Object, System.Int32>(rowspan
+            #line 51 "..\..\Views\Partials\_RunOuts.cshtml"
+    , Tuple.Create(Tuple.Create("", 2246), Tuple.Create<System.Object, System.Int32>(rowspan
             
             #line default
             #line hidden
-, 2336), false)
+, 2246), false)
 );
 
 WriteLiteral("><span");
@@ -292,7 +284,7 @@ WriteLiteral(" class=\"text-nowrap\"");
 WriteLiteral(">");
 
             
-            #line 53 "..\..\Views\Partials\_Catches.cshtml"
+            #line 51 "..\..\Views\Partials\_RunOuts.cshtml"
                                                                                                                                                                                       Write(dateTimeFormatter.FormatDate(Model.Results[i].Match.StartTime, false, true, false));
 
             
@@ -310,152 +302,23 @@ WriteLiteral(" class=\"table-as-cards__label\"");
 
 WriteLiteral(" aria-hidden=\"true\"");
 
-WriteLiteral(">Batter</span><a");
+WriteLiteral(">Batter</span><div><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2661), Tuple.Create("\"", 2718)
+WriteAttribute("href", Tuple.Create(" href=\"", 2576), Tuple.Create("\"", 2633)
             
-            #line 54 "..\..\Views\Partials\_Catches.cshtml"
-                                                   , Tuple.Create(Tuple.Create("", 2668), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Batter.Player.PlayerRoute
+            #line 52 "..\..\Views\Partials\_RunOuts.cshtml"
+                                                        , Tuple.Create(Tuple.Create("", 2583), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Batter.Player.PlayerRoute
             
             #line default
             #line hidden
-, 2668), false)
+, 2583), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 54 "..\..\Views\Partials\_Catches.cshtml"
-                                                                                                                                                                                   Write(Model.Results[i].Result.Batter.PlayerIdentityName);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</a></td>\r\n");
-
-            
-            #line 55 "..\..\Views\Partials\_Catches.cshtml"
-                        }
-                        else
-                        {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                            <td");
-
-WriteLiteral(" data-stackable=\"true\"");
-
-WriteLiteral(" class=\"table-as-cards__rowspan-header-md\"");
-
-WriteLiteral("><span");
-
-WriteLiteral(" class=\"table-as-cards__label\"");
-
-WriteLiteral(" aria-hidden=\"true\"");
-
-WriteLiteral(">Batter</span><a");
-
-WriteAttribute("href", Tuple.Create(" href=\"", 3033), Tuple.Create("\"", 3090)
-            
-            #line 58 "..\..\Views\Partials\_Catches.cshtml"
-                                                                                             , Tuple.Create(Tuple.Create("", 3040), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Batter.Player.PlayerRoute
-            
-            #line default
-            #line hidden
-, 3040), false)
-);
-
-WriteLiteral(">");
-
-            
-            #line 58 "..\..\Views\Partials\_Catches.cshtml"
-                                                                                                                                                                                                                             Write(Model.Results[i].Result.Batter.PlayerIdentityName);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</a></td>\r\n");
-
-            
-            #line 59 "..\..\Views\Partials\_Catches.cshtml"
-                        }
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                        ");
-
-            
-            #line 60 "..\..\Views\Partials\_Catches.cshtml"
-                          
-                            previousMatchRoute = Model.Results[i].Match.MatchRoute;
-                        
-            
-            #line default
-            #line hidden
-WriteLiteral("\r\n                        <td");
-
-WriteLiteral(" data-stackable=\"true\"");
-
-WriteLiteral("><span");
-
-WriteLiteral(" class=\"table-as-cards__label\"");
-
-WriteLiteral(" aria-hidden=\"true\"");
-
-WriteLiteral(">How out</span>");
-
-            
-            #line 63 "..\..\Views\Partials\_Catches.cshtml"
-                                                                                                                  Write(Model.Results[i].Result.DismissalType.Humanize(LetterCasing.LowerCase));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</td>\r\n");
-
-            
-            #line 64 "..\..\Views\Partials\_Catches.cshtml"
-                        
-            
-            #line default
-            #line hidden
-            
-            #line 64 "..\..\Views\Partials\_Catches.cshtml"
-                         if (Model.Results[i].Result.Bowler != null)
-                        {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                            <td");
-
-WriteLiteral(" data-stackable=\"true\"");
-
-WriteLiteral("><span");
-
-WriteLiteral(" class=\"table-as-cards__label\"");
-
-WriteLiteral(" aria-hidden=\"true\"");
-
-WriteLiteral(">Bowler</span><div><a");
-
-WriteAttribute("href", Tuple.Create(" href=\"", 3745), Tuple.Create("\"", 3802)
-            
-            #line 66 "..\..\Views\Partials\_Catches.cshtml"
-                                                        , Tuple.Create(Tuple.Create("", 3752), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Bowler.Player.PlayerRoute
-            
-            #line default
-            #line hidden
-, 3752), false)
-);
-
-WriteLiteral(">");
-
-            
-            #line 66 "..\..\Views\Partials\_Catches.cshtml"
-                                                                                                                                                                                        Write(Model.Results[i].Result.Bowler.PlayerIdentityName);
+            #line 52 "..\..\Views\Partials\_RunOuts.cshtml"
+                                                                                                                                                                                        Write(Model.Results[i].Result.Batter.PlayerIdentityName);
 
             
             #line default
@@ -463,7 +326,7 @@ WriteLiteral(">");
 WriteLiteral("</a></div></td>\r\n");
 
             
-            #line 67 "..\..\Views\Partials\_Catches.cshtml"
+            #line 53 "..\..\Views\Partials\_RunOuts.cshtml"
                         }
                         else
                         {
@@ -475,12 +338,39 @@ WriteLiteral("                            <td");
 
 WriteLiteral(" data-stackable=\"true\"");
 
-WriteLiteral(" class=\"table-as-cards__missing-data\"");
+WriteLiteral(" class=\"table-as-cards__rowspan-header-sm\"");
 
-WriteLiteral(">–</td>\r\n");
+WriteLiteral("><span");
+
+WriteLiteral(" class=\"table-as-cards__label\"");
+
+WriteLiteral(" aria-hidden=\"true\"");
+
+WriteLiteral(">Batter</span><div><a");
+
+WriteAttribute("href", Tuple.Create(" href=\"", 2959), Tuple.Create("\"", 3016)
+            
+            #line 56 "..\..\Views\Partials\_RunOuts.cshtml"
+                                                                                                  , Tuple.Create(Tuple.Create("", 2966), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Batter.Player.PlayerRoute
+            
+            #line default
+            #line hidden
+, 2966), false)
+);
+
+WriteLiteral(">");
 
             
-            #line 71 "..\..\Views\Partials\_Catches.cshtml"
+            #line 56 "..\..\Views\Partials\_RunOuts.cshtml"
+                                                                                                                                                                                                                                  Write(Model.Results[i].Result.Batter.PlayerIdentityName);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</a></div></td>\r\n");
+
+            
+            #line 57 "..\..\Views\Partials\_RunOuts.cshtml"
                         }
 
             
@@ -489,7 +379,23 @@ WriteLiteral(">–</td>\r\n");
 WriteLiteral("                        ");
 
             
-            #line 72 "..\..\Views\Partials\_Catches.cshtml"
+            #line 58 "..\..\Views\Partials\_RunOuts.cshtml"
+                          
+                            previousMatchRoute = Model.Results[i].Match.MatchRoute;
+                        
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
+            
+            #line 61 "..\..\Views\Partials\_RunOuts.cshtml"
+                        
+            
+            #line default
+            #line hidden
+            
+            #line 61 "..\..\Views\Partials\_RunOuts.cshtml"
                          if (Model.Results[i].Result.RunsScored.HasValue)
                         {
 
@@ -500,7 +406,7 @@ WriteLiteral("                            <td");
 
 WriteLiteral(" data-stackable=\"true\"");
 
-WriteLiteral(" class=\"numeric-md\"");
+WriteLiteral(" class=\"numeric-sm\"");
 
 WriteLiteral("><span");
 
@@ -511,7 +417,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Runs</span>");
 
             
-            #line 74 "..\..\Views\Partials\_Catches.cshtml"
+            #line 63 "..\..\Views\Partials\_RunOuts.cshtml"
                                                                                                                                       Write(Model.Results[i].Result.RunsScored.Value);
 
             
@@ -520,7 +426,7 @@ WriteLiteral(">Runs</span>");
 WriteLiteral("</td>\r\n");
 
             
-            #line 75 "..\..\Views\Partials\_Catches.cshtml"
+            #line 64 "..\..\Views\Partials\_RunOuts.cshtml"
                         }
                         else
                         {
@@ -532,12 +438,12 @@ WriteLiteral("                            <td");
 
 WriteLiteral(" data-stackable=\"true\"");
 
-WriteLiteral(" class=\"numeric-md table-as-cards__missing-data\"");
+WriteLiteral(" class=\"numeric-sm table-as-cards__missing-data\"");
 
 WriteLiteral(">–</td>\r\n");
 
             
-            #line 79 "..\..\Views\Partials\_Catches.cshtml"
+            #line 68 "..\..\Views\Partials\_RunOuts.cshtml"
                         }
 
             
@@ -546,7 +452,7 @@ WriteLiteral(">–</td>\r\n");
 WriteLiteral("                    </tr>\r\n");
 
             
-            #line 81 "..\..\Views\Partials\_Catches.cshtml"
+            #line 70 "..\..\Views\Partials\_RunOuts.cshtml"
                 }
             
             
@@ -555,20 +461,20 @@ WriteLiteral("                    </tr>\r\n");
 WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
 
             
-            #line 85 "..\..\Views\Partials\_Catches.cshtml"
+            #line 74 "..\..\Views\Partials\_RunOuts.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 85 "..\..\Views\Partials\_Catches.cshtml"
+            #line 74 "..\..\Views\Partials\_RunOuts.cshtml"
 Write(Html.Partial("_Paging", Model.StatisticsFilter.Paging));
 
             
             #line default
             #line hidden
             
-            #line 85 "..\..\Views\Partials\_Catches.cshtml"
+            #line 74 "..\..\Views\Partials\_RunOuts.cshtml"
                                                            
 }
             

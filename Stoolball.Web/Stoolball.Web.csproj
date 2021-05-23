@@ -1292,6 +1292,7 @@
     <Compile Include="Matches\OnlySportCsvRecord.cs" />
     <Compile Include="Routing\RedirectBareDomainModule.cs" />
     <Compile Include="Statistics\BasePlayerViewModel.cs" />
+    <Compile Include="Statistics\RunOutsController.cs" />
     <Compile Include="Statistics\CatchesController.cs" />
     <Compile Include="Statistics\PlayerFieldingViewModel.cs" />
     <Compile Include="Statistics\PlayerFieldingController.cs" />
@@ -1301,6 +1302,11 @@
     <Compile Include="Teams\SpogoCsvExportTask.cs" />
     <Compile Include="Teams\SpogoCsvRecord.cs" />
     <Compile Include="Teams\PlayersForTeamController.cs" />
+    <Compile Include="Views\Partials\_RunOuts.generated.cs">
+      <DependentUpon>_RunOuts.cshtml</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Views\Partials\_Catches.generated.cs">
       <DependentUpon>_Catches.cshtml</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2701,6 +2707,11 @@
     <Content Include="Views\Partials\_Catches.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_Catches.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\RunOuts.cshtml" />
+    <Content Include="Views\Partials\_RunOuts.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_RunOuts.generated.cs</LastGenOutput>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

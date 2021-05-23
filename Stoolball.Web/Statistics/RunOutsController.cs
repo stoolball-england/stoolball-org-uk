@@ -15,14 +15,14 @@ using Umbraco.Web.Models;
 
 namespace Stoolball.Web.Statistics
 {
-    public class CatchesController : RenderMvcControllerAsync
+    public class RunOutsController : RenderMvcControllerAsync
     {
         private readonly IStatisticsFilterUrlParser _statisticsFilterUrlParser;
         private readonly IPlayerSummaryStatisticsDataSource _playerSummaryStatisticsDataSource;
         private readonly IPlayerPerformanceStatisticsDataSource _playerPerformanceDataSource;
         private readonly IStatisticsBreadcrumbBuilder _statisticsBreadcrumbBuilder;
 
-        public CatchesController(IGlobalSettings globalSettings,
+        public RunOutsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
@@ -54,7 +54,7 @@ namespace Stoolball.Web.Statistics
             model.StatisticsFilter.Paging.PageSize = Constants.Defaults.PageSize;
             var catchesFilter = new StatisticsFilter
             {
-                CaughtByPlayerIdentityIds = model.StatisticsFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList(),
+                RunOutByPlayerIdentityIds = model.StatisticsFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList(),
                 Paging = model.StatisticsFilter.Paging
             };
             model.Results = (await _playerPerformanceDataSource.ReadPlayerInnings(catchesFilter).ConfigureAwait(false)).ToList();
@@ -66,10 +66,10 @@ namespace Stoolball.Web.Statistics
             else
             {
                 model.StatisticsFilter.Paging.PageUrl = Request.Url;
-                model.StatisticsFilter.Paging.Total = (await _playerSummaryStatisticsDataSource.ReadFieldingStatistics(model.StatisticsFilter).ConfigureAwait(false)).TotalCatches;
+                model.StatisticsFilter.Paging.Total = (await _playerSummaryStatisticsDataSource.ReadFieldingStatistics(model.StatisticsFilter).ConfigureAwait(false)).TotalRunOuts;
 
                 _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.StatisticsFilter);
-                model.Metadata.PageTitle = "Catches" + model.StatisticsFilter.ToString();
+                model.Metadata.PageTitle = "Run-outs" + model.StatisticsFilter.ToString();
 
                 return CurrentTemplate(model);
             }

@@ -13,9 +13,11 @@ table {
   border-bottom: $table-border-width solid $table-border-color;
 }
 
-// Display the caption as a heading for the table, not a footnote like in academic text
+// Display the caption as a heading for the table, not a footnote like in academic text,
+// and give it some breathing space above
 caption {
     caption-side: top;
+    margin: $spacer 0 0;
     background: theme-color("primary");
     color: $white;
     padding: $spacer*.75;
@@ -88,9 +90,27 @@ th.numeric {
 }
 
 // Selected cells can be reversed for clarity
-.table-as-cards__header-md {
+.table-as-cards__header-sm, .table-as-cards__header-md {
     background: $table-dark-bg;
     color: $table-dark-color;
+}
+
+.table-as-cards__header-sm a:link, .table-as-cards__header-sm a:visited,
+.table-as-cards__header-md a:link, .table-as-cards__header-md a:visited {
+    color: $white;
+    border-bottom-color: $white;
+}
+
+// Where the first column has rowspan > 1, the first cell in the extra rows should have this class to make the grouping clear when stacked
+.table-as-cards__rowspan-header-sm,
+.table-as-cards__rowspan-header-md {
+    border-top: 4px solid #dee2e6;
+}
+
+// When stacked, there's no point showing missing data (represented by a –).
+// .table-as-cards__reset-* makes it reappear when unstacked
+.table-as-cards__missing-data[data-stackable] {
+    display: none;
 }
 
 // Explanatory paragraph immediately following a table
@@ -116,6 +136,20 @@ th.numeric {
     .table-as-cards.table-as-cards-reset-sm .table-as-cards__label {
         @include table-as-cards-reset-label;
     }
+
+    .table-as-cards__header-sm {
+        background: none;
+        color: $table-color;
+    }
+
+    .table-as-cards__header-sm a:link, .table-as-cards__header-sm a:visited {
+        color: $link-color;
+        border-bottom-color: $link-color;
+    }
+
+    .table-as-cards__rowspan-header-sm {
+        border-top: $table-border-width solid $table-border-color;
+    }
 }
 
 @include media-breakpoint-up(md) {
@@ -140,5 +174,14 @@ th.numeric {
     .table-as-cards__header-md {
         background: none;
         color: $table-color;
+    }
+
+    .table-as-cards__header-md a:link, .table-as-cards__header-md a:visited {
+        color: $link-color;
+        border-bottom-color: $link-color;
+    }
+
+    .table-as-cards__rowspan-header-md {
+        border-top: $table-border-width solid $table-border-color;
     }
 }

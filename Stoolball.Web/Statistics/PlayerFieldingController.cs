@@ -58,7 +58,7 @@ namespace Stoolball.Web.Statistics
             }
             else
             {
-                model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 5 };
+                model.StatisticsFilter = new StatisticsFilter();
                 model.StatisticsFilter.Player = model.Player;
                 model.FieldingStatistics = await _summaryStatisticsDataSource.ReadFieldingStatistics(model.StatisticsFilter).ConfigureAwait(false);
 
@@ -68,6 +68,13 @@ namespace Stoolball.Web.Statistics
                     Paging = new Paging { PageSize = 5 }
                 };
                 model.Catches = (await _playerPerformanceStatisticsDataSource.ReadPlayerInnings(catchesFilter).ConfigureAwait(false)).ToList();
+
+                var runOutsFilter = new StatisticsFilter
+                {
+                    RunOutByPlayerIdentityIds = model.StatisticsFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList(),
+                    Paging = new Paging { PageSize = 5 }
+                };
+                model.RunOuts = (await _playerPerformanceStatisticsDataSource.ReadPlayerInnings(runOutsFilter).ConfigureAwait(false)).ToList();
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Statistics, Url = new Uri(Constants.Pages.StatisticsUrl, UriKind.Relative) });
 

@@ -6,6 +6,8 @@
     Html.RequiresCss("/statistics/statistics.min.css");
     var catches = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
     catches.Results.AddRange(Model.Catches);
+    var runOuts = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
+    runOuts.Results.AddRange(Model.RunOuts);
 }
 <div class="container-xl">
     @Html.Partial("_PlayerHeader")
@@ -42,4 +44,13 @@
     </table>
 
     @Html.Partial("_Catches", catches)
+    @if (Model.FieldingStatistics.TotalCatches > catches.Results.Count)
+    {
+        <p><a href="@Request.RawUrl.TrimEnd("/fielding")/catches">Catches – view all</a></p>
+    }
+    @Html.Partial("_RunOuts", runOuts)
+    @if (Model.FieldingStatistics.TotalRunOuts > catches.Results.Count)
+    {
+        <p><a href="@Request.RawUrl.TrimEnd("/fielding")/run-outs">Run-outs – view all</a></p>
+    }
 </div>

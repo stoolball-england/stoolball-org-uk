@@ -163,6 +163,36 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         }
 
         [Fact]
+        public async Task Read_player_innings_supports_filter_by_run_out_fielder_id()
+        {
+            foreach (var player in _databaseFixture.TestData.PlayersWithMultipleIdentities)
+            {
+                var filter = new StatisticsFilter
+                {
+                    Paging = new Paging
+                    {
+                        PageSize = int.MaxValue
+                    },
+                    RunOutByPlayerIdentityIds = player.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList()
+                };
+                var queryBuilder = new Mock<IStatisticsQueryBuilder>();
+                queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND RunOutByPlayerIdentityId IN @PlayerIdentities", new Dictionary<string, object> { { "PlayerIdentities", filter.RunOutByPlayerIdentityIds } }));
+                var dataSource = new SqlServerPlayerPerformanceStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
+
+                var results = await dataSource.ReadPlayerInnings(filter).ConfigureAwait(false);
+
+                var expected = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings)
+                    .SelectMany(x => x.PlayerInnings)
+                    .Where(x => x.DismissalType == DismissalType.RunOut && x.DismissedBy?.Player.PlayerId == player.PlayerId).ToList();
+                Assert.Equal(expected.Count, results.Count());
+                foreach (var expectedInnings in expected)
+                {
+                    Assert.NotNull(results.SingleOrDefault(x => x.Result.PlayerInningsId == expectedInnings.PlayerInningsId));
+                }
+            }
+        }
+
+        [Fact]
         public async Task Read_player_innings_sorts_by_most_recent_first()
         {
             var filter = new StatisticsFilter { Paging = new Paging { PageSize = int.MaxValue } };

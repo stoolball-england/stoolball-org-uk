@@ -82,6 +82,7 @@
         SeasonStatistics,
         IndividualScores,
         BowlingFigures,
-        Catches
+        Catches,
+        RunOuts
     }
 }

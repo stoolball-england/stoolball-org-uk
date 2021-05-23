@@ -454,7 +454,7 @@ WriteLiteral("                            <td");
 
 WriteLiteral(" data-stackable=\"true\"");
 
-WriteLiteral(" class=\"numeric-md missing-data\"");
+WriteLiteral(" class=\"numeric-md table-as-cards__missing-data\"");
 
 WriteLiteral(">–</td>\r\n");
 
@@ -486,15 +486,15 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3936), Tuple.Create("\"", 3976)
+WriteAttribute("href", Tuple.Create(" href=\"", 3952), Tuple.Create("\"", 3992)
             
             #line 72 "..\..\Views\Partials\_IndividualScores.cshtml"
-, Tuple.Create(Tuple.Create("", 3943), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
+, Tuple.Create(Tuple.Create("", 3959), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
             
             #line default
             #line hidden
-, 3943), false)
-, Tuple.Create(Tuple.Create("", 3958), Tuple.Create("/individual-scores", 3958), true)
+, 3959), false)
+, Tuple.Create(Tuple.Create("", 3974), Tuple.Create("/individual-scores", 3974), true)
 );
 
 WriteLiteral(">Individual scores – view all</a></p>\r\n");

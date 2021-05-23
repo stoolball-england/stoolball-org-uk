@@ -14,8 +14,9 @@
     padding-right: 1.1em;
 }
 
-.missing-data[data-stackable] {
-    display: none;
+// When a table is stacked and the first column is the match name, it should not be too wide and the fixed width makes multiple tables line up
+.match__stacked {
+    width: 200px;
 }
 
 @include media-breakpoint-up(md) {

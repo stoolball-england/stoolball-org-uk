@@ -229,6 +229,8 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/players/example-NAME/FIEldIng/", StoolballRouteType.PlayerFielding)]
         [InlineData("https://example.org/players/example-name/CATCHES", StoolballRouteType.Catches)]
         [InlineData("https://example.org/players/example-NAME/catches/", StoolballRouteType.Catches)]
+        [InlineData("https://example.org/players/example-name/run-outs", StoolballRouteType.RunOuts)]
+        [InlineData("https://example.org/players/example-NAME/RUN-OUts/", StoolballRouteType.RunOuts)]
         [InlineData("https://example.org/players/example-name/", StoolballRouteType.Player)]
         [InlineData("https://example.org/players/example-NAME", StoolballRouteType.Player)]
         public void Correct_route_should_match(string route, StoolballRouteType expectedType)
