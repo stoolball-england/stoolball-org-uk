@@ -91,6 +91,7 @@ namespace Stoolball.Web
             composition.Register<ITeamListingFilterSerializer, TeamListingFilterQueryStringSerializer>();
             composition.Register<ICacheOverride, CacheOverride>();
             composition.Register<IBadLanguageFilter, BadLanguageFilter>();
+            composition.Register<IStatisticsQueryBuilder, StatisticsQueryBuilder>();
 
 
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 
@@ -166,6 +167,8 @@ namespace Stoolball.Web
             composition.Register<IMatchFilterFactory, MatchFilterFactory>();
             composition.Register<IPlayerSummaryStatisticsDataSource, CachedPlayerSummaryStatisticsDataSource>();
             composition.Register<ICacheablePlayerSummaryStatisticsDataSource, SqlServerPlayerSummaryStatisticsDataSource>();
+            composition.Register<IPlayerPerformanceStatisticsDataSource, CachedPlayerPerformanceStatisticsDataSource>();
+            composition.Register<ICacheablePlayerPerformanceStatisticsDataSource, SqlServerPlayerPerformanceStatisticsDataSource>();
 
             // Security checks
             composition.Register<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>();

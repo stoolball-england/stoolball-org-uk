@@ -1,4 +1,6 @@
-﻿using Stoolball.Statistics;
+﻿using System.Collections.Generic;
+using Stoolball.Matches;
+using Stoolball.Statistics;
 using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Core.Services;
 
@@ -10,5 +12,6 @@ namespace Stoolball.Web.Statistics
         {
         }
         public FieldingStatistics FieldingStatistics { get; set; }
+        public List<StatisticsResult<PlayerInnings>> Catches { get; internal set; } = new List<StatisticsResult<PlayerInnings>>();
     }
 }

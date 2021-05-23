@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Moq;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Matches;
 using Stoolball.Statistics;
@@ -22,14 +23,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_player_innings_with_MaxResultsAllowingExtraResultsIfValuesAreEqual_returns_results_equal_to_the_max()
         {
-            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory);
-
-            var results = (await dataSource.ReadPlayerInnings(new StatisticsFilter
+            var filter = new StatisticsFilter
             {
                 MaxResultsAllowingExtraResultsIfValuesAreEqual = 5,
                 Player = _databaseFixture.PlayerWithFifthAndSixthInningsTheSame
-            },
-            StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+            };
+            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns(("AND PlayerId = @PlayerId", new Dictionary<string, object> { { "PlayerId", _databaseFixture.PlayerWithFifthAndSixthInningsTheSame.PlayerId } }));
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
+
+            var results = (await dataSource.ReadPlayerInnings(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
             var allExpectedResults = _databaseFixture.TestData.Matches.SelectMany(x => x.MatchInnings)
                 .SelectMany(x => x.PlayerInnings)

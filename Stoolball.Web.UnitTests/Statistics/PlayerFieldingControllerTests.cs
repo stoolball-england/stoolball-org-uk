@@ -34,7 +34,8 @@ namespace Stoolball.Web.Tests.Statistics
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
                 playerDataSource,
-                Mock.Of<IPlayerSummaryStatisticsDataSource>()
+                Mock.Of<IPlayerSummaryStatisticsDataSource>(),
+                Mock.Of<IPlayerPerformanceStatisticsDataSource>()
                 )
             {
                 var request = new Mock<HttpRequestBase>();

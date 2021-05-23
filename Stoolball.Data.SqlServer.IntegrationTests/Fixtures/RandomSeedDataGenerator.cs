@@ -59,6 +59,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 if (testData.PlayerIdentities.Count(x => x.Player.PlayerId == identity.Player.PlayerId) > 1 &&
                     !testData.PlayersWithMultipleIdentities.Any(x => x.PlayerId == identity.Player.PlayerId))
                 {
+                    identity.Player.PlayerIdentities = testData.PlayerIdentities.Where(x => x.Player.PlayerId == identity.Player.PlayerId).ToList();
                     testData.PlayersWithMultipleIdentities.Add(identity.Player);
                 }
             }
@@ -182,21 +183,24 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var firstInnings = match.MatchInnings[0];
             var firstInningsIdentities = firstInnings.BowlingTeam.Team.TeamId == anyTeam1.team.TeamId ? anyTeam1.identities : anyTeam2.identities;
 
-            var catcherWithMultipleIdentities = firstInningsIdentities.FirstOrDefault(x => firstInningsIdentities.Count(p => p.Player.PlayerId == x.Player.PlayerId) > 1).Player.PlayerId;
-            var catcherIdentities = firstInningsIdentities.Where(x => x.Player.PlayerId == catcherWithMultipleIdentities).ToList();
-
-            for (var i = 0; i < 6; i++)
+            var catcherWithMultipleIdentities = firstInningsIdentities.FirstOrDefault(x => firstInningsIdentities.Count(p => p.Player.PlayerId == x.Player.PlayerId) > 1)?.Player.PlayerId;
+            if (catcherWithMultipleIdentities.HasValue)
             {
-                if (i % 2 == 0)
+                var catcherIdentities = firstInningsIdentities.Where(x => x.Player.PlayerId == catcherWithMultipleIdentities).ToList();
+
+                for (var i = 0; i < 6; i++)
                 {
-                    firstInnings.PlayerInnings[i].DismissalType = DismissalType.Caught;
-                    firstInnings.PlayerInnings[i].DismissedBy = catcherIdentities[0];
-                }
-                else
-                {
-                    firstInnings.PlayerInnings[i].DismissalType = DismissalType.CaughtAndBowled;
-                    firstInnings.PlayerInnings[i].DismissedBy = null;
-                    firstInnings.PlayerInnings[i].Bowler = catcherIdentities[1];
+                    if (i % 2 == 0)
+                    {
+                        firstInnings.PlayerInnings[i].DismissalType = DismissalType.Caught;
+                        firstInnings.PlayerInnings[i].DismissedBy = catcherIdentities[0];
+                    }
+                    else
+                    {
+                        firstInnings.PlayerInnings[i].DismissalType = DismissalType.CaughtAndBowled;
+                        firstInnings.PlayerInnings[i].DismissedBy = null;
+                        firstInnings.PlayerInnings[i].Bowler = catcherIdentities[1];
+                    }
                 }
             }
 
@@ -204,14 +208,17 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var secondInnings = match.MatchInnings[1];
             var secondInningsIdentities = secondInnings.BowlingTeam.Team.TeamId == anyTeam1.team.TeamId ? anyTeam1.identities : anyTeam2.identities;
 
-            var fielderWithMultipleIdentities = secondInningsIdentities.FirstOrDefault(x => secondInningsIdentities.Count(p => p.Player.PlayerId == x.Player.PlayerId) > 1).Player.PlayerId;
-            var fielderIdentities = secondInningsIdentities.Where(x => x.Player.PlayerId == fielderWithMultipleIdentities).ToList();
-
-            for (var i = 0; i < 6; i++)
+            var fielderWithMultipleIdentities = secondInningsIdentities.FirstOrDefault(x => secondInningsIdentities.Count(p => p.Player.PlayerId == x.Player.PlayerId) > 1)?.Player.PlayerId;
+            if (fielderWithMultipleIdentities.HasValue)
             {
-                secondInnings.PlayerInnings[i].DismissalType = DismissalType.RunOut;
-                secondInnings.PlayerInnings[i].DismissedBy = fielderIdentities[i % 2];
-                secondInnings.PlayerInnings[i].Bowler = null;
+                var fielderIdentities = secondInningsIdentities.Where(x => x.Player.PlayerId == fielderWithMultipleIdentities).ToList();
+
+                for (var i = 0; i < 6; i++)
+                {
+                    secondInnings.PlayerInnings[i].DismissalType = DismissalType.RunOut;
+                    secondInnings.PlayerInnings[i].DismissedBy = fielderIdentities[i % 2];
+                    secondInnings.PlayerInnings[i].Bowler = null;
+                }
             }
 
             return match;

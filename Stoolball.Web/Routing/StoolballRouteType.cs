@@ -81,6 +81,7 @@
         CompetitionStatistics,
         SeasonStatistics,
         IndividualScores,
-        BowlingFigures
+        BowlingFigures,
+        Catches
     }
 }

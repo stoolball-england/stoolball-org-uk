@@ -1171,6 +1171,7 @@
     <Content Include="Views\Matches.cshtml" />
     <Content Include="Views\EditTournamentSeasons.cshtml" />
     <Content Include="Views\MatchesCalendar.cshtml" />
+    <Content Include="Views\Catches.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -1291,6 +1292,7 @@
     <Compile Include="Matches\OnlySportCsvRecord.cs" />
     <Compile Include="Routing\RedirectBareDomainModule.cs" />
     <Compile Include="Statistics\BasePlayerViewModel.cs" />
+    <Compile Include="Statistics\CatchesController.cs" />
     <Compile Include="Statistics\PlayerFieldingViewModel.cs" />
     <Compile Include="Statistics\PlayerFieldingController.cs" />
     <Compile Include="Statistics\PlayerBowlingViewModel.cs" />
@@ -1299,6 +1301,11 @@
     <Compile Include="Teams\SpogoCsvExportTask.cs" />
     <Compile Include="Teams\SpogoCsvRecord.cs" />
     <Compile Include="Teams\PlayersForTeamController.cs" />
+    <Compile Include="Views\Partials\_Catches.generated.cs">
+      <DependentUpon>_Catches.cshtml</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Views\Partials\_CreateOrEditTrainingSession.generated.cs">
       <DependentUpon>_CreateOrEditTrainingSession.cshtml</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2691,6 +2698,10 @@
     <Content Include="Views\PlayersForTeam.cshtml" />
     <Content Include="Views\Partials\_PlayerList.cshtml" />
     <Content Include="Views\Partials\_Comments.cshtml" />
+    <Content Include="Views\Partials\_Catches.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_Catches.generated.cs</LastGenOutput>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

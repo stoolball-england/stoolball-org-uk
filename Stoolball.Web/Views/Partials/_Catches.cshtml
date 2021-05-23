@@ -1,0 +1,89 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<PlayerInnings>>
+@using Humanizer
+@using Stoolball.Dates
+@using Stoolball.Matches
+@using Stoolball.Web.Statistics
+@using Umbraco.Core.Composing
+@{
+    var dateTimeFormatter = Current.Factory.CreateInstance<DateTimeFormatter>();
+}
+@if (Model.Results.Any())
+{
+    <table class="statistics table-as-cards table-as-cards-reset-md">
+        @if (Model.ShowCaption)
+        {
+            <caption>Catches, most recent first</caption>
+        }
+        <thead>
+            <tr>
+                <th scope="col">Match</th>
+                <th scope="col">When</th>
+                <th scope="col">Batter</th>
+                <th scope="col">How out</th>
+                <th scope="col">Bowler</th>
+                <th scope="col" class="numeric">Runs</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                var previousMatchRoute = string.Empty;
+                for (var i = 0; i < Model.Results.Count(); i++)
+                {
+                    <tr>
+                        @{ 
+                            var rowspan = 1;
+                            var row = i+1;
+                            while (row < Model.Results.Count())
+                            {
+                                if (Model.Results[row].Match.MatchRoute == Model.Results[i].Match.MatchRoute)
+                                {
+                                    rowspan++;
+                                    row++;
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+                        }
+
+                        @if (Model.Results[i].Match.MatchRoute != previousMatchRoute)
+                        {
+                            <td data-stackable="true" rowspan="@rowspan"><span class="table-as-cards__label" aria-hidden="true">Match</span><div><a href="@Model.Results[i].Match.MatchRoute">@Model.Results[i].Match.MatchName</a></div></td>
+                            <td data-stackable="true" class="text-nowrap" rowspan="@rowspan"><span class="table-as-cards__label" aria-hidden="true">When</span>@(dateTimeFormatter.FormatDate(Model.Results[i].Match.StartTime, false, true, false))</td>
+                        }
+                        @{
+                            previousMatchRoute = Model.Results[i].Match.MatchRoute;
+                        }
+                        <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Batter</span><a href="@Model.Results[i].Result.Batter.Player.PlayerRoute">@(Model.Results[i].Result.Batter.PlayerIdentityName)</a></td>
+                        <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">How out</span>@Model.Results[i].Result.DismissalType.Humanize(LetterCasing.LowerCase)</td>
+                        @if (Model.Results[i].Result.Bowler != null)
+                        {
+                            <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Bowler</span><a href="@Model.Results[i].Result.Bowler.Player.PlayerRoute">@(Model.Results[i].Result.Bowler.PlayerIdentityName)</a></td>
+                        }
+                        else
+                        {
+                            <td data-stackable="true" class="missing-data">–</td>
+                        }
+                        @if (Model.Results[i].Result.RunsScored.HasValue)
+                        {
+                            <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Runs</span>@Model.Results[i].Result.RunsScored.Value</td>
+                        }
+                        else
+                        {
+                            <td data-stackable="true" class="numeric-md missing-data">–</td>
+                        }
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    if (Model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
+    {
+        <p><a href="@Request.RawUrl.TrimEnd("/fielding")/catches">Catches – view all</a></p>
+    }
+    else
+    {
+        @Html.Partial("_Paging", Model.StatisticsFilter.Paging)
+    }
+}

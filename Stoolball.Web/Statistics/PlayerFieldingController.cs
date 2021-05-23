@@ -20,6 +20,7 @@ namespace Stoolball.Web.Statistics
     {
         private readonly IPlayerDataSource _playerDataSource;
         private readonly IPlayerSummaryStatisticsDataSource _summaryStatisticsDataSource;
+        private readonly IPlayerPerformanceStatisticsDataSource _playerPerformanceStatisticsDataSource;
 
         public PlayerFieldingController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -28,11 +29,13 @@ namespace Stoolball.Web.Statistics
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IPlayerDataSource playerDataSource,
-           IPlayerSummaryStatisticsDataSource summaryStatisticsDataSource)
+           IPlayerSummaryStatisticsDataSource summaryStatisticsDataSource,
+           IPlayerPerformanceStatisticsDataSource playerPerformanceStatisticsDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
             _summaryStatisticsDataSource = summaryStatisticsDataSource ?? throw new ArgumentNullException(nameof(summaryStatisticsDataSource));
+            _playerPerformanceStatisticsDataSource = playerPerformanceStatisticsDataSource ?? throw new ArgumentNullException(nameof(playerPerformanceStatisticsDataSource));
         }
 
         [HttpGet]
@@ -58,6 +61,13 @@ namespace Stoolball.Web.Statistics
                 model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 5 };
                 model.StatisticsFilter.Player = model.Player;
                 model.FieldingStatistics = await _summaryStatisticsDataSource.ReadFieldingStatistics(model.StatisticsFilter).ConfigureAwait(false);
+
+                var catchesFilter = new StatisticsFilter
+                {
+                    CaughtByPlayerIdentityIds = model.StatisticsFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList(),
+                    Paging = new Paging { PageSize = 5 }
+                };
+                model.Catches = (await _playerPerformanceStatisticsDataSource.ReadPlayerInnings(catchesFilter).ConfigureAwait(false)).ToList();
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Statistics, Url = new Uri(Constants.Pages.StatisticsUrl, UriKind.Relative) });
 

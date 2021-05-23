@@ -88,7 +88,8 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.CompetitionStatistics, typeof(CompetitionStatisticsController) },
             { StoolballRouteType.SeasonStatistics, typeof(SeasonStatisticsController) },
             { StoolballRouteType.IndividualScores, typeof(IndividualScoresController) },
-            { StoolballRouteType.BowlingFigures, typeof(BowlingFiguresController) }
+            { StoolballRouteType.BowlingFigures, typeof(BowlingFiguresController) },
+            { StoolballRouteType.Catches, typeof(CatchesController) }
         };
 
         public Type MapRouteTypeToController(string unparsedRouteType)
