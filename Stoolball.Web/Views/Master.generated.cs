@@ -240,34 +240,44 @@ Write(Html.RenderCssHere());
             
             #line default
             #line hidden
-WriteLiteral("\r\n</head>\r\n<body>\r\n");
+WriteLiteral("\r\n</head>\r\n<body>\r\n    <a");
+
+WriteLiteral(" href=\"#main\"");
+
+WriteLiteral(" class=\"skip-to-content sr-only sr-only-focusable\"");
+
+WriteLiteral("><span>Skip to content</span></a>\r\n");
 
 WriteLiteral("    ");
 
             
-            #line 52 "..\..\Views\Master.cshtml"
+            #line 53 "..\..\Views\Master.cshtml"
 Write(Html.Partial("_Header"));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\r\n    <main>\r\n");
-
-WriteLiteral("        ");
-
-            
-            #line 54 "..\..\Views\Master.cshtml"
-   Write(Html.Partial("_Breadcrumb", Model.Breadcrumbs));
 
             
             #line default
             #line hidden
 WriteLiteral("\r\n");
 
+WriteLiteral("    ");
+
+            
+            #line 54 "..\..\Views\Master.cshtml"
+Write(Html.Partial("_Breadcrumb", Model.Breadcrumbs));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n    <main");
+
+WriteLiteral(" id=\"main\"");
+
+WriteLiteral(">\r\n");
+
 WriteLiteral("        ");
 
             
-            #line 55 "..\..\Views\Master.cshtml"
+            #line 56 "..\..\Views\Master.cshtml"
    Write(RenderBody());
 
             
@@ -278,7 +288,7 @@ WriteLiteral("\r\n    </main>\r\n");
 WriteLiteral("    ");
 
             
-            #line 57 "..\..\Views\Master.cshtml"
+            #line 58 "..\..\Views\Master.cshtml"
 Write(Html.Partial("_Footer"));
 
             
@@ -289,7 +299,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 58 "..\..\Views\Master.cshtml"
+            #line 59 "..\..\Views\Master.cshtml"
 Write(Html.RenderJsHere());
 
             
@@ -298,13 +308,13 @@ Write(Html.RenderJsHere());
 WriteLiteral("\r\n");
 
             
-            #line 59 "..\..\Views\Master.cshtml"
+            #line 60 "..\..\Views\Master.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 59 "..\..\Views\Master.cshtml"
+            #line 60 "..\..\Views\Master.cshtml"
      if (Request.Url.Host != "localhost")
     {
 
@@ -320,7 +330,7 @@ WriteLiteral("\r\n            data-cf-beacon=\'{\"token\": \"4b73271c7ec547e2a9c
 WriteLiteral("></script>\r\n");
 
             
-            #line 63 "..\..\Views\Master.cshtml"
+            #line 64 "..\..\Views\Master.cshtml"
     }
 
             

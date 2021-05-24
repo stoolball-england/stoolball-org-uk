@@ -21,6 +21,31 @@ $header_selected_background: #555;
 $space-for-header-focus-ring: 3px;
 $offset-container-padding: -(($grid-gutter-width/2)-$space-for-header-focus-ring); // Applied to the the final icon, offset the padding of .container-xl, but allow space for the focus ring to show
 
+// Skip to content link appears only when focussed, for keyboard users
+.skip-to-content:focus {
+    display: block;
+    text-align: center;
+    background: theme-color("primary");
+    color: $white;
+    padding: $spacer;
+}
+.skip-to-content:focus > span {
+    @include header-focus-ring;
+    padding: $spacer/2;
+    border-radius: $spacer/4;
+}
+.skip-to-content:focus > span:after{
+    content: '❯';
+    margin-left: $spacer/2;
+}
+
+// When skip-to-content is followed, by default the page is scrolled with the h1 partly off-screen, so push the scroll position up a bit.
+main {
+    padding-top: 60px;
+    margin-top: -60px;
+}
+
+
 // Create some space between the header and the following content
 .header {
     margin-bottom: $spacer;

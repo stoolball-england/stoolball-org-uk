@@ -49,9 +49,10 @@
     @Html.RenderCssHere()
 </head>
 <body>
+    <a href="#main" class="skip-to-content sr-only sr-only-focusable"><span>Skip to content</span></a>
     @Html.Partial("_Header")
-    <main>
-        @Html.Partial("_Breadcrumb", Model.Breadcrumbs)
+    @Html.Partial("_Breadcrumb", Model.Breadcrumbs)
+    <main id="main">
         @RenderBody()
     </main>
     @Html.Partial("_Footer")
