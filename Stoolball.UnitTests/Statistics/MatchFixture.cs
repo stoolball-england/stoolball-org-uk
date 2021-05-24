@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Humanizer;
 using Stoolball.Awards;
 using Stoolball.Clubs;
-using Stoolball.Competitions;
 using Stoolball.Matches;
-using Stoolball.MatchLocations;
 using Stoolball.Statistics;
 using Stoolball.Teams;
+using Stoolball.Testing;
 
 namespace Stoolball.UnitTests.Statistics
 {
@@ -22,10 +20,14 @@ namespace Stoolball.UnitTests.Statistics
 
         public MatchFixture()
         {
+            var bowlingFiguresCalculator = new BowlingFiguresCalculator(_oversHelper);
+            var playerIdentityFinder = new PlayerIdentityFinder();
+            var seedDataGenerator = new SeedDataGenerator(_oversHelper, bowlingFiguresCalculator, playerIdentityFinder);
+
             var homeTeam = new TeamInMatch
             {
                 MatchTeamId = Guid.NewGuid(),
-                Team = CreateTeamWithMinimalDetails("Home team"),
+                Team = seedDataGenerator.CreateTeamWithMinimalDetails("Home team"),
                 WonToss = true,
                 BattedFirst = true,
                 TeamRole = TeamRole.Home
@@ -34,7 +36,7 @@ namespace Stoolball.UnitTests.Statistics
             var awayTeam = new TeamInMatch
             {
                 MatchTeamId = Guid.NewGuid(),
-                Team = CreateTeamWithMinimalDetails("Away team"),
+                Team = seedDataGenerator.CreateTeamWithMinimalDetails("Away team"),
                 WonToss = false,
                 BattedFirst = false,
                 TeamRole = TeamRole.Away
@@ -72,13 +74,13 @@ namespace Stoolball.UnitTests.Statistics
                 });
             };
 
-            var firstInningsOverSets = CreateOverSets();
-            var secondInningsOverSets = CreateOverSets();
-            var thirdInningsOverSets = CreateOverSets();
-            var fourthInningsOverSets = CreateOverSets();
+            var firstInningsOverSets = seedDataGenerator.CreateOverSets();
+            var secondInningsOverSets = seedDataGenerator.CreateOverSets();
+            var thirdInningsOverSets = seedDataGenerator.CreateOverSets();
+            var fourthInningsOverSets = seedDataGenerator.CreateOverSets();
 
-            var competition = CreateCompetitionWithMinimalDetails();
-            var season = CreateSeasonWithMinimalDetails(competition, 2020, 2020);
+            var competition = seedDataGenerator.CreateCompetitionWithMinimalDetails();
+            var season = seedDataGenerator.CreateSeasonWithMinimalDetails(competition, 2020, 2020);
             competition.Seasons.Add(season);
 
             Match = new Match
@@ -139,7 +141,7 @@ namespace Stoolball.UnitTests.Statistics
                         Wickets = 2,
                         PlayerInnings = CreateBattingScorecard(HomePlayers, AwayPlayers),
                         OverSets = firstInningsOverSets,
-                        OversBowled = CreateOversBowled(AwayPlayers, firstInningsOverSets)
+                        OversBowled = seedDataGenerator.CreateOversBowled(AwayPlayers, firstInningsOverSets)
                     },
                     new MatchInnings
                     {
@@ -157,7 +159,7 @@ namespace Stoolball.UnitTests.Statistics
                         Wickets = 7,
                         PlayerInnings = CreateBattingScorecard(AwayPlayers, HomePlayers),
                         OverSets = secondInningsOverSets,
-                        OversBowled = CreateOversBowled(HomePlayers, secondInningsOverSets)
+                        OversBowled = seedDataGenerator.CreateOversBowled(HomePlayers, secondInningsOverSets)
                     },
                     new MatchInnings
                     {
@@ -175,7 +177,7 @@ namespace Stoolball.UnitTests.Statistics
                         Wickets = 10,
                         PlayerInnings = CreateBattingScorecard(HomePlayers, AwayPlayers),
                         OverSets = thirdInningsOverSets,
-                        OversBowled = CreateOversBowled(AwayPlayers, thirdInningsOverSets)
+                        OversBowled = seedDataGenerator.CreateOversBowled(AwayPlayers, thirdInningsOverSets)
                     },
                     new MatchInnings
                     {
@@ -193,10 +195,10 @@ namespace Stoolball.UnitTests.Statistics
                         Wickets = 4,
                         PlayerInnings = CreateBattingScorecard(AwayPlayers, HomePlayers),
                         OverSets = fourthInningsOverSets,
-                        OversBowled = CreateOversBowled(HomePlayers, fourthInningsOverSets)
+                        OversBowled = seedDataGenerator.CreateOversBowled(HomePlayers, fourthInningsOverSets)
                     }
                 },
-                MatchLocation = CreateMatchLocationWithMinimalDetails(),
+                MatchLocation = seedDataGenerator.CreateMatchLocationWithMinimalDetails(),
                 MatchResultType = MatchResultType.HomeWin,
                 MatchNotes = "<p>This is a test match, not a Test Match.</p>",
                 MatchRoute = "/matches/team-a-vs-team-b-1jul2020-" + Guid.NewGuid(),
@@ -212,69 +214,6 @@ namespace Stoolball.UnitTests.Statistics
             // The last innings will be missing its overs bowled, to simulate bowling figures entered by the user instead of calculated from overs
             Match.MatchInnings[3].OversBowled.Clear();
         }
-
-        private static List<OverSet> CreateOverSets()
-        {
-            return new List<OverSet> { new OverSet { OverSetId = Guid.NewGuid(), OverSetNumber = 1, Overs = 15, BallsPerOver = 8 } };
-        }
-
-        private static Competition CreateCompetitionWithMinimalDetails()
-        {
-            return new Competition
-            {
-                CompetitionId = Guid.NewGuid(),
-                CompetitionName = "Minimal league",
-                CompetitionRoute = "/competitions/minimal-league-" + Guid.NewGuid(),
-                MemberGroupKey = Guid.NewGuid(),
-                MemberGroupName = "Minimal league owners"
-            };
-        }
-
-        private static Season CreateSeasonWithMinimalDetails(Competition competition, int fromYear, int untilYear)
-        {
-            return new Season
-            {
-                SeasonId = Guid.NewGuid(),
-                Competition = competition,
-                FromYear = fromYear,
-                UntilYear = untilYear,
-                SeasonRoute = competition?.CompetitionRoute + "/" + fromYear + "-" + untilYear,
-                DefaultOverSets = CreateOverSets(),
-                MatchTypes = new List<MatchType> { MatchType.LeagueMatch, MatchType.FriendlyMatch }
-            };
-        }
-
-        private static Team CreateTeamWithMinimalDetails(string teamName)
-        {
-            return new Team
-            {
-                TeamId = Guid.NewGuid(),
-                TeamName = teamName,
-                TeamRoute = "/teams/" + teamName.Kebaberize() + "-" + Guid.NewGuid(),
-                MemberGroupKey = Guid.NewGuid(),
-                MemberGroupName = teamName + " owners"
-            };
-        }
-
-        private static MatchLocation CreateMatchLocationWithMinimalDetails()
-        {
-            return new MatchLocation
-            {
-                MatchLocationId = Guid.NewGuid(),
-                PrimaryAddressableObjectName = "Pitch 1",
-                SecondaryAddressableObjectName = "Our ground",
-                StreetDescription = "Our street",
-                Locality = "Our locality",
-                Town = "Our town",
-                AdministrativeArea = "Our county",
-                Postcode = "AB1 2CD",
-                MatchLocationRoute = "/locations/our-ground-" + Guid.NewGuid(),
-                GeoPrecision = GeoPrecision.Postcode,
-                MemberGroupKey = Guid.NewGuid(),
-                MemberGroupName = "Our ground owners"
-            };
-        }
-
 
         private static List<PlayerInnings> CreateBattingScorecard(List<PlayerIdentity> battingTeam, List<PlayerIdentity> bowlingTeam)
         {
@@ -370,33 +309,6 @@ namespace Stoolball.UnitTests.Statistics
                                 DismissalType = DismissalType.DidNotBat
                             }
                         };
-        }
-
-        private List<Over> CreateOversBowled(List<PlayerIdentity> bowlingTeam, IEnumerable<OverSet> overSets)
-        {
-            var oversBowled = new List<Over>();
-            for (var i = 0; i < 15; i++)
-            {
-                oversBowled.Add(new Over
-                {
-                    OverId = Guid.NewGuid(),
-                    OverSet = _oversHelper.OverSetForOver(overSets, i + 1),
-                    OverNumber = i + 1,
-                    Bowler = (i % 2 == 0) ? bowlingTeam[5] : bowlingTeam[3],
-                    BallsBowled = 8,
-                    NoBalls = 1,
-                    Wides = 0,
-                    RunsConceded = 10
-                }); ;
-            }
-
-            // One over has a known bowler with missing data
-            oversBowled[10].BallsBowled = null;
-            oversBowled[10].Wides = null;
-            oversBowled[10].NoBalls = null;
-            oversBowled[10].RunsConceded = null;
-
-            return oversBowled;
         }
     }
 }

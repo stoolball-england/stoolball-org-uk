@@ -10,6 +10,7 @@ using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Statistics;
 using Stoolball.Teams;
+using Stoolball.Testing;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests
 {

@@ -5,7 +5,7 @@ using Stoolball.MatchLocations;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 
-namespace Stoolball.Data.SqlServer.IntegrationTests
+namespace Stoolball.Testing
 {
     public class TestData
     {

@@ -4,6 +4,7 @@ using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Statistics;
 using Stoolball.Teams;
+using Stoolball.Testing;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 {
@@ -25,7 +26,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 
         private void GenerateSeedData()
         {
-            var seedDataGenerator = new FixedSeedDataGenerator();
+            var oversHelper = new OversHelper();
+            var seedDataGenerator = new SeedDataGenerator(oversHelper, new BowlingFiguresCalculator(oversHelper), new PlayerIdentityFinder());
             using (var connection = ConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();

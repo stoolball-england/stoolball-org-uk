@@ -1,5 +1,6 @@
 ﻿using Stoolball.Matches;
 using Stoolball.Statistics;
+using Stoolball.Testing;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 {
@@ -10,10 +11,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         public SqlServerStatisticsDataSourceFixture() : base("StoolballStatisticsDataSourceIntegrationTests")
         {
             // Populate seed data so that there's a consistent baseline for each test run
-            var seedDataGenerator = new FixedSeedDataGenerator();
-            var bowlingFiguresCalculator = new BowlingFiguresCalculator(new OversHelper());
+            var oversHelper = new OversHelper();
+            var bowlingFiguresCalculator = new BowlingFiguresCalculator(oversHelper);
             var playerIdentityFinder = new PlayerIdentityFinder();
-            var randomSeedDataGenerator = new RandomSeedDataGenerator(seedDataGenerator, bowlingFiguresCalculator, playerIdentityFinder);
+            var randomSeedDataGenerator = new SeedDataGenerator(oversHelper, bowlingFiguresCalculator, playerIdentityFinder);
             TestData = randomSeedDataGenerator.GenerateTestData();
 
             using (var connection = ConnectionFactory.CreateDatabaseConnection())
