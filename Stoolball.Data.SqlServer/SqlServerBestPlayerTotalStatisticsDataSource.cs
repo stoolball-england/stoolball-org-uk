@@ -44,11 +44,6 @@ namespace Stoolball.Data.SqlServer
 
         private async Task<IEnumerable<StatisticsResult<BestTotal>>> ReadBestPlayerTotal(string fieldName, bool isFieldingStatistic, StatisticsFilter filter)
         {
-            var select = $@"SELECT PlayerId, PlayerRoute,
-		                        (SELECT COUNT(DISTINCT MatchId) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId) AS TotalMatches,
-		                        (SELECT COUNT(PlayerInMatchStatisticsId) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId AND DismissalType != {(int)DismissalType.DidNotBat}) AS TotalInnings,
-		                        (SELECT SUM({fieldName}) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId) AS Total";
-
             var clonedFilter = filter.Clone();
             clonedFilter.SwapBattingFirstFilter = isFieldingStatistic;
             var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(clonedFilter);
@@ -73,6 +68,9 @@ namespace Stoolball.Data.SqlServer
                 // If @MaxResult IS NULL there are fewer rows than the requested maximum, so just fetch all.
                 // Otherwise look for results that are greater than or equal to the value(s) in the last row retrieved above.
                 offsetWithExtraResults = $"AND (@MaxResult IS NULL OR SUM({fieldName}) >= @MaxResult) ";
+
+                // Add an offset clause that should be inert, but is required to allow the use of ORDER BY in a subquery
+                offsetPaging = "OFFSET 0 ROWS FETCH NEXT 10000 ROWS ONLY ";
             }
             else
             {
@@ -81,7 +79,21 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@PageSize", clonedFilter.Paging.PageSize);
             }
 
-            var sql = $"{preQuery} {select} FROM {Tables.PlayerInMatchStatistics} AS s {where} {group} {having} {offsetWithExtraResults} ORDER BY SUM({fieldName}) DESC, TotalInnings ASC, TotalMatches ASC {offsetPaging}";
+            var sql = $@"{preQuery} 
+                         SELECT PlayerId, PlayerRoute, TotalMatches, TotalInnings, Total, 
+                                CASE WHEN TotalDismissals > 0 THEN CAST(Total AS DECIMAL)/TotalDismissals ELSE NULL END AS Average 
+                         FROM (
+                                 SELECT PlayerId, PlayerRoute,
+		                                (SELECT COUNT(DISTINCT MatchId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId) AS TotalMatches,
+		                                (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId AND DismissalType != { (int)DismissalType.DidNotBat}) AS TotalInnings,
+                                        (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId AND DismissalType NOT IN({ (int)DismissalType.DidNotBat},{ (int)DismissalType.NotOut},{ (int)DismissalType.Retired},{ (int)DismissalType.RetiredHurt})) AS TotalDismissals,
+		                                (SELECT SUM({ fieldName}) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId) AS Total
+                                 FROM {Tables.PlayerInMatchStatistics} AS s 
+                                 {where} {group} {having} 
+                                 {offsetWithExtraResults} 
+                                 ORDER BY SUM({fieldName}) DESC, TotalInnings ASC, TotalMatches ASC 
+                                 {offsetPaging}
+                        ) AS BestTotal";
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {

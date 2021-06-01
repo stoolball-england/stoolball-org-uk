@@ -235,7 +235,22 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                             .SelectMany(m => m.MatchInnings)
                             .SelectMany(mi => mi.PlayerInnings)
                             .Where(pi => pi.Batter.Player.PlayerId == p.PlayerId && pi.RunsScored.HasValue)
-                            .Sum(pi => pi.RunsScored)
+                            .Sum(pi => pi.RunsScored),
+                Average = (_databaseFixture.TestData.Matches
+                            .SelectMany(m => m.MatchInnings)
+                            .SelectMany(mi => mi.PlayerInnings)
+                            .Any(pi => pi.Batter.Player.PlayerId == p.PlayerId && StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType)) ?
+                                ((decimal)_databaseFixture.TestData.Matches
+                                .SelectMany(m => m.MatchInnings)
+                                .SelectMany(mi => mi.PlayerInnings)
+                                .Where(pi => pi.Batter.Player.PlayerId == p.PlayerId && pi.RunsScored.HasValue)
+                                .Sum(pi => pi.RunsScored))
+                                /
+                                _databaseFixture.TestData.Matches
+                                .SelectMany(m => m.MatchInnings)
+                                .SelectMany(mi => mi.PlayerInnings)
+                                .Count(pi => pi.Batter.Player.PlayerId == p.PlayerId && StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType))
+                            : (decimal?)null)
             }).Where(x => x.Total > 0);
 
             foreach (var player in expected)
@@ -246,6 +261,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Assert.Equal(player.TotalMatches, result.Result.TotalMatches);
                 Assert.Equal(player.TotalInnings, result.Result.TotalInnings);
                 Assert.Equal(player.Total, result.Result.Total);
+                if (player.Average.HasValue)
+                {
+                    Assert.Equal(player.Average.Value.AccurateToTwoDecimalPlaces(), result.Result.Average.Value.AccurateToTwoDecimalPlaces());
+                }
+                else
+                {
+                    Assert.Null(result.Result.Average);
+                }
             }
         }
 

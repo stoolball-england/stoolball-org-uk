@@ -22,9 +22,10 @@
                 {
                     <th scope="col">Teams</th>
                 }
-                <th scope="col" class="numeric">Matches</th>
-                <th scope="col" class="numeric">Innings</th>
-                <th scope="col" class="numeric">Runs</th>
+                <th scope="col" class="numeric statistic">Matches</th>
+                <th scope="col" class="numeric statistic">Innings</th>
+                <th scope="col" class="numeric statistic">Runs</th>
+                <th scope="col" class="numeric statistic">Average</th>
             </tr>
         </thead>
         <tbody>
@@ -44,6 +45,7 @@
                         <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Matches</span>@Model.Results[i].Result.TotalMatches</td>
                         <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Innings</span>@Model.Results[i].Result.TotalInnings</td>
                         <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Runs</span>@Model.Results[i].Result.Total</td>
+                        <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Average</span>@(Model.Results[i].Result.Average.HasValue ? Math.Round(Model.Results[i].Result.Average.Value, 2).ToString() : "–")</td>
                     </tr>
                 }
             }
