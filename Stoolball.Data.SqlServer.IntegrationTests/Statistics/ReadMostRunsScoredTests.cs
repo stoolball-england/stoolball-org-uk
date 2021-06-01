@@ -216,38 +216,156 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
             var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
+            await ActAndAssertStatistics(filter, dataSource, x => true, x => true).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task Read_most_runs_scored_supports_statistics_filtered_by_club_id()
+        {
+            var filter = new StatisticsFilter
+            {
+                Paging = new Paging
+                {
+                    PageSize = int.MaxValue
+                },
+                Club = _databaseFixture.TestData.TeamWithClub.Club
+            };
+            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
+            queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND ClubId = @ClubId", new Dictionary<string, object> { { "ClubId", _databaseFixture.TestData.TeamWithClub.Club.ClubId } }));
+            var playerDataSource = new Mock<IPlayerDataSource>();
+            playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
+            var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
+
+            await ActAndAssertStatistics(filter, dataSource, x => true, i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithClub.TeamId.Value).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task Read_most_runs_scored_supports_statistics_filtered_by_team_id()
+        {
+            var filter = new StatisticsFilter
+            {
+                Paging = new Paging
+                {
+                    PageSize = int.MaxValue
+                },
+                Team = _databaseFixture.TestData.TeamWithClub
+            };
+            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
+            queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND TeamId = @TeamId", new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithClub.TeamId } }));
+            var playerDataSource = new Mock<IPlayerDataSource>();
+            playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
+            var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
+
+            await ActAndAssertStatistics(filter, dataSource, x => true, i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithClub.TeamId.Value).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task Read_most_runs_scored_supports_statistics_filtered_by_match_location_id()
+        {
+            var filter = new StatisticsFilter
+            {
+                Paging = new Paging
+                {
+                    PageSize = int.MaxValue
+                },
+                MatchLocation = _databaseFixture.TestData.MatchLocations.First()
+            };
+            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
+            queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND MatchLocationId = @MatchLocationId", new Dictionary<string, object> { { "MatchLocationId", _databaseFixture.TestData.MatchLocations.First().MatchLocationId } }));
+            var playerDataSource = new Mock<IPlayerDataSource>();
+            playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
+            var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
+
+            await ActAndAssertStatistics(filter, dataSource, x => x.MatchLocation?.MatchLocationId == filter.MatchLocation.MatchLocationId, x => true).ConfigureAwait(false);
+        }
+
+
+        [Fact]
+        public async Task Read_most_runs_scored_supports_statistics_filtered_by_competition_id()
+        {
+            var filter = new StatisticsFilter
+            {
+                Paging = new Paging
+                {
+                    PageSize = int.MaxValue
+                },
+                Competition = _databaseFixture.TestData.Competitions.First()
+            };
+            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
+            queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND CompetitionId = @CompetitionId", new Dictionary<string, object> { { "CompetitionId", _databaseFixture.TestData.Competitions.First().CompetitionId } }));
+            var playerDataSource = new Mock<IPlayerDataSource>();
+            playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
+            var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
+
+            await ActAndAssertStatistics(filter, dataSource, x => x.Season?.Competition?.CompetitionId == filter.Competition.CompetitionId, x => true).ConfigureAwait(false);
+        }
+
+
+        [Fact]
+        public async Task Read_most_runs_scored_supports_statistics_filtered_by_season_id()
+        {
+            var filter = new StatisticsFilter
+            {
+                Paging = new Paging
+                {
+                    PageSize = int.MaxValue
+                },
+                Season = _databaseFixture.TestData.Competitions.First().Seasons.First()
+            };
+            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
+            queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND SeasonId = @SeasonId", new Dictionary<string, object> { { "SeasonId", _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId } }));
+            var playerDataSource = new Mock<IPlayerDataSource>();
+            playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
+            var dataSource = new SqlServerBestPlayerTotalStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
+
+            await ActAndAssertStatistics(filter, dataSource, x => x.Season?.SeasonId == filter.Season.SeasonId, x => true).ConfigureAwait(false);
+        }
+
+        private async Task ActAndAssertStatistics(StatisticsFilter filter, SqlServerBestPlayerTotalStatisticsDataSource dataSource, Func<Stoolball.Matches.Match, bool> matchFilter, Func<MatchInnings, bool> matchInningsFilter)
+        {
             var results = await dataSource.ReadMostRunsScored(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Players.Select(p => new BestTotal
             {
                 Player = p,
                 TotalMatches = (int)_databaseFixture.TestData.Matches
-                            .Count(m => m.MatchInnings.Any(mi =>
+                            .Where(matchFilter)
+                            .Count(m => m.MatchInnings.Where(matchInningsFilter).Any(mi =>
                                     mi.PlayerInnings.Any(pi => pi.Batter.Player.PlayerId == p.PlayerId || pi.DismissedBy?.Player.PlayerId == p.PlayerId || pi.Bowler?.Player.PlayerId == p.PlayerId) ||
                                     mi.OversBowled.Any(o => o.Bowler.Player.PlayerId == p.PlayerId) ||
                                     mi.BowlingFigures.Any(bf => bf.Bowler.Player.PlayerId == p.PlayerId)
                                     ) || m.Awards.Any(aw => aw.PlayerIdentity.Player.PlayerId == p.PlayerId)),
                 TotalInnings = (int)_databaseFixture.TestData.Matches
+                            .Where(matchFilter)
                             .SelectMany(m => m.MatchInnings)
+                            .Where(matchInningsFilter)
                             .SelectMany(mi => mi.PlayerInnings)
                             .Count(pi => pi.Batter.Player.PlayerId == p.PlayerId && pi.DismissalType != DismissalType.DidNotBat),
                 Total = (int)_databaseFixture.TestData.Matches
+                            .Where(matchFilter)
                             .SelectMany(m => m.MatchInnings)
+                            .Where(matchInningsFilter)
                             .SelectMany(mi => mi.PlayerInnings)
                             .Where(pi => pi.Batter.Player.PlayerId == p.PlayerId && pi.RunsScored.HasValue)
                             .Sum(pi => pi.RunsScored),
                 Average = (_databaseFixture.TestData.Matches
+                            .Where(matchFilter)
                             .SelectMany(m => m.MatchInnings)
+                            .Where(matchInningsFilter)
                             .SelectMany(mi => mi.PlayerInnings)
                             .Any(pi => pi.Batter.Player.PlayerId == p.PlayerId && StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType)) ?
                                 ((decimal)_databaseFixture.TestData.Matches
+                                .Where(matchFilter)
                                 .SelectMany(m => m.MatchInnings)
+                                .Where(matchInningsFilter)
                                 .SelectMany(mi => mi.PlayerInnings)
                                 .Where(pi => pi.Batter.Player.PlayerId == p.PlayerId && pi.RunsScored.HasValue)
                                 .Sum(pi => pi.RunsScored))
                                 /
                                 _databaseFixture.TestData.Matches
+                                .Where(matchFilter)
                                 .SelectMany(m => m.MatchInnings)
+                                .Where(matchInningsFilter)
                                 .SelectMany(mi => mi.PlayerInnings)
                                 .Count(pi => pi.Batter.Player.PlayerId == p.PlayerId && StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType))
                             : (decimal?)null)
