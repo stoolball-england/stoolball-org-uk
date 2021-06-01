@@ -29,7 +29,7 @@ namespace Stoolball.Web.Tests.MatchLocations
 
         private class TestController : MatchLocationStatisticsController
         {
-            public TestController(IMatchLocationDataSource matchLocationDataSource, IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
+            public TestController(IMatchLocationDataSource matchLocationDataSource, IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -38,7 +38,8 @@ namespace Stoolball.Web.Tests.MatchLocations
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
                 matchLocationDataSource,
-                statisticsDataSource)
+                bestPerformanceDataSource,
+                Mock.Of<IBestPlayerTotalStatisticsDataSource>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));

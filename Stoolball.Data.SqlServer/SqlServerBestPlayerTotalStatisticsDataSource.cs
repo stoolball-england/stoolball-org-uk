@@ -47,7 +47,6 @@ namespace Stoolball.Data.SqlServer
             var clonedFilter = filter.Clone();
             clonedFilter.SwapBattingFirstFilter = isFieldingStatistic;
             var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(clonedFilter);
-            where = $"WHERE {fieldName} IS NOT NULL AND {fieldName} >= 0 {where}";
 
             var group = "GROUP BY PlayerId, PlayerRoute";
             var having = $"HAVING SUM({fieldName}) > 0";
@@ -62,19 +61,16 @@ namespace Stoolball.Data.SqlServer
             {
                 // Get the values from what should be the last row according to the maximum number of results.
                 preQuery = $@"DECLARE @MaxResult int;
-                            SELECT @MaxResult = SUM({fieldName}) FROM {Tables.PlayerInMatchStatistics} {where} {group} {having} ORDER BY SUM({fieldName}) DESC
+                            SELECT @MaxResult = SUM({fieldName}) FROM {Tables.PlayerInMatchStatistics} WHERE {fieldName} IS NOT NULL AND {fieldName} >= 0 {where} {group} {having} ORDER BY SUM({fieldName}) DESC
                             OFFSET {clonedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual - 1} ROWS FETCH NEXT 1 ROWS ONLY; ";
 
                 // If @MaxResult IS NULL there are fewer rows than the requested maximum, so just fetch all.
                 // Otherwise look for results that are greater than or equal to the value(s) in the last row retrieved above.
                 offsetWithExtraResults = $"AND (@MaxResult IS NULL OR SUM({fieldName}) >= @MaxResult) ";
-
-                // Add an offset clause that should be inert, but is required to allow the use of ORDER BY in a subquery
-                offsetPaging = "OFFSET 0 ROWS FETCH NEXT 10000 ROWS ONLY ";
             }
             else
             {
-                offsetPaging = $"OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
+                offsetPaging = $"ORDER BY SUM({fieldName}) DESC, TotalInnings ASC, TotalMatches ASC OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY";
                 parameters.Add("@PageOffset", clonedFilter.Paging.PageSize * (clonedFilter.Paging.PageNumber - 1));
                 parameters.Add("@PageSize", clonedFilter.Paging.PageSize);
             }
@@ -84,16 +80,18 @@ namespace Stoolball.Data.SqlServer
                                 CASE WHEN TotalDismissals > 0 THEN CAST(Total AS DECIMAL)/TotalDismissals ELSE NULL END AS Average 
                          FROM (
                                  SELECT PlayerId, PlayerRoute,
-		                                (SELECT COUNT(DISTINCT MatchId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId) AS TotalMatches,
-		                                (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId AND DismissalType != { (int)DismissalType.DidNotBat}) AS TotalInnings,
-                                        (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId AND DismissalType NOT IN({ (int)DismissalType.DidNotBat},{ (int)DismissalType.NotOut},{ (int)DismissalType.Retired},{ (int)DismissalType.RetiredHurt})) AS TotalDismissals,
-		                                (SELECT SUM({ fieldName}) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId) AS Total
+		                                (SELECT COUNT(DISTINCT MatchId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS TotalMatches,
+		                                (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId AND DismissalType != { (int)DismissalType.DidNotBat} {where}) AS TotalInnings,
+                                        (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId AND DismissalType NOT IN({ (int)DismissalType.DidNotBat},{ (int)DismissalType.NotOut},{ (int)DismissalType.Retired},{ (int)DismissalType.RetiredHurt}) {where}) AS TotalDismissals,
+		                                (SELECT SUM({ fieldName}) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS Total
                                  FROM {Tables.PlayerInMatchStatistics} AS s 
-                                 {where} {group} {having} 
+                                 WHERE {fieldName} IS NOT NULL AND {fieldName} >= 0 {where} 
+                                 {group} 
+                                 {having} 
                                  {offsetWithExtraResults} 
-                                 ORDER BY SUM({fieldName}) DESC, TotalInnings ASC, TotalMatches ASC 
                                  {offsetPaging}
-                        ) AS BestTotal";
+                        ) AS BestTotal
+                        ORDER BY Total DESC, TotalInnings ASC, TotalMatches ASC";
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {

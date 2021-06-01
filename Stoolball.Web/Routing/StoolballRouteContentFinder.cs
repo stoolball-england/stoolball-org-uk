@@ -152,6 +152,7 @@ namespace Stoolball.Web.Routing
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}matches{SLASH}ics{OPTIONAL_SLASH}", StoolballRouteType.MatchesCalendar },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.MatchLocationStatistics },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores },
+                { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}most-runs{OPTIONAL_SLASH}", StoolballRouteType.MostRuns },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.MatchLocationActions },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}location{OPTIONAL_SLASH}", StoolballRouteType.EditMatchLocation },
