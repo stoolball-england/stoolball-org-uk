@@ -20,7 +20,8 @@ namespace Stoolball.Web.Competitions
     public class CompetitionStatisticsController : RenderMvcControllerAsync
     {
         private readonly ICompetitionDataSource _competitionDataSource;
-        private readonly IBestPerformanceInAMatchStatisticsDataSource _statisticsDataSource;
+        private readonly IBestPerformanceInAMatchStatisticsDataSource _bestPerformanceDataSource;
+        private readonly IBestPlayerTotalStatisticsDataSource _bestPlayerTotalDataSource;
 
         public CompetitionStatisticsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -29,11 +30,13 @@ namespace Stoolball.Web.Competitions
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            ICompetitionDataSource competitionDataSource,
-           IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource)
+           IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource,
+           IBestPlayerTotalStatisticsDataSource bestPlayerTotalDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
-            _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
+            _bestPerformanceDataSource = bestPerformanceDataSource ?? throw new ArgumentNullException(nameof(bestPerformanceDataSource));
+            _bestPlayerTotalDataSource = bestPlayerTotalDataSource ?? throw new ArgumentNullException(nameof(bestPlayerTotalDataSource));
         }
 
         [HttpGet]
@@ -58,8 +61,9 @@ namespace Stoolball.Web.Competitions
             {
                 model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
                 model.StatisticsFilter.Competition = model.Context;
-                model.PlayerInnings = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
-                model.BowlingFigures = (await _statisticsDataSource.ReadBowlingFigures(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+                model.PlayerInnings = (await _bestPerformanceDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+                model.BowlingFigures = (await _bestPerformanceDataSource.ReadBowlingFigures(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+                model.MostRuns = (await _bestPlayerTotalDataSource.ReadMostRunsScored(model.StatisticsFilter).ConfigureAwait(false)).ToList();
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
 

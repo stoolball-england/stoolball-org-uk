@@ -44,7 +44,7 @@ namespace ASP
         public override void Execute()
         {
 WriteLiteral("<p>The statistics below are based on scorecards added to this website. If you kno" +
-"w someone who\'s played better, add the scorecard for that match – see <a");
+"w someone who\'s played better, add the scorecard – see <a");
 
 WriteLiteral(" href=\"/organise/website/how-to-add-match-results/\"");
 

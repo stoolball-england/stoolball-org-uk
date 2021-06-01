@@ -11,6 +11,8 @@
     individualScores.Results.AddRange(Model.PlayerInnings);
     var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
     bowlingFigures.Results.AddRange(Model.BowlingFigures);
+    var mostRuns = new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    mostRuns.Results.AddRange(Model.MostRuns);
 }
 <div class="container-xl">
     <h1>@Model.Context.CompetitionNameAndPlayerType()</h1>
@@ -36,6 +38,7 @@
     else
     {
         @Html.Partial("_IndividualScores", individualScores)
+        @Html.Partial("_MostRuns", mostRuns)
         @Html.Partial("_BowlingFigures", bowlingFigures)
     }
 </div>

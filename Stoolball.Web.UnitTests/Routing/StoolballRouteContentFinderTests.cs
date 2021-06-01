@@ -104,6 +104,8 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/competitions/example/STATISTICS", StoolballRouteType.CompetitionStatistics)]
         [InlineData("https://example.org/competitions/example/Statistics/Individual-Scores", StoolballRouteType.IndividualScores)]
         [InlineData("https://example.org/competitions/example/STATISTICS/INDIVIDUAL-SCores/", StoolballRouteType.IndividualScores)]
+        [InlineData("https://example.org/competitions/example/Statistics/Most-Runs", StoolballRouteType.MostRuns)]
+        [InlineData("https://example.org/competitions/example/STATISTICS/MOst-RUNS/", StoolballRouteType.MostRuns)]
         [InlineData("https://example.org/competitions/example/Statistics/BOWLING-FIGURES", StoolballRouteType.BowlingFigures)]
         [InlineData("https://example.org/competitions/example/STATISTICS/bowling-figures/", StoolballRouteType.BowlingFigures)]
         [InlineData("https://example.org/competitions/example/Add", StoolballRouteType.CreateSeason)]
