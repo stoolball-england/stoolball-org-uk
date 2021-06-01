@@ -16,5 +16,6 @@ namespace Stoolball.Web.Statistics
 
         public bool ShowCaption { get; set; } = true;
         public bool ShowPlayerColumn { get; set; } = true;
+        public bool ShowTeamsColumn { get; set; } = true;
     }
 }

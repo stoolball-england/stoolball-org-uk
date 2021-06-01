@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Moq;
-using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Web.Statistics;
 using Umbraco.Core.Cache;
@@ -67,7 +66,7 @@ namespace Stoolball.Web.Tests.Statistics
             urlParser.Setup(x => x.ParseUrl(It.IsAny<Uri>())).Returns(Task.FromResult(filter));
 
             var playerId = Guid.NewGuid();
-            var results = new List<StatisticsResult<PlayerInnings>>();
+            var results = new List<StatisticsResult<BestTotal>>();
             statisticsDataSource.Setup(x => x.ReadMostRunsScored(filter)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<BestTotal>>));
 
             using (var controller = new TestController(urlParser.Object, statisticsDataSource.Object, UmbracoHelper))
@@ -104,7 +103,7 @@ namespace Stoolball.Web.Tests.Statistics
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<StatisticsViewModel<PlayerInnings>>(((ViewResult)result).Model);
+                Assert.IsType<StatisticsViewModel<BestTotal>>(((ViewResult)result).Model);
             }
         }
     }

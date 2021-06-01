@@ -29,7 +29,7 @@ namespace Stoolball.Web.Tests.Teams
 
         private class TestController : TeamStatisticsController
         {
-            public TestController(ITeamDataSource teamDataSource, IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource, IInningsStatisticsDataSource inningsStatisticsDataSource, UmbracoHelper umbracoHelper)
+            public TestController(ITeamDataSource teamDataSource, IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource, IInningsStatisticsDataSource inningsStatisticsDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -38,8 +38,9 @@ namespace Stoolball.Web.Tests.Teams
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
                 teamDataSource,
-                statisticsDataSource,
-                inningsStatisticsDataSource)
+                bestPerformanceDataSource,
+                inningsStatisticsDataSource,
+                Mock.Of<IBestPlayerTotalStatisticsDataSource>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));

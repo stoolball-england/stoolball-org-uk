@@ -48,6 +48,8 @@ namespace Stoolball.Web.Statistics
             var model = new StatisticsViewModel<BestTotal>(contentModel.Content, Services?.UserService) { ShowCaption = false };
             model.StatisticsFilter = await _statisticsFilterUrlParser.ParseUrl(new Uri(Request.Url, Request.RawUrl)).ConfigureAwait(false);
             model.StatisticsFilter.Paging.PageSize = Constants.Defaults.PageSize;
+            if (model.StatisticsFilter.Team != null) { model.ShowTeamsColumn = false; }
+
             model.Results = (await _statisticsDataSource.ReadMostRunsScored(model.StatisticsFilter).ConfigureAwait(false)).ToList();
 
             if (!model.Results.Any())

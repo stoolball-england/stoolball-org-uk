@@ -82,6 +82,8 @@ namespace ASP
     individualScores.Results.AddRange(Model.PlayerInnings);
     var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
     bowlingFigures.Results.AddRange(Model.BowlingFigures);
+    var mostRuns = new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = false, StatisticsFilter = Model.StatisticsFilter };
+    mostRuns.Results.AddRange(Model.MostRuns);
 
             
             #line default
@@ -93,7 +95,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 16 "..\..\Views\TeamStatistics.cshtml"
+            #line 18 "..\..\Views\TeamStatistics.cshtml"
    Write(Model.Context.TeamNameLocationAndPlayerType());
 
             
@@ -102,13 +104,13 @@ WriteLiteral(">\r\n    <h1>");
 WriteLiteral("</h1>\r\n\r\n");
 
             
-            #line 18 "..\..\Views\TeamStatistics.cshtml"
+            #line 20 "..\..\Views\TeamStatistics.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 18 "..\..\Views\TeamStatistics.cshtml"
+            #line 20 "..\..\Views\TeamStatistics.cshtml"
      if (Model.Context.UntilYear.HasValue)
     {
 
@@ -123,7 +125,7 @@ WriteLiteral(">\r\n            <p><strong>This team is no longer active.</strong
 "div>\r\n");
 
             
-            #line 23 "..\..\Views\TeamStatistics.cshtml"
+            #line 25 "..\..\Views\TeamStatistics.cshtml"
     }
 
             
@@ -141,14 +143,14 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1153), Tuple.Create("\"", 1184)
+WriteAttribute("href", Tuple.Create(" href=\"", 1377), Tuple.Create("\"", 1408)
             
-            #line 27 "..\..\Views\TeamStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 1160), Tuple.Create<System.Object, System.Int32>(Model.Context.TeamRoute
+            #line 29 "..\..\Views\TeamStatistics.cshtml"
+, Tuple.Create(Tuple.Create("", 1384), Tuple.Create<System.Object, System.Int32>(Model.Context.TeamRoute
             
             #line default
             #line hidden
-, 1160), false)
+, 1384), false)
 );
 
 WriteLiteral(">Summary</a>\r\n        </li>\r\n        <li");
@@ -159,15 +161,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1276), Tuple.Create("\"", 1315)
+WriteAttribute("href", Tuple.Create(" href=\"", 1500), Tuple.Create("\"", 1539)
             
-            #line 30 "..\..\Views\TeamStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 1283), Tuple.Create<System.Object, System.Int32>(Model.Context.TeamRoute
+            #line 32 "..\..\Views\TeamStatistics.cshtml"
+, Tuple.Create(Tuple.Create("", 1507), Tuple.Create<System.Object, System.Int32>(Model.Context.TeamRoute
             
             #line default
             #line hidden
-, 1283), false)
-, Tuple.Create(Tuple.Create("", 1307), Tuple.Create("/matches", 1307), true)
+, 1507), false)
+, Tuple.Create(Tuple.Create("", 1531), Tuple.Create("/matches", 1531), true)
 );
 
 WriteLiteral(">Matches</a>\r\n        </li>\r\n        <li");
@@ -178,15 +180,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1407), Tuple.Create("\"", 1446)
+WriteAttribute("href", Tuple.Create(" href=\"", 1631), Tuple.Create("\"", 1670)
             
-            #line 33 "..\..\Views\TeamStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 1414), Tuple.Create<System.Object, System.Int32>(Model.Context.TeamRoute
+            #line 35 "..\..\Views\TeamStatistics.cshtml"
+, Tuple.Create(Tuple.Create("", 1638), Tuple.Create<System.Object, System.Int32>(Model.Context.TeamRoute
             
             #line default
             #line hidden
-, 1414), false)
-, Tuple.Create(Tuple.Create("", 1438), Tuple.Create("/players", 1438), true)
+, 1638), false)
+, Tuple.Create(Tuple.Create("", 1662), Tuple.Create("/players", 1662), true)
 );
 
 WriteLiteral(">Players</a>\r\n        </li>\r\n        <li");
@@ -200,13 +202,13 @@ WriteLiteral(" class=\"nav-link active\"");
 WriteLiteral(">Statistics</em>\r\n        </li>\r\n    </ul>\r\n\r\n\r\n");
 
             
-            #line 41 "..\..\Views\TeamStatistics.cshtml"
+            #line 43 "..\..\Views\TeamStatistics.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 41 "..\..\Views\TeamStatistics.cshtml"
+            #line 43 "..\..\Views\TeamStatistics.cshtml"
      if (!Model.InningsStatistics.Any() && !Model.PlayerInnings.Any() && !Model.BowlingFigures.Any())
     {
 
@@ -221,7 +223,7 @@ WriteLiteral(" href=\"/organise/website/how-to-add-match-results/\"");
 WriteLiteral(">How to add match results</a>.</p>\r\n");
 
             
-            #line 44 "..\..\Views\TeamStatistics.cshtml"
+            #line 46 "..\..\Views\TeamStatistics.cshtml"
     }
     else
     {
@@ -230,42 +232,56 @@ WriteLiteral(">How to add match results</a>.</p>\r\n");
             #line default
             #line hidden
             
-            #line 47 "..\..\Views\TeamStatistics.cshtml"
+            #line 49 "..\..\Views\TeamStatistics.cshtml"
    Write(Html.Partial("_InningsStatistics", Model.InningsStatistics));
 
             
             #line default
             #line hidden
             
-            #line 47 "..\..\Views\TeamStatistics.cshtml"
+            #line 49 "..\..\Views\TeamStatistics.cshtml"
                                                                     
         
             
             #line default
             #line hidden
             
-            #line 48 "..\..\Views\TeamStatistics.cshtml"
+            #line 50 "..\..\Views\TeamStatistics.cshtml"
    Write(Html.Partial("_IndividualScores", individualScores));
 
             
             #line default
             #line hidden
             
-            #line 48 "..\..\Views\TeamStatistics.cshtml"
+            #line 50 "..\..\Views\TeamStatistics.cshtml"
                                                             
         
             
             #line default
             #line hidden
             
-            #line 49 "..\..\Views\TeamStatistics.cshtml"
+            #line 51 "..\..\Views\TeamStatistics.cshtml"
+   Write(Html.Partial("_MostRuns", mostRuns));
+
+            
+            #line default
+            #line hidden
+            
+            #line 51 "..\..\Views\TeamStatistics.cshtml"
+                                            
+        
+            
+            #line default
+            #line hidden
+            
+            #line 52 "..\..\Views\TeamStatistics.cshtml"
    Write(Html.Partial("_BowlingFigures", bowlingFigures));
 
             
             #line default
             #line hidden
             
-            #line 49 "..\..\Views\TeamStatistics.cshtml"
+            #line 52 "..\..\Views\TeamStatistics.cshtml"
                                                         
     }
 
