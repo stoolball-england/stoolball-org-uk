@@ -219,6 +219,8 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/play/statistics/Individual-Scores/", StoolballRouteType.IndividualScores)]
         [InlineData("https://example.org/play/statistics/bowling-figures", StoolballRouteType.BowlingFigures)]
         [InlineData("https://example.org/play/statistics/Bowling-FIgures/", StoolballRouteType.BowlingFigures)]
+        [InlineData("https://example.org/play/statistics/most-runs", StoolballRouteType.MostRuns)]
+        [InlineData("https://example.org/play/statistics/Most-Runs/", StoolballRouteType.MostRuns)]
         [InlineData("https://example.org/players/example-name/individual-scores", StoolballRouteType.IndividualScores)]
         [InlineData("https://example.org/players/example-NAME/Individual-Scores/", StoolballRouteType.IndividualScores)]
         [InlineData("https://example.org/players/example-name/bowling-figures", StoolballRouteType.BowlingFigures)]

@@ -78,7 +78,7 @@ namespace Stoolball.Web.Matches
                 if (model.PlayerIdentities.Any())
                 {
                     model.PlayerIdentities = await _playerDataSource.ReadPlayerIdentities(
-                        new PlayerIdentityFilter
+                        new PlayerFilter
                         {
                             PlayerIdentityIds = model.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList()
                         }

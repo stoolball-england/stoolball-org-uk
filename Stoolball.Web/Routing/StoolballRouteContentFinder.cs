@@ -187,7 +187,8 @@ namespace Stoolball.Web.Routing
                 { $"play{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.Statistics },
                 { $"play{SLASH}statistics{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.EditStatistics },
                 { $"play{SLASH}statistics{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores },
-                { $"play{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures }
+                { $"play{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures },
+                { $"play{SLASH}statistics{SLASH}most-runs{OPTIONAL_SLASH}", StoolballRouteType.MostRuns }
             };
 
             foreach (var routePattern in routeTypes.Keys)

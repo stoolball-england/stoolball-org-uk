@@ -80,7 +80,7 @@ namespace Stoolball.Web.Teams
                     TeamIds = teamIds,
                     IncludeTournamentMatches = true
                 }).ConfigureAwait(false);
-                model.Team.Players = (await _playerDataSource.ReadPlayerIdentities(new PlayerIdentityFilter
+                model.Team.Players = (await _playerDataSource.ReadPlayerIdentities(new PlayerFilter
                 {
                     TeamIds = teamIds
                 }).ConfigureAwait(false))?.Select(x => new Player { PlayerIdentities = new List<PlayerIdentity> { x } }).ToList();

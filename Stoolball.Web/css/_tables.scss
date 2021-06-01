@@ -33,6 +33,11 @@ table thead th, table thead td {
     border-bottom: none;
 }
 
+// Where a table has ordered rows, use a consistent width for the column giving the order
+.table-order {
+    width: 2em;
+}
+
 // Numeric values should be right-aligned so that figure columns line up
 td.numeric,
 th.numeric {

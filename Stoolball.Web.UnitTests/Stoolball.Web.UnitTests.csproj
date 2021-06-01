@@ -116,6 +116,7 @@
     <Compile Include="MatchLocations\MatchLocationsControllerTests.cs" />
     <Compile Include="Routing\PostSaveRedirectorTests.cs" />
     <Compile Include="MatchLocations\MatchLocationStatisticsControllerTests.cs" />
+    <Compile Include="Statistics\MostRunsControllerTests.cs" />
     <Compile Include="Statistics\RunOutsControllerTests.cs" />
     <Compile Include="Statistics\CatchesControllerTests.cs" />
     <Compile Include="Statistics\BowlingFiguresControllerTests.cs" />

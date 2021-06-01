@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -23,11 +24,71 @@ namespace Stoolball.Data.SqlServer
             _routeNormaliser = routeNormaliser ?? throw new ArgumentNullException(nameof(routeNormaliser));
         }
 
+        /// <inheritdoc/>
+        public async Task<List<Player>> ReadPlayers(PlayerFilter filter)
+        {
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                return await ReadPlayers(filter, connection).ConfigureAwait(false);
+            }
+        }
+
+
+        /// <inheritdoc/>
+        public async Task<List<Player>> ReadPlayers(PlayerFilter filter, IDbConnection connection)
+        {
+            if (filter is null)
+            {
+                filter = new PlayerFilter();
+            }
+
+            if (connection is null)
+            {
+                throw new ArgumentNullException(nameof(connection));
+            }
+
+            var sql = $@"SELECT DISTINCT PlayerId, PlayerRoute, 
+                                PlayerIdentityId, PlayerIdentityName, MIN(MatchStartTime) AS FirstPlayed,  MAX(MatchStartTime) AS LastPlayed, 
+                                TeamName 
+                                FROM {Tables.PlayerInMatchStatistics} AS stats 
+                                <<WHERE>>
+                                GROUP BY stats.PlayerId, stats.PlayerRoute, stats.PlayerIdentityId, stats.PlayerIdentityName, stats.TeamName";
+
+            var where = new List<string>();
+            var parameters = new Dictionary<string, object>();
+
+            if (filter?.PlayerIds?.Count > 0)
+            {
+                where.Add("stats.PlayerId IN @PlayerIds");
+                parameters.Add("@PlayerIds", filter.PlayerIds.Select(x => x.ToString()));
+            }
+
+            sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);
+
+            var rawResults = (await connection.QueryAsync<Player, PlayerIdentity, Team, Player>(sql,
+                (player, identity, team) =>
+                {
+                    identity.Team = team;
+                    identity.Player = player;
+                    player.PlayerIdentities.Add(identity);
+                    return player;
+                },
+                new DynamicParameters(parameters),
+                splitOn: "PlayerIdentityId, TeamName").ConfigureAwait(false)).ToList();
+
+            return rawResults.GroupBy(x => x.PlayerId).Select(group =>
+            {
+                var player = group.First();
+                player.PlayerIdentities = group.Select(x => x.PlayerIdentities.Single()).OfType<PlayerIdentity>().ToList();
+                return player;
+            }).ToList();
+        }
+
         /// <summary>
         /// Gets a list of player identities based on a query
         /// </summary>
         /// <returns>A list of <see cref="PlayerIdentity"/> objects. An empty list if no player identities are found.</returns>
-        public async Task<List<PlayerIdentity>> ReadPlayerIdentities(PlayerIdentityFilter playerQuery)
+        public async Task<List<PlayerIdentity>> ReadPlayerIdentities(PlayerFilter filter)
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -44,22 +105,22 @@ namespace Stoolball.Data.SqlServer
                 var where = new List<string>();
                 var parameters = new Dictionary<string, object>();
 
-                if (!string.IsNullOrEmpty(playerQuery?.Query))
+                if (!string.IsNullOrEmpty(filter?.Query))
                 {
                     where.Add("stats.PlayerIdentityName LIKE @Query");
-                    parameters.Add("@Query", $"%{playerQuery.Query.Replace(" ", "%")}%");
+                    parameters.Add("@Query", $"%{filter.Query.Replace(" ", "%")}%");
                 }
 
-                if (playerQuery?.TeamIds?.Count > 0)
+                if (filter?.TeamIds?.Count > 0)
                 {
                     where.Add("stats.TeamId IN @TeamIds");
-                    parameters.Add("@TeamIds", playerQuery.TeamIds.Select(x => x.ToString()));
+                    parameters.Add("@TeamIds", filter.TeamIds.Select(x => x.ToString()));
                 }
 
-                if (playerQuery?.PlayerIdentityIds?.Count > 0)
+                if (filter?.PlayerIdentityIds?.Count > 0)
                 {
                     where.Add("stats.PlayerIdentityId IN @PlayerIdentityIds");
-                    parameters.Add("@PlayerIdentityIds", playerQuery.PlayerIdentityIds.Select(x => x.ToString()));
+                    parameters.Add("@PlayerIdentityIds", filter.PlayerIdentityIds.Select(x => x.ToString()));
                 }
 
                 sql = sql.Replace("<<WHERE>>", where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : string.Empty);

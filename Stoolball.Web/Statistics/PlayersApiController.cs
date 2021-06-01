@@ -40,7 +40,7 @@ namespace Stoolball.Web.Statistics
                 throw new ArgumentNullException(nameof(teams));
             }
 
-            var playerQuery = new PlayerIdentityFilter { Query = query };
+            var playerQuery = new PlayerFilter { Query = query };
             foreach (var guid in teams)
             {
                 if (guid == null) continue;

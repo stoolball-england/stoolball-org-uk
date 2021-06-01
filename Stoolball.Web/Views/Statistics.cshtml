@@ -10,6 +10,8 @@
     individualScores.Results.AddRange(Model.PlayerInnings);
     var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
     bowlingFigures.Results.AddRange(Model.BowlingFigures);
+    var mostRuns = new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
+    mostRuns.Results.AddRange(Model.MostRuns);
 }
 @section head {
     <meta name="robots" content="noindex, follow" />
@@ -28,5 +30,6 @@
 
     @Html.Partial("_StatisticsBasis")
     @Html.Partial("_IndividualScores", individualScores)
+    @Html.Partial("_MostRuns", mostRuns)
     @Html.Partial("_BowlingFigures", bowlingFigures)
 </div>

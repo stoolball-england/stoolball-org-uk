@@ -37,6 +37,37 @@ namespace Stoolball.Statistics
         public Paging Paging { get; set; } = new Paging();
         public int? MaxResultsAllowingExtraResultsIfValuesAreEqual { get; set; }
 
+        public StatisticsFilter Clone()
+        {
+            return new StatisticsFilter
+            {
+                Club = Club,
+                Team = Team,
+                OppositionTeamIds = OppositionTeamIds,
+                SwapTeamAndOppositionFilters = SwapTeamAndOppositionFilters,
+                Player = Player,
+                BowledByPlayerIdentityIds = BowledByPlayerIdentityIds,
+                CaughtByPlayerIdentityIds = CaughtByPlayerIdentityIds,
+                RunOutByPlayerIdentityIds = RunOutByPlayerIdentityIds,
+                Season = Season,
+                Competition = Competition,
+                MatchLocation = MatchLocation,
+                TournamentIds = TournamentIds,
+                MatchTypes = MatchTypes,
+                PlayerTypes = PlayerTypes,
+                DismissalTypes = DismissalTypes,
+                BattingPositions = BattingPositions,
+                FromDate = FromDate,
+                UntilDate = UntilDate,
+                WonMatch = WonMatch,
+                BattingFirst = BattingFirst,
+                SwapBattingFirstFilter = SwapBattingFirstFilter,
+                PlayerOfTheMatch = PlayerOfTheMatch,
+                Paging = Paging,
+                MaxResultsAllowingExtraResultsIfValuesAreEqual = MaxResultsAllowingExtraResultsIfValuesAreEqual
+            };
+        }
+
         public override string ToString()
         {
             var description = new StringBuilder();

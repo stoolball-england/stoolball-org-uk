@@ -124,6 +124,8 @@ WriteLiteral("        <thead>\r\n            <tr>\r\n                <th");
 
 WriteLiteral(" scope=\"col\"");
 
+WriteLiteral(" class=\"table-order\"");
+
 WriteLiteral(">#</th>\r\n");
 
             
@@ -238,14 +240,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Player</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2008), Tuple.Create("\"", 2051)
+WriteAttribute("href", Tuple.Create(" href=\"", 2028), Tuple.Create("\"", 2071)
             
             #line 45 "..\..\Views\Partials\_IndividualScores.cshtml"
-                                                   , Tuple.Create(Tuple.Create("", 2015), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Player.PlayerRoute
+                                                   , Tuple.Create(Tuple.Create("", 2035), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Player.PlayerRoute
             
             #line default
             #line hidden
-, 2015), false)
+, 2035), false)
 );
 
 WriteLiteral(">");
@@ -278,14 +280,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Match</span><div><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2254), Tuple.Create("\"", 2295)
+WriteAttribute("href", Tuple.Create(" href=\"", 2274), Tuple.Create("\"", 2315)
             
             #line 47 "..\..\Views\Partials\_IndividualScores.cshtml"
-                                                   , Tuple.Create(Tuple.Create("", 2261), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
+                                                   , Tuple.Create(Tuple.Create("", 2281), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
             
             #line default
             #line hidden
-, 2261), false)
+, 2281), false)
 );
 
 WriteLiteral(">");
@@ -486,15 +488,15 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3952), Tuple.Create("\"", 3992)
+WriteAttribute("href", Tuple.Create(" href=\"", 3972), Tuple.Create("\"", 4012)
             
             #line 72 "..\..\Views\Partials\_IndividualScores.cshtml"
-, Tuple.Create(Tuple.Create("", 3959), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
+, Tuple.Create(Tuple.Create("", 3979), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
             
             #line default
             #line hidden
-, 3959), false)
-, Tuple.Create(Tuple.Create("", 3974), Tuple.Create("/individual-scores", 3974), true)
+, 3979), false)
+, Tuple.Create(Tuple.Create("", 3994), Tuple.Create("/individual-scores", 3994), true)
 );
 
 WriteLiteral(">Individual scores – view all</a></p>\r\n");

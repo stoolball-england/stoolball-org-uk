@@ -25,7 +25,7 @@ namespace Stoolball.Web.Tests.Statistics
 
         private class TestController : StatisticsController
         {
-            public TestController(IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
+            public TestController(IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource, IBestPlayerTotalStatisticsDataSource totalStatisticsDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -33,7 +33,8 @@ namespace Stoolball.Web.Tests.Statistics
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
-                statisticsDataSource)
+                bestPerformanceDataSource,
+                totalStatisticsDataSource)
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -56,9 +57,10 @@ namespace Stoolball.Web.Tests.Statistics
         [Fact]
         public async Task Index_returns_StatisticsSummaryViewModel()
         {
-            var dataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
+            var bestPerformanceDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
+            var totalStatisticsDataSource = new Mock<IBestPlayerTotalStatisticsDataSource>();
 
-            using (var controller = new TestController(dataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(bestPerformanceDataSource.Object, totalStatisticsDataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

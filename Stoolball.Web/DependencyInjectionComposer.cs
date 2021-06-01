@@ -89,6 +89,7 @@ namespace Stoolball.Web
             composition.Register<IMatchFilterSerializer, MatchFilterQueryStringSerializer>();
             composition.Register<IStatisticsFilterSerializer, StatisticsFilterQueryStringSerializer>();
             composition.Register<ITeamListingFilterSerializer, TeamListingFilterQueryStringSerializer>();
+            composition.Register<IPlayerFilterSerializer, PlayerFilterQueryStringSerializer>();
             composition.Register<ICacheOverride, CacheOverride>();
             composition.Register<IBadLanguageFilter, BadLanguageFilter>();
             composition.Register<IStatisticsQueryBuilder, StatisticsQueryBuilder>();
@@ -169,6 +170,8 @@ namespace Stoolball.Web
             composition.Register<ICacheablePlayerSummaryStatisticsDataSource, SqlServerPlayerSummaryStatisticsDataSource>();
             composition.Register<IPlayerPerformanceStatisticsDataSource, CachedPlayerPerformanceStatisticsDataSource>();
             composition.Register<ICacheablePlayerPerformanceStatisticsDataSource, SqlServerPlayerPerformanceStatisticsDataSource>();
+            composition.Register<IBestPlayerTotalStatisticsDataSource, CachedBestPlayerTotalStatisticsDataSource>();
+            composition.Register<ICacheableBestTotalStatisticsDataSource, SqlServerBestPlayerTotalStatisticsDataSource>();
 
             // Security checks
             composition.Register<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>();

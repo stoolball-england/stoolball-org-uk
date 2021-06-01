@@ -60,7 +60,7 @@ namespace Stoolball.Web.Teams
             }
             else
             {
-                var identities = await _playerDataSource.ReadPlayerIdentities(new PlayerIdentityFilter { TeamIds = new List<Guid> { model.Team.TeamId.Value } }).ConfigureAwait(false);
+                var identities = await _playerDataSource.ReadPlayerIdentities(new PlayerFilter { TeamIds = new List<Guid> { model.Team.TeamId.Value } }).ConfigureAwait(false);
                 model.Players = identities.Select(x => x.Player).Distinct(new PlayerEqualityComparer()).ToList();
                 foreach (var player in model.Players)
                 {

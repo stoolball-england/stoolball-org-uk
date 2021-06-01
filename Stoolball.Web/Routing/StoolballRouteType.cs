@@ -83,6 +83,7 @@
         IndividualScores,
         BowlingFigures,
         Catches,
-        RunOuts
+        RunOuts,
+        MostRuns
     }
 }

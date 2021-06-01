@@ -81,7 +81,7 @@ namespace Stoolball.Web.Tests.Teams
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team { TeamId = Guid.NewGuid() });
 
             var playerDataSource = new Mock<IPlayerDataSource>();
-            playerDataSource.Setup(x => x.ReadPlayerIdentities(It.IsAny<PlayerIdentityFilter>())).Returns(Task.FromResult(new List<PlayerIdentity>()));
+            playerDataSource.Setup(x => x.ReadPlayerIdentities(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(new List<PlayerIdentity>()));
 
             using (var controller = new TestController(teamDataSource.Object, playerDataSource.Object, UmbracoHelper))
             {

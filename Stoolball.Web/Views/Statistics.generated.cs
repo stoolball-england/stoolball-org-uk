@@ -81,6 +81,8 @@ namespace ASP
     individualScores.Results.AddRange(Model.PlayerInnings);
     var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
     bowlingFigures.Results.AddRange(Model.BowlingFigures);
+    var mostRuns = new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
+    mostRuns.Results.AddRange(Model.MostRuns);
 
             
             #line default
@@ -106,13 +108,13 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>Statistics for all teams</h1>\r\n\r\n");
 
             
-            #line 20 "..\..\Views\Statistics.cshtml"
+            #line 22 "..\..\Views\Statistics.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 20 "..\..\Views\Statistics.cshtml"
+            #line 22 "..\..\Views\Statistics.cshtml"
      if (Model.IsAuthorized[AuthorizedAction.EditStatistics])
     {
 
@@ -131,21 +133,21 @@ WriteLiteral(">\r\n                <a");
 
 WriteLiteral(" class=\"nav-link nav-link-edit\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1147), Tuple.Create("\"", 1199)
+WriteAttribute("href", Tuple.Create(" href=\"", 1346), Tuple.Create("\"", 1398)
             
-            #line 24 "..\..\Views\Statistics.cshtml"
-, Tuple.Create(Tuple.Create("", 1154), Tuple.Create<System.Object, System.Int32>(Stoolball.Constants.Pages.StatisticsUrl
+            #line 26 "..\..\Views\Statistics.cshtml"
+, Tuple.Create(Tuple.Create("", 1353), Tuple.Create<System.Object, System.Int32>(Stoolball.Constants.Pages.StatisticsUrl
             
             #line default
             #line hidden
-, 1154), false)
-, Tuple.Create(Tuple.Create("", 1194), Tuple.Create("/edit", 1194), true)
+, 1353), false)
+, Tuple.Create(Tuple.Create("", 1393), Tuple.Create("/edit", 1393), true)
 );
 
 WriteLiteral(">Edit statistics</a>\r\n            </li>\r\n        </ul>\r\n");
 
             
-            #line 27 "..\..\Views\Statistics.cshtml"
+            #line 29 "..\..\Views\Statistics.cshtml"
     }
 
             
@@ -156,7 +158,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 29 "..\..\Views\Statistics.cshtml"
+            #line 31 "..\..\Views\Statistics.cshtml"
 Write(Html.Partial("_StatisticsBasis"));
 
             
@@ -167,7 +169,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 30 "..\..\Views\Statistics.cshtml"
+            #line 32 "..\..\Views\Statistics.cshtml"
 Write(Html.Partial("_IndividualScores", individualScores));
 
             
@@ -178,7 +180,18 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 31 "..\..\Views\Statistics.cshtml"
+            #line 33 "..\..\Views\Statistics.cshtml"
+Write(Html.Partial("_MostRuns", mostRuns));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
+WriteLiteral("    ");
+
+            
+            #line 34 "..\..\Views\Statistics.cshtml"
 Write(Html.Partial("_BowlingFigures", bowlingFigures));
 
             

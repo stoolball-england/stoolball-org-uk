@@ -18,7 +18,8 @@ namespace Stoolball.Web.Statistics
 {
     public class StatisticsController : RenderMvcControllerAsync
     {
-        private readonly IBestPerformanceInAMatchStatisticsDataSource _statisticsDataSource;
+        private readonly IBestPerformanceInAMatchStatisticsDataSource _bestPerformanceInAMatchStatisticsDataSource;
+        private readonly IBestPlayerTotalStatisticsDataSource _bestTotalStatisticsDataSource;
 
         public StatisticsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -26,10 +27,12 @@ namespace Stoolball.Web.Statistics
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource)
+           IBestPerformanceInAMatchStatisticsDataSource bestPerformanceInAMatchStatisticsDataSource,
+           IBestPlayerTotalStatisticsDataSource bestTotalStatisticsDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
+            _bestPerformanceInAMatchStatisticsDataSource = bestPerformanceInAMatchStatisticsDataSource ?? throw new ArgumentNullException(nameof(bestPerformanceInAMatchStatisticsDataSource));
+            _bestTotalStatisticsDataSource = bestTotalStatisticsDataSource ?? throw new ArgumentNullException(nameof(bestTotalStatisticsDataSource));
         }
 
         [HttpGet]
@@ -45,8 +48,9 @@ namespace Stoolball.Web.Statistics
             model.IsAuthorized[AuthorizedAction.EditStatistics] = Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null);
 
             model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
-            model.PlayerInnings = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
-            model.BowlingFigures = (await _statisticsDataSource.ReadBowlingFigures(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+            model.PlayerInnings = (await _bestPerformanceInAMatchStatisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+            model.MostRuns = (await _bestTotalStatisticsDataSource.ReadMostRunsScored(model.StatisticsFilter).ConfigureAwait(false)).ToList();
+            model.BowlingFigures = (await _bestPerformanceInAMatchStatisticsDataSource.ReadBowlingFigures(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
             model.Metadata.PageTitle = $"Statistics for all teams";
 

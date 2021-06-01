@@ -794,8 +794,29 @@ namespace Stoolball.Testing
             // Get all batting records
             testData.PlayerInnings = testData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();
 
+            ForceTheFifthAndSixthMostRunsResultsToBeEqual(testData);
+
             return testData;
         }
+
+        private static void ForceTheFifthAndSixthMostRunsResultsToBeEqual(TestData testData)
+        {
+            var allPlayers = testData.Players.Select(x => new
+            {
+                Player = x,
+                Runs = testData.Matches.SelectMany(m => m.MatchInnings)
+                                       .SelectMany(mi => mi.PlayerInnings)
+                                       .Where(pi => pi.Batter.Player.PlayerId == x.PlayerId)
+                                       .Sum(pi => pi.RunsScored)
+            }).OrderByDescending(x => x.Runs).ToList();
+
+            var differenceBetweenFifthAndSixth = allPlayers[4].Runs - allPlayers[5].Runs;
+            var anyInningsByPlayerSix = testData.Matches.SelectMany(m => m.MatchInnings)
+                                       .SelectMany(mi => mi.PlayerInnings)
+                                       .First(pi => pi.Batter.Player.PlayerId == allPlayers[5].Player.PlayerId && pi.RunsScored.HasValue);
+            anyInningsByPlayerSix.RunsScored += differenceBetweenFifthAndSixth;
+        }
+
 
         private List<Match> GenerateMatchData()
         {
