@@ -29,7 +29,7 @@ namespace Stoolball.Web.Tests.Competitions
 
         private class TestController : SeasonStatisticsController
         {
-            public TestController(ISeasonDataSource seasonDataSource, IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
+            public TestController(ISeasonDataSource seasonDataSource, IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -38,7 +38,8 @@ namespace Stoolball.Web.Tests.Competitions
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
                 seasonDataSource,
-                statisticsDataSource)
+                bestPerformanceDataSource,
+                Mock.Of<IBestPlayerTotalStatisticsDataSource>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));

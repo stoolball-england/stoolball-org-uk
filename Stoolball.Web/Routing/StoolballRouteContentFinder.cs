@@ -109,6 +109,7 @@ namespace Stoolball.Web.Routing
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.MatchesForSeason },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.SeasonStatistics },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}statistics{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores },
+                { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}statistics{SLASH}most-runs{OPTIONAL_SLASH}", StoolballRouteType.MostRuns },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches{SLASH}add{SLASH}training{OPTIONAL_SLASH}", StoolballRouteType.CreateTrainingSession },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches{SLASH}add{SLASH}friendly{OPTIONAL_SLASH}", StoolballRouteType.CreateFriendlyMatch },
