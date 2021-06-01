@@ -39,7 +39,8 @@ namespace Stoolball.Web.Tests.Clubs
                 umbracoHelper,
                 clubDataSource,
                 statisticsDataSource,
-                inningsStatisticsDataSource)
+                inningsStatisticsDataSource,
+                Mock.Of<IBestPlayerTotalStatisticsDataSource>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));

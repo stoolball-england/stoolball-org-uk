@@ -20,8 +20,9 @@ namespace Stoolball.Web.Clubs
     public class ClubStatisticsController : RenderMvcControllerAsync
     {
         private readonly IClubDataSource _clubDataSource;
-        private readonly IBestPerformanceInAMatchStatisticsDataSource _statisticsDataSource;
+        private readonly IBestPerformanceInAMatchStatisticsDataSource _bestPerformanceDataSource;
         private readonly IInningsStatisticsDataSource _inningsStatisticsDataSource;
+        private readonly IBestPlayerTotalStatisticsDataSource _bestPlayerTotalDataSource;
 
         public ClubStatisticsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -30,13 +31,15 @@ namespace Stoolball.Web.Clubs
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IClubDataSource clubDataSource,
-           IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource,
-           IInningsStatisticsDataSource inningsStatisticsDataSource)
+           IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource,
+           IInningsStatisticsDataSource inningsStatisticsDataSource,
+           IBestPlayerTotalStatisticsDataSource bestPlayerTotalDataSource)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
-            _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
+            _bestPerformanceDataSource = bestPerformanceDataSource ?? throw new ArgumentNullException(nameof(bestPerformanceDataSource));
             _inningsStatisticsDataSource = inningsStatisticsDataSource ?? throw new ArgumentNullException(nameof(inningsStatisticsDataSource));
+            _bestPlayerTotalDataSource = bestPlayerTotalDataSource ?? throw new ArgumentNullException(nameof(bestPlayerTotalDataSource));
         }
 
         [HttpGet]
@@ -63,8 +66,9 @@ namespace Stoolball.Web.Clubs
                 model.InningsStatistics = await _inningsStatisticsDataSource.ReadInningsStatistics(model.StatisticsFilter).ConfigureAwait(false);
 
                 model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual = 10;
-                model.PlayerInnings = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
-                model.BowlingFigures = (await _statisticsDataSource.ReadBowlingFigures(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+                model.PlayerInnings = (await _bestPerformanceDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+                model.BowlingFigures = (await _bestPerformanceDataSource.ReadBowlingFigures(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+                model.MostRuns = (await _bestPlayerTotalDataSource.ReadMostRunsScored(model.StatisticsFilter).ConfigureAwait(false)).ToList();
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
 

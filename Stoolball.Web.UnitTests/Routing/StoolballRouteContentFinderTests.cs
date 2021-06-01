@@ -84,6 +84,8 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/clubs/EXAMPLE-club/STATISTICS/", StoolballRouteType.ClubStatistics)]
         [InlineData("https://example.org/clubs/EXAMPLE-club/StatisticS/Individual-Scores", StoolballRouteType.IndividualScores)]
         [InlineData("https://example.org/clubs/EXAMPLE-club/STATISTICS/individual-scores/", StoolballRouteType.IndividualScores)]
+        [InlineData("https://example.org/clubs/EXAMPLE-club/StatisticS/most-runs", StoolballRouteType.MostRuns)]
+        [InlineData("https://example.org/clubs/EXAMPLE-club/STATISTICS/Most-Runs/", StoolballRouteType.MostRuns)]
         [InlineData("https://example.org/clubs/EXAMPLE-club/StatisticS/Bowling-Figures", StoolballRouteType.BowlingFigures)]
         [InlineData("https://example.org/clubs/EXAMPLE-club/STATISTICS/bowling-figures/", StoolballRouteType.BowlingFigures)]
         [InlineData("https://example.org/clubs/ADD", StoolballRouteType.CreateClub)]
