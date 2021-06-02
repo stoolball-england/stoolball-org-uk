@@ -762,12 +762,12 @@ namespace Stoolball.Testing
 
             testData.PlayerIdentities = testData.Matches.SelectMany(m => _playerIdentityFinder.PlayerIdentitiesInMatch(m)).Distinct(new PlayerIdentityEqualityComparer()).ToList();
             testData.Players = testData.PlayerIdentities.Select(x => x.Player).Distinct(playerComparer).ToList();
+
             foreach (var identity in testData.PlayerIdentities)
             {
                 if (testData.PlayerIdentities.Count(x => x.Player.PlayerId == identity.Player.PlayerId) > 1 &&
                     !testData.PlayersWithMultipleIdentities.Any(x => x.PlayerId == identity.Player.PlayerId))
                 {
-                    identity.Player.PlayerIdentities = testData.PlayerIdentities.Where(x => x.Player.PlayerId == identity.Player.PlayerId).ToList();
                     testData.PlayersWithMultipleIdentities.Add(identity.Player);
                 }
             }
@@ -858,6 +858,12 @@ namespace Stoolball.Testing
                 } while (targetTeam.TeamId == team.TeamId);
                 var player4 = targetIdentities[_randomiser.Next(targetIdentities.Count)];
                 player4.Player = player3.Player;
+            }
+
+            var allIdentities = _teams.SelectMany(x => x.identities);
+            foreach (var player in allIdentities.Select(x => x.Player))
+            {
+                player.PlayerIdentities = allIdentities.Where(x => x.Player.PlayerId == player.PlayerId).ToList();
             }
 
             // Create matches for them to play in, with scorecards
