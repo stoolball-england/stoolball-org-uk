@@ -167,7 +167,7 @@
       <Version>8.11.2</Version>
     </PackageReference>
     <PackageReference Include="UmbracoCms.Web">
-      <Version>8.11.2</Version>
+      <Version>8.11.3</Version>
     </PackageReference>
     <PackageReference Include="UmbracoForms.Core">
       <Version>8.6.1</Version>
