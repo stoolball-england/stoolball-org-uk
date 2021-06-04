@@ -17,10 +17,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
     public class SqlServerIntegrationTestsRepository
     {
         private readonly IDbConnection _connection;
+        private readonly IPlayerInMatchStatisticsBuilder _playerInMatchStatisticsBuilder;
 
-        public SqlServerIntegrationTestsRepository(IDbConnection connection)
+        public SqlServerIntegrationTestsRepository(IDbConnection connection, IPlayerInMatchStatisticsBuilder playerInMatchStatisticsBuilder)
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
+            _playerInMatchStatisticsBuilder = playerInMatchStatisticsBuilder ?? throw new ArgumentNullException(nameof(playerInMatchStatisticsBuilder));
         }
 
         public void CreateTestData(TestData data)
@@ -30,8 +32,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 throw new ArgumentNullException(nameof(data));
             }
 
-            var playerIdentityFinder = new PlayerIdentityFinder();
-            var statisticsBuilder = new PlayerInMatchStatisticsBuilder(playerIdentityFinder, new OversHelper());
+            foreach (var member in data.Members)
+            {
+                CreateMember(member);
+            }
 
             foreach (var player in data.Players)
             {
@@ -57,16 +61,32 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             foreach (var competition in data.Competitions)
             {
                 CreateCompetition(competition);
-                foreach (var season in competition.Seasons)
+            }
+            foreach (var season in data.Seasons)
+            {
+                CreateSeason(season, season.Competition.CompetitionId.Value);
+                foreach (var teamInSeason in season.Teams)
                 {
-                    CreateSeason(season, competition.CompetitionId.Value);
+                    AddTeamToSeason(teamInSeason);
+                }
+            }
+            foreach (var tournament in data.Tournaments)
+            {
+                CreateTournament(tournament);
+                foreach (var teamInTournament in tournament.Teams)
+                {
+                    AddTeamToTournament(teamInTournament, tournament);
+                }
+                foreach (var season in tournament.Seasons)
+                {
+                    AddTournamentToSeason(tournament, season);
                 }
             }
             foreach (var match in data.Matches)
             {
                 CreateMatch(match);
 
-                var statisticsRecords = statisticsBuilder.BuildStatisticsForMatch(match);
+                var statisticsRecords = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(match);
                 foreach (var record in statisticsRecords)
                 {
                     CreatePlayerInMatchStatisticsRecord(record);

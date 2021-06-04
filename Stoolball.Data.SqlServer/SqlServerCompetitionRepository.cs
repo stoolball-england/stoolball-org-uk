@@ -356,6 +356,7 @@ namespace Stoolball.Data.SqlServer
                     }
 
                     await _seasonRepository.DeleteSeasons(competition.Seasons, memberKey, memberName, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET CompetitionId = NULL WHERE CompetitionId = @CompetitionId", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.CompetitionVersion} WHERE CompetitionId = @CompetitionId", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"DELETE FROM {Tables.Competition} WHERE CompetitionId = @CompetitionId", new { competition.CompetitionId }, transaction).ConfigureAwait(false);
 

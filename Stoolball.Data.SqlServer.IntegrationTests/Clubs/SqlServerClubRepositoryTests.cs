@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Transactions;
 using Dapper;
 using Moq;
 using Stoolball.Clubs;
@@ -11,14 +12,16 @@ using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
 {
-    [Collection(IntegrationTestConstants.RepositoryIntegrationTestCollection)]
-    public class SqlServerClubRepositoryTests
+    [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
+    public class SqlServerClubRepositoryTests : IDisposable
     {
-        private readonly SqlServerRepositoryFixture _databaseFixture;
+        private readonly SqlServerTestDataFixture _databaseFixture;
+        private readonly TransactionScope _scope;
 
-        public SqlServerClubRepositoryTests(SqlServerRepositoryFixture databaseFixture)
+        public SqlServerClubRepositoryTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
+            _scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         }
 
         [Fact]
@@ -55,13 +58,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
 
             var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger>(), Mock.Of<IRouteGenerator>(), Mock.Of<IRedirectsRepository>());
 
-            await repo.DeleteClub(_databaseFixture.ClubWithTeamsForDelete, memberKey, memberName).ConfigureAwait(false);
+            await repo.DeleteClub(_databaseFixture.TestData.TeamWithFullDetails.Club, memberKey, memberName).ConfigureAwait(false);
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
-                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT ClubId FROM {Tables.Club} WHERE ClubId = @ClubId", _databaseFixture.ClubWithTeamsForDelete).ConfigureAwait(false);
+                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT ClubId FROM {Tables.Club} WHERE ClubId = @ClubId", new { _databaseFixture.TestData.TeamWithFullDetails.Club.ClubId }).ConfigureAwait(false);
                 Assert.Null(result);
             }
         }
+
+        public void Dispose() => _scope.Dispose();
     }
 }

@@ -8,12 +8,12 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 {
-    [Collection(IntegrationTestConstants.StatisticsDataSourceIntegrationTestCollection)]
+    [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
     public class SqlServerPlayerSummaryStatisticsDataSourceTests
     {
-        private readonly SqlServerStatisticsDataSourceFixture _databaseFixture;
+        private readonly SqlServerTestDataFixture _databaseFixture;
 
-        public SqlServerPlayerSummaryStatisticsDataSourceTests(SqlServerStatisticsDataSourceFixture databaseFixture)
+        public SqlServerPlayerSummaryStatisticsDataSourceTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
@@ -153,9 +153,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 Assert.NotNull(result);
 
                 var bestRunsScored = _databaseFixture.TestData.PlayerInnings.Where(x => x.Batter.Player.PlayerId == player.PlayerId).Max(x => x.RunsScored);
-                Assert.Equal(bestRunsScored, result.BestInningsRunsScored);
-                Assert.Equal(_databaseFixture.TestData.PlayerInnings.Where(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored == bestRunsScored)
-                    .Any(x => x.DismissalType == DismissalType.NotOut || x.DismissalType == DismissalType.Retired || x.DismissalType == DismissalType.RetiredHurt), !result.BestInningsWasDismissed);
+                if (bestRunsScored.HasValue)
+                {
+                    Assert.Equal(bestRunsScored, result.BestInningsRunsScored);
+                    Assert.Equal(_databaseFixture.TestData.PlayerInnings.Where(x => x.Batter.Player.PlayerId == player.PlayerId && x.RunsScored == bestRunsScored)
+                        .Any(x => x.DismissalType == DismissalType.NotOut || x.DismissalType == DismissalType.Retired || x.DismissalType == DismissalType.RetiredHurt), !result.BestInningsWasDismissed);
+                }
+                else
+                {
+                    Assert.Null(result.BestInningsRunsScored);
+                }
             }
         }
 

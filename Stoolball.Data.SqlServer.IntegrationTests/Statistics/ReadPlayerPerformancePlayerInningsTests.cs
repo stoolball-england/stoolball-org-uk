@@ -11,12 +11,12 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 {
-    [Collection(IntegrationTestConstants.StatisticsDataSourceIntegrationTestCollection)]
+    [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
     public class ReadPlayerPerformancePlayerInningsTests
     {
-        private readonly SqlServerStatisticsDataSourceFixture _databaseFixture;
+        private readonly SqlServerTestDataFixture _databaseFixture;
 
-        public ReadPlayerPerformancePlayerInningsTests(SqlServerStatisticsDataSourceFixture databaseFixture)
+        public ReadPlayerPerformancePlayerInningsTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }

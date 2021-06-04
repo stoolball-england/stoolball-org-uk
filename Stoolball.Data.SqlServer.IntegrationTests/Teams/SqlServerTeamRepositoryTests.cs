@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Transactions;
 using AngleSharp.Css.Dom;
 using Dapper;
 using Ganss.XSS;
@@ -15,14 +16,16 @@ using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
 {
-    [Collection(IntegrationTestConstants.RepositoryIntegrationTestCollection)]
-    public class SqlServerTeamRepositoryTests
+    [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
+    public class SqlServerTeamRepositoryTests : IDisposable
     {
-        private readonly SqlServerRepositoryFixture _databaseFixture;
+        private readonly SqlServerTestDataFixture _databaseFixture;
+        private readonly TransactionScope _scope;
 
-        public SqlServerTeamRepositoryTests(SqlServerRepositoryFixture databaseFixture)
+        public SqlServerTeamRepositoryTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
+            _scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         }
 
         [Fact]
@@ -84,13 +87,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 sanitizer.Object,
                 Mock.Of<IDataRedactor>());
 
-            await repo.DeleteTeam(_databaseFixture.TeamWithFullDetailsForDelete, memberKey, memberName).ConfigureAwait(false);
+            await repo.DeleteTeam(_databaseFixture.TestData.TeamWithFullDetails, memberKey, memberName).ConfigureAwait(false);
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
-                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT TeamId FROM {Tables.Team} WHERE TeamId = @TeamId", _databaseFixture.TeamWithFullDetailsForDelete).ConfigureAwait(false);
+                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT TeamId FROM {Tables.Team} WHERE TeamId = @TeamId", new { _databaseFixture.TestData.TeamWithFullDetails.TeamId }).ConfigureAwait(false);
                 Assert.Null(result);
             }
         }
+
+        public void Dispose() => _scope.Dispose();
     }
 }

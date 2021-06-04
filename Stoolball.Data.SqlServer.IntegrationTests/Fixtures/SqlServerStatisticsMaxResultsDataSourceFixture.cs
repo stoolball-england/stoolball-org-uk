@@ -17,6 +17,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var oversHelper = new OversHelper();
             var bowlingFiguresCalculator = new BowlingFiguresCalculator(oversHelper);
             var playerIdentityFinder = new PlayerIdentityFinder();
+            var playerInMatchStatisticsBuilder = new PlayerInMatchStatisticsBuilder(playerIdentityFinder, oversHelper);
             var seedDataGenerator = new SeedDataGenerator(oversHelper, bowlingFiguresCalculator, playerIdentityFinder);
             TestData = seedDataGenerator.GenerateTestData();
             ModifyTestData();
@@ -25,7 +26,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             {
                 connection.Open();
 
-                var repo = new SqlServerIntegrationTestsRepository(connection);
+                var repo = new SqlServerIntegrationTestsRepository(connection, playerInMatchStatisticsBuilder);
+                repo.CreateUmbracoBaseRecords();
                 repo.CreateTestData(TestData);
             }
         }

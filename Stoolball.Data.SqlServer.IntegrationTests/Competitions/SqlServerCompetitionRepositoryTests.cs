@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Transactions;
 using AngleSharp.Css.Dom;
 using Dapper;
 using Ganss.XSS;
@@ -13,14 +14,16 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 {
-    [Collection(IntegrationTestConstants.RepositoryIntegrationTestCollection)]
-    public class SqlServerCompetitionRepositoryTests
+    [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
+    public class SqlServerCompetitionRepositoryTests : IDisposable
     {
-        private readonly SqlServerRepositoryFixture _databaseFixture;
+        private readonly SqlServerTestDataFixture _databaseFixture;
+        private readonly TransactionScope _scope;
 
-        public SqlServerCompetitionRepositoryTests(SqlServerRepositoryFixture databaseFixture)
+        public SqlServerCompetitionRepositoryTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
+            _scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         }
 
         [Fact]
@@ -54,13 +57,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
                 sanitizer.Object,
                 Mock.Of<IDataRedactor>());
 
-            await competitionRepository.DeleteCompetition(_databaseFixture.CompetitionWithFullDetailsForDelete, memberKey, memberName).ConfigureAwait(false);
+            await competitionRepository.DeleteCompetition(_databaseFixture.TestData.CompetitionWithFullDetails, memberKey, memberName).ConfigureAwait(false);
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
-                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT CompetitionId FROM {Tables.Competition} WHERE CompetitionId = @CompetitionId", _databaseFixture.CompetitionWithFullDetailsForDelete).ConfigureAwait(false);
+                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT CompetitionId FROM {Tables.Competition} WHERE CompetitionId = @CompetitionId", new { _databaseFixture.TestData.CompetitionWithFullDetails.CompetitionId }).ConfigureAwait(false);
                 Assert.Null(result);
             }
         }
+        public void Dispose() => _scope.Dispose();
     }
 }

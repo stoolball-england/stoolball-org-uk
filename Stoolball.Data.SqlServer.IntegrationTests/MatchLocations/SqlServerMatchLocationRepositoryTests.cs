@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Transactions;
 using AngleSharp.Css.Dom;
 using Dapper;
 using Ganss.XSS;
@@ -13,14 +14,16 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 {
-    [Collection(IntegrationTestConstants.RepositoryIntegrationTestCollection)]
-    public class SqlServerMatchLocationRepositoryTests
+    [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
+    public class SqlServerMatchLocationRepositoryTests : IDisposable
     {
-        private readonly SqlServerRepositoryFixture _databaseFixture;
+        private readonly SqlServerTestDataFixture _databaseFixture;
+        private readonly TransactionScope _scope;
 
-        public SqlServerMatchLocationRepositoryTests(SqlServerRepositoryFixture databaseFixture)
+        public SqlServerMatchLocationRepositoryTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
+            _scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         }
 
         [Fact]
@@ -44,13 +47,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
                 sanitizer.Object,
                 Mock.Of<IDataRedactor>());
 
-            await repo.DeleteMatchLocation(_databaseFixture.MatchLocationWithFullDetailsForDelete, memberKey, memberName).ConfigureAwait(false);
+            await repo.DeleteMatchLocation(_databaseFixture.TestData.MatchLocationWithFullDetails, memberKey, memberName).ConfigureAwait(false);
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
-                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT MatchLocationId FROM {Tables.MatchLocation} WHERE MatchLocationId = @MatchLocationId", _databaseFixture.MatchLocationWithFullDetailsForDelete).ConfigureAwait(false);
+                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT MatchLocationId FROM {Tables.MatchLocation} WHERE MatchLocationId = @MatchLocationId", new { _databaseFixture.TestData.MatchLocationWithFullDetails.MatchLocationId }).ConfigureAwait(false);
                 Assert.Null(result);
             }
         }
+        public void Dispose() => _scope.Dispose();
     }
 }

@@ -10,12 +10,12 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 {
-    [Collection(IntegrationTestConstants.StatisticsDataSourceIntegrationTestCollection)]
+    [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
     public class ReadBestPerformancePlayerInningsTests
     {
-        private readonly SqlServerStatisticsDataSourceFixture _databaseFixture;
+        private readonly SqlServerTestDataFixture _databaseFixture;
 
-        public ReadBestPerformancePlayerInningsTests(SqlServerStatisticsDataSourceFixture databaseFixture)
+        public ReadBestPerformancePlayerInningsTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
         }
@@ -52,15 +52,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_total_player_innings_supports_filter_by_club_id()
         {
-            var filter = new StatisticsFilter { Club = _databaseFixture.TestData.TeamWithClub.Club };
+            var filter = new StatisticsFilter { Club = _databaseFixture.TestData.TeamWithFullDetails.Club };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND ClubId = @ClubId", new Dictionary<string, object> { { "ClubId", _databaseFixture.TestData.TeamWithClub.Club.ClubId } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND ClubId = @ClubId", new Dictionary<string, object> { { "ClubId", _databaseFixture.TestData.TeamWithFullDetails.Club.ClubId } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var result = await dataSource.ReadTotalPlayerInnings(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithClub.TeamId.Value))
-                .SelectMany(x => x.MatchInnings.Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithClub.TeamId.Value))
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId.Value))
+                .SelectMany(x => x.MatchInnings.Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId.Value))
                 .SelectMany(x => x.PlayerInnings)
                 .Count(x => x.RunsScored.HasValue);
             Assert.Equal(expected, result);
@@ -69,15 +69,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_total_player_innings_supports_filter_by_team_id()
         {
-            var filter = new StatisticsFilter { Team = _databaseFixture.TestData.TeamWithClub };
+            var filter = new StatisticsFilter { Team = _databaseFixture.TestData.TeamWithFullDetails };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND TeamId = @TeamId", new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithClub.TeamId } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND TeamId = @TeamId", new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithFullDetails.TeamId } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var result = await dataSource.ReadTotalPlayerInnings(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithClub.TeamId.Value))
-                .SelectMany(x => x.MatchInnings.Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithClub.TeamId.Value))
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId.Value))
+                .SelectMany(x => x.MatchInnings.Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId.Value))
                 .SelectMany(x => x.PlayerInnings)
                 .Count(x => x.RunsScored.HasValue);
             Assert.Equal(expected, result);
@@ -307,16 +307,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     PageSize = int.MaxValue
                 },
-                Club = _databaseFixture.TestData.TeamWithClub.Club
+                Club = _databaseFixture.TestData.TeamWithFullDetails.Club
             };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND ClubId = @ClubId", new Dictionary<string, object> { { "ClubId", _databaseFixture.TestData.TeamWithClub.Club.ClubId } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND ClubId = @ClubId", new Dictionary<string, object> { { "ClubId", _databaseFixture.TestData.TeamWithFullDetails.Club.ClubId } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var results = await dataSource.ReadPlayerInnings(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithClub.TeamId.Value))
-                .SelectMany(x => x.MatchInnings.Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithClub.TeamId.Value))
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId.Value))
+                .SelectMany(x => x.MatchInnings.Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId.Value))
                 .SelectMany(x => x.PlayerInnings)
                 .Where(x => x.RunsScored.HasValue).ToList();
             Assert.Equal(expected.Count, results.Count());
@@ -335,16 +335,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 {
                     PageSize = int.MaxValue
                 },
-                Team = _databaseFixture.TestData.TeamWithClub
+                Team = _databaseFixture.TestData.TeamWithFullDetails
             };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
-            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND TeamId = @TeamId", new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithClub.TeamId } }));
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND TeamId = @TeamId", new Dictionary<string, object> { { "TeamId", _databaseFixture.TestData.TeamWithFullDetails.TeamId } }));
             var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
 
             var results = await dataSource.ReadPlayerInnings(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithClub.TeamId.Value))
-                .SelectMany(x => x.MatchInnings.Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithClub.TeamId.Value))
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.Teams.Select(t => t.Team.TeamId).Contains(_databaseFixture.TestData.TeamWithFullDetails.TeamId.Value))
+                .SelectMany(x => x.MatchInnings.Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId.Value))
                 .SelectMany(x => x.PlayerInnings)
                 .Where(x => x.RunsScored.HasValue).ToList();
             Assert.Equal(expected.Count, results.Count());

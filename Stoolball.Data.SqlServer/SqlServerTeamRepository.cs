@@ -527,8 +527,7 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET OppositionTeamId = NULL, OppositionTeamName = NULL WHERE OppositionTeamId = @TeamId", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInMatchStatistics} WHERE TeamId = @TeamId", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInMatchStatistics} WHERE TeamId = @TeamId OR OppositionTeamId = @TeamId", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET BowledByPlayerIdentityId = NULL WHERE BowledByPlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET CaughtByPlayerIdentityId = NULL WHERE CaughtByPlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET RunOutByPlayerIdentityId = NULL WHERE RunOutByPlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId)", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false);

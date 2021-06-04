@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Transactions;
 using AngleSharp.Css.Dom;
 using Dapper;
 using Ganss.XSS;
@@ -15,14 +16,16 @@ using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 {
-    [Collection(IntegrationTestConstants.RepositoryIntegrationTestCollection)]
-    public class SqlServerMatchRepositoryTests
+    [Collection(IntegrationTestConstants.TestDataIntegrationTestCollection)]
+    public class SqlServerMatchRepositoryTests : IDisposable
     {
-        private readonly SqlServerRepositoryFixture _databaseFixture;
+        private readonly SqlServerTestDataFixture _databaseFixture;
+        private readonly TransactionScope _scope;
 
-        public SqlServerMatchRepositoryTests(SqlServerRepositoryFixture databaseFixture)
+        public SqlServerMatchRepositoryTests(SqlServerTestDataFixture databaseFixture)
         {
             _databaseFixture = databaseFixture ?? throw new ArgumentNullException(nameof(databaseFixture));
+            _scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         }
 
         [Fact]
@@ -54,13 +57,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 Mock.Of<IOversHelper>(),
                 Mock.Of<IPlayerInMatchStatisticsBuilder>());
 
-            await repo.DeleteMatch(_databaseFixture.MatchWithFullDetailsForDelete, memberKey, memberName).ConfigureAwait(false);
+            await repo.DeleteMatch(_databaseFixture.TestData.MatchInThePastWithFullDetails, memberKey, memberName).ConfigureAwait(false);
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
-                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT MatchId FROM {Tables.Match} WHERE MatchId = @MatchId", _databaseFixture.MatchWithFullDetailsForDelete).ConfigureAwait(false);
+                var result = await connection.QuerySingleOrDefaultAsync<Guid?>($"SELECT MatchId FROM {Tables.Match} WHERE MatchId = @MatchId", new { _databaseFixture.TestData.MatchInThePastWithFullDetails.MatchId }).ConfigureAwait(false);
                 Assert.Null(result);
             }
         }
+        public void Dispose() => _scope.Dispose();
     }
 }

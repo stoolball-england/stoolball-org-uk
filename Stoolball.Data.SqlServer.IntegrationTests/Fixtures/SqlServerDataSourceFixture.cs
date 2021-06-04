@@ -56,12 +56,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         {
             var oversHelper = new OversHelper();
             var playerIdentityFinder = new PlayerIdentityFinder();
+            var playerInMatchStatisticsBuilder = new PlayerInMatchStatisticsBuilder(playerIdentityFinder, oversHelper);
             var seedDataGenerator = new SeedDataGenerator(oversHelper, new BowlingFiguresCalculator(oversHelper), playerIdentityFinder);
             using (var connection = ConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
 
-                var repo = new SqlServerIntegrationTestsRepository(connection);
+                var repo = new SqlServerIntegrationTestsRepository(connection, playerInMatchStatisticsBuilder);
 
                 repo.CreateUmbracoBaseRecords();
                 var members = seedDataGenerator.CreateMembers();
@@ -111,7 +112,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 repo.CreateTeam(TeamWithMinimalDetails);
                 Teams.Add(TeamWithMinimalDetails);
 
-                TeamWithFullDetails = seedDataGenerator.CreateTeamWithFullDetails();
+                TeamWithFullDetails = seedDataGenerator.CreateTeamWithFullDetails("Team with full details");
                 repo.CreateTeam(TeamWithFullDetails);
                 Teams.Add(TeamWithFullDetails);
                 foreach (var matchLocation in TeamWithFullDetails.MatchLocations)
@@ -287,7 +288,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 Competitions.Add(competitionForSeason);
                 Seasons.Add(SeasonWithMinimalDetails);
 
-                SeasonWithFullDetails = seedDataGenerator.CreateSeasonWithFullDetails(competitionForSeason, 2021, 2021);
+                SeasonWithFullDetails = seedDataGenerator.CreateSeasonWithFullDetails(competitionForSeason, 2021, 2021, seedDataGenerator.CreateTeamWithMinimalDetails("Team 1 in season"), seedDataGenerator.CreateTeamWithMinimalDetails("Team 2 in season"));
                 competitionForSeason.Seasons.Add(SeasonWithFullDetails);
                 Teams.AddRange(SeasonWithFullDetails.Teams.Select(x => x.Team));
                 foreach (var team in SeasonWithFullDetails.Teams)

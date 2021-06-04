@@ -241,6 +241,7 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
+                    await connection.ExecuteAsync($@"UPDATE {Tables.PlayerInMatchStatistics} SET ClubId = NULL WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"UPDATE {Tables.Team} SET ClubId = NULL, ClubMark = 0 WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.AwardedTo} WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
                     await connection.ExecuteAsync($@"DELETE FROM {Tables.ClubVersion} WHERE ClubId = @ClubId", new { club.ClubId }, transaction).ConfigureAwait(false);
