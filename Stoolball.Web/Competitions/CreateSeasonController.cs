@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
+using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Web.Routing;
@@ -56,6 +57,10 @@ namespace Stoolball.Web.Competitions
                 {
                     Season = competition.Seasons.FirstOrDefault() ?? new Season { PlayersPerTeam = 11 }
                 };
+                if (!model.Season.DefaultOverSets.Any())
+                {
+                    model.Season.DefaultOverSets.Add(new OverSet());
+                }
                 var summerSeason = model.Season.FromYear == model.Season.UntilYear;
                 model.Season.Competition = competition;
                 model.Season.FromYear = model.Season.FromYear == default ? DateTime.Today.Year : model.Season.FromYear + 1;
