@@ -1,9 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Stoolball.Routing
 {
     public interface IRouteGenerator
     {
+        Task<string> GenerateUniqueRoute(string prefix, string name, IEnumerable<string> noiseWords, Func<string, Task<int>> findMatchingRoutes);
+        Task<string> GenerateUniqueRoute(string currentRoute, string prefix, string name, IEnumerable<string> noiseWords, Func<string, Task<int>> findMatchingRoutes);
+
         string GenerateRoute(string prefix, string name, IEnumerable<string> noiseWords);
         string IncrementRoute(string route);
 

@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using Stoolball.Clubs;
 using Stoolball.Logging;
 using Stoolball.Routing;
-using Stoolball.Teams;
 using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer
@@ -21,27 +20,16 @@ namespace Stoolball.Data.SqlServer
         private readonly ILogger _logger;
         private readonly IRouteGenerator _routeGenerator;
         private readonly IRedirectsRepository _redirectsRepository;
+        private readonly IStoolballEntityCopier _copier;
 
-        public SqlServerClubRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator, IRedirectsRepository redirectsRepository)
+        public SqlServerClubRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator, IRedirectsRepository redirectsRepository, IStoolballEntityCopier copier)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
-        }
-
-        private static Club CreateAuditableCopy(Club club)
-        {
-            return new Club
-            {
-                ClubId = club.ClubId,
-                ClubName = club.ClubName,
-                Teams = club.Teams.Select(x => new Team { TeamId = x.TeamId }).ToList(),
-                ClubRoute = club.ClubRoute,
-                MemberGroupKey = club.MemberGroupKey,
-                MemberGroupName = club.MemberGroupName
-            };
+            _copier = copier ?? throw new ArgumentNullException(nameof(copier));
         }
 
         /// <summary>
@@ -59,7 +47,7 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            var auditableClub = CreateAuditableCopy(club);
+            var auditableClub = _copier.CreateAuditableCopy(club);
             auditableClub.ClubId = Guid.NewGuid();
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
@@ -67,17 +55,10 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    auditableClub.ClubRoute = _routeGenerator.GenerateRoute("/clubs", auditableClub.ClubName, NoiseWords.ClubRoute);
-                    int count;
-                    do
-                    {
-                        count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Club} WHERE ClubRoute = @ClubRoute", new { auditableClub.ClubRoute }, transaction).ConfigureAwait(false);
-                        if (count > 0)
-                        {
-                            auditableClub.ClubRoute = _routeGenerator.IncrementRoute(auditableClub.ClubRoute);
-                        }
-                    }
-                    while (count > 0);
+                    auditableClub.ClubRoute = await _routeGenerator.GenerateUniqueRoute(
+                       "/clubs", auditableClub.ClubName, NoiseWords.ClubRoute,
+                       async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Club} WHERE ClubRoute = @ClubRoute", new { ClubRoute = route }, transaction).ConfigureAwait(false)
+                   ).ConfigureAwait(false);
 
                     await connection.ExecuteAsync(
                         $@"INSERT INTO {Tables.Club} (ClubId, ClubRoute, MemberGroupKey, MemberGroupName) 
@@ -119,7 +100,7 @@ namespace Stoolball.Data.SqlServer
 
                     transaction.Commit();
 
-                    _logger.Info(GetType(), LoggingTemplates.Created, auditableClub, memberName, memberKey, GetType(), nameof(SqlServerClubRepository.CreateClub));
+                    _logger.Info(GetType(), LoggingTemplates.Created, auditableClub, memberName, memberKey, GetType(), nameof(CreateClub));
                 }
             }
 
@@ -142,29 +123,18 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            var auditableClub = CreateAuditableCopy(club);
+            var auditableClub = _copier.CreateAuditableCopy(club);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-
-                    var baseRoute = _routeGenerator.GenerateRoute("/clubs", auditableClub.ClubName, NoiseWords.ClubRoute);
-                    if (!_routeGenerator.IsMatchingRoute(club.ClubRoute, baseRoute))
-                    {
-                        auditableClub.ClubRoute = baseRoute;
-                        int count;
-                        do
-                        {
-                            count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Club} WHERE ClubRoute = @ClubRoute", new { auditableClub.ClubRoute }, transaction).ConfigureAwait(false);
-                            if (count > 0)
-                            {
-                                auditableClub.ClubRoute = _routeGenerator.IncrementRoute(auditableClub.ClubRoute);
-                            }
-                        }
-                        while (count > 0);
-                    }
+                    auditableClub.ClubRoute = await _routeGenerator.GenerateUniqueRoute(
+                        club.ClubRoute,
+                        "/clubs", auditableClub.ClubName, NoiseWords.ClubRoute,
+                        async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Club} WHERE ClubRoute = @ClubRoute", new { ClubRoute = route }, transaction).ConfigureAwait(false)
+                    ).ConfigureAwait(false);
 
                     await connection.ExecuteAsync(
                         $@"UPDATE {Tables.Club} SET
@@ -249,7 +219,7 @@ namespace Stoolball.Data.SqlServer
 
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix(club.ClubRoute, transaction).ConfigureAwait(false);
 
-                    var auditableClub = CreateAuditableCopy(club);
+                    var auditableClub = _copier.CreateAuditableCopy(club);
                     var serialisedClub = JsonConvert.SerializeObject(auditableClub);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {

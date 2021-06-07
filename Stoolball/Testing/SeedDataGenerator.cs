@@ -727,6 +727,12 @@ namespace Stoolball.Testing
                     poolOfTeams[poolOfTeams.Count - 1].team.Club = CreateClubWithMinimalDetails();
                 }
             }
+
+            foreach (var club in poolOfTeams.Where(x => x.team.Club != null).Select(x => x.team.Club))
+            {
+                club.Teams.AddRange(poolOfTeams.Where(x => x.team.Club?.ClubId == club.ClubId).Select(x => x.team));
+            }
+
             return poolOfTeams;
         }
 

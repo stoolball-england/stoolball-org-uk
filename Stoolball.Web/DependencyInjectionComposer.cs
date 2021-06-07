@@ -93,6 +93,7 @@ namespace Stoolball.Web
             composition.Register<ICacheOverride, CacheOverride>();
             composition.Register<IBadLanguageFilter, BadLanguageFilter>();
             composition.Register<IStatisticsQueryBuilder, StatisticsQueryBuilder>();
+            composition.Register<IStoolballEntityCopier, StoolballEntityCopier>();
 
 
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 

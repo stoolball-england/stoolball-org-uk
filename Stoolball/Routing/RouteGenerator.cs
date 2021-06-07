@@ -1,12 +1,46 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Humanizer;
 
 namespace Stoolball.Routing
 {
     public class RouteGenerator : IRouteGenerator
     {
+        public async Task<string> GenerateUniqueRoute(string prefix, string name, IEnumerable<string> noiseWords, Func<string, Task<int>> findMatchingRoutes)
+        {
+            return await GenerateUniqueRoute(string.Empty, prefix, name, noiseWords, findMatchingRoutes).ConfigureAwait(false);
+        }
+
+        public async Task<string> GenerateUniqueRoute(string currentRoute, string prefix, string name, IEnumerable<string> noiseWords, Func<string, Task<int>> findMatchingRoutes)
+        {
+            if (findMatchingRoutes is null)
+            {
+                throw new ArgumentNullException(nameof(findMatchingRoutes));
+            }
+
+            var baseRoute = GenerateRoute(prefix, name, noiseWords);
+            var uniqueRoute = currentRoute;
+            if (!IsMatchingRoute(currentRoute, baseRoute))
+            {
+                uniqueRoute = baseRoute;
+                int count;
+                do
+                {
+                    count = await findMatchingRoutes(uniqueRoute).ConfigureAwait(false);
+                    if (count > 0)
+                    {
+                        uniqueRoute = IncrementRoute(uniqueRoute);
+                    }
+                }
+                while (count > 0);
+            }
+
+            return uniqueRoute;
+        }
+
         /// <inheritdoc/>
         public string GenerateRoute(string prefix, string name, IEnumerable<string> noiseWords)
         {
