@@ -11,3 +11,4 @@ This is a rebuild of the Stoolball England website at www.stoolball.org.uk using
 - [Requiring consent](Documentation/Consent.md)
 - [Design](Documentation/Design.md)
 - [Deployment](Documentation/Deployment.md)
+- [Caching](Documentation/Caching.md)
