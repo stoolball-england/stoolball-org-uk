@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Caching;
 using Stoolball.Clubs;
-using Stoolball.Data.Cache;
 using Stoolball.Navigation;
 using Stoolball.Security;
 using Stoolball.Web.Security;

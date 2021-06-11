@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Polly;
 using Polly.Registry;
+using Stoolball.Caching;
 using Stoolball.Statistics;
 
 namespace Stoolball.Data.Cache

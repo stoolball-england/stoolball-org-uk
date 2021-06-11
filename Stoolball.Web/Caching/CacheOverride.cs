@@ -3,7 +3,6 @@ using Polly;
 using Polly.Caching;
 using Polly.Registry;
 using Stoolball.Caching;
-using Stoolball.Data.Cache;
 using Umbraco.Web.Security;
 
 namespace Stoolball.Web.Caching

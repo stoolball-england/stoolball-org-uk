@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Caching;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
 using Stoolball.Routing;
@@ -22,15 +23,17 @@ namespace Stoolball.Web.MatchLocations
         private readonly IMatchLocationRepository _matchLocationRepository;
         private readonly IAuthorizationPolicy<MatchLocation> _authorizationPolicy;
         private readonly IRouteGenerator _routeGenerator;
+        private readonly ICacheOverride _cacheOverride;
 
         public CreateMatchLocationSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchLocationRepository matchLocationRepository,
-           IAuthorizationPolicy<MatchLocation> authorizationPolicy, IRouteGenerator routeGenerator)
+           IAuthorizationPolicy<MatchLocation> authorizationPolicy, IRouteGenerator routeGenerator, ICacheOverride cacheOverride)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _matchLocationRepository = matchLocationRepository ?? throw new System.ArgumentNullException(nameof(matchLocationRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
             _routeGenerator = routeGenerator ?? throw new System.ArgumentNullException(nameof(routeGenerator));
+            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
         }
 
         [HttpPost]
@@ -84,6 +87,7 @@ namespace Stoolball.Web.MatchLocations
 
                 // Create the location
                 var createdMatchLocation = await _matchLocationRepository.CreateMatchLocation(location, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.MatchLocationsCacheKeyPrefix);
 
                 // Redirect to the location
                 return Redirect(createdMatchLocation.MatchLocationRoute);

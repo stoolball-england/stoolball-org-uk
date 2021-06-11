@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Stoolball.Caching;
 using Stoolball.Clubs;
 using Stoolball.Matches;
 

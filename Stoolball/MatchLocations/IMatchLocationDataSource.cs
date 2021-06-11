@@ -12,13 +12,13 @@ namespace Stoolball.MatchLocations
         /// Gets the number of match locations that match a query
         /// </summary>
         /// <returns></returns>
-        Task<int> ReadTotalMatchLocations(MatchLocationFilter matchLocationQuery);
+        Task<int> ReadTotalMatchLocations(MatchLocationFilter filter);
 
         /// <summary>
         /// Gets a list of match locations based on a query
         /// </summary>
         /// <returns>A list of <see cref="MatchLocation"/> objects. An empty list if no match locations are found.</returns>
-        Task<List<MatchLocation>> ReadMatchLocations(MatchLocationFilter matchLocationQuery);
+        Task<List<MatchLocation>> ReadMatchLocations(MatchLocationFilter filter);
 
         /// <summary>
         /// Gets a single match location based on its route

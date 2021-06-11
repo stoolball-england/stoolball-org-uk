@@ -89,6 +89,7 @@ namespace Stoolball.Web
             composition.Register<IMatchFilterSerializer, MatchFilterQueryStringSerializer>();
             composition.Register<IStatisticsFilterSerializer, StatisticsFilterQueryStringSerializer>();
             composition.Register<ITeamListingFilterSerializer, TeamListingFilterQueryStringSerializer>();
+            composition.Register<IMatchLocationFilterSerializer, MatchLocationFilterQueryStringSerializer>();
             composition.Register<IPlayerFilterSerializer, PlayerFilterQueryStringSerializer>();
             composition.Register<ICacheOverride, CacheOverride>();
             composition.Register<IBadLanguageFilter, BadLanguageFilter>();
@@ -126,6 +127,7 @@ namespace Stoolball.Web
                 registry.Add(CacheConstants.MatchesPolicy, cachePolicy);
                 registry.Add(CacheConstants.CommentsPolicy, cachePolicy);
                 registry.Add(CacheConstants.TeamsPolicy, cachePolicy);
+                registry.Add(CacheConstants.MatchLocationsPolicy, cachePolicy);
                 registry.Add(CacheConstants.MemberOverridePolicy, slidingPolicy);
                 return registry;
 
@@ -143,7 +145,8 @@ namespace Stoolball.Web
             composition.Register<IPlayerDataSource, CachedPlayerDataSource>();
             composition.Register<ICacheablePlayerDataSource, SqlServerPlayerDataSource>();
             composition.Register<IPlayerRepository, SqlServerPlayerRepository>();
-            composition.Register<IMatchLocationDataSource, SqlServerMatchLocationDataSource>();
+            composition.Register<IMatchLocationDataSource, CachedMatchLocationDataSource>();
+            composition.Register<ICacheableMatchLocationDataSource, SqlServerMatchLocationDataSource>();
             composition.Register<IMatchLocationRepository, SqlServerMatchLocationRepository>();
             composition.Register<ICompetitionDataSource, SqlServerCompetitionDataSource>();
             composition.Register<ICompetitionRepository, SqlServerCompetitionRepository>();

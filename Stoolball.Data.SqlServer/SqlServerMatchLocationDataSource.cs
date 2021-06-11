@@ -14,7 +14,7 @@ namespace Stoolball.Data.SqlServer
     /// <summary>
     /// Gets match location data from the Umbraco database
     /// </summary>
-    public class SqlServerMatchLocationDataSource : IMatchLocationDataSource
+    public class SqlServerMatchLocationDataSource : IMatchLocationDataSource, ICacheableMatchLocationDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IRouteNormaliser _routeNormaliser;

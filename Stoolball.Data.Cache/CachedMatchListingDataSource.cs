@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Polly;
 using Polly.Registry;
+using Stoolball.Caching;
 using Stoolball.Matches;
 
 namespace Stoolball.Data.Cache
