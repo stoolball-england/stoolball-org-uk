@@ -84,6 +84,7 @@
         BowlingFigures,
         Catches,
         RunOuts,
-        MostRuns
+        MostRuns,
+        MostWickets
     }
 }

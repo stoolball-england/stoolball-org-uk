@@ -1165,14 +1165,39 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>BowlingFigures.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\MatchesRss.cshtml" />
-    <Content Include="Views\MatchTweets.cshtml" />
-    <Content Include="Views\CreateTrainingSession.cshtml" />
-    <Content Include="Views\Matches.cshtml" />
-    <Content Include="Views\EditTournamentSeasons.cshtml" />
-    <Content Include="Views\MatchesCalendar.cshtml" />
+    <Content Include="Views\MatchesRss.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>MatchesRss.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\MatchTweets.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>MatchTweets.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\CreateTrainingSession.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>CreateTrainingSession.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Matches.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Matches.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditTournamentSeasons.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditTournamentSeasons.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\MatchesCalendar.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>MatchesCalendar.generated.cs</LastGenOutput>
+    </Content>
     <Content Include="Views\Catches.cshtml" />
-    <Content Include="Views\MostRuns.cshtml" />
+    <Content Include="Views\MostRuns.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>MostRuns.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\MostWickets.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>MostWickets.generated.cs</LastGenOutput>
+    </Content>
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -1293,6 +1318,7 @@
     <Compile Include="Matches\OnlySportCsvRecord.cs" />
     <Compile Include="Routing\RedirectBareDomainModule.cs" />
     <Compile Include="Statistics\BasePlayerViewModel.cs" />
+    <Compile Include="Statistics\MostWicketsController.cs" />
     <Compile Include="Statistics\MostRunsController.cs" />
     <Compile Include="Statistics\RunOutsController.cs" />
     <Compile Include="Statistics\CatchesController.cs" />
@@ -1304,10 +1330,80 @@
     <Compile Include="Teams\SpogoCsvExportTask.cs" />
     <Compile Include="Teams\SpogoCsvRecord.cs" />
     <Compile Include="Teams\PlayersForTeamController.cs" />
+    <Compile Include="Views\CreateTrainingSession.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CreateTrainingSession.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditTournamentSeasons.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditTournamentSeasons.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Matches.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Matches.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MatchesCalendar.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MatchesCalendar.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MatchesRss.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MatchesRss.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MatchTweets.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MatchTweets.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MostRuns.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MostRuns.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MostWickets.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MostWickets.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_CanonicalUrl.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_CanonicalUrl.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_Comments.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_Comments.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_MatchListSubscriptions.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_MatchListSubscriptions.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_MostWickets.generated.cs">
+      <DependentUpon>_MostWickets.cshtml</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Views\Partials\_MostRuns.generated.cs">
       <DependentUpon>_MostRuns.cshtml</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Views\Partials\_PlayerHeader.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_PlayerHeader.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_PlayerList.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_PlayerList.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\Partials\_RunOuts.generated.cs">
       <DependentUpon>_RunOuts.cshtml</DependentUpon>
@@ -1323,6 +1419,41 @@
       <DependentUpon>_CreateOrEditTrainingSession.cshtml</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Views\PlayerBowling.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PlayerBowling.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PlayerFielding.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PlayerFielding.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PlayersForTeam.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PlayersForTeam.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RunOuts.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RunOuts.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Tournaments.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Tournaments.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TournamentsRss.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TournamentsRss.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TournamentTweets.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TournamentTweets.cshtml</DependentUpon>
     </Compile>
     <Compile Include="WebApi\CsvHandler.cs" />
     <Compile Include="DapperComposer.cs" />
@@ -2696,26 +2827,62 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_InningsStatistics.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\TournamentsRss.cshtml" />
-    <Content Include="Views\TournamentTweets.cshtml" />
-    <Content Include="Views\Partials\_CanonicalUrl.cshtml" />
+    <Content Include="Views\TournamentsRss.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>TournamentsRss.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\TournamentTweets.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>TournamentTweets.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_CanonicalUrl.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_CanonicalUrl.generated.cs</LastGenOutput>
+    </Content>
     <Content Include="Views\Partials\_CreateOrEditTrainingSession.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_CreateOrEditTrainingSession.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\Tournaments.cshtml" />
-    <Content Include="Views\Partials\_MatchListSubscriptions.cshtml" />
-    <Content Include="Views\PlayerBowling.cshtml" />
-    <Content Include="Views\Partials\_PlayerHeader.cshtml" />
-    <Content Include="Views\PlayerFielding.cshtml" />
-    <Content Include="Views\PlayersForTeam.cshtml" />
-    <Content Include="Views\Partials\_PlayerList.cshtml" />
-    <Content Include="Views\Partials\_Comments.cshtml" />
+    <Content Include="Views\Tournaments.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Tournaments.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_MatchListSubscriptions.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_MatchListSubscriptions.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\PlayerBowling.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>PlayerBowling.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_PlayerHeader.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_PlayerHeader.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\PlayerFielding.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>PlayerFielding.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\PlayersForTeam.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>PlayersForTeam.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_PlayerList.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_PlayerList.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_Comments.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_Comments.generated.cs</LastGenOutput>
+    </Content>
     <Content Include="Views\Partials\_Catches.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_Catches.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\RunOuts.cshtml" />
+    <Content Include="Views\RunOuts.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>RunOuts.generated.cs</LastGenOutput>
+    </Content>
     <Content Include="Views\Partials\_RunOuts.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_RunOuts.generated.cs</LastGenOutput>
@@ -2723,6 +2890,10 @@
     <Content Include="Views\Partials\_MostRuns.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_MostRuns.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_MostWickets.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_MostWickets.generated.cs</LastGenOutput>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

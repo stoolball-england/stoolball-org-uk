@@ -815,6 +815,7 @@ namespace Stoolball.Testing
             testData.PlayerInnings = testData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();
 
             ForceTheFifthAndSixthMostRunsResultsToBeEqual(testData);
+            ForceTheFifthAndSixthMostWicketsResultsToBeEqual(testData);
 
             return testData;
         }
@@ -835,6 +836,37 @@ namespace Stoolball.Testing
                                        .SelectMany(mi => mi.PlayerInnings)
                                        .First(pi => pi.Batter.Player.PlayerId == allPlayers[5].Player.PlayerId && pi.RunsScored.HasValue);
             anyInningsByPlayerSix.RunsScored += differenceBetweenFifthAndSixth;
+        }
+
+        private void ForceTheFifthAndSixthMostWicketsResultsToBeEqual(TestData testData)
+        {
+            var allPlayers = testData.Players.Select(x => new
+            {
+                Player = x,
+                Wickets = testData.Matches.SelectMany(m => m.MatchInnings)
+                                       .SelectMany(mi => mi.BowlingFigures)
+                                       .Where(pi => pi.Bowler.Player.PlayerId == x.PlayerId)
+                                       .Sum(pi => pi.Wickets)
+            }).OrderByDescending(x => x.Wickets).ToList();
+
+            var sixthPlayer = allPlayers[5];
+            var differenceBetweenFifthAndSixth = allPlayers[4].Wickets - sixthPlayer.Wickets;
+
+            while (differenceBetweenFifthAndSixth > 0)
+            {
+                var matchInningsWherePlayerSixCouldTakeWickets = testData.Matches.SelectMany(m => m.MatchInnings)
+                                                   .Where(mi => sixthPlayer.Player.PlayerIdentities.Select(pi => pi.Team.TeamId.Value).Contains(mi.BowlingTeam.Team.TeamId.Value) &&
+                                                                mi.PlayerInnings.Any(pi => !StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType))
+                                                   ).First();
+
+                var playerInningsToChange = matchInningsWherePlayerSixCouldTakeWickets.PlayerInnings.First(pi => !StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType));
+                playerInningsToChange.DismissalType = DismissalType.Bowled;
+                playerInningsToChange.Bowler = sixthPlayer.Player.PlayerIdentities.First(x => x.Team.TeamId == matchInningsWherePlayerSixCouldTakeWickets.BowlingTeam.Team.TeamId);
+
+                matchInningsWherePlayerSixCouldTakeWickets.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(matchInningsWherePlayerSixCouldTakeWickets);
+
+                differenceBetweenFifthAndSixth--;
+            }
         }
 
 

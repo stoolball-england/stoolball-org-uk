@@ -25,12 +25,33 @@ namespace Stoolball.Data.SqlServer
         {
             filter = filter ?? new StatisticsFilter();
 
-            return await ReadBestPlayerTotal("RunsScored", false, filter).ConfigureAwait(false);
+            var outerQuery = @"SELECT PlayerId, PlayerRoute, TotalMatches, TotalInnings, Total, 
+                                CASE WHEN TotalDismissals > 0 THEN CAST(Total AS DECIMAL)/ TotalDismissals ELSE NULL END AS Average
+                         FROM(
+                            <<QUERY>>
+                         ) AS BestTotal
+                         ORDER BY Total DESC, TotalInnings ASC, TotalMatches ASC";
+
+            var extraSelectFields = $", (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics } WHERE PlayerId = s.PlayerId AND DismissalType NOT IN({ (int)DismissalType.DidNotBat},{ (int)DismissalType.NotOut},{ (int)DismissalType.Retired},{ (int)DismissalType.RetiredHurt}) <<WHERE>>) AS TotalDismissals";
+
+            return await ReadBestPlayerTotal("RunsScored", false, extraSelectFields, outerQuery, $"DismissalType != { (int)DismissalType.DidNotBat}", filter).ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<StatisticsResult<BestTotal>>> ReadMostWickets(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+
+            return await ReadBestPlayerTotal("Wickets", true, null, null, "BowlingFiguresId IS NOT NULL", filter).ConfigureAwait(false);
         }
 
         public async Task<int> ReadTotalPlayersWithRunsScored(StatisticsFilter filter)
         {
             return await ReadTotalPlayersWithData("RunsScored", filter).ConfigureAwait(false);
+        }
+
+        public async Task<int> ReadTotalPlayersWithWickets(StatisticsFilter filter)
+        {
+            return await ReadTotalPlayersWithData("Wickets", filter).ConfigureAwait(false);
         }
 
         private async Task<int> ReadTotalPlayersWithData(string fieldName, StatisticsFilter filter)
@@ -42,7 +63,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private async Task<IEnumerable<StatisticsResult<BestTotal>>> ReadBestPlayerTotal(string fieldName, bool isFieldingStatistic, StatisticsFilter filter)
+        private async Task<IEnumerable<StatisticsResult<BestTotal>>> ReadBestPlayerTotal(string fieldName, bool isFieldingStatistic, string extraSelectFields, string outerQueryIncludingOrderBy, string totalInningsFilter, StatisticsFilter filter)
         {
             var clonedFilter = filter.Clone();
             clonedFilter.SwapBattingFirstFilter = isFieldingStatistic;
@@ -67,6 +88,12 @@ namespace Stoolball.Data.SqlServer
                 // If @MaxResult IS NULL there are fewer rows than the requested maximum, so just fetch all.
                 // Otherwise look for results that are greater than or equal to the value(s) in the last row retrieved above.
                 offsetWithExtraResults = $"AND (@MaxResult IS NULL OR SUM({fieldName}) >= @MaxResult) ";
+
+                // Add an ORDER BY clause to sort the results, unless we're relying on an outer query to do that because it's not valid in a sub-query
+                if (string.IsNullOrEmpty(outerQueryIncludingOrderBy))
+                {
+                    offsetWithExtraResults += $"ORDER BY SUM({fieldName}) DESC, TotalInnings ASC, TotalMatches ASC";
+                }
             }
             else
             {
@@ -75,27 +102,36 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@PageSize", clonedFilter.Paging.PageSize);
             }
 
-            var sql = $@"{preQuery} 
-                         SELECT PlayerId, PlayerRoute, TotalMatches, TotalInnings, Total, 
-                                CASE WHEN TotalDismissals > 0 THEN CAST(Total AS DECIMAL)/TotalDismissals ELSE NULL END AS Average 
-                         FROM (
-                                 SELECT PlayerId, PlayerRoute,
+            var sql = $@"SELECT PlayerId, PlayerRoute,
 		                                (SELECT COUNT(DISTINCT MatchId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS TotalMatches,
-		                                (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId AND DismissalType != { (int)DismissalType.DidNotBat} {where}) AS TotalInnings,
-                                        (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId AND DismissalType NOT IN({ (int)DismissalType.DidNotBat},{ (int)DismissalType.NotOut},{ (int)DismissalType.Retired},{ (int)DismissalType.RetiredHurt}) {where}) AS TotalDismissals,
+		                                (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId AND {totalInningsFilter} {where}) AS TotalInnings,
 		                                (SELECT SUM({ fieldName}) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS Total
+                                        <<SELECT>>
                                  FROM {Tables.PlayerInMatchStatistics} AS s 
                                  WHERE {fieldName} IS NOT NULL AND {fieldName} >= 0 {where} 
                                  {group} 
                                  {having} 
                                  {offsetWithExtraResults} 
-                                 {offsetPaging}
-                        ) AS BestTotal
-                        ORDER BY Total DESC, TotalInnings ASC, TotalMatches ASC";
+                                 {offsetPaging}";
+
+            if (!string.IsNullOrEmpty(extraSelectFields))
+            {
+                extraSelectFields = extraSelectFields.Replace("<<WHERE>>", where);
+                sql = sql.Replace("<<SELECT>>", extraSelectFields);
+            }
+            else
+            {
+                sql = sql.Replace("<<SELECT>>", string.Empty);
+            }
+
+            if (!string.IsNullOrEmpty(outerQueryIncludingOrderBy))
+            {
+                sql = outerQueryIncludingOrderBy.Replace("<<QUERY>>", sql);
+            }
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var results = await connection.QueryAsync<Player, BestTotal, StatisticsResult<BestTotal>>(sql,
+                var results = await connection.QueryAsync<Player, BestTotal, StatisticsResult<BestTotal>>($"{preQuery} {sql}",
                     (player, totals) =>
                     {
                         totals.Player = player;

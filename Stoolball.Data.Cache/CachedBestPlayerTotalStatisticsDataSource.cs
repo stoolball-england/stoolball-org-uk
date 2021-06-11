@@ -29,12 +29,26 @@ namespace Stoolball.Data.Cache
             return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadMostRunsScored(filter).ConfigureAwait(false), new Context(nameof(ReadMostRunsScored) + _statisticsFilterSerializer.Serialize(filter)));
         }
 
+        public async Task<IEnumerable<StatisticsResult<BestTotal>>> ReadMostWickets(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
+            return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadMostWickets(filter).ConfigureAwait(false), new Context(nameof(ReadMostWickets) + _statisticsFilterSerializer.Serialize(filter)));
+        }
+
         /// <inheritdoc />
         public async Task<int> ReadTotalPlayersWithRunsScored(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
             var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
             return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadTotalPlayersWithRunsScored(filter).ConfigureAwait(false), new Context(nameof(ReadTotalPlayersWithRunsScored) + _statisticsFilterSerializer.Serialize(filter)));
+        }
+
+        public async Task<int> ReadTotalPlayersWithWickets(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
+            return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadTotalPlayersWithWickets(filter).ConfigureAwait(false), new Context(nameof(ReadTotalPlayersWithWickets) + _statisticsFilterSerializer.Serialize(filter)));
         }
     }
 }

@@ -110,6 +110,7 @@ namespace Stoolball.Web.Routing
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.SeasonStatistics },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}statistics{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}statistics{SLASH}most-runs{OPTIONAL_SLASH}", StoolballRouteType.MostRuns },
+                { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}statistics{SLASH}most-wickets{OPTIONAL_SLASH}", StoolballRouteType.MostWickets },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches{SLASH}add{SLASH}training{OPTIONAL_SLASH}", StoolballRouteType.CreateTrainingSession },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches{SLASH}add{SLASH}friendly{OPTIONAL_SLASH}", StoolballRouteType.CreateFriendlyMatch },
@@ -130,10 +131,12 @@ namespace Stoolball.Web.Routing
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.ClubStatistics },
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores},
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}most-runs{OPTIONAL_SLASH}", StoolballRouteType.MostRuns},
+                { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}most-wickets{OPTIONAL_SLASH}", StoolballRouteType.MostWickets},
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures},
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.TeamStatistics},
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores},
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}most-runs{OPTIONAL_SLASH}", StoolballRouteType.MostRuns},
+                { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}most-wickets{OPTIONAL_SLASH}", StoolballRouteType.MostWickets},
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures},
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.ClubActions },
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}club{OPTIONAL_SLASH}", StoolballRouteType.EditClub },
@@ -154,6 +157,7 @@ namespace Stoolball.Web.Routing
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.MatchLocationStatistics },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}most-runs{OPTIONAL_SLASH}", StoolballRouteType.MostRuns },
+                { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}most-wickets{OPTIONAL_SLASH}", StoolballRouteType.MostWickets },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.MatchLocationActions },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}location{OPTIONAL_SLASH}", StoolballRouteType.EditMatchLocation },
@@ -162,6 +166,7 @@ namespace Stoolball.Web.Routing
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.CompetitionStatistics },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}most-runs{OPTIONAL_SLASH}", StoolballRouteType.MostRuns },
+                { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}most-wickets{OPTIONAL_SLASH}", StoolballRouteType.MostWickets },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}add{OPTIONAL_SLASH}", StoolballRouteType.CreateSeason },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.CompetitionActions },
@@ -193,7 +198,8 @@ namespace Stoolball.Web.Routing
                 { $"play{SLASH}statistics{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.EditStatistics },
                 { $"play{SLASH}statistics{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores },
                 { $"play{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures },
-                { $"play{SLASH}statistics{SLASH}most-runs{OPTIONAL_SLASH}", StoolballRouteType.MostRuns }
+                { $"play{SLASH}statistics{SLASH}most-runs{OPTIONAL_SLASH}", StoolballRouteType.MostRuns },
+                { $"play{SLASH}statistics{SLASH}most-wickets{OPTIONAL_SLASH}", StoolballRouteType.MostWickets }
             };
 
             foreach (var routePattern in routeTypes.Keys)

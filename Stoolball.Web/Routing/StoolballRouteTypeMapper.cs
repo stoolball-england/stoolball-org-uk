@@ -91,7 +91,8 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.BowlingFigures, typeof(BowlingFiguresController) },
             { StoolballRouteType.Catches, typeof(CatchesController) },
             { StoolballRouteType.RunOuts, typeof(RunOutsController) },
-            { StoolballRouteType.MostRuns, typeof(MostRunsController) }
+            { StoolballRouteType.MostRuns, typeof(MostRunsController) },
+            { StoolballRouteType.MostWickets, typeof(MostWicketsController) }
         };
 
         public Type MapRouteTypeToController(string unparsedRouteType)

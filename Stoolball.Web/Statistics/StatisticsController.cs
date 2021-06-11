@@ -50,6 +50,7 @@ namespace Stoolball.Web.Statistics
             model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
             model.PlayerInnings = (await _bestPerformanceInAMatchStatisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
             model.MostRuns = (await _bestTotalStatisticsDataSource.ReadMostRunsScored(model.StatisticsFilter).ConfigureAwait(false)).ToList();
+            model.MostWickets = (await _bestTotalStatisticsDataSource.ReadMostWickets(model.StatisticsFilter).ConfigureAwait(false)).ToList();
             model.BowlingFigures = (await _bestPerformanceInAMatchStatisticsDataSource.ReadBowlingFigures(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
             model.Metadata.PageTitle = $"Statistics for all teams";
