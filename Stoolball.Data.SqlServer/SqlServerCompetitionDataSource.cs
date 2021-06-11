@@ -15,7 +15,7 @@ namespace Stoolball.Data.SqlServer
     /// <summary>
     /// Gets stoolball competition data from the Umbraco database
     /// </summary>
-    public class SqlServerCompetitionDataSource : ICompetitionDataSource
+    public class SqlServerCompetitionDataSource : ICompetitionDataSource, ICacheableCompetitionDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IRouteNormaliser _routeNormaliser;

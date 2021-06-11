@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Caching;
 using Stoolball.Competitions;
 using Stoolball.Navigation;
 using Stoolball.Routing;
@@ -21,16 +22,18 @@ namespace Stoolball.Web.Competitions
         private readonly ICompetitionRepository _competitionRepository;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
         private readonly IPostSaveRedirector _postSaveRedirector;
+        private readonly ICacheOverride _cacheOverride;
 
         public EditCompetitionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ICompetitionDataSource competitionDataSource,
-            ICompetitionRepository competitionRepository, IAuthorizationPolicy<Competition> authorizationPolicy, IPostSaveRedirector postSaveRedirector)
+            ICompetitionRepository competitionRepository, IAuthorizationPolicy<Competition> authorizationPolicy, IPostSaveRedirector postSaveRedirector, ICacheOverride cacheOverride)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
             _competitionRepository = competitionRepository ?? throw new ArgumentNullException(nameof(competitionRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _postSaveRedirector = postSaveRedirector ?? throw new ArgumentNullException(nameof(postSaveRedirector));
+            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
         }
 
         [HttpPost]
@@ -59,6 +62,7 @@ namespace Stoolball.Web.Competitions
             {
                 var currentMember = Members.GetCurrentMember();
                 var updatedCompetition = await _competitionRepository.UpdateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.CompetitionsPolicyCacheKeyPrefix);
 
                 return _postSaveRedirector.WorkOutRedirect(competition.CompetitionRoute, updatedCompetition.CompetitionRoute, "/edit", Request.Form["UrlReferrer"]);
             }

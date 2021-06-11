@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Caching;
 using Stoolball.Competitions;
 using Stoolball.Navigation;
 using Stoolball.Routing;
@@ -22,15 +23,17 @@ namespace Stoolball.Web.Competitions
         private readonly ICompetitionRepository _competitionRepository;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
         private readonly IRouteGenerator _routeGenerator;
+        private readonly ICacheOverride _cacheOverride;
 
         public CreateCompetitionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ICompetitionRepository seasonRepository,
-            IAuthorizationPolicy<Competition> authorizationPolicy, IRouteGenerator routeGenerator)
+            IAuthorizationPolicy<Competition> authorizationPolicy, IRouteGenerator routeGenerator, ICacheOverride cacheOverride)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _competitionRepository = seasonRepository ?? throw new System.ArgumentNullException(nameof(seasonRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new System.ArgumentNullException(nameof(authorizationPolicy));
             _routeGenerator = routeGenerator ?? throw new System.ArgumentNullException(nameof(routeGenerator));
+            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
         }
 
         [HttpPost]
@@ -86,6 +89,7 @@ namespace Stoolball.Web.Competitions
 
                 // Create the competition
                 var createdCompetition = await _competitionRepository.CreateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.CompetitionsPolicyCacheKeyPrefix);
 
                 // Redirect to the competition
                 return Redirect(createdCompetition.CompetitionRoute);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Caching;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Navigation;
@@ -24,10 +25,12 @@ namespace Stoolball.Web.Competitions
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly ITeamDataSource _teamDataSource;
         private readonly IAuthorizationPolicy<Competition> _authorizationPolicy;
+        private readonly ICacheOverride _cacheOverride;
 
         public DeleteCompetitionSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ICompetitionDataSource competitionDataSource,
-            ICompetitionRepository competitionRepository, IMatchListingDataSource matchDataSource, ITeamDataSource teamDataSource, IAuthorizationPolicy<Competition> authorizationPolicy)
+            ICompetitionRepository competitionRepository, IMatchListingDataSource matchDataSource, ITeamDataSource teamDataSource, IAuthorizationPolicy<Competition> authorizationPolicy,
+            ICacheOverride cacheOverride)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _competitionDataSource = competitionDataSource ?? throw new ArgumentNullException(nameof(competitionDataSource));
@@ -35,6 +38,7 @@ namespace Stoolball.Web.Competitions
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
+            _cacheOverride = cacheOverride ?? throw new ArgumentNullException(nameof(cacheOverride));
         }
 
         [HttpPost]
@@ -64,6 +68,7 @@ namespace Stoolball.Web.Competitions
 
                 var currentMember = Members.GetCurrentMember();
                 await _competitionRepository.DeleteCompetition(viewModel.Competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.CompetitionsPolicyCacheKeyPrefix);
                 viewModel.Deleted = true;
             }
             else

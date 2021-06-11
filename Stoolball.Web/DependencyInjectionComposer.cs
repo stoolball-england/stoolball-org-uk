@@ -90,6 +90,7 @@ namespace Stoolball.Web
             composition.Register<IStatisticsFilterSerializer, StatisticsFilterQueryStringSerializer>();
             composition.Register<ITeamListingFilterSerializer, TeamListingFilterQueryStringSerializer>();
             composition.Register<IMatchLocationFilterSerializer, MatchLocationFilterQueryStringSerializer>();
+            composition.Register<ICompetitionFilterSerializer, CompetitionFilterQueryStringSerializer>();
             composition.Register<IPlayerFilterSerializer, PlayerFilterQueryStringSerializer>();
             composition.Register<ICacheOverride, CacheOverride>();
             composition.Register<IBadLanguageFilter, BadLanguageFilter>();
@@ -127,6 +128,7 @@ namespace Stoolball.Web
                 registry.Add(CacheConstants.MatchesPolicy, cachePolicy);
                 registry.Add(CacheConstants.CommentsPolicy, cachePolicy);
                 registry.Add(CacheConstants.TeamsPolicy, cachePolicy);
+                registry.Add(CacheConstants.CompetitionsPolicy, cachePolicy);
                 registry.Add(CacheConstants.MatchLocationsPolicy, cachePolicy);
                 registry.Add(CacheConstants.MemberOverridePolicy, slidingPolicy);
                 return registry;
@@ -148,7 +150,8 @@ namespace Stoolball.Web
             composition.Register<IMatchLocationDataSource, CachedMatchLocationDataSource>();
             composition.Register<ICacheableMatchLocationDataSource, SqlServerMatchLocationDataSource>();
             composition.Register<IMatchLocationRepository, SqlServerMatchLocationRepository>();
-            composition.Register<ICompetitionDataSource, SqlServerCompetitionDataSource>();
+            composition.Register<ICompetitionDataSource, CachedCompetitionDataSource>();
+            composition.Register<ICacheableCompetitionDataSource, SqlServerCompetitionDataSource>();
             composition.Register<ICompetitionRepository, SqlServerCompetitionRepository>();
             composition.Register<ISeasonDataSource, SqlServerSeasonDataSource>();
             composition.Register<ISeasonRepository, SqlServerSeasonRepository>();

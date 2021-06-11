@@ -18,7 +18,9 @@ There are three strategies used for caching:
 
   Suitable for data that's not too time-sensitive, but is directly editable. If you update some data you want to see that change take effect so that you know it worked. In this strategy the cache is invalidated immediately for the account who made the update, but other accounts and users who are not signed in will see the update when the cache naturally expires. This is used for:
 
+  - competition listings
   - club and team listings
+  - match location listings
 
 - **Update immediately for all**
 
