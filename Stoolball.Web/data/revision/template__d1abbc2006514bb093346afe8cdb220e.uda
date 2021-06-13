@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/MostCatches.cshtml",
+  "Master": null,
+  "Udi": "umb://template/d1abbc2006514bb093346afe8cdb220e",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/MostCatches.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Most Catches",
+  "Alias": "MostCatches",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "4.1.2"
+}

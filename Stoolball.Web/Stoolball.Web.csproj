@@ -1198,6 +1198,14 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>MostWickets.generated.cs</LastGenOutput>
     </Content>
+    <Content Include="Views\MostCatches.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>MostCatches.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\MostRunOuts.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>MostRunOuts.generated.cs</LastGenOutput>
+    </Content>
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -1318,6 +1326,8 @@
     <Compile Include="Matches\OnlySportCsvRecord.cs" />
     <Compile Include="Routing\RedirectBareDomainModule.cs" />
     <Compile Include="Statistics\BasePlayerViewModel.cs" />
+    <Compile Include="Statistics\MostRunOutsController.cs" />
+    <Compile Include="Statistics\MostCatchesController.cs" />
     <Compile Include="Statistics\MostWicketsController.cs" />
     <Compile Include="Statistics\MostRunsController.cs" />
     <Compile Include="Statistics\RunOutsController.cs" />
@@ -1360,6 +1370,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MatchTweets.cshtml</DependentUpon>
     </Compile>
+    <Compile Include="Views\MostCatches.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MostCatches.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MostRunOuts.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MostRunOuts.cshtml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MostRuns.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1384,6 +1404,16 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>_MatchListSubscriptions.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_MostRunOuts.generated.cs">
+      <DependentUpon>_MostRunOuts.cshtml</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Views\Partials\_MostCatches.generated.cs">
+      <DependentUpon>_MostCatches.cshtml</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Views\Partials\_MostWickets.generated.cs">
       <DependentUpon>_MostWickets.cshtml</DependentUpon>
@@ -2894,6 +2924,14 @@
     <Content Include="Views\Partials\_MostWickets.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_MostWickets.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_MostCatches.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_MostCatches.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_MostRunOuts.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_MostRunOuts.generated.cs</LastGenOutput>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

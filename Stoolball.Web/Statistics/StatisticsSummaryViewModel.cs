@@ -17,6 +17,7 @@ namespace Stoolball.Web.Statistics
         public List<StatisticsResult<BowlingFigures>> BowlingFigures { get; internal set; } = new List<StatisticsResult<BowlingFigures>>();
         public List<StatisticsResult<BestTotal>> MostRuns { get; internal set; } = new List<StatisticsResult<BestTotal>>();
         public List<StatisticsResult<BestTotal>> MostWickets { get; internal set; } = new List<StatisticsResult<BestTotal>>();
+        public List<StatisticsResult<BestTotal>> MostCatches { get; internal set; } = new List<StatisticsResult<BestTotal>>();
     }
 
     public class StatisticsSummaryViewModel<T> : StatisticsSummaryViewModel

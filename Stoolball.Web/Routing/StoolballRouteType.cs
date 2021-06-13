@@ -85,6 +85,8 @@
         Catches,
         RunOuts,
         MostRuns,
-        MostWickets
+        MostWickets,
+        MostCatches,
+        MostRunOuts
     }
 }

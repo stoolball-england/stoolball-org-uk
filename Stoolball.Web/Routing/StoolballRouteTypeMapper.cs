@@ -92,7 +92,9 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.Catches, typeof(CatchesController) },
             { StoolballRouteType.RunOuts, typeof(RunOutsController) },
             { StoolballRouteType.MostRuns, typeof(MostRunsController) },
-            { StoolballRouteType.MostWickets, typeof(MostWicketsController) }
+            { StoolballRouteType.MostWickets, typeof(MostWicketsController) },
+            { StoolballRouteType.MostCatches, typeof(MostCatchesController) },
+            { StoolballRouteType.MostRunOuts, typeof(MostRunOutsController) }
         };
 
         public Type MapRouteTypeToController(string unparsedRouteType)

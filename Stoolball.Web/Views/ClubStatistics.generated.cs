@@ -86,6 +86,9 @@ namespace ASP
     mostRuns.Results.AddRange(Model.MostRuns);
     var mostWickets = new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
     mostWickets.Results.AddRange(Model.MostWickets);
+    var mostCatches = new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    mostCatches.Results.AddRange(Model.MostCatches);
+
             
             #line default
             #line hidden
@@ -96,7 +99,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 19 "..\..\Views\ClubStatistics.cshtml"
+            #line 22 "..\..\Views\ClubStatistics.cshtml"
    Write(Model.Context.ClubName);
 
             
@@ -114,14 +117,14 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1399), Tuple.Create("\"", 1430)
+WriteAttribute("href", Tuple.Create(" href=\"", 1633), Tuple.Create("\"", 1664)
             
-            #line 23 "..\..\Views\ClubStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 1406), Tuple.Create<System.Object, System.Int32>(Model.Context.ClubRoute
+            #line 26 "..\..\Views\ClubStatistics.cshtml"
+, Tuple.Create(Tuple.Create("", 1640), Tuple.Create<System.Object, System.Int32>(Model.Context.ClubRoute
             
             #line default
             #line hidden
-, 1406), false)
+, 1640), false)
 );
 
 WriteLiteral(">Summary</a>\r\n        </li>\r\n        <li");
@@ -132,15 +135,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1522), Tuple.Create("\"", 1561)
+WriteAttribute("href", Tuple.Create(" href=\"", 1756), Tuple.Create("\"", 1795)
             
-            #line 26 "..\..\Views\ClubStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 1529), Tuple.Create<System.Object, System.Int32>(Model.Context.ClubRoute
+            #line 29 "..\..\Views\ClubStatistics.cshtml"
+, Tuple.Create(Tuple.Create("", 1763), Tuple.Create<System.Object, System.Int32>(Model.Context.ClubRoute
             
             #line default
             #line hidden
-, 1529), false)
-, Tuple.Create(Tuple.Create("", 1553), Tuple.Create("/matches", 1553), true)
+, 1763), false)
+, Tuple.Create(Tuple.Create("", 1787), Tuple.Create("/matches", 1787), true)
 );
 
 WriteLiteral(">Matches</a>\r\n        </li>\r\n        <li");
@@ -154,14 +157,14 @@ WriteLiteral(" class=\"nav-link active\"");
 WriteLiteral(">Statistics</em>\r\n        </li>\r\n    </ul>\r\n\r\n\r\n");
 
             
-            #line 34 "..\..\Views\ClubStatistics.cshtml"
+            #line 37 "..\..\Views\ClubStatistics.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 34 "..\..\Views\ClubStatistics.cshtml"
-     if (!Model.InningsStatistics.Any() && !Model.PlayerInnings.Any() && !Model.BowlingFigures.Any() && !Model.MostRuns.Any() && !Model.MostWickets.Any())
+            #line 37 "..\..\Views\ClubStatistics.cshtml"
+     if (!Model.InningsStatistics.Any() && !Model.PlayerInnings.Any() && !Model.BowlingFigures.Any() && !Model.MostRuns.Any() && !Model.MostWickets.Any() && !Model.MostCatches.Any())
     {
 
             
@@ -175,7 +178,7 @@ WriteLiteral(" href=\"/organise/website/how-to-add-match-results/\"");
 WriteLiteral(">How to add match results</a>.</p>\r\n");
 
             
-            #line 37 "..\..\Views\ClubStatistics.cshtml"
+            #line 40 "..\..\Views\ClubStatistics.cshtml"
     }
     else
     {
@@ -184,71 +187,99 @@ WriteLiteral(">How to add match results</a>.</p>\r\n");
             #line default
             #line hidden
             
-            #line 40 "..\..\Views\ClubStatistics.cshtml"
+            #line 43 "..\..\Views\ClubStatistics.cshtml"
    Write(Html.Partial("_InningsStatistics", Model.InningsStatistics));
 
             
             #line default
             #line hidden
             
-            #line 40 "..\..\Views\ClubStatistics.cshtml"
+            #line 43 "..\..\Views\ClubStatistics.cshtml"
                                                                     
         
             
             #line default
             #line hidden
             
-            #line 41 "..\..\Views\ClubStatistics.cshtml"
+            #line 44 "..\..\Views\ClubStatistics.cshtml"
    Write(Html.Partial("_IndividualScores", individualScores));
 
             
             #line default
             #line hidden
             
-            #line 41 "..\..\Views\ClubStatistics.cshtml"
+            #line 44 "..\..\Views\ClubStatistics.cshtml"
                                                             
         
             
             #line default
             #line hidden
             
-            #line 42 "..\..\Views\ClubStatistics.cshtml"
+            #line 45 "..\..\Views\ClubStatistics.cshtml"
    Write(Html.Partial("_MostRuns", mostRuns));
 
             
             #line default
             #line hidden
             
-            #line 42 "..\..\Views\ClubStatistics.cshtml"
+            #line 45 "..\..\Views\ClubStatistics.cshtml"
                                             
         
             
             #line default
             #line hidden
             
-            #line 43 "..\..\Views\ClubStatistics.cshtml"
+            #line 46 "..\..\Views\ClubStatistics.cshtml"
    Write(Html.Partial("_BowlingFigures", bowlingFigures));
 
             
             #line default
             #line hidden
             
-            #line 43 "..\..\Views\ClubStatistics.cshtml"
+            #line 46 "..\..\Views\ClubStatistics.cshtml"
                                                         
         
             
             #line default
             #line hidden
             
-            #line 44 "..\..\Views\ClubStatistics.cshtml"
+            #line 47 "..\..\Views\ClubStatistics.cshtml"
    Write(Html.Partial("_MostWickets", mostWickets));
 
             
             #line default
             #line hidden
             
-            #line 44 "..\..\Views\ClubStatistics.cshtml"
+            #line 47 "..\..\Views\ClubStatistics.cshtml"
                                                   
+        
+            
+            #line default
+            #line hidden
+            
+            #line 48 "..\..\Views\ClubStatistics.cshtml"
+   Write(Html.Partial("_MostCatches", mostCatches));
+
+            
+            #line default
+            #line hidden
+            
+            #line 48 "..\..\Views\ClubStatistics.cshtml"
+                                                  
+        
+            
+            #line default
+            #line hidden
+            
+            #line 49 "..\..\Views\ClubStatistics.cshtml"
+   Write(Html.Partial("_MostRunOuts", new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowLinkOnly = true }));
+
+            
+            #line default
+            #line hidden
+            
+            #line 49 "..\..\Views\ClubStatistics.cshtml"
+                                                                                                                              
     }
 
             

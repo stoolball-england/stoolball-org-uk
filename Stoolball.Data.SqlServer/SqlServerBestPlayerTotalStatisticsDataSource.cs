@@ -21,6 +21,7 @@ namespace Stoolball.Data.SqlServer
             _playerDataSource = playerDataSource ?? throw new ArgumentNullException(nameof(playerDataSource));
         }
 
+        ///  <inheritdoc/>
         public async Task<IEnumerable<StatisticsResult<BestTotal>>> ReadMostRunsScored(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
@@ -34,24 +35,55 @@ namespace Stoolball.Data.SqlServer
 
             var extraSelectFields = $", (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics } WHERE PlayerId = s.PlayerId AND DismissalType NOT IN({ (int)DismissalType.DidNotBat},{ (int)DismissalType.NotOut},{ (int)DismissalType.Retired},{ (int)DismissalType.RetiredHurt}) <<WHERE>>) AS TotalDismissals";
 
-            return await ReadBestPlayerTotal("RunsScored", false, extraSelectFields, outerQuery, $"DismissalType != { (int)DismissalType.DidNotBat}", filter).ConfigureAwait(false);
+            return await ReadBestPlayerTotal("RunsScored", false, extraSelectFields, outerQuery, $"AND DismissalType != { (int)DismissalType.DidNotBat}", filter).ConfigureAwait(false);
         }
 
+        ///  <inheritdoc/>
         public async Task<IEnumerable<StatisticsResult<BestTotal>>> ReadMostWickets(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
 
-            return await ReadBestPlayerTotal("Wickets", true, null, null, "BowlingFiguresId IS NOT NULL", filter).ConfigureAwait(false);
+            return await ReadBestPlayerTotal("Wickets", true, null, null, "AND BowlingFiguresId IS NOT NULL", filter).ConfigureAwait(false);
         }
 
+        ///  <inheritdoc/>
+        public async Task<IEnumerable<StatisticsResult<BestTotal>>> ReadMostCatches(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+
+            return await ReadBestPlayerTotal("Catches", true, null, null, string.Empty, filter).ConfigureAwait(false);
+        }
+
+        ///  <inheritdoc/>
+        public async Task<IEnumerable<StatisticsResult<BestTotal>>> ReadMostRunOuts(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+
+            return await ReadBestPlayerTotal("RunOuts", true, null, null, string.Empty, filter).ConfigureAwait(false);
+        }
+
+        ///  <inheritdoc/>
         public async Task<int> ReadTotalPlayersWithRunsScored(StatisticsFilter filter)
         {
             return await ReadTotalPlayersWithData("RunsScored", filter).ConfigureAwait(false);
         }
 
+        ///  <inheritdoc/>
         public async Task<int> ReadTotalPlayersWithWickets(StatisticsFilter filter)
         {
             return await ReadTotalPlayersWithData("Wickets", filter).ConfigureAwait(false);
+        }
+
+        ///  <inheritdoc/>
+        public async Task<int> ReadTotalPlayersWithCatches(StatisticsFilter filter)
+        {
+            return await ReadTotalPlayersWithData("Catches", filter).ConfigureAwait(false);
+        }
+
+        ///  <inheritdoc/>
+        public async Task<int> ReadTotalPlayersWithRunOuts(StatisticsFilter filter)
+        {
+            return await ReadTotalPlayersWithData("RunOuts", filter).ConfigureAwait(false);
         }
 
         private async Task<int> ReadTotalPlayersWithData(string fieldName, StatisticsFilter filter)
@@ -102,9 +134,11 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@PageSize", clonedFilter.Paging.PageSize);
             }
 
+            var totalInningsQuery = !string.IsNullOrEmpty(totalInningsFilter) ? $"SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {totalInningsFilter} {where}" : "NULL";
+
             var sql = $@"SELECT PlayerId, PlayerRoute,
 		                                (SELECT COUNT(DISTINCT MatchId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS TotalMatches,
-		                                (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId AND {totalInningsFilter} {where}) AS TotalInnings,
+		                                ({totalInningsQuery}) AS TotalInnings,
 		                                (SELECT SUM({ fieldName}) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS Total
                                         <<SELECT>>
                                  FROM {Tables.PlayerInMatchStatistics} AS s 

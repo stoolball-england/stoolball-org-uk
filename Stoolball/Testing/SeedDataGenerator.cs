@@ -815,9 +815,106 @@ namespace Stoolball.Testing
             testData.PlayerInnings = testData.Matches.SelectMany(x => x.MatchInnings).SelectMany(x => x.PlayerInnings).ToList();
 
             ForceTheFifthAndSixthMostRunsResultsToBeEqual(testData);
+            ForceTheFifthAndSixthCatchesResultsToBeEqual(testData);
+            ForceTheFifthAndSixthRunOutsResultsToBeEqual(testData);
             ForceTheFifthAndSixthMostWicketsResultsToBeEqual(testData);
 
             return testData;
+        }
+
+        private class PlayerTotal
+        {
+            internal Player Player { get; set; }
+            internal int Total { get; set; }
+        }
+
+        private void ForceTheFifthAndSixthRunOutsResultsToBeEqual(TestData testData)
+        {
+            var allPlayers = testData.Players.Select(x => new PlayerTotal
+            {
+                Player = x,
+                Total = testData.Matches.SelectMany(m => m.MatchInnings)
+                           .SelectMany(mi => mi.PlayerInnings)
+                           .Where(pi => pi.DismissalType == DismissalType.RunOut && pi.DismissedBy?.Player.PlayerId == x.PlayerId)
+                           .Count()
+            }).OrderByDescending(x => x.Total).ToList();
+
+            for (var i = 0; i < 6; i++)
+            {
+                if (allPlayers[i].Total == 0)
+                {
+                    AddRunOutForPlayer(testData.Matches, allPlayers[i].Player);
+                    allPlayers[i].Total++;
+                }
+            }
+
+            var sixthPlayer = allPlayers[5];
+            var differenceBetweenFifthAndSixth = allPlayers[4].Total - sixthPlayer.Total;
+
+            while (differenceBetweenFifthAndSixth > 0)
+            {
+                AddRunOutForPlayer(testData.Matches, sixthPlayer.Player);
+
+                differenceBetweenFifthAndSixth--;
+            }
+        }
+
+        private static void AddRunOutForPlayer(List<Match> matches, Player player)
+        {
+            var matchInningsWherePlayerSixCouldCompleteRunOuts = matches.SelectMany(m => m.MatchInnings)
+                                               .Where(mi => player.PlayerIdentities.Select(pi => pi.Team.TeamId.Value).Contains(mi.BowlingTeam.Team.TeamId.Value) &&
+                                                            mi.PlayerInnings.Any(pi => !StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType))
+                                               ).First();
+
+            var playerInningsToChange = matchInningsWherePlayerSixCouldCompleteRunOuts.PlayerInnings.First(pi => !StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType));
+            playerInningsToChange.DismissalType = DismissalType.RunOut;
+            playerInningsToChange.DismissedBy = player.PlayerIdentities.First(x => x.Team.TeamId == matchInningsWherePlayerSixCouldCompleteRunOuts.BowlingTeam.Team.TeamId);
+        }
+
+        private void ForceTheFifthAndSixthCatchesResultsToBeEqual(TestData testData)
+        {
+            var allPlayers = testData.Players.Select(x => new PlayerTotal
+            {
+                Player = x,
+                Total = testData.Matches.SelectMany(m => m.MatchInnings)
+                           .SelectMany(mi => mi.PlayerInnings)
+                           .Where(pi => (pi.DismissalType == DismissalType.Caught && pi.DismissedBy?.Player.PlayerId == x.PlayerId) ||
+                                        (pi.DismissalType == DismissalType.CaughtAndBowled && pi.Bowler?.Player.PlayerId == x.PlayerId))
+                           .Count()
+            }).OrderByDescending(x => x.Total).ToList();
+
+            for (var i = 0; i < 6; i++)
+            {
+                if (allPlayers[i].Total == 0)
+                {
+                    AddCatchForPlayer(testData.Matches, allPlayers[i].Player);
+                    allPlayers[i].Total++;
+                }
+            }
+
+            var sixthPlayer = allPlayers[5];
+            var differenceBetweenFifthAndSixth = allPlayers[4].Total - sixthPlayer.Total;
+
+            while (differenceBetweenFifthAndSixth > 0)
+            {
+                AddCatchForPlayer(testData.Matches, sixthPlayer.Player);
+
+                differenceBetweenFifthAndSixth--;
+            }
+        }
+
+        private void AddCatchForPlayer(List<Match> matches, Player player)
+        {
+            var matchInningsWherePlayerSixCouldTakeCatches = matches.SelectMany(m => m.MatchInnings)
+                                               .Where(mi => player.PlayerIdentities.Select(pi => pi.Team.TeamId.Value).Contains(mi.BowlingTeam.Team.TeamId.Value) &&
+                                                            mi.PlayerInnings.Any(pi => !StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType))
+                                               ).First();
+
+            var playerInningsToChange = matchInningsWherePlayerSixCouldTakeCatches.PlayerInnings.First(pi => !StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType));
+            playerInningsToChange.DismissalType = DismissalType.CaughtAndBowled;
+            playerInningsToChange.Bowler = player.PlayerIdentities.First(x => x.Team.TeamId == matchInningsWherePlayerSixCouldTakeCatches.BowlingTeam.Team.TeamId);
+
+            matchInningsWherePlayerSixCouldTakeCatches.BowlingFigures = _bowlingFiguresCalculator.CalculateBowlingFigures(matchInningsWherePlayerSixCouldTakeCatches);
         }
 
         private static void ForceTheFifthAndSixthMostRunsResultsToBeEqual(TestData testData)

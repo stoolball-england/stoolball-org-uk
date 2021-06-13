@@ -1,0 +1,20 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<BestTotal>>
+@using Stoolball.Statistics
+@using Stoolball.Web.Statistics
+@using ClientDependency.Core.Mvc
+@{ Html.RequiresCss("/statistics/statistics.min.css"); }
+@section canonical {@Html.Partial("_CanonicalUrl", new[] { "page" })}
+@section head {
+    @if (Model.StatisticsFilter.Paging.PageNumber == 1)
+    {
+<meta name="robots" content="index, nofollow"> }
+                else
+                {
+<meta name="robots" content="noindex, nofollow">}
+}
+<div class="container-xl">
+    <h1>Most catches@(Model.StatisticsFilter)</h1>
+
+    @Html.Partial("_StatisticsBasis")
+    @Html.Partial("_MostCatches")
+</div>

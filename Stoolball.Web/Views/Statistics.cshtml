@@ -14,6 +14,8 @@
     mostRuns.Results.AddRange(Model.MostRuns);
     var mostWickets = new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
     mostWickets.Results.AddRange(Model.MostWickets);
+    var mostCatches = new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
+    mostCatches.Results.AddRange(Model.MostCatches);
 }
 @section head {
     <meta name="robots" content="noindex, follow" />
@@ -35,4 +37,6 @@
     @Html.Partial("_MostRuns", mostRuns)
     @Html.Partial("_BowlingFigures", bowlingFigures)
     @Html.Partial("_MostWickets", mostWickets)
+    @Html.Partial("_MostCatches", mostCatches)
+    @Html.Partial("_MostRunOuts", new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowLinkOnly = true })
 </div>

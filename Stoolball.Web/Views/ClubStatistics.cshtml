@@ -14,7 +14,10 @@
     var mostRuns = new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
     mostRuns.Results.AddRange(Model.MostRuns);
     var mostWickets = new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
-    mostWickets.Results.AddRange(Model.MostWickets);}
+    mostWickets.Results.AddRange(Model.MostWickets);
+    var mostCatches = new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    mostCatches.Results.AddRange(Model.MostCatches);
+}
 <div class="container-xl">
     <h1>@Model.Context.ClubName</h1>
 
@@ -31,7 +34,7 @@
     </ul>
 
 
-    @if (!Model.InningsStatistics.Any() && !Model.PlayerInnings.Any() && !Model.BowlingFigures.Any() && !Model.MostRuns.Any() && !Model.MostWickets.Any())
+    @if (!Model.InningsStatistics.Any() && !Model.PlayerInnings.Any() && !Model.BowlingFigures.Any() && !Model.MostRuns.Any() && !Model.MostWickets.Any() && !Model.MostCatches.Any())
     {
         <p>There are no statistics for this club yet. Statistics are based on scorecards added to this website – see <a href="/organise/website/how-to-add-match-results/">How to add match results</a>.</p>
     }
@@ -42,5 +45,7 @@
         @Html.Partial("_MostRuns", mostRuns)
         @Html.Partial("_BowlingFigures", bowlingFigures)
         @Html.Partial("_MostWickets", mostWickets)
+        @Html.Partial("_MostCatches", mostCatches)
+        @Html.Partial("_MostRunOuts", new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowLinkOnly = true })
     }
 </div>

@@ -17,14 +17,14 @@ using Xunit;
 
 namespace Stoolball.Web.Tests.Statistics
 {
-    public class MostWicketsControllerTests : UmbracoBaseTest
+    public class MostCatchesControllerTests : UmbracoBaseTest
     {
-        public MostWicketsControllerTests()
+        public MostCatchesControllerTests()
         {
             Setup();
         }
 
-        private class TestController : MostWicketsController
+        private class TestController : MostCatchesController
         {
             public TestController(IStatisticsFilterUrlParser statisticsFilterUrlParser, IBestPlayerTotalStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
            : base(
@@ -40,7 +40,7 @@ namespace Stoolball.Web.Tests.Statistics
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
-                request.SetupGet(x => x.RawUrl).Returns(Stoolball.Constants.Pages.StatisticsUrl + "/most-wickets");
+                request.SetupGet(x => x.RawUrl).Returns(Stoolball.Constants.Pages.StatisticsUrl + "/most-catches");
 
                 var context = new Mock<HttpContextBase>();
                 context.SetupGet(x => x.Request).Returns(request.Object);
@@ -53,7 +53,7 @@ namespace Stoolball.Web.Tests.Statistics
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("MostWickets", model);
+                return View("MostCatches", model);
             }
         }
 
@@ -67,7 +67,7 @@ namespace Stoolball.Web.Tests.Statistics
 
             var playerId = Guid.NewGuid();
             var results = new List<StatisticsResult<BestTotal>>();
-            statisticsDataSource.Setup(x => x.ReadMostWickets(filter)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<BestTotal>>));
+            statisticsDataSource.Setup(x => x.ReadMostCatches(filter)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<BestTotal>>));
 
             using (var controller = new TestController(urlParser.Object, statisticsDataSource.Object, UmbracoHelper))
             {
@@ -97,7 +97,7 @@ namespace Stoolball.Web.Tests.Statistics
                     }
                 }
             };
-            statisticsDataSource.Setup(x => x.ReadMostWickets(filter)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<BestTotal>>));
+            statisticsDataSource.Setup(x => x.ReadMostCatches(filter)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<BestTotal>>));
 
             using (var controller = new TestController(urlParser.Object, statisticsDataSource.Object, UmbracoHelper))
             {
