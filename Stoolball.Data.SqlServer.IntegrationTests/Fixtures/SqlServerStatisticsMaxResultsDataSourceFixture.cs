@@ -20,7 +20,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var playerInMatchStatisticsBuilder = new PlayerInMatchStatisticsBuilder(playerIdentityFinder, oversHelper);
             var seedDataGenerator = new SeedDataGenerator(oversHelper, bowlingFiguresCalculator, playerIdentityFinder);
             TestData = seedDataGenerator.GenerateTestData();
-            ModifyTestData();
+            PlayerWithFifthAndSixthBowlingFiguresTheSame = ForceFifthAndSixthBowlingFiguresToBeTheSame(TestData);
+            PlayerWithFifthAndSixthInningsTheSame = ForceFifthAndSixthPlayerInningsToBeTheSame(TestData, bowlingFiguresCalculator);
 
             using (var connection = ConnectionFactory.CreateDatabaseConnection())
             {
@@ -32,14 +33,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             }
         }
 
-        /// <remarks>
-        /// This method potentially substitutes a bowler from another match as a wicket-taker - this will disrupt other statistics records,
-        /// which is why this must be a separate fixture for the tests of this feature.
-        /// </remarks>
-        private void ModifyTestData()
+        private Player ForceFifthAndSixthPlayerInningsToBeTheSame(TestData testData, IBowlingFiguresCalculator bowlingFiguresCalculator)
         {
             // Find any player with at least six innings, and make the sixth best score the same as the fifth so that we can test retrieving a top five + any equal results
-            var inningsForPlayerWithAtLeast6Scores = TestData.Matches
+            var inningsForPlayerWithAtLeast6Scores = testData.Matches
                              .SelectMany(x => x.MatchInnings) // for each innings of each match...
                              .SelectMany(x => x.PlayerInnings.Where(i => i.DismissalType != DismissalType.DidNotBat && i.DismissalType != DismissalType.TimedOut && i.RunsScored.HasValue)) // get the player innings where the player got to bat...
                              .GroupBy(x => x.Batter.Player.PlayerId) // separate them into a group of innings for each player...
@@ -50,9 +47,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 
             // Make the sixth innings the same as the fifth, including anything that might affect the out/not out status.
             inningsForPlayerWithAtLeast6Scores[5].DismissalType = inningsForPlayerWithAtLeast6Scores[4].DismissalType;
-            inningsForPlayerWithAtLeast6Scores[5].DismissedBy = inningsForPlayerWithAtLeast6Scores[4].DismissedBy; // This can end up being a player who's not in the teams in the match!
-            inningsForPlayerWithAtLeast6Scores[5].Bowler = inningsForPlayerWithAtLeast6Scores[4].Bowler; // This can end up being a player who's not in the teams in the match!
+            inningsForPlayerWithAtLeast6Scores[5].DismissedBy = null;
+            inningsForPlayerWithAtLeast6Scores[5].Bowler = null;
             inningsForPlayerWithAtLeast6Scores[5].RunsScored = inningsForPlayerWithAtLeast6Scores[4].RunsScored;
+            inningsForPlayerWithAtLeast6Scores[5].BallsFaced = inningsForPlayerWithAtLeast6Scores[4].BallsFaced;
+
+            // That might've changed bowling figures, so update them
+            var matchInningsForPlayerInnings = testData.Matches.SelectMany(x => x.MatchInnings).Single(mi => mi.PlayerInnings.Any(pi => pi.PlayerInningsId == inningsForPlayerWithAtLeast6Scores[5].PlayerInningsId));
+            matchInningsForPlayerInnings.BowlingFigures = bowlingFiguresCalculator.CalculateBowlingFigures(matchInningsForPlayerInnings);
 
             // The assertion expects the fifth and sixth innings to be the same, but to be different that any that come before or after in the
             // result set. So make sure those others are different.
@@ -86,10 +88,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 }
             }
 
-            PlayerWithFifthAndSixthInningsTheSame = inningsForPlayerWithAtLeast6Scores.First().Batter.Player;
+            return inningsForPlayerWithAtLeast6Scores.First().Batter.Player;
+        }
 
+        private Player ForceFifthAndSixthBowlingFiguresToBeTheSame(TestData testData)
+        {
             // Find any player with at least six sets of bowling figures, and make the sixth set the same as the fifth so that we can test retrieving a top five + any equal results
-            var inningsForPlayerWithAtLeast6BowlingFigures = TestData.Matches
+            var bowlingFiguresForPlayerWithAtLeast6BowlingFigures = testData.Matches
                              .SelectMany(x => x.MatchInnings) // for each innings of each match...
                              .SelectMany(x => x.BowlingFigures) // get the bowling figures...
                              .GroupBy(x => x.Bowler.Player.PlayerId) // separate them into a group of figures for each player...
@@ -99,17 +104,51 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                              .ToList(); // make it possible to access figures by index
 
             // Make the sixth set of figures the same as the fifth.
-            // If there are more, make sure they're worse so we know what to assert.
-            inningsForPlayerWithAtLeast6BowlingFigures[5].Overs = inningsForPlayerWithAtLeast6BowlingFigures[4].Overs;
-            inningsForPlayerWithAtLeast6BowlingFigures[5].Maidens = inningsForPlayerWithAtLeast6BowlingFigures[4].Maidens;
-            inningsForPlayerWithAtLeast6BowlingFigures[5].RunsConceded = inningsForPlayerWithAtLeast6BowlingFigures[4].RunsConceded;
-            inningsForPlayerWithAtLeast6BowlingFigures[5].Wickets = inningsForPlayerWithAtLeast6BowlingFigures[4].Wickets;
-            for (var i = 6; i < inningsForPlayerWithAtLeast6BowlingFigures.Count; i++)
+            bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Overs = bowlingFiguresForPlayerWithAtLeast6BowlingFigures[4].Overs;
+            bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Maidens = bowlingFiguresForPlayerWithAtLeast6BowlingFigures[4].Maidens;
+            bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].RunsConceded = bowlingFiguresForPlayerWithAtLeast6BowlingFigures[4].RunsConceded;
+            bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Wickets = bowlingFiguresForPlayerWithAtLeast6BowlingFigures[4].Wickets;
+
+            // Update the OversBowled to match
+            var matchInnings = bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].MatchInnings;
+            var oversBowledBySixthBowler = matchInnings.OversBowled.Where(x => x.Bowler.Player.PlayerId.Value == bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Bowler.Player.PlayerId);
+            while (oversBowledBySixthBowler.Count() < bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Overs)
             {
-                inningsForPlayerWithAtLeast6BowlingFigures[i].RunsConceded++;
+                bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].MatchInnings.OversBowled.Add(new Over { Bowler = bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Bowler });
+                oversBowledBySixthBowler = matchInnings.OversBowled.Where(x => x.Bowler.Player.PlayerId.Value == bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Bowler.Player.PlayerId);
+            }
+            while (oversBowledBySixthBowler.Count() > bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Overs)
+            {
+                matchInnings.OversBowled.Remove(oversBowledBySixthBowler.Last());
+                oversBowledBySixthBowler = matchInnings.OversBowled.Where(x => x.Bowler.Player.PlayerId.Value == bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Bowler.Player.PlayerId);
+            }
+            var runsConcededDifference = bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].RunsConceded - oversBowledBySixthBowler.Sum(x => x.RunsConceded);
+            if (runsConcededDifference > 0)
+            {
+                var overToUpdate = oversBowledBySixthBowler.First();
+                overToUpdate.RunsConceded = overToUpdate.RunsConceded.HasValue ? overToUpdate.RunsConceded + runsConcededDifference : runsConcededDifference;
+            }
+            while (runsConcededDifference < 0)
+            {
+                oversBowledBySixthBowler.First(x => x.RunsConceded.HasValue && x.RunsConceded > 0).RunsConceded--;
+                runsConcededDifference++;
             }
 
-            PlayerWithFifthAndSixthBowlingFiguresTheSame = inningsForPlayerWithAtLeast6BowlingFigures.First().Bowler.Player;
+            // If there are more that six sets of figures, make sure they're worse so we know what to assert.
+            for (var i = 6; i < bowlingFiguresForPlayerWithAtLeast6BowlingFigures.Count; i++)
+            {
+                bowlingFiguresForPlayerWithAtLeast6BowlingFigures[i].RunsConceded++;
+
+                // Update the OversBowled to match
+                var oversBowledByThisBowler = bowlingFiguresForPlayerWithAtLeast6BowlingFigures[i].MatchInnings.OversBowled.Where(x => x.Bowler.Player.PlayerId.Value == bowlingFiguresForPlayerWithAtLeast6BowlingFigures[i].Bowler.Player.PlayerId);
+                if (oversBowledByThisBowler.Any())
+                {
+                    var overToUpdate = oversBowledByThisBowler.First();
+                    overToUpdate.RunsConceded = overToUpdate.RunsConceded.HasValue ? overToUpdate.RunsConceded++ : 1;
+                }
+            }
+
+            return bowlingFiguresForPlayerWithAtLeast6BowlingFigures.First().Bowler.Player;
         }
     }
 }
