@@ -41,6 +41,20 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
         }
 
         [Fact]
+        public async Task Read_total_teams_supports_case_insensitive_filter_by_team_name_where_the_club_name_is_different()
+        {
+            var team = _databaseFixture.Clubs.Where(x => x.Teams.Count > 1).SelectMany(x => x.Teams).First(x => !x.Club.ClubName.Contains(x.TeamName, StringComparison.OrdinalIgnoreCase));
+            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var query = new TeamListingFilter { Query = team.TeamName.ToUpperInvariant() };
+
+            var result = await teamDataSource.ReadTotalTeams(query).ConfigureAwait(false);
+
+            var matchedByClubName = _databaseFixture.Clubs.Where(x => x.ClubName.Contains(query.Query, StringComparison.OrdinalIgnoreCase));
+            var matchedByTeamName = _databaseFixture.Teams.Where(x => x.TeamName.Contains(query.Query, StringComparison.OrdinalIgnoreCase) && (x.Club == null || !matchedByClubName.Select(c => x.Club.ClubId.Value).Contains(x.Club.ClubId.Value)));
+            Assert.Equal(matchedByClubName.Count() + matchedByTeamName.Count(x => x.Club == null) + matchedByTeamName.Where(x => x.Club != null).Select(x => x.Club.ClubId.Value).Distinct().Count(), result);
+        }
+
+        [Fact]
         public async Task Read_total_teams_supports_case_insensitive_filter_by_player_type()
         {
             var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
@@ -301,6 +315,41 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
             foreach (var team in _databaseFixture.TeamListings.Where(x => x.ClubOrTeamName.Contains(query.Query, StringComparison.OrdinalIgnoreCase)))
             {
                 Assert.NotNull(result.SingleOrDefault(x => x.TeamListingId == team.TeamListingId));
+            }
+        }
+
+        [Fact]
+        public async Task Read_team_listings_supports_case_insensitive_filter_by_team_name_where_the_club_name_is_different()
+        {
+            var team = _databaseFixture.Clubs.Where(x => x.Teams.Count > 1).SelectMany(x => x.Teams).First(x => !x.Club.ClubName.Contains(x.TeamName, StringComparison.OrdinalIgnoreCase));
+            var teamDataSource = new SqlServerTeamListingDataSource(_databaseFixture.ConnectionFactory);
+            var query = new TeamListingFilter { Query = team.TeamName.ToUpperInvariant() };
+
+            var results = await teamDataSource.ReadTeamListings(query).ConfigureAwait(false);
+
+            foreach (var result in results)
+            {
+                var club = _databaseFixture.Clubs.SingleOrDefault(x => x.ClubId == result.TeamListingId);
+                if (club != null)
+                {
+                    var clubNameMatches = club.ClubName.Contains(team.TeamName, StringComparison.OrdinalIgnoreCase);
+                    var teamNameMatches = club.Teams.Any(x => x.TeamName.Contains(team.TeamName, StringComparison.OrdinalIgnoreCase));
+                    Assert.True(clubNameMatches || teamNameMatches);
+                }
+                else
+                {
+                    var resultTeam = _databaseFixture.Teams.SingleOrDefault(x => x.TeamId == result.TeamListingId);
+                    Assert.Contains(team.TeamName, result.ClubOrTeamName, StringComparison.OrdinalIgnoreCase);
+                }
+
+            }
+            if (team.Club.Teams.Count > 1)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.TeamListingId == team.Club.ClubId));
+            }
+            else
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.TeamListingId == team.TeamId));
             }
         }
 

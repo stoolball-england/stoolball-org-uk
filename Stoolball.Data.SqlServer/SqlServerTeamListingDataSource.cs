@@ -215,7 +215,7 @@ namespace Stoolball.Data.SqlServer
 
             if (!string.IsNullOrEmpty(filter.Query))
             {
-                where.Add("(cn.ClubName LIKE @Query OR ct.PlayerType LIKE @Query OR ml.Locality LIKE @Query OR ml.Town LIKE @Query OR ml.AdministrativeArea LIKE @Query)");
+                where.Add("(cn.ClubName LIKE @Query OR ctn.TeamName LIKE @Query OR ct.PlayerType LIKE @Query OR ml.Locality LIKE @Query OR ml.Town LIKE @Query OR ml.AdministrativeArea LIKE @Query)");
                 parameters.Add("@Query", $"%{filter.Query}%");
             }
 
