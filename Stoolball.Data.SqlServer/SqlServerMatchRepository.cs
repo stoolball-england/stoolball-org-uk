@@ -308,7 +308,7 @@ namespace Stoolball.Data.SqlServer
                             homeMatchTeamId = Guid.NewGuid();
                             matchTeamId = homeMatchTeamId.Value;
                         }
-                        else
+                        else if (team.TeamRole == TeamRole.Away)
                         {
                             awayMatchTeamId = Guid.NewGuid();
                             matchTeamId = awayMatchTeamId.Value;
@@ -328,42 +328,45 @@ namespace Stoolball.Data.SqlServer
                             transaction).ConfigureAwait(false);
                     }
 
-                    var defaultOverSets = new List<OverSet> { new OverSet { Overs = 12, BallsPerOver = 8 } }; // default if none provided
-
-                    auditableMatch.MatchInnings.Add(new MatchInnings
+                    if (auditableMatch.MatchType != MatchType.TrainingSession)
                     {
-                        MatchInningsId = Guid.NewGuid(),
-                        BattingMatchTeamId = homeMatchTeamId,
-                        BowlingMatchTeamId = awayMatchTeamId,
-                        InningsOrderInMatch = 1,
-                        OverSets = auditableMatch.Tournament?.DefaultOverSets ?? auditableMatch.Season?.DefaultOverSets ?? defaultOverSets
-                    });
+                        var defaultOverSets = new List<OverSet> { new OverSet { Overs = 12, BallsPerOver = 8 } }; // default if none provided
 
-                    auditableMatch.MatchInnings.Add(new MatchInnings
-                    {
-                        MatchInningsId = Guid.NewGuid(),
-                        BattingMatchTeamId = awayMatchTeamId,
-                        BowlingMatchTeamId = homeMatchTeamId,
-                        InningsOrderInMatch = 2,
-                        OverSets = auditableMatch.Tournament?.DefaultOverSets ?? auditableMatch.Season?.DefaultOverSets ?? defaultOverSets
-                    });
+                        auditableMatch.MatchInnings.Add(new MatchInnings
+                        {
+                            MatchInningsId = Guid.NewGuid(),
+                            BattingMatchTeamId = homeMatchTeamId,
+                            BowlingMatchTeamId = awayMatchTeamId,
+                            InningsOrderInMatch = 1,
+                            OverSets = auditableMatch.Tournament?.DefaultOverSets ?? auditableMatch.Season?.DefaultOverSets ?? defaultOverSets
+                        });
 
-                    foreach (var innings in auditableMatch.MatchInnings)
-                    {
-                        await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchInnings} 
+                        auditableMatch.MatchInnings.Add(new MatchInnings
+                        {
+                            MatchInningsId = Guid.NewGuid(),
+                            BattingMatchTeamId = awayMatchTeamId,
+                            BowlingMatchTeamId = homeMatchTeamId,
+                            InningsOrderInMatch = 2,
+                            OverSets = auditableMatch.Tournament?.DefaultOverSets ?? auditableMatch.Season?.DefaultOverSets ?? defaultOverSets
+                        });
+
+                        foreach (var innings in auditableMatch.MatchInnings)
+                        {
+                            await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchInnings} 
 							(MatchInningsId, MatchId, BattingMatchTeamId, BowlingMatchTeamId, InningsOrderInMatch)
 							VALUES (@MatchInningsId, @MatchId, @BattingMatchTeamId, @BowlingMatchTeamId, @InningsOrderInMatch)",
-                            new
-                            {
-                                innings.MatchInningsId,
-                                auditableMatch.MatchId,
-                                innings.BattingMatchTeamId,
-                                innings.BowlingMatchTeamId,
-                                innings.InningsOrderInMatch
-                            },
-                            transaction).ConfigureAwait(false);
+                                new
+                                {
+                                    innings.MatchInningsId,
+                                    auditableMatch.MatchId,
+                                    innings.BattingMatchTeamId,
+                                    innings.BowlingMatchTeamId,
+                                    innings.InningsOrderInMatch
+                                },
+                                transaction).ConfigureAwait(false);
 
-                        await InsertOverSets(innings, transaction).ConfigureAwait(false);
+                            await InsertOverSets(innings, transaction).ConfigureAwait(false);
+                        }
                     }
 
                     var redacted = CreateRedactedCopy(auditableMatch);

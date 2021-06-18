@@ -114,6 +114,8 @@ namespace Stoolball.Data.SqlServer
                     matchToReturn.Teams = matches.Select(match => match.Teams.SingleOrDefault()).OfType<TeamInMatch>().OrderBy(x => x.TeamRole).ToList();
                 }
 
+                if (matchToReturn.MatchType == MatchType.TrainingSession) { return matchToReturn; }
+
                 if (matchToReturn != null)
                 {
                     // Add match innings and player innings within that to the match
