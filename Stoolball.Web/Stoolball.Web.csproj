@@ -1206,6 +1206,7 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>MostRunOuts.generated.cs</LastGenOutput>
     </Content>
+    <Content Include="Views\EditTrainingSession.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -1308,6 +1309,8 @@
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
     <Compile Include="ContentPage\CookiesController.cs" />
+    <Compile Include="Matches\EditTrainingSessionSurfaceController.cs" />
+    <Compile Include="Matches\EditTrainingSessionController.cs" />
     <Compile Include="Matches\EditTournamentSeasonsController.cs" />
     <Compile Include="Matches\EditTournamentSeasonsSurfaceController.cs" />
     <Compile Include="Matches\IMatchValidator.cs" />

@@ -17,17 +17,18 @@
                 {
                     case MatchType.FriendlyMatch:
                         <dt><a href="@Model.Match.MatchRoute/edit/friendly">Edit @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false))</a></dt>
-                        <dd>Set the date and time, teams, location and notes.</dd>
                         break;
                     case MatchType.LeagueMatch:
                         <dt><a href="@Model.Match.MatchRoute/edit/league">Edit @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false))</a></dt>
-                        <dd>Set the date and time, teams, location and notes.</dd>
                         break;
                     case MatchType.KnockoutMatch:
                         <dt><a href="@Model.Match.MatchRoute/edit/knockout">Edit @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false))</a></dt>
-                        <dd>Set the date and time, teams, location and notes.</dd>
+                        break;
+                    case MatchType.TrainingSession:
+                        <dt><a href="@Model.Match.MatchRoute/edit/training">Edit @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false))</a></dt>
                         break;
                 }
+                <dd>Set the date and time, teams, location and notes.</dd>
             }
             else if (Model.IsAuthorized[AuthorizedAction.EditMatchResult] && Model.Match.StartTime <= DateTime.UtcNow)
             {

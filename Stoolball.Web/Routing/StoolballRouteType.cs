@@ -55,6 +55,7 @@
         EditFriendlyMatch,
         EditLeagueMatch,
         EditKnockoutMatch,
+        EditTrainingSession,
         EditStartOfPlay,
         EditBattingScorecard,
         EditBowlingScorecard,

@@ -85,7 +85,6 @@ namespace Stoolball.Web.Matches
                 var currentMember = Members.GetCurrentMember();
                 var createdMatch = await _matchRepository.CreateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                // Redirect to the match
                 return Redirect(createdMatch.MatchRoute);
             }
 

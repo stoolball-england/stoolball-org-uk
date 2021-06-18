@@ -475,63 +475,94 @@ namespace Stoolball.Data.SqlServer
                             $@"SELECT MatchTeamId, TeamId, TeamRole FROM {Tables.MatchTeam} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction
                         ).ConfigureAwait(false);
 
-                    foreach (var team in auditableMatch.Teams)
+                    if (auditableMatch.MatchType == MatchType.TrainingSession)
                     {
-                        var currentTeamInRole = currentTeams.SingleOrDefault(x => x.TeamRole == team.TeamRole);
-
                         // Team added
-                        if (currentTeamInRole == null)
+                        foreach (var team in auditableMatch.Teams)
                         {
-                            team.MatchTeamId = Guid.NewGuid();
-                            await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
-								(MatchTeamId, MatchId, TeamId, TeamRole) VALUES (@MatchTeamId, @MatchId, @TeamId, @TeamRole)",
-                                new
-                                {
-                                    team.MatchTeamId,
-                                    auditableMatch.MatchId,
-                                    team.Team.TeamId,
-                                    TeamRole = team.TeamRole.ToString()
-                                },
-                                transaction).ConfigureAwait(false);
-                        }
-                        // Team changed
-                        else if (currentTeamInRole.TeamId != team.Team.TeamId)
-                        {
-                            await connection.ExecuteAsync($"UPDATE {Tables.MatchTeam} SET TeamId = @TeamId WHERE MatchTeamId = @MatchTeamId",
-                            new
+                            if (!currentTeams.Any(x => x.TeamId == team.Team.TeamId))
                             {
-                                team.Team.TeamId,
-                                currentTeamInRole.MatchTeamId
-                            },
-                            transaction).ConfigureAwait(false);
+                                team.MatchTeamId = Guid.NewGuid();
+                                await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
+								(MatchTeamId, MatchId, TeamId, TeamRole) VALUES (@MatchTeamId, @MatchId, @TeamId, @TeamRole)",
+                                    new
+                                    {
+                                        team.MatchTeamId,
+                                        auditableMatch.MatchId,
+                                        team.Team.TeamId,
+                                        TeamRole = team.TeamRole.ToString()
+                                    },
+                                    transaction).ConfigureAwait(false);
+                            }
+                        }
+
+                        // Team removed?
+                        foreach (var team in currentTeams.Where(x => !auditableMatch.Teams.Select(t => t.Team.TeamId.Value).Contains(x.TeamId.Value)))
+                        {
+                            await transaction.Connection.ExecuteAsync($"DELETE FROM { Tables.MatchTeam } WHERE MatchTeamId = @MatchTeamId", new { team.MatchTeamId }, transaction).ConfigureAwait(false);
                         }
                     }
+                    else
+                    {
 
-                    // Team removed?
-                    await RemoveTeamIfRequired(TeamRole.Home, currentTeams, auditableMatch.Teams, transaction).ConfigureAwait(false);
-                    await RemoveTeamIfRequired(TeamRole.Away, currentTeams, auditableMatch.Teams, transaction).ConfigureAwait(false);
+                        foreach (var team in auditableMatch.Teams)
+                        {
+                            var currentTeamInRole = currentTeams.SingleOrDefault(x => x.TeamRole == team.TeamRole);
 
-                    // Update innings with the new values for match team ids (assuming the match hasn't happened yet, 
-                    // therefore the innings order is home bats first as assumed in CreateMatch)
-                    await connection.ExecuteAsync($@"UPDATE { Tables.MatchInnings } SET
+                            // Team added
+                            if (currentTeamInRole == null)
+                            {
+                                team.MatchTeamId = Guid.NewGuid();
+                                await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
+								(MatchTeamId, MatchId, TeamId, TeamRole) VALUES (@MatchTeamId, @MatchId, @TeamId, @TeamRole)",
+                                    new
+                                    {
+                                        team.MatchTeamId,
+                                        auditableMatch.MatchId,
+                                        team.Team.TeamId,
+                                        TeamRole = team.TeamRole.ToString()
+                                    },
+                                    transaction).ConfigureAwait(false);
+                            }
+                            // Team changed
+                            else if (currentTeamInRole.TeamId != team.Team.TeamId)
+                            {
+                                await connection.ExecuteAsync($"UPDATE {Tables.MatchTeam} SET TeamId = @TeamId WHERE MatchTeamId = @MatchTeamId",
+                                new
+                                {
+                                    team.Team.TeamId,
+                                    currentTeamInRole.MatchTeamId
+                                },
+                                transaction).ConfigureAwait(false);
+                            }
+                        }
+
+                        // Team removed?
+                        await RemoveTeamIfRequired(TeamRole.Home, currentTeams, auditableMatch.Teams, transaction).ConfigureAwait(false);
+                        await RemoveTeamIfRequired(TeamRole.Away, currentTeams, auditableMatch.Teams, transaction).ConfigureAwait(false);
+
+                        // Update innings with the new values for match team ids (assuming the match hasn't happened yet, 
+                        // therefore the innings order is home bats first as assumed in CreateMatch)
+                        await connection.ExecuteAsync($@"UPDATE { Tables.MatchInnings } SET
                                 BattingMatchTeamId = (SELECT MatchTeamId FROM { Tables.MatchTeam } WHERE MatchId = @MatchId AND TeamRole = '{TeamRole.Home.ToString()}'), 
                                 BowlingMatchTeamId = (SELECT MatchTeamId FROM { Tables.MatchTeam } WHERE MatchId = @MatchId AND TeamRole = '{TeamRole.Away.ToString()}')
                                 WHERE MatchId = @MatchId AND InningsOrderInMatch = 1",
-                        new
-                        {
-                            auditableMatch.MatchId,
-                        },
-                        transaction).ConfigureAwait(false);
+                            new
+                            {
+                                auditableMatch.MatchId,
+                            },
+                            transaction).ConfigureAwait(false);
 
-                    await connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET
+                        await connection.ExecuteAsync($@"UPDATE {Tables.MatchInnings} SET
                                 BattingMatchTeamId = (SELECT MatchTeamId FROM { Tables.MatchTeam } WHERE MatchId = @MatchId AND TeamRole = '{TeamRole.Away.ToString()}'), 
                                 BowlingMatchTeamId = (SELECT MatchTeamId FROM { Tables.MatchTeam } WHERE MatchId = @MatchId AND TeamRole = '{TeamRole.Home.ToString()}')
                                 WHERE MatchId = @MatchId AND InningsOrderInMatch = 2",
-                        new
-                        {
-                            auditableMatch.MatchId,
-                        },
-                        transaction).ConfigureAwait(false);
+                            new
+                            {
+                                auditableMatch.MatchId,
+                            },
+                            transaction).ConfigureAwait(false);
+                    }
 
                     if (match.MatchRoute != auditableMatch.MatchRoute)
                     {

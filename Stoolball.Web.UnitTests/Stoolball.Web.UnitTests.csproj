@@ -82,6 +82,7 @@
     <Compile Include="Competitions\DeleteSeasonControllerTests.cs" />
     <Compile Include="Competitions\SeasonResultsTableControllerTests.cs" />
     <Compile Include="Forms\EmailFieldTests.cs" />
+    <Compile Include="Matches\EditTrainingSessionControllerTests.cs" />
     <Compile Include="Matches\EditTournamentSeasonsControllerTests.cs" />
     <Compile Include="Matches\MatchesCalendarControllerTests.cs" />
     <Compile Include="Matches\MatchValidatorTests.cs" />
