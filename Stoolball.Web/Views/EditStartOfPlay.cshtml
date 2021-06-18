@@ -310,6 +310,17 @@
                     </div>
                     @Html.ValidationMessageFor(m => Model.BattedFirst, null, new { id = "batted-first-validation" })
                 </fieldset>
+                <fieldset class="form-group">
+                    <legend>Do you have the scorecard?</legend>
+                    <div class="custom-control custom-radio">
+                        @Html.RadioButtonFor(m => m.HasScorecard, true, new { @class="custom-control-input", id = "scorecard-yes" })
+                        <label for="scorecard-yes" class="custom-control-label">Yes</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                        @Html.RadioButtonFor(m => m.HasScorecard, false, new { @class = "custom-control-input", id = "scorecard-no" })
+                        <label for="scorecard-no" class="custom-control-label">No</label>
+                    </div>
+                </fieldset>
             </div>
             <div id="match-went-ahead-no-fields">
                 <fieldset class="form-group">

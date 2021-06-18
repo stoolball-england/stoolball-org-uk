@@ -92,6 +92,11 @@ namespace Stoolball.Web.Matches
                     model.BattedFirst = null;
                 }
 
+                if (bool.TryParse(Request.Form["HasScorecard"], out var hasScorecard))
+                {
+                    model.HasScorecard = hasScorecard;
+                }
+
                 // Validate this field as required, but conditionally based on whether the match went ahead
                 if (!model.MatchWentAhead.Value && !model.Match.MatchResultType.HasValue)
                 {
@@ -115,10 +120,15 @@ namespace Stoolball.Web.Matches
                     // There's no scorecard to complete - redirect to the match
                     return Redirect(updatedMatch.MatchRoute);
                 }
-                else
+                else if (model.HasScorecard)
                 {
                     // Redirect to batting scorecard
                     return Redirect(updatedMatch.MatchRoute + "/edit/innings/1/batting");
+                }
+                else
+                {
+                    // Skip scorecard editing and redirect to close of play
+                    return Redirect(updatedMatch.MatchRoute + "/edit/close-of-play");
                 }
             }
 

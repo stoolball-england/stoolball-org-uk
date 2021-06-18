@@ -1211,7 +1211,55 @@ WriteLiteral("                    ");
             
             #line default
             #line hidden
-WriteLiteral("\r\n                </fieldset>\r\n            </div>\r\n");
+WriteLiteral("\r\n                </fieldset>\r\n                <fieldset");
+
+WriteLiteral(" class=\"form-group\"");
+
+WriteLiteral(">\r\n                    <legend>Do you have the scorecard?</legend>\r\n             " +
+"       <div");
+
+WriteLiteral(" class=\"custom-control custom-radio\"");
+
+WriteLiteral(">\r\n");
+
+WriteLiteral("                        ");
+
+            
+            #line 316 "..\..\Views\EditStartOfPlay.cshtml"
+                   Write(Html.RadioButtonFor(m => m.HasScorecard, true, new { @class="custom-control-input", id = "scorecard-yes" }));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n                        <label");
+
+WriteLiteral(" for=\"scorecard-yes\"");
+
+WriteLiteral(" class=\"custom-control-label\"");
+
+WriteLiteral(">Yes</label>\r\n                    </div>\r\n                    <div");
+
+WriteLiteral(" class=\"custom-control custom-radio\"");
+
+WriteLiteral(">\r\n");
+
+WriteLiteral("                        ");
+
+            
+            #line 320 "..\..\Views\EditStartOfPlay.cshtml"
+                   Write(Html.RadioButtonFor(m => m.HasScorecard, false, new { @class = "custom-control-input", id = "scorecard-no" }));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n                        <label");
+
+WriteLiteral(" for=\"scorecard-no\"");
+
+WriteLiteral(" class=\"custom-control-label\"");
+
+WriteLiteral(">No</label>\r\n                    </div>\r\n                </fieldset>\r\n           " +
+" </div>\r\n");
 
 WriteLiteral("            <div");
 
@@ -1231,7 +1279,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                        ");
 
             
-            #line 318 "..\..\Views\EditStartOfPlay.cshtml"
+            #line 329 "..\..\Views\EditStartOfPlay.cshtml"
                    Write(Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.HomeWinByForfeit, new { @class = "custom-control-input", @id = MatchResultType.HomeWinByForfeit.ToString(), aria_describedby = "result-type-validation" }));
 
             
@@ -1239,14 +1287,14 @@ WriteLiteral("                        ");
             #line hidden
 WriteLiteral("\r\n                        <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 21289), Tuple.Create("\"", 21339)
+WriteAttribute("for", Tuple.Create(" for=\"", 22066), Tuple.Create("\"", 22116)
             
-            #line 319 "..\..\Views\EditStartOfPlay.cshtml"
-, Tuple.Create(Tuple.Create("", 21295), Tuple.Create<System.Object, System.Int32>(MatchResultType.HomeWinByForfeit.ToString()
+            #line 330 "..\..\Views\EditStartOfPlay.cshtml"
+, Tuple.Create(Tuple.Create("", 22072), Tuple.Create<System.Object, System.Int32>(MatchResultType.HomeWinByForfeit.ToString()
             
             #line default
             #line hidden
-, 21295), false)
+, 22072), false)
 );
 
 WriteLiteral(" class=\"custom-control-label\"");
@@ -1254,7 +1302,7 @@ WriteLiteral(" class=\"custom-control-label\"");
 WriteLiteral(">");
 
             
-            #line 319 "..\..\Views\EditStartOfPlay.cshtml"
+            #line 330 "..\..\Views\EditStartOfPlay.cshtml"
                                                                                                           Write(MatchResultType.HomeWinByForfeit.ToString().Humanize().Replace("Home", Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Home)?.Team.TeamName ?? "Home"));
 
             
@@ -1269,7 +1317,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                        ");
 
             
-            #line 322 "..\..\Views\EditStartOfPlay.cshtml"
+            #line 333 "..\..\Views\EditStartOfPlay.cshtml"
                    Write(Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.AwayWinByForfeit, new { @class = "custom-control-input", @id = MatchResultType.AwayWinByForfeit.ToString(), aria_describedby = "result-type-validation" }));
 
             
@@ -1277,14 +1325,14 @@ WriteLiteral("                        ");
             #line hidden
 WriteLiteral("\r\n                        <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 21917), Tuple.Create("\"", 21967)
+WriteAttribute("for", Tuple.Create(" for=\"", 22694), Tuple.Create("\"", 22744)
             
-            #line 323 "..\..\Views\EditStartOfPlay.cshtml"
-, Tuple.Create(Tuple.Create("", 21923), Tuple.Create<System.Object, System.Int32>(MatchResultType.AwayWinByForfeit.ToString()
+            #line 334 "..\..\Views\EditStartOfPlay.cshtml"
+, Tuple.Create(Tuple.Create("", 22700), Tuple.Create<System.Object, System.Int32>(MatchResultType.AwayWinByForfeit.ToString()
             
             #line default
             #line hidden
-, 21923), false)
+, 22700), false)
 );
 
 WriteLiteral(" class=\"custom-control-label\"");
@@ -1292,7 +1340,7 @@ WriteLiteral(" class=\"custom-control-label\"");
 WriteLiteral(">");
 
             
-            #line 323 "..\..\Views\EditStartOfPlay.cshtml"
+            #line 334 "..\..\Views\EditStartOfPlay.cshtml"
                                                                                                           Write(MatchResultType.AwayWinByForfeit.ToString().Humanize().Replace("Away", Model.Match.Teams.SingleOrDefault(x => x.TeamRole == TeamRole.Away)?.Team.TeamName ?? "Away"));
 
             
@@ -1307,7 +1355,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                        ");
 
             
-            #line 326 "..\..\Views\EditStartOfPlay.cshtml"
+            #line 337 "..\..\Views\EditStartOfPlay.cshtml"
                    Write(Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.Postponed, new { @class = "custom-control-input", @id = MatchResultType.Postponed.ToString(), aria_describedby = "result-type-validation" }));
 
             
@@ -1315,14 +1363,14 @@ WriteLiteral("                        ");
             #line hidden
 WriteLiteral("\r\n                        <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 22531), Tuple.Create("\"", 22574)
+WriteAttribute("for", Tuple.Create(" for=\"", 23308), Tuple.Create("\"", 23351)
             
-            #line 327 "..\..\Views\EditStartOfPlay.cshtml"
-, Tuple.Create(Tuple.Create("", 22537), Tuple.Create<System.Object, System.Int32>(MatchResultType.Postponed.ToString()
+            #line 338 "..\..\Views\EditStartOfPlay.cshtml"
+, Tuple.Create(Tuple.Create("", 23314), Tuple.Create<System.Object, System.Int32>(MatchResultType.Postponed.ToString()
             
             #line default
             #line hidden
-, 22537), false)
+, 23314), false)
 );
 
 WriteLiteral(" class=\"custom-control-label\"");
@@ -1330,7 +1378,7 @@ WriteLiteral(" class=\"custom-control-label\"");
 WriteLiteral(">");
 
             
-            #line 327 "..\..\Views\EditStartOfPlay.cshtml"
+            #line 338 "..\..\Views\EditStartOfPlay.cshtml"
                                                                                                    Write(MatchResultType.Postponed.ToString().Humanize());
 
             
@@ -1345,7 +1393,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                        ");
 
             
-            #line 330 "..\..\Views\EditStartOfPlay.cshtml"
+            #line 341 "..\..\Views\EditStartOfPlay.cshtml"
                    Write(Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.Cancelled, new { @class = "custom-control-input", @id = MatchResultType.Cancelled.ToString(), aria_describedby = "result-type-validation" }));
 
             
@@ -1353,14 +1401,14 @@ WriteLiteral("                        ");
             #line hidden
 WriteLiteral("\r\n                        <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 23021), Tuple.Create("\"", 23064)
+WriteAttribute("for", Tuple.Create(" for=\"", 23798), Tuple.Create("\"", 23841)
             
-            #line 331 "..\..\Views\EditStartOfPlay.cshtml"
-, Tuple.Create(Tuple.Create("", 23027), Tuple.Create<System.Object, System.Int32>(MatchResultType.Cancelled.ToString()
+            #line 342 "..\..\Views\EditStartOfPlay.cshtml"
+, Tuple.Create(Tuple.Create("", 23804), Tuple.Create<System.Object, System.Int32>(MatchResultType.Cancelled.ToString()
             
             #line default
             #line hidden
-, 23027), false)
+, 23804), false)
 );
 
 WriteLiteral(" class=\"custom-control-label\"");
@@ -1368,7 +1416,7 @@ WriteLiteral(" class=\"custom-control-label\"");
 WriteLiteral(">");
 
             
-            #line 331 "..\..\Views\EditStartOfPlay.cshtml"
+            #line 342 "..\..\Views\EditStartOfPlay.cshtml"
                                                                                                    Write(MatchResultType.Cancelled.ToString().Humanize());
 
             
@@ -1383,7 +1431,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                        ");
 
             
-            #line 334 "..\..\Views\EditStartOfPlay.cshtml"
+            #line 345 "..\..\Views\EditStartOfPlay.cshtml"
                    Write(Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.AbandonedDuringPlayAndPostponed, new { @class = "custom-control-input", @id = MatchResultType.AbandonedDuringPlayAndPostponed.ToString(), aria_describedby = "result-type-validation" }));
 
             
@@ -1391,14 +1439,14 @@ WriteLiteral("                        ");
             #line hidden
 WriteLiteral("\r\n                        <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 23555), Tuple.Create("\"", 23620)
+WriteAttribute("for", Tuple.Create(" for=\"", 24332), Tuple.Create("\"", 24397)
             
-            #line 335 "..\..\Views\EditStartOfPlay.cshtml"
-, Tuple.Create(Tuple.Create("", 23561), Tuple.Create<System.Object, System.Int32>(MatchResultType.AbandonedDuringPlayAndPostponed.ToString()
+            #line 346 "..\..\Views\EditStartOfPlay.cshtml"
+, Tuple.Create(Tuple.Create("", 24338), Tuple.Create<System.Object, System.Int32>(MatchResultType.AbandonedDuringPlayAndPostponed.ToString()
             
             #line default
             #line hidden
-, 23561), false)
+, 24338), false)
 );
 
 WriteLiteral(" class=\"custom-control-label\"");
@@ -1406,7 +1454,7 @@ WriteLiteral(" class=\"custom-control-label\"");
 WriteLiteral(">");
 
             
-            #line 335 "..\..\Views\EditStartOfPlay.cshtml"
+            #line 346 "..\..\Views\EditStartOfPlay.cshtml"
                                                                                                                          Write(MatchResultType.AbandonedDuringPlayAndPostponed.ToString().Humanize());
 
             
@@ -1421,7 +1469,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                        ");
 
             
-            #line 338 "..\..\Views\EditStartOfPlay.cshtml"
+            #line 349 "..\..\Views\EditStartOfPlay.cshtml"
                    Write(Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.AbandonedDuringPlayAndCancelled, new { @class = "custom-control-input", @id = MatchResultType.AbandonedDuringPlayAndCancelled.ToString(), aria_describedby = "result-type-validation" }));
 
             
@@ -1429,14 +1477,14 @@ WriteLiteral("                        ");
             #line hidden
 WriteLiteral("\r\n                        <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 24133), Tuple.Create("\"", 24198)
+WriteAttribute("for", Tuple.Create(" for=\"", 24910), Tuple.Create("\"", 24975)
             
-            #line 339 "..\..\Views\EditStartOfPlay.cshtml"
-, Tuple.Create(Tuple.Create("", 24139), Tuple.Create<System.Object, System.Int32>(MatchResultType.AbandonedDuringPlayAndCancelled.ToString()
+            #line 350 "..\..\Views\EditStartOfPlay.cshtml"
+, Tuple.Create(Tuple.Create("", 24916), Tuple.Create<System.Object, System.Int32>(MatchResultType.AbandonedDuringPlayAndCancelled.ToString()
             
             #line default
             #line hidden
-, 24139), false)
+, 24916), false)
 );
 
 WriteLiteral(" class=\"custom-control-label\"");
@@ -1444,7 +1492,7 @@ WriteLiteral(" class=\"custom-control-label\"");
 WriteLiteral(">");
 
             
-            #line 339 "..\..\Views\EditStartOfPlay.cshtml"
+            #line 350 "..\..\Views\EditStartOfPlay.cshtml"
                                                                                                                          Write(MatchResultType.AbandonedDuringPlayAndCancelled.ToString().Humanize());
 
             
@@ -1455,7 +1503,7 @@ WriteLiteral("</label>\r\n                    </div>\r\n");
 WriteLiteral("                    ");
 
             
-            #line 341 "..\..\Views\EditStartOfPlay.cshtml"
+            #line 352 "..\..\Views\EditStartOfPlay.cshtml"
                Write(Html.ValidationMessageFor(m => Model.Match.MatchResultType, null, new { id = "result-type-validation" }));
 
             
@@ -1464,7 +1512,7 @@ WriteLiteral("                    ");
 WriteLiteral("\r\n                </fieldset>\r\n            </div>\r\n");
 
             
-            #line 344 "..\..\Views\EditStartOfPlay.cshtml"
+            #line 355 "..\..\Views\EditStartOfPlay.cshtml"
 
 
             
@@ -1477,7 +1525,7 @@ WriteLiteral(" class=\"btn btn-primary\"");
 WriteLiteral(">Save and continue</button>\r\n");
 
             
-            #line 346 "..\..\Views\EditStartOfPlay.cshtml"
+            #line 357 "..\..\Views\EditStartOfPlay.cshtml"
         }
     }
     else
@@ -1487,14 +1535,14 @@ WriteLiteral(">Save and continue</button>\r\n");
             #line default
             #line hidden
             
-            #line 350 "..\..\Views\EditStartOfPlay.cshtml"
+            #line 361 "..\..\Views\EditStartOfPlay.cshtml"
 Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 350 "..\..\Views\EditStartOfPlay.cshtml"
+            #line 361 "..\..\Views\EditStartOfPlay.cshtml"
                            
     }
 

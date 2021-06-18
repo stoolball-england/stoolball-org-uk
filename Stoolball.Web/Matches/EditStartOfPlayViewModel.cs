@@ -54,6 +54,8 @@ namespace Stoolball.Web.Matches
         /// </summary>
         public string BattedFirst { get; set; }
 
+        public bool HasScorecard { get; set; } = true;
+
         public IDateTimeFormatter DateFormatter { get; set; }
     }
 }
