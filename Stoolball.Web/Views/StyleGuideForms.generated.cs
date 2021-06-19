@@ -1060,7 +1060,7 @@ WriteLiteral(" class=\"form-group related-item\"");
 
 WriteLiteral(">\r\n            <label");
 
-WriteLiteral(" for=\"Match.MatchLocation.PrimaryAddressableObjectName\"");
+WriteLiteral(" for=\"Match_MatchLocation_PrimaryAddressableObjectName\"");
 
 WriteLiteral(">Single related item</label>\r\n");
 

@@ -22,6 +22,7 @@ namespace Stoolball.Web.Matches
         public Team Team { get; set; }
         public Season Season { get; set; }
 
+        [Display(Name = "Season")]
         public string SeasonFullName { get; set; }
 
         [Display(Name = "Training session date")]

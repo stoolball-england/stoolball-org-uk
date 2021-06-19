@@ -72,7 +72,7 @@
             if (!hasHomeTeam && Model.PossibleHomeTeams.Count == 0)
             {
                 <div class="form-group related-item">
-                    @Html.LabelFor(m => Model.HomeTeamId)
+                    @Html.LabelFor(m => Model.HomeTeamName)
                     @if (Model.HomeTeamId.HasValue)
                     {
                         <div class="single-related-item__selected">
@@ -132,7 +132,7 @@
             if (!hasAwayTeam && Model.PossibleAwayTeams.Count == 0)
             {
                 <div class="form-group related-item">
-                    @Html.LabelFor(m => Model.AwayTeamId)
+                    @Html.LabelFor(m => Model.AwayTeamName)
                     @if (Model.AwayTeamId.HasValue)
                     {
                         <div class="single-related-item__selected">

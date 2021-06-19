@@ -85,7 +85,7 @@ else
 </div>
 
 <div class="form-group related-item">
-    @Html.LabelFor(m => Model.HomeTeamId, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+    @Html.LabelFor(m => Model.HomeTeamName, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     <p class="form-text" id="home-team-or"><small>If you're still arranging the match you can fill in one team and leave the other blank.</small></p>
     @if (Model.HomeTeamId.HasValue)
     {
@@ -139,7 +139,7 @@ else
 </script>
 
 <div class="form-group related-item">
-    @Html.LabelFor(m => Model.AwayTeamId, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+    @Html.LabelFor(m => Model.AwayTeamName, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
     <p class="form-text" id="away-team-or"><small>If you're still arranging the match you can fill in one team and leave the other blank.</small></p>
     @if (Model.AwayTeamId.HasValue)
     {

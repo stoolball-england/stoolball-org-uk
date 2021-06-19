@@ -361,7 +361,7 @@ WriteLiteral("                    ");
 
             
             #line 75 "..\..\Views\EditStartOfPlay.cshtml"
-               Write(Html.LabelFor(m => Model.HomeTeamId));
+               Write(Html.LabelFor(m => Model.HomeTeamName));
 
             
             #line default
@@ -551,7 +551,7 @@ WriteLiteral("                    ");
 
             
             #line 135 "..\..\Views\EditStartOfPlay.cshtml"
-               Write(Html.LabelFor(m => Model.AwayTeamId));
+               Write(Html.LabelFor(m => Model.AwayTeamName));
 
             
             #line default
@@ -1287,14 +1287,14 @@ WriteLiteral("                        ");
             #line hidden
 WriteLiteral("\r\n                        <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 22066), Tuple.Create("\"", 22116)
+WriteAttribute("for", Tuple.Create(" for=\"", 22070), Tuple.Create("\"", 22120)
             
             #line 330 "..\..\Views\EditStartOfPlay.cshtml"
-, Tuple.Create(Tuple.Create("", 22072), Tuple.Create<System.Object, System.Int32>(MatchResultType.HomeWinByForfeit.ToString()
+, Tuple.Create(Tuple.Create("", 22076), Tuple.Create<System.Object, System.Int32>(MatchResultType.HomeWinByForfeit.ToString()
             
             #line default
             #line hidden
-, 22072), false)
+, 22076), false)
 );
 
 WriteLiteral(" class=\"custom-control-label\"");
@@ -1325,14 +1325,14 @@ WriteLiteral("                        ");
             #line hidden
 WriteLiteral("\r\n                        <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 22694), Tuple.Create("\"", 22744)
+WriteAttribute("for", Tuple.Create(" for=\"", 22698), Tuple.Create("\"", 22748)
             
             #line 334 "..\..\Views\EditStartOfPlay.cshtml"
-, Tuple.Create(Tuple.Create("", 22700), Tuple.Create<System.Object, System.Int32>(MatchResultType.AwayWinByForfeit.ToString()
+, Tuple.Create(Tuple.Create("", 22704), Tuple.Create<System.Object, System.Int32>(MatchResultType.AwayWinByForfeit.ToString()
             
             #line default
             #line hidden
-, 22700), false)
+, 22704), false)
 );
 
 WriteLiteral(" class=\"custom-control-label\"");
@@ -1363,14 +1363,14 @@ WriteLiteral("                        ");
             #line hidden
 WriteLiteral("\r\n                        <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 23308), Tuple.Create("\"", 23351)
+WriteAttribute("for", Tuple.Create(" for=\"", 23312), Tuple.Create("\"", 23355)
             
             #line 338 "..\..\Views\EditStartOfPlay.cshtml"
-, Tuple.Create(Tuple.Create("", 23314), Tuple.Create<System.Object, System.Int32>(MatchResultType.Postponed.ToString()
+, Tuple.Create(Tuple.Create("", 23318), Tuple.Create<System.Object, System.Int32>(MatchResultType.Postponed.ToString()
             
             #line default
             #line hidden
-, 23314), false)
+, 23318), false)
 );
 
 WriteLiteral(" class=\"custom-control-label\"");
@@ -1401,14 +1401,14 @@ WriteLiteral("                        ");
             #line hidden
 WriteLiteral("\r\n                        <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 23798), Tuple.Create("\"", 23841)
+WriteAttribute("for", Tuple.Create(" for=\"", 23802), Tuple.Create("\"", 23845)
             
             #line 342 "..\..\Views\EditStartOfPlay.cshtml"
-, Tuple.Create(Tuple.Create("", 23804), Tuple.Create<System.Object, System.Int32>(MatchResultType.Cancelled.ToString()
+, Tuple.Create(Tuple.Create("", 23808), Tuple.Create<System.Object, System.Int32>(MatchResultType.Cancelled.ToString()
             
             #line default
             #line hidden
-, 23804), false)
+, 23808), false)
 );
 
 WriteLiteral(" class=\"custom-control-label\"");
@@ -1439,14 +1439,14 @@ WriteLiteral("                        ");
             #line hidden
 WriteLiteral("\r\n                        <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 24332), Tuple.Create("\"", 24397)
+WriteAttribute("for", Tuple.Create(" for=\"", 24336), Tuple.Create("\"", 24401)
             
             #line 346 "..\..\Views\EditStartOfPlay.cshtml"
-, Tuple.Create(Tuple.Create("", 24338), Tuple.Create<System.Object, System.Int32>(MatchResultType.AbandonedDuringPlayAndPostponed.ToString()
+, Tuple.Create(Tuple.Create("", 24342), Tuple.Create<System.Object, System.Int32>(MatchResultType.AbandonedDuringPlayAndPostponed.ToString()
             
             #line default
             #line hidden
-, 24338), false)
+, 24342), false)
 );
 
 WriteLiteral(" class=\"custom-control-label\"");
@@ -1477,14 +1477,14 @@ WriteLiteral("                        ");
             #line hidden
 WriteLiteral("\r\n                        <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 24910), Tuple.Create("\"", 24975)
+WriteAttribute("for", Tuple.Create(" for=\"", 24914), Tuple.Create("\"", 24979)
             
             #line 350 "..\..\Views\EditStartOfPlay.cshtml"
-, Tuple.Create(Tuple.Create("", 24916), Tuple.Create<System.Object, System.Int32>(MatchResultType.AbandonedDuringPlayAndCancelled.ToString()
+, Tuple.Create(Tuple.Create("", 24920), Tuple.Create<System.Object, System.Int32>(MatchResultType.AbandonedDuringPlayAndCancelled.ToString()
             
             #line default
             #line hidden
-, 24916), false)
+, 24920), false)
 );
 
 WriteLiteral(" class=\"custom-control-label\"");

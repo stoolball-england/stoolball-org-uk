@@ -409,7 +409,7 @@ WriteLiteral("    ");
 
             
             #line 88 "..\..\Views\Partials\_CreateOrEditFriendlyMatch.cshtml"
-Write(Html.LabelFor(m => Model.HomeTeamId, RequiredFieldStatus.Optional, new { @class = "has-form-text" }));
+Write(Html.LabelFor(m => Model.HomeTeamName, RequiredFieldStatus.Optional, new { @class = "has-form-text" }));
 
             
             #line default
@@ -585,7 +585,7 @@ WriteLiteral("    ");
 
             
             #line 142 "..\..\Views\Partials\_CreateOrEditFriendlyMatch.cshtml"
-Write(Html.LabelFor(m => Model.AwayTeamId, RequiredFieldStatus.Optional, new { @class = "has-form-text" }));
+Write(Html.LabelFor(m => Model.AwayTeamName, RequiredFieldStatus.Optional, new { @class = "has-form-text" }));
 
             
             #line default

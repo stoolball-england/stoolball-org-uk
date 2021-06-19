@@ -20,7 +20,7 @@ else if (Model.PossibleSeasons.Count > 0)
 else
 {
     <div class="form-group related-item">
-        @Html.LabelFor(m => Model.Match.Season.SeasonId, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+        @Html.LabelFor(m => Model.SeasonFullName, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
         @if (Model.Match.Season != null)
         {
             <div class="single-related-item__selected">

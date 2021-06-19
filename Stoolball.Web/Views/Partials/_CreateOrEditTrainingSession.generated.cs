@@ -162,7 +162,7 @@ WriteLiteral("        ");
 
             
             #line 23 "..\..\Views\Partials\_CreateOrEditTrainingSession.cshtml"
-   Write(Html.LabelFor(m => Model.Match.Season.SeasonId, RequiredFieldStatus.Optional, new { @class = "has-form-text" }));
+   Write(Html.LabelFor(m => Model.SeasonFullName, RequiredFieldStatus.Optional, new { @class = "has-form-text" }));
 
             
             #line default
