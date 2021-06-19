@@ -33,7 +33,25 @@ namespace ASP
     #line default
     #line hidden
     using Examine;
+    
+    #line 5 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+    using Stoolball.Email;
+    
+    #line default
+    #line hidden
+    
+    #line 4 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+    using Stoolball.Html;
+    
+    #line default
+    #line hidden
     using Umbraco.Core;
+    
+    #line 3 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+    using Umbraco.Core.Composing;
+    
+    #line default
+    #line hidden
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
@@ -50,38 +68,45 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 3 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+            #line 6 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
   
     var content = (ContentModels.ProductPreview)Model.Content;
+
+    var formatter = (IHtmlFormatter)Current.Factory.GetInstance(typeof(IHtmlFormatter));
+    var html = formatter.FormatHtml(content.Description.ToHtmlString());
+
+    var emailProtector = (IEmailProtector)Current.Factory.GetInstance(typeof(IEmailProtector));
+    html = emailProtector.ProtectEmailAddresses(html, User.Identity.IsAuthenticated);
 
             
             #line default
             #line hidden
 WriteLiteral("\r\n<li");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 212), Tuple.Create("\"", 316)
-, Tuple.Create(Tuple.Create("", 220), Tuple.Create("tile", 220), true)
-, Tuple.Create(Tuple.Create(" ", 224), Tuple.Create("product-preview", 225), true)
+WriteAttribute("class", Tuple.Create(" class=\"", 645), Tuple.Create("\"", 749)
+, Tuple.Create(Tuple.Create("", 653), Tuple.Create("tile", 653), true)
+, Tuple.Create(Tuple.Create(" ", 657), Tuple.Create("product-preview", 658), true)
             
-            #line 6 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
-, Tuple.Create(Tuple.Create("", 240), Tuple.Create<System.Object, System.Int32>((content.ProductPage != null) ? " product-preview__linked" : string.Empty
+            #line 15 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+, Tuple.Create(Tuple.Create("", 673), Tuple.Create<System.Object, System.Int32>((content.ProductPage != null) ? " product-preview__linked" : string.Empty
             
             #line default
             #line hidden
-, 240), false)
+, 673), false)
 );
 
 WriteLiteral(">\r\n");
 
             
-            #line 7 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+            #line 16 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 7 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
-     if (content.ProductPage != null) { 
+            #line 16 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+     if (content.ProductPage != null)
+    {
 
             
             #line default
@@ -91,7 +116,7 @@ WriteLiteral("        ");
 WriteLiteral("<a href=\"");
 
             
-            #line 8 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+            #line 18 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
               Write(content.ProductPage.Url());
 
             
@@ -100,8 +125,8 @@ WriteLiteral("<a href=\"");
 WriteLiteral("\">\r\n");
 
             
-            #line 9 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
-    }
+            #line 19 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+        }
 
             
             #line default
@@ -113,13 +138,13 @@ WriteLiteral(" class=\"tile__link\"");
 WriteLiteral(">\r\n");
 
             
-            #line 11 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+            #line 21 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
         
             
             #line default
             #line hidden
             
-            #line 11 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+            #line 21 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
          if (content.Photo != null)
         {
 
@@ -128,25 +153,25 @@ WriteLiteral(">\r\n");
             #line hidden
 WriteLiteral("            <img");
 
-WriteAttribute("src", Tuple.Create(" src=\"", 515), Tuple.Create("\"", 602)
+WriteAttribute("src", Tuple.Create(" src=\"", 956), Tuple.Create("\"", 1043)
             
-            #line 13 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
-, Tuple.Create(Tuple.Create("", 521), Tuple.Create<System.Object, System.Int32>(content.Photo.MediaUrl()
+            #line 23 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+, Tuple.Create(Tuple.Create("", 962), Tuple.Create<System.Object, System.Int32>(content.Photo.MediaUrl()
             
             #line default
             #line hidden
-, 521), false)
-, Tuple.Create(Tuple.Create("", 546), Tuple.Create("?width=180&height=180&mode=pad&bgcolor=fff&upscale=false", 546), true)
+, 962), false)
+, Tuple.Create(Tuple.Create("", 987), Tuple.Create("?width=180&height=180&mode=pad&bgcolor=fff&upscale=false", 987), true)
 );
 
-WriteAttribute("alt", Tuple.Create(" alt=\"", 603), Tuple.Create("\"", 629)
+WriteAttribute("alt", Tuple.Create(" alt=\"", 1044), Tuple.Create("\"", 1070)
             
-            #line 13 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
-                               , Tuple.Create(Tuple.Create("", 609), Tuple.Create<System.Object, System.Int32>(content.ProductName
+            #line 23 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+                              , Tuple.Create(Tuple.Create("", 1050), Tuple.Create<System.Object, System.Int32>(content.ProductName
             
             #line default
             #line hidden
-, 609), false)
+, 1050), false)
 );
 
 WriteLiteral(" width=\"180\"");
@@ -156,7 +181,7 @@ WriteLiteral(" height=\"180\"");
 WriteLiteral(" />\r\n");
 
             
-            #line 14 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+            #line 24 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
         }
 
             
@@ -173,7 +198,7 @@ WriteLiteral(" class=\"product-preview__title\"");
 WriteLiteral(">");
 
             
-            #line 16 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+            #line 26 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
                                          Write(content.ProductName);
 
             
@@ -182,28 +207,30 @@ WriteLiteral(">");
 WriteLiteral("</p>\r\n");
 
             
-            #line 17 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+            #line 27 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
             
             
             #line default
             #line hidden
             
-            #line 17 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
-             if (!string.IsNullOrWhiteSpace(content.Description))
+            #line 27 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+             if (!string.IsNullOrWhiteSpace(html))
             {
 
             
             #line default
             #line hidden
-WriteLiteral("                <p");
+WriteLiteral("                <div");
 
 WriteLiteral(" class=\"product-preview__description\"");
 
-WriteLiteral(">");
+WriteLiteral(">\r\n");
+
+WriteLiteral("                    ");
 
             
-            #line 19 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
-                                                   Write(content.Description);
+            #line 30 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+               Write(content.Description);
 
             
             #line default
@@ -211,26 +238,26 @@ WriteLiteral(">");
 WriteLiteral("\r\n");
 
             
-            #line 20 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
-                
+            #line 31 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+                    
             
             #line default
             #line hidden
             
-            #line 20 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
-                 if (!string.IsNullOrWhiteSpace(content.Delivery))
-                {
+            #line 31 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+                     if (!string.IsNullOrWhiteSpace(content.Delivery))
+                    {
 
             
             #line default
             #line hidden
-WriteLiteral("                    ");
+WriteLiteral("                        ");
 
 WriteLiteral("£");
 
             
-            #line 22 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
-                  Write(content.Delivery);
+            #line 33 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+                      Write(content.Delivery);
 
             
             #line default
@@ -238,16 +265,16 @@ WriteLiteral("£");
 WriteLiteral(" delivery.\r\n");
 
             
-            #line 23 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
-                }
+            #line 34 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+                    }
 
             
             #line default
             #line hidden
-WriteLiteral("                </p>\r\n");
+WriteLiteral("                </div>\r\n");
 
             
-            #line 25 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+            #line 36 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
             }
 
             
@@ -260,34 +287,35 @@ WriteLiteral(" class=\"product-preview__price\"");
 WriteLiteral(">£");
 
             
-            #line 28 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+            #line 39 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
                                      Write(content.Price);
 
             
             #line default
             #line hidden
-WriteLiteral("</span>   \r\n");
+WriteLiteral("</span>\r\n");
 
             
-            #line 29 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+            #line 40 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 29 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
-     if (content.ProductPage != null) {
+            #line 40 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+     if (content.ProductPage != null)
+    {
 
             
             #line default
             #line hidden
-WriteLiteral("        ");
+WriteLiteral("    ");
 
 WriteLiteral("</a>\r\n");
 
             
-            #line 31 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
-    }
+            #line 43 "..\..\Views\Partials\BlockList\Components\ProductPreview.cshtml"
+}
 
             
             #line default

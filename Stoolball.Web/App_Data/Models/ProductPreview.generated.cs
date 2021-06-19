@@ -56,7 +56,7 @@ namespace Umbraco.Web.PublishedModels
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.3")]
 		[ImplementPropertyType("description")]
-		public string Description => this.Value<string>("description");
+		public global::System.Web.IHtmlString Description => this.Value<global::System.Web.IHtmlString>("description");
 
 		///<summary>
 		/// Photo
