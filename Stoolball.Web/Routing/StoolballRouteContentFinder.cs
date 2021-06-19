@@ -119,6 +119,7 @@ namespace Stoolball.Web.Routing
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches{SLASH}add{SLASH}knockout{OPTIONAL_SLASH}", StoolballRouteType.CreateKnockoutMatch },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches{SLASH}add{SLASH}league{OPTIONAL_SLASH}", StoolballRouteType.CreateLeagueMatch },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches{SLASH}add{SLASH}tournament{OPTIONAL_SLASH}", StoolballRouteType.CreateTournament },
+                { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}map{OPTIONAL_SLASH}", StoolballRouteType.SeasonMap },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}table{OPTIONAL_SLASH}", StoolballRouteType.SeasonResultsTable },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.SeasonActions },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}edit{SLASH}season{OPTIONAL_SLASH}", StoolballRouteType.EditSeason },

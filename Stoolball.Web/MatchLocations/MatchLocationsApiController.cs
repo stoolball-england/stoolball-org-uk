@@ -32,9 +32,9 @@ namespace Stoolball.Web.MatchLocations
 
         [HttpGet]
         [Route("api/locations/autocomplete")]
-        public async Task<AutocompleteResultSet> Autocomplete([FromUri] string query = null, [FromUri] string[] not = null, [FromUri] string[] teamType = null, [FromUri] bool? hasActiveTeams = null)
+        public async Task<AutocompleteResultSet> Autocomplete([FromUri] string query = null, [FromUri] string[] not = null, [FromUri] string[] teamType = null, [FromUri] bool? hasActiveTeams = null, [FromUri] Guid? season = null)
         {
-            var locations = await QueryMatchLocations(query, not, hasActiveTeams, teamType).ConfigureAwait(false);
+            var locations = await QueryMatchLocations(query, not, hasActiveTeams, teamType, season).ConfigureAwait(false);
 
             return new AutocompleteResultSet
             {
@@ -48,9 +48,9 @@ namespace Stoolball.Web.MatchLocations
 
         [HttpGet]
         [Route("api/locations/map")]
-        public async Task<IEnumerable<MatchLocationResult>> Map([FromUri] string query = null, [FromUri] string[] not = null, [FromUri] string[] teamType = null, [FromUri] bool? hasActiveTeams = null)
+        public async Task<IEnumerable<MatchLocationResult>> Map([FromUri] string query = null, [FromUri] string[] not = null, [FromUri] string[] teamType = null, [FromUri] bool? hasActiveTeams = null, [FromUri] Guid? season = null)
         {
-            var locations = await QueryMatchLocations(query, not, hasActiveTeams, teamType).ConfigureAwait(false);
+            var locations = await QueryMatchLocations(query, not, hasActiveTeams, teamType, season).ConfigureAwait(false);
 
             return locations.Select(x => new MatchLocationResult
             {
@@ -66,9 +66,9 @@ namespace Stoolball.Web.MatchLocations
             });
         }
 
-        private async Task<List<MatchLocation>> QueryMatchLocations(string query, string[] not, bool? hasActiveTeams, string[] teamTypes)
+        private async Task<List<MatchLocation>> QueryMatchLocations(string query, string[] not, bool? hasActiveTeams, string[] teamTypes, Guid? seasonId)
         {
-            var locationQuery = new MatchLocationFilter { Query = query, HasActiveTeams = hasActiveTeams };
+            var filter = new MatchLocationFilter { Query = query, HasActiveTeams = hasActiveTeams };
             if (not != null)
             {
                 foreach (var guid in not)
@@ -77,7 +77,7 @@ namespace Stoolball.Web.MatchLocations
 
                     try
                     {
-                        locationQuery.ExcludeMatchLocationIds.Add(new Guid(guid));
+                        filter.ExcludeMatchLocationIds.Add(new Guid(guid));
                     }
                     catch (FormatException)
                     {
@@ -92,13 +92,17 @@ namespace Stoolball.Web.MatchLocations
                 {
                     if (Enum.TryParse<TeamType>(teamType, true, out var parsedType))
                     {
-                        locationQuery.TeamTypes.Add(parsedType);
+                        filter.TeamTypes.Add(parsedType);
                     }
                 }
             }
 
-            var locations = await _locationDataSource.ReadMatchLocations(locationQuery).ConfigureAwait(false);
-            return locations;
+            if (seasonId.HasValue)
+            {
+                filter.SeasonIds.Add(seasonId.Value);
+            }
+
+            return await _locationDataSource.ReadMatchLocations(filter).ConfigureAwait(false);
         }
     }
 }

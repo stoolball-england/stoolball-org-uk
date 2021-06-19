@@ -124,9 +124,11 @@ namespace Stoolball.Data.SqlServer
                             LEFT JOIN {Tables.TeamMatchLocation} AS tml2 ON ml2.MatchLocationId = tml2.MatchLocationId
                             LEFT JOIN {Tables.Team} AS t2 ON tml2.TeamId = t2.TeamId 
                             LEFT JOIN {Tables.TeamVersion} AS tv2 ON t2.TeamId = tv2.TeamId
+                            <<JOIN-T2-SEASON>>
                             WHERE tml2.UntilDate IS NULL
                             AND (tv2.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t2.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR tv2.TeamVersionId IS NULL)
                             <<WHERE-T2-TYPE>>
+                            <<WHERE-T2-SEASON>>
                             AND ml2.MatchLocationId IN (
 
                                SELECT MatchLocationId FROM (
@@ -146,6 +148,7 @@ namespace Stoolball.Data.SqlServer
                                         LEFT JOIN {Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId
                                         LEFT JOIN {Tables.Team} AS t ON tml.TeamId = t.TeamId
                                         LEFT JOIN {Tables.TeamVersion} AS tv ON t.TeamId = tv.TeamId
+                                        <<JOIN>>
                                         <<WHERE>>
                                         AND tml.UntilDate IS NULL
 
@@ -174,6 +177,10 @@ namespace Stoolball.Data.SqlServer
                 filteredSql = filteredSql.Replace("<<WHERE-T2-TYPE>>", filter.TeamTypes.Count > 0 ? "AND t2.TeamType IN @TeamTypes" : string.Empty);
                 filteredSql = filteredSql.Replace("<<WHERE-T3-TYPE>>", filter.TeamTypes.Count > 0 ? "AND t3.TeamType IN @TeamTypes" : string.Empty);
                 filteredSql = filteredSql.Replace("<<WHERE-T4-TYPE>>", filter.TeamTypes.Count > 0 ? "AND t4.TeamType IN @TeamTypes" : string.Empty);
+
+                // when filtering by season, return only the teams in the season in case there are other teams also based at the same locations
+                filteredSql = filteredSql.Replace("<<JOIN-T2-SEASON>>", filter.SeasonIds.Count > 0 ? $"LEFT JOIN {Tables.SeasonTeam} AS st2 ON tml2.TeamId = st2.TeamId" : string.Empty);
+                filteredSql = filteredSql.Replace("<<WHERE-T2-SEASON>>", filter.SeasonIds.Count > 0 ? "AND st2.SeasonId IN @SeasonIds" : string.Empty);
 
                 var locations = await connection.QueryAsync<MatchLocation, Team, MatchLocation>(filteredSql,
                               (location, team) =>
@@ -254,6 +261,21 @@ namespace Stoolball.Data.SqlServer
 
                 where.Add("t.TeamType IN @TeamTypes");
                 parameters.Add("@TeamTypes", matchLocationQuery.TeamTypes.Select(x => x.ToString()));
+            }
+
+            if (matchLocationQuery.SeasonIds.Count > 0)
+            {
+                if (!currentJoins.Contains(Tables.TeamMatchLocation))
+                {
+                    join.Add($"LEFT JOIN {Tables.TeamMatchLocation} AS tml ON ml.MatchLocationId = tml.MatchLocationId");
+                }
+                if (!currentJoins.Contains(Tables.SeasonTeam))
+                {
+                    join.Add($"LEFT JOIN {Tables.SeasonTeam} AS st ON tml.TeamId = st.TeamId");
+                }
+
+                where.Add("st.SeasonId IN @SeasonIds");
+                parameters.Add("@SeasonIds", matchLocationQuery.SeasonIds.Select(x => x.ToString()));
             }
 
             sql = sql.Replace("<<JOIN>>", join.Count > 0 ? string.Join(" ", join) : string.Empty)

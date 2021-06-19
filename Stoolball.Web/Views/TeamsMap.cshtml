@@ -4,7 +4,7 @@
     Html.RequiresJs("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey, 50);
     Html.RequiresJs("/js/maps.js", 90);
     Html.RequiresJs("/js/libs/markerclustererplus.1.0.3.min.js", 95);
-    Html.RequiresJs("/teams/teams-map.js");
+    Html.RequiresJs("/teams/teams-map.js?hasactiveteams=true&teamtype=regular&teamtype=occasional&teamtype=limitedmembership&adjust=true");
 }
 <div class="container-xl">
     <h1>@Stoolball.Constants.Pages.Teams</h1>

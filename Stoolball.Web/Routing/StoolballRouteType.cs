@@ -26,6 +26,7 @@
         TeamsMap,
         Teams,
         Season,
+        SeasonMap,
         SeasonActions,
         SeasonResultsTable,
         CreateSeason,

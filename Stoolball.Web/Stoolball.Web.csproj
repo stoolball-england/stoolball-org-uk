@@ -1278,6 +1278,7 @@
     <Compile Include="Clubs\ClubStatisticsController.cs" />
     <Compile Include="Competitions\CompetitionActionsController.cs" />
     <Compile Include="Competitions\CompetitionAuthorizationPolicy.cs" />
+    <Compile Include="Competitions\SeasonMapController.cs" />
     <Compile Include="Competitions\SeasonStatisticsController.cs" />
     <Compile Include="Competitions\DeleteCompetitionViewModel.cs" />
     <Compile Include="Competitions\DeleteCompetitionController.cs" />
@@ -2936,6 +2937,7 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_MostRunOuts.generated.cs</LastGenOutput>
     </Content>
+    <Content Include="Views\SeasonMap.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

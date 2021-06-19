@@ -181,6 +181,25 @@ WriteLiteral(">Matches</a>\r\n        </li>\r\n        <li");
 
 WriteLiteral(" class=\"nav-item\"");
 
+WriteLiteral(">\r\n            <a");
+
+WriteLiteral(" class=\"nav-link\"");
+
+WriteAttribute("href", Tuple.Create(" href=\"", 1122), Tuple.Create("\"", 1158)
+            
+            #line 31 "..\..\Views\SeasonResultsTable.cshtml"
+, Tuple.Create(Tuple.Create("", 1129), Tuple.Create<System.Object, System.Int32>(Model.Season.SeasonRoute
+            
+            #line default
+            #line hidden
+, 1129), false)
+, Tuple.Create(Tuple.Create("", 1154), Tuple.Create("/map", 1154), true)
+);
+
+WriteLiteral(">Map</a>\r\n        </li>\r\n        <li");
+
+WriteLiteral(" class=\"nav-item\"");
+
 WriteLiteral(">\r\n            <em");
 
 WriteLiteral(" class=\"nav-link active\"");
@@ -193,27 +212,27 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1220), Tuple.Create("\"", 1263)
+WriteAttribute("href", Tuple.Create(" href=\"", 1344), Tuple.Create("\"", 1387)
             
-            #line 34 "..\..\Views\SeasonResultsTable.cshtml"
-, Tuple.Create(Tuple.Create("", 1227), Tuple.Create<System.Object, System.Int32>(Model.Season.SeasonRoute
+            #line 37 "..\..\Views\SeasonResultsTable.cshtml"
+, Tuple.Create(Tuple.Create("", 1351), Tuple.Create<System.Object, System.Int32>(Model.Season.SeasonRoute
             
             #line default
             #line hidden
-, 1227), false)
-, Tuple.Create(Tuple.Create("", 1252), Tuple.Create("/statistics", 1252), true)
+, 1351), false)
+, Tuple.Create(Tuple.Create("", 1376), Tuple.Create("/statistics", 1376), true)
 );
 
 WriteLiteral(">Statistics</a>\r\n        </li>\r\n");
 
             
-            #line 36 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 39 "..\..\Views\SeasonResultsTable.cshtml"
         
             
             #line default
             #line hidden
             
-            #line 36 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 39 "..\..\Views\SeasonResultsTable.cshtml"
          if (authorizedToEdit)
         {
 
@@ -228,21 +247,21 @@ WriteLiteral(">\r\n                <a");
 
 WriteLiteral(" class=\"nav-link nav-link-edit\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1438), Tuple.Create("\"", 1481)
+WriteAttribute("href", Tuple.Create(" href=\"", 1562), Tuple.Create("\"", 1605)
             
-            #line 39 "..\..\Views\SeasonResultsTable.cshtml"
-, Tuple.Create(Tuple.Create("", 1445), Tuple.Create<System.Object, System.Int32>(Model.Season.SeasonRoute
+            #line 42 "..\..\Views\SeasonResultsTable.cshtml"
+, Tuple.Create(Tuple.Create("", 1569), Tuple.Create<System.Object, System.Int32>(Model.Season.SeasonRoute
             
             #line default
             #line hidden
-, 1445), false)
-, Tuple.Create(Tuple.Create("", 1470), Tuple.Create("/edit/table", 1470), true)
+, 1569), false)
+, Tuple.Create(Tuple.Create("", 1594), Tuple.Create("/edit/table", 1594), true)
 );
 
 WriteLiteral(">Edit results table</a>\r\n            </li>\r\n");
 
             
-            #line 41 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 44 "..\..\Views\SeasonResultsTable.cshtml"
         }
 
             
@@ -251,13 +270,13 @@ WriteLiteral(">Edit results table</a>\r\n            </li>\r\n");
 WriteLiteral("    </ul>\r\n\r\n");
 
             
-            #line 44 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 47 "..\..\Views\SeasonResultsTable.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 44 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 47 "..\..\Views\SeasonResultsTable.cshtml"
       
         var noResults = true;
         if (Model.Season.Teams.Count > 0)
@@ -313,13 +332,13 @@ WriteLiteral(" class=\"numeric\"");
 WriteLiteral(">No result</th>\r\n");
 
             
-            #line 62 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 65 "..\..\Views\SeasonResultsTable.cshtml"
                             
             
             #line default
             #line hidden
             
-            #line 62 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 65 "..\..\Views\SeasonResultsTable.cshtml"
                              if (Model.Season.EnableRunsScored)
                             {
                                 columns++;
@@ -336,7 +355,7 @@ WriteLiteral(" class=\"numeric\"");
 WriteLiteral(">Runs scored</th>\r\n");
 
             
-            #line 66 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 69 "..\..\Views\SeasonResultsTable.cshtml"
                             }
 
             
@@ -345,7 +364,7 @@ WriteLiteral(">Runs scored</th>\r\n");
 WriteLiteral("                            ");
 
             
-            #line 67 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 70 "..\..\Views\SeasonResultsTable.cshtml"
                              if (Model.Season.EnableRunsConceded)
                             {
                                 columns++;
@@ -362,7 +381,7 @@ WriteLiteral(" class=\"numeric\"");
 WriteLiteral(">Runs conceded</th>\r\n");
 
             
-            #line 71 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 74 "..\..\Views\SeasonResultsTable.cshtml"
                             }
 
             
@@ -371,7 +390,7 @@ WriteLiteral(">Runs conceded</th>\r\n");
 WriteLiteral("                            ");
 
             
-            #line 72 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 75 "..\..\Views\SeasonResultsTable.cshtml"
                              if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
                             {
 
@@ -387,7 +406,7 @@ WriteLiteral(" class=\"numeric\"");
 WriteLiteral(">Points</th>\r\n");
 
             
-            #line 75 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 78 "..\..\Views\SeasonResultsTable.cshtml"
                             }
 
             
@@ -397,13 +416,13 @@ WriteLiteral("                        </tr>\r\n                    </thead>\r\n 
 "<tbody>\r\n");
 
             
-            #line 79 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 82 "..\..\Views\SeasonResultsTable.cshtml"
                         
             
             #line default
             #line hidden
             
-            #line 79 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 82 "..\..\Views\SeasonResultsTable.cshtml"
                           
                             var rows = new Dictionary<Guid, ResultsTableRow>();
                             foreach (var team in Model.Season.Teams)
@@ -502,20 +521,20 @@ WriteLiteral(" scope=\"row\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 10387), Tuple.Create("\"", 10413)
+WriteAttribute("href", Tuple.Create(" href=\"", 10511), Tuple.Create("\"", 10537)
             
-            #line 168 "..\..\Views\SeasonResultsTable.cshtml"
-, Tuple.Create(Tuple.Create("", 10394), Tuple.Create<System.Object, System.Int32>(row.Team.TeamRoute
+            #line 171 "..\..\Views\SeasonResultsTable.cshtml"
+, Tuple.Create(Tuple.Create("", 10518), Tuple.Create<System.Object, System.Int32>(row.Team.TeamRoute
             
             #line default
             #line hidden
-, 10394), false)
+, 10518), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 168 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 171 "..\..\Views\SeasonResultsTable.cshtml"
                                                                              Write(row.Team.TeamName);
 
             
@@ -540,7 +559,7 @@ WriteLiteral(" class=\"results-table__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 169 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 172 "..\..\Views\SeasonResultsTable.cshtml"
                                                                                                                                                                                         Write(row.Played);
 
             
@@ -565,7 +584,7 @@ WriteLiteral(" class=\"results-table__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 170 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 173 "..\..\Views\SeasonResultsTable.cshtml"
                                                                                                                                                                                      Write(row.Won);
 
             
@@ -590,7 +609,7 @@ WriteLiteral(" class=\"results-table__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 171 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 174 "..\..\Views\SeasonResultsTable.cshtml"
                                                                                                                                                                                       Write(row.Lost);
 
             
@@ -615,7 +634,7 @@ WriteLiteral(" class=\"results-table__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 172 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 175 "..\..\Views\SeasonResultsTable.cshtml"
                                                                                                                                                                                       Write(row.Tied);
 
             
@@ -640,7 +659,7 @@ WriteLiteral(" class=\"results-table__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 173 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 176 "..\..\Views\SeasonResultsTable.cshtml"
                                                                                                                                                                                            Write(row.NoResult);
 
             
@@ -649,13 +668,13 @@ WriteLiteral(">");
 WriteLiteral("</span></td>\r\n");
 
             
-            #line 174 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 177 "..\..\Views\SeasonResultsTable.cshtml"
                                     
             
             #line default
             #line hidden
             
-            #line 174 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 177 "..\..\Views\SeasonResultsTable.cshtml"
                                      if (Model.Season.EnableRunsScored)
                                     {
 
@@ -681,7 +700,7 @@ WriteLiteral(" class=\"results-table__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 176 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 179 "..\..\Views\SeasonResultsTable.cshtml"
                                                                                                                                                                                                  Write(row.RunsScored);
 
             
@@ -690,7 +709,7 @@ WriteLiteral(">");
 WriteLiteral("</span></td>\r\n");
 
             
-            #line 177 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 180 "..\..\Views\SeasonResultsTable.cshtml"
                                     }
 
             
@@ -699,7 +718,7 @@ WriteLiteral("</span></td>\r\n");
 WriteLiteral("                                    ");
 
             
-            #line 178 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 181 "..\..\Views\SeasonResultsTable.cshtml"
                                      if (Model.Season.EnableRunsConceded)
                                     {
 
@@ -725,7 +744,7 @@ WriteLiteral(" class=\"results-table__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 180 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 183 "..\..\Views\SeasonResultsTable.cshtml"
                                                                                                                                                                                                    Write(row.RunsConceded);
 
             
@@ -734,7 +753,7 @@ WriteLiteral(">");
 WriteLiteral("</span></td>\r\n");
 
             
-            #line 181 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 184 "..\..\Views\SeasonResultsTable.cshtml"
                                     }
 
             
@@ -743,7 +762,7 @@ WriteLiteral("</span></td>\r\n");
 WriteLiteral("                                    ");
 
             
-            #line 182 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 185 "..\..\Views\SeasonResultsTable.cshtml"
                                      if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable)
                                     {
 
@@ -769,7 +788,7 @@ WriteLiteral(" class=\"results-table__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 184 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 187 "..\..\Views\SeasonResultsTable.cshtml"
                                                                                                                                                                                             Write(row.Points);
 
             
@@ -778,7 +797,7 @@ WriteLiteral(">");
 WriteLiteral("</span></td>\r\n");
 
             
-            #line 185 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 188 "..\..\Views\SeasonResultsTable.cshtml"
                                     }
 
             
@@ -787,7 +806,7 @@ WriteLiteral("</span></td>\r\n");
 WriteLiteral("                                </tr>\r\n");
 
             
-            #line 187 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 190 "..\..\Views\SeasonResultsTable.cshtml"
                             }
                             foreach (var team in withdrawnTeams)
                             {
@@ -805,20 +824,20 @@ WriteLiteral(" scope=\"row\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 12908), Tuple.Create("\"", 12935)
+WriteAttribute("href", Tuple.Create(" href=\"", 13032), Tuple.Create("\"", 13059)
             
-            #line 190 "..\..\Views\SeasonResultsTable.cshtml"
-, Tuple.Create(Tuple.Create("", 12915), Tuple.Create<System.Object, System.Int32>(team.Team.TeamRoute
+            #line 193 "..\..\Views\SeasonResultsTable.cshtml"
+, Tuple.Create(Tuple.Create("", 13039), Tuple.Create<System.Object, System.Int32>(team.Team.TeamRoute
             
             #line default
             #line hidden
-, 12915), false)
+, 13039), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 190 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 193 "..\..\Views\SeasonResultsTable.cshtml"
                                                                                                  Write(team.Team.TeamName);
 
             
@@ -826,20 +845,20 @@ WriteLiteral(">");
             #line hidden
 WriteLiteral("</a></th><td");
 
-WriteAttribute("colspan", Tuple.Create(" colspan=\"", 12968), Tuple.Create("\"", 12990)
+WriteAttribute("colspan", Tuple.Create(" colspan=\"", 13092), Tuple.Create("\"", 13114)
             
-            #line 190 "..\..\Views\SeasonResultsTable.cshtml"
-                                                               , Tuple.Create(Tuple.Create("", 12978), Tuple.Create<System.Object, System.Int32>(columns-1
+            #line 193 "..\..\Views\SeasonResultsTable.cshtml"
+                                                               , Tuple.Create(Tuple.Create("", 13102), Tuple.Create<System.Object, System.Int32>(columns-1
             
             #line default
             #line hidden
-, 12978), false)
+, 13102), false)
 );
 
 WriteLiteral(">Withdrew from season</td></tr>\r\n");
 
             
-            #line 191 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 194 "..\..\Views\SeasonResultsTable.cshtml"
                             }
                         
             
@@ -848,7 +867,7 @@ WriteLiteral(">Withdrew from season</td></tr>\r\n");
 WriteLiteral("\r\n                    </tbody>\r\n                </table>\r\n");
 
             
-            #line 195 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 198 "..\..\Views\SeasonResultsTable.cshtml"
 
                 if (Model.Season.ResultsTableType == ResultsTableType.LeagueTable && Model.Season.PointsAdjustments.Count > 0)
                 {
@@ -862,13 +881,13 @@ WriteLiteral("                    <p>The league table includes the following poi
 WriteLiteral("                    <ul>\r\n");
 
             
-            #line 200 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 203 "..\..\Views\SeasonResultsTable.cshtml"
                         
             
             #line default
             #line hidden
             
-            #line 200 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 203 "..\..\Views\SeasonResultsTable.cshtml"
                          foreach (var adjustment in Model.Season.PointsAdjustments)
                         {
                             var reason = !string.IsNullOrEmpty(adjustment.Reason) ? $"for {adjustment.Reason}" : string.Empty;
@@ -881,7 +900,7 @@ WriteLiteral("                    <ul>\r\n");
 WriteLiteral("                                <li>");
 
             
-            #line 205 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 208 "..\..\Views\SeasonResultsTable.cshtml"
                                 Write("point".ToQuantity(adjustment.Points));
 
             
@@ -890,7 +909,7 @@ WriteLiteral("                                <li>");
 WriteLiteral(" awarded to ");
 
             
-            #line 205 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 208 "..\..\Views\SeasonResultsTable.cshtml"
                                                                                    Write(adjustment.Team.TeamName);
 
             
@@ -899,7 +918,7 @@ WriteLiteral(" awarded to ");
 WriteLiteral(" ");
 
             
-            #line 205 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 208 "..\..\Views\SeasonResultsTable.cshtml"
                                                                                                              Write(reason);
 
             
@@ -908,7 +927,7 @@ WriteLiteral(" ");
 WriteLiteral("</li>\r\n");
 
             
-            #line 206 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 209 "..\..\Views\SeasonResultsTable.cshtml"
                             }
                             else if (adjustment.Points < 0)
                             {
@@ -919,7 +938,7 @@ WriteLiteral("</li>\r\n");
 WriteLiteral("                                <li>");
 
             
-            #line 209 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 212 "..\..\Views\SeasonResultsTable.cshtml"
                                 Write("point".ToQuantity(adjustment.Points *-1));
 
             
@@ -928,7 +947,7 @@ WriteLiteral("                                <li>");
 WriteLiteral(" deducted from ");
 
             
-            #line 209 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 212 "..\..\Views\SeasonResultsTable.cshtml"
                                                                                           Write(adjustment.Team.TeamName);
 
             
@@ -937,7 +956,7 @@ WriteLiteral(" deducted from ");
 WriteLiteral(" ");
 
             
-            #line 209 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 212 "..\..\Views\SeasonResultsTable.cshtml"
                                                                                                                     Write(reason);
 
             
@@ -946,7 +965,7 @@ WriteLiteral(" ");
 WriteLiteral("</li>\r\n");
 
             
-            #line 210 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 213 "..\..\Views\SeasonResultsTable.cshtml"
                             }
                         }
 
@@ -956,7 +975,7 @@ WriteLiteral("</li>\r\n");
 WriteLiteral("                    </ul>\r\n");
 
             
-            #line 213 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 216 "..\..\Views\SeasonResultsTable.cshtml"
                 }
 
                 if (matchesAwaitingResults.Matches.Count > 0)
@@ -969,20 +988,20 @@ WriteLiteral("                    </ul>\r\n");
 WriteLiteral("                    <p>Waiting for results from:</p>\r\n");
 
             
-            #line 219 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 222 "..\..\Views\SeasonResultsTable.cshtml"
                     
             
             #line default
             #line hidden
             
-            #line 219 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 222 "..\..\Views\SeasonResultsTable.cshtml"
                Write(Html.Partial("_MatchList", matchesAwaitingResults));
 
             
             #line default
             #line hidden
             
-            #line 219 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 222 "..\..\Views\SeasonResultsTable.cshtml"
                                                                        
                 }
 
@@ -997,14 +1016,14 @@ WriteLiteral("                    <p>Waiting for results from:</p>\r\n");
             #line default
             #line hidden
             
-            #line 228 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 231 "..\..\Views\SeasonResultsTable.cshtml"
        Write(Html.Raw(Model.Season.Results));
 
             
             #line default
             #line hidden
             
-            #line 228 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 231 "..\..\Views\SeasonResultsTable.cshtml"
                                            ;
             noResults = false;
         }
@@ -1027,7 +1046,7 @@ WriteLiteral(" href=\"/organise/website/results-tables/\"");
 WriteLiteral(">Results tables – how they work</a>.</p>\r\n");
 
             
-            #line 237 "..\..\Views\SeasonResultsTable.cshtml"
+            #line 240 "..\..\Views\SeasonResultsTable.cshtml"
         }
     
             

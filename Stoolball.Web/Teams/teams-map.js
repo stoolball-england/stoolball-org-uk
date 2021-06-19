@@ -9,14 +9,37 @@
       return;
     }
 
+    // Parse the querystring this script was called with. Most of it will be passed on to the API.
+    const scriptUrl = document
+      .querySelector('script[src*="teams-map.js"]')
+      .getAttribute("src");
+    const urlParser = document.createElement("a");
+    urlParser.setAttribute("href", scriptUrl);
+
+    let query = urlParser.search
+      ? urlParser.search
+          .substring(1)
+          .split("&")
+          .map(function (x) {
+            return x.split("=");
+          })
+      : "";
+
+    // Remove the CDV parameter
+    const cdvQuery = query.filter(function (x) {
+      return x[0] == "cdv";
+    });
+    if (cdvQuery.length) {
+      query.splice(query.indexOf(cdvQuery[0]), 1);
+    }
+
     // Make the placeholder big enough for a map
     var mapControl = document.getElementById("map");
     mapControl.setAttribute("class", "google-map");
-    myLatlng = new google.maps.LatLng(51.8157917, -0.9166621); // Aylesbury
     const myOptions = {
-      zoom: 6,
-      center: myLatlng,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
+      center: new google.maps.LatLng(51.8157917, -0.9166621), // Aylesbury - works for showing a map of England by default
+      zoom: 6,
     };
     const map = new google.maps.Map(mapControl, myOptions);
     const groundMarkers = [],
@@ -25,12 +48,26 @@
     let clusterer;
     let previousZoom = map.getZoom();
 
+    // Adjust the map to the markers or leave at default?
+    let fixMap = false;
+    const fixQuery = query.filter(function (x) {
+      return x[0] === "adjust";
+    });
+    if (fixQuery.length) {
+      query.splice(query.indexOf(fixQuery[0]), 1);
+      fixMap = fixQuery[0][1] === "true";
+    }
+
     // JavaScript will create two sets of markers, one for each ground, and one for each team.
     // This is so that, when clustered, we can display the number of teams by creating a marker for each(even though they're actually duplicates).
     // You can't get an infoWindow for a cluster though, so once we're zoomed in far enough switch to using the ground markers, which are unique.
-
     fetch(
-      "/api/locations/map?hasactiveteams=true&teamtype=regular&teamtype=occasional&teamtype=limitedmembership"
+      "/api/locations/map?" +
+        query
+          .map(function (x) {
+            return x.join("=");
+          })
+          .join("&")
     )
       .then(function (response) {
         return response.json();
@@ -38,6 +75,9 @@
       .then(function (data) {
         createGroundMarkers(data);
         createTeamMarkers(data);
+        if (!fixMap) {
+          setCentre(data);
+        }
         plotMarkers(teamMarkers);
       });
 
@@ -155,6 +195,64 @@
           return teamsInCluster + " teams";
         },
       });
+    }
+
+    function setCentre(data) {
+      const minLatitude = Math.min.apply(
+        null,
+        data
+          .filter(function (x) {
+            return x.latitude !== null && x.latitude !== undefined;
+          })
+          .map(function (x) {
+            return x.latitude;
+          })
+      );
+      const maxLatitude = Math.max.apply(
+        null,
+        data
+          .filter(function (x) {
+            return x.latitude !== null && x.latitude !== undefined;
+          })
+          .map(function (x) {
+            return x.latitude;
+          })
+      );
+      const minLongitude = Math.min.apply(
+        null,
+        data
+          .filter(function (x) {
+            return x.longitude !== null && x.longitude !== undefined;
+          })
+          .map(function (x) {
+            return x.longitude;
+          })
+      );
+      const maxLongitude = Math.max.apply(
+        null,
+        data
+          .filter(function (x) {
+            return x.longitude !== null && x.longitude !== undefined;
+          })
+          .map(function (x) {
+            return x.longitude;
+          })
+      );
+      const latitudeSpan = maxLatitude - minLatitude;
+      const longitudeSpan = maxLongitude - minLongitude;
+      const midLatitude = minLatitude + latitudeSpan / 2;
+      const midLongitude = minLongitude + longitudeSpan / 2;
+      if (!isNaN(midLatitude) && !isNaN(midLongitude)) {
+        map.setCenter(new google.maps.LatLng(midLatitude, midLongitude));
+
+        if (latitudeSpan < 0.25 && longitudeSpan < 0.25) {
+          map.setZoom(11);
+        } else if (latitudeSpan < 0.5 && longitudeSpan < 0.5) {
+          map.setZoom(10);
+        } else {
+          map.setZoom(6);
+        }
+      }
     }
 
     function zoomChanged() {

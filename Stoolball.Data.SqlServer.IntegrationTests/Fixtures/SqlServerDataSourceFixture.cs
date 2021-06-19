@@ -118,7 +118,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 foreach (var matchLocation in TeamWithFullDetails.MatchLocations)
                 {
                     repo.CreateMatchLocation(matchLocation);
-                    repo.AddTeamToMatchLocation(TeamWithFullDetails, matchLocation);
+                    foreach (var team in matchLocation.Teams)
+                    {
+                        if (team.TeamId != TeamWithFullDetails.TeamId)
+                        {
+                            repo.CreateTeam(team);
+                            Teams.Add(team);
+                        }
+                        repo.AddTeamToMatchLocation(team, matchLocation);
+                    }
                     MatchLocations.Add(matchLocation);
                 }
                 repo.CreateCompetition(TeamWithFullDetails.Seasons[0].Season.Competition);

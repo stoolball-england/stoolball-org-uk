@@ -209,7 +209,7 @@ namespace Stoolball.Testing
                 MemberGroupName = teamName + " owners",
                 MatchLocations = new List<MatchLocation> {
                     CreateMatchLocationWithMinimalDetails(),
-                    CreateMatchLocationWithMinimalDetails()
+                    CreateMatchLocationWithFullDetails()
                 },
                 Seasons = new List<TeamInSeason> {
                     new TeamInSeason
@@ -226,9 +226,10 @@ namespace Stoolball.Testing
             {
                 matchLocation.Teams.Add(team);
             }
-            foreach (var season in team.Seasons)
+            foreach (var teamInSeason in team.Seasons)
             {
-                season.Team = team;
+                teamInSeason.Team = team;
+                teamInSeason.Season.Teams.Add(teamInSeason);
             }
             competition.Seasons.AddRange(team.Seasons.Select(x => x.Season));
             return team;

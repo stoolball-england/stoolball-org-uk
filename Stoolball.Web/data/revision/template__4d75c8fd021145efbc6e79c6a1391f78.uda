@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/SeasonMap.cshtml",
+  "Master": null,
+  "Udi": "umb://template/4d75c8fd021145efbc6e79c6a1391f78",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/SeasonMap.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Season Map",
+  "Alias": "SeasonMap",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "4.1.2"
+}

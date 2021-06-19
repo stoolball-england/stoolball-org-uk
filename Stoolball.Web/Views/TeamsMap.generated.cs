@@ -55,7 +55,7 @@ namespace ASP
     Html.RequiresJs("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey, 50);
     Html.RequiresJs("/js/maps.js", 90);
     Html.RequiresJs("/js/libs/markerclustererplus.1.0.3.min.js", 95);
-    Html.RequiresJs("/teams/teams-map.js");
+    Html.RequiresJs("/teams/teams-map.js?hasactiveteams=true&teamtype=regular&teamtype=occasional&teamtype=limitedmembership&adjust=true");
 
             
             #line default
@@ -85,14 +85,14 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 562), Tuple.Create("\"", 604)
+WriteAttribute("href", Tuple.Create(" href=\"", 658), Tuple.Create("\"", 700)
             
             #line 14 "..\..\Views\TeamsMap.cshtml"
-, Tuple.Create(Tuple.Create("", 569), Tuple.Create<System.Object, System.Int32>(Stoolball.Constants.Pages.TeamsUrl
+, Tuple.Create(Tuple.Create("", 665), Tuple.Create<System.Object, System.Int32>(Stoolball.Constants.Pages.TeamsUrl
             
             #line default
             #line hidden
-, 569), false)
+, 665), false)
 );
 
 WriteLiteral(">Search</a>\r\n        </li>\r\n        <li");
