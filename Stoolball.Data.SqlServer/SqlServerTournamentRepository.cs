@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,11 +27,12 @@ namespace Stoolball.Data.SqlServer
         private readonly IRouteGenerator _routeGenerator;
         private readonly IRedirectsRepository _redirectsRepository;
         private readonly ITeamRepository _teamRepository;
+        private readonly IMatchRepository _matchRepository;
         private readonly IHtmlSanitizer _htmlSanitiser;
         private readonly IDataRedactor _dataRedactor;
 
         public SqlServerTournamentRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
-            IRedirectsRepository redirectsRepository, ITeamRepository teamRepository, IHtmlSanitizer htmlSanitiser, IDataRedactor dataRedactor)
+            IRedirectsRepository redirectsRepository, ITeamRepository teamRepository, IMatchRepository matchRepository, IHtmlSanitizer htmlSanitiser, IDataRedactor dataRedactor)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
@@ -38,6 +40,7 @@ namespace Stoolball.Data.SqlServer
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
             _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
+            _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
             _htmlSanitiser = htmlSanitiser ?? throw new ArgumentNullException(nameof(htmlSanitiser));
             _dataRedactor = dataRedactor ?? throw new ArgumentNullException(nameof(dataRedactor));
             _htmlSanitiser.AllowedTags.Clear();
@@ -71,11 +74,22 @@ namespace Stoolball.Data.SqlServer
                 QualificationType = tournament.QualificationType,
                 SpacesInTournament = tournament.SpacesInTournament,
                 MaximumTeamsInTournament = tournament.MaximumTeamsInTournament,
-                Teams = tournament.Teams.Select(x => new TeamInTournament { Team = new Team { TeamId = x.Team.TeamId, TeamName = x.Team.TeamName }, TeamRole = x.TeamRole }).ToList(),
+                Teams = CreateAuditableCopy(tournament.Teams),
                 Seasons = tournament.Seasons.Select(x => new Competitions.Season { SeasonId = x.SeasonId }).ToList(),
+                Matches = tournament.Matches.Select(x => new MatchInTournament { MatchId = x.MatchId, MatchName = x.MatchName, Teams = CreateAuditableCopy(x.Teams) }).ToList(),
                 TournamentNotes = tournament.TournamentNotes,
                 TournamentRoute = tournament.TournamentRoute
             };
+        }
+
+        private static List<TeamInTournament> CreateAuditableCopy(List<TeamInTournament> teams)
+        {
+            return teams.Select(x => new TeamInTournament
+            {
+                TournamentTeamId = x.TournamentTeamId,
+                Team = x.Team != null ? new Team { TeamId = x.Team.TeamId, TeamName = x.Team.TeamName } : null,
+                TeamRole = x.TeamRole
+            }).ToList();
         }
 
         private Tournament CreateRedactedCopy(Tournament tournament)
@@ -508,9 +522,9 @@ namespace Stoolball.Data.SqlServer
                     {
                         await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET OppositionTeamId = NULL, OppositionTeamName = NULL WHERE OppositionTeamId = @TeamId AND TournamentId = @TournamentId", new { team.TeamId, auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInMatchStatistics} WHERE TeamId = @TeamId AND TournamentId = @TournamentId", new { team.TeamId, auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET BowledById = NULL WHERE BowledById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId) AND TournamentId = @TournamentId", new { team.TeamId, auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET CaughtById = NULL WHERE CaughtById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId) AND TournamentId = @TournamentId", new { team.TeamId, auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
-                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET RunOutById = NULL WHERE RunOutById IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId) AND TournamentId = @TournamentId", new { team.TeamId, auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET BowledByPlayerIdentityId = NULL WHERE BowledByPlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId) AND TournamentId = @TournamentId", new { team.TeamId, auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET CaughtByPlayerIdentityId = NULL WHERE CaughtByPlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId) AND TournamentId = @TournamentId", new { team.TeamId, auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
+                        await connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET RunOutByPlayerIdentityId = NULL WHERE RunOutByPlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId) AND TournamentId = @TournamentId", new { team.TeamId, auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"UPDATE {Tables.PlayerInnings} SET DismissedByPlayerIdentityId = NULL WHERE DismissedByPlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId) AND MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId))", new { team.TeamId, auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"UPDATE {Tables.PlayerInnings} SET BowlerPlayerIdentityId = NULL WHERE BowlerPlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId) AND MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId))", new { team.TeamId, auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
                         await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings} WHERE BatterPlayerIdentityId IN (SELECT PlayerIdentityId FROM {Tables.PlayerIdentity} WHERE TeamId = @TeamId) AND MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId IN (SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId))", new { team.TeamId, auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
@@ -638,6 +652,83 @@ namespace Stoolball.Data.SqlServer
             return auditableTournament;
         }
 
+        public async Task<Tournament> UpdateMatches(Tournament tournament, Guid memberKey, string memberUsername, string memberName)
+        {
+            if (tournament is null)
+            {
+                throw new ArgumentNullException(nameof(tournament));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberUsername))
+            {
+                throw new ArgumentException($"'{nameof(memberUsername)}' cannot be null or whitespace", nameof(memberUsername));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            var auditableTournament = CreateAuditableCopy(tournament);
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var currentMatchesInTournament = await connection.QueryAsync<Guid>($"SELECT MatchId FROM {Tables.Match} WHERE TournamentId = @TournamentId", new { tournament.TournamentId }, transaction).ConfigureAwait(false);
+                    var deletedMatches = currentMatchesInTournament.Where(x => !tournament.Matches.Where(t => t.MatchId.HasValue).Select(m => m.MatchId.Value).Contains(x));
+                    if (deletedMatches.Any())
+                    {
+                        foreach (var match in deletedMatches)
+                        {
+                            await _matchRepository.DeleteMatch(new Match { MatchId = match }, memberKey, memberName, transaction).ConfigureAwait(false);
+                        }
+                    }
+
+                    for (var i = 0; i < tournament.Matches.Count; i++)
+                    {
+                        if (tournament.Matches[i].MatchId.HasValue) { continue; }
+
+                        var match = new Match
+                        {
+                            MatchType = MatchType.LeagueMatch,
+                            Tournament = tournament,
+                            PlayerType = tournament.PlayerType,
+                            PlayersPerTeam = tournament.PlayersPerTeam,
+                            MatchLocation = tournament.TournamentLocation,
+                            OrderInTournament = i + 1,
+                            StartTime = tournament.StartTime.AddMinutes(45 * i),
+                            StartTimeIsKnown = false,
+                            Teams = tournament.Matches[i].Teams.Select(x => new TeamInMatch { Team = tournament.Teams.Single(t => t.TournamentTeamId == x.TournamentTeamId).Team }).ToList()
+                        };
+                        if (match.Teams.Count > 0) { match.Teams[0].TeamRole = TeamRole.Home; }
+                        if (match.Teams.Count > 1) { match.Teams[1].TeamRole = TeamRole.Away; }
+
+                        _ = await _matchRepository.CreateMatch(match, memberKey, memberName, transaction).ConfigureAwait(false);
+                    }
+
+                    var redacted = CreateRedactedCopy(auditableTournament);
+                    await _auditRepository.CreateAudit(new AuditRecord
+                    {
+                        Action = AuditAction.Update,
+                        MemberKey = memberKey,
+                        ActorName = memberName,
+                        EntityUri = auditableTournament.EntityUri,
+                        State = JsonConvert.SerializeObject(auditableTournament),
+                        RedactedState = JsonConvert.SerializeObject(redacted),
+                        AuditDate = DateTime.UtcNow
+                    },
+                    transaction).ConfigureAwait(false);
+
+                    transaction.Commit();
+
+                    _logger.Info(GetType(), LoggingTemplates.Updated, redacted, memberName, memberKey, GetType(), nameof(UpdateMatches));
+                }
+            }
+
+            return auditableTournament;
+        }
+
         /// <summary>
         /// Deletes a stoolball tournament
         /// </summary>
@@ -714,5 +805,6 @@ namespace Stoolball.Data.SqlServer
                 }
             }
         }
+
     }
 }

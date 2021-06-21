@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Matches;
+using Stoolball.Routing;
 using Stoolball.Security;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -21,15 +22,17 @@ namespace Stoolball.Web.Matches
         private readonly ITournamentDataSource _tournamentDataSource;
         private readonly ITournamentRepository _tournamentRepository;
         private readonly IAuthorizationPolicy<Tournament> _authorizationPolicy;
+        private readonly IPostSaveRedirector _postSaveRedirector;
 
         public EditTournamentSeasonsSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITournamentDataSource tournamentDataSource,
-            ITournamentRepository tournamentRepository, IAuthorizationPolicy<Tournament> authorizationPolicy)
+            ITournamentRepository tournamentRepository, IAuthorizationPolicy<Tournament> authorizationPolicy, IPostSaveRedirector postSaveRedirector)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _tournamentDataSource = tournamentDataSource ?? throw new ArgumentNullException(nameof(tournamentDataSource));
             _tournamentRepository = tournamentRepository ?? throw new ArgumentNullException(nameof(tournamentRepository));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
+            _postSaveRedirector = postSaveRedirector ?? throw new ArgumentNullException(nameof(postSaveRedirector));
         }
 
         [HttpPost]
@@ -54,8 +57,7 @@ namespace Stoolball.Web.Matches
                 var updatedTournament = await _tournamentRepository.UpdateSeasons(model.Tournament, currentMember.Key, Members.CurrentUserName, currentMember.Name).ConfigureAwait(false);
             }
 
-            // Redirect to the tournament actions page
-            return Redirect(model.Tournament.TournamentRoute + "/edit");
+            return _postSaveRedirector.WorkOutRedirect(model.Tournament.TournamentRoute, model.Tournament.TournamentRoute, "/edit", Request.Form["UrlReferrer"]);
         }
     }
 }

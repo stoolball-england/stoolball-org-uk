@@ -23,6 +23,7 @@ namespace Stoolball.Web.Matches
     {
         private readonly ITournamentDataSource _tournamentDataSource;
         private readonly IMatchListingDataSource _matchDataSource;
+        private readonly IMatchFilterFactory _matchFilterFactory;
         private readonly ICommentsDataSource<Tournament> _commentsDataSource;
         private readonly IAuthorizationPolicy<Tournament> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
@@ -37,6 +38,7 @@ namespace Stoolball.Web.Matches
            UmbracoHelper umbracoHelper,
            ITournamentDataSource tournamentDataSource,
            IMatchListingDataSource matchDataSource,
+           IMatchFilterFactory matchFilterFactory,
            ICommentsDataSource<Tournament> commentsDataSource,
            IAuthorizationPolicy<Tournament> authorizationPolicy,
            IDateTimeFormatter dateFormatter,
@@ -46,6 +48,7 @@ namespace Stoolball.Web.Matches
         {
             _tournamentDataSource = tournamentDataSource ?? throw new ArgumentNullException(nameof(tournamentDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
+            _matchFilterFactory = matchFilterFactory ?? throw new ArgumentNullException(nameof(matchFilterFactory));
             _commentsDataSource = commentsDataSource ?? throw new ArgumentNullException(nameof(commentsDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
@@ -83,14 +86,10 @@ namespace Stoolball.Web.Matches
                     comment.Comment = _badLanguageFilter.Filter(comment.Comment);
                 }
 
+                var filter = _matchFilterFactory.MatchesForTournament(model.Tournament.TournamentId.Value);
                 model.Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
                 {
-                    Matches = await _matchDataSource.ReadMatchListings(new MatchFilter
-                    {
-                        TournamentId = model.Tournament.TournamentId,
-                        IncludeTournamentMatches = true,
-                        IncludeTournaments = false
-                    }, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false),
+                    Matches = await _matchDataSource.ReadMatchListings(filter.filter, filter.sortOrder).ConfigureAwait(false),
                     ShowMatchDate = false,
                     HighlightNextMatch = false,
                     DateTimeFormatter = _dateFormatter

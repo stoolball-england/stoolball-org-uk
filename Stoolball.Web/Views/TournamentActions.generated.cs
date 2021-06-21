@@ -167,7 +167,25 @@ WriteAttribute("href", Tuple.Create(" href=\"", 1111), Tuple.Create("\"", 1164)
             #line default
             #line hidden
 , 1118), false)
-, Tuple.Create(Tuple.Create("", 1151), Tuple.Create("/edit/seasons", 1151), true)
+, Tuple.Create(Tuple.Create("", 1151), Tuple.Create("/edit/matches", 1151), true)
+);
+
+WriteLiteral(">Matches</a></dt>\r\n");
+
+WriteLiteral("                <dd>Set who plays who and in what order in the tournament.</dd>\r\n" +
+"");
+
+WriteLiteral("                <dt><a");
+
+WriteAttribute("href", Tuple.Create(" href=\"", 1287), Tuple.Create("\"", 1340)
+            
+            #line 21 "..\..\Views\TournamentActions.cshtml"
+, Tuple.Create(Tuple.Create("", 1294), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
+            
+            #line default
+            #line hidden
+, 1294), false)
+, Tuple.Create(Tuple.Create("", 1327), Tuple.Create("/edit/seasons", 1327), true)
 );
 
 WriteLiteral(">Where to list the tournament</a></dt>\r\n");
@@ -175,7 +193,7 @@ WriteLiteral(">Where to list the tournament</a></dt>\r\n");
 WriteLiteral("                <dd>Set which competitions to list this tournament in.</dd>\r\n");
 
             
-            #line 21 "..\..\Views\TournamentActions.cshtml"
+            #line 23 "..\..\Views\TournamentActions.cshtml"
             }
 
             
@@ -184,7 +202,7 @@ WriteLiteral("                <dd>Set which competitions to list this tournament
 WriteLiteral("            ");
 
             
-            #line 22 "..\..\Views\TournamentActions.cshtml"
+            #line 24 "..\..\Views\TournamentActions.cshtml"
              if (Model.IsAuthorized[AuthorizedAction.DeleteTournament])
             {
 
@@ -193,21 +211,21 @@ WriteLiteral("            ");
             #line hidden
 WriteLiteral("                <dt><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1407), Tuple.Create("\"", 1454)
+WriteAttribute("href", Tuple.Create(" href=\"", 1583), Tuple.Create("\"", 1630)
             
-            #line 24 "..\..\Views\TournamentActions.cshtml"
-, Tuple.Create(Tuple.Create("", 1414), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
+            #line 26 "..\..\Views\TournamentActions.cshtml"
+, Tuple.Create(Tuple.Create("", 1590), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
             
             #line default
             #line hidden
-, 1414), false)
-, Tuple.Create(Tuple.Create("", 1447), Tuple.Create("/delete", 1447), true)
+, 1590), false)
+, Tuple.Create(Tuple.Create("", 1623), Tuple.Create("/delete", 1623), true)
 );
 
 WriteLiteral(">Delete ");
 
             
-            #line 24 "..\..\Views\TournamentActions.cshtml"
+            #line 26 "..\..\Views\TournamentActions.cshtml"
                                                                          Write(Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x, false)));
 
             
@@ -219,7 +237,7 @@ WriteLiteral("                <dd>Matches and match statistics will be lost. Pla
 "that only feature in this tournament will be deleted.</dd>\r\n");
 
             
-            #line 26 "..\..\Views\TournamentActions.cshtml"
+            #line 28 "..\..\Views\TournamentActions.cshtml"
             }
 
             
@@ -228,7 +246,7 @@ WriteLiteral("                <dd>Matches and match statistics will be lost. Pla
 WriteLiteral("        </dl>\r\n");
 
             
-            #line 28 "..\..\Views\TournamentActions.cshtml"
+            #line 30 "..\..\Views\TournamentActions.cshtml"
     }
     else
     {
@@ -237,14 +255,14 @@ WriteLiteral("        </dl>\r\n");
             #line default
             #line hidden
             
-            #line 31 "..\..\Views\TournamentActions.cshtml"
+            #line 33 "..\..\Views\TournamentActions.cshtml"
    Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 31 "..\..\Views\TournamentActions.cshtml"
+            #line 33 "..\..\Views\TournamentActions.cshtml"
                                
     }
 

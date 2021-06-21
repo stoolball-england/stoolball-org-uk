@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -60,12 +61,26 @@ namespace Stoolball.Data.Cache
                 var cacheKey = CacheConstants.MatchListingsCacheKeyPrefix + _matchFilterSerializer.Serialize(filter.filter) + filter.sortOrder;
                 _memoryCache.Remove(cacheKey);
             }
+
+            if (match?.Tournament != null)
+            {
+                var filter = _matchFilterFactory.MatchesForTournament(match.Tournament.TournamentId.Value);
+                var cacheKey = CacheConstants.MatchListingsCacheKeyPrefix + _matchFilterSerializer.Serialize(filter.filter) + filter.sortOrder;
+                _memoryCache.Remove(cacheKey);
+            }
         }
 
         public async Task<Match> CreateMatch(Match match, Guid memberKey, string memberName)
         {
             var createdMatch = await _matchRepository.CreateMatch(match, memberKey, memberName).ConfigureAwait(false);
             await ClearImportantCachesForMatch(createdMatch);
+            return createdMatch;
+        }
+
+        public async Task<Match> CreateMatch(Match match, Guid memberKey, string memberName, IDbTransaction dbTransaction)
+        {
+            var createdMatch = await _matchRepository.CreateMatch(match, memberKey, memberName, dbTransaction).ConfigureAwait(false);
+            await ClearImportantCachesForMatch(createdMatch).ConfigureAwait(false);
             return createdMatch;
         }
 
@@ -95,6 +110,11 @@ namespace Stoolball.Data.Cache
             await _matchRepository.DeleteMatch(match, memberKey, memberName).ConfigureAwait(false);
             await ClearImportantCachesForMatch(match);
         }
+        public async Task DeleteMatch(Match match, Guid memberKey, string memberName, IDbTransaction transaction)
+        {
+            await _matchRepository.DeleteMatch(match, memberKey, memberName, transaction).ConfigureAwait(false);
+            await ClearImportantCachesForMatch(match);
+        }
 
         public async Task<MatchInnings> UpdateBowlingScorecard(Match match, Guid matchInningsId, Guid memberKey, string memberName)
         {
@@ -105,5 +125,7 @@ namespace Stoolball.Data.Cache
         {
             return await _matchRepository.UpdateBattingScorecard(match, matchInningsId, memberKey, memberName).ConfigureAwait(false);
         }
+
+
     }
 }

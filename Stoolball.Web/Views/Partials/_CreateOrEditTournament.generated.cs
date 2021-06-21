@@ -261,13 +261,15 @@ WriteLiteral("                ");
             #line hidden
 WriteLiteral("\r\n                <button");
 
+WriteLiteral(" type=\"button\"");
+
 WriteLiteral(" class=\"btn-delete-icon\"");
 
 WriteLiteral(">");
 
             
             #line 37 "..\..\Views\Partials\_CreateOrEditTournament.cshtml"
-                                           Write(Html.Partial("_DeleteIcon", $"Remove {Model.TournamentLocationName} from this tournament"));
+                                                         Write(Html.Partial("_DeleteIcon", $"Remove {Model.TournamentLocationName} from this tournament"));
 
             
             #line default
@@ -345,11 +347,11 @@ WriteLiteral(@">
         </div>
         <div class=""related-item__delete related-item__selected__section"">
             <input name=""TournamentLocationId"" class=""related-item__data related-item__id"" type=""hidden"" value=""{{data}}"" />
-            <button class=""btn-delete-icon"">");
+            <button type=""button"" class=""btn-delete-icon"">");
 
             
             #line 74 "..\..\Views\Partials\_CreateOrEditTournament.cshtml"
-                                       Write(Html.Partial("_DeleteIcon", "Remove {{value}} from this tournament"));
+                                                     Write(Html.Partial("_DeleteIcon", "Remove {{value}} from this tournament"));
 
             
             #line default
@@ -375,14 +377,14 @@ WriteLiteral("        ");
             #line hidden
 WriteLiteral("\r\n        <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 4507), Tuple.Create("\"", 4567)
+WriteAttribute("for", Tuple.Create(" for=\"", 4535), Tuple.Create("\"", 4595)
             
             #line 83 "..\..\Views\Partials\_CreateOrEditTournament.cshtml"
-, Tuple.Create(Tuple.Create("", 4513), Tuple.Create<System.Object, System.Int32>(TournamentQualificationType.OpenTournament.ToString()
+, Tuple.Create(Tuple.Create("", 4541), Tuple.Create<System.Object, System.Int32>(TournamentQualificationType.OpenTournament.ToString()
             
             #line default
             #line hidden
-, 4513), false)
+, 4541), false)
 );
 
 WriteLiteral(" class=\"custom-control-label\"");
@@ -404,14 +406,14 @@ WriteLiteral("        ");
             #line hidden
 WriteLiteral("\r\n        <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 4961), Tuple.Create("\"", 5023)
+WriteAttribute("for", Tuple.Create(" for=\"", 4989), Tuple.Create("\"", 5051)
             
             #line 87 "..\..\Views\Partials\_CreateOrEditTournament.cshtml"
-, Tuple.Create(Tuple.Create("", 4967), Tuple.Create<System.Object, System.Int32>(TournamentQualificationType.ClosedTournament.ToString()
+, Tuple.Create(Tuple.Create("", 4995), Tuple.Create<System.Object, System.Int32>(TournamentQualificationType.ClosedTournament.ToString()
             
             #line default
             #line hidden
-, 4967), false)
+, 4995), false)
 );
 
 WriteLiteral(" class=\"custom-control-label\"");

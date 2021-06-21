@@ -33,7 +33,7 @@ namespace ASP
     #line default
     #line hidden
     
-    #line 7 "..\..\Views\DeleteMatch.cshtml"
+    #line 6 "..\..\Views\DeleteMatch.cshtml"
     using Constants = Stoolball.Constants;
     
     #line default
@@ -47,12 +47,6 @@ namespace ASP
     #line hidden
     
     #line 5 "..\..\Views\DeleteMatch.cshtml"
-    using Stoolball.Matches;
-    
-    #line default
-    #line hidden
-    
-    #line 6 "..\..\Views\DeleteMatch.cshtml"
     using Stoolball.Security;
     
     #line default
@@ -64,12 +58,6 @@ namespace ASP
     #line default
     #line hidden
     using Umbraco.Core;
-    
-    #line 8 "..\..\Views\DeleteMatch.cshtml"
-    using Umbraco.Core.Composing;
-    
-    #line default
-    #line hidden
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
@@ -86,7 +74,7 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 9 "..\..\Views\DeleteMatch.cshtml"
+            #line 7 "..\..\Views\DeleteMatch.cshtml"
   
     Html.EnableClientValidation();
     Html.EnableUnobtrusiveJavaScript();
@@ -117,7 +105,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>Delete ");
 
             
-            #line 19 "..\..\Views\DeleteMatch.cshtml"
+            #line 17 "..\..\Views\DeleteMatch.cshtml"
           Write(Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false)));
 
             
@@ -126,13 +114,13 @@ WriteLiteral(">\r\n    <h1>Delete ");
 WriteLiteral("</h1>\r\n\r\n");
 
             
-            #line 21 "..\..\Views\DeleteMatch.cshtml"
+            #line 19 "..\..\Views\DeleteMatch.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 21 "..\..\Views\DeleteMatch.cshtml"
+            #line 19 "..\..\Views\DeleteMatch.cshtml"
      if (Model.IsAuthorized[AuthorizedAction.DeleteMatch])
     {
         if (!Model.Deleted)
@@ -144,7 +132,7 @@ WriteLiteral("</h1>\r\n\r\n");
 WriteLiteral("            <p>If you delete ");
 
             
-            #line 25 "..\..\Views\DeleteMatch.cshtml"
+            #line 23 "..\..\Views\DeleteMatch.cshtml"
                         Write(Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false)));
 
             
@@ -155,13 +143,13 @@ WriteLiteral(" you will:</p>\r\n");
 WriteLiteral("            <ul>\r\n");
 
             
-            #line 27 "..\..\Views\DeleteMatch.cshtml"
+            #line 25 "..\..\Views\DeleteMatch.cshtml"
                 
             
             #line default
             #line hidden
             
-            #line 27 "..\..\Views\DeleteMatch.cshtml"
+            #line 25 "..\..\Views\DeleteMatch.cshtml"
                  if (Model.Match.Teams.Count > 0)
                 {
 
@@ -171,7 +159,7 @@ WriteLiteral("            <ul>\r\n");
 WriteLiteral("                    <li>remove this ");
 
             
-            #line 29 "..\..\Views\DeleteMatch.cshtml"
+            #line 27 "..\..\Views\DeleteMatch.cshtml"
                                Write(Model.Match.MatchType.Humanize(LetterCasing.LowerCase));
 
             
@@ -180,7 +168,7 @@ WriteLiteral("                    <li>remove this ");
 WriteLiteral(" from match listings for ");
 
             
-            #line 29 "..\..\Views\DeleteMatch.cshtml"
+            #line 27 "..\..\Views\DeleteMatch.cshtml"
                                                                                                                Write(Model.Match.Teams.Humanize(x => x.Team.TeamName));
 
             
@@ -189,7 +177,7 @@ WriteLiteral(" from match listings for ");
 WriteLiteral("</li>\r\n");
 
             
-            #line 30 "..\..\Views\DeleteMatch.cshtml"
+            #line 28 "..\..\Views\DeleteMatch.cshtml"
                 }
                 else
                 {
@@ -200,7 +188,7 @@ WriteLiteral("</li>\r\n");
 WriteLiteral("                    <li>not affect any teams</li>\r\n");
 
             
-            #line 34 "..\..\Views\DeleteMatch.cshtml"
+            #line 32 "..\..\Views\DeleteMatch.cshtml"
                 }
 
             
@@ -209,7 +197,44 @@ WriteLiteral("                    <li>not affect any teams</li>\r\n");
 WriteLiteral("                ");
 
             
+            #line 33 "..\..\Views\DeleteMatch.cshtml"
+                 if (Model.Match.Tournament != null)
+                {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                    <li>remove this ");
+
+            
             #line 35 "..\..\Views\DeleteMatch.cshtml"
+                               Write(Model.Match.MatchType.Humanize(LetterCasing.LowerCase));
+
+            
+            #line default
+            #line hidden
+WriteLiteral(" from the ");
+
+            
+            #line 35 "..\..\Views\DeleteMatch.cshtml"
+                                                                                                Write(Model.Match.Tournament.TournamentName);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</li>\r\n");
+
+            
+            #line 36 "..\..\Views\DeleteMatch.cshtml"
+                }
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                ");
+
+            
+            #line 37 "..\..\Views\DeleteMatch.cshtml"
                  if (Model.Match.Season != null)
                 {
 
@@ -219,7 +244,7 @@ WriteLiteral("                ");
 WriteLiteral("                    <li>remove this ");
 
             
-            #line 37 "..\..\Views\DeleteMatch.cshtml"
+            #line 39 "..\..\Views\DeleteMatch.cshtml"
                                Write(Model.Match.MatchType.Humanize(LetterCasing.LowerCase));
 
             
@@ -228,7 +253,7 @@ WriteLiteral("                    <li>remove this ");
 WriteLiteral(" from the ");
 
             
-            #line 37 "..\..\Views\DeleteMatch.cshtml"
+            #line 39 "..\..\Views\DeleteMatch.cshtml"
                                                                                                 Write(Model.Match.Season.SeasonFullName());
 
             
@@ -237,7 +262,7 @@ WriteLiteral(" from the ");
 WriteLiteral("</li>\r\n");
 
             
-            #line 38 "..\..\Views\DeleteMatch.cshtml"
+            #line 40 "..\..\Views\DeleteMatch.cshtml"
                 }
                 else
                 {
@@ -248,7 +273,7 @@ WriteLiteral("</li>\r\n");
 WriteLiteral("                    <li>not affect any competitions</li>\r\n");
 
             
-            #line 42 "..\..\Views\DeleteMatch.cshtml"
+            #line 44 "..\..\Views\DeleteMatch.cshtml"
                 }
 
             
@@ -257,7 +282,7 @@ WriteLiteral("                    <li>not affect any competitions</li>\r\n");
 WriteLiteral("                ");
 
             
-            #line 43 "..\..\Views\DeleteMatch.cshtml"
+            #line 45 "..\..\Views\DeleteMatch.cshtml"
                  if (Model.PlayerIdentities.Count > 0)
                 {
 
@@ -268,7 +293,7 @@ WriteLiteral("                    <li>change batting, bowling and fielding stati
 "teams, affecting ");
 
             
-            #line 45 "..\..\Views\DeleteMatch.cshtml"
+            #line 47 "..\..\Views\DeleteMatch.cshtml"
                                                                                               Write("player".ToQuantity(Model.PlayerIdentities.Count));
 
             
@@ -277,7 +302,7 @@ WriteLiteral("                    <li>change batting, bowling and fielding stati
 WriteLiteral("</li>\r\n");
 
             
-            #line 46 "..\..\Views\DeleteMatch.cshtml"
+            #line 48 "..\..\Views\DeleteMatch.cshtml"
                 }
                 else
                 {
@@ -289,7 +314,7 @@ WriteLiteral("                    <li>not affect any batting, bowling and fieldi
 "li>\r\n");
 
             
-            #line 50 "..\..\Views\DeleteMatch.cshtml"
+            #line 52 "..\..\Views\DeleteMatch.cshtml"
                 }
 
             
@@ -298,7 +323,7 @@ WriteLiteral("                    <li>not affect any batting, bowling and fieldi
 WriteLiteral("                ");
 
             
-            #line 51 "..\..\Views\DeleteMatch.cshtml"
+            #line 53 "..\..\Views\DeleteMatch.cshtml"
                   
                     var playersAtRisk = Model.PlayerIdentities.Where(x => x.TotalMatches == 1).ToList();
                     if (playersAtRisk.Count > 0)
@@ -310,7 +335,7 @@ WriteLiteral("                ");
 WriteLiteral("                        <li>delete ");
 
             
-            #line 55 "..\..\Views\DeleteMatch.cshtml"
+            #line 57 "..\..\Views\DeleteMatch.cshtml"
                                Write("player".ToQuantity(playersAtRisk.Count));
 
             
@@ -319,7 +344,7 @@ WriteLiteral("                        <li>delete ");
 WriteLiteral(" involved in only this ");
 
             
-            #line 55 "..\..\Views\DeleteMatch.cshtml"
+            #line 57 "..\..\Views\DeleteMatch.cshtml"
                                                                                                 Write(Model.Match.MatchType.Humanize(LetterCasing.LowerCase));
 
             
@@ -328,7 +353,7 @@ WriteLiteral(" involved in only this ");
 WriteLiteral(": ");
 
             
-            #line 55 "..\..\Views\DeleteMatch.cshtml"
+            #line 57 "..\..\Views\DeleteMatch.cshtml"
                                                                                                                                                          Write(playersAtRisk.Humanize(x => x.PlayerIdentityName));
 
             
@@ -337,7 +362,7 @@ WriteLiteral(": ");
 WriteLiteral("</li>\r\n");
 
             
-            #line 56 "..\..\Views\DeleteMatch.cshtml"
+            #line 58 "..\..\Views\DeleteMatch.cshtml"
                     }
                     else
                     {
@@ -348,7 +373,7 @@ WriteLiteral("</li>\r\n");
 WriteLiteral("                        <li>not delete any players</li>\r\n");
 
             
-            #line 60 "..\..\Views\DeleteMatch.cshtml"
+            #line 62 "..\..\Views\DeleteMatch.cshtml"
                     }
                 
             
@@ -357,13 +382,13 @@ WriteLiteral("                        <li>not delete any players</li>\r\n");
 WriteLiteral("\r\n");
 
             
-            #line 62 "..\..\Views\DeleteMatch.cshtml"
+            #line 64 "..\..\Views\DeleteMatch.cshtml"
                 
             
             #line default
             #line hidden
             
-            #line 62 "..\..\Views\DeleteMatch.cshtml"
+            #line 64 "..\..\Views\DeleteMatch.cshtml"
                  if (Model.Match.Awards.Count > 0)
                 {
 
@@ -373,7 +398,7 @@ WriteLiteral("\r\n");
 WriteLiteral("                    <li>remove ");
 
             
-            #line 64 "..\..\Views\DeleteMatch.cshtml"
+            #line 66 "..\..\Views\DeleteMatch.cshtml"
                            Write("player award".ToQuantity(Model.Match.Awards.Count));
 
             
@@ -382,7 +407,7 @@ WriteLiteral("                    <li>remove ");
 WriteLiteral(" from ");
 
             
-            #line 64 "..\..\Views\DeleteMatch.cshtml"
+            #line 66 "..\..\Views\DeleteMatch.cshtml"
                                                                                       Write(Model.Match.Awards.Select(x => x.PlayerIdentity).Humanize(x => x.PlayerIdentityName));
 
             
@@ -391,7 +416,7 @@ WriteLiteral(" from ");
 WriteLiteral("\'s statistics</li>\r\n");
 
             
-            #line 65 "..\..\Views\DeleteMatch.cshtml"
+            #line 67 "..\..\Views\DeleteMatch.cshtml"
                 }
                 else
                 {
@@ -402,7 +427,7 @@ WriteLiteral("\'s statistics</li>\r\n");
 WriteLiteral("                    <li>not affect any player awards</li>\r\n");
 
             
-            #line 69 "..\..\Views\DeleteMatch.cshtml"
+            #line 71 "..\..\Views\DeleteMatch.cshtml"
                 }
 
             
@@ -411,7 +436,7 @@ WriteLiteral("                    <li>not affect any player awards</li>\r\n");
 WriteLiteral("                ");
 
             
-            #line 70 "..\..\Views\DeleteMatch.cshtml"
+            #line 72 "..\..\Views\DeleteMatch.cshtml"
                  if (Model.TotalComments > 0)
                 {
 
@@ -421,7 +446,7 @@ WriteLiteral("                ");
 WriteLiteral("                    <li>delete ");
 
             
-            #line 72 "..\..\Views\DeleteMatch.cshtml"
+            #line 74 "..\..\Views\DeleteMatch.cshtml"
                            Write("comment".ToQuantity(Model.TotalComments));
 
             
@@ -430,7 +455,7 @@ WriteLiteral("                    <li>delete ");
 WriteLiteral(", which may include records of outstanding performances</li>\r\n");
 
             
-            #line 73 "..\..\Views\DeleteMatch.cshtml"
+            #line 75 "..\..\Views\DeleteMatch.cshtml"
                 }
                 else
                 {
@@ -441,7 +466,7 @@ WriteLiteral(", which may include records of outstanding performances</li>\r\n")
 WriteLiteral("                    <li>not affect any comments</li>\r\n");
 
             
-            #line 77 "..\..\Views\DeleteMatch.cshtml"
+            #line 79 "..\..\Views\DeleteMatch.cshtml"
                 }
 
             
@@ -452,7 +477,7 @@ WriteLiteral("            </ul>\r\n");
 WriteLiteral("            <p><strong><strong>You cannot undo this.</strong></strong></p>\r\n");
 
             
-            #line 80 "..\..\Views\DeleteMatch.cshtml"
+            #line 82 "..\..\Views\DeleteMatch.cshtml"
 
 
             using (Html.BeginUmbracoForm<DeleteMatchSurfaceController>
@@ -463,14 +488,14 @@ WriteLiteral("            <p><strong><strong>You cannot undo this.</strong></str
             #line default
             #line hidden
             
-            #line 85 "..\..\Views\DeleteMatch.cshtml"
+            #line 87 "..\..\Views\DeleteMatch.cshtml"
            Write(Html.AntiForgeryToken());
 
             
             #line default
             #line hidden
             
-            #line 85 "..\..\Views\DeleteMatch.cshtml"
+            #line 87 "..\..\Views\DeleteMatch.cshtml"
                                         
 
                 
@@ -478,14 +503,14 @@ WriteLiteral("            <p><strong><strong>You cannot undo this.</strong></str
             #line default
             #line hidden
             
-            #line 87 "..\..\Views\DeleteMatch.cshtml"
+            #line 89 "..\..\Views\DeleteMatch.cshtml"
            Write(Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText));
 
             
             #line default
             #line hidden
             
-            #line 87 "..\..\Views\DeleteMatch.cshtml"
+            #line 89 "..\..\Views\DeleteMatch.cshtml"
                                                                              
 
             
@@ -500,7 +525,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                    ");
 
             
-            #line 89 "..\..\Views\DeleteMatch.cshtml"
+            #line 91 "..\..\Views\DeleteMatch.cshtml"
                Write(Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Match.MatchName}' into this box:"));
 
             
@@ -511,7 +536,7 @@ WriteLiteral("\r\n");
 WriteLiteral("                    ");
 
             
-            #line 90 "..\..\Views\DeleteMatch.cshtml"
+            #line 92 "..\..\Views\DeleteMatch.cshtml"
                Write(Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck = "false" }));
 
             
@@ -522,7 +547,7 @@ WriteLiteral("\r\n");
 WriteLiteral("                    ");
 
             
-            #line 91 "..\..\Views\DeleteMatch.cshtml"
+            #line 93 "..\..\Views\DeleteMatch.cshtml"
                Write(Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" }));
 
             
@@ -531,7 +556,7 @@ WriteLiteral("                    ");
 WriteLiteral("\r\n                </div>\r\n");
 
             
-            #line 93 "..\..\Views\DeleteMatch.cshtml"
+            #line 95 "..\..\Views\DeleteMatch.cshtml"
 
 
             
@@ -544,7 +569,7 @@ WriteLiteral(" class=\"btn btn-danger btn-delete\"");
 WriteLiteral(">Delete ");
 
             
-            #line 94 "..\..\Views\DeleteMatch.cshtml"
+            #line 96 "..\..\Views\DeleteMatch.cshtml"
                                                             Write(Model.Match.MatchName);
 
             
@@ -553,7 +578,7 @@ WriteLiteral(">Delete ");
 WriteLiteral("</button>\r\n");
 
             
-            #line 95 "..\..\Views\DeleteMatch.cshtml"
+            #line 97 "..\..\Views\DeleteMatch.cshtml"
             }
         }
         else
@@ -565,7 +590,7 @@ WriteLiteral("</button>\r\n");
 WriteLiteral("            <p>");
 
             
-            #line 99 "..\..\Views\DeleteMatch.cshtml"
+            #line 101 "..\..\Views\DeleteMatch.cshtml"
           Write(Model.Match.MatchName);
 
             
@@ -574,7 +599,7 @@ WriteLiteral("            <p>");
 WriteLiteral(" has been deleted.</p>\r\n");
 
             
-            #line 100 "..\..\Views\DeleteMatch.cshtml"
+            #line 102 "..\..\Views\DeleteMatch.cshtml"
             if (Model.Match.Season != null)
             {
 
@@ -585,20 +610,20 @@ WriteLiteral("                <p><a");
 
 WriteLiteral(" class=\"btn btn-primary\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4714), Tuple.Create("\"", 4752)
+WriteAttribute("href", Tuple.Create(" href=\"", 4895), Tuple.Create("\"", 4933)
             
-            #line 102 "..\..\Views\DeleteMatch.cshtml"
-, Tuple.Create(Tuple.Create("", 4721), Tuple.Create<System.Object, System.Int32>(Model.Match.Season.SeasonRoute
+            #line 104 "..\..\Views\DeleteMatch.cshtml"
+, Tuple.Create(Tuple.Create("", 4902), Tuple.Create<System.Object, System.Int32>(Model.Match.Season.SeasonRoute
             
             #line default
             #line hidden
-, 4721), false)
+, 4902), false)
 );
 
 WriteLiteral(">Back to ");
 
             
-            #line 102 "..\..\Views\DeleteMatch.cshtml"
+            #line 104 "..\..\Views\DeleteMatch.cshtml"
                                                                                         Write(Model.Match.Season.SeasonFullName());
 
             
@@ -607,7 +632,41 @@ WriteLiteral(">Back to ");
 WriteLiteral("</a></p>\r\n");
 
             
-            #line 103 "..\..\Views\DeleteMatch.cshtml"
+            #line 105 "..\..\Views\DeleteMatch.cshtml"
+            }
+            else if (Model.Match.Tournament != null)
+            {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                <p><a");
+
+WriteLiteral(" class=\"btn btn-primary btn-back\"");
+
+WriteAttribute("href", Tuple.Create(" href=\"", 5127), Tuple.Create("\"", 5173)
+            
+            #line 108 "..\..\Views\DeleteMatch.cshtml"
+, Tuple.Create(Tuple.Create("", 5134), Tuple.Create<System.Object, System.Int32>(Model.Match.Tournament.TournamentRoute
+            
+            #line default
+            #line hidden
+, 5134), false)
+);
+
+WriteLiteral(">Back to ");
+
+            
+            #line 108 "..\..\Views\DeleteMatch.cshtml"
+                                                                                                         Write(Model.Match.Tournament.TournamentName);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</a></p>\r\n");
+
+            
+            #line 109 "..\..\Views\DeleteMatch.cshtml"
             }
             else
             {
@@ -619,20 +678,20 @@ WriteLiteral("                <p><a");
 
 WriteLiteral(" class=\"btn btn-primary btn-back\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4910), Tuple.Create("\"", 4944)
+WriteAttribute("href", Tuple.Create(" href=\"", 5333), Tuple.Create("\"", 5367)
             
-            #line 106 "..\..\Views\DeleteMatch.cshtml"
-, Tuple.Create(Tuple.Create("", 4917), Tuple.Create<System.Object, System.Int32>(Constants.Pages.MatchesUrl
+            #line 112 "..\..\Views\DeleteMatch.cshtml"
+, Tuple.Create(Tuple.Create("", 5340), Tuple.Create<System.Object, System.Int32>(Constants.Pages.MatchesUrl
             
             #line default
             #line hidden
-, 4917), false)
+, 5340), false)
 );
 
 WriteLiteral(">Back to ");
 
             
-            #line 106 "..\..\Views\DeleteMatch.cshtml"
+            #line 112 "..\..\Views\DeleteMatch.cshtml"
                                                                                              Write(Constants.Pages.Matches);
 
             
@@ -641,7 +700,7 @@ WriteLiteral(">Back to ");
 WriteLiteral("</a></p>\r\n");
 
             
-            #line 107 "..\..\Views\DeleteMatch.cshtml"
+            #line 113 "..\..\Views\DeleteMatch.cshtml"
             }
         }
     }
@@ -652,14 +711,14 @@ WriteLiteral("</a></p>\r\n");
             #line default
             #line hidden
             
-            #line 112 "..\..\Views\DeleteMatch.cshtml"
+            #line 118 "..\..\Views\DeleteMatch.cshtml"
    Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 112 "..\..\Views\DeleteMatch.cshtml"
+            #line 118 "..\..\Views\DeleteMatch.cshtml"
                                
     }
 

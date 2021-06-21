@@ -132,6 +132,7 @@ namespace Stoolball.Matches
         /// Gets or sets the unique identifier of the member who owns the tournament
         /// </summary>
         public Guid? MemberKey { get; set; }
+        public List<MatchInTournament> Matches { get; internal set; } = new List<MatchInTournament>();
 
         public MatchListing ToMatchListing()
         {

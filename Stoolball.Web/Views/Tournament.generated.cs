@@ -320,34 +320,6 @@ WriteLiteral("\r\n");
             #line hidden
             
             #line 49 "..\..\Views\Tournament.cshtml"
-     if (Model.Tournament.DefaultOverSets.Any())
-    {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("        <p>Matches are ");
-
-            
-            #line 51 "..\..\Views\Tournament.cshtml"
-                  Write(Model.Tournament.DefaultOverSets.Sum(x => x.Overs));
-
-            
-            #line default
-            #line hidden
-WriteLiteral(" overs.</p>\r\n");
-
-            
-            #line 52 "..\..\Views\Tournament.cshtml"
-    }
-
-            
-            #line default
-            #line hidden
-WriteLiteral("    ");
-
-            
-            #line 53 "..\..\Views\Tournament.cshtml"
       
         var showSpacesLeft = (Model.Tournament.SpacesInTournament.HasValue &&
             Model.Tournament.StartTime > DateTime.UtcNow &&
@@ -355,7 +327,8 @@ WriteLiteral("    ");
         if (Model.Tournament.PlayersPerTeam.HasValue ||
             showSpacesLeft ||
             Model.Tournament.Teams.Count > 0 ||
-            Model.Tournament.QualificationType.HasValue)
+            Model.Tournament.QualificationType.HasValue ||
+            authorizedToEdit)
         {
 
             
@@ -364,7 +337,7 @@ WriteLiteral("    ");
 WriteLiteral("            <h2>Teams</h2>\r\n");
 
             
-            #line 63 "..\..\Views\Tournament.cshtml"
+            #line 60 "..\..\Views\Tournament.cshtml"
         }
 
     
@@ -374,13 +347,13 @@ WriteLiteral("            <h2>Teams</h2>\r\n");
 WriteLiteral("\r\n");
 
             
-            #line 66 "..\..\Views\Tournament.cshtml"
+            #line 63 "..\..\Views\Tournament.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 66 "..\..\Views\Tournament.cshtml"
+            #line 63 "..\..\Views\Tournament.cshtml"
      if (Model.Tournament.PlayersPerTeam.HasValue ||
         Model.Tournament.QualificationType.HasValue ||
         showSpacesLeft)
@@ -392,13 +365,13 @@ WriteLiteral("\r\n");
 WriteLiteral("        <p>\r\n");
 
             
-            #line 71 "..\..\Views\Tournament.cshtml"
+            #line 68 "..\..\Views\Tournament.cshtml"
             
             
             #line default
             #line hidden
             
-            #line 71 "..\..\Views\Tournament.cshtml"
+            #line 68 "..\..\Views\Tournament.cshtml"
              if (Model.Tournament.PlayersPerTeam.HasValue)
             {
                 
@@ -406,7 +379,7 @@ WriteLiteral("        <p>\r\n");
             #line default
             #line hidden
             
-            #line 73 "..\..\Views\Tournament.cshtml"
+            #line 70 "..\..\Views\Tournament.cshtml"
            Write(Model.Tournament.PlayersPerTeam.Value);
 
             
@@ -415,7 +388,7 @@ WriteLiteral("        <p>\r\n");
 WriteLiteral(" players per team.\r\n");
 
             
-            #line 74 "..\..\Views\Tournament.cshtml"
+            #line 71 "..\..\Views\Tournament.cshtml"
             }
 
             
@@ -424,7 +397,7 @@ WriteLiteral(" players per team.\r\n");
 WriteLiteral("            ");
 
             
-            #line 75 "..\..\Views\Tournament.cshtml"
+            #line 72 "..\..\Views\Tournament.cshtml"
              if (Model.Tournament.QualificationType == TournamentQualificationType.OpenTournament)
             {
 
@@ -436,7 +409,7 @@ WriteLiteral("                ");
 WriteLiteral("Any ");
 
             
-            #line 77 "..\..\Views\Tournament.cshtml"
+            #line 74 "..\..\Views\Tournament.cshtml"
                  Write(Model.Tournament.PlayerType.Humanize(LetterCasing.LowerCase).Replace("men", "men's"));
 
             
@@ -445,7 +418,7 @@ WriteLiteral("Any ");
 WriteLiteral(" team may enter this tournament.\r\n");
 
             
-            #line 78 "..\..\Views\Tournament.cshtml"
+            #line 75 "..\..\Views\Tournament.cshtml"
             }
             else if (Model.Tournament.QualificationType == TournamentQualificationType.ClosedTournament)
             {
@@ -458,7 +431,7 @@ WriteLiteral("                ");
 WriteLiteral("Only invited or qualifying teams may enter this tournament.\r\n");
 
             
-            #line 82 "..\..\Views\Tournament.cshtml"
+            #line 79 "..\..\Views\Tournament.cshtml"
             }
 
             
@@ -467,7 +440,7 @@ WriteLiteral("Only invited or qualifying teams may enter this tournament.\r\n");
 WriteLiteral("            ");
 
             
-            #line 83 "..\..\Views\Tournament.cshtml"
+            #line 80 "..\..\Views\Tournament.cshtml"
              if (showSpacesLeft)
             {
 
@@ -477,7 +450,7 @@ WriteLiteral("            ");
 WriteLiteral("                <strong>");
 
             
-            #line 85 "..\..\Views\Tournament.cshtml"
+            #line 82 "..\..\Views\Tournament.cshtml"
                    Write(Model.Tournament.SpacesInTournament);
 
             
@@ -486,7 +459,7 @@ WriteLiteral("                <strong>");
 WriteLiteral(" spaces.</strong>\r\n");
 
             
-            #line 86 "..\..\Views\Tournament.cshtml"
+            #line 83 "..\..\Views\Tournament.cshtml"
             }
 
             
@@ -495,7 +468,7 @@ WriteLiteral(" spaces.</strong>\r\n");
 WriteLiteral("        </p>\r\n");
 
             
-            #line 88 "..\..\Views\Tournament.cshtml"
+            #line 85 "..\..\Views\Tournament.cshtml"
     }
 
             
@@ -504,7 +477,7 @@ WriteLiteral("        </p>\r\n");
 WriteLiteral("    ");
 
             
-            #line 89 "..\..\Views\Tournament.cshtml"
+            #line 86 "..\..\Views\Tournament.cshtml"
      if (Model.Tournament.Teams.Count > 0)
     {
         
@@ -512,15 +485,49 @@ WriteLiteral("    ");
             #line default
             #line hidden
             
-            #line 91 "..\..\Views\Tournament.cshtml"
+            #line 88 "..\..\Views\Tournament.cshtml"
    Write(Html.Partial("_TeamList", Model.Tournament.Teams.Select(x => x.Team).ToList()));
 
             
             #line default
             #line hidden
             
-            #line 91 "..\..\Views\Tournament.cshtml"
+            #line 88 "..\..\Views\Tournament.cshtml"
                                                                                        
+    }
+
+            
+            #line default
+            #line hidden
+WriteLiteral("    ");
+
+            
+            #line 90 "..\..\Views\Tournament.cshtml"
+     if (authorizedToEdit)
+    {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("        <p><a");
+
+WriteLiteral(" class=\"btn btn-secondary\"");
+
+WriteAttribute("href", Tuple.Create(" href=\"", 4071), Tuple.Create("\"", 4122)
+            
+            #line 92 "..\..\Views\Tournament.cshtml"
+, Tuple.Create(Tuple.Create("", 4078), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
+            
+            #line default
+            #line hidden
+, 4078), false)
+, Tuple.Create(Tuple.Create("", 4111), Tuple.Create("/edit/teams", 4111), true)
+);
+
+WriteLiteral(">Edit teams</a></p>\r\n");
+
+            
+            #line 93 "..\..\Views\Tournament.cshtml"
     }
 
             
@@ -529,14 +536,14 @@ WriteLiteral("    ");
 WriteLiteral("\r\n");
 
             
-            #line 94 "..\..\Views\Tournament.cshtml"
+            #line 95 "..\..\Views\Tournament.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 94 "..\..\Views\Tournament.cshtml"
-     if (Model.Matches.Matches.Count > 0)
+            #line 95 "..\..\Views\Tournament.cshtml"
+     if (Model.Matches.Matches.Count > 0 || Model.Tournament.DefaultOverSets.Any() || authorizedToEdit)
     {
 
             
@@ -545,21 +552,67 @@ WriteLiteral("\r\n");
 WriteLiteral("        <h2>Matches</h2>\r\n");
 
             
-            #line 97 "..\..\Views\Tournament.cshtml"
+            #line 98 "..\..\Views\Tournament.cshtml"
         
             
             #line default
             #line hidden
             
-            #line 97 "..\..\Views\Tournament.cshtml"
+            #line 98 "..\..\Views\Tournament.cshtml"
    Write(Html.Partial("_MatchList", Model.Matches));
 
             
             #line default
             #line hidden
             
-            #line 97 "..\..\Views\Tournament.cshtml"
+            #line 98 "..\..\Views\Tournament.cshtml"
                                                   
+        if (Model.Tournament.DefaultOverSets.Any())
+        {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("            <p>Matches are ");
+
+            
+            #line 101 "..\..\Views\Tournament.cshtml"
+                      Write(Model.Tournament.DefaultOverSets.Sum(x => x.Overs));
+
+            
+            #line default
+            #line hidden
+WriteLiteral(" overs.</p>\r\n");
+
+            
+            #line 102 "..\..\Views\Tournament.cshtml"
+        }
+        if (authorizedToEdit)
+        {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("            <p><a");
+
+WriteLiteral(" class=\"btn btn-secondary\"");
+
+WriteAttribute("href", Tuple.Create(" href=\"", 4594), Tuple.Create("\"", 4647)
+            
+            #line 105 "..\..\Views\Tournament.cshtml"
+, Tuple.Create(Tuple.Create("", 4601), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
+            
+            #line default
+            #line hidden
+, 4601), false)
+, Tuple.Create(Tuple.Create("", 4634), Tuple.Create("/edit/matches", 4634), true)
+);
+
+WriteLiteral(">Edit matches</a></p>\r\n");
+
+            
+            #line 106 "..\..\Views\Tournament.cshtml"
+        }
     }
 
             
@@ -568,13 +621,13 @@ WriteLiteral("        <h2>Matches</h2>\r\n");
 WriteLiteral("\r\n");
 
             
-            #line 100 "..\..\Views\Tournament.cshtml"
+            #line 109 "..\..\Views\Tournament.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 100 "..\..\Views\Tournament.cshtml"
+            #line 109 "..\..\Views\Tournament.cshtml"
      if (!string.IsNullOrWhiteSpace(Model.Tournament.TournamentNotes) || Model.Tournament.Seasons.Count > 0)
     {
 
@@ -584,7 +637,7 @@ WriteLiteral("\r\n");
 WriteLiteral("        <h2>Notes</h2>\r\n");
 
             
-            #line 103 "..\..\Views\Tournament.cshtml"
+            #line 112 "..\..\Views\Tournament.cshtml"
     }
 
             
@@ -593,13 +646,13 @@ WriteLiteral("        <h2>Notes</h2>\r\n");
 WriteLiteral("\r\n");
 
             
-            #line 105 "..\..\Views\Tournament.cshtml"
+            #line 114 "..\..\Views\Tournament.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 105 "..\..\Views\Tournament.cshtml"
+            #line 114 "..\..\Views\Tournament.cshtml"
      if (!string.IsNullOrWhiteSpace(Model.Tournament.TournamentNotes))
     {
         
@@ -607,14 +660,14 @@ WriteLiteral("\r\n");
             #line default
             #line hidden
             
-            #line 107 "..\..\Views\Tournament.cshtml"
+            #line 116 "..\..\Views\Tournament.cshtml"
    Write(Html.Raw(Model.Tournament.TournamentNotes));
 
             
             #line default
             #line hidden
             
-            #line 107 "..\..\Views\Tournament.cshtml"
+            #line 116 "..\..\Views\Tournament.cshtml"
                                                    
     }
 
@@ -624,13 +677,13 @@ WriteLiteral("\r\n");
 WriteLiteral("\r\n");
 
             
-            #line 110 "..\..\Views\Tournament.cshtml"
+            #line 119 "..\..\Views\Tournament.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 110 "..\..\Views\Tournament.cshtml"
+            #line 119 "..\..\Views\Tournament.cshtml"
      if (Model.Tournament.Seasons.Count == 1)
     {
         var season = Model.Tournament.Seasons.First();
@@ -643,7 +696,7 @@ WriteLiteral("\r\n");
 WriteLiteral("        <p>This tournament is listed in ");
 
             
-            #line 115 "..\..\Views\Tournament.cshtml"
+            #line 124 "..\..\Views\Tournament.cshtml"
                                     Write(the ? string.Empty : "the ");
 
             
@@ -651,20 +704,20 @@ WriteLiteral("        <p>This tournament is listed in ");
             #line hidden
 WriteLiteral(" <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4804), Tuple.Create("\"", 4830)
+WriteAttribute("href", Tuple.Create(" href=\"", 5241), Tuple.Create("\"", 5267)
             
-            #line 115 "..\..\Views\Tournament.cshtml"
-, Tuple.Create(Tuple.Create("", 4811), Tuple.Create<System.Object, System.Int32>(season.SeasonRoute
+            #line 124 "..\..\Views\Tournament.cshtml"
+, Tuple.Create(Tuple.Create("", 5248), Tuple.Create<System.Object, System.Int32>(season.SeasonRoute
             
             #line default
             #line hidden
-, 4811), false)
+, 5248), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 115 "..\..\Views\Tournament.cshtml"
+            #line 124 "..\..\Views\Tournament.cshtml"
                                                                                                 Write(season.SeasonFullName());
 
             
@@ -673,7 +726,7 @@ WriteLiteral(">");
 WriteLiteral("</a>.</p>\r\n");
 
             
-            #line 116 "..\..\Views\Tournament.cshtml"
+            #line 125 "..\..\Views\Tournament.cshtml"
     }
     else if (Model.Tournament.Seasons.Count > 1)
     {
@@ -684,7 +737,7 @@ WriteLiteral("</a>.</p>\r\n");
 WriteLiteral("        <p>This tournament is listed in the following seasons:</p>\r\n");
 
             
-            #line 120 "..\..\Views\Tournament.cshtml"
+            #line 129 "..\..\Views\Tournament.cshtml"
 
 
             
@@ -693,13 +746,13 @@ WriteLiteral("        <p>This tournament is listed in the following seasons:</p>
 WriteLiteral("        <ul>\r\n");
 
             
-            #line 122 "..\..\Views\Tournament.cshtml"
+            #line 131 "..\..\Views\Tournament.cshtml"
             
             
             #line default
             #line hidden
             
-            #line 122 "..\..\Views\Tournament.cshtml"
+            #line 131 "..\..\Views\Tournament.cshtml"
              foreach (var season in Model.Tournament.Seasons)
             {
 
@@ -708,20 +761,20 @@ WriteLiteral("        <ul>\r\n");
             #line hidden
 WriteLiteral("                <li><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 5115), Tuple.Create("\"", 5141)
+WriteAttribute("href", Tuple.Create(" href=\"", 5552), Tuple.Create("\"", 5578)
             
-            #line 124 "..\..\Views\Tournament.cshtml"
-, Tuple.Create(Tuple.Create("", 5122), Tuple.Create<System.Object, System.Int32>(season.SeasonRoute
+            #line 133 "..\..\Views\Tournament.cshtml"
+, Tuple.Create(Tuple.Create("", 5559), Tuple.Create<System.Object, System.Int32>(season.SeasonRoute
             
             #line default
             #line hidden
-, 5122), false)
+, 5559), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 124 "..\..\Views\Tournament.cshtml"
+            #line 133 "..\..\Views\Tournament.cshtml"
                                              Write(season.SeasonFullName());
 
             
@@ -730,7 +783,7 @@ WriteLiteral(">");
 WriteLiteral("</a></li>\r\n");
 
             
-            #line 125 "..\..\Views\Tournament.cshtml"
+            #line 134 "..\..\Views\Tournament.cshtml"
             }
 
             
@@ -739,7 +792,41 @@ WriteLiteral("</a></li>\r\n");
 WriteLiteral("        </ul>\r\n");
 
             
-            #line 127 "..\..\Views\Tournament.cshtml"
+            #line 136 "..\..\Views\Tournament.cshtml"
+    }
+
+            
+            #line default
+            #line hidden
+WriteLiteral("    ");
+
+            
+            #line 137 "..\..\Views\Tournament.cshtml"
+     if (authorizedToEdit)
+    {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("        <p><a");
+
+WriteLiteral(" class=\"btn btn-secondary\"");
+
+WriteAttribute("href", Tuple.Create(" href=\"", 5726), Tuple.Create("\"", 5779)
+            
+            #line 139 "..\..\Views\Tournament.cshtml"
+, Tuple.Create(Tuple.Create("", 5733), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
+            
+            #line default
+            #line hidden
+, 5733), false)
+, Tuple.Create(Tuple.Create("", 5766), Tuple.Create("/edit/seasons", 5766), true)
+);
+
+WriteLiteral(">Edit where to list this tournament</a></p>\r\n");
+
+            
+            #line 140 "..\..\Views\Tournament.cshtml"
     }
 
             
@@ -750,7 +837,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 129 "..\..\Views\Tournament.cshtml"
+            #line 142 "..\..\Views\Tournament.cshtml"
 Write(Html.Partial("_Comments", Model.Tournament.Comments));
 
             

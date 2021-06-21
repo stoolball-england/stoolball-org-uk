@@ -81,7 +81,7 @@
             var solarTimes = new SolarTimes(Model.Match.StartTime, Model.Match.MatchLocation.Latitude, Model.Match.MatchLocation.Longitude);
             @: (sunset @Model.DateTimeFormatter.FormatTime(solarTimes.Sunset))
         }
-        @if (Model.Match.StartTime > DateTimeOffset.UtcNow)
+        @if (Model.Match.StartTime > DateTimeOffset.UtcNow && Model.Match.Tournament == null)
         {
             <a type="text/calendar" href="webcal://@(Request.Url.Host == "localhost" ? Request.Url.Authority : "www.stoolball.org.uk")@(Model.Match.MatchRoute).ics" rel="nofollow" class="calendar__inline">Add to calendar</a>
         }

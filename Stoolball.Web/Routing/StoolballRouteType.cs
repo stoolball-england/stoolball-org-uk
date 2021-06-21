@@ -68,6 +68,7 @@
         TournamentActions,
         CreateTournament,
         EditTournament,
+        EditTournamentMatches,
         EditTournamentTeams,
         EditTournamentSeasons,
         DeleteTournament,

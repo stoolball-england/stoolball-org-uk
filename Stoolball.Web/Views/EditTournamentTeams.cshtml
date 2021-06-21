@@ -30,6 +30,8 @@
             @Html.AntiForgeryToken()
             @Html.ValidationSummary(true)
 
+            @Html.HiddenFor(m => Model.UrlReferrer)
+            
             <div class="form-group">
                 @Html.LabelFor(m => Model.Tournament.MaximumTeamsInTournament, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
                 <p class="form-text" id="maximum-teams-help"><small>Tell us how many teams you have room for and who's coming, and we'll list your tournament with how many spaces are left.</small></p>
@@ -75,19 +77,19 @@
                 </tbody>
             </table>
             <script type="text/x-template" id="team-template">
-            <table>
-                <tr class="related-item__selected">
-                    <td class="related-item__selected__section"><div class="related-item__animate">{{value}}</div></td>
-                    <td class="related-item__selected__section"><div class="related-item__animate">{{create}}</div></td>
-                    <td class="related-item__delete related-item__selected__section">
-                        <div class="related-item__animate">
-                            <input name="Tournament.Teams[0].Team.TeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
-                            <input name="Tournament.Teams[0].Team.TeamName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
-                            <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this tournament")</button>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+                <table>
+                    <tr class="related-item__selected">
+                        <td class="related-item__selected__section"><div class="related-item__animate">{{value}}</div></td>
+                        <td class="related-item__selected__section"><div class="related-item__animate">{{create}}</div></td>
+                        <td class="related-item__delete related-item__selected__section">
+                            <div class="related-item__animate">
+                                <input name="Tournament.Teams[0].Team.TeamId" class="related-item__data related-item__id" type="hidden" value="{{data}}" data-item="{{data}}" />
+                                <input name="Tournament.Teams[0].Team.TeamName" class="related-item__data" type="hidden" value="{{value}}" data-item="{{data}}" />
+                                <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this tournament")</button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </script>
 
             <button class="btn btn-primary">Save teams</button>

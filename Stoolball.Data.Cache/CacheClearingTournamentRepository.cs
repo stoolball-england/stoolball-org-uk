@@ -64,6 +64,13 @@ namespace Stoolball.Data.Cache
                     _memoryCache.Remove(cacheKey);
                 }
             }
+
+            if (tournament != null)
+            {
+                var filter = _matchFilterFactory.MatchesForTournament(tournament.TournamentId.Value);
+                var cacheKey = CacheConstants.MatchListingsCacheKeyPrefix + _matchFilterSerializer.Serialize(filter.filter) + filter.sortOrder;
+                _memoryCache.Remove(cacheKey);
+            }
         }
 
         public async Task<Tournament> CreateTournament(Tournament tournament, Guid memberKey, string memberName)
@@ -94,10 +101,18 @@ namespace Stoolball.Data.Cache
             return updatedTournament;
         }
 
+        public async Task<Tournament> UpdateMatches(Tournament tournament, Guid memberKey, string memberUsername, string memberName)
+        {
+            var updatedTournament = await _tournamentRepository.UpdateMatches(tournament, memberKey, memberUsername, memberName);
+            await ClearImportantCachesForTournament(updatedTournament);
+            return updatedTournament;
+        }
+
         public async Task DeleteTournament(Tournament tournament, Guid memberKey, string memberName)
         {
             await _tournamentRepository.DeleteTournament(tournament, memberKey, memberName);
             await ClearImportantCachesForTournament(tournament);
         }
+
     }
 }

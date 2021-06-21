@@ -195,6 +195,7 @@ namespace Stoolball.Web.Routing
                 { $"matches{SLASH}{ANY_VALID_ROUTE}{SLASH}delete{OPTIONAL_SLASH}", StoolballRouteType.DeleteMatch },
                 { $"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.TournamentActions },
                 { $"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}tournament{OPTIONAL_SLASH}", StoolballRouteType.EditTournament },
+                { $"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}matches{OPTIONAL_SLASH}", StoolballRouteType.EditTournamentMatches },
                 { $"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}teams{OPTIONAL_SLASH}", StoolballRouteType.EditTournamentTeams },
                 { $"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}seasons{OPTIONAL_SLASH}", StoolballRouteType.EditTournamentSeasons },
                 { $"tournaments{SLASH}{ANY_VALID_ROUTE}{SLASH}delete{OPTIONAL_SLASH}", StoolballRouteType.DeleteTournament },

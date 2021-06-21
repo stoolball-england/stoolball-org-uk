@@ -1,0 +1,116 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<EditTournamentViewModel>
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.Matches
+@using Stoolball.Security
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresCss("~/css/related-items.min.css");
+    Html.RequiresCss("~/matches/edit-tournament-matches.min.css");
+    Html.RequiresJs("~/js/related-items.js");
+    Html.RequiresJs("~/matches/edit-tournament-matches.js");
+
+    var teamOptions = Model.Tournament.Teams.Select(x => new SelectListItem { Text = x.Team.TeamName, Value = x.TournamentTeamId.ToString() });
+}
+
+<div class="container-xl">
+    <h1>Matches in the @Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateFormatter.FormatDate(x, false, false, false))</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.EditTournament])
+    {
+        if (Model.Tournament.Teams.Count < 2)
+        {
+            <p>You need at least two teams in the tournament to add a match.</p>
+            <p><a href="@Model.Tournament.TournamentRoute/edit/teams" class="btn btn-primary">Edit teams</a></p>
+            <p><a href="@Model.Tournament.TournamentRoute/edit" class="btn-back">Back to Edit tournament</a></p>
+        }
+        else
+        {
+            using (Html.BeginUmbracoForm<EditTournamentMatchesSurfaceController>
+                ("UpdateMatches"))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(false)
+
+                @Html.HiddenFor(m => Model.UrlReferrer)
+               
+                <table class="table table-hover related-items@(Model.Tournament.Matches.Count == 0 ? " related-items__empty" : string.Empty)" data-related-item="match">
+                    <thead class="thead-dark">
+                        <tr><th scope="col">Match</th><th scope="col"></th></tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.Tournament.Matches.Count; i++)
+                        {
+                            <tr class="related-item__selected">
+                                <td class="related-item__selected__section">
+                                    @if (Model.Tournament.Matches[i].MatchId.HasValue)
+                                    {
+                                        <div class="related-item__animate">@Model.Tournament.Matches[i].MatchName</div>
+                                    }
+                                    else
+                                    {
+                                        var id = Guid.NewGuid();
+                                        <div class="select-teams-in-match">
+                                            <div class="select-teams-in-match__team">
+                                                @Html.DropDownList($"Tournament.Matches[{i}].Teams[0].TournamentTeamId", teamOptions, string.Empty, new { @class = "form-control related-item__data related-item__id", aria_describedby = $"{id}_validation", aria_label = "Team 1", data_item = $"{id}", id = $"{id}_teamA", required = "required" })
+                                            </div>
+                                            <div class="select-teams-in-match__versus">v</div>
+                                            <div class="select-teams-in-match__team">
+                                                @Html.DropDownList($"Tournament.Matches[{i}].Teams[1].TournamentTeamId", teamOptions, string.Empty, new { @class = "form-control related-item__data related-item__id", aria_describedby = $"{id}_validation", aria_label = "Team 2", data_item = "{{id}}", id = $"{id}_teamB", required = "required" })
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessage($"{id}_validation", null, new { id = $"{id}_validation", @class = "add-match-validation", data_val_msg = "You must select two teams to add a match.", data_val_msg_diff = "A match must be between two different teams." }, "p")
+                                    }
+                                </td>
+                                <td class="related-item__delete related-item__selected__section">
+                                    <div class="related-item__animate">
+                                        @Html.Hidden($"Tournament.Matches[{i}].MatchId", Model.Tournament.Matches[i].MatchId, new { @class = "related-item__data related-item__id", data_item = Model.Tournament.Matches[i].MatchId })
+                                        @Html.Hidden($"Tournament.Matches[{i}].MatchName", Model.Tournament.Matches[i].MatchName, new { @class = "related-item__data select-teams-in-match__match-name", data_item = Model.Tournament.Matches[i].MatchId })
+                                        @Html.Hidden($"Tournament.Matches[{i}].Teams[0].TournamentTeamId", Model.Tournament.Matches[i].Teams.Count > 0 ? Model.Tournament.Matches[i].Teams[0].TournamentTeamId : null, new { @class = "related-item__data", data_item = Model.Tournament.Matches[i].MatchId })
+                                        @Html.Hidden($"Tournament.Matches[{i}].Teams[1].TournamentTeamId", Model.Tournament.Matches[i].Teams.Count > 1 ? Model.Tournament.Matches[i].Teams[1].TournamentTeamId : null, new { @class = "related-item__data", data_item = Model.Tournament.Matches[i].MatchId })
+                                        <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.Tournament.Matches[i].MatchName} from this tournament")</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        <tr class="related-items__if-empty"><td colspan="2">There are no matches in this tournament yet.</td></tr>
+                    </tbody>
+                </table>
+                <p><button type="button" class="select-teams-in-match__add btn btn-secondary btn-add" data-template="match-template">Add a match</button></p>
+                <script type="text/x-template" id="match-template">
+                    <table>
+                        <tr class="related-item__selected select_teams_in_match__create">
+                            <td class="related-item__selected__section">
+                                <div class="select-teams-in-match">
+                                    <div class="select-teams-in-match__team">
+                                        @Html.DropDownList("Tournament.Matches[0].Teams[0].TournamentTeamId", teamOptions, string.Empty, new { @class = "form-control related-item__data related-item__id", aria_describedby = "{{id}}_validation", aria_label = "Team 1", data_item = "{{id}}", id="{{id}}_teamA", required = "required" })
+                                    </div>
+                                    <div class="select-teams-in-match__versus">v</div>
+                                    <div class="select-teams-in-match__team">
+                                        @Html.DropDownList("Tournament.Matches[0].Teams[1].TournamentTeamId", teamOptions, string.Empty, new { @class = "form-control related-item__data related-item__id", aria_describedby = "{{id}}_validation", aria_label = "Team 2", data_item = "{{id}}", id = "{{id}}_teamB", required="required" })
+                                    </div>
+                                </div>
+                                @Html.ValidationMessage("{{id}}_validation", null, new { id= "{{id}}_validation", @class = "add-match-validation", data_val_msg = "You must select two teams to add a match.", data_val_msg_diff = "A match must be between two different teams." }, "p")
+                            </td>
+                            <td class="related-item__delete related-item__selected__section">
+                                <div class="related-item__animate">
+                                    <input name="Tournament.Matches[0].MatchName" class="related-item__data select-teams-in-match__match-name" type="hidden" value="{{value}}" data-item="{{id}}" />
+                                    <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove this match from the tournament")</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </script>
+
+                <button class="btn btn-primary">Save matches</button>
+            }
+        }
+    }
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

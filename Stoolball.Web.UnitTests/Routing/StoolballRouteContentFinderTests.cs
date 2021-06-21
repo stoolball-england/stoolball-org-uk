@@ -259,6 +259,8 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/tournaments/123-TOURNAMENT/edit/", StoolballRouteType.TournamentActions)]
         [InlineData("https://example.org/tournaments/example-tournament/Edit/Tournament", StoolballRouteType.EditTournament)]
         [InlineData("https://example.org/tournaments/123-TOURNAMENT/edit/tournament/", StoolballRouteType.EditTournament)]
+        [InlineData("https://example.org/tournaments/example-tournament/Edit/Matches", StoolballRouteType.EditTournamentMatches)]
+        [InlineData("https://example.org/tournaments/123-TOURNAMENT/edit/MATCHES/", StoolballRouteType.EditTournamentMatches)]
         [InlineData("https://example.org/tournaments/example-tournament/Edit/Teams", StoolballRouteType.EditTournamentTeams)]
         [InlineData("https://example.org/tournaments/123-TOURNAMENT/edit/teams/", StoolballRouteType.EditTournamentTeams)]
         [InlineData("https://example.org/tournaments/example-tournament/Edit/Seasons", StoolballRouteType.EditTournamentSeasons)]

@@ -50,7 +50,8 @@ namespace Stoolball.Web.Matches
             var model = new EditTournamentViewModel(contentModel.Content, Services?.UserService)
             {
                 Tournament = await _tournamentDataSource.ReadTournamentByRoute(Request.RawUrl).ConfigureAwait(false),
-                DateFormatter = _dateFormatter
+                DateFormatter = _dateFormatter,
+                UrlReferrer = Request.UrlReferrer
             };
 
             if (model.Tournament == null)
@@ -62,7 +63,7 @@ namespace Stoolball.Web.Matches
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Tournament);
 
                 model.TournamentDate = model.Tournament.StartTime;
-                model.Metadata.PageTitle = "Edit " + model.Tournament.TournamentFullName(x => _dateFormatter.FormatDate(x, false, false, false));
+                model.Metadata.PageTitle = "Teams in the " + model.Tournament.TournamentFullName(x => _dateFormatter.FormatDate(x, false, false, false));
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Tournaments, Url = new Uri(Constants.Pages.TournamentsUrl, UriKind.Relative) });
                 model.Breadcrumbs.Add(new Breadcrumb { Name = model.Tournament.TournamentName, Url = new Uri(model.Tournament.TournamentRoute, UriKind.Relative) });

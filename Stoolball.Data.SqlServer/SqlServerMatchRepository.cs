@@ -86,6 +86,7 @@ namespace Stoolball.Data.SqlServer
                 UpdateMatchNameAutomatically = match.UpdateMatchNameAutomatically,
                 MatchType = match.MatchType,
                 PlayerType = match.PlayerType,
+                Tournament = match.Tournament != null ? new Tournament { TournamentId = match.Tournament.TournamentId } : null,
                 MatchResultType = match.MatchResultType,
                 Teams = match.Teams.Select(x => CreateAuditableCopy(x)).ToList(),
                 MatchLocation = match.MatchLocation != null ? new MatchLocation { MatchLocationId = match.MatchLocation.MatchLocationId } : null,
@@ -224,168 +225,192 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
+            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var createdMatch = await CreateMatch(match, memberKey, memberName, transaction).ConfigureAwait(false);
+                    transaction.Commit();
+                    return createdMatch;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Creates a stoolball match
+        /// </summary>
+        public async Task<Match> CreateMatch(Match match, Guid memberKey, string memberName, IDbTransaction transaction)
+        {
+            if (match is null)
+            {
+                throw new ArgumentNullException(nameof(match));
+            }
+
+            if (string.IsNullOrWhiteSpace(memberName))
+            {
+                throw new ArgumentNullException(nameof(memberName));
+            }
+
+            if (transaction is null)
+            {
+                throw new ArgumentNullException(nameof(transaction));
+            }
+
             var auditableMatch = CreateAuditableCopy(match);
             auditableMatch.MatchId = Guid.NewGuid();
             auditableMatch.UpdateMatchNameAutomatically = string.IsNullOrEmpty(auditableMatch.MatchName);
             auditableMatch.MatchNotes = _htmlSanitiser.Sanitize(auditableMatch.MatchNotes);
             auditableMatch.MemberKey = memberKey;
 
-            using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
+            await PopulateTeamNames(auditableMatch, transaction).ConfigureAwait(false);
+            await UpdateMatchRoute(auditableMatch, string.Empty, transaction).ConfigureAwait(false);
+
+            if (auditableMatch.UpdateMatchNameAutomatically)
             {
-                connection.Open();
-                using (var transaction = connection.BeginTransaction())
-                {
-                    await PopulateTeamNames(auditableMatch, transaction).ConfigureAwait(false);
-                    await UpdateMatchRoute(auditableMatch, string.Empty, transaction).ConfigureAwait(false);
+                auditableMatch.MatchName = _matchNameBuilder.BuildMatchName(auditableMatch);
+            }
 
-                    if (auditableMatch.UpdateMatchNameAutomatically)
-                    {
-                        auditableMatch.MatchName = _matchNameBuilder.BuildMatchName(auditableMatch);
-                    }
-
-                    auditableMatch.EnableBonusOrPenaltyRuns = true;
-                    if (auditableMatch.Season != null)
-                    {
-                        var unprocessedSeasons = (await connection.QueryAsync<Season, Competition, OverSet, Season>(
-                             $@"SELECT s.SeasonId, s.PlayersPerTeam, s.EnableLastPlayerBatsOn, s.EnableBonusOrPenaltyRuns, 
+            auditableMatch.EnableBonusOrPenaltyRuns = true;
+            if (auditableMatch.Season != null)
+            {
+                var unprocessedSeasons = (await transaction.Connection.QueryAsync<Season, Competition, OverSet, Season>(
+                     $@"SELECT s.SeasonId, s.PlayersPerTeam, s.EnableLastPlayerBatsOn, s.EnableBonusOrPenaltyRuns, 
                                     co.PlayerType,
                                     os.Overs, os.BallsPerOver
                                     FROM {Tables.Season} AS s INNER JOIN {Tables.Competition} co ON s.CompetitionId = co.CompetitionId 
                                     LEFT JOIN {Tables.OverSet} os ON s.SeasonId = os.SeasonId
                                     WHERE s.SeasonId = @SeasonId
                                     ORDER BY os.OverSetNumber",
-                                (season, competition, overSet) =>
-                                {
-                                    season.Competition = competition;
-                                    if (overSet != null) { season.DefaultOverSets.Add(overSet); }
-                                    return season;
-                                },
-                                new { auditableMatch.Season.SeasonId },
-                                transaction,
-                                splitOn: "PlayerType, Overs"
-                            ).ConfigureAwait(false));
-                        auditableMatch.Season = unprocessedSeasons.First();
-                        auditableMatch.Season.DefaultOverSets = unprocessedSeasons.Select(season => season.DefaultOverSets.FirstOrDefault()).OfType<OverSet>().ToList();
-                        auditableMatch.PlayersPerTeam = auditableMatch.Season.PlayersPerTeam;
-                        auditableMatch.LastPlayerBatsOn = auditableMatch.Season.EnableLastPlayerBatsOn;
-                        auditableMatch.EnableBonusOrPenaltyRuns = auditableMatch.Season.EnableBonusOrPenaltyRuns;
-                    }
-                    auditableMatch.PlayerType = _playerTypeSelector.SelectPlayerType(auditableMatch);
+                        (season, competition, overSet) =>
+                        {
+                            season.Competition = competition;
+                            if (overSet != null) { season.DefaultOverSets.Add(overSet); }
+                            return season;
+                        },
+                        new { auditableMatch.Season.SeasonId },
+                        transaction,
+                        splitOn: "PlayerType, Overs"
+                    ).ConfigureAwait(false));
+                auditableMatch.Season = unprocessedSeasons.First();
+                auditableMatch.Season.DefaultOverSets = unprocessedSeasons.Select(season => season.DefaultOverSets.FirstOrDefault()).OfType<OverSet>().ToList();
+                auditableMatch.PlayersPerTeam = auditableMatch.Season.PlayersPerTeam;
+                auditableMatch.LastPlayerBatsOn = auditableMatch.Season.EnableLastPlayerBatsOn;
+                auditableMatch.EnableBonusOrPenaltyRuns = auditableMatch.Season.EnableBonusOrPenaltyRuns;
+            }
+            auditableMatch.PlayerType = _playerTypeSelector.SelectPlayerType(auditableMatch);
 
-                    await connection.ExecuteAsync($@"INSERT INTO {Tables.Match}
-						(MatchId, MatchName, UpdateMatchNameAutomatically, MatchLocationId, MatchType, PlayerType, PlayersPerTeam, InningsOrderIsKnown,
+            await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.Match}
+						(MatchId, MatchName, UpdateMatchNameAutomatically, TournamentId, MatchLocationId, MatchType, PlayerType, PlayersPerTeam, InningsOrderIsKnown,
 						 StartTime, StartTimeIsKnown, LastPlayerBatsOn, EnableBonusOrPenaltyRuns, MatchNotes, SeasonId, MatchRoute, MemberKey)
-						VALUES (@MatchId, @MatchName, @UpdateMatchNameAutomatically, @MatchLocationId, @MatchType, @PlayerType, @PlayersPerTeam, @InningsOrderIsKnown, 
+						VALUES (@MatchId, @MatchName, @UpdateMatchNameAutomatically, @TournamentId, @MatchLocationId, @MatchType, @PlayerType, @PlayersPerTeam, @InningsOrderIsKnown, 
                         @StartTime, @StartTimeIsKnown, @LastPlayerBatsOn, @EnableBonusOrPenaltyRuns, @MatchNotes, @SeasonId, @MatchRoute, @MemberKey)",
+            new
+            {
+                auditableMatch.MatchId,
+                auditableMatch.MatchName,
+                auditableMatch.UpdateMatchNameAutomatically,
+                auditableMatch.Tournament?.TournamentId,
+                auditableMatch.MatchLocation?.MatchLocationId,
+                MatchType = auditableMatch.MatchType.ToString(),
+                PlayerType = auditableMatch.PlayerType.ToString(),
+                auditableMatch.PlayersPerTeam,
+                auditableMatch.InningsOrderIsKnown,
+                StartTime = TimeZoneInfo.ConvertTimeToUtc(auditableMatch.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)),
+                auditableMatch.StartTimeIsKnown,
+                auditableMatch.LastPlayerBatsOn,
+                auditableMatch.EnableBonusOrPenaltyRuns,
+                auditableMatch.MatchNotes,
+                auditableMatch.Season?.SeasonId,
+                auditableMatch.MatchRoute,
+                auditableMatch.MemberKey
+            }, transaction).ConfigureAwait(false);
+
+            Guid? homeMatchTeamId = null;
+            Guid? awayMatchTeamId = null;
+
+            foreach (var team in auditableMatch.Teams)
+            {
+                Guid matchTeamId;
+                if (team.TeamRole == TeamRole.Home)
+                {
+                    homeMatchTeamId = Guid.NewGuid();
+                    matchTeamId = homeMatchTeamId.Value;
+                }
+                else if (team.TeamRole == TeamRole.Away)
+                {
+                    awayMatchTeamId = Guid.NewGuid();
+                    matchTeamId = awayMatchTeamId.Value;
+                }
+
+                team.MatchTeamId = matchTeamId;
+
+                await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
+								(MatchTeamId, MatchId, TeamId, TeamRole) VALUES (@MatchTeamId, @MatchId, @TeamId, @TeamRole)",
                     new
                     {
+                        team.MatchTeamId,
                         auditableMatch.MatchId,
-                        auditableMatch.MatchName,
-                        auditableMatch.UpdateMatchNameAutomatically,
-                        auditableMatch.MatchLocation?.MatchLocationId,
-                        MatchType = auditableMatch.MatchType.ToString(),
-                        PlayerType = auditableMatch.PlayerType.ToString(),
-                        auditableMatch.PlayersPerTeam,
-                        auditableMatch.InningsOrderIsKnown,
-                        StartTime = TimeZoneInfo.ConvertTimeToUtc(auditableMatch.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)),
-                        auditableMatch.StartTimeIsKnown,
-                        auditableMatch.LastPlayerBatsOn,
-                        auditableMatch.EnableBonusOrPenaltyRuns,
-                        auditableMatch.MatchNotes,
-                        auditableMatch.Season?.SeasonId,
-                        auditableMatch.MatchRoute,
-                        auditableMatch.MemberKey
-                    }, transaction).ConfigureAwait(false);
+                        team.Team.TeamId,
+                        TeamRole = team.TeamRole.ToString()
+                    },
+                    transaction).ConfigureAwait(false);
+            }
 
-                    Guid? homeMatchTeamId = null;
-                    Guid? awayMatchTeamId = null;
+            if (auditableMatch.MatchType != MatchType.TrainingSession)
+            {
+                var defaultOverSets = new List<OverSet> { new OverSet { Overs = 12, BallsPerOver = 8 } }; // default if none provided
 
-                    foreach (var team in auditableMatch.Teams)
-                    {
-                        Guid matchTeamId;
-                        if (team.TeamRole == TeamRole.Home)
-                        {
-                            homeMatchTeamId = Guid.NewGuid();
-                            matchTeamId = homeMatchTeamId.Value;
-                        }
-                        else if (team.TeamRole == TeamRole.Away)
-                        {
-                            awayMatchTeamId = Guid.NewGuid();
-                            matchTeamId = awayMatchTeamId.Value;
-                        }
+                auditableMatch.MatchInnings.Add(new MatchInnings
+                {
+                    MatchInningsId = Guid.NewGuid(),
+                    BattingMatchTeamId = homeMatchTeamId,
+                    BowlingMatchTeamId = awayMatchTeamId,
+                    InningsOrderInMatch = 1,
+                    OverSets = auditableMatch.Tournament?.DefaultOverSets ?? auditableMatch.Season?.DefaultOverSets ?? defaultOverSets
+                });
 
-                        team.MatchTeamId = matchTeamId;
+                auditableMatch.MatchInnings.Add(new MatchInnings
+                {
+                    MatchInningsId = Guid.NewGuid(),
+                    BattingMatchTeamId = awayMatchTeamId,
+                    BowlingMatchTeamId = homeMatchTeamId,
+                    InningsOrderInMatch = 2,
+                    OverSets = auditableMatch.Tournament?.DefaultOverSets ?? auditableMatch.Season?.DefaultOverSets ?? defaultOverSets
+                });
 
-                        await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchTeam} 
-								(MatchTeamId, MatchId, TeamId, TeamRole) VALUES (@MatchTeamId, @MatchId, @TeamId, @TeamRole)",
-                            new
-                            {
-                                team.MatchTeamId,
-                                auditableMatch.MatchId,
-                                team.Team.TeamId,
-                                TeamRole = team.TeamRole.ToString()
-                            },
-                            transaction).ConfigureAwait(false);
-                    }
-
-                    if (auditableMatch.MatchType != MatchType.TrainingSession)
-                    {
-                        var defaultOverSets = new List<OverSet> { new OverSet { Overs = 12, BallsPerOver = 8 } }; // default if none provided
-
-                        auditableMatch.MatchInnings.Add(new MatchInnings
-                        {
-                            MatchInningsId = Guid.NewGuid(),
-                            BattingMatchTeamId = homeMatchTeamId,
-                            BowlingMatchTeamId = awayMatchTeamId,
-                            InningsOrderInMatch = 1,
-                            OverSets = auditableMatch.Tournament?.DefaultOverSets ?? auditableMatch.Season?.DefaultOverSets ?? defaultOverSets
-                        });
-
-                        auditableMatch.MatchInnings.Add(new MatchInnings
-                        {
-                            MatchInningsId = Guid.NewGuid(),
-                            BattingMatchTeamId = awayMatchTeamId,
-                            BowlingMatchTeamId = homeMatchTeamId,
-                            InningsOrderInMatch = 2,
-                            OverSets = auditableMatch.Tournament?.DefaultOverSets ?? auditableMatch.Season?.DefaultOverSets ?? defaultOverSets
-                        });
-
-                        foreach (var innings in auditableMatch.MatchInnings)
-                        {
-                            await connection.ExecuteAsync($@"INSERT INTO {Tables.MatchInnings} 
+                foreach (var innings in auditableMatch.MatchInnings)
+                {
+                    await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.MatchInnings} 
 							(MatchInningsId, MatchId, BattingMatchTeamId, BowlingMatchTeamId, InningsOrderInMatch)
 							VALUES (@MatchInningsId, @MatchId, @BattingMatchTeamId, @BowlingMatchTeamId, @InningsOrderInMatch)",
-                                new
-                                {
-                                    innings.MatchInningsId,
-                                    auditableMatch.MatchId,
-                                    innings.BattingMatchTeamId,
-                                    innings.BowlingMatchTeamId,
-                                    innings.InningsOrderInMatch
-                                },
-                                transaction).ConfigureAwait(false);
+                        new
+                        {
+                            innings.MatchInningsId,
+                            auditableMatch.MatchId,
+                            innings.BattingMatchTeamId,
+                            innings.BowlingMatchTeamId,
+                            innings.InningsOrderInMatch
+                        },
+                        transaction).ConfigureAwait(false);
 
-                            await InsertOverSets(innings, transaction).ConfigureAwait(false);
-                        }
-                    }
-
-                    var redacted = CreateRedactedCopy(auditableMatch);
-                    await _auditRepository.CreateAudit(new AuditRecord
-                    {
-                        Action = AuditAction.Create,
-                        MemberKey = memberKey,
-                        ActorName = memberName,
-                        EntityUri = auditableMatch.EntityUri,
-                        State = JsonConvert.SerializeObject(auditableMatch),
-                        RedactedState = JsonConvert.SerializeObject(redacted),
-                        AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
-
-                    transaction.Commit();
-
-                    _logger.Info(GetType(), LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.CreateMatch));
+                    await InsertOverSets(innings, transaction).ConfigureAwait(false);
                 }
             }
+
+            var redacted = CreateRedactedCopy(auditableMatch);
+            await _auditRepository.CreateAudit(new AuditRecord
+            {
+                Action = AuditAction.Create,
+                MemberKey = memberKey,
+                ActorName = memberName,
+                EntityUri = auditableMatch.EntityUri,
+                State = JsonConvert.SerializeObject(auditableMatch),
+                RedactedState = JsonConvert.SerializeObject(redacted),
+                AuditDate = DateTime.UtcNow
+            }, transaction).ConfigureAwait(false);
+
+            _logger.Info(GetType(), LoggingTemplates.Created, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.CreateMatch));
 
             return auditableMatch;
         }
@@ -1366,45 +1391,60 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(match));
             }
 
-            var auditableMatch = CreateAuditableCopy(match);
-
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInMatchStatistics} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.BowlingFigures} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.Over} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.MatchInnings} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.Comment} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.AwardedTo} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-                    await connection.ExecuteAsync($"DELETE FROM {Tables.Match} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
-
-                    await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableMatch.MatchRoute, transaction).ConfigureAwait(false);
-
-                    var redacted = CreateRedactedCopy(auditableMatch);
-                    await _auditRepository.CreateAudit(new AuditRecord
-                    {
-                        Action = AuditAction.Delete,
-                        MemberKey = memberKey,
-                        ActorName = memberName,
-                        EntityUri = auditableMatch.EntityUri,
-                        State = JsonConvert.SerializeObject(auditableMatch),
-                        RedactedState = JsonConvert.SerializeObject(redacted),
-                        AuditDate = DateTime.UtcNow
-                    }, transaction).ConfigureAwait(false);
-
+                    await DeleteMatch(match, memberKey, memberName, transaction).ConfigureAwait(false);
                     transaction.Commit();
-
-                    _logger.Info(GetType(), LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.DeleteMatch));
                 }
             }
-
         }
 
+        /// <summary>
+        /// Deletes a stoolball match
+        /// </summary>
+        public async Task DeleteMatch(Match match, Guid memberKey, string memberName, IDbTransaction transaction)
+        {
+            if (match is null)
+            {
+                throw new ArgumentNullException(nameof(match));
+            }
+
+            if (transaction is null)
+            {
+                throw new ArgumentNullException(nameof(transaction));
+            }
+
+            var auditableMatch = CreateAuditableCopy(match);
+
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInMatchStatistics} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.BowlingFigures} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.Over} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.PlayerInnings} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.OverSet} WHERE MatchInningsId IN (SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId)", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.MatchInnings} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.MatchTeam} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.Comment} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.AwardedTo} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+            await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.Match} WHERE MatchId = @MatchId", new { auditableMatch.MatchId }, transaction).ConfigureAwait(false);
+
+            await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableMatch.MatchRoute, transaction).ConfigureAwait(false);
+
+            var redacted = CreateRedactedCopy(auditableMatch);
+            await _auditRepository.CreateAudit(new AuditRecord
+            {
+                Action = AuditAction.Delete,
+                MemberKey = memberKey,
+                ActorName = memberName,
+                EntityUri = auditableMatch.EntityUri,
+                State = JsonConvert.SerializeObject(auditableMatch),
+                RedactedState = JsonConvert.SerializeObject(redacted),
+                AuditDate = DateTime.UtcNow
+            }, transaction).ConfigureAwait(false);
+
+            _logger.Info(GetType(), LoggingTemplates.Deleted, redacted, memberName, memberKey, GetType(), nameof(SqlServerMatchRepository.DeleteMatch));
+        }
     }
 }

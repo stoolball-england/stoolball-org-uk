@@ -40,7 +40,7 @@ namespace Stoolball.Data.SqlServer
                 var sql = $@"SELECT tourney.TournamentId, tourney.TournamentName, tourney.PlayerType, tourney.StartTime, tourney.StartTimeIsKnown, 
                             tourney.PlayersPerTeam, tourney.QualificationType, tourney.MaximumTeamsInTournament, 
                             tourney.SpacesInTournament, tourney.TournamentNotes, tourney.TournamentRoute, tourney.MemberKey,
-                            tt.TeamRole,
+                            tt.TournamentTeamId, tt.TeamRole,
                             t.TeamId, t.TeamRoute, t.TeamType, tn.TeamName,
                             os.OverSetId, os.Overs, os.BallsPerOver,
                             ml.MatchLocationId, ml.MatchLocationRoute, ml.SecondaryAddressableObjectName, ml.PrimaryAddressableObjectName, 
@@ -79,7 +79,7 @@ namespace Stoolball.Data.SqlServer
                         return tournament;
                     },
                     new { Route = normalisedRoute },
-                    splitOn: "TeamRole, TeamId, OverSetId, MatchLocationId, SeasonId, CompetitionName")
+                    splitOn: "TournamentTeamId, TeamId, OverSetId, MatchLocationId, SeasonId, CompetitionName")
                     .ConfigureAwait(false);
 
                 var tournamentToReturn = tournaments.FirstOrDefault(); // get an example with the properties that are the same for every row

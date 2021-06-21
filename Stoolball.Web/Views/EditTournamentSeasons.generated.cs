@@ -140,6 +140,21 @@ WriteLiteral("</h1>\r\n\r\n");
             #line 22 "..\..\Views\EditTournamentSeasons.cshtml"
                                              
 
+                
+            
+            #line default
+            #line hidden
+            
+            #line 24 "..\..\Views\EditTournamentSeasons.cshtml"
+           Write(Html.HiddenFor(m => Model.UrlReferrer));
+
+            
+            #line default
+            #line hidden
+            
+            #line 24 "..\..\Views\EditTournamentSeasons.cshtml"
+                                                       
+                
 
             
             #line default
@@ -151,13 +166,13 @@ WriteLiteral(" class=\"form-group\"");
 WriteLiteral(">\r\n");
 
             
-            #line 25 "..\..\Views\EditTournamentSeasons.cshtml"
+            #line 27 "..\..\Views\EditTournamentSeasons.cshtml"
                     
             
             #line default
             #line hidden
             
-            #line 25 "..\..\Views\EditTournamentSeasons.cshtml"
+            #line 27 "..\..\Views\EditTournamentSeasons.cshtml"
                      foreach (var season in Model.PossibleSeasons)
                     {
                         var checkSeason = Model.Tournament.Seasons.Select(x => x.SeasonId.Value).Contains(season.SeasonId.Value) ? " checked=\"checked\"" : string.Empty;
@@ -175,14 +190,14 @@ WriteLiteral(" type=\"checkbox\"");
 
 WriteLiteral(" class=\"custom-control-input\"");
 
-WriteAttribute("id", Tuple.Create(" id=\"", 1257), Tuple.Create("\"", 1278)
+WriteAttribute("id", Tuple.Create(" id=\"", 1332), Tuple.Create("\"", 1353)
             
-            #line 29 "..\..\Views\EditTournamentSeasons.cshtml"
-    , Tuple.Create(Tuple.Create("", 1262), Tuple.Create<System.Object, System.Int32>(season.SeasonId
+            #line 31 "..\..\Views\EditTournamentSeasons.cshtml"
+    , Tuple.Create(Tuple.Create("", 1337), Tuple.Create<System.Object, System.Int32>(season.SeasonId
             
             #line default
             #line hidden
-, 1262), false)
+, 1337), false)
 );
 
 WriteLiteral(" name=\"Tournament.Seasons\"");
@@ -190,7 +205,7 @@ WriteLiteral(" name=\"Tournament.Seasons\"");
 WriteLiteral(" ");
 
             
-            #line 29 "..\..\Views\EditTournamentSeasons.cshtml"
+            #line 31 "..\..\Views\EditTournamentSeasons.cshtml"
                                                                                                                            Write(checkSeason);
 
             
@@ -199,7 +214,7 @@ WriteLiteral(" ");
 WriteLiteral(" value=\"");
 
             
-            #line 29 "..\..\Views\EditTournamentSeasons.cshtml"
+            #line 31 "..\..\Views\EditTournamentSeasons.cshtml"
                                                                                                                                                Write(season.SeasonId);
 
             
@@ -209,20 +224,20 @@ WriteLiteral("\" />\r\n                            <label");
 
 WriteLiteral(" class=\"custom-control-label\"");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 1411), Tuple.Create("\"", 1433)
+WriteAttribute("for", Tuple.Create(" for=\"", 1486), Tuple.Create("\"", 1508)
             
-            #line 30 "..\..\Views\EditTournamentSeasons.cshtml"
-, Tuple.Create(Tuple.Create("", 1417), Tuple.Create<System.Object, System.Int32>(season.SeasonId
+            #line 32 "..\..\Views\EditTournamentSeasons.cshtml"
+, Tuple.Create(Tuple.Create("", 1492), Tuple.Create<System.Object, System.Int32>(season.SeasonId
             
             #line default
             #line hidden
-, 1417), false)
+, 1492), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 30 "..\..\Views\EditTournamentSeasons.cshtml"
+            #line 32 "..\..\Views\EditTournamentSeasons.cshtml"
                                                                                   Write(season.SeasonFullName());
 
             
@@ -231,7 +246,7 @@ WriteLiteral(">");
 WriteLiteral("</label>\r\n                        </div>\r\n");
 
             
-            #line 32 "..\..\Views\EditTournamentSeasons.cshtml"
+            #line 34 "..\..\Views\EditTournamentSeasons.cshtml"
                     }
 
             
@@ -240,7 +255,7 @@ WriteLiteral("</label>\r\n                        </div>\r\n");
 WriteLiteral("                </div>\r\n");
 
             
-            #line 34 "..\..\Views\EditTournamentSeasons.cshtml"
+            #line 36 "..\..\Views\EditTournamentSeasons.cshtml"
 
 
             
@@ -255,7 +270,7 @@ WriteLiteral(" target=\"_blank\"");
 WriteLiteral(">Sussex Stoolball tournaments Facebook group</a>.</p>\r\n");
 
             
-            #line 36 "..\..\Views\EditTournamentSeasons.cshtml"
+            #line 38 "..\..\Views\EditTournamentSeasons.cshtml"
 
 
             
@@ -265,10 +280,10 @@ WriteLiteral("                <button");
 
 WriteLiteral(" class=\"btn btn-primary\"");
 
-WriteLiteral(">Save seasons</button>\r\n");
+WriteLiteral(">Save where to list</button>\r\n");
 
             
-            #line 38 "..\..\Views\EditTournamentSeasons.cshtml"
+            #line 40 "..\..\Views\EditTournamentSeasons.cshtml"
             }
         }
         else
@@ -280,7 +295,7 @@ WriteLiteral(">Save seasons</button>\r\n");
 WriteLiteral("            <p>Unfortunately we don\'t have details of any ");
 
             
-            #line 42 "..\..\Views\EditTournamentSeasons.cshtml"
+            #line 44 "..\..\Views\EditTournamentSeasons.cshtml"
                                                      Write(Model.Tournament.PlayerType.Humanize(LetterCasing.LowerCase));
 
             
@@ -289,7 +304,7 @@ WriteLiteral("            <p>Unfortunately we don\'t have details of any ");
 WriteLiteral(" competitions in ");
 
             
-            #line 42 "..\..\Views\EditTournamentSeasons.cshtml"
+            #line 44 "..\..\Views\EditTournamentSeasons.cshtml"
                                                                                                                                    Write(Model.Tournament.StartTime.ToString("MMMM yyyy"));
 
             
@@ -301,21 +316,21 @@ WriteLiteral("            <a");
 
 WriteLiteral(" class=\"btn btn-primary btn-back\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2130), Tuple.Create("\"", 2175)
+WriteAttribute("href", Tuple.Create(" href=\"", 2211), Tuple.Create("\"", 2256)
             
-            #line 43 "..\..\Views\EditTournamentSeasons.cshtml"
-, Tuple.Create(Tuple.Create("", 2137), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
+            #line 45 "..\..\Views\EditTournamentSeasons.cshtml"
+, Tuple.Create(Tuple.Create("", 2218), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
             
             #line default
             #line hidden
-, 2137), false)
-, Tuple.Create(Tuple.Create("", 2170), Tuple.Create("/edit", 2170), true)
+, 2218), false)
+, Tuple.Create(Tuple.Create("", 2251), Tuple.Create("/edit", 2251), true)
 );
 
 WriteLiteral(">Back to Edit tournament</a>\r\n");
 
             
-            #line 44 "..\..\Views\EditTournamentSeasons.cshtml"
+            #line 46 "..\..\Views\EditTournamentSeasons.cshtml"
         }
     }
     else
@@ -325,14 +340,14 @@ WriteLiteral(">Back to Edit tournament</a>\r\n");
             #line default
             #line hidden
             
-            #line 48 "..\..\Views\EditTournamentSeasons.cshtml"
+            #line 50 "..\..\Views\EditTournamentSeasons.cshtml"
    Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 48 "..\..\Views\EditTournamentSeasons.cshtml"
+            #line 50 "..\..\Views\EditTournamentSeasons.cshtml"
                                
     }
 

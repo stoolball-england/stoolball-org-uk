@@ -46,10 +46,6 @@
         <p>Where: <a href="@Model.Tournament.TournamentLocation.MatchLocationRoute">@Model.Tournament.TournamentLocation.NameAndLocalityOrTown()</a></p>
     }
 
-    @if (Model.Tournament.DefaultOverSets.Any())
-    {
-        <p>Matches are @Model.Tournament.DefaultOverSets.Sum(x => x.Overs) overs.</p>
-    }
     @{
         var showSpacesLeft = (Model.Tournament.SpacesInTournament.HasValue &&
             Model.Tournament.StartTime > DateTime.UtcNow &&
@@ -57,7 +53,8 @@
         if (Model.Tournament.PlayersPerTeam.HasValue ||
             showSpacesLeft ||
             Model.Tournament.Teams.Count > 0 ||
-            Model.Tournament.QualificationType.HasValue)
+            Model.Tournament.QualificationType.HasValue ||
+            authorizedToEdit)
         {
             <h2>Teams</h2>
         }
@@ -90,11 +87,23 @@
     {
         @Html.Partial("_TeamList", Model.Tournament.Teams.Select(x => x.Team).ToList())
     }
+    @if (authorizedToEdit)
+    {
+        <p><a class="btn btn-secondary" href="@Model.Tournament.TournamentRoute/edit/teams">Edit teams</a></p>
+    }
 
-    @if (Model.Matches.Matches.Count > 0)
+    @if (Model.Matches.Matches.Count > 0 || Model.Tournament.DefaultOverSets.Any() || authorizedToEdit)
     {
         <h2>Matches</h2>
         @Html.Partial("_MatchList", Model.Matches)
+        if (Model.Tournament.DefaultOverSets.Any())
+        {
+            <p>Matches are @Model.Tournament.DefaultOverSets.Sum(x => x.Overs) overs.</p>
+        }
+        if (authorizedToEdit)
+        {
+            <p><a class="btn btn-secondary" href="@Model.Tournament.TournamentRoute/edit/matches">Edit matches</a></p>
+        }
     }
 
     @if (!string.IsNullOrWhiteSpace(Model.Tournament.TournamentNotes) || Model.Tournament.Seasons.Count > 0)
@@ -124,6 +133,10 @@
                 <li><a href="@season.SeasonRoute">@season.SeasonFullName()</a></li>
             }
         </ul>
+    }
+    @if (authorizedToEdit)
+    {
+        <p><a class="btn btn-secondary" href="@Model.Tournament.TournamentRoute/edit/seasons">Edit where to list this tournament</a></p>
     }
 
     @Html.Partial("_Comments", Model.Tournament.Comments)

@@ -719,7 +719,15 @@
     <Content Include="images\icons\iconmonstr-rss-feed-3.svg" />
     <Content Include="images\logos\stoolball-england-rss.gif" />
     <Content Include="js\libs\markerclustererplus.1.0.3.min.js" />
+    <Content Include="Matches\add-tournament-matches.js" />
     <Content Include="Matches\close-of-play.js" />
+    <Content Include="Matches\edit-tournament-matches.css">
+      <DependentUpon>edit-tournament-matches.scss</DependentUpon>
+    </Content>
+    <Content Include="Matches\edit-tournament-matches.js" />
+    <Content Include="Matches\edit-tournament-matches.min.css">
+      <DependentUpon>edit-tournament-matches.css</DependentUpon>
+    </Content>
     <Content Include="Matches\match.js" />
     <Content Include="Matches\scorecards.css">
       <DependentUpon>scorecards.scss</DependentUpon>
@@ -996,6 +1004,7 @@
     <Content Include="ApplicationInsights.xdt.template.config" />
     <Content Include="Secret-InstrumentationKey.ApplicationInsights.live.xdt.config" />
     <Content Include="Media\Web.config" />
+    <Content Include="Matches\edit-tournament-matches.scss" />
     <None Include="Secret-StoolballApiKeys.Web.live.xdt.config" />
     <None Include="Status\offline.json" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
@@ -1206,7 +1215,14 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>MostRunOuts.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\EditTrainingSession.cshtml" />
+    <Content Include="Views\EditTrainingSession.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditTrainingSession.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EditTournamentMatches.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditTournamentMatches.generated.cs</LastGenOutput>
+    </Content>
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -1310,6 +1326,8 @@
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
     <Compile Include="ContentPage\CookiesController.cs" />
+    <Compile Include="Matches\EditTournamentMatchesController.cs" />
+    <Compile Include="Matches\EditTournamentMatchesSurfaceController.cs" />
     <Compile Include="Matches\EditTrainingSessionSurfaceController.cs" />
     <Compile Include="Matches\EditTrainingSessionController.cs" />
     <Compile Include="Matches\EditTournamentSeasonsController.cs" />
@@ -1349,10 +1367,20 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CreateTrainingSession.cshtml</DependentUpon>
     </Compile>
+    <Compile Include="Views\EditTournamentMatches.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditTournamentMatches.cshtml</DependentUpon>
+    </Compile>
     <Compile Include="Views\EditTournamentSeasons.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>EditTournamentSeasons.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditTrainingSession.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditTrainingSession.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\Matches.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1473,6 +1501,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>RunOuts.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SeasonMap.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SeasonMap.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\Tournaments.generated.cs">
       <AutoGen>True</AutoGen>
@@ -2937,7 +2970,10 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_MostRunOuts.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\SeasonMap.cshtml" />
+    <Content Include="Views\SeasonMap.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>SeasonMap.generated.cs</LastGenOutput>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -121,31 +121,19 @@ WriteLiteral("</h1>\r\n\r\n");
         using (Html.BeginUmbracoForm<EditTournamentSurfaceController>
             ("UpdateTournament"))
         {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("            <button");
-
-WriteLiteral(" class=\"sr-only\"");
-
-WriteLiteral(">Save tournament</button>\r\n");
-
-            
-            #line 32 "..\..\Views\EditTournament.cshtml"
             
             
             #line default
             #line hidden
             
-            #line 32 "..\..\Views\EditTournament.cshtml"
+            #line 31 "..\..\Views\EditTournament.cshtml"
        Write(Html.Partial("_CreateOrEditTournament"));
 
             
             #line default
             #line hidden
             
-            #line 32 "..\..\Views\EditTournament.cshtml"
+            #line 31 "..\..\Views\EditTournament.cshtml"
                                                     
 
             
@@ -158,7 +146,7 @@ WriteLiteral(" class=\"btn btn-primary\"");
 WriteLiteral(">Save tournament</button>\r\n");
 
             
-            #line 34 "..\..\Views\EditTournament.cshtml"
+            #line 33 "..\..\Views\EditTournament.cshtml"
         }
     }
     else
@@ -168,14 +156,14 @@ WriteLiteral(">Save tournament</button>\r\n");
             #line default
             #line hidden
             
-            #line 38 "..\..\Views\EditTournament.cshtml"
+            #line 37 "..\..\Views\EditTournament.cshtml"
    Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 38 "..\..\Views\EditTournament.cshtml"
+            #line 37 "..\..\Views\EditTournament.cshtml"
                                
     }
 

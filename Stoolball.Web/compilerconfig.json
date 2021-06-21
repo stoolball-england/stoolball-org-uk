@@ -66,5 +66,9 @@
   {
     "outputFile": "css/comments.css",
     "inputFile": "css/comments.scss"
+  },
+  {
+    "outputFile": "Matches/edit-tournament-matches.css",
+    "inputFile": "Matches/edit-tournament-matches.scss"
   }
 ]

@@ -73,6 +73,11 @@ namespace Stoolball.Web.Matches
                 model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.Season.Competition.CompetitionName, Url = new Uri(model.Match.Season.Competition.CompetitionRoute, UriKind.Relative) });
                 model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.Season.SeasonName(), Url = new Uri(model.Match.Season.SeasonRoute, UriKind.Relative) });
             }
+            else if (model.Match.Tournament != null)
+            {
+                model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Tournaments, Url = new Uri(Constants.Pages.TournamentsUrl, UriKind.Relative) });
+                model.Breadcrumbs.Add(new Breadcrumb { Name = model.Match.Tournament.TournamentName, Url = new Uri(model.Match.Tournament.TournamentRoute, UriKind.Relative) });
+            }
             else
             {
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Matches, Url = new Uri(Constants.Pages.MatchesUrl, UriKind.Relative) });

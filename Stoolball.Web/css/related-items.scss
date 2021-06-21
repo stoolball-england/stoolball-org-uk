@@ -187,6 +187,13 @@
     visibility: hidden;
 }
 
+/* A separate table row can contain a message saying no items are selected, simply by adding .related-items__if-empty to the tr */
+.related-items .related-items__if-empty {
+    display: none;
+}
+.related-items__empty .related-items__if-empty {
+    display: table-row;
+}
 
 /* For reduced motion, instead of animating the row strike out the text and remove the delete button */
 @media (prefers-reduced-motion: reduce) {

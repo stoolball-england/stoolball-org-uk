@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Threading.Tasks;
 
 namespace Stoolball.Matches
@@ -11,9 +12,19 @@ namespace Stoolball.Matches
         Task DeleteMatch(Match match, Guid memberKey, string memberName);
 
         /// <summary>
+        /// Deletes a stoolball match
+        /// </summary>
+        Task DeleteMatch(Match match, Guid memberKey, string memberName, IDbTransaction transaction);
+
+        /// <summary>
         /// Creates a stoolball match
         /// </summary>
         Task<Match> CreateMatch(Match match, Guid memberKey, string memberName);
+
+        /// <summary>
+        /// Creates a stoolball match
+        /// </summary>
+        Task<Match> CreateMatch(Match match, Guid memberKey, string memberName, IDbTransaction dbTransaction);
 
         /// <summary>
         /// Updates a stoolball match

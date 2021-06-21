@@ -159,6 +159,21 @@ WriteLiteral("</h1>\r\n\r\n");
             #line 31 "..\..\Views\EditTournamentTeams.cshtml"
                                          
 
+            
+            
+            #line default
+            #line hidden
+            
+            #line 33 "..\..\Views\EditTournamentTeams.cshtml"
+       Write(Html.HiddenFor(m => Model.UrlReferrer));
+
+            
+            #line default
+            #line hidden
+            
+            #line 33 "..\..\Views\EditTournamentTeams.cshtml"
+                                                   
+            
 
             
             #line default
@@ -172,7 +187,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                ");
 
             
-            #line 34 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 36 "..\..\Views\EditTournamentTeams.cshtml"
            Write(Html.LabelFor(m => Model.Tournament.MaximumTeamsInTournament, RequiredFieldStatus.Optional, new { @class = "has-form-text" }));
 
             
@@ -190,7 +205,7 @@ WriteLiteral("><small>Tell us how many teams you have room for and who\'s coming
 WriteLiteral("                ");
 
             
-            #line 36 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 38 "..\..\Views\EditTournamentTeams.cshtml"
            Write(Html.TextBoxFor(m => Model.Tournament.MaximumTeamsInTournament, new { @class = "form-control", aria_describedby = "maximum-teams maximum-teams-help", @type = "number" }));
 
             
@@ -201,7 +216,7 @@ WriteLiteral("\r\n");
 WriteLiteral("                ");
 
             
-            #line 37 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 39 "..\..\Views\EditTournamentTeams.cshtml"
            Write(Html.ValidationMessageFor(m => Model.Tournament.MaximumTeamsInTournament, null, new { id = "maximum-teams" }));
 
             
@@ -210,7 +225,7 @@ WriteLiteral("                ");
 WriteLiteral("\r\n            </div>\r\n");
 
             
-            #line 39 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 41 "..\..\Views\EditTournamentTeams.cshtml"
 
 
             
@@ -245,13 +260,13 @@ WriteLiteral(" scope=\"col\"");
 WriteLiteral("></th></tr>\r\n                </thead>\r\n                <tbody>\r\n");
 
             
-            #line 45 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 47 "..\..\Views\EditTournamentTeams.cshtml"
                     
             
             #line default
             #line hidden
             
-            #line 45 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 47 "..\..\Views\EditTournamentTeams.cshtml"
                      for (var i = 0; i < Model.Tournament.Teams.Count; i++)
                     {
                         var displayName = Model.Tournament.Teams[i].Team.UntilYear.HasValue ? Model.Tournament.Teams[i].Team.TeamName + " (no longer active)" : Model.Tournament.Teams[i].Team.TeamName;
@@ -274,7 +289,7 @@ WriteLiteral(" class=\"related-item__animate\"");
 WriteLiteral(">");
 
             
-            #line 49 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 51 "..\..\Views\EditTournamentTeams.cshtml"
                                                                                                       Write(displayName);
 
             
@@ -291,7 +306,7 @@ WriteLiteral(" class=\"related-item__animate\"");
 WriteLiteral(">");
 
             
-            #line 50 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 52 "..\..\Views\EditTournamentTeams.cshtml"
                                                                                                        Write(Model.Tournament.Teams[i].Team.TeamType == Stoolball.Teams.TeamType.Transient ? "Yes" : "No");
 
             
@@ -310,7 +325,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                    ");
 
             
-            #line 53 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 55 "..\..\Views\EditTournamentTeams.cshtml"
                                Write(Html.Hidden($"Tournament.Teams[{i}].Team.TeamId", Model.Tournament.Teams[i].Team.TeamId, new { @class = "related-item__data related-item__id", data_item = Model.Tournament.Teams[i].Team.TeamId }));
 
             
@@ -321,7 +336,7 @@ WriteLiteral("\r\n");
 WriteLiteral("                                    ");
 
             
-            #line 54 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 56 "..\..\Views\EditTournamentTeams.cshtml"
                                Write(Html.Hidden($"Tournament.Teams[{i}].Team.TeamName", displayName, new { @class = "related-item__data", data_item = Model.Tournament.Teams[i].Team.TeamId }));
 
             
@@ -336,7 +351,7 @@ WriteLiteral(" class=\"btn-delete-icon\"");
 WriteLiteral(">");
 
             
-            #line 55 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 57 "..\..\Views\EditTournamentTeams.cshtml"
                                                                              Write(Html.Partial("_DeleteIcon", $"Remove {Model.Tournament.Teams[i].Team.TeamName} from this tournament"));
 
             
@@ -346,7 +361,7 @@ WriteLiteral("</button>\r\n                                </div>\r\n           
 "td>\r\n                        </tr>\r\n");
 
             
-            #line 59 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 61 "..\..\Views\EditTournamentTeams.cshtml"
                     }
 
             
@@ -361,7 +376,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                            ");
 
             
-            #line 62 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 64 "..\..\Views\EditTournamentTeams.cshtml"
                        Write(Html.Label("team-autocomplete", "Add a team", new { @class = "sr-only" }));
 
             
@@ -372,7 +387,7 @@ WriteLiteral("\r\n");
 WriteLiteral("                            ");
 
             
-            #line 63 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 65 "..\..\Views\EditTournamentTeams.cshtml"
                        Write(Html.TextBox("team-autocomplete", string.Empty, new
                             {
                                 @class = "form-control related-item__search",
@@ -397,28 +412,28 @@ WriteLiteral(" type=\"text/x-template\"");
 WriteLiteral(" id=\"team-template\"");
 
 WriteLiteral(@">
-            <table>
-                <tr class=""related-item__selected"">
-                    <td class=""related-item__selected__section""><div class=""related-item__animate"">{{value}}</div></td>
-                    <td class=""related-item__selected__section""><div class=""related-item__animate"">{{create}}</div></td>
-                    <td class=""related-item__delete related-item__selected__section"">
-                        <div class=""related-item__animate"">
-                            <input name=""Tournament.Teams[0].Team.TeamId"" class=""related-item__data related-item__id"" type=""hidden"" value=""{{data}}"" data-item=""{{data}}"" />
-                            <input name=""Tournament.Teams[0].Team.TeamName"" class=""related-item__data"" type=""hidden"" value=""{{value}}"" data-item=""{{data}}"" />
-                            <button type=""button"" class=""btn-delete-icon"">");
+                <table>
+                    <tr class=""related-item__selected"">
+                        <td class=""related-item__selected__section""><div class=""related-item__animate"">{{value}}</div></td>
+                        <td class=""related-item__selected__section""><div class=""related-item__animate"">{{create}}</div></td>
+                        <td class=""related-item__delete related-item__selected__section"">
+                            <div class=""related-item__animate"">
+                                <input name=""Tournament.Teams[0].Team.TeamId"" class=""related-item__data related-item__id"" type=""hidden"" value=""{{data}}"" data-item=""{{data}}"" />
+                                <input name=""Tournament.Teams[0].Team.TeamName"" class=""related-item__data"" type=""hidden"" value=""{{value}}"" data-item=""{{data}}"" />
+                                <button type=""button"" class=""btn-delete-icon"">");
 
             
-            #line 86 "..\..\Views\EditTournamentTeams.cshtml"
-                                                                     Write(Html.Partial("_DeleteIcon", "Remove {{value}} from this tournament"));
+            #line 88 "..\..\Views\EditTournamentTeams.cshtml"
+                                                                         Write(Html.Partial("_DeleteIcon", "Remove {{value}} from this tournament"));
 
             
             #line default
             #line hidden
-WriteLiteral("</button>\r\n                        </div>\r\n                    </td>\r\n           " +
-"     </tr>\r\n            </table>\r\n            </script>\r\n");
+WriteLiteral("</button>\r\n                            </div>\r\n                        </td>\r\n   " +
+"                 </tr>\r\n                </table>\r\n            </script>\r\n");
 
             
-            #line 92 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 94 "..\..\Views\EditTournamentTeams.cshtml"
 
 
             
@@ -431,7 +446,7 @@ WriteLiteral(" class=\"btn btn-primary\"");
 WriteLiteral(">Save teams</button>\r\n");
 
             
-            #line 94 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 96 "..\..\Views\EditTournamentTeams.cshtml"
         }
     }
     else
@@ -441,14 +456,14 @@ WriteLiteral(">Save teams</button>\r\n");
             #line default
             #line hidden
             
-            #line 98 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 100 "..\..\Views\EditTournamentTeams.cshtml"
    Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 98 "..\..\Views\EditTournamentTeams.cshtml"
+            #line 100 "..\..\Views\EditTournamentTeams.cshtml"
                                
     }
 

@@ -21,6 +21,8 @@
                 @Html.AntiForgeryToken()
                 @Html.ValidationSummary(true)
 
+                @Html.HiddenFor(m => Model.UrlReferrer)
+                
                 <div class="form-group">
                     @foreach (var season in Model.PossibleSeasons)
                     {
@@ -34,7 +36,7 @@
 
                 <p>You can also list your tournament on the <a href="https://www.facebook.com/groups/1451559361817258/" target="_blank">Sussex Stoolball tournaments Facebook group</a>.</p>
 
-                <button class="btn btn-primary">Save seasons</button>
+                <button class="btn btn-primary">Save where to list</button>
             }
         }
         else

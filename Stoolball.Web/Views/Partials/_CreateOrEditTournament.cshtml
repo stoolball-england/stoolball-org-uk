@@ -34,7 +34,7 @@
             </div>
             <div class="related-item__delete related-item__selected__section">
                 @Html.HiddenFor(m => Model.TournamentLocationId, new { @class = "related-item__data related-item__id" })
-                <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.TournamentLocationName} from this tournament")</button>
+                <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", $"Remove {Model.TournamentLocationName} from this tournament")</button>
             </div>
         </div>
         Model.TournamentLocationName = string.Empty;
@@ -71,7 +71,7 @@
         </div>
         <div class="related-item__delete related-item__selected__section">
             <input name="TournamentLocationId" class="related-item__data related-item__id" type="hidden" value="{{data}}" />
-            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this tournament")</button>
+            <button type="button" class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}} from this tournament")</button>
         </div>
     </div>
 </script>

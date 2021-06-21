@@ -33,5 +33,8 @@ namespace Stoolball.Web.Matches
         [Display(Name = "Ground or sports centre name")]
         public string TournamentLocationName { get; set; }
         public IDateTimeFormatter DateFormatter { get; set; }
+        public Guid? HomeTeamId { get; set; }
+        public Guid? AwayTeamId { get; set; }
+        public Uri UrlReferrer { get; set; }
     }
 }

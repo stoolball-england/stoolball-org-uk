@@ -50,6 +50,7 @@ function createRelatedItemsEditor() {
       );
     },
 
+    /* Updates whether there are any data items selected in the editor */
     resetEmpty: function (editor) {
       const selectedItems = editor.querySelectorAll(".related-item__selected");
       if (selectedItems.length) {
@@ -58,54 +59,76 @@ function createRelatedItemsEditor() {
         editor.classList.add("related-items__empty");
       }
     },
+
+    resetIndexes: function (selectedItem) {
+      /* Reset the indexes on the remaining fields so that ASP.NET model binding reads them all */
+      const remainingData = selectedItem.parentNode.querySelectorAll(
+        ".related-item__data, .related-items-as-cards__label"
+      );
+
+      let index = -1;
+      let dataItem;
+      for (let i = 0; i < remainingData.length; i++) {
+        if (remainingData[i].getAttribute("data-item") !== dataItem) {
+          index++;
+          dataItem = remainingData[i].getAttribute("data-item");
+        }
+
+        this.replaceIndex(remainingData[i], "name", index);
+        this.replaceIndex(remainingData[i], "for", index);
+        this.replaceIndex(remainingData[i], "id", index);
+        this.replaceIndex(remainingData[i], "aria-describedby", index);
+
+        const validator = remainingData[i].parentNode.querySelector(
+          ".field-validation-valid"
+        );
+        if (validator) {
+          this.replaceIndex(validator, "id", index);
+          this.replaceIndex(validator, "data-valmsg-for", index);
+        }
+      }
+    },
+
+    replaceIndex: function (element, attribute, index) {
+      const currentValue = element.getAttribute(attribute);
+      if (currentValue) {
+        element.setAttribute(
+          attribute,
+          currentValue.replace(/\[[0-9]+\]/, "[" + index + "]")
+        );
+      }
+    },
+
+    alertAssistiveTechnology: function (
+      document,
+      editor,
+      itemName,
+      itemWillBeCreated
+    ) {
+      /* Create an alert for assistive technology */
+      const itemType = editor.getAttribute("data-related-item")
+        ? editor.getAttribute("data-related-item")
+        : "item";
+
+      var alert = document.createElement("div");
+      alert.setAttribute("role", "alert");
+      alert.setAttribute("class", "sr-only");
+      alert.appendChild(document.createTextNode("Added " + itemName));
+      if (itemWillBeCreated) {
+        alert.appendChild(
+          document.createTextNode("This new " + itemType + " will be created.")
+        );
+      }
+      document.body.appendChild(alert);
+    },
   };
 }
 (function () {
   const editorUtilities = createRelatedItemsEditor();
 
-  function resetIndexes(selectedItem) {
-    /* Reset the indexes on the remaining fields so that ASP.NET model binding reads them all */
-    const remainingData = selectedItem.parentNode.querySelectorAll(
-      ".related-item__data, .related-items-as-cards__label"
-    );
-
-    let index = -1;
-    let dataItem;
-    for (let i = 0; i < remainingData.length; i++) {
-      if (remainingData[i].getAttribute("data-item") !== dataItem) {
-        index++;
-        dataItem = remainingData[i].getAttribute("data-item");
-      }
-
-      replaceIndex(remainingData[i], "name", index);
-      replaceIndex(remainingData[i], "for", index);
-      replaceIndex(remainingData[i], "id", index);
-      replaceIndex(remainingData[i], "aria-describedby", index);
-
-      const validator = remainingData[i].parentNode.querySelector(
-        ".field-validation-valid"
-      );
-      if (validator) {
-        replaceIndex(validator, "id", index);
-        replaceIndex(validator, "data-valmsg-for", index);
-      }
-    }
-  }
-
-  function replaceIndex(element, attribute, index) {
-    const currentValue = element.getAttribute(attribute);
-    if (currentValue) {
-      element.setAttribute(
-        attribute,
-        currentValue.replace(/\[[0-9]+\]/, "[" + index + "]")
-      );
-    }
-  }
-
   function resetAutocompleteParams(selectedItem) {
-    const existingIdFields = selectedItem.parentNode.querySelectorAll(
-      ".related-item__id"
-    );
+    const existingIdFields =
+      selectedItem.parentNode.querySelectorAll(".related-item__id");
     const existingIds = [];
     for (let j = 0; j < existingIdFields.length; j++) {
       existingIds.push(existingIdFields[j].value);
@@ -126,6 +149,8 @@ function createRelatedItemsEditor() {
     const relatedItems = document.querySelectorAll(".related-items");
     for (let i = 0; i < relatedItems.length; i++) {
       let thisEditor = relatedItems[i];
+      thisEditor.relatedItems =
+        editorUtilities; /* Make utility functions available to other scripts on the page */
       editorUtilities.resetEmpty(thisEditor);
       thisEditor.addEventListener("click", function (e) {
         /* Get a consistent target of the selected item container element, or null if it wasn't the delete button clicked */
@@ -144,15 +169,20 @@ function createRelatedItemsEditor() {
             dataFields[j].parentNode.removeChild(dataFields[j]);
           }
 
-          resetIndexes(selectedItem);
+          editorUtilities.resetIndexes(selectedItem);
 
           /* Reset autocomplete options so the deleted team is available for reselection */
           const searchField = selectedItem.parentNode.querySelector(
             ".related-item__search"
           );
-          $(searchField)
-            .autocomplete()
-            .setOptions({ params: resetAutocompleteParams(selectedItem) });
+          if (searchField) {
+            $(searchField)
+              .autocomplete()
+              .setOptions({ params: resetAutocompleteParams(selectedItem) });
+
+            /* Set the focus to the search field */
+            searchField.focus();
+          }
 
           /* Set a class on the selected item container element so that CSS can transition it, then delete it after the transition */
           selectedItem.classList.add("related-item__deleted");
@@ -168,132 +198,122 @@ function createRelatedItemsEditor() {
           alert.setAttribute("class", "sr-only");
           alert.appendChild(document.createTextNode("Item removed"));
           document.body.appendChild(alert);
-
-          /* Set the focus to the search field */
-          searchField.focus();
         }
       });
 
       const searchField = thisEditor.querySelector(".related-item__search");
+      if (searchField) {
+        searchField.addEventListener("keypress", function (e) {
+          // Prevent enter submitting the form within this editor
+          if (e.keyCode === 13) {
+            e.preventDefault();
+          }
+        });
 
-      searchField.addEventListener("keypress", function (e) {
-        // Prevent enter submitting the form within this editor
-        if (e.keyCode === 13) {
-          e.preventDefault();
-        }
-      });
+        let url = searchField.getAttribute("data-url");
+        let template = document.getElementById(
+          searchField.getAttribute("data-template")
+        ).innerHTML;
+        const selectedItem = searchField.parentNode.parentNode;
+        const params = resetAutocompleteParams(selectedItem);
 
-      let url = searchField.getAttribute("data-url");
-      let template = document.getElementById(
-        searchField.getAttribute("data-template")
-      ).innerHTML;
-      const selectedItem = searchField.parentNode.parentNode;
-      const params = resetAutocompleteParams(selectedItem);
-
-      $(searchField).autocomplete({
-        serviceUrl: url,
-        params: params,
-        triggerSelectOnValidInput: false,
-        onSelect: function (suggestion) {
-          selectedItem.insertAdjacentHTML(
-            "beforebegin",
-            editorUtilities.populateTemplate(template, suggestion)
-          );
-
-          /* Create an alert for assistive technology */
-          const itemType = thisEditor.getAttribute("data-related-item")
-            ? thisEditor.getAttribute("data-related-item")
-            : "item";
-
-          var alert = document.createElement("div");
-          alert.setAttribute("role", "alert");
-          alert.setAttribute("class", "sr-only");
-          alert.appendChild(
-            document.createTextNode("Added " + suggestion.value)
-          );
-          if (suggestion.data && suggestion.data.create) {
-            alert.appendChild(
-              document.createTextNode(
-                "This new " + itemType + " will be created."
-              )
+        $(searchField).autocomplete({
+          serviceUrl: url,
+          params: params,
+          triggerSelectOnValidInput: false,
+          onSelect: function (suggestion) {
+            selectedItem.insertAdjacentHTML(
+              "beforebegin",
+              editorUtilities.populateTemplate(template, suggestion)
             );
-          }
-          document.body.appendChild(alert);
 
-          editorUtilities.resetEmpty(thisEditor);
-          resetIndexes(selectedItem);
+            editorUtilities.resetEmpty(thisEditor);
+            editorUtilities.resetIndexes(selectedItem);
 
-          /* Reset autocomplete options to the added team is excluded from further suggestions */
-          $(this)
-            .autocomplete()
-            .setOptions({ params: resetAutocompleteParams(selectedItem) });
+            editorUtilities.alertAssistiveTechnology(
+              document,
+              thisEditor,
+              suggestion.value,
+              suggestion.data && suggestion.data.create
+            );
 
-          /* Clear the search field */
-          this.value = "";
+            /* Reset autocomplete options so the added team is excluded from further suggestions */
+            $(this)
+              .autocomplete()
+              .setOptions({ params: resetAutocompleteParams(selectedItem) });
 
-          // If there's a field within the new row, set the focus there
-          const rows = thisEditor.querySelectorAll(".related-item__selected");
-          const fieldsInNewRow = rows[rows.length - 1].querySelectorAll(
-            "input[type=text],input[type=number],select"
-          );
-          if (fieldsInNewRow && fieldsInNewRow.length) {
-            fieldsInNewRow[0].focus();
-          }
-        },
-        groupBy: thisEditor.classList.contains("related-items__create")
-          ? "category"
-          : null,
-        transformResult: function (response, originalQuery) {
-          response = JSON.parse(response);
-          if (thisEditor.classList.contains("related-items__create")) {
-            const itemType = thisEditor.getAttribute("data-related-item")
-              ? thisEditor.getAttribute("data-related-item")
-              : "item";
-            response.suggestions = response.suggestions.map(function (x) {
-              return {
-                value: x.value,
+            /* Clear the search field */
+            this.value = "";
+
+            // If there's a field within the new row, set the focus there
+            const rows = thisEditor.querySelectorAll(".related-item__selected");
+            const fieldsInNewRow = rows[rows.length - 1].querySelectorAll(
+              "input[type=text],input[type=number],select"
+            );
+            if (fieldsInNewRow && fieldsInNewRow.length) {
+              fieldsInNewRow[0].focus();
+            }
+          },
+          groupBy: thisEditor.classList.contains("related-items__create")
+            ? "category"
+            : null,
+          transformResult: function (response, originalQuery) {
+            response = JSON.parse(response);
+            if (thisEditor.classList.contains("related-items__create")) {
+              const itemType = thisEditor.getAttribute("data-related-item")
+                ? thisEditor.getAttribute("data-related-item")
+                : "item";
+              response.suggestions = response.suggestions.map(function (x) {
+                return {
+                  value: x.value,
+                  data: {
+                    create: false,
+                    category: "Pick a current " + itemType,
+                    data: x.data,
+                  },
+                };
+              });
+              response.suggestions.push({
+                value: originalQuery,
                 data: {
-                  create: false,
-                  category: "Pick a current " + itemType,
-                  data: x.data,
+                  create: true,
+                  category: "Add a new " + itemType,
+                  data: editorUtilities.uuidv4(),
                 },
-              };
-            });
-            response.suggestions.push({
-              value: originalQuery,
-              data: {
-                create: true,
-                category: "Add a new " + itemType,
-                data: editorUtilities.uuidv4(),
-              },
-            });
-          }
+              });
+            }
 
-          const valueTemplate = searchField.getAttribute("data-value-template");
-          if (valueTemplate) {
-            response.suggestions = response.suggestions.map(function (x) {
-              return {
-                value: editorUtilities.populateTemplate(valueTemplate, x),
-                data: x.data,
-              };
-            });
-          }
-
-          return response;
-        },
-        formatResult: function (suggestion, currentValue) {
-          const suggestionTemplate = searchField.getAttribute(
-            "data-suggestion-template"
-          );
-          if (suggestionTemplate) {
-            return editorUtilities.populateTemplate(
-              suggestionTemplate,
-              suggestion
+            const valueTemplate = searchField.getAttribute(
+              "data-value-template"
             );
-          }
-          return $.Autocomplete.defaults.formatResult(suggestion, currentValue);
-        },
-      });
+            if (valueTemplate) {
+              response.suggestions = response.suggestions.map(function (x) {
+                return {
+                  value: editorUtilities.populateTemplate(valueTemplate, x),
+                  data: x.data,
+                };
+              });
+            }
+
+            return response;
+          },
+          formatResult: function (suggestion, currentValue) {
+            const suggestionTemplate = searchField.getAttribute(
+              "data-suggestion-template"
+            );
+            if (suggestionTemplate) {
+              return editorUtilities.populateTemplate(
+                suggestionTemplate,
+                suggestion
+              );
+            }
+            return $.Autocomplete.defaults.formatResult(
+              suggestion,
+              currentValue
+            );
+          },
+        });
+      }
     }
   });
 })();

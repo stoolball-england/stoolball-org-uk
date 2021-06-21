@@ -2,10 +2,8 @@
 @using Humanizer
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Matches
-@using Stoolball.Matches
 @using Stoolball.Security
 @using Constants = Stoolball.Constants
-@using Umbraco.Core.Composing
 @{
     Html.EnableClientValidation();
     Html.EnableUnobtrusiveJavaScript();
@@ -31,6 +29,10 @@
                 else
                 {
                     <li>not affect any teams</li>
+                }
+                @if (Model.Match.Tournament != null)
+                {
+                    <li>remove this @Model.Match.MatchType.Humanize(LetterCasing.LowerCase) from the @Model.Match.Tournament.TournamentName</li>
                 }
                 @if (Model.Match.Season != null)
                 {
@@ -100,6 +102,10 @@
             if (Model.Match.Season != null)
             {
                 <p><a class="btn btn-primary" href="@Model.Match.Season.SeasonRoute">Back to @Model.Match.Season.SeasonFullName()</a></p>
+            }
+            else if (Model.Match.Tournament != null)
+            {
+                <p><a class="btn btn-primary btn-back" href="@Model.Match.Tournament.TournamentRoute">Back to @Model.Match.Tournament.TournamentName</a></p>
             }
             else
             {

@@ -77,6 +77,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
             var expectedTeams = _databaseFixture.TournamentInThePastWithFullDetails.Teams.OrderBy(x => x.Team.ComparableName()).ToList();
             for (var team = 0; team < expectedTeams.Count; team++)
             {
+                Assert.Equal(expectedTeams[team].TournamentTeamId, result.Teams[team].TournamentTeamId);
                 Assert.Equal(expectedTeams[team].TeamRole, result.Teams[team].TeamRole);
                 Assert.Equal(expectedTeams[team].Team.TeamId, result.Teams[team].Team.TeamId);
                 Assert.Equal(expectedTeams[team].Team.TeamName, result.Teams[team].Team.TeamName);

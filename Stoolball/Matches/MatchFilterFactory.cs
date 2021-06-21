@@ -38,5 +38,15 @@ namespace Stoolball.Matches
                 SeasonIds = new List<Guid> { seasonId }
             }, MatchSortOrder.MatchDateEarliestFirst);
         }
+
+        public (MatchFilter filter, MatchSortOrder sortOrder) MatchesForTournament(Guid tournamentId)
+        {
+            return (new MatchFilter
+            {
+                TournamentId = tournamentId,
+                IncludeTournamentMatches = true,
+                IncludeTournaments = false
+            }, MatchSortOrder.MatchDateEarliestFirst);
+        }
     }
 }

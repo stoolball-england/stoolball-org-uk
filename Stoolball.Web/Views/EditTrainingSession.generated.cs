@@ -27,20 +27,20 @@ namespace ASP
     using System.Web.UI;
     using System.Web.WebPages;
     
-    #line 2 "..\..\Views\CreateTournament.cshtml"
+    #line 2 "..\..\Views\EditTrainingSession.cshtml"
     using ClientDependency.Core.Mvc;
     
     #line default
     #line hidden
     using Examine;
     
-    #line 4 "..\..\Views\CreateTournament.cshtml"
+    #line 4 "..\..\Views\EditTrainingSession.cshtml"
     using Stoolball.Security;
     
     #line default
     #line hidden
     
-    #line 3 "..\..\Views\CreateTournament.cshtml"
+    #line 3 "..\..\Views\EditTrainingSession.cshtml"
     using Stoolball.Web.Matches;
     
     #line default
@@ -53,10 +53,10 @@ namespace ASP
     using Umbraco.Web.PublishedModels;
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("RazorGenerator", "2.0.0.0")]
-    [System.Web.WebPages.PageVirtualPathAttribute("~/Views/CreateTournament.cshtml")]
-    public partial class _Views_CreateTournament_cshtml : Umbraco.Web.Mvc.UmbracoViewPage<EditTournamentViewModel>
+    [System.Web.WebPages.PageVirtualPathAttribute("~/Views/EditTrainingSession.cshtml")]
+    public partial class _Views_EditTrainingSession_cshtml : Umbraco.Web.Mvc.UmbracoViewPage<EditTrainingSessionViewModel>
     {
-        public _Views_CreateTournament_cshtml()
+        public _Views_EditTrainingSession_cshtml()
         {
         }
         public override void Execute()
@@ -74,7 +74,7 @@ WriteLiteral(" />\r\n");
 });
 
             
-            #line 8 "..\..\Views\CreateTournament.cshtml"
+            #line 8 "..\..\Views\EditTrainingSession.cshtml"
   
     Html.EnableClientValidation();
     Html.EnableUnobtrusiveJavaScript();
@@ -85,20 +85,11 @@ WriteLiteral(" />\r\n");
     Html.RequiresCss("~/css/autocomplete.min.css");
 
     Html.RequiresCss("~/css/related-items.min.css");
+    Html.RequiresJs("~/js/related-items.js");
     Html.RequiresJs("~/js/related-item.js");
 
     Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
     Html.RequiresJs("/js/tinymce.js");
-
-    var h1 = string.Empty;
-    if (Model.Team != null)
-    {
-        h1 = $"Add a tournament for {Model.Team.TeamName}";
-    }
-    else if (Model.Season != null)
-    {
-        h1 = $"Add a tournament in the {Model.Season.SeasonFullName()}";
-    }
 
             
             #line default
@@ -107,11 +98,11 @@ WriteLiteral("\r\n<div");
 
 WriteLiteral(" class=\"container-xl\"");
 
-WriteLiteral(">\r\n    <h1>");
+WriteLiteral(">\r\n    <h1>Edit ");
 
             
-            #line 34 "..\..\Views\CreateTournament.cshtml"
-   Write(h1);
+            #line 25 "..\..\Views\EditTrainingSession.cshtml"
+        Write(Html.MatchFullName(Model.Match, x => Model.DateFormatter.FormatDate(x, false, false, false)));
 
             
             #line default
@@ -119,32 +110,32 @@ WriteLiteral(">\r\n    <h1>");
 WriteLiteral("</h1>\r\n\r\n");
 
             
-            #line 36 "..\..\Views\CreateTournament.cshtml"
+            #line 27 "..\..\Views\EditTrainingSession.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 36 "..\..\Views\CreateTournament.cshtml"
-     if (Model.IsAuthorized[AuthorizedAction.CreateTournament])
+            #line 27 "..\..\Views\EditTrainingSession.cshtml"
+     if (Model.IsAuthorized[AuthorizedAction.EditMatch])
     {
-        using (Html.BeginUmbracoForm<CreateTournamentSurfaceController>
-            ("CreateTournament"))
+        using (Html.BeginUmbracoForm<EditTrainingSessionSurfaceController>
+            ("UpdateMatch"))
         {
             
             
             #line default
             #line hidden
             
-            #line 41 "..\..\Views\CreateTournament.cshtml"
-       Write(Html.Partial("_CreateOrEditTournament"));
+            #line 32 "..\..\Views\EditTrainingSession.cshtml"
+       Write(Html.Partial("_CreateOrEditTrainingSession"));
 
             
             #line default
             #line hidden
             
-            #line 41 "..\..\Views\CreateTournament.cshtml"
-                                                    
+            #line 32 "..\..\Views\EditTrainingSession.cshtml"
+                                                         
 
             
             #line default
@@ -153,10 +144,10 @@ WriteLiteral("            <button");
 
 WriteLiteral(" class=\"btn btn-primary\"");
 
-WriteLiteral(">Save tournament</button>\r\n");
+WriteLiteral(">Save training session</button>\r\n");
 
             
-            #line 43 "..\..\Views\CreateTournament.cshtml"
+            #line 34 "..\..\Views\EditTrainingSession.cshtml"
         }
     }
     else
@@ -166,14 +157,14 @@ WriteLiteral(">Save tournament</button>\r\n");
             #line default
             #line hidden
             
-            #line 47 "..\..\Views\CreateTournament.cshtml"
+            #line 38 "..\..\Views\EditTrainingSession.cshtml"
    Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 47 "..\..\Views\CreateTournament.cshtml"
+            #line 38 "..\..\Views\EditTrainingSession.cshtml"
                                
     }
 
