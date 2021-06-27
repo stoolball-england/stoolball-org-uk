@@ -80,7 +80,7 @@ namespace Stoolball.Web.Matches
                     model.MatchWentAhead = (model.Match.MatchResultType == MatchResultType.HomeWin || model.Match.MatchResultType == MatchResultType.AwayWin || model.Match.MatchResultType == MatchResultType.Tie);
                 }
 
-                if (model.Match.MatchType == MatchType.KnockoutMatch)
+                if (model.Match.MatchType == MatchType.KnockoutMatch && model.Match.Season != null)
                 {
                     model.Match.Season = await _seasonDataSource.ReadSeasonByRoute(model.Match.Season.SeasonRoute, true).ConfigureAwait(false);
                     model.PossibleHomeTeams = _editMatchHelper.PossibleTeamsAsListItems(model.Match.Season?.Teams);
