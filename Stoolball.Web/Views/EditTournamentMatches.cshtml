@@ -10,7 +10,8 @@
     Html.EnableUnobtrusiveJavaScript();
     Html.RequiresCss("~/css/related-items.min.css");
     Html.RequiresCss("~/matches/edit-tournament-matches.min.css");
-    Html.RequiresJs("~/js/related-items.js");
+    Html.RequiresJs("~/js/libs/sortable.1.13.0.min.js", 80);
+    Html.RequiresJs("~/js/related-items.js", 90);
     Html.RequiresJs("~/matches/edit-tournament-matches.js");
 
     var teamOptions = Model.Tournament.Teams.Select(x => new SelectListItem { Text = x.Team.TeamName, Value = x.TournamentTeamId.ToString() });
@@ -41,19 +42,23 @@
                     <thead class="thead-dark">
                         <tr><th scope="col">Match</th><th scope="col"></th></tr>
                     </thead>
-                    <tbody>
+                    <tbody class="select-teams-in-match__matches">
                         @for (var i = 0; i < Model.Tournament.Matches.Count; i++)
                         {
                             <tr class="related-item__selected">
                                 <td class="related-item__selected__section">
                                     @if (Model.Tournament.Matches[i].MatchId.HasValue)
                                     {
-                                        <div class="related-item__animate">@Model.Tournament.Matches[i].MatchName</div>
+                                    <div class="related-item__animate">
+                                        <span class="select-teams-in-match__sort"><img src="/images/icons/drag-indicator-24dp.svg" alt="" width="24" height="24" /></span>
+                                        @Model.Tournament.Matches[i].MatchName
+                                    </div>
                                     }
                                     else
                                     {
                                         var id = Guid.NewGuid();
                                         <div class="select-teams-in-match">
+                                            <span class="select-teams-in-match__sort"><img src="/images/icons/drag-indicator-24dp.svg" alt="" width="24" height="24" /></span>
                                             <div class="select-teams-in-match__team">
                                                 @Html.DropDownList($"Tournament.Matches[{i}].Teams[0].TournamentTeamId", teamOptions, string.Empty, new { @class = "form-control related-item__data related-item__id", aria_describedby = $"{id}_validation", aria_label = "Team 1", data_item = $"{id}", id = $"{id}_teamA", required = "required" })
                                             </div>
@@ -85,12 +90,13 @@
                         <tr class="related-item__selected select_teams_in_match__create">
                             <td class="related-item__selected__section">
                                 <div class="select-teams-in-match">
+                                    <span class="select-teams-in-match__sort"><img src="/images/icons/drag-indicator-24dp.svg" alt="" width="24" height="24" /></span>
                                     <div class="select-teams-in-match__team">
-                                        @Html.DropDownList("Tournament.Matches[0].Teams[0].TournamentTeamId", teamOptions, string.Empty, new { @class = "form-control related-item__data related-item__id", aria_describedby = "{{id}}_validation", aria_label = "Team 1", data_item = "{{id}}", id="{{id}}_teamA", required = "required" })
+                                        @Html.DropDownList("Tournament.Matches[0].Teams[0].TournamentTeamId", teamOptions, string.Empty, new { @class = "form-control related-item__data related-item__id", aria_describedby = "{{id}}_validation", aria_label = "Team 1", data_item = "{{id}}", id = "{{id}}_teamA", required = "required" })
                                     </div>
                                     <div class="select-teams-in-match__versus">v</div>
                                     <div class="select-teams-in-match__team">
-                                        @Html.DropDownList("Tournament.Matches[0].Teams[1].TournamentTeamId", teamOptions, string.Empty, new { @class = "form-control related-item__data related-item__id", aria_describedby = "{{id}}_validation", aria_label = "Team 2", data_item = "{{id}}", id = "{{id}}_teamB", required="required" })
+                                        @Html.DropDownList("Tournament.Matches[0].Teams[1].TournamentTeamId", teamOptions, string.Empty, new { @class = "form-control related-item__data related-item__id", aria_describedby = "{{id}}_validation", aria_label = "Team 2", data_item = "{{id}}", id = "{{id}}_teamB", required = "required" })
                                     </div>
                                 </div>
                                 @Html.ValidationMessage("{{id}}_validation", null, new { id= "{{id}}_validation", @class = "add-match-validation", data_val_msg = "You must select two teams to add a match.", data_val_msg_diff = "A match must be between two different teams." }, "p")

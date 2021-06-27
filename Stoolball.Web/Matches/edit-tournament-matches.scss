@@ -19,12 +19,23 @@
 // The button to add a match with the selected teams
 .select-teams-in-match__add {
     display: inline-block;
-    margin: 0 $table-cell-padding $spacer;
+    margin: 0 0 $spacer $table-cell-padding;
 }
 
 // The validation message has to go after the fieldset rather than after each field
 .field-validation-error {
-    margin: $table-cell-padding 0 0;
+    margin: $table-cell-padding 0 0 $minimum-clickable-size;
+}
+
+// Align drag & drop handle with the left edge
+.select-teams-in-match__matches .related-item__selected td:first-child {
+    padding-left: 0;
+}
+.select-teams-in-match__sort {
+    display: inline-block;
+    text-align: center;
+    cursor: move;
+    width: $minimum-clickable-size;
 }
 
 // When there's more space, arrange the teams side-by-side rather than stacked

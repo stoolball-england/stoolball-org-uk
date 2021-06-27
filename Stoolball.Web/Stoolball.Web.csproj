@@ -715,10 +715,12 @@
     <Content Include="css\rules.page.min.css">
       <DependentUpon>rules.page.css</DependentUpon>
     </Content>
+    <Content Include="images\icons\drag-indicator-24dp.svg" />
     <Content Include="images\icons\iconmonstr-calendar-5.svg" />
     <Content Include="images\icons\iconmonstr-rss-feed-3.svg" />
     <Content Include="images\logos\stoolball-england-rss.gif" />
     <Content Include="js\libs\markerclustererplus.1.0.3.min.js" />
+    <Content Include="js\libs\sortable.1.13.0.min.js" />
     <Content Include="Matches\close-of-play.js" />
     <Content Include="Matches\edit-tournament-matches.css">
       <DependentUpon>edit-tournament-matches.scss</DependentUpon>

@@ -126,5 +126,18 @@
       }
       return true;
     });
+
+    if (typeof Sortable !== "undefined") {
+      Sortable.create(
+        document.querySelector(".select-teams-in-match__matches"),
+        {
+          handle: ".select-teams-in-match__sort",
+          animation: 150,
+          onEnd: function () {
+            thisEditor.relatedItems.resetIndexes(thisEditor.lastChild);
+          },
+        }
+      );
+    }
   });
 })();
