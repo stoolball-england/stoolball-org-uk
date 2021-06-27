@@ -1,7 +1,9 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<EditTrainingSessionViewModel>
 @using ClientDependency.Core.Mvc
+@using Stoolball.Matches
 @using Stoolball.Web.Matches
 @using Stoolball.Security
+@using Humanizer
 @section head {
     <meta name="robots" content="noindex,follow" />
 }
@@ -30,11 +32,33 @@
             ("UpdateMatch"))
         {
             @Html.Partial("_CreateOrEditTrainingSession")
+            
+            object noResultAttributes;
+            if (Model.Match.MatchResultType.HasValue)
+            {
+                noResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeYes" };
+            }
+            else
+            {
+                noResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeYes", @checked = "checked" };
+            }
+            <fieldset class="form-group">
+                <legend>@(Model.Match.StartTime >= DateTimeOffset.UtcNow ? "Will" : "Did") the training session happen?</legend>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, -1, noResultAttributes)
+                    <label for="MatchResultTypeYes" class="custom-control-label">The training session @(Model.Match.StartTime >= DateTimeOffset.UtcNow ? "will happen" : "happened")</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.Cancelled, new { @class = "custom-control-input", @id = MatchResultType.Cancelled.ToString() })
+                    <label for="@MatchResultType.Cancelled.ToString()" class="custom-control-label">No, it @(Model.Match.StartTime >= DateTimeOffset.UtcNow ? "is" : "was") @MatchResultType.Cancelled.ToString().Humanize(LetterCasing.LowerCase)</label>
+                </div>
+                @Html.ValidationMessageFor(m => Model.Match.MatchResultType, null, new { id = "result-type-validation" })
+            </fieldset>
             <button class="btn btn-primary">Save training session</button>
         }
     }
     else
     {
-        @Html.Partial("_Login")
+    @Html.Partial("_Login")
     }
 </div>

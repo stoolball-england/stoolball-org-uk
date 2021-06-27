@@ -34,13 +34,25 @@ namespace ASP
     #line hidden
     using Examine;
     
-    #line 4 "..\..\Views\EditTrainingSession.cshtml"
-    using Stoolball.Security;
+    #line 6 "..\..\Views\EditTrainingSession.cshtml"
+    using Humanizer;
     
     #line default
     #line hidden
     
     #line 3 "..\..\Views\EditTrainingSession.cshtml"
+    using Stoolball.Matches;
+    
+    #line default
+    #line hidden
+    
+    #line 5 "..\..\Views\EditTrainingSession.cshtml"
+    using Stoolball.Security;
+    
+    #line default
+    #line hidden
+    
+    #line 4 "..\..\Views\EditTrainingSession.cshtml"
     using Stoolball.Web.Matches;
     
     #line default
@@ -74,7 +86,7 @@ WriteLiteral(" />\r\n");
 });
 
             
-            #line 8 "..\..\Views\EditTrainingSession.cshtml"
+            #line 10 "..\..\Views\EditTrainingSession.cshtml"
   
     Html.EnableClientValidation();
     Html.EnableUnobtrusiveJavaScript();
@@ -101,7 +113,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>Edit ");
 
             
-            #line 25 "..\..\Views\EditTrainingSession.cshtml"
+            #line 27 "..\..\Views\EditTrainingSession.cshtml"
         Write(Html.MatchFullName(Model.Match, x => Model.DateFormatter.FormatDate(x, false, false, false)));
 
             
@@ -110,13 +122,13 @@ WriteLiteral(">\r\n    <h1>Edit ");
 WriteLiteral("</h1>\r\n\r\n");
 
             
-            #line 27 "..\..\Views\EditTrainingSession.cshtml"
+            #line 29 "..\..\Views\EditTrainingSession.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 27 "..\..\Views\EditTrainingSession.cshtml"
+            #line 29 "..\..\Views\EditTrainingSession.cshtml"
      if (Model.IsAuthorized[AuthorizedAction.EditMatch])
     {
         using (Html.BeginUmbracoForm<EditTrainingSessionSurfaceController>
@@ -127,19 +139,132 @@ WriteLiteral("</h1>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 32 "..\..\Views\EditTrainingSession.cshtml"
+            #line 34 "..\..\Views\EditTrainingSession.cshtml"
        Write(Html.Partial("_CreateOrEditTrainingSession"));
 
             
             #line default
             #line hidden
             
-            #line 32 "..\..\Views\EditTrainingSession.cshtml"
+            #line 34 "..\..\Views\EditTrainingSession.cshtml"
                                                          
+            
+            object noResultAttributes;
+            if (Model.Match.MatchResultType.HasValue)
+            {
+                noResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeYes" };
+            }
+            else
+            {
+                noResultAttributes = new { @class = "custom-control-input", @id = "MatchResultTypeYes", @checked = "checked" };
+            }
 
             
             #line default
             #line hidden
+WriteLiteral("            <fieldset");
+
+WriteLiteral(" class=\"form-group\"");
+
+WriteLiteral(">\r\n                <legend>");
+
+            
+            #line 46 "..\..\Views\EditTrainingSession.cshtml"
+                    Write(Model.Match.StartTime >= DateTimeOffset.UtcNow ? "Will" : "Did");
+
+            
+            #line default
+            #line hidden
+WriteLiteral(" the training session happen?</legend>\r\n                <div");
+
+WriteLiteral(" class=\"custom-control custom-radio\"");
+
+WriteLiteral(">\r\n");
+
+WriteLiteral("                    ");
+
+            
+            #line 48 "..\..\Views\EditTrainingSession.cshtml"
+               Write(Html.RadioButtonFor(m => Model.Match.MatchResultType, -1, noResultAttributes));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n                    <label");
+
+WriteLiteral(" for=\"MatchResultTypeYes\"");
+
+WriteLiteral(" class=\"custom-control-label\"");
+
+WriteLiteral(">The training session ");
+
+            
+            #line 49 "..\..\Views\EditTrainingSession.cshtml"
+                                                                                                  Write(Model.Match.StartTime >= DateTimeOffset.UtcNow ? "will happen" : "happened");
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</label>\r\n                </div>\r\n                <div");
+
+WriteLiteral(" class=\"custom-control custom-radio\"");
+
+WriteLiteral(">\r\n");
+
+WriteLiteral("                    ");
+
+            
+            #line 52 "..\..\Views\EditTrainingSession.cshtml"
+               Write(Html.RadioButtonFor(m => Model.Match.MatchResultType, MatchResultType.Cancelled, new { @class = "custom-control-input", @id = MatchResultType.Cancelled.ToString() }));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n                    <label");
+
+WriteAttribute("for", Tuple.Create(" for=\"", 2496), Tuple.Create("\"", 2539)
+            
+            #line 53 "..\..\Views\EditTrainingSession.cshtml"
+, Tuple.Create(Tuple.Create("", 2502), Tuple.Create<System.Object, System.Int32>(MatchResultType.Cancelled.ToString()
+            
+            #line default
+            #line hidden
+, 2502), false)
+);
+
+WriteLiteral(" class=\"custom-control-label\"");
+
+WriteLiteral(">No, it ");
+
+            
+            #line 53 "..\..\Views\EditTrainingSession.cshtml"
+                                                                                                       Write(Model.Match.StartTime >= DateTimeOffset.UtcNow ? "is" : "was");
+
+            
+            #line default
+            #line hidden
+WriteLiteral(" ");
+
+            
+            #line 53 "..\..\Views\EditTrainingSession.cshtml"
+                                                                                                                                                                       Write(MatchResultType.Cancelled.ToString().Humanize(LetterCasing.LowerCase));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</label>\r\n                </div>\r\n");
+
+WriteLiteral("                ");
+
+            
+            #line 55 "..\..\Views\EditTrainingSession.cshtml"
+           Write(Html.ValidationMessageFor(m => Model.Match.MatchResultType, null, new { id = "result-type-validation" }));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n            </fieldset>\r\n");
+
 WriteLiteral("            <button");
 
 WriteLiteral(" class=\"btn btn-primary\"");
@@ -147,25 +272,25 @@ WriteLiteral(" class=\"btn btn-primary\"");
 WriteLiteral(">Save training session</button>\r\n");
 
             
-            #line 34 "..\..\Views\EditTrainingSession.cshtml"
+            #line 58 "..\..\Views\EditTrainingSession.cshtml"
         }
     }
     else
     {
-        
+    
             
             #line default
             #line hidden
             
-            #line 38 "..\..\Views\EditTrainingSession.cshtml"
-   Write(Html.Partial("_Login"));
+            #line 62 "..\..\Views\EditTrainingSession.cshtml"
+Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 38 "..\..\Views\EditTrainingSession.cshtml"
-                               
+            #line 62 "..\..\Views\EditTrainingSession.cshtml"
+                           
     }
 
             

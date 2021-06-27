@@ -44,7 +44,7 @@ namespace Stoolball.Web.Matches
         [ValidateAntiForgeryToken]
         [ValidateUmbracoFormRouteString]
         [ContentSecurityPolicy(Forms = true, TinyMCE = true)]
-        public async Task<ActionResult> UpdateMatch([Bind(Prefix = "Match", Include = "Season,Teams")] Match postedMatch)
+        public async Task<ActionResult> UpdateMatch([Bind(Prefix = "Match", Include = "Season,Teams,MatchResultType")] Match postedMatch)
         {
             if (postedMatch is null)
             {
@@ -88,6 +88,8 @@ namespace Stoolball.Web.Matches
             if (model.IsAuthorized[AuthorizedAction.EditMatch] && ModelState.IsValid &&
                (model.Season == null || model.Season.MatchTypes.Contains(MatchType.TrainingSession)))
             {
+                if ((int?)model.Match.MatchResultType == -1) { model.Match.MatchResultType = null; }
+
                 var currentMember = Members.GetCurrentMember();
                 var updatedMatch = await _matchRepository.UpdateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
