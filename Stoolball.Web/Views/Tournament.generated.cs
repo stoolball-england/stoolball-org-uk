@@ -628,7 +628,7 @@ WriteLiteral("\r\n");
             #line hidden
             
             #line 109 "..\..\Views\Tournament.cshtml"
-     if (!string.IsNullOrWhiteSpace(Model.Tournament.TournamentNotes) || Model.Tournament.Seasons.Count > 0)
+     if (!string.IsNullOrWhiteSpace(Model.Tournament.TournamentNotes) || Model.Tournament.Seasons.Count > 0 || authorizedToEdit)
     {
 
             
@@ -704,14 +704,14 @@ WriteLiteral("        <p>This tournament is listed in ");
             #line hidden
 WriteLiteral(" <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 5241), Tuple.Create("\"", 5267)
+WriteAttribute("href", Tuple.Create(" href=\"", 5261), Tuple.Create("\"", 5287)
             
             #line 124 "..\..\Views\Tournament.cshtml"
-, Tuple.Create(Tuple.Create("", 5248), Tuple.Create<System.Object, System.Int32>(season.SeasonRoute
+, Tuple.Create(Tuple.Create("", 5268), Tuple.Create<System.Object, System.Int32>(season.SeasonRoute
             
             #line default
             #line hidden
-, 5248), false)
+, 5268), false)
 );
 
 WriteLiteral(">");
@@ -761,14 +761,14 @@ WriteLiteral("        <ul>\r\n");
             #line hidden
 WriteLiteral("                <li><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 5552), Tuple.Create("\"", 5578)
+WriteAttribute("href", Tuple.Create(" href=\"", 5572), Tuple.Create("\"", 5598)
             
             #line 133 "..\..\Views\Tournament.cshtml"
-, Tuple.Create(Tuple.Create("", 5559), Tuple.Create<System.Object, System.Int32>(season.SeasonRoute
+, Tuple.Create(Tuple.Create("", 5579), Tuple.Create<System.Object, System.Int32>(season.SeasonRoute
             
             #line default
             #line hidden
-, 5559), false)
+, 5579), false)
 );
 
 WriteLiteral(">");
@@ -812,15 +812,15 @@ WriteLiteral("        <p><a");
 
 WriteLiteral(" class=\"btn btn-secondary\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 5726), Tuple.Create("\"", 5779)
+WriteAttribute("href", Tuple.Create(" href=\"", 5746), Tuple.Create("\"", 5799)
             
             #line 139 "..\..\Views\Tournament.cshtml"
-, Tuple.Create(Tuple.Create("", 5733), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
+, Tuple.Create(Tuple.Create("", 5753), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
             
             #line default
             #line hidden
-, 5733), false)
-, Tuple.Create(Tuple.Create("", 5766), Tuple.Create("/edit/seasons", 5766), true)
+, 5753), false)
+, Tuple.Create(Tuple.Create("", 5786), Tuple.Create("/edit/seasons", 5786), true)
 );
 
 WriteLiteral(">Edit where to list this tournament</a></p>\r\n");

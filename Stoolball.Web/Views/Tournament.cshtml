@@ -106,7 +106,7 @@
         }
     }
 
-    @if (!string.IsNullOrWhiteSpace(Model.Tournament.TournamentNotes) || Model.Tournament.Seasons.Count > 0)
+    @if (!string.IsNullOrWhiteSpace(Model.Tournament.TournamentNotes) || Model.Tournament.Seasons.Count > 0 || authorizedToEdit)
     {
         <h2>Notes</h2>
     }
