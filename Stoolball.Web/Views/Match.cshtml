@@ -62,20 +62,15 @@
             @(Model.Match.MatchType == MatchType.TrainingSession ? "for " : (Model.Match.Teams.Count > 1 ? "between " : "involving "))
             @Html.Raw(Model.Match.Teams.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>"))
         }
+        @if (Model.Match.Tournament != null)
+        {
+            @((Model.Match.Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? " in " : " in the ")
+            <a href="@Model.Match.Tournament.TournamentRoute">@Model.Match.Tournament.TournamentName</a>@:.
+        }
     </p>
 
     <p>
-        When:
-        @if (Model.Match.Tournament != null)
-        {
-            var inTheTournament = (Model.Match.Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? ", in " : ", in the ";
-            @(Model.Match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(Model.Match.StartTime) : Model.DateTimeFormatter.FormatDate(Model.Match.StartTime))@inTheTournament
-            <a href="@Model.Match.Tournament.TournamentRoute">@Model.Match.Tournament.TournamentName</a>
-        }
-        else
-        {
-            @(Model.Match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(Model.Match.StartTime) : Model.DateTimeFormatter.FormatDate(Model.Match.StartTime))
-        }
+        When: @(Model.Match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(Model.Match.StartTime) : Model.DateTimeFormatter.FormatDate(Model.Match.StartTime))
         @if (Model.Match.MatchLocation?.Latitude != null && Model.Match.MatchLocation?.Longitude != null)
         {
             var solarTimes = new SolarTimes(Model.Match.StartTime, Model.Match.MatchLocation.Latitude, Model.Match.MatchLocation.Longitude);

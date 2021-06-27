@@ -691,7 +691,7 @@ namespace Stoolball.Data.SqlServer
 
                         var match = new Match
                         {
-                            MatchType = MatchType.LeagueMatch,
+                            MatchType = MatchType.GroupMatch,
                             Tournament = tournament,
                             PlayerType = tournament.PlayerType,
                             PlayersPerTeam = tournament.PlayersPerTeam,
