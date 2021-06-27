@@ -50,7 +50,7 @@ namespace Stoolball.Web.Matches
 
             var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false);
 
-            if (beforeUpdate.StartTime > DateTime.UtcNow)
+            if (beforeUpdate.StartTime > DateTime.UtcNow || beforeUpdate.Tournament != null)
             {
                 return new HttpNotFoundResult();
             }

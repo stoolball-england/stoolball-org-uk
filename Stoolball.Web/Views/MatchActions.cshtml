@@ -11,7 +11,7 @@
     @if (Model.IsAuthorized[AuthorizedAction.EditMatch] || Model.IsAuthorized[AuthorizedAction.EditMatchResult] || Model.IsAuthorized[AuthorizedAction.DeleteMatch])
     {
         <dl>
-            @if (Model.IsAuthorized[AuthorizedAction.EditMatch] && Model.Match.StartTime > DateTime.UtcNow)
+            @if (Model.IsAuthorized[AuthorizedAction.EditMatch] && Model.Match.StartTime > DateTime.UtcNow && Model.Match.Tournament == null)
             {
                 switch (Model.Match.MatchType)
                 {
@@ -30,7 +30,7 @@
                 }
                 <dd>Set the date and time, teams, location and notes.</dd>
             }
-            else if (Model.IsAuthorized[AuthorizedAction.EditMatchResult] && Model.Match.StartTime <= DateTime.UtcNow)
+            else if (Model.IsAuthorized[AuthorizedAction.EditMatchResult] && Model.Match.StartTime <= DateTime.UtcNow && Model.Match.Tournament == null)
             {
                 if (Model.Match.MatchType == MatchType.LeagueMatch || Model.Match.MatchType == MatchType.KnockoutMatch || Model.Match.MatchType == MatchType.FriendlyMatch)
                 {

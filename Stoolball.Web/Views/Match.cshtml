@@ -98,9 +98,11 @@
         <p class="match-result"><strong>Result: @ResultDescription()</strong></p>
 
         var resultRequired = !Model.Match.MatchResultType.HasValue || !Model.Match.HasCompleteScorecard();
+        if (Model.Match.Tournament == null) {
         <div class="update-result">
             <a class="btn btn-secondary@(resultRequired ? " btn-lg" : null)" href="@Model.Match.MatchRoute/edit/start-of-play">Edit result</a>
         </div>
+        }
 
         var tossWinners = Model.Match.Teams.FirstOrDefault(x => x.WonToss.HasValue && x.WonToss.Value);
         if (tossWinners != null)

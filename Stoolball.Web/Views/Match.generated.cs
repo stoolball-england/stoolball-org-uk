@@ -511,6 +511,7 @@ WriteLiteral("</strong></p>\r\n");
             #line 99 "..\..\Views\Match.cshtml"
 
         var resultRequired = !Model.Match.MatchResultType.HasValue || !Model.Match.HasCompleteScorecard();
+        if (Model.Match.Tournament == null) {
 
             
             #line default
@@ -521,33 +522,34 @@ WriteLiteral(" class=\"update-result\"");
 
 WriteLiteral(">\r\n            <a");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 4828), Tuple.Create("\"", 4889)
-, Tuple.Create(Tuple.Create("", 4836), Tuple.Create("btn", 4836), true)
-, Tuple.Create(Tuple.Create(" ", 4839), Tuple.Create("btn-secondary", 4840), true)
+WriteAttribute("class", Tuple.Create(" class=\"", 4875), Tuple.Create("\"", 4936)
+, Tuple.Create(Tuple.Create("", 4883), Tuple.Create("btn", 4883), true)
+, Tuple.Create(Tuple.Create(" ", 4886), Tuple.Create("btn-secondary", 4887), true)
             
-            #line 102 "..\..\Views\Match.cshtml"
-, Tuple.Create(Tuple.Create("", 4853), Tuple.Create<System.Object, System.Int32>(resultRequired ? " btn-lg" : null
+            #line 103 "..\..\Views\Match.cshtml"
+, Tuple.Create(Tuple.Create("", 4900), Tuple.Create<System.Object, System.Int32>(resultRequired ? " btn-lg" : null
             
             #line default
             #line hidden
-, 4853), false)
+, 4900), false)
 );
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4890), Tuple.Create("\"", 4939)
+WriteAttribute("href", Tuple.Create(" href=\"", 4937), Tuple.Create("\"", 4986)
             
-            #line 102 "..\..\Views\Match.cshtml"
-   , Tuple.Create(Tuple.Create("", 4897), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
+            #line 103 "..\..\Views\Match.cshtml"
+   , Tuple.Create(Tuple.Create("", 4944), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
             
             #line default
             #line hidden
-, 4897), false)
-, Tuple.Create(Tuple.Create("", 4920), Tuple.Create("/edit/start-of-play", 4920), true)
+, 4944), false)
+, Tuple.Create(Tuple.Create("", 4967), Tuple.Create("/edit/start-of-play", 4967), true)
 );
 
 WriteLiteral(">Edit result</a>\r\n        </div>\r\n");
 
             
-            #line 104 "..\..\Views\Match.cshtml"
+            #line 105 "..\..\Views\Match.cshtml"
+        }
 
         var tossWinners = Model.Match.Teams.FirstOrDefault(x => x.WonToss.HasValue && x.WonToss.Value);
         if (tossWinners != null)
@@ -565,7 +567,7 @@ WriteLiteral(">Edit result</a>\r\n        </div>\r\n");
 WriteLiteral("            <p>");
 
             
-            #line 114 "..\..\Views\Match.cshtml"
+            #line 116 "..\..\Views\Match.cshtml"
           Write(tossResult);
 
             
@@ -574,7 +576,7 @@ WriteLiteral("            <p>");
 WriteLiteral(".</p>\r\n");
 
             
-            #line 115 "..\..\Views\Match.cshtml"
+            #line 117 "..\..\Views\Match.cshtml"
         }
 
         if (Model.Match.HasScorecard())
@@ -586,28 +588,28 @@ WriteLiteral(".</p>\r\n");
             #line default
             #line hidden
             
-            #line 121 "..\..\Views\Match.cshtml"
+            #line 123 "..\..\Views\Match.cshtml"
            Write(Html.Partial("_BattingScorecard", innings));
 
             
             #line default
             #line hidden
             
-            #line 121 "..\..\Views\Match.cshtml"
+            #line 123 "..\..\Views\Match.cshtml"
                                                            
                 
             
             #line default
             #line hidden
             
-            #line 122 "..\..\Views\Match.cshtml"
+            #line 124 "..\..\Views\Match.cshtml"
            Write(Html.Partial("_BowlingScorecard", innings));
 
             
             #line default
             #line hidden
             
-            #line 122 "..\..\Views\Match.cshtml"
+            #line 124 "..\..\Views\Match.cshtml"
                                                            
             }
         }
@@ -626,7 +628,7 @@ WriteLiteral(".</p>\r\n");
 WriteLiteral("                    <p>");
 
             
-            #line 133 "..\..\Views\Match.cshtml"
+            #line 135 "..\..\Views\Match.cshtml"
                   Write(firstToBat.Team.TeamName);
 
             
@@ -635,7 +637,7 @@ WriteLiteral("                    <p>");
 WriteLiteral(" batted first.</p>\r\n");
 
             
-            #line 134 "..\..\Views\Match.cshtml"
+            #line 136 "..\..\Views\Match.cshtml"
                 }
             }
         }
@@ -654,13 +656,13 @@ WriteLiteral(" class=\"list-results__detail award-list\"");
 WriteLiteral(">\r\n");
 
             
-            #line 142 "..\..\Views\Match.cshtml"
+            #line 144 "..\..\Views\Match.cshtml"
                 
             
             #line default
             #line hidden
             
-            #line 142 "..\..\Views\Match.cshtml"
+            #line 144 "..\..\Views\Match.cshtml"
                  foreach (var award in Model.Match.Awards)
                 {
                     if (award.Award.AwardName != currentAwardName)
@@ -672,7 +674,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                        <dt>");
 
             
-            #line 146 "..\..\Views\Match.cshtml"
+            #line 148 "..\..\Views\Match.cshtml"
                        Write(award.Award.AwardName);
 
             
@@ -681,7 +683,7 @@ WriteLiteral("                        <dt>");
 WriteLiteral("</dt>\r\n");
 
             
-            #line 147 "..\..\Views\Match.cshtml"
+            #line 149 "..\..\Views\Match.cshtml"
                         currentAwardName = award.Award.AwardName;
                     }
 
@@ -690,20 +692,20 @@ WriteLiteral("</dt>\r\n");
             #line hidden
 WriteLiteral("                    <dd>\r\n                        <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 6904), Tuple.Create("\"", 6951)
+WriteAttribute("href", Tuple.Create(" href=\"", 6962), Tuple.Create("\"", 7009)
             
-            #line 150 "..\..\Views\Match.cshtml"
-, Tuple.Create(Tuple.Create("", 6911), Tuple.Create<System.Object, System.Int32>(award.PlayerIdentity.Player.PlayerRoute
+            #line 152 "..\..\Views\Match.cshtml"
+, Tuple.Create(Tuple.Create("", 6969), Tuple.Create<System.Object, System.Int32>(award.PlayerIdentity.Player.PlayerRoute
             
             #line default
             #line hidden
-, 6911), false)
+, 6969), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 150 "..\..\Views\Match.cshtml"
+            #line 152 "..\..\Views\Match.cshtml"
                                                                       Write(award.PlayerIdentity.PlayerIdentityName);
 
             
@@ -712,7 +714,7 @@ WriteLiteral(">");
 WriteLiteral("</a> (");
 
             
-            #line 150 "..\..\Views\Match.cshtml"
+            #line 152 "..\..\Views\Match.cshtml"
                                                                                                                     Write(Model.Match.Teams.First(x => x.Team.TeamId == award.PlayerIdentity.Team.TeamId).Team.TeamName);
 
             
@@ -721,13 +723,13 @@ WriteLiteral("</a> (");
 WriteLiteral(")\r\n");
 
             
-            #line 151 "..\..\Views\Match.cshtml"
+            #line 153 "..\..\Views\Match.cshtml"
                         
             
             #line default
             #line hidden
             
-            #line 151 "..\..\Views\Match.cshtml"
+            #line 153 "..\..\Views\Match.cshtml"
                          if (!string.IsNullOrWhiteSpace(award.Reason))
                         {
 
@@ -739,7 +741,7 @@ WriteLiteral("                            ");
 WriteLiteral(" – ");
 
             
-            #line 153 "..\..\Views\Match.cshtml"
+            #line 155 "..\..\Views\Match.cshtml"
                             Write(award.Reason.Humanize(LetterCasing.Sentence));
 
             
@@ -748,7 +750,7 @@ WriteLiteral(" – ");
 WriteLiteral("\r\n");
 
             
-            #line 154 "..\..\Views\Match.cshtml"
+            #line 156 "..\..\Views\Match.cshtml"
                         }
 
             
@@ -757,7 +759,7 @@ WriteLiteral("\r\n");
 WriteLiteral("                    </dd>\r\n");
 
             
-            #line 156 "..\..\Views\Match.cshtml"
+            #line 158 "..\..\Views\Match.cshtml"
                 }
 
             
@@ -766,7 +768,7 @@ WriteLiteral("                    </dd>\r\n");
 WriteLiteral("            </dl>\r\n");
 
             
-            #line 158 "..\..\Views\Match.cshtml"
+            #line 160 "..\..\Views\Match.cshtml"
         }
     }
 
@@ -776,13 +778,13 @@ WriteLiteral("            </dl>\r\n");
 WriteLiteral("\r\n");
 
             
-            #line 161 "..\..\Views\Match.cshtml"
+            #line 163 "..\..\Views\Match.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 161 "..\..\Views\Match.cshtml"
+            #line 163 "..\..\Views\Match.cshtml"
      if (!string.IsNullOrWhiteSpace(Model.Match.MatchNotes))
     {
 
@@ -792,20 +794,20 @@ WriteLiteral("\r\n");
 WriteLiteral("        <h2>Notes</h2>\r\n");
 
             
-            #line 164 "..\..\Views\Match.cshtml"
+            #line 166 "..\..\Views\Match.cshtml"
         
             
             #line default
             #line hidden
             
-            #line 164 "..\..\Views\Match.cshtml"
+            #line 166 "..\..\Views\Match.cshtml"
    Write(Html.Raw(Model.Match.MatchNotes));
 
             
             #line default
             #line hidden
             
-            #line 164 "..\..\Views\Match.cshtml"
+            #line 166 "..\..\Views\Match.cshtml"
                                          
     }
 
@@ -817,7 +819,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 167 "..\..\Views\Match.cshtml"
+            #line 169 "..\..\Views\Match.cshtml"
 Write(Html.Partial("_Comments", Model.Match.Comments));
 
             

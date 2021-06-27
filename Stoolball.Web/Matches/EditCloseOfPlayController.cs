@@ -58,7 +58,7 @@ namespace Stoolball.Web.Matches
                 DateFormatter = _dateFormatter
             };
 
-            if (model.Match == null)
+            if (model.Match == null || model.Match.Tournament != null)
             {
                 return new HttpNotFoundResult();
             }

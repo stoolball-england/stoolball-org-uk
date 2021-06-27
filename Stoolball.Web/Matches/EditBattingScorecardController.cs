@@ -63,7 +63,7 @@ namespace Stoolball.Web.Matches
                 Autofocus = true
             };
 
-            if (model.Match == null || !model.InningsOrderInMatch.HasValue)
+            if (model.Match == null || !model.InningsOrderInMatch.HasValue || model.Match.Tournament != null)
             {
                 return new HttpNotFoundResult();
             }

@@ -112,7 +112,7 @@ WriteLiteral("        <dl>\r\n");
             #line hidden
             
             #line 14 "..\..\Views\MatchActions.cshtml"
-             if (Model.IsAuthorized[AuthorizedAction.EditMatch] && Model.Match.StartTime > DateTime.UtcNow)
+             if (Model.IsAuthorized[AuthorizedAction.EditMatch] && Model.Match.StartTime > DateTime.UtcNow && Model.Match.Tournament == null)
             {
                 switch (Model.Match.MatchType)
                 {
@@ -123,15 +123,15 @@ WriteLiteral("        <dl>\r\n");
             #line hidden
 WriteLiteral("                        <dt><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 807), Tuple.Create("\"", 851)
+WriteAttribute("href", Tuple.Create(" href=\"", 841), Tuple.Create("\"", 885)
             
             #line 19 "..\..\Views\MatchActions.cshtml"
-, Tuple.Create(Tuple.Create("", 814), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
+, Tuple.Create(Tuple.Create("", 848), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
             
             #line default
             #line hidden
-, 814), false)
-, Tuple.Create(Tuple.Create("", 837), Tuple.Create("/edit/friendly", 837), true)
+, 848), false)
+, Tuple.Create(Tuple.Create("", 871), Tuple.Create("/edit/friendly", 871), true)
 );
 
 WriteLiteral(">Edit ");
@@ -155,15 +155,15 @@ WriteLiteral("</a></dt>\r\n");
             #line hidden
 WriteLiteral("                        <dt><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1063), Tuple.Create("\"", 1105)
+WriteAttribute("href", Tuple.Create(" href=\"", 1097), Tuple.Create("\"", 1139)
             
             #line 22 "..\..\Views\MatchActions.cshtml"
-, Tuple.Create(Tuple.Create("", 1070), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
+, Tuple.Create(Tuple.Create("", 1104), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
             
             #line default
             #line hidden
-, 1070), false)
-, Tuple.Create(Tuple.Create("", 1093), Tuple.Create("/edit/league", 1093), true)
+, 1104), false)
+, Tuple.Create(Tuple.Create("", 1127), Tuple.Create("/edit/league", 1127), true)
 );
 
 WriteLiteral(">Edit ");
@@ -187,15 +187,15 @@ WriteLiteral("</a></dt>\r\n");
             #line hidden
 WriteLiteral("                        <dt><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1319), Tuple.Create("\"", 1363)
+WriteAttribute("href", Tuple.Create(" href=\"", 1353), Tuple.Create("\"", 1397)
             
             #line 25 "..\..\Views\MatchActions.cshtml"
-, Tuple.Create(Tuple.Create("", 1326), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
+, Tuple.Create(Tuple.Create("", 1360), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
             
             #line default
             #line hidden
-, 1326), false)
-, Tuple.Create(Tuple.Create("", 1349), Tuple.Create("/edit/knockout", 1349), true)
+, 1360), false)
+, Tuple.Create(Tuple.Create("", 1383), Tuple.Create("/edit/knockout", 1383), true)
 );
 
 WriteLiteral(">Edit ");
@@ -219,15 +219,15 @@ WriteLiteral("</a></dt>\r\n");
             #line hidden
 WriteLiteral("                        <dt><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1579), Tuple.Create("\"", 1623)
+WriteAttribute("href", Tuple.Create(" href=\"", 1613), Tuple.Create("\"", 1657)
             
             #line 28 "..\..\Views\MatchActions.cshtml"
-, Tuple.Create(Tuple.Create("", 1586), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
+, Tuple.Create(Tuple.Create("", 1620), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
             
             #line default
             #line hidden
-, 1586), false)
-, Tuple.Create(Tuple.Create("", 1609), Tuple.Create("/edit/training", 1609), true)
+, 1620), false)
+, Tuple.Create(Tuple.Create("", 1643), Tuple.Create("/edit/training", 1643), true)
 );
 
 WriteLiteral(">Edit ");
@@ -254,7 +254,7 @@ WriteLiteral("                <dd>Set the date and time, teams, location and not
             
             #line 32 "..\..\Views\MatchActions.cshtml"
             }
-            else if (Model.IsAuthorized[AuthorizedAction.EditMatchResult] && Model.Match.StartTime <= DateTime.UtcNow)
+            else if (Model.IsAuthorized[AuthorizedAction.EditMatchResult] && Model.Match.StartTime <= DateTime.UtcNow && Model.Match.Tournament == null)
             {
                 if (Model.Match.MatchType == MatchType.LeagueMatch || Model.Match.MatchType == MatchType.KnockoutMatch || Model.Match.MatchType == MatchType.FriendlyMatch)
                 {
@@ -264,15 +264,15 @@ WriteLiteral("                <dd>Set the date and time, teams, location and not
             #line hidden
 WriteLiteral("                    <dt><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2219), Tuple.Create("\"", 2268)
+WriteAttribute("href", Tuple.Create(" href=\"", 2287), Tuple.Create("\"", 2336)
             
             #line 37 "..\..\Views\MatchActions.cshtml"
-, Tuple.Create(Tuple.Create("", 2226), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
+, Tuple.Create(Tuple.Create("", 2294), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
             
             #line default
             #line hidden
-, 2226), false)
-, Tuple.Create(Tuple.Create("", 2249), Tuple.Create("/edit/start-of-play", 2249), true)
+, 2294), false)
+, Tuple.Create(Tuple.Create("", 2317), Tuple.Create("/edit/start-of-play", 2317), true)
 );
 
 WriteLiteral(">Edit the result of ");
@@ -309,15 +309,15 @@ WriteLiteral("            ");
             #line hidden
 WriteLiteral("                <dt><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2647), Tuple.Create("\"", 2684)
+WriteAttribute("href", Tuple.Create(" href=\"", 2715), Tuple.Create("\"", 2752)
             
             #line 43 "..\..\Views\MatchActions.cshtml"
-, Tuple.Create(Tuple.Create("", 2654), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
+, Tuple.Create(Tuple.Create("", 2722), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
             
             #line default
             #line hidden
-, 2654), false)
-, Tuple.Create(Tuple.Create("", 2677), Tuple.Create("/delete", 2677), true)
+, 2722), false)
+, Tuple.Create(Tuple.Create("", 2745), Tuple.Create("/delete", 2745), true)
 );
 
 WriteLiteral(">Delete ");
