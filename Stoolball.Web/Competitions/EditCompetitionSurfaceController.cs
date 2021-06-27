@@ -4,8 +4,8 @@ using System.Web.Mvc;
 using Stoolball.Caching;
 using Stoolball.Competitions;
 using Stoolball.Navigation;
-using Stoolball.Routing;
 using Stoolball.Security;
+using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -64,7 +64,7 @@ namespace Stoolball.Web.Competitions
                 var updatedCompetition = await _competitionRepository.UpdateCompetition(competition, currentMember.Key, currentMember.Name).ConfigureAwait(false);
                 _cacheOverride.OverrideCacheForCurrentMember(CacheConstants.CompetitionsPolicyCacheKeyPrefix);
 
-                return _postSaveRedirector.WorkOutRedirect(competition.CompetitionRoute, updatedCompetition.CompetitionRoute, "/edit", Request.Form["UrlReferrer"]);
+                return _postSaveRedirector.WorkOutRedirect(competition.CompetitionRoute, updatedCompetition.CompetitionRoute, "/edit", Request.Form["UrlReferrer"], null);
             }
 
             var viewModel = new CompetitionViewModel(CurrentPage, Services.UserService)

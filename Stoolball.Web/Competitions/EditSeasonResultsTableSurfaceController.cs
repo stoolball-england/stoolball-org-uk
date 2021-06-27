@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
 using Stoolball.Navigation;
-using Stoolball.Routing;
 using Stoolball.Security;
+using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -55,7 +55,7 @@ namespace Stoolball.Web.Competitions
                 var currentMember = Members.GetCurrentMember();
                 await _seasonRepository.UpdateResultsTable(season, currentMember.Key, currentMember.Name).ConfigureAwait(false);
 
-                return _postSaveRedirector.WorkOutRedirect(beforeUpdate.SeasonRoute, beforeUpdate.SeasonRoute, "/edit", Request.Form["UrlReferrer"]);
+                return _postSaveRedirector.WorkOutRedirect(beforeUpdate.SeasonRoute, beforeUpdate.SeasonRoute, "/edit", Request.Form["UrlReferrer"], null);
             }
 
             var viewModel = new SeasonViewModel(CurrentPage, Services.UserService)

@@ -6,8 +6,8 @@ using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
-using Stoolball.Routing;
 using Stoolball.Security;
+using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -88,7 +88,8 @@ namespace Stoolball.Web.Matches
                 var currentMember = Members.GetCurrentMember();
                 var updatedTournament = await _tournamentRepository.UpdateMatches(model.Tournament, currentMember.Key, Members.CurrentUserName, currentMember.Name).ConfigureAwait(false);
 
-                return _postSaveRedirector.WorkOutRedirect(model.Tournament.TournamentRoute, updatedTournament.TournamentRoute, "/edit", Request.Form["UrlReferrer"]);
+                // Use a regex to prevent part 4 of the journey Edit Matches > Edit Teams > Edit Matches > Edit Teams
+                return _postSaveRedirector.WorkOutRedirect(model.Tournament.TournamentRoute, updatedTournament.TournamentRoute, "/edit", Request.Form["UrlReferrer"], $"^({updatedTournament.TournamentRoute}|{updatedTournament.TournamentRoute}/edit)$");
             }
 
             model.Metadata.PageTitle = "Matches in the " + model.Tournament.TournamentFullName(x => _dateTimeFormatter.FormatDate(x, false, false, false));

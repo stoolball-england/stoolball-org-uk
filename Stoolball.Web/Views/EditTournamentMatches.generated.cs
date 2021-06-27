@@ -135,21 +135,21 @@ WriteAttribute("href", Tuple.Create(" href=\"", 1099), Tuple.Create("\"", 1150)
 , Tuple.Create(Tuple.Create("", 1139), Tuple.Create("/edit/teams", 1139), true)
 );
 
-WriteLiteral(" class=\"btn btn-primary\"");
+WriteLiteral(" class=\"btn btn-secondary\"");
 
 WriteLiteral(">Edit teams</a></p>\r\n");
 
 WriteLiteral("            <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1213), Tuple.Create("\"", 1258)
+WriteAttribute("href", Tuple.Create(" href=\"", 1215), Tuple.Create("\"", 1260)
             
             #line 28 "..\..\Views\EditTournamentMatches.cshtml"
-, Tuple.Create(Tuple.Create("", 1220), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
+, Tuple.Create(Tuple.Create("", 1222), Tuple.Create<System.Object, System.Int32>(Model.Tournament.TournamentRoute
             
             #line default
             #line hidden
-, 1220), false)
-, Tuple.Create(Tuple.Create("", 1253), Tuple.Create("/edit", 1253), true)
+, 1222), false)
+, Tuple.Create(Tuple.Create("", 1255), Tuple.Create("/edit", 1255), true)
 );
 
 WriteLiteral(" class=\"btn-back\"");
@@ -214,17 +214,17 @@ WriteLiteral(">Back to Edit tournament</a></p>\r\n");
             #line hidden
 WriteLiteral("                <table");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 1667), Tuple.Create("\"", 1785)
-, Tuple.Create(Tuple.Create("", 1675), Tuple.Create("table", 1675), true)
-, Tuple.Create(Tuple.Create(" ", 1680), Tuple.Create("table-hover", 1681), true)
-, Tuple.Create(Tuple.Create(" ", 1692), Tuple.Create("related-items", 1693), true)
+WriteAttribute("class", Tuple.Create(" class=\"", 1669), Tuple.Create("\"", 1787)
+, Tuple.Create(Tuple.Create("", 1677), Tuple.Create("table", 1677), true)
+, Tuple.Create(Tuple.Create(" ", 1682), Tuple.Create("table-hover", 1683), true)
+, Tuple.Create(Tuple.Create(" ", 1694), Tuple.Create("related-items", 1695), true)
             
             #line 40 "..\..\Views\EditTournamentMatches.cshtml"
-, Tuple.Create(Tuple.Create("", 1706), Tuple.Create<System.Object, System.Int32>(Model.Tournament.Matches.Count == 0 ? " related-items__empty" : string.Empty
+, Tuple.Create(Tuple.Create("", 1708), Tuple.Create<System.Object, System.Int32>(Model.Tournament.Matches.Count == 0 ? " related-items__empty" : string.Empty
             
             #line default
             #line hidden
-, 1706), false)
+, 1708), false)
 );
 
 WriteLiteral(" data-related-item=\"match\"");

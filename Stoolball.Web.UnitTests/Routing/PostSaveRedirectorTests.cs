@@ -1,4 +1,4 @@
-﻿using Stoolball.Routing;
+﻿using Stoolball.Web.Routing;
 using Xunit;
 
 namespace Stoolball.Web.Tests.Routing
@@ -16,7 +16,7 @@ namespace Stoolball.Web.Tests.Routing
         {
             var redirector = new PostSaveRedirector();
 
-            var result = redirector.WorkOutRedirect(ROUTE_BEFORE, ROUTE_AFTER, DESTINATION_SUFFIX, referrer);
+            var result = redirector.WorkOutRedirect(ROUTE_BEFORE, ROUTE_AFTER, DESTINATION_SUFFIX, referrer, null);
 
             Assert.Equal(ROUTE_AFTER + DESTINATION_SUFFIX, result.Url);
         }

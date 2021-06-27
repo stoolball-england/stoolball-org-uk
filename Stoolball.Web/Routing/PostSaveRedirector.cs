@@ -1,19 +1,20 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Web.Mvc;
 
-namespace Stoolball.Routing
+namespace Stoolball.Web.Routing
 {
     public class PostSaveRedirector : IPostSaveRedirector
     {
         /// <inheritdoc/>
-        public RedirectResult WorkOutRedirect(string routeBefore, string routeAfter, string destinationSuffix, string referrer)
+        public RedirectResult WorkOutRedirect(string routeBefore, string routeAfter, string defaultDestinationSuffix, string referrer, string permittedReferrerRegex)
         {
             if (!string.IsNullOrEmpty(referrer))
             {
                 var routeFromReferrer = new Uri(referrer).AbsolutePath;
                 if (!routeFromReferrer.StartsWith(routeBefore, StringComparison.OrdinalIgnoreCase))
                 {
-                    return new RedirectResult(routeAfter + destinationSuffix);
+                    return new RedirectResult(routeAfter + defaultDestinationSuffix);
                 }
 
                 if (routeAfter != routeBefore && !string.IsNullOrEmpty(routeBefore))
@@ -21,10 +22,13 @@ namespace Stoolball.Routing
                     routeFromReferrer = routeAfter + routeFromReferrer.Substring(routeBefore.Length);
                 }
 
-                return new RedirectResult(routeFromReferrer, false);
+                if (string.IsNullOrEmpty(permittedReferrerRegex) || Regex.IsMatch(routeFromReferrer, permittedReferrerRegex, RegexOptions.IgnoreCase))
+                {
+                    return new RedirectResult(routeFromReferrer, false);
+                }
             }
 
-            return new RedirectResult(routeAfter + destinationSuffix, false);
+            return new RedirectResult(routeAfter + defaultDestinationSuffix, false);
         }
     }
 }
