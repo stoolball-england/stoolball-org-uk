@@ -8,6 +8,7 @@ using Ganss.XSS;
 using Moq;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Logging;
+using Stoolball.Matches;
 using Stoolball.Routing;
 using Stoolball.Security;
 using Stoolball.Teams;
@@ -46,6 +47,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 Mock.Of<IRouteGenerator>(),
                 Mock.Of<IRedirectsRepository>(),
                 Mock.Of<ITeamRepository>(),
+                Mock.Of<IMatchRepository>(),
                 sanitizer.Object,
                 Mock.Of<IDataRedactor>());
 

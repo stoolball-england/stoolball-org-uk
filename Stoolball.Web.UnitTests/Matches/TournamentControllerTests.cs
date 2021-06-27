@@ -41,6 +41,7 @@ namespace Stoolball.Web.Tests.Matches
                 umbracoHelper,
                 tournamentDataSource,
                 matchDataSource,
+                Mock.Of<IMatchFilterFactory>(),
                 commentsDataSource,
                 Mock.Of<IAuthorizationPolicy<Tournament>>(),
                 Mock.Of<IDateTimeFormatter>(),

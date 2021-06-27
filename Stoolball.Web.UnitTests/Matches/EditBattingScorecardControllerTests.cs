@@ -202,7 +202,7 @@ namespace Stoolball.Web.Tests.Matches
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Tournament match editing disabled until it's tested")]
         public async Task ModelU002EMatchU002EPlayersPerTeam_defaults_to_8_for_tournaments()
         {
             var matchDataSource = new Mock<IMatchDataSource>();

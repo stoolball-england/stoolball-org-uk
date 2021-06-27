@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -27,7 +28,7 @@ namespace Stoolball.Web.Tests.Matches
 
         private class TestController : EditTournamentMatchesController
         {
-            public TestController(ITournamentDataSource tournamentDataSource, Uri requestUrl, UmbracoHelper umbracoHelper)
+            public TestController(ITournamentDataSource tournamentDataSource, IMatchListingDataSource matchListingDataSource, Uri requestUrl, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -36,7 +37,7 @@ namespace Stoolball.Web.Tests.Matches
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
                 tournamentDataSource,
-                Mock.Of<IMatchListingDataSource>(),
+                matchListingDataSource,
                 Mock.Of<IAuthorizationPolicy<Tournament>>(),
                 Mock.Of<IDateTimeFormatter>())
             {
@@ -64,7 +65,7 @@ namespace Stoolball.Web.Tests.Matches
             var tournamentDataSource = new Mock<ITournamentDataSource>();
             tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).Returns(Task.FromResult<Tournament>(null));
 
-            using (var controller = new TestController(tournamentDataSource.Object, new Uri("https://example.org/not-a-match"), UmbracoHelper))
+            using (var controller = new TestController(tournamentDataSource.Object, Mock.Of<IMatchListingDataSource>(), new Uri("https://example.org/not-a-match"), UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -77,9 +78,12 @@ namespace Stoolball.Web.Tests.Matches
         public async Task Route_matching_tournament_returns_EditTournamentViewModel()
         {
             var tournamentDataSource = new Mock<ITournamentDataSource>();
-            tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentName = "Example tournament", TournamentRoute = "/tournaments/example" });
+            tournamentDataSource.Setup(x => x.ReadTournamentByRoute(It.IsAny<string>())).ReturnsAsync(new Tournament { TournamentId = Guid.NewGuid(), TournamentName = "Example tournament", TournamentRoute = "/tournaments/example" });
 
-            using (var controller = new TestController(tournamentDataSource.Object, new Uri("https://example.org/tournaments/example-tournament"), UmbracoHelper))
+            var matchListingDataSource = new Mock<IMatchListingDataSource>();
+            matchListingDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.MatchDateEarliestFirst)).Returns(Task.FromResult(new List<MatchListing>()));
+
+            using (var controller = new TestController(tournamentDataSource.Object, matchListingDataSource.Object, new Uri("https://example.org/tournaments/example-tournament"), UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

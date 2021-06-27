@@ -532,12 +532,15 @@ namespace Stoolball.Testing
                 MemberKey = Guid.NewGuid(),
                 Teams = new List<TeamInTournament> {
                     new TeamInTournament {
+                        TournamentTeamId = Guid.NewGuid(),
                         Team = CreateTeamWithMinimalDetails("Tournament team 1")
                     },
                     new TeamInTournament {
+                        TournamentTeamId = Guid.NewGuid(),
                         Team = CreateTeamWithMinimalDetails("Tournament team 2")
                     },
                     new TeamInTournament {
+                        TournamentTeamId = Guid.NewGuid(),
                         Team = CreateTeamWithMinimalDetails("Tournament team 3")
                     }
                 },

@@ -719,7 +719,6 @@
     <Content Include="images\icons\iconmonstr-rss-feed-3.svg" />
     <Content Include="images\logos\stoolball-england-rss.gif" />
     <Content Include="js\libs\markerclustererplus.1.0.3.min.js" />
-    <Content Include="Matches\add-tournament-matches.js" />
     <Content Include="Matches\close-of-play.js" />
     <Content Include="Matches\edit-tournament-matches.css">
       <DependentUpon>edit-tournament-matches.scss</DependentUpon>

@@ -394,7 +394,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     (@TournamentTeamId, @TournamentId, @TeamId, @TeamRole, @PlayingAsTeamName)",
           new
           {
-              TournamentTeamId = Guid.NewGuid(),
+              TournamentTeamId = team.TournamentTeamId ?? Guid.NewGuid(),
               tournament.TournamentId,
               team.Team.TeamId,
               team.TeamRole,
