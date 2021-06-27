@@ -23,7 +23,7 @@ namespace Stoolball.Routing
 
             var baseRoute = GenerateRoute(prefix, name, noiseWords);
             var uniqueRoute = currentRoute;
-            if (!IsMatchingRoute(currentRoute, baseRoute))
+            if (string.IsNullOrEmpty(currentRoute) || !IsMatchingRoute(currentRoute, baseRoute))
             {
                 uniqueRoute = baseRoute;
                 int count;
@@ -46,12 +46,12 @@ namespace Stoolball.Routing
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new System.ArgumentException("message", nameof(name));
+                throw new ArgumentException("message", nameof(name));
             }
 
             if (noiseWords is null)
             {
-                throw new System.ArgumentNullException(nameof(noiseWords));
+                throw new ArgumentNullException(nameof(noiseWords));
             }
 
             var route = Regex.Replace(name.ToLower(CultureInfo.CurrentCulture).Kebaberize(), "[^a-z0-9-]", string.Empty);
@@ -60,7 +60,7 @@ namespace Stoolball.Routing
                 route = Regex.Replace(route, $@"\b{noiseWord}\b", string.Empty);
             }
             route = Regex.Replace(route, "-+", "-").Trim('-');
-            return string.IsNullOrEmpty(prefix) ? route : $"{prefix}/{route}";
+            return string.IsNullOrEmpty(prefix) ? "/" + route : $"{prefix}/{route}";
         }
 
         /// <inheritdoc/>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Stoolball.Routing;
 using Xunit;
 
@@ -14,7 +15,7 @@ namespace Stoolball.UnitTests.Routing
 
             var result = generator.GenerateRoute(string.Empty, original, Array.Empty<string>());
 
-            Assert.Equal("mixed", result);
+            Assert.Equal("/mixed", result);
         }
 
         [Fact]
@@ -25,7 +26,7 @@ namespace Stoolball.UnitTests.Routing
 
             var result = generator.GenerateRoute(string.Empty, original, Array.Empty<string>());
 
-            Assert.Equal("example-routes-punctuation-good-example", result);
+            Assert.Equal("/example-routes-punctuation-good-example", result);
         }
 
         [Fact]
@@ -36,7 +37,7 @@ namespace Stoolball.UnitTests.Routing
 
             var result = generator.GenerateRoute(string.Empty, original, new[] { "stoolball" });
 
-            Assert.Equal("ladies", result);
+            Assert.Equal("/ladies", result);
         }
 
         [Fact]
@@ -47,7 +48,7 @@ namespace Stoolball.UnitTests.Routing
 
             var result = generator.GenerateRoute(string.Empty, original, new[] { "stoolball" });
 
-            Assert.Equal("some-friends", result);
+            Assert.Equal("/some-friends", result);
         }
 
         [Fact]
@@ -58,7 +59,7 @@ namespace Stoolball.UnitTests.Routing
 
             var result = generator.GenerateRoute(string.Empty, original, new[] { "club" });
 
-            Assert.Equal("somewhere", result);
+            Assert.Equal("/somewhere", result);
         }
 
 
@@ -119,6 +120,16 @@ namespace Stoolball.UnitTests.Routing
             var result = generator.IsMatchingRoute(original, generated);
 
             Assert.Equal(shouldMatch, result);
+        }
+
+        [Fact]
+        public async Task GenerateUniqueRoute_returns_route_with_no_counter_when_current_route_is_empty_string()
+        {
+            var generator = new RouteGenerator();
+
+            var result = await generator.GenerateUniqueRoute(string.Empty, null, "Example thing", Array.Empty<string>(), x => Task.FromResult(0)).ConfigureAwait(false);
+
+            Assert.Equal("/example-thing", result);
         }
     }
 }
