@@ -246,6 +246,8 @@ WriteLiteral("></th></tr>\r\n                    </thead>\r\n                   
 
 WriteLiteral(" class=\"select-teams-in-match__matches\"");
 
+WriteLiteral(" aria-dropeffect=\"move\"");
+
 WriteLiteral(">\r\n");
 
             
@@ -265,6 +267,8 @@ WriteLiteral(">\r\n");
 WriteLiteral("                            <tr");
 
 WriteLiteral(" class=\"related-item__selected\"");
+
+WriteLiteral(" aria-grabbed=\"false\"");
 
 WriteLiteral(">\r\n                                <td");
 
@@ -290,21 +294,41 @@ WriteLiteral("                                    <div");
 
 WriteLiteral(" class=\"related-item__animate\"");
 
-WriteLiteral(">\r\n                                        <span");
+WriteLiteral(">\r\n                                        <button");
 
-WriteLiteral(" class=\"select-teams-in-match__sort\"");
+WriteLiteral(" type=\"button\"");
+
+WriteLiteral(" class=\"select-teams-in-match__sort btn-drag\"");
+
+WriteLiteral(" draggable=\"true\"");
+
+WriteLiteral(" aria-pressed=\"false\"");
 
 WriteLiteral("><img");
 
 WriteLiteral(" src=\"/images/icons/drag-indicator-24dp.svg\"");
 
-WriteLiteral(" alt=\"\"");
+WriteAttribute("alt", Tuple.Create(" alt=\"", 2801), Tuple.Create("\"", 2863)
+, Tuple.Create(Tuple.Create("", 2807), Tuple.Create("Move", 2807), true)
+, Tuple.Create(Tuple.Create(" ", 2811), Tuple.Create("\'", 2812), true)
+            
+            #line 53 "..\..\Views\EditTournamentMatches.cshtml"
+                                                                                                                             , Tuple.Create(Tuple.Create("", 2813), Tuple.Create<System.Object, System.Int32>(Model.Tournament.Matches[i].MatchName
+            
+            #line default
+            #line hidden
+, 2813), false)
+, Tuple.Create(Tuple.Create("", 2851), Tuple.Create("\'", 2851), true)
+, Tuple.Create(Tuple.Create(" ", 2852), Tuple.Create("up", 2853), true)
+, Tuple.Create(Tuple.Create(" ", 2855), Tuple.Create("or", 2856), true)
+, Tuple.Create(Tuple.Create(" ", 2858), Tuple.Create("down", 2859), true)
+);
 
 WriteLiteral(" width=\"24\"");
 
 WriteLiteral(" height=\"24\"");
 
-WriteLiteral(" /></span>\r\n");
+WriteLiteral(" /></button>\r\n");
 
 WriteLiteral("                                        ");
 
@@ -331,21 +355,27 @@ WriteLiteral("                                        <div");
 
 WriteLiteral(" class=\"select-teams-in-match\"");
 
-WriteLiteral(">\r\n                                            <span");
+WriteLiteral(">\r\n                                            <button");
 
-WriteLiteral(" class=\"select-teams-in-match__sort\"");
+WriteLiteral(" type=\"button\"");
+
+WriteLiteral(" class=\"select-teams-in-match__sort btn-drag\"");
+
+WriteLiteral(" draggable=\"true\"");
+
+WriteLiteral(" aria-pressed=\"false\"");
 
 WriteLiteral("><img");
 
 WriteLiteral(" src=\"/images/icons/drag-indicator-24dp.svg\"");
 
-WriteLiteral(" alt=\"\"");
+WriteLiteral(" alt=\"Move this match up or down\"");
 
 WriteLiteral(" width=\"24\"");
 
 WriteLiteral(" height=\"24\"");
 
-WriteLiteral(" /></span>\r\n                                            <div");
+WriteLiteral(" /></button>\r\n                                            <div");
 
 WriteLiteral(" class=\"select-teams-in-match__team\"");
 
@@ -481,7 +511,8 @@ WriteLiteral("</button>\r\n                                    </div>\r\n       
             
             #line default
             #line hidden
-WriteLiteral("                        <tr");
+WriteLiteral("                    </tbody>\r\n                    <tbody>\r\n                      " +
+"  <tr");
 
 WriteLiteral(" class=\"related-items__if-empty\"");
 
@@ -491,6 +522,14 @@ WriteLiteral(" colspan=\"2\"");
 
 WriteLiteral(">There are no matches in this tournament yet.</td></tr>\r\n                    </tb" +
 "ody>\r\n                </table>\r\n");
+
+WriteLiteral("                <span");
+
+WriteLiteral(" class=\"sr-only\"");
+
+WriteLiteral(" role=\"status\"");
+
+WriteLiteral("></span>\r\n");
 
 WriteLiteral("                <p><button");
 
@@ -510,17 +549,17 @@ WriteLiteral(" id=\"match-template\"");
 
 WriteLiteral(@">
                     <table>
-                        <tr class=""related-item__selected select_teams_in_match__create"">
+                        <tr class=""related-item__selected select_teams_in_match__create"" aria-grabbed=""false"">
                             <td class=""related-item__selected__section"">
                                 <div class=""select-teams-in-match"">
-                                    <span class=""select-teams-in-match__sort""><img src=""/images/icons/drag-indicator-24dp.svg"" alt="""" width=""24"" height=""24"" /></span>
+                                    <button type=""button"" class=""select-teams-in-match__sort btn-drag"" draggable=""true"" aria-pressed=""false""><img src=""/images/icons/drag-indicator-24dp.svg"" alt=""Move this match up or down"" width=""24"" height=""24"" /></button>
                                     <div class=""select-teams-in-match__team"">
 ");
 
 WriteLiteral("                                        ");
 
             
-            #line 95 "..\..\Views\EditTournamentMatches.cshtml"
+            #line 98 "..\..\Views\EditTournamentMatches.cshtml"
                                    Write(Html.DropDownList("Tournament.Matches[0].Teams[0].TournamentTeamId", teamOptions, string.Empty, new { @class = "form-control related-item__data related-item__id", aria_describedby = "{{id}}_validation", aria_label = "Team 1", data_item = "{{id}}", id = "{{id}}_teamA", required = "required" }));
 
             
@@ -533,7 +572,7 @@ WriteLiteral("\r\n                                    </div>\r\n                
 WriteLiteral("                                        ");
 
             
-            #line 99 "..\..\Views\EditTournamentMatches.cshtml"
+            #line 102 "..\..\Views\EditTournamentMatches.cshtml"
                                    Write(Html.DropDownList("Tournament.Matches[0].Teams[1].TournamentTeamId", teamOptions, string.Empty, new { @class = "form-control related-item__data related-item__id", aria_describedby = "{{id}}_validation", aria_label = "Team 2", data_item = "{{id}}", id = "{{id}}_teamB", required = "required" }));
 
             
@@ -545,7 +584,7 @@ WriteLiteral("\r\n                                    </div>\r\n                
 WriteLiteral("                                ");
 
             
-            #line 102 "..\..\Views\EditTournamentMatches.cshtml"
+            #line 105 "..\..\Views\EditTournamentMatches.cshtml"
                            Write(Html.ValidationMessage("{{id}}_validation", null, new { id= "{{id}}_validation", @class = "add-match-validation", data_val_msg = "You must select two teams to add a match.", data_val_msg_diff = "A match must be between two different teams." }, "p"));
 
             
@@ -559,7 +598,7 @@ WriteLiteral(@"
                                     <button type=""button"" class=""btn-delete-icon"">");
 
             
-            #line 107 "..\..\Views\EditTournamentMatches.cshtml"
+            #line 110 "..\..\Views\EditTournamentMatches.cshtml"
                                                                              Write(Html.Partial("_DeleteIcon", "Remove this match from the tournament"));
 
             
@@ -570,7 +609,7 @@ WriteLiteral("</button>\r\n                                </div>\r\n           
 "  </script>\r\n");
 
             
-            #line 113 "..\..\Views\EditTournamentMatches.cshtml"
+            #line 116 "..\..\Views\EditTournamentMatches.cshtml"
 
 
             
@@ -583,7 +622,7 @@ WriteLiteral(" class=\"btn btn-primary\"");
 WriteLiteral(">Save matches</button>\r\n");
 
             
-            #line 115 "..\..\Views\EditTournamentMatches.cshtml"
+            #line 118 "..\..\Views\EditTournamentMatches.cshtml"
             }
         }
     }
@@ -594,14 +633,14 @@ WriteLiteral(">Save matches</button>\r\n");
             #line default
             #line hidden
             
-            #line 120 "..\..\Views\EditTournamentMatches.cshtml"
+            #line 123 "..\..\Views\EditTournamentMatches.cshtml"
    Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 120 "..\..\Views\EditTournamentMatches.cshtml"
+            #line 123 "..\..\Views\EditTournamentMatches.cshtml"
                                
     }
 

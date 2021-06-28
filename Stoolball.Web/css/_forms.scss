@@ -195,12 +195,24 @@ svg {
     }
 }
 
-.btn-delete-icon {
-    padding: 0;
+.btn-delete-icon, .btn-drag {
+    padding: 2px;
 }
 
-.btn-delete-icon > img {
+.btn-drag {
+    margin: 0 3px; // to separate from adjacent elements when :focus is applied
+}
+
+.btn-delete-icon:focus, .btn-drag:focus {
+    @include button-focus;
+}
+
+.btn-delete-icon > img, .btn-drag > img {
     max-width: none; // don't allow this image to shrink when space is tight
+}
+
+[aria-grabbed='true'] {
+    outline: 2px dashed $black;
 }
 
 /* Add social media icons to fields for social media accounts */

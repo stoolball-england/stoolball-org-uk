@@ -1,4 +1,5 @@
 ﻿@import "../css/_theme.scss";
+@import "../css/_mixins.scss";
 @import "../Content/bootstrap/_mixins.scss";
 @import "../Content/bootstrap/_functions.scss";
 @import "../Content/bootstrap/_variables.scss";
@@ -35,6 +36,8 @@
     display: inline-block;
     text-align: center;
     cursor: move;
+    background: transparent;
+    border: none;
     width: $minimum-clickable-size;
 }
 

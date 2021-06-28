@@ -42,15 +42,15 @@
                     <thead class="thead-dark">
                         <tr><th scope="col">Match</th><th scope="col"></th></tr>
                     </thead>
-                    <tbody class="select-teams-in-match__matches">
+                    <tbody class="select-teams-in-match__matches" aria-dropeffect="move">
                         @for (var i = 0; i < Model.Tournament.Matches.Count; i++)
                         {
-                            <tr class="related-item__selected">
+                            <tr class="related-item__selected" aria-grabbed="false">
                                 <td class="related-item__selected__section">
                                     @if (Model.Tournament.Matches[i].MatchId.HasValue)
                                     {
                                     <div class="related-item__animate">
-                                        <span class="select-teams-in-match__sort"><img src="/images/icons/drag-indicator-24dp.svg" alt="" width="24" height="24" /></span>
+                                        <button type="button" class="select-teams-in-match__sort btn-drag" draggable="true" aria-pressed="false"><img src="/images/icons/drag-indicator-24dp.svg" alt="Move '@Model.Tournament.Matches[i].MatchName' up or down" width="24" height="24" /></button>
                                         @Model.Tournament.Matches[i].MatchName
                                     </div>
                                     }
@@ -58,7 +58,7 @@
                                     {
                                         var id = Guid.NewGuid();
                                         <div class="select-teams-in-match">
-                                            <span class="select-teams-in-match__sort"><img src="/images/icons/drag-indicator-24dp.svg" alt="" width="24" height="24" /></span>
+                                            <button type="button" class="select-teams-in-match__sort btn-drag" draggable="true" aria-pressed="false"><img src="/images/icons/drag-indicator-24dp.svg" alt="Move this match up or down" width="24" height="24" /></button>
                                             <div class="select-teams-in-match__team">
                                                 @Html.DropDownList($"Tournament.Matches[{i}].Teams[0].TournamentTeamId", teamOptions, string.Empty, new { @class = "form-control related-item__data related-item__id", aria_describedby = $"{id}_validation", aria_label = "Team 1", data_item = $"{id}", id = $"{id}_teamA", required = "required" })
                                             </div>
@@ -81,16 +81,19 @@
                                 </td>
                             </tr>
                         }
+                    </tbody>
+                    <tbody>
                         <tr class="related-items__if-empty"><td colspan="2">There are no matches in this tournament yet.</td></tr>
                     </tbody>
                 </table>
+                <span class="sr-only" role="status"></span>
                 <p><button type="button" class="select-teams-in-match__add btn btn-secondary btn-add" data-template="match-template">Add a match</button></p>
                 <script type="text/x-template" id="match-template">
                     <table>
-                        <tr class="related-item__selected select_teams_in_match__create">
+                        <tr class="related-item__selected select_teams_in_match__create" aria-grabbed="false">
                             <td class="related-item__selected__section">
                                 <div class="select-teams-in-match">
-                                    <span class="select-teams-in-match__sort"><img src="/images/icons/drag-indicator-24dp.svg" alt="" width="24" height="24" /></span>
+                                    <button type="button" class="select-teams-in-match__sort btn-drag" draggable="true" aria-pressed="false"><img src="/images/icons/drag-indicator-24dp.svg" alt="Move this match up or down" width="24" height="24" /></button>
                                     <div class="select-teams-in-match__team">
                                         @Html.DropDownList("Tournament.Matches[0].Teams[0].TournamentTeamId", teamOptions, string.Empty, new { @class = "form-control related-item__data related-item__id", aria_describedby = "{{id}}_validation", aria_label = "Team 1", data_item = "{{id}}", id = "{{id}}_teamA", required = "required" })
                                     </div>

@@ -65,8 +65,12 @@
       row.querySelector(".select-teams-in-match__match-name").value = matchName;
 
       row
-        .querySelector("img")
+        .querySelector(".btn-delete-icon img")
         .setAttribute("alt", "Remove '" + matchName + "' from the tournament");
+
+      row
+        .querySelector(".btn-drag img")
+        .setAttribute("alt", "Move '" + matchName + "' up or down");
 
       validateMatch(row, this);
     }
@@ -100,6 +104,11 @@
       fields[0].addEventListener("blur", onBlur);
       fields[1].addEventListener("blur", onBlur);
 
+      // Watch for click event on drag handle
+      rows[rows.length - 1]
+        .querySelector(".select-teams-in-match__sort")
+        .addEventListener("click", onDrag);
+
       // alert assistive technology
       thisEditor.relatedItems.alertAssistiveTechnology(
         document,
@@ -127,6 +136,7 @@
       return true;
     });
 
+    // Pointer-based drag-and-drop
     if (typeof Sortable !== "undefined") {
       Sortable.create(
         document.querySelector(".select-teams-in-match__matches"),
@@ -139,5 +149,118 @@
         }
       );
     }
+
+    // Let go of any items grabbed for drag & drop and release any drag handle
+    // toggle button that grabbed the item.
+    function resetGrabbed(except) {
+      const grabbed = thisEditor.querySelectorAll("[aria-grabbed='true']");
+      for (let i = 0; i < grabbed.length; i++) {
+        if (except && grabbed[i] === except) {
+          continue;
+        }
+        grabbed[i].setAttribute("aria-grabbed", "false");
+        grabbed[i]
+          .querySelector("[aria-pressed='true']")
+          .setAttribute("aria-pressed", "false");
+      }
+    }
+
+    // Changing the role allows arrow keys to be intercepted and handled,
+    // but it should only be set when a drag handle button is pressed.
+    function setApplicationRole(anyChildElement, isApplication) {
+      let dropTarget = anyChildElement;
+      while (dropTarget.tagName !== "TBODY") {
+        dropTarget = dropTarget.parentNode;
+      }
+      if (isApplication) {
+        dropTarget.setAttribute("role", "application");
+      } else {
+        dropTarget.removeAttribute("role");
+      }
+    }
+
+    // Keyboard-based drag-and-drop
+    function onDrag(e) {
+      // Find the row to grab
+      let dragTarget = e.target;
+      while (dragTarget.tagName !== "TR") {
+        dragTarget = dragTarget.parentNode;
+      }
+
+      // Reset any existing grabbed items
+      resetGrabbed(dragTarget);
+
+      // Toggle the drag handle button and grab the row it represents
+      const pressed = e.target.getAttribute("aria-pressed") === "false";
+      e.target.setAttribute("aria-pressed", pressed);
+      dragTarget.setAttribute("aria-grabbed", pressed);
+
+      // Change the role to application so we can handle key presses
+      setApplicationRole(e.target, pressed);
+    }
+
+    let draggable = thisEditor.querySelectorAll(".select-teams-in-match__sort");
+    for (let i = 0; i < draggable.length; i++) {
+      draggable[i].addEventListener("click", onDrag);
+    }
+
+    function setStatus(text) {
+      const status = document.querySelector("[role='status']");
+      status.innerHTML = text;
+      setTimeout(function () {
+        status.innerHTML = "";
+      }, 4000);
+    }
+
+    function getElementIndex(node) {
+      let index = 0;
+      while ((node = node.previousElementSibling)) {
+        index++;
+      }
+      return index;
+    }
+
+    // Handle key presses for keyboard drag and drop
+    thisEditor.addEventListener("keydown", function (e) {
+      const grabbed = thisEditor.querySelector("[aria-grabbed='true']");
+      if (grabbed) {
+        const tab = 9,
+          esc = 27,
+          upArrow = 38,
+          downArrow = 40;
+        if (e.keyCode === tab || e.keyCode == esc) {
+          resetGrabbed(null);
+          setApplicationRole(grabbed, false);
+        } else if (e.keyCode === upArrow) {
+          if (grabbed !== grabbed.parentElement.firstElementChild) {
+            const previousSibling = grabbed.previousElementSibling;
+            grabbed.parentElement.removeChild(grabbed);
+            previousSibling.parentElement.insertBefore(
+              grabbed,
+              previousSibling
+            );
+            grabbed.querySelector("[aria-pressed='true']").focus();
+            thisEditor.relatedItems.resetIndexes(thisEditor.lastChild);
+            setStatus("Moved up to position " + (getElementIndex(grabbed) + 1));
+          }
+        } else if (e.keyCode === downArrow) {
+          if (grabbed !== grabbed.parentElement.lastElementChild) {
+            let nextSibling = grabbed.nextElementSibling;
+            grabbed.parentElement.removeChild(grabbed);
+            if (nextSibling.nextElementSibling) {
+              nextSibling = nextSibling.nextElementSibling;
+              nextSibling.parentElement.insertBefore(grabbed, nextSibling);
+            } else {
+              nextSibling.parentElement.appendChild(grabbed);
+            }
+            grabbed.querySelector("[aria-pressed='true']").focus();
+            thisEditor.relatedItems.resetIndexes(thisEditor.lastChild);
+            setStatus(
+              "Moved down to position " + (getElementIndex(grabbed) + 1)
+            );
+          }
+        }
+      }
+    });
   });
 })();
