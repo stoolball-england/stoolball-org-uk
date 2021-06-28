@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Caching;
 using Stoolball.Comments;
 using Stoolball.Dates;
 using Stoolball.Matches;
@@ -21,19 +22,21 @@ namespace Stoolball.Web.Matches
         private readonly ITournamentDataSource _tournamentDataSource;
         private readonly IMatchListingDataSource _matchListingDataSource;
         private readonly ITournamentRepository _tournamentRepository;
+        private readonly ICacheClearer<Tournament> _cacheClearer;
         private readonly ICommentsDataSource<Tournament> _commentsDataSource;
         private readonly IAuthorizationPolicy<Tournament> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateTimeFormatter;
 
         public DeleteTournamentSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, ITournamentDataSource tournamentDataSource,
-            IMatchListingDataSource matchListingDataSource, ITournamentRepository tournamentRepository,
+            IMatchListingDataSource matchListingDataSource, ITournamentRepository tournamentRepository, ICacheClearer<Tournament> cacheClearer,
            ICommentsDataSource<Tournament> matchCommentsDataSource, IAuthorizationPolicy<Tournament> authorizationPolicy, IDateTimeFormatter dateTimeFormatter)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
-            _tournamentDataSource = tournamentDataSource ?? throw new System.ArgumentNullException(nameof(tournamentDataSource));
+            _tournamentDataSource = tournamentDataSource ?? throw new ArgumentNullException(nameof(tournamentDataSource));
             _matchListingDataSource = matchListingDataSource ?? throw new ArgumentNullException(nameof(matchListingDataSource));
-            _tournamentRepository = tournamentRepository ?? throw new System.ArgumentNullException(nameof(tournamentRepository));
+            _tournamentRepository = tournamentRepository ?? throw new ArgumentNullException(nameof(tournamentRepository));
+            _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
             _commentsDataSource = matchCommentsDataSource ?? throw new ArgumentNullException(nameof(matchCommentsDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
@@ -61,6 +64,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = Members.GetCurrentMember();
                 await _tournamentRepository.DeleteTournament(model.Tournament, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheFor(model.Tournament).ConfigureAwait(false);
                 model.Deleted = true;
             }
             else

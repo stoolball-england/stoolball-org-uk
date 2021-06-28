@@ -19,7 +19,7 @@ namespace Stoolball.Data.SqlServer
     /// <summary>
     /// Writes stoolball tournament data to the Umbraco database
     /// </summary>
-    public class SqlServerTournamentRepository : ITournamentRepository, IWrappableTournamentRepository
+    public class SqlServerTournamentRepository : ITournamentRepository
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IAuditRepository _auditRepository;

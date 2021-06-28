@@ -134,6 +134,8 @@ namespace Stoolball.Web
                 return registry;
 
             }, Lifetime.Singleton);
+            composition.Register<IClearableCache, ClearableCacheWrapper>();
+            composition.Register<ICacheClearer<Tournament>, TournamentCacheClearer>();
 
             // Data sources for stoolball data.
             composition.Register<IDatabaseConnectionFactory, UmbracoDatabaseConnectionFactory>();
@@ -165,8 +167,7 @@ namespace Stoolball.Web
             composition.Register<IMatchRepository, CacheClearingMatchRepository>();
             composition.Register<IWrappableMatchRepository, SqlServerMatchRepository>();
             composition.Register<ITournamentDataSource, SqlServerTournamentDataSource>();
-            composition.Register<ITournamentRepository, CacheClearingTournamentRepository>();
-            composition.Register<IWrappableTournamentRepository, SqlServerTournamentRepository>();
+            composition.Register<ITournamentRepository, SqlServerTournamentRepository>();
             composition.Register<IBestPerformanceInAMatchStatisticsDataSource, CachedBestPerformanceInAMatchStatisticsDataSource>();
             composition.Register<ICacheableBestPerformanceInAMatchStatisticsDataSource, SqlServerBestPerformanceInAMatchStatisticsDataSource>();
             composition.Register<IStatisticsRepository, SqlServerStatisticsRepository>();
