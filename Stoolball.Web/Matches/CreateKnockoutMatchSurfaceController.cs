@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Humanizer;
+using Stoolball.Caching;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.Navigation;
@@ -26,10 +27,12 @@ namespace Stoolball.Web.Matches
         private readonly ICreateMatchSeasonSelector _createMatchSeasonSelector;
         private readonly IEditMatchHelper _editMatchHelper;
         private readonly IMatchValidator _matchValidator;
+        private readonly ICacheClearer<Match> _cacheClearer;
 
         public CreateKnockoutMatchSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchRepository matchRepository, ITeamDataSource teamDataSource,
-            ISeasonDataSource seasonDataSource, ICreateMatchSeasonSelector createMatchSeasonSelector, IEditMatchHelper editMatchHelper, IMatchValidator matchValidator)
+            ISeasonDataSource seasonDataSource, ICreateMatchSeasonSelector createMatchSeasonSelector, IEditMatchHelper editMatchHelper, IMatchValidator matchValidator,
+            ICacheClearer<Match> cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
@@ -38,6 +41,7 @@ namespace Stoolball.Web.Matches
             _createMatchSeasonSelector = createMatchSeasonSelector ?? throw new ArgumentNullException(nameof(createMatchSeasonSelector));
             _editMatchHelper = editMatchHelper ?? throw new ArgumentNullException(nameof(editMatchHelper));
             _matchValidator = matchValidator ?? throw new ArgumentNullException(nameof(matchValidator));
+            _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
         }
 
         [HttpPost]
@@ -77,6 +81,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = Members.GetCurrentMember();
                 var createdMatch = await _matchRepository.CreateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheFor(createdMatch).ConfigureAwait(false);
 
                 return Redirect(createdMatch.MatchRoute);
             }

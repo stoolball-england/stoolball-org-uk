@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Caching;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
@@ -25,10 +26,12 @@ namespace Stoolball.Web.Matches
         private readonly IDateTimeFormatter _dateTimeFormatter;
         private readonly IEditMatchHelper _editMatchHelper;
         private readonly IMatchValidator _matchValidator;
+        private readonly ICacheClearer<Match> _cacheClearer;
 
         public EditLeagueMatchSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchDataSource matchDataSource, ISeasonDataSource seasonDataSource,
-            IMatchRepository matchRepository, IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IEditMatchHelper editMatchHelper, IMatchValidator matchValidator)
+            IMatchRepository matchRepository, IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IEditMatchHelper editMatchHelper,
+            IMatchValidator matchValidator, ICacheClearer<Match> cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
@@ -38,6 +41,7 @@ namespace Stoolball.Web.Matches
             _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
             _editMatchHelper = editMatchHelper ?? throw new ArgumentNullException(nameof(editMatchHelper));
             _matchValidator = matchValidator ?? throw new ArgumentNullException(nameof(matchValidator));
+            _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
         }
 
         [HttpPost]
@@ -83,6 +87,7 @@ namespace Stoolball.Web.Matches
 
                 var currentMember = Members.GetCurrentMember();
                 var updatedMatch = await _matchRepository.UpdateMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheFor(updatedMatch).ConfigureAwait(false);
 
                 return Redirect(updatedMatch.MatchRoute);
             }

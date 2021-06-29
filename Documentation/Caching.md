@@ -37,7 +37,7 @@ In `DependencyInjectionComposer.cs` the application is configured to inject the 
 
 The cached data sources each use a Polly cache policy which is also defined in `DependencyInjectionComposer.cs`, and this defines the length of time the cache lasts for, and whether it uses absolute or sliding expiration.
 
-A similar pattern is used for `CacheClearingMatchRepository.cs` classes for matches to make the cache aware of updates which require the cache to be cleared for some or all users. Tournaments handle this differently by requiring an `ICacheClearer<Tournament>` in the controller and calling a method on that to clear the cache. Team listings handle this differently again by requiring an `ICacheOverride` in the controller and calling a method on that to override the cache.
+When caches need to be updated immediately for all the controller requires an `ICacheClearer<T>` and calls the `ClearCacheFor` method with the object the cache needs to be cleared for. Where caches only need to be cleared for the editor, this is handled by requiring an `ICacheOverride` in the controller and calling a method on that to override the cache.
 
 ## Further caching with Examine
 

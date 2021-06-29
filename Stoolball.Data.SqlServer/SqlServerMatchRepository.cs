@@ -23,7 +23,7 @@ namespace Stoolball.Data.SqlServer
     /// <summary>
     /// Writes stoolball match data to the Umbraco database
     /// </summary>
-    public class SqlServerMatchRepository : IMatchRepository, IWrappableMatchRepository
+    public class SqlServerMatchRepository : IMatchRepository
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IAuditRepository _auditRepository;

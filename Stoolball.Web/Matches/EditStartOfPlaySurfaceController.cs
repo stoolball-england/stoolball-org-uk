@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Caching;
 using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
@@ -28,11 +29,12 @@ namespace Stoolball.Web.Matches
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateTimeFormatter;
         private readonly IEditMatchHelper _editMatchHelper;
+        private readonly ICacheClearer<Match> _cacheClearer;
 
         public EditStartOfPlaySurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchDataSource matchDataSource,
             IMatchRepository matchRepository, ISeasonDataSource seasonDataSource, IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter,
-            IEditMatchHelper editMatchHelper)
+            IEditMatchHelper editMatchHelper, ICacheClearer<Match> cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
@@ -41,6 +43,7 @@ namespace Stoolball.Web.Matches
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
             _editMatchHelper = editMatchHelper ?? throw new ArgumentNullException(nameof(editMatchHelper));
+            _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
         }
 
         [HttpPost]
@@ -110,6 +113,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = Members.GetCurrentMember();
                 var updatedMatch = await _matchRepository.UpdateStartOfPlay(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheFor(updatedMatch).ConfigureAwait(false);
 
                 if (model.Match.MatchResultType.HasValue && new List<MatchResultType> {
                     MatchResultType.HomeWinByForfeit,

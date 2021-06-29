@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Caching;
 using Stoolball.Comments;
 using Stoolball.Dates;
 using Stoolball.Matches;
@@ -23,17 +24,19 @@ namespace Stoolball.Web.Matches
         private readonly ICommentsDataSource<Match> _matchCommentsDataSource;
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateTimeFormatter;
+        private readonly ICacheClearer<Match> _cacheClearer;
 
         public DeleteMatchSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchDataSource matchDataSource, IMatchRepository matchRepository,
-           ICommentsDataSource<Match> matchCommentsDataSource, IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter)
+           ICommentsDataSource<Match> matchCommentsDataSource, IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, ICacheClearer<Match> cacheClearer)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
-            _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
-            _matchRepository = matchRepository ?? throw new System.ArgumentNullException(nameof(matchRepository));
+            _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
+            _matchRepository = matchRepository ?? throw new ArgumentNullException(nameof(matchRepository));
             _matchCommentsDataSource = matchCommentsDataSource ?? throw new ArgumentNullException(nameof(matchCommentsDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
+            _cacheClearer = cacheClearer ?? throw new ArgumentNullException(nameof(cacheClearer));
         }
 
         [HttpPost]
@@ -58,6 +61,7 @@ namespace Stoolball.Web.Matches
             {
                 var currentMember = Members.GetCurrentMember();
                 await _matchRepository.DeleteMatch(model.Match, currentMember.Key, currentMember.Name).ConfigureAwait(false);
+                await _cacheClearer.ClearCacheFor(model.Match).ConfigureAwait(false);
                 model.Deleted = true;
             }
             else
