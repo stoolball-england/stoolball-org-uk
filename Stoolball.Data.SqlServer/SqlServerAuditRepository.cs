@@ -16,7 +16,7 @@ namespace Stoolball.Data.SqlServer
         /// </summary>
         /// <param name="audit">The audit details to record</param>
         /// <param name="transaction">The transaction to audit</param>
-        public async Task CreateAudit(AuditRecord audit, IDbTransaction transaction)
+        public async Task<AuditRecord> CreateAudit(AuditRecord audit, IDbTransaction transaction)
         {
             if (audit is null)
             {
@@ -28,12 +28,13 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(transaction));
             }
 
+            audit.AuditId = Guid.NewGuid();
             await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.Audit} 
                         ([AuditId], [MemberKey], [ActorName], [Action], [EntityUri], [State], [RedactedState], [AuditDate]) 
                         VALUES (@AuditId, @MemberKey, @ActorName, @Action, @EntityUri, @State, @RedactedState, @AuditDate)",
                 new
                 {
-                    AuditId = Guid.NewGuid(),
+                    audit.AuditId,
                     audit.MemberKey,
                     audit.ActorName,
                     Action = audit.Action.ToString(),
@@ -43,6 +44,8 @@ namespace Stoolball.Data.SqlServer
                     AuditDate = audit.AuditDate.UtcDateTime
                 },
                 transaction).ConfigureAwait(false);
+
+            return audit;
         }
     }
 }

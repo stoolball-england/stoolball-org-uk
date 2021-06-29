@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.SqlServer.Dac;
 using Microsoft.SqlServer.Management.Smo;
@@ -47,6 +48,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     File.Delete(_dacpacPath);
                 }
             }
+
+            // Configure Dapper
+            SqlMapper.AddTypeHandler(new DapperUriTypeHandler());
 
             // Create a connection factory that connects to the database, and is accessible via a protected property by classes being tested
             ConnectionFactory = new IntegrationTestsDatabaseConnectionFactory(new SqlConnectionStringBuilder { DataSource = _SQL_SERVER_INSTANCE, IntegratedSecurity = true, InitialCatalog = _databaseName }.ToString());

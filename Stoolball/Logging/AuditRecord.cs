@@ -7,6 +7,7 @@ namespace Stoolball.Logging
     /// </summary>
     public class AuditRecord
     {
+        public Guid? AuditId { get; set; }
         /// <summary>
         /// Gets or sets the GUID identifier for the Umbraco Member taking the action
         /// </summary>
