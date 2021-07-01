@@ -56,7 +56,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
 
                 if (inningsForTeam.Any())
                 {
-                    var expectedAverageRuns = ((decimal)inningsForTeam.Average(x => x.Runs)).AccurateToTwoDecimalPlaces();
+                    var expectedAverageRuns = ((decimal)inningsForTeam.Where(x => x.Runs.HasValue).Average(x => x.Runs)).AccurateToTwoDecimalPlaces();
                     var expectedHighestRuns = inningsForTeam.Where(x => x.Runs.HasValue).Max(x => x.Runs);
                     var expectedLowestRuns = inningsForTeam.Where(x => x.Runs.HasValue).Min(x => x.Runs);
                     var expectedAverageWickets = ((decimal)inningsForTeam.Where(x => x.Wickets.HasValue).Average(x => x.Wickets)).AccurateToTwoDecimalPlaces();

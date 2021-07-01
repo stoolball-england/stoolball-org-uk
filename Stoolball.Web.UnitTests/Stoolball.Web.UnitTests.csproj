@@ -121,6 +121,7 @@
     <Compile Include="MatchLocations\MatchLocationStatisticsControllerTests.cs" />
     <Compile Include="Statistics\MostRunOutsControllerTests.cs" />
     <Compile Include="Statistics\MostCatchesControllerTests.cs" />
+    <Compile Include="Statistics\BattingAverageControllerTests.cs" />
     <Compile Include="Statistics\MostWicketsControllerTests.cs" />
     <Compile Include="Statistics\MostRunsControllerTests.cs" />
     <Compile Include="Statistics\RunOutsControllerTests.cs" />

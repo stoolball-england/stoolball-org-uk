@@ -45,7 +45,7 @@ namespace Stoolball.Web.Statistics
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            var model = new StatisticsViewModel<BestTotal>(contentModel.Content, Services?.UserService) { ShowCaption = false };
+            var model = new StatisticsViewModel<BestStatistic>(contentModel.Content, Services?.UserService) { ShowCaption = false };
             model.StatisticsFilter = await _statisticsFilterUrlParser.ParseUrl(new Uri(Request.Url, Request.RawUrl)).ConfigureAwait(false);
             model.StatisticsFilter.Paging.PageSize = Constants.Defaults.PageSize;
             if (model.StatisticsFilter.Team != null) { model.ShowTeamsColumn = false; }

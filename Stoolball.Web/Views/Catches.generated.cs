@@ -27,20 +27,20 @@ namespace ASP
     using System.Web.UI;
     using System.Web.WebPages;
     
-    #line 4 "..\..\Views\MostRunOuts.cshtml"
+    #line 4 "..\..\Views\Catches.cshtml"
     using ClientDependency.Core.Mvc;
     
     #line default
     #line hidden
     using Examine;
     
-    #line 2 "..\..\Views\MostRunOuts.cshtml"
-    using Stoolball.Statistics;
+    #line 3 "..\..\Views\Catches.cshtml"
+    using Stoolball.Matches;
     
     #line default
     #line hidden
     
-    #line 3 "..\..\Views\MostRunOuts.cshtml"
+    #line 2 "..\..\Views\Catches.cshtml"
     using Stoolball.Web.Statistics;
     
     #line default
@@ -53,28 +53,28 @@ namespace ASP
     using Umbraco.Web.PublishedModels;
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("RazorGenerator", "2.0.0.0")]
-    [System.Web.WebPages.PageVirtualPathAttribute("~/Views/MostRunOuts.cshtml")]
-    public partial class _Views_MostRunOuts_cshtml : Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<BestStatistic>>
+    [System.Web.WebPages.PageVirtualPathAttribute("~/Views/Catches.cshtml")]
+    public partial class _Views_Catches_cshtml : Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<PlayerInnings>>
     {
-        public _Views_MostRunOuts_cshtml()
+        public _Views_Catches_cshtml()
         {
         }
         public override void Execute()
         {
             
-            #line 5 "..\..\Views\MostRunOuts.cshtml"
+            #line 5 "..\..\Views\Catches.cshtml"
   
     Html.RequiresCss("/statistics/statistics.min.css");
 
             
             #line default
             #line hidden
-WriteLiteral("\n");
+WriteLiteral("\r\n");
 
 DefineSection("canonical", () => {
 
             
-            #line 8 "..\..\Views\MostRunOuts.cshtml"
+            #line 8 "..\..\Views\Catches.cshtml"
                Write(Html.Partial("_CanonicalUrl", new[] { "page" }));
 
             
@@ -84,16 +84,16 @@ DefineSection("canonical", () => {
 
 DefineSection("head", () => {
 
-WriteLiteral("\n");
+WriteLiteral("\r\n");
 
             
-            #line 10 "..\..\Views\MostRunOuts.cshtml"
+            #line 10 "..\..\Views\Catches.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 10 "..\..\Views\MostRunOuts.cshtml"
+            #line 10 "..\..\Views\Catches.cshtml"
      if (Model.StatisticsFilter.Paging.PageNumber == 1)
     {
 
@@ -106,10 +106,10 @@ WriteLiteral(" name=\"robots\"");
 
 WriteLiteral(" content=\"index, nofollow\"");
 
-WriteLiteral(">\n");
+WriteLiteral(">\r\n");
 
             
-            #line 13 "..\..\Views\MostRunOuts.cshtml"
+            #line 13 "..\..\Views\Catches.cshtml"
     }
     else
     {
@@ -123,10 +123,10 @@ WriteLiteral(" name=\"robots\"");
 
 WriteLiteral(" content=\"noindex, nofollow\"");
 
-WriteLiteral(">\n");
+WriteLiteral(">\r\n");
 
             
-            #line 17 "..\..\Views\MostRunOuts.cshtml"
+            #line 17 "..\..\Views\Catches.cshtml"
     }
 
             
@@ -138,38 +138,27 @@ WriteLiteral("<div");
 
 WriteLiteral(" class=\"container-xl\"");
 
-WriteLiteral(">\n    <h1>Most run-outs");
+WriteLiteral(">\r\n    <h1>Catches");
 
             
-            #line 20 "..\..\Views\MostRunOuts.cshtml"
-                 Write(Model.StatisticsFilter);
+            #line 20 "..\..\Views\Catches.cshtml"
+           Write(Model.StatisticsFilter);
 
             
             #line default
             #line hidden
-WriteLiteral("</h1>\n\n");
+WriteLiteral("</h1>\r\n");
 
 WriteLiteral("    ");
 
             
-            #line 22 "..\..\Views\MostRunOuts.cshtml"
-Write(Html.Partial("_StatisticsBasis"));
+            #line 21 "..\..\Views\Catches.cshtml"
+Write(Html.Partial("_Catches"));
 
             
             #line default
             #line hidden
-WriteLiteral("\n");
-
-WriteLiteral("    ");
-
-            
-            #line 23 "..\..\Views\MostRunOuts.cshtml"
-Write(Html.Partial("_MostRunOuts"));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\n</div>");
+WriteLiteral("\r\n</div>");
 
         }
     }

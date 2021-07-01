@@ -325,7 +325,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         {
             var results = await dataSource.ReadMostRunOuts(filter).ConfigureAwait(false);
 
-            var expected = _databaseFixture.TestData.Players.Select(p => new BestTotal
+            var expected = _databaseFixture.TestData.Players.Select(p => new BestStatistic
             {
                 Player = p,
                 TotalMatches = (int)_databaseFixture.TestData.Matches
@@ -561,7 +561,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             foreach (var result in results)
             {
                 Assert.True(result.Result.Total <= previousTotal);
-                previousTotal = result.Result.Total;
+                previousTotal = result.Result.Total.Value;
             }
         }
 

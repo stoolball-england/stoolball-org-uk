@@ -81,11 +81,11 @@ namespace ASP
     individualScores.Results.AddRange(Model.PlayerInnings);
     var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
     bowlingFigures.Results.AddRange(Model.BowlingFigures);
-    var mostRuns = new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
+    var mostRuns = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
     mostRuns.Results.AddRange(Model.MostRuns);
-    var mostWickets = new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
+    var mostWickets = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
     mostWickets.Results.AddRange(Model.MostWickets);
-    var mostCatches = new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
+    var mostCatches = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
     mostCatches.Results.AddRange(Model.MostCatches);
 
             
@@ -137,15 +137,15 @@ WriteLiteral(">\r\n                <a");
 
 WriteLiteral(" class=\"nav-link nav-link-edit\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1762), Tuple.Create("\"", 1814)
+WriteAttribute("href", Tuple.Create(" href=\"", 1774), Tuple.Create("\"", 1826)
             
             #line 30 "..\..\Views\Statistics.cshtml"
-, Tuple.Create(Tuple.Create("", 1769), Tuple.Create<System.Object, System.Int32>(Stoolball.Constants.Pages.StatisticsUrl
+, Tuple.Create(Tuple.Create("", 1781), Tuple.Create<System.Object, System.Int32>(Stoolball.Constants.Pages.StatisticsUrl
             
             #line default
             #line hidden
-, 1769), false)
-, Tuple.Create(Tuple.Create("", 1809), Tuple.Create("/edit", 1809), true)
+, 1781), false)
+, Tuple.Create(Tuple.Create("", 1821), Tuple.Create("/edit", 1821), true)
 );
 
 WriteLiteral(">Edit statistics</a>\r\n            </li>\r\n        </ul>\r\n");
@@ -196,7 +196,7 @@ WriteLiteral("    ");
 
             
             #line 38 "..\..\Views\Statistics.cshtml"
-Write(Html.Partial("_BowlingFigures", bowlingFigures));
+Write(Html.Partial("_BattingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
@@ -207,7 +207,7 @@ WriteLiteral("    ");
 
             
             #line 39 "..\..\Views\Statistics.cshtml"
-Write(Html.Partial("_MostWickets", mostWickets));
+Write(Html.Partial("_BowlingFigures", bowlingFigures));
 
             
             #line default
@@ -218,7 +218,7 @@ WriteLiteral("    ");
 
             
             #line 40 "..\..\Views\Statistics.cshtml"
-Write(Html.Partial("_MostCatches", mostCatches));
+Write(Html.Partial("_MostWickets", mostWickets));
 
             
             #line default
@@ -229,7 +229,18 @@ WriteLiteral("    ");
 
             
             #line 41 "..\..\Views\Statistics.cshtml"
-Write(Html.Partial("_MostRunOuts", new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowLinkOnly = true }));
+Write(Html.Partial("_MostCatches", mostCatches));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
+WriteLiteral("    ");
+
+            
+            #line 42 "..\..\Views\Statistics.cshtml"
+Write(Html.Partial("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default

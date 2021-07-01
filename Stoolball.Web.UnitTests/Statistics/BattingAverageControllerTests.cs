@@ -17,16 +17,16 @@ using Xunit;
 
 namespace Stoolball.Web.Tests.Statistics
 {
-    public class MostWicketsControllerTests : UmbracoBaseTest
+    public class BattingAverageControllerTests : UmbracoBaseTest
     {
-        public MostWicketsControllerTests()
+        public BattingAverageControllerTests()
         {
             Setup();
         }
 
-        private class TestController : MostWicketsController
+        private class TestController : BattingAverageController
         {
-            public TestController(IStatisticsFilterUrlParser statisticsFilterUrlParser, IBestPlayerTotalStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
+            public TestController(IStatisticsFilterUrlParser statisticsFilterUrlParser, IBestPlayerAverageStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -40,7 +40,7 @@ namespace Stoolball.Web.Tests.Statistics
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
-                request.SetupGet(x => x.RawUrl).Returns(Stoolball.Constants.Pages.StatisticsUrl + "/most-wickets");
+                request.SetupGet(x => x.RawUrl).Returns(Stoolball.Constants.Pages.StatisticsUrl + "/batting-average");
 
                 var context = new Mock<HttpContextBase>();
                 context.SetupGet(x => x.Request).Returns(request.Object);
@@ -53,27 +53,27 @@ namespace Stoolball.Web.Tests.Statistics
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
-                return View("MostWickets", model);
+                return View("BattingAverage", model);
             }
         }
 
         [Fact]
-        public async Task No_results_returns_404()
+        public async Task No_results_returns_StatisticsViewModel()
         {
             var filter = new StatisticsFilter();
-            var statisticsDataSource = new Mock<IBestPlayerTotalStatisticsDataSource>();
+            var statisticsDataSource = new Mock<IBestPlayerAverageStatisticsDataSource>();
             var urlParser = new Mock<IStatisticsFilterUrlParser>();
             urlParser.Setup(x => x.ParseUrl(It.IsAny<Uri>())).Returns(Task.FromResult(filter));
 
             var playerId = Guid.NewGuid();
             var results = new List<StatisticsResult<BestStatistic>>();
-            statisticsDataSource.Setup(x => x.ReadMostWickets(filter)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<BestStatistic>>));
+            statisticsDataSource.Setup(x => x.ReadBestBattingAverage(filter)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<BestStatistic>>));
 
             using (var controller = new TestController(urlParser.Object, statisticsDataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<HttpNotFoundResult>(result);
+                Assert.IsType<StatisticsViewModel<BestStatistic>>(((ViewResult)result).Model);
             }
         }
 
@@ -81,7 +81,7 @@ namespace Stoolball.Web.Tests.Statistics
         public async Task With_results_returns_StatisticsViewModel()
         {
             var filter = new StatisticsFilter();
-            var statisticsDataSource = new Mock<IBestPlayerTotalStatisticsDataSource>();
+            var statisticsDataSource = new Mock<IBestPlayerAverageStatisticsDataSource>();
             var urlParser = new Mock<IStatisticsFilterUrlParser>();
             urlParser.Setup(x => x.ParseUrl(It.IsAny<Uri>())).Returns(Task.FromResult(filter));
 
@@ -97,7 +97,7 @@ namespace Stoolball.Web.Tests.Statistics
                     }
                 }
             };
-            statisticsDataSource.Setup(x => x.ReadMostWickets(filter)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<BestStatistic>>));
+            statisticsDataSource.Setup(x => x.ReadBestBattingAverage(filter)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<BestStatistic>>));
 
             using (var controller = new TestController(urlParser.Object, statisticsDataSource.Object, UmbracoHelper))
             {

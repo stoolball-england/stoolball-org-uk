@@ -54,7 +54,7 @@ namespace ASP
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("RazorGenerator", "2.0.0.0")]
     [System.Web.WebPages.PageVirtualPathAttribute("~/Views/MostRuns.cshtml")]
-    public partial class _Views_MostRuns_cshtml : Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<BestTotal>>
+    public partial class _Views_MostRuns_cshtml : Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<BestStatistic>>
     {
         public _Views_MostRuns_cshtml()
         {

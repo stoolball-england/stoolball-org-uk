@@ -36,6 +36,7 @@ namespace Stoolball.Statistics
         public bool? PlayerOfTheMatch { get; set; }
         public Paging Paging { get; set; } = new Paging();
         public int? MaxResultsAllowingExtraResultsIfValuesAreEqual { get; set; }
+        public int? MinimumQualifyingInnings { get; set; }
 
         public StatisticsFilter Clone()
         {
@@ -64,7 +65,8 @@ namespace Stoolball.Statistics
                 SwapBattingFirstFilter = SwapBattingFirstFilter,
                 PlayerOfTheMatch = PlayerOfTheMatch,
                 Paging = Paging,
-                MaxResultsAllowingExtraResultsIfValuesAreEqual = MaxResultsAllowingExtraResultsIfValuesAreEqual
+                MaxResultsAllowingExtraResultsIfValuesAreEqual = MaxResultsAllowingExtraResultsIfValuesAreEqual,
+                MinimumQualifyingInnings = MinimumQualifyingInnings
             };
         }
 

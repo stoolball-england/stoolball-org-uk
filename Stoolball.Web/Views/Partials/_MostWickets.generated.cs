@@ -66,7 +66,7 @@ namespace ASP
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("RazorGenerator", "2.0.0.0")]
     [System.Web.WebPages.PageVirtualPathAttribute("~/Views/Partials/_MostWickets.cshtml")]
-    public partial class _Views_Partials__MostWickets_cshtml : Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<BestTotal>>
+    public partial class _Views_Partials__MostWickets_cshtml : Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<BestStatistic>>
     {
         public _Views_Partials__MostWickets_cshtml()
         {
@@ -222,14 +222,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Player</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1702), Tuple.Create("\"", 1752)
+WriteAttribute("href", Tuple.Create(" href=\"", 1706), Tuple.Create("\"", 1756)
             
             #line 39 "..\..\Views\Partials\_MostWickets.cshtml"
-                                               , Tuple.Create(Tuple.Create("", 1709), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Player.PlayerRoute
+                                               , Tuple.Create(Tuple.Create("", 1713), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Player.PlayerRoute
             
             #line default
             #line hidden
-, 1709), false)
+, 1713), false)
 );
 
 WriteLiteral(">");
@@ -369,15 +369,15 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2886), Tuple.Create("\"", 2921)
+WriteAttribute("href", Tuple.Create(" href=\"", 2890), Tuple.Create("\"", 2925)
             
             #line 54 "..\..\Views\Partials\_MostWickets.cshtml"
-, Tuple.Create(Tuple.Create("", 2893), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
+, Tuple.Create(Tuple.Create("", 2897), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
             
             #line default
             #line hidden
-, 2893), false)
-, Tuple.Create(Tuple.Create("", 2908), Tuple.Create("/most-wickets", 2908), true)
+, 2897), false)
+, Tuple.Create(Tuple.Create("", 2912), Tuple.Create("/most-wickets", 2912), true)
 );
 
 WriteLiteral(">Most wickets – view all</a></p>\r\n");

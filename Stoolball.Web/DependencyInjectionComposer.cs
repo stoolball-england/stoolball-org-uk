@@ -179,7 +179,9 @@ namespace Stoolball.Web
             composition.Register<IPlayerPerformanceStatisticsDataSource, CachedPlayerPerformanceStatisticsDataSource>();
             composition.Register<ICacheablePlayerPerformanceStatisticsDataSource, SqlServerPlayerPerformanceStatisticsDataSource>();
             composition.Register<IBestPlayerTotalStatisticsDataSource, CachedBestPlayerTotalStatisticsDataSource>();
-            composition.Register<ICacheableBestTotalStatisticsDataSource, SqlServerBestPlayerTotalStatisticsDataSource>();
+            composition.Register<ICacheableBestPlayerTotalStatisticsDataSource, SqlServerBestPlayerTotalStatisticsDataSource>();
+            composition.Register<IBestPlayerAverageStatisticsDataSource, CachedBestPlayerAverageStatisticsDataSource>();
+            composition.Register<ICacheableBestPlayerAverageStatisticsDataSource, SqlServerBestPlayerAverageStatisticsDataSource>();
 
             // Security checks
             composition.Register<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>();

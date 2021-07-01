@@ -10,11 +10,11 @@ namespace Stoolball.Data.Cache
 {
     public class CachedBestPlayerTotalStatisticsDataSource : IBestPlayerTotalStatisticsDataSource
     {
-        private readonly ICacheableBestTotalStatisticsDataSource _statisticsDataSource;
+        private readonly ICacheableBestPlayerTotalStatisticsDataSource _statisticsDataSource;
         private readonly IReadOnlyPolicyRegistry<string> _policyRegistry;
         private readonly IStatisticsFilterSerializer _statisticsFilterSerializer;
 
-        public CachedBestPlayerTotalStatisticsDataSource(IReadOnlyPolicyRegistry<string> policyRegistry, ICacheableBestTotalStatisticsDataSource statisticsDataSource, IStatisticsFilterSerializer statisticsFilterSerializer)
+        public CachedBestPlayerTotalStatisticsDataSource(IReadOnlyPolicyRegistry<string> policyRegistry, ICacheableBestPlayerTotalStatisticsDataSource statisticsDataSource, IStatisticsFilterSerializer statisticsFilterSerializer)
         {
             _policyRegistry = policyRegistry ?? throw new ArgumentNullException(nameof(policyRegistry));
             _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
@@ -22,7 +22,7 @@ namespace Stoolball.Data.Cache
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<StatisticsResult<BestTotal>>> ReadMostCatches(StatisticsFilter filter)
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostCatches(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
             var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
@@ -30,7 +30,7 @@ namespace Stoolball.Data.Cache
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<StatisticsResult<BestTotal>>> ReadMostRunOuts(StatisticsFilter filter)
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostRunOuts(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
             var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
@@ -38,14 +38,14 @@ namespace Stoolball.Data.Cache
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<StatisticsResult<BestTotal>>> ReadMostRunsScored(StatisticsFilter filter)
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostRunsScored(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
             var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
             return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadMostRunsScored(filter).ConfigureAwait(false), new Context(nameof(ReadMostRunsScored) + _statisticsFilterSerializer.Serialize(filter)));
         }
 
-        public async Task<IEnumerable<StatisticsResult<BestTotal>>> ReadMostWickets(StatisticsFilter filter)
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadMostWickets(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
             var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);

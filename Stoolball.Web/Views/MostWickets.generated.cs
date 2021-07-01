@@ -54,7 +54,7 @@ namespace ASP
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("RazorGenerator", "2.0.0.0")]
     [System.Web.WebPages.PageVirtualPathAttribute("~/Views/MostWickets.cshtml")]
-    public partial class _Views_MostWickets_cshtml : Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<BestTotal>>
+    public partial class _Views_MostWickets_cshtml : Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<BestStatistic>>
     {
         public _Views_MostWickets_cshtml()
         {
@@ -69,7 +69,7 @@ namespace ASP
             
             #line default
             #line hidden
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 DefineSection("canonical", () => {
 
@@ -84,7 +84,7 @@ DefineSection("canonical", () => {
 
 DefineSection("head", () => {
 
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
             
             #line 10 "..\..\Views\MostWickets.cshtml"
@@ -106,7 +106,7 @@ WriteLiteral(" name=\"robots\"");
 
 WriteLiteral(" content=\"index, nofollow\"");
 
-WriteLiteral(">\r\n");
+WriteLiteral(">\n");
 
             
             #line 13 "..\..\Views\MostWickets.cshtml"
@@ -123,7 +123,7 @@ WriteLiteral(" name=\"robots\"");
 
 WriteLiteral(" content=\"noindex, nofollow\"");
 
-WriteLiteral(">\r\n");
+WriteLiteral(">\n");
 
             
             #line 17 "..\..\Views\MostWickets.cshtml"
@@ -138,7 +138,7 @@ WriteLiteral("<div");
 
 WriteLiteral(" class=\"container-xl\"");
 
-WriteLiteral(">\r\n    <h1>Most wickets");
+WriteLiteral(">\n    <h1>Most wickets");
 
             
             #line 20 "..\..\Views\MostWickets.cshtml"
@@ -147,7 +147,7 @@ WriteLiteral(">\r\n    <h1>Most wickets");
             
             #line default
             #line hidden
-WriteLiteral("</h1>\r\n\r\n");
+WriteLiteral("</h1>\n\n");
 
 WriteLiteral("    ");
 
@@ -158,7 +158,7 @@ Write(Html.Partial("_StatisticsBasis"));
             
             #line default
             #line hidden
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 WriteLiteral("    ");
 
@@ -169,7 +169,7 @@ Write(Html.Partial("_MostWickets"));
             
             #line default
             #line hidden
-WriteLiteral("\r\n</div>");
+WriteLiteral("\n</div>");
 
         }
     }

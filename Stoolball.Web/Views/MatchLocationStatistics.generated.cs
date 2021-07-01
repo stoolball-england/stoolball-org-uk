@@ -82,11 +82,11 @@ namespace ASP
     individualScores.Results.AddRange(Model.PlayerInnings);
     var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
     bowlingFigures.Results.AddRange(Model.BowlingFigures);
-    var mostRuns = new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    var mostRuns = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
     mostRuns.Results.AddRange(Model.MostRuns);
-    var mostWickets = new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    var mostWickets = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
     mostWickets.Results.AddRange(Model.MostWickets);
-    var mostCatches = new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    var mostCatches = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
     mostCatches.Results.AddRange(Model.MostCatches);
 
             
@@ -117,14 +117,14 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1677), Tuple.Create("\"", 1717)
+WriteAttribute("href", Tuple.Create(" href=\"", 1689), Tuple.Create("\"", 1729)
             
             #line 26 "..\..\Views\MatchLocationStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 1684), Tuple.Create<System.Object, System.Int32>(Model.Context.MatchLocationRoute
+, Tuple.Create(Tuple.Create("", 1696), Tuple.Create<System.Object, System.Int32>(Model.Context.MatchLocationRoute
             
             #line default
             #line hidden
-, 1684), false)
+, 1696), false)
 );
 
 WriteLiteral(">Summary</a>\r\n        </li>\r\n        <li");
@@ -135,15 +135,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1809), Tuple.Create("\"", 1857)
+WriteAttribute("href", Tuple.Create(" href=\"", 1821), Tuple.Create("\"", 1869)
             
             #line 29 "..\..\Views\MatchLocationStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 1816), Tuple.Create<System.Object, System.Int32>(Model.Context.MatchLocationRoute
+, Tuple.Create(Tuple.Create("", 1828), Tuple.Create<System.Object, System.Int32>(Model.Context.MatchLocationRoute
             
             #line default
             #line hidden
-, 1816), false)
-, Tuple.Create(Tuple.Create("", 1849), Tuple.Create("/matches", 1849), true)
+, 1828), false)
+, Tuple.Create(Tuple.Create("", 1861), Tuple.Create("/matches", 1861), true)
 );
 
 WriteLiteral(">Matches</a>\r\n        </li>\r\n        <li");
@@ -166,19 +166,20 @@ WriteLiteral(">Statistics</em>\r\n        </li>\r\n    </ul>\r\n\r\n\r\n");
             #line 37 "..\..\Views\MatchLocationStatistics.cshtml"
      if (!Model.PlayerInnings.Any() && !Model.BowlingFigures.Any() && !Model.MostRuns.Any() && !Model.MostWickets.Any() && !Model.MostCatches.Any())
     {
+        
+            
+            #line default
+            #line hidden
+            
+            #line 39 "..\..\Views\MatchLocationStatistics.cshtml"
+   Write(Html.Partial("_NoData"));
 
             
             #line default
             #line hidden
-WriteLiteral("        <p>There are no statistics for this ground or sports centre yet. Statisti" +
-"cs are based on scorecards added to this website – see <a");
-
-WriteLiteral(" href=\"/organise/website/how-to-add-match-results/\"");
-
-WriteLiteral(">How to add match results</a>.</p>\r\n");
-
             
-            #line 40 "..\..\Views\MatchLocationStatistics.cshtml"
+            #line 39 "..\..\Views\MatchLocationStatistics.cshtml"
+                                
     }
     else
     {
@@ -216,56 +217,70 @@ WriteLiteral(">How to add match results</a>.</p>\r\n");
             #line hidden
             
             #line 45 "..\..\Views\MatchLocationStatistics.cshtml"
-   Write(Html.Partial("_BowlingFigures", bowlingFigures));
+   Write(Html.Partial("_BattingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
             #line 45 "..\..\Views\MatchLocationStatistics.cshtml"
+                                                                                                                                     
+        
+            
+            #line default
+            #line hidden
+            
+            #line 46 "..\..\Views\MatchLocationStatistics.cshtml"
+   Write(Html.Partial("_BowlingFigures", bowlingFigures));
+
+            
+            #line default
+            #line hidden
+            
+            #line 46 "..\..\Views\MatchLocationStatistics.cshtml"
                                                         
         
             
             #line default
             #line hidden
             
-            #line 46 "..\..\Views\MatchLocationStatistics.cshtml"
+            #line 47 "..\..\Views\MatchLocationStatistics.cshtml"
    Write(Html.Partial("_MostWickets", mostWickets));
 
             
             #line default
             #line hidden
             
-            #line 46 "..\..\Views\MatchLocationStatistics.cshtml"
+            #line 47 "..\..\Views\MatchLocationStatistics.cshtml"
                                                   
         
             
             #line default
             #line hidden
             
-            #line 47 "..\..\Views\MatchLocationStatistics.cshtml"
+            #line 48 "..\..\Views\MatchLocationStatistics.cshtml"
    Write(Html.Partial("_MostCatches", mostCatches));
 
             
             #line default
             #line hidden
             
-            #line 47 "..\..\Views\MatchLocationStatistics.cshtml"
+            #line 48 "..\..\Views\MatchLocationStatistics.cshtml"
                                                   
         
             
             #line default
             #line hidden
             
-            #line 48 "..\..\Views\MatchLocationStatistics.cshtml"
-   Write(Html.Partial("_MostRunOuts", new StatisticsViewModel<BestTotal>(Model, Services.UserService) { ShowLinkOnly = true }));
+            #line 49 "..\..\Views\MatchLocationStatistics.cshtml"
+   Write(Html.Partial("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
-            #line 48 "..\..\Views\MatchLocationStatistics.cshtml"
-                                                                                                                              
+            #line 49 "..\..\Views\MatchLocationStatistics.cshtml"
+                                                                                                                                  
     }
 
             

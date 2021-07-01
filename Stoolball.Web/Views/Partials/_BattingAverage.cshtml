@@ -7,12 +7,14 @@
 @{
     var dateTimeFormatter = Current.Factory.CreateInstance<DateTimeFormatter>();
 }
-@if (Model.Results.Any())
+@if (Model.Results.Any() || Model.ShowLinkOnly)
 {
+    if (!Model.ShowLinkOnly)
+    {
     <table class="statistics table-as-cards table-as-cards-reset-md">
         @if (Model.ShowCaption)
         {
-            <caption>Most wickets</caption>
+            <caption>Best batting average</caption>
         }
         <thead>
             <tr>
@@ -24,16 +26,16 @@
                 }
                 <th scope="col" class="numeric statistic">Matches</th>
                 <th scope="col" class="numeric statistic">Innings</th>
-                <th scope="col" class="numeric statistic">Wickets</th>
+                <th scope="col" class="numeric statistic">Average</th>
             </tr>
         </thead>
         <tbody>
             @{
-                int? previousWickets = null;
+                decimal? previous = null;
                 for (var i = 0; i < Model.Results.Count(); i++)
                 {
-                    var equalToPrevious = Model.Results[i].Result.Total == previousWickets;
-                    previousWickets = Model.Results[i].Result.Total;
+                    var equalToPrevious = Model.Results[i].Result.Average == previous;
+                    previous = Model.Results[i].Result.Average;
                     <tr>
                         <td class="table-as-cards__header-md">@(equalToPrevious ? "=" : ((Model.StatisticsFilter.Paging.PageSize * (Model.StatisticsFilter.Paging.PageNumber - 1)) + i + 1).ToString())</td>
                         <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Player</span><a href="@Model.Results[i].Result.Player.PlayerRoute">@(Model.Results[i].Result.Player.PlayerName())</a></td>
@@ -43,15 +45,16 @@
                         }
                         <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Matches</span>@Model.Results[i].Result.TotalMatches</td>
                         <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Innings</span>@Model.Results[i].Result.TotalInnings</td>
-                        <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Wickets</span>@Model.Results[i].Result.Total</td>
+                        <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Average</span>@(Model.Results[i].Result.Average.HasValue ? Math.Round(Model.Results[i].Result.Average.Value, 2).ToString() : "–")</td>
                     </tr>
                 }
             }
         </tbody>
     </table>
-    if (Model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
+    }
+    if (Model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue || Model.ShowLinkOnly)
     {
-        <p><a href="@Request.RawUrl/most-wickets">Most wickets – view all</a></p>
+        <p><a href="@Request.RawUrl/batting-average">Batting averages – view all</a></p>
     }
     else
     {

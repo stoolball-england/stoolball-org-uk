@@ -28,32 +28,32 @@ namespace ASP
     using System.Web.WebPages;
     using Examine;
     
-    #line 2 "..\..\Views\Partials\_MostRuns.cshtml"
+    #line 2 "..\..\Views\Partials\_BattingAverage.cshtml"
     using Humanizer;
     
     #line default
     #line hidden
     
-    #line 3 "..\..\Views\Partials\_MostRuns.cshtml"
+    #line 3 "..\..\Views\Partials\_BattingAverage.cshtml"
     using Stoolball.Dates;
     
     #line default
     #line hidden
     
-    #line 4 "..\..\Views\Partials\_MostRuns.cshtml"
+    #line 4 "..\..\Views\Partials\_BattingAverage.cshtml"
     using Stoolball.Statistics;
     
     #line default
     #line hidden
     
-    #line 5 "..\..\Views\Partials\_MostRuns.cshtml"
+    #line 5 "..\..\Views\Partials\_BattingAverage.cshtml"
     using Stoolball.Web.Statistics;
     
     #line default
     #line hidden
     using Umbraco.Core;
     
-    #line 6 "..\..\Views\Partials\_MostRuns.cshtml"
+    #line 6 "..\..\Views\Partials\_BattingAverage.cshtml"
     using Umbraco.Core.Composing;
     
     #line default
@@ -65,16 +65,16 @@ namespace ASP
     using Umbraco.Web.PublishedModels;
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("RazorGenerator", "2.0.0.0")]
-    [System.Web.WebPages.PageVirtualPathAttribute("~/Views/Partials/_MostRuns.cshtml")]
-    public partial class _Views_Partials__MostRuns_cshtml : Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<BestStatistic>>
+    [System.Web.WebPages.PageVirtualPathAttribute("~/Views/Partials/_BattingAverage.cshtml")]
+    public partial class _Views_Partials__BattingAverage_cshtml : Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<BestStatistic>>
     {
-        public _Views_Partials__MostRuns_cshtml()
+        public _Views_Partials__BattingAverage_cshtml()
         {
         }
         public override void Execute()
         {
             
-            #line 7 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 7 "..\..\Views\Partials\_BattingAverage.cshtml"
   
     var dateTimeFormatter = Current.Factory.CreateInstance<DateTimeFormatter>();
 
@@ -84,9 +84,11 @@ namespace ASP
 WriteLiteral("\r\n");
 
             
-            #line 10 "..\..\Views\Partials\_MostRuns.cshtml"
- if (Model.Results.Any())
+            #line 10 "..\..\Views\Partials\_BattingAverage.cshtml"
+ if (Model.Results.Any() || Model.ShowLinkOnly)
 {
+    if (!Model.ShowLinkOnly)
+    {
 
             
             #line default
@@ -98,23 +100,23 @@ WriteLiteral(" class=\"statistics table-as-cards table-as-cards-reset-md\"");
 WriteLiteral(">\r\n");
 
             
-            #line 13 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 15 "..\..\Views\Partials\_BattingAverage.cshtml"
         
             
             #line default
             #line hidden
             
-            #line 13 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 15 "..\..\Views\Partials\_BattingAverage.cshtml"
          if (Model.ShowCaption)
         {
 
             
             #line default
             #line hidden
-WriteLiteral("            <caption>Most runs</caption>\r\n");
+WriteLiteral("            <caption>Best batting average</caption>\r\n");
 
             
-            #line 16 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 18 "..\..\Views\Partials\_BattingAverage.cshtml"
         }
 
             
@@ -133,13 +135,13 @@ WriteLiteral(" scope=\"col\"");
 WriteLiteral(">Player</th>\r\n");
 
             
-            #line 21 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 23 "..\..\Views\Partials\_BattingAverage.cshtml"
                 
             
             #line default
             #line hidden
             
-            #line 21 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 23 "..\..\Views\Partials\_BattingAverage.cshtml"
                  if (Model.ShowTeamsColumn)
                 {
 
@@ -153,7 +155,7 @@ WriteLiteral(" scope=\"col\"");
 WriteLiteral(">Teams</th>\r\n");
 
             
-            #line 24 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 26 "..\..\Views\Partials\_BattingAverage.cshtml"
                 }
 
             
@@ -177,28 +179,22 @@ WriteLiteral(" scope=\"col\"");
 
 WriteLiteral(" class=\"numeric statistic\"");
 
-WriteLiteral(">Runs</th>\r\n                <th");
-
-WriteLiteral(" scope=\"col\"");
-
-WriteLiteral(" class=\"numeric statistic\"");
-
 WriteLiteral(">Average</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody>\r\n");
 
             
-            #line 32 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 33 "..\..\Views\Partials\_BattingAverage.cshtml"
             
             
             #line default
             #line hidden
             
-            #line 32 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 33 "..\..\Views\Partials\_BattingAverage.cshtml"
               
-                int? previousRunsScored = null;
+                decimal? previous = null;
                 for (var i = 0; i < Model.Results.Count(); i++)
                 {
-                    var equalToPrevious = Model.Results[i].Result.Total == previousRunsScored;
-                    previousRunsScored = Model.Results[i].Result.Total;
+                    var equalToPrevious = Model.Results[i].Result.Average == previous;
+                    previous = Model.Results[i].Result.Average;
 
             
             #line default
@@ -210,7 +206,7 @@ WriteLiteral(" class=\"table-as-cards__header-md\"");
 WriteLiteral(">");
 
             
-            #line 39 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 40 "..\..\Views\Partials\_BattingAverage.cshtml"
                                                           Write(equalToPrevious ? "=" : ((Model.StatisticsFilter.Paging.PageSize * (Model.StatisticsFilter.Paging.PageNumber - 1)) + i + 1).ToString());
 
             
@@ -228,20 +224,20 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Player</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1781), Tuple.Create("\"", 1831)
+WriteAttribute("href", Tuple.Create(" href=\"", 1760), Tuple.Create("\"", 1810)
             
-            #line 40 "..\..\Views\Partials\_MostRuns.cshtml"
-                                               , Tuple.Create(Tuple.Create("", 1788), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Player.PlayerRoute
+            #line 41 "..\..\Views\Partials\_BattingAverage.cshtml"
+                                               , Tuple.Create(Tuple.Create("", 1767), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Player.PlayerRoute
             
             #line default
             #line hidden
-, 1788), false)
+, 1767), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 40 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 41 "..\..\Views\Partials\_BattingAverage.cshtml"
                                                                                                                                                                         Write(Model.Results[i].Result.Player.PlayerName());
 
             
@@ -250,13 +246,13 @@ WriteLiteral(">");
 WriteLiteral("</a></td>\r\n");
 
             
-            #line 41 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 42 "..\..\Views\Partials\_BattingAverage.cshtml"
                         
             
             #line default
             #line hidden
             
-            #line 41 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 42 "..\..\Views\Partials\_BattingAverage.cshtml"
                          if (Model.ShowTeamsColumn)
                         {
 
@@ -276,7 +272,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Teams</span><div>");
 
             
-            #line 43 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 44 "..\..\Views\Partials\_BattingAverage.cshtml"
                                                                                                                          Write(Model.Results[i].Result.Player.PlayerIdentities.Select(x => x.Team.TeamName).Humanize());
 
             
@@ -285,7 +281,7 @@ WriteLiteral(">Teams</span><div>");
 WriteLiteral("</div></td>\r\n");
 
             
-            #line 44 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 45 "..\..\Views\Partials\_BattingAverage.cshtml"
                         }
 
             
@@ -306,7 +302,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Matches</span>");
 
             
-            #line 45 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 46 "..\..\Views\Partials\_BattingAverage.cshtml"
                                                                                                                                      Write(Model.Results[i].Result.TotalMatches);
 
             
@@ -327,29 +323,8 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Innings</span>");
 
             
-            #line 46 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 47 "..\..\Views\Partials\_BattingAverage.cshtml"
                                                                                                                                      Write(Model.Results[i].Result.TotalInnings);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</td>\r\n                        <td");
-
-WriteLiteral(" data-stackable=\"true\"");
-
-WriteLiteral(" class=\"numeric-md\"");
-
-WriteLiteral("><span");
-
-WriteLiteral(" class=\"table-as-cards__label\"");
-
-WriteLiteral(" aria-hidden=\"true\"");
-
-WriteLiteral(">Runs</span>");
-
-            
-            #line 47 "..\..\Views\Partials\_MostRuns.cshtml"
-                                                                                                                                  Write(Model.Results[i].Result.Total);
 
             
             #line default
@@ -369,7 +344,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Average</span>");
 
             
-            #line 48 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 48 "..\..\Views\Partials\_BattingAverage.cshtml"
                                                                                                                                       Write(Model.Results[i].Result.Average.HasValue ? Math.Round(Model.Results[i].Result.Average.Value, 2).ToString() : "–");
 
             
@@ -378,7 +353,7 @@ WriteLiteral(">Average</span>");
 WriteLiteral("</td>\r\n                    </tr>\r\n");
 
             
-            #line 50 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 50 "..\..\Views\Partials\_BattingAverage.cshtml"
                 }
             
             
@@ -387,8 +362,9 @@ WriteLiteral("</td>\r\n                    </tr>\r\n");
 WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
 
             
-            #line 54 "..\..\Views\Partials\_MostRuns.cshtml"
-    if (Model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
+            #line 54 "..\..\Views\Partials\_BattingAverage.cshtml"
+    }
+    if (Model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue || Model.ShowLinkOnly)
     {
 
             
@@ -396,21 +372,21 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3222), Tuple.Create("\"", 3254)
+WriteAttribute("href", Tuple.Create(" href=\"", 3058), Tuple.Create("\"", 3096)
             
-            #line 56 "..\..\Views\Partials\_MostRuns.cshtml"
-, Tuple.Create(Tuple.Create("", 3229), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
+            #line 57 "..\..\Views\Partials\_BattingAverage.cshtml"
+, Tuple.Create(Tuple.Create("", 3065), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
             
             #line default
             #line hidden
-, 3229), false)
-, Tuple.Create(Tuple.Create("", 3244), Tuple.Create("/most-runs", 3244), true)
+, 3065), false)
+, Tuple.Create(Tuple.Create("", 3080), Tuple.Create("/batting-average", 3080), true)
 );
 
-WriteLiteral(">Most runs – view all</a></p>\r\n");
+WriteLiteral(">Batting averages – view all</a></p>\r\n");
 
             
-            #line 57 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 58 "..\..\Views\Partials\_BattingAverage.cshtml"
     }
     else
     {
@@ -419,14 +395,14 @@ WriteLiteral(">Most runs – view all</a></p>\r\n");
             #line default
             #line hidden
             
-            #line 60 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 61 "..\..\Views\Partials\_BattingAverage.cshtml"
    Write(Html.Partial("_Paging", Model.StatisticsFilter.Paging));
 
             
             #line default
             #line hidden
             
-            #line 60 "..\..\Views\Partials\_MostRuns.cshtml"
+            #line 61 "..\..\Views\Partials\_BattingAverage.cshtml"
                                                                
     }
 }

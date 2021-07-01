@@ -66,8 +66,8 @@ namespace Stoolball.Web.Tests.Statistics
             urlParser.Setup(x => x.ParseUrl(It.IsAny<Uri>())).Returns(Task.FromResult(filter));
 
             var playerId = Guid.NewGuid();
-            var results = new List<StatisticsResult<BestTotal>>();
-            statisticsDataSource.Setup(x => x.ReadMostRunsScored(filter)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<BestTotal>>));
+            var results = new List<StatisticsResult<BestStatistic>>();
+            statisticsDataSource.Setup(x => x.ReadMostRunsScored(filter)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<BestStatistic>>));
 
             using (var controller = new TestController(urlParser.Object, statisticsDataSource.Object, UmbracoHelper))
             {
@@ -86,8 +86,8 @@ namespace Stoolball.Web.Tests.Statistics
             urlParser.Setup(x => x.ParseUrl(It.IsAny<Uri>())).Returns(Task.FromResult(filter));
 
             var playerId = Guid.NewGuid();
-            var results = new List<StatisticsResult<BestTotal>> {
-                new StatisticsResult<BestTotal> {
+            var results = new List<StatisticsResult<BestStatistic>> {
+                new StatisticsResult<BestStatistic> {
                     Player = new Player {
                         PlayerIdentities = new List<PlayerIdentity>{
                             new PlayerIdentity{
@@ -97,13 +97,13 @@ namespace Stoolball.Web.Tests.Statistics
                     }
                 }
             };
-            statisticsDataSource.Setup(x => x.ReadMostRunsScored(filter)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<BestTotal>>));
+            statisticsDataSource.Setup(x => x.ReadMostRunsScored(filter)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<BestStatistic>>));
 
             using (var controller = new TestController(urlParser.Object, statisticsDataSource.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<StatisticsViewModel<BestTotal>>(((ViewResult)result).Model);
+                Assert.IsType<StatisticsViewModel<BestStatistic>>(((ViewResult)result).Model);
             }
         }
     }

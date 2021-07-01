@@ -1199,7 +1199,10 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>MatchesCalendar.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\Catches.cshtml" />
+    <Content Include="Views\Catches.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Catches.generated.cs</LastGenOutput>
+    </Content>
     <Content Include="Views\MostRuns.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>MostRuns.generated.cs</LastGenOutput>
@@ -1223,6 +1226,10 @@
     <Content Include="Views\EditTournamentMatches.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>EditTournamentMatches.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\BattingAverage.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>BattingAverage.generated.cs</LastGenOutput>
     </Content>
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
@@ -1352,6 +1359,7 @@
     <Compile Include="Statistics\BasePlayerViewModel.cs" />
     <Compile Include="Statistics\MostRunOutsController.cs" />
     <Compile Include="Statistics\MostCatchesController.cs" />
+    <Compile Include="Statistics\BattingAverageController.cs" />
     <Compile Include="Statistics\MostWicketsController.cs" />
     <Compile Include="Statistics\MostRunsController.cs" />
     <Compile Include="Statistics\RunOutsController.cs" />
@@ -1364,6 +1372,16 @@
     <Compile Include="Teams\SpogoCsvExportTask.cs" />
     <Compile Include="Teams\SpogoCsvRecord.cs" />
     <Compile Include="Teams\PlayersForTeamController.cs" />
+    <Compile Include="Views\BattingAverage.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BattingAverage.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Catches.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Catches.cshtml</DependentUpon>
+    </Compile>
     <Compile Include="Views\CreateTrainingSession.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1449,6 +1467,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Views\Partials\_BattingAverage.generated.cs">
+      <DependentUpon>_BattingAverage.cshtml</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Views\Partials\_MostWickets.generated.cs">
       <DependentUpon>_MostWickets.cshtml</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1458,6 +1481,11 @@
       <DependentUpon>_MostRuns.cshtml</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Views\Partials\_NoData.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_NoData.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\Partials\_PlayerHeader.generated.cs">
       <AutoGen>True</AutoGen>
@@ -2975,6 +3003,14 @@
     <Content Include="Views\SeasonMap.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>SeasonMap.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_BattingAverage.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_BattingAverage.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_NoData.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_NoData.generated.cs</LastGenOutput>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

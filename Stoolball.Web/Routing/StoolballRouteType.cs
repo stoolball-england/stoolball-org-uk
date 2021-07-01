@@ -90,6 +90,7 @@
         MostRuns,
         MostWickets,
         MostCatches,
-        MostRunOuts
+        MostRunOuts,
+        BattingAverage
     }
 }

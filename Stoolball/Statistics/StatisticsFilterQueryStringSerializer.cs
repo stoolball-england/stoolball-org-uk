@@ -32,6 +32,7 @@
             Serialize(filter.Paging.PageNumber, "page");
             Serialize(filter.Paging.PageSize, "pagesize");
             Serialize(filter.MaxResultsAllowingExtraResultsIfValuesAreEqual, "max");
+            Serialize(filter.MinimumQualifyingInnings, "min");
 
             return Serializer.ToQueryString();
         }

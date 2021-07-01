@@ -14,20 +14,20 @@ using Umbraco.Web.Models;
 
 namespace Stoolball.Web.Statistics
 {
-    public class MostRunOutsController : RenderMvcControllerAsync
+    public class BattingAverageController : RenderMvcControllerAsync
     {
         private readonly IStatisticsFilterUrlParser _statisticsFilterUrlParser;
-        private readonly IBestPlayerTotalStatisticsDataSource _statisticsDataSource;
+        private readonly IBestPlayerAverageStatisticsDataSource _statisticsDataSource;
         private readonly IStatisticsBreadcrumbBuilder _statisticsBreadcrumbBuilder;
 
-        public MostRunOutsController(IGlobalSettings globalSettings,
+        public BattingAverageController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IStatisticsFilterUrlParser statisticsFilterUrlParser,
-           IBestPlayerTotalStatisticsDataSource statisticsDataSource,
+           IBestPlayerAverageStatisticsDataSource statisticsDataSource,
            IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
@@ -49,23 +49,22 @@ namespace Stoolball.Web.Statistics
             model.StatisticsFilter = await _statisticsFilterUrlParser.ParseUrl(new Uri(Request.Url, Request.RawUrl)).ConfigureAwait(false);
             model.StatisticsFilter.Paging.PageSize = Constants.Defaults.PageSize;
             if (model.StatisticsFilter.Team != null) { model.ShowTeamsColumn = false; }
+            model.StatisticsFilter.MinimumQualifyingInnings = 10;
+            if (model.StatisticsFilter.Team != null ||
+                model.StatisticsFilter.Club != null ||
+                model.StatisticsFilter.Competition != null ||
+                model.StatisticsFilter.Season != null ||
+                model.StatisticsFilter.MatchLocation != null) { model.StatisticsFilter.MinimumQualifyingInnings = 5; }
 
-            model.Results = (await _statisticsDataSource.ReadMostRunOuts(model.StatisticsFilter).ConfigureAwait(false)).ToList();
+            model.Results = (await _statisticsDataSource.ReadBestBattingAverage(model.StatisticsFilter).ConfigureAwait(false)).ToList();
 
-            if (!model.Results.Any())
-            {
-                return new HttpNotFoundResult();
-            }
-            else
-            {
-                model.StatisticsFilter.Paging.PageUrl = Request.Url;
-                model.StatisticsFilter.Paging.Total = await _statisticsDataSource.ReadTotalPlayersWithRunOuts(model.StatisticsFilter).ConfigureAwait(false);
+            model.StatisticsFilter.Paging.PageUrl = Request.Url;
+            model.StatisticsFilter.Paging.Total = await _statisticsDataSource.ReadTotalPlayersWithBattingAverage(model.StatisticsFilter).ConfigureAwait(false);
 
-                _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.StatisticsFilter);
-                model.Metadata.PageTitle = "Most run-outs" + model.StatisticsFilter.ToString();
+            _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.StatisticsFilter);
+            model.Metadata.PageTitle = "Best batting average" + model.StatisticsFilter.ToString();
 
-                return CurrentTemplate(model);
-            }
+            return CurrentTemplate(model);
         }
 
     }
