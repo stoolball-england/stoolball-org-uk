@@ -149,21 +149,56 @@ WriteLiteral(">\n    <h1>Most run-outs");
             #line hidden
 WriteLiteral("</h1>\n\n");
 
-WriteLiteral("    ");
-
             
             #line 22 "..\..\Views\MostRunOuts.cshtml"
-Write(Html.Partial("_StatisticsBasis"));
+    
+            
+            #line default
+            #line hidden
+            
+            #line 22 "..\..\Views\MostRunOuts.cshtml"
+     if (Model.Results.Any())
+    {
+        
+            
+            #line default
+            #line hidden
+            
+            #line 24 "..\..\Views\MostRunOuts.cshtml"
+   Write(Html.Partial("_StatisticsBasis"));
 
             
             #line default
             #line hidden
-WriteLiteral("\n");
+            
+            #line 24 "..\..\Views\MostRunOuts.cshtml"
+                                         
+    }
+    else
+    {
+        
+            
+            #line default
+            #line hidden
+            
+            #line 28 "..\..\Views\MostRunOuts.cshtml"
+   Write(Html.Partial("_NoData"));
 
+            
+            #line default
+            #line hidden
+            
+            #line 28 "..\..\Views\MostRunOuts.cshtml"
+                                
+    }
+
+            
+            #line default
+            #line hidden
 WriteLiteral("    ");
 
             
-            #line 23 "..\..\Views\MostRunOuts.cshtml"
+            #line 30 "..\..\Views\MostRunOuts.cshtml"
 Write(Html.Partial("_MostRunOuts"));
 
             

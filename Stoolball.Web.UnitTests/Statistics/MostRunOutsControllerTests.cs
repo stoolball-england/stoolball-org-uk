@@ -58,7 +58,7 @@ namespace Stoolball.Web.Tests.Statistics
         }
 
         [Fact]
-        public async Task No_results_returns_404()
+        public async Task No_results_returns_StatisticsViewModel()
         {
             var filter = new StatisticsFilter();
             var statisticsDataSource = new Mock<IBestPlayerTotalStatisticsDataSource>();
@@ -73,7 +73,7 @@ namespace Stoolball.Web.Tests.Statistics
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<HttpNotFoundResult>(result);
+                Assert.IsType<StatisticsViewModel<BestStatistic>>(((ViewResult)result).Model);
             }
         }
 

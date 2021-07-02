@@ -52,20 +52,13 @@ namespace Stoolball.Web.Statistics
 
             model.Results = (await _statisticsDataSource.ReadMostRunOuts(model.StatisticsFilter).ConfigureAwait(false)).ToList();
 
-            if (!model.Results.Any())
-            {
-                return new HttpNotFoundResult();
-            }
-            else
-            {
-                model.StatisticsFilter.Paging.PageUrl = Request.Url;
-                model.StatisticsFilter.Paging.Total = await _statisticsDataSource.ReadTotalPlayersWithRunOuts(model.StatisticsFilter).ConfigureAwait(false);
+            model.StatisticsFilter.Paging.PageUrl = Request.Url;
+            model.StatisticsFilter.Paging.Total = await _statisticsDataSource.ReadTotalPlayersWithRunOuts(model.StatisticsFilter).ConfigureAwait(false);
 
-                _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.StatisticsFilter);
-                model.Metadata.PageTitle = "Most run-outs" + model.StatisticsFilter.ToString();
+            _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.StatisticsFilter);
+            model.Metadata.PageTitle = "Most run-outs" + model.StatisticsFilter.ToString();
 
-                return CurrentTemplate(model);
-            }
+            return CurrentTemplate(model);
         }
 
     }

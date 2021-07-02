@@ -19,6 +19,13 @@
 <div class="container-xl">
     <h1>Most run-outs@(Model.StatisticsFilter)</h1>
 
-    @Html.Partial("_StatisticsBasis")
+    @if (Model.Results.Any())
+    {
+        @Html.Partial("_StatisticsBasis")
+    }
+    else
+    {
+        @Html.Partial("_NoData")
+    }
     @Html.Partial("_MostRunOuts")
 </div>
