@@ -1,22 +1,30 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Metadata.IHasViewMetadata>
 @using System.Text.RegularExpressions
 @using Stoolball.Web.Account
+@{ 
+    var headerPhoto = Model.HeaderPhotoWithInheritance();
+    var rootUrlsForPlaySection = new List<string>(6) { "PLAY", "TEAMS", "COMPETITIONS", "MATCHES", "TOURNAMENTS", "LOCATIONS" };
+    string currentSection = null, currentPage = null;
+}
 @functions {
     private bool IsCurrentPage(string requestedPath, string sectionPath)
     {
         return Regex.IsMatch(requestedPath, $"^{sectionPath.Replace("/", @"\/")}?$");
     }
 
-    private bool IsCurrentSection(string requestedPath, string sectionPath)
+    private bool IsCurrentSection(string requestedPath, string sectionPath, List<string> rootUrlsForPlaySection)
     {
         if (requestedPath.Length <= 1) { return false; }
         var requestedSection = requestedPath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries)[0].ToUpperInvariant();
-        var matchingSections = new List<string>(new []{ sectionPath.Replace("/", string.Empty).ToUpperInvariant() });
-        if (matchingSections[0] == "PLAY")
+        sectionPath = sectionPath.ToUpperInvariant();
+        if (sectionPath == "/PLAY/")
         {
-            matchingSections.AddRange(new[] { "TEAMS", "COMPETITIONS", "MATCHES", "TOURNAMENTS", "LOCATIONS" });
+            return rootUrlsForPlaySection.Contains(requestedSection);
         }
-        return matchingSections.Contains(requestedSection);
+        else
+        {
+            return requestedSection == sectionPath.Replace("/", string.Empty);
+        }
     }
 } 
 <header class="header">
@@ -41,18 +49,21 @@
                             .Where(x => x.IsVisible());
                             foreach (var child in childrenOfHome)
                             {
+                                var childUrl = child.Url();
                                 <li role="none">
-                                    @if (IsCurrentPage(Request.RawUrl, child.Url()))
+                                    @if (currentPage == null && currentSection == null && IsCurrentPage(Request.RawUrl, childUrl))
                                     {
+                                        currentPage = childUrl;
                                         <em role="menuitem" aria-selected="true">@child.Name</em>
                                     }
-                                    else if (IsCurrentSection(Request.RawUrl, child.Url()))
+                                    else if (currentPage == null && currentSection == null && IsCurrentSection(Request.RawUrl, childUrl, rootUrlsForPlaySection))
                                     {
-                                        <a role="menuitem" aria-selected="true" href="@child.Url()">@child.Name</a>
+                                        currentSection = childUrl;
+                                        <a role="menuitem" aria-selected="true" href="@childUrl">@child.Name</a>
                                     }
                                     else
                                     {
-                                        <a role="menuitem" href="@child.Url()">@child.Name</a>
+                                        <a role="menuitem" href="@childUrl">@child.Name</a>
                                     }
                                 </li>
                             }
@@ -123,22 +134,23 @@
                             @{
                                 foreach (var child in childrenOfHome)
                                 {
-                                    if (IsCurrentPage(Request.RawUrl, child.Url()))
+                                    var childUrl = child.Url();
+                                    if (currentPage == childUrl)
                                     {
                                         <li class="dropdown-item">
                                             <em aria-selected="true">@child.Name</em>
                                         </li>
                                     }
-                                    else if (IsCurrentSection(Request.RawUrl, child.Url()))
+                                    else if (currentSection == childUrl)
                                     {
                                         <li class="dropdown-item">
-                                            <a href="@child.Url()" aria-selected="true">@child.Name</a>
+                                            <a href="@childUrl" aria-selected="true">@child.Name</a>
                                         </li>
                                     }
                                     else
                                     {
                                         <li class="dropdown-item">
-                                            <a href="@child.Url()">@child.Name</a>
+                                            <a href="@childUrl">@child.Name</a>
                                         </li>
                                     }
                                 }
@@ -149,13 +161,13 @@
             </div>
         </div>
     </nav>
-    @if (Model.HeaderPhotoWithInheritance() != null)
+    @if (headerPhoto != null)
     {
-        <img srcset="@Model.HeaderPhotoWithInheritance().GetCropUrl("extra-small") 576w,
-            @Model.HeaderPhotoWithInheritance().GetCropUrl("small") 768w,
-            @Model.HeaderPhotoWithInheritance().GetCropUrl("medium") 992w,
-            @Model.HeaderPhotoWithInheritance().GetCropUrl("large") 1200w,
-            @Model.HeaderPhotoWithInheritance().GetCropUrl("extra-large") 2000w"
-             sizes="100vw" src="@Model.HeaderPhotoWithInheritance().GetCropUrl("large")" alt="" class="header__photo" />
+        <img srcset="@headerPhoto.GetCropUrl("extra-small") 576w,
+            @headerPhoto.GetCropUrl("small") 768w,
+            @headerPhoto.GetCropUrl("medium") 992w,
+            @headerPhoto.GetCropUrl("large") 1200w,
+            @headerPhoto.GetCropUrl("extra-large") 2000w"
+             sizes="100vw" src="@headerPhoto.GetCropUrl("large")" alt="" class="header__photo" />
     }
 </header>

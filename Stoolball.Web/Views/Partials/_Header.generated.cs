@@ -51,23 +51,26 @@ namespace ASP
     public partial class _Views_Partials__Header_cshtml : Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Metadata.IHasViewMetadata>
     {
         
-        #line 4 "..\..\Views\Partials\_Header.cshtml"
+        #line 9 "..\..\Views\Partials\_Header.cshtml"
             
     private bool IsCurrentPage(string requestedPath, string sectionPath)
     {
         return Regex.IsMatch(requestedPath, $"^{sectionPath.Replace("/", @"\/")}?$");
     }
 
-    private bool IsCurrentSection(string requestedPath, string sectionPath)
+    private bool IsCurrentSection(string requestedPath, string sectionPath, List<string> rootUrlsForPlaySection)
     {
         if (requestedPath.Length <= 1) { return false; }
         var requestedSection = requestedPath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries)[0].ToUpperInvariant();
-        var matchingSections = new List<string>(new []{ sectionPath.Replace("/", string.Empty).ToUpperInvariant() });
-        if (matchingSections[0] == "PLAY")
+        sectionPath = sectionPath.ToUpperInvariant();
+        if (sectionPath == "/PLAY/")
         {
-            matchingSections.AddRange(new[] { "TEAMS", "COMPETITIONS", "MATCHES", "TOURNAMENTS", "LOCATIONS" });
+            return rootUrlsForPlaySection.Contains(requestedSection);
         }
-        return matchingSections.Contains(requestedSection);
+        else
+        {
+            return requestedSection == sectionPath.Replace("/", string.Empty);
+        }
     }
 
         #line default
@@ -78,6 +81,18 @@ namespace ASP
         }
         public override void Execute()
         {
+            
+            #line 4 "..\..\Views\Partials\_Header.cshtml"
+   
+    var headerPhoto = Model.HeaderPhotoWithInheritance();
+    var rootUrlsForPlaySection = new List<string>(6) { "PLAY", "TEAMS", "COMPETITIONS", "MATCHES", "TOURNAMENTS", "LOCATIONS" };
+    string currentSection = null, currentPage = null;
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
 WriteLiteral("<header");
 
 WriteLiteral(" class=\"header\"");
@@ -103,13 +118,13 @@ WriteLiteral(" class=\"header__logo\"");
 WriteLiteral(">\r\n");
 
             
-            #line 27 "..\..\Views\Partials\_Header.cshtml"
+            #line 35 "..\..\Views\Partials\_Header.cshtml"
                     
             
             #line default
             #line hidden
             
-            #line 27 "..\..\Views\Partials\_Header.cshtml"
+            #line 35 "..\..\Views\Partials\_Header.cshtml"
                      if (Request.RawUrl == "/")
                     {
 
@@ -122,9 +137,9 @@ WriteLiteral(" class=\"header__logo-inner\"");
 
 WriteLiteral("><img");
 
-WriteAttribute("src", Tuple.Create(" src=\"", 1326), Tuple.Create("\"", 1368)
-, Tuple.Create(Tuple.Create("", 1332), Tuple.Create<System.Object, System.Int32>(Href("~/images/logos/stoolball-england.svg")
-, 1332), false)
+WriteAttribute("src", Tuple.Create(" src=\"", 1557), Tuple.Create("\"", 1599)
+, Tuple.Create(Tuple.Create("", 1563), Tuple.Create<System.Object, System.Int32>(Href("~/images/logos/stoolball-england.svg")
+, 1563), false)
 );
 
 WriteLiteral(" alt=\"Stoolball England\"");
@@ -132,7 +147,7 @@ WriteLiteral(" alt=\"Stoolball England\"");
 WriteLiteral(" /></div>\r\n");
 
             
-            #line 30 "..\..\Views\Partials\_Header.cshtml"
+            #line 38 "..\..\Views\Partials\_Header.cshtml"
                     }
                     else
                     {
@@ -148,9 +163,9 @@ WriteLiteral(" class=\"header__logo-inner print__no-url\"");
 
 WriteLiteral("><img");
 
-WriteAttribute("src", Tuple.Create(" src=\"", 1557), Tuple.Create("\"", 1599)
-, Tuple.Create(Tuple.Create("", 1563), Tuple.Create<System.Object, System.Int32>(Href("~/images/logos/stoolball-england.svg")
-, 1563), false)
+WriteAttribute("src", Tuple.Create(" src=\"", 1788), Tuple.Create("\"", 1830)
+, Tuple.Create(Tuple.Create("", 1794), Tuple.Create<System.Object, System.Int32>(Href("~/images/logos/stoolball-england.svg")
+, 1794), false)
 );
 
 WriteLiteral(" alt=\"Stoolball England\"");
@@ -158,7 +173,7 @@ WriteLiteral(" alt=\"Stoolball England\"");
 WriteLiteral(" /></a>\r\n");
 
             
-            #line 34 "..\..\Views\Partials\_Header.cshtml"
+            #line 42 "..\..\Views\Partials\_Header.cshtml"
                     }
 
             
@@ -177,19 +192,20 @@ WriteLiteral(" aria-label=\"Stoolball England\"");
 WriteLiteral(">\r\n");
 
             
-            #line 38 "..\..\Views\Partials\_Header.cshtml"
+            #line 46 "..\..\Views\Partials\_Header.cshtml"
                         
             
             #line default
             #line hidden
             
-            #line 38 "..\..\Views\Partials\_Header.cshtml"
+            #line 46 "..\..\Views\Partials\_Header.cshtml"
                           
                             var childrenOfHome = Umbraco.Content(Guid.Parse("7ea74fe5-4982-4bcf-bb8a-8e213c32f91c"))
                             .Children()
                             .Where(x => x.IsVisible());
                             foreach (var child in childrenOfHome)
                             {
+                                var childUrl = child.Url();
 
             
             #line default
@@ -201,15 +217,16 @@ WriteLiteral(" role=\"none\"");
 WriteLiteral(">\r\n");
 
             
-            #line 45 "..\..\Views\Partials\_Header.cshtml"
+            #line 54 "..\..\Views\Partials\_Header.cshtml"
                                     
             
             #line default
             #line hidden
             
-            #line 45 "..\..\Views\Partials\_Header.cshtml"
-                                     if (IsCurrentPage(Request.RawUrl, child.Url()))
+            #line 54 "..\..\Views\Partials\_Header.cshtml"
+                                     if (currentPage == null && currentSection == null && IsCurrentPage(Request.RawUrl, childUrl))
                                     {
+                                        currentPage = childUrl;
 
             
             #line default
@@ -223,7 +240,7 @@ WriteLiteral(" aria-selected=\"true\"");
 WriteLiteral(">");
 
             
-            #line 47 "..\..\Views\Partials\_Header.cshtml"
+            #line 57 "..\..\Views\Partials\_Header.cshtml"
                                                                             Write(child.Name);
 
             
@@ -232,10 +249,11 @@ WriteLiteral(">");
 WriteLiteral("</em>\r\n");
 
             
-            #line 48 "..\..\Views\Partials\_Header.cshtml"
+            #line 58 "..\..\Views\Partials\_Header.cshtml"
                                     }
-                                    else if (IsCurrentSection(Request.RawUrl, child.Url()))
+                                    else if (currentPage == null && currentSection == null && IsCurrentSection(Request.RawUrl, childUrl, rootUrlsForPlaySection))
                                     {
+                                        currentSection = childUrl;
 
             
             #line default
@@ -246,21 +264,21 @@ WriteLiteral(" role=\"menuitem\"");
 
 WriteLiteral(" aria-selected=\"true\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2668), Tuple.Create("\"", 2687)
+WriteAttribute("href", Tuple.Create(" href=\"", 3209), Tuple.Create("\"", 3225)
             
-            #line 51 "..\..\Views\Partials\_Header.cshtml"
-      , Tuple.Create(Tuple.Create("", 2675), Tuple.Create<System.Object, System.Int32>(child.Url()
+            #line 62 "..\..\Views\Partials\_Header.cshtml"
+      , Tuple.Create(Tuple.Create("", 3216), Tuple.Create<System.Object, System.Int32>(childUrl
             
             #line default
             #line hidden
-, 2675), false)
+, 3216), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 51 "..\..\Views\Partials\_Header.cshtml"
-                                                                                               Write(child.Name);
+            #line 62 "..\..\Views\Partials\_Header.cshtml"
+                                                                                            Write(child.Name);
 
             
             #line default
@@ -268,7 +286,7 @@ WriteLiteral(">");
 WriteLiteral("</a>\r\n");
 
             
-            #line 52 "..\..\Views\Partials\_Header.cshtml"
+            #line 63 "..\..\Views\Partials\_Header.cshtml"
                                     }
                                     else
                                     {
@@ -280,21 +298,21 @@ WriteLiteral("                                        <a");
 
 WriteLiteral(" role=\"menuitem\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2884), Tuple.Create("\"", 2903)
+WriteAttribute("href", Tuple.Create(" href=\"", 3422), Tuple.Create("\"", 3438)
             
-            #line 55 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("", 2891), Tuple.Create<System.Object, System.Int32>(child.Url()
+            #line 66 "..\..\Views\Partials\_Header.cshtml"
+, Tuple.Create(Tuple.Create("", 3429), Tuple.Create<System.Object, System.Int32>(childUrl
             
             #line default
             #line hidden
-, 2891), false)
+, 3429), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 55 "..\..\Views\Partials\_Header.cshtml"
-                                                                          Write(child.Name);
+            #line 66 "..\..\Views\Partials\_Header.cshtml"
+                                                                       Write(child.Name);
 
             
             #line default
@@ -302,7 +320,7 @@ WriteLiteral(">");
 WriteLiteral("</a>\r\n");
 
             
-            #line 56 "..\..\Views\Partials\_Header.cshtml"
+            #line 67 "..\..\Views\Partials\_Header.cshtml"
                                     }
 
             
@@ -311,7 +329,7 @@ WriteLiteral("</a>\r\n");
 WriteLiteral("                                </li>\r\n");
 
             
-            #line 58 "..\..\Views\Partials\_Header.cshtml"
+            #line 69 "..\..\Views\Partials\_Header.cshtml"
                             }
                         
             
@@ -344,13 +362,13 @@ WriteLiteral(" title=\"Account\"");
 WriteLiteral(">\r\n");
 
             
-            #line 65 "..\..\Views\Partials\_Header.cshtml"
+            #line 76 "..\..\Views\Partials\_Header.cshtml"
                             
             
             #line default
             #line hidden
             
-            #line 65 "..\..\Views\Partials\_Header.cshtml"
+            #line 76 "..\..\Views\Partials\_Header.cshtml"
                              if (User.Identity.IsAuthenticated)
                             {
                                 var gravatar = new Gravatar(User.Identity.Name);
@@ -360,14 +378,14 @@ WriteLiteral(">\r\n");
             #line hidden
 WriteLiteral("                                <img");
 
-WriteAttribute("src", Tuple.Create(" src=\"", 3622), Tuple.Create("\"", 3641)
+WriteAttribute("src", Tuple.Create(" src=\"", 4157), Tuple.Create("\"", 4176)
             
-            #line 68 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("", 3628), Tuple.Create<System.Object, System.Int32>(gravatar.Url
+            #line 79 "..\..\Views\Partials\_Header.cshtml"
+, Tuple.Create(Tuple.Create("", 4163), Tuple.Create<System.Object, System.Int32>(gravatar.Url
             
             #line default
             #line hidden
-, 3628), false)
+, 4163), false)
 );
 
 WriteLiteral(" alt=\"Account\"");
@@ -381,7 +399,7 @@ WriteLiteral(" class=\"header__account__account-image\"");
 WriteLiteral(" />\r\n");
 
             
-            #line 69 "..\..\Views\Partials\_Header.cshtml"
+            #line 80 "..\..\Views\Partials\_Header.cshtml"
                             }
                             else
                             {
@@ -391,9 +409,9 @@ WriteLiteral(" />\r\n");
             #line hidden
 WriteLiteral("                                <img");
 
-WriteAttribute("src", Tuple.Create(" src=\"", 3855), Tuple.Create("\"", 3897)
-, Tuple.Create(Tuple.Create("", 3861), Tuple.Create<System.Object, System.Int32>(Href("~/images/icons/person-white-24dp.svg")
-, 3861), false)
+WriteAttribute("src", Tuple.Create(" src=\"", 4390), Tuple.Create("\"", 4432)
+, Tuple.Create(Tuple.Create("", 4396), Tuple.Create<System.Object, System.Int32>(Href("~/images/icons/person-white-24dp.svg")
+, 4396), false)
 );
 
 WriteLiteral(" alt=\"Account\"");
@@ -405,7 +423,7 @@ WriteLiteral(" height=\"30\"");
 WriteLiteral(" />\r\n");
 
             
-            #line 73 "..\..\Views\Partials\_Header.cshtml"
+            #line 84 "..\..\Views\Partials\_Header.cshtml"
                             }
 
             
@@ -420,13 +438,13 @@ WriteLiteral(" aria-labelledby=\"header__account__button\"");
 WriteLiteral(">\r\n");
 
             
-            #line 76 "..\..\Views\Partials\_Header.cshtml"
+            #line 87 "..\..\Views\Partials\_Header.cshtml"
                             
             
             #line default
             #line hidden
             
-            #line 76 "..\..\Views\Partials\_Header.cshtml"
+            #line 87 "..\..\Views\Partials\_Header.cshtml"
                              if (User.Identity.IsAuthenticated)
                             {
                                 if (Request.RawUrl == "/account")
@@ -446,7 +464,7 @@ WriteLiteral(" aria-selected=\"true\"");
 WriteLiteral(">My account</em></li>\r\n");
 
             
-            #line 81 "..\..\Views\Partials\_Header.cshtml"
+            #line 92 "..\..\Views\Partials\_Header.cshtml"
                                 }
                                 else
                                 {
@@ -465,7 +483,7 @@ WriteLiteral(" href=\"/account\"");
 WriteLiteral(">My account</a></li>\r\n");
 
             
-            #line 85 "..\..\Views\Partials\_Header.cshtml"
+            #line 96 "..\..\Views\Partials\_Header.cshtml"
                                 }
                                 if (Request.RawUrl.StartsWith("/account/sign-out"))
                                 {
@@ -484,7 +502,7 @@ WriteLiteral(" aria-selected=\"true\"");
 WriteLiteral(">Sign out</em></li>\r\n");
 
             
-            #line 89 "..\..\Views\Partials\_Header.cshtml"
+            #line 100 "..\..\Views\Partials\_Header.cshtml"
                                 }
                                 else
                                 {
@@ -503,7 +521,7 @@ WriteLiteral(" href=\"/account/sign-out\"");
 WriteLiteral(">Sign out</a></li>\r\n");
 
             
-            #line 93 "..\..\Views\Partials\_Header.cshtml"
+            #line 104 "..\..\Views\Partials\_Header.cshtml"
                                 }
                             }
                             else
@@ -525,7 +543,7 @@ WriteLiteral(" aria-selected=\"true\"");
 WriteLiteral(">Create an account</em></li>\r\n");
 
             
-            #line 100 "..\..\Views\Partials\_Header.cshtml"
+            #line 111 "..\..\Views\Partials\_Header.cshtml"
                                 }
                                 else
                                 {
@@ -544,7 +562,7 @@ WriteLiteral(" href=\"/account/create\"");
 WriteLiteral(">Create an account</a></li>\r\n");
 
             
-            #line 104 "..\..\Views\Partials\_Header.cshtml"
+            #line 115 "..\..\Views\Partials\_Header.cshtml"
                                 }
                                 if (Request.RawUrl.StartsWith("/account/sign-in"))
                                 {
@@ -563,7 +581,7 @@ WriteLiteral(" aria-selected=\"true\"");
 WriteLiteral(">Sign in</em></li>\r\n");
 
             
-            #line 108 "..\..\Views\Partials\_Header.cshtml"
+            #line 119 "..\..\Views\Partials\_Header.cshtml"
                                 }
                                 else
                                 {
@@ -577,21 +595,21 @@ WriteLiteral(" class=\"dropdown-item\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 6137), Tuple.Create("\"", 6219)
-, Tuple.Create(Tuple.Create("", 6144), Tuple.Create("/account/sign-in?ReturnUrl=", 6144), true)
+WriteAttribute("href", Tuple.Create(" href=\"", 6672), Tuple.Create("\"", 6754)
+, Tuple.Create(Tuple.Create("", 6679), Tuple.Create("/account/sign-in?ReturnUrl=", 6679), true)
             
-            #line 111 "..\..\Views\Partials\_Header.cshtml"
-                  , Tuple.Create(Tuple.Create("", 6171), Tuple.Create<System.Object, System.Int32>(HttpUtility.UrlEncode(Request.Url.PathAndQuery)
+            #line 122 "..\..\Views\Partials\_Header.cshtml"
+                  , Tuple.Create(Tuple.Create("", 6706), Tuple.Create<System.Object, System.Int32>(HttpUtility.UrlEncode(Request.Url.PathAndQuery)
             
             #line default
             #line hidden
-, 6171), false)
+, 6706), false)
 );
 
 WriteLiteral(">Sign in</a></li>\r\n");
 
             
-            #line 112 "..\..\Views\Partials\_Header.cshtml"
+            #line 123 "..\..\Views\Partials\_Header.cshtml"
                                 }
                             }
 
@@ -625,9 +643,9 @@ WriteLiteral(" title=\"Menu\"");
 
 WriteLiteral(">\r\n                            <img");
 
-WriteAttribute("src", Tuple.Create(" src=\"", 6712), Tuple.Create("\"", 6752)
-, Tuple.Create(Tuple.Create("", 6718), Tuple.Create<System.Object, System.Int32>(Href("~/images/icons/menu-white-24dp.svg")
-, 6718), false)
+WriteAttribute("src", Tuple.Create(" src=\"", 7247), Tuple.Create("\"", 7287)
+, Tuple.Create(Tuple.Create("", 7253), Tuple.Create<System.Object, System.Int32>(Href("~/images/icons/menu-white-24dp.svg")
+, 7253), false)
 );
 
 WriteLiteral(" alt=\"Menu\"");
@@ -645,17 +663,18 @@ WriteLiteral(" aria-labelledby=\"header__menu-small__button\"");
 WriteLiteral(">\r\n");
 
             
-            #line 123 "..\..\Views\Partials\_Header.cshtml"
+            #line 134 "..\..\Views\Partials\_Header.cshtml"
                             
             
             #line default
             #line hidden
             
-            #line 123 "..\..\Views\Partials\_Header.cshtml"
+            #line 134 "..\..\Views\Partials\_Header.cshtml"
                               
                                 foreach (var child in childrenOfHome)
                                 {
-                                    if (IsCurrentPage(Request.RawUrl, child.Url()))
+                                    var childUrl = child.Url();
+                                    if (currentPage == childUrl)
                                     {
 
             
@@ -672,7 +691,7 @@ WriteLiteral(" aria-selected=\"true\"");
 WriteLiteral(">");
 
             
-            #line 129 "..\..\Views\Partials\_Header.cshtml"
+            #line 141 "..\..\Views\Partials\_Header.cshtml"
                                                                 Write(child.Name);
 
             
@@ -681,9 +700,9 @@ WriteLiteral(">");
 WriteLiteral("</em>\r\n                                        </li>\r\n");
 
             
-            #line 131 "..\..\Views\Partials\_Header.cshtml"
+            #line 143 "..\..\Views\Partials\_Header.cshtml"
                                     }
-                                    else if (IsCurrentSection(Request.RawUrl, child.Url()))
+                                    else if (currentSection == childUrl)
                                     {
 
             
@@ -695,14 +714,14 @@ WriteLiteral(" class=\"dropdown-item\"");
 
 WriteLiteral(">\r\n                                            <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 7693), Tuple.Create("\"", 7712)
+WriteAttribute("href", Tuple.Create(" href=\"", 8255), Tuple.Create("\"", 8271)
             
-            #line 135 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("", 7700), Tuple.Create<System.Object, System.Int32>(child.Url()
+            #line 147 "..\..\Views\Partials\_Header.cshtml"
+, Tuple.Create(Tuple.Create("", 8262), Tuple.Create<System.Object, System.Int32>(childUrl
             
             #line default
             #line hidden
-, 7700), false)
+, 8262), false)
 );
 
 WriteLiteral(" aria-selected=\"true\"");
@@ -710,8 +729,8 @@ WriteLiteral(" aria-selected=\"true\"");
 WriteLiteral(">");
 
             
-            #line 135 "..\..\Views\Partials\_Header.cshtml"
-                                                                                   Write(child.Name);
+            #line 147 "..\..\Views\Partials\_Header.cshtml"
+                                                                                Write(child.Name);
 
             
             #line default
@@ -719,7 +738,7 @@ WriteLiteral(">");
 WriteLiteral("</a>\r\n                                        </li>\r\n");
 
             
-            #line 137 "..\..\Views\Partials\_Header.cshtml"
+            #line 149 "..\..\Views\Partials\_Header.cshtml"
                                     }
                                     else
                                     {
@@ -733,21 +752,21 @@ WriteLiteral(" class=\"dropdown-item\"");
 
 WriteLiteral(">\r\n                                            <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 8033), Tuple.Create("\"", 8052)
+WriteAttribute("href", Tuple.Create(" href=\"", 8592), Tuple.Create("\"", 8608)
             
-            #line 141 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("", 8040), Tuple.Create<System.Object, System.Int32>(child.Url()
+            #line 153 "..\..\Views\Partials\_Header.cshtml"
+, Tuple.Create(Tuple.Create("", 8599), Tuple.Create<System.Object, System.Int32>(childUrl
             
             #line default
             #line hidden
-, 8040), false)
+, 8599), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 141 "..\..\Views\Partials\_Header.cshtml"
-                                                              Write(child.Name);
+            #line 153 "..\..\Views\Partials\_Header.cshtml"
+                                                           Write(child.Name);
 
             
             #line default
@@ -755,7 +774,7 @@ WriteLiteral(">");
 WriteLiteral("</a>\r\n                                        </li>\r\n");
 
             
-            #line 143 "..\..\Views\Partials\_Header.cshtml"
+            #line 155 "..\..\Views\Partials\_Header.cshtml"
                                     }
                                 }
                             
@@ -766,14 +785,14 @@ WriteLiteral("\r\n                        </ul>\r\n                    </div>\r\
 "v>\r\n            </div>\r\n        </div>\r\n    </nav>\r\n");
 
             
-            #line 152 "..\..\Views\Partials\_Header.cshtml"
+            #line 164 "..\..\Views\Partials\_Header.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 152 "..\..\Views\Partials\_Header.cshtml"
-     if (Model.HeaderPhotoWithInheritance() != null)
+            #line 164 "..\..\Views\Partials\_Header.cshtml"
+     if (headerPhoto != null)
     {
 
             
@@ -781,59 +800,59 @@ WriteLiteral("\r\n                        </ul>\r\n                    </div>\r\
             #line hidden
 WriteLiteral("        <img");
 
-WriteAttribute("srcset", Tuple.Create(" srcset=\"", 8427), Tuple.Create("\"", 8811)
+WriteAttribute("srcset", Tuple.Create(" srcset=\"", 8960), Tuple.Create("\"", 9229)
             
-            #line 154 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("", 8436), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("extra-small")
-            
-            #line default
-            #line hidden
-, 8436), false)
-, Tuple.Create(Tuple.Create(" ", 8497), Tuple.Create("576w,", 8498), true)
-            
-            #line 155 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("\r\n            ", 8503), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("small")
+            #line 166 "..\..\Views\Partials\_Header.cshtml"
+, Tuple.Create(Tuple.Create("", 8969), Tuple.Create<System.Object, System.Int32>(headerPhoto.GetCropUrl("extra-small")
             
             #line default
             #line hidden
-, 8517), false)
-, Tuple.Create(Tuple.Create(" ", 8572), Tuple.Create("768w,", 8573), true)
+, 8969), false)
+, Tuple.Create(Tuple.Create(" ", 9007), Tuple.Create("576w,", 9008), true)
             
-            #line 156 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("\r\n            ", 8578), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("medium")
-            
-            #line default
-            #line hidden
-, 8592), false)
-, Tuple.Create(Tuple.Create(" ", 8648), Tuple.Create("992w,", 8649), true)
-            
-            #line 157 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("\r\n            ", 8654), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("large")
+            #line 167 "..\..\Views\Partials\_Header.cshtml"
+, Tuple.Create(Tuple.Create("\r\n            ", 9013), Tuple.Create<System.Object, System.Int32>(headerPhoto.GetCropUrl("small")
             
             #line default
             #line hidden
-, 8668), false)
-, Tuple.Create(Tuple.Create(" ", 8723), Tuple.Create("1200w,", 8724), true)
+, 9027), false)
+, Tuple.Create(Tuple.Create(" ", 9059), Tuple.Create("768w,", 9060), true)
             
-            #line 158 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("\r\n            ", 8730), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("extra-large")
+            #line 168 "..\..\Views\Partials\_Header.cshtml"
+, Tuple.Create(Tuple.Create("\r\n            ", 9065), Tuple.Create<System.Object, System.Int32>(headerPhoto.GetCropUrl("medium")
             
             #line default
             #line hidden
-, 8744), false)
-, Tuple.Create(Tuple.Create(" ", 8805), Tuple.Create("2000w", 8806), true)
+, 9079), false)
+, Tuple.Create(Tuple.Create(" ", 9112), Tuple.Create("992w,", 9113), true)
+            
+            #line 169 "..\..\Views\Partials\_Header.cshtml"
+, Tuple.Create(Tuple.Create("\r\n            ", 9118), Tuple.Create<System.Object, System.Int32>(headerPhoto.GetCropUrl("large")
+            
+            #line default
+            #line hidden
+, 9132), false)
+, Tuple.Create(Tuple.Create(" ", 9164), Tuple.Create("1200w,", 9165), true)
+            
+            #line 170 "..\..\Views\Partials\_Header.cshtml"
+, Tuple.Create(Tuple.Create("\r\n            ", 9171), Tuple.Create<System.Object, System.Int32>(headerPhoto.GetCropUrl("extra-large")
+            
+            #line default
+            #line hidden
+, 9185), false)
+, Tuple.Create(Tuple.Create(" ", 9223), Tuple.Create("2000w", 9224), true)
 );
 
 WriteLiteral("\r\n             sizes=\"100vw\"");
 
-WriteAttribute("src", Tuple.Create(" src=\"", 8840), Tuple.Create("\"", 8901)
+WriteAttribute("src", Tuple.Create(" src=\"", 9258), Tuple.Create("\"", 9296)
             
-            #line 159 "..\..\Views\Partials\_Header.cshtml"
-, Tuple.Create(Tuple.Create("", 8846), Tuple.Create<System.Object, System.Int32>(Model.HeaderPhotoWithInheritance().GetCropUrl("large")
+            #line 171 "..\..\Views\Partials\_Header.cshtml"
+, Tuple.Create(Tuple.Create("", 9264), Tuple.Create<System.Object, System.Int32>(headerPhoto.GetCropUrl("large")
             
             #line default
             #line hidden
-, 8846), false)
+, 9264), false)
 );
 
 WriteLiteral(" alt=\"\"");
@@ -843,7 +862,7 @@ WriteLiteral(" class=\"header__photo\"");
 WriteLiteral(" />\r\n");
 
             
-            #line 160 "..\..\Views\Partials\_Header.cshtml"
+            #line 172 "..\..\Views\Partials\_Header.cshtml"
     }
 
             
