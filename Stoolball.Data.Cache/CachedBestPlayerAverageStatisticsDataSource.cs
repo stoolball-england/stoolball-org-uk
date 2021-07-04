@@ -29,12 +29,26 @@ namespace Stoolball.Data.Cache
             return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadBestBattingAverage(filter).ConfigureAwait(false), new Context(nameof(ReadBestBattingAverage) + _statisticsFilterSerializer.Serialize(filter)));
         }
 
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBowlingAverage(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
+            return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadBestBowlingAverage(filter).ConfigureAwait(false), new Context(nameof(ReadBestBowlingAverage) + _statisticsFilterSerializer.Serialize(filter)));
+        }
+
         /// <inheritdoc />
         public async Task<int> ReadTotalPlayersWithBattingAverage(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
             var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
             return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadTotalPlayersWithBattingAverage(filter).ConfigureAwait(false), new Context(nameof(ReadTotalPlayersWithBattingAverage) + _statisticsFilterSerializer.Serialize(filter)));
+        }
+
+        public async Task<int> ReadTotalPlayersWithBowlingAverage(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
+            return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadTotalPlayersWithBowlingAverage(filter).ConfigureAwait(false), new Context(nameof(ReadTotalPlayersWithBowlingAverage) + _statisticsFilterSerializer.Serialize(filter)));
         }
     }
 }

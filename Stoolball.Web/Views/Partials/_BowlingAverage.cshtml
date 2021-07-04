@@ -14,7 +14,7 @@
     <table class="statistics table-as-cards table-as-cards-reset-md">
         @if (Model.ShowCaption)
         {
-            <caption>Best batting average</caption>
+            <caption>Best bowling average</caption>
         }
         <thead>
             <tr>
@@ -54,7 +54,7 @@
     }
     if (Model.ShowLinkOnly)
     {
-        <p><a href="@Request.RawUrl/batting-average">Batting averages – view all</a></p>
+        <p><a href="@Request.RawUrl/bowling-average">Bowling averages – view all</a></p>
     }
     else
     {

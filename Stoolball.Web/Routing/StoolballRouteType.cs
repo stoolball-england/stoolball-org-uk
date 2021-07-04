@@ -91,6 +91,7 @@
         MostWickets,
         MostCatches,
         MostRunOuts,
-        BattingAverage
+        BattingAverage,
+        BowlingAverage
     }
 }
