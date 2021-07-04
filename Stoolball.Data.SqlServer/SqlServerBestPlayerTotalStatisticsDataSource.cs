@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using Stoolball.Matches;
 using Stoolball.Statistics;
 
 namespace Stoolball.Data.SqlServer
@@ -33,9 +32,9 @@ namespace Stoolball.Data.SqlServer
                          ) AS BestTotal
                          ORDER BY Total DESC, TotalInnings ASC, TotalMatches ASC";
 
-            var extraSelectFields = $", (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics } WHERE PlayerId = s.PlayerId AND PlayerWasDismissed = 1 <<WHERE>>) AS TotalDismissals";
+            var extraSelectFields = $", (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics } WHERE PlayerId = s.PlayerId AND PlayerWasDismissed = 1 AND RunsScored IS NOT NULL <<WHERE>>) AS TotalDismissals";
 
-            return await ReadBestPlayerTotal("RunsScored", false, extraSelectFields, outerQuery, $"AND (DismissalType IS NULL OR DismissalType != { (int)DismissalType.DidNotBat})", filter).ConfigureAwait(false);
+            return await ReadBestPlayerTotal("RunsScored", false, extraSelectFields, outerQuery, $"AND RunsScored IS NOT NULL", filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>

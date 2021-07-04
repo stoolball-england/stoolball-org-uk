@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,28 +26,31 @@ namespace Stoolball.Data.SqlServer
         {
             filter = filter ?? new StatisticsFilter();
 
-            return await ReadBestPlayerTotal("RunsScored", false, $"AND (DismissalType IS NULL OR DismissalType != { (int)DismissalType.DidNotBat})", filter).ConfigureAwait(false);
+            return await ReadBestPlayerTotal("RunsScored", false, $"AND RunsScored IS NOT NULL", filter).ConfigureAwait(false);
+        }
         }
 
         ///  <inheritdoc/>
         public async Task<int> ReadTotalPlayersWithBattingAverage(StatisticsFilter filter)
         {
-            if (filter == null) { filter = new StatisticsFilter(); }
-            return await ReadTotalPlayersWithData("PlayerWasDismissed", filter).ConfigureAwait(false);
+            filter = filter ?? new StatisticsFilter();
+
+            return await ReadTotalPlayersWithData("RunsScored", "CAST(PlayerWasDismissed AS INT)", filter).ConfigureAwait(false);
         }
 
-        private async Task<int> ReadTotalPlayersWithData(string fieldName, StatisticsFilter filter)
+        }
+
+        private async Task<int> ReadTotalPlayersWithData(string divideThisField, string byThisField, StatisticsFilter filter)
         {
             var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var sql = $@"SELECT COUNT(PlayerId) FROM (
                             SELECT PlayerId FROM {Tables.PlayerInMatchStatistics} 
-                            WHERE 1=1 {where} 
+                            WHERE {divideThisField} IS NOT NULL {where} 
                             GROUP BY PlayerId 
-                            HAVING SUM(CAST({fieldName} AS INT)) > 0 AND 
-                                   SUM(RunsScored) > 0 AND 
-                                   COUNT(DISTINCT MatchId) >= @MinimumQualifyingInnings
+                            HAVING SUM({byThisField}) > 0 AND 
+                                   COUNT(PlayerInMatchStatisticsId) >= @MinimumQualifyingInnings
                         ) AS Total";
                 parameters.Add("@MinimumQualifyingInnings", filter.MinimumQualifyingInnings ?? 1);
                 return await connection.ExecuteScalarAsync<int>(sql, parameters).ConfigureAwait(false);
@@ -68,8 +71,7 @@ namespace Stoolball.Data.SqlServer
                                  FROM {Tables.PlayerInMatchStatistics} AS s 
                                  WHERE 1=1 {inningsFilter} {where} 
                                  GROUP BY PlayerId, PlayerRoute
-                                 HAVING SUM({fieldName}) > 0 
-                                    AND SUM(CAST(PlayerWasDismissed AS INT)) > 0 
+                                 HAVING SUM(CAST(PlayerWasDismissed AS INT)) > 0 
                                     AND (SELECT COUNT(PlayerInMatchStatisticsId) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {inningsFilter} {where}) >= @MinimumQualifyingInnings
                                 ORDER BY CAST(SUM({fieldName}) AS DECIMAL) / SUM(CAST(PlayerWasDismissed AS INT)) DESC, TotalInnings DESC, TotalMatches DESC 
                                 OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY

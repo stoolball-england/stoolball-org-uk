@@ -340,7 +340,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                             .SelectMany(m => m.MatchInnings)
                             .Where(matchInningsFilter)
                             .SelectMany(mi => mi.PlayerInnings)
-                            .Count(pi => pi.Batter.Player.PlayerId == p.PlayerId && pi.DismissalType != DismissalType.DidNotBat),
+                            .Count(pi => pi.Batter.Player.PlayerId == p.PlayerId && pi.RunsScored.HasValue),
                 Total = (int)_databaseFixture.TestData.Matches
                             .Where(matchFilter)
                             .SelectMany(m => m.MatchInnings)
@@ -353,7 +353,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                             .SelectMany(m => m.MatchInnings)
                             .Where(matchInningsFilter)
                             .SelectMany(mi => mi.PlayerInnings)
-                            .Any(pi => pi.Batter.Player.PlayerId == p.PlayerId && StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType)) ?
+                            .Any(pi => pi.Batter.Player.PlayerId == p.PlayerId && StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType) && pi.RunsScored.HasValue) ?
                                 ((decimal)_databaseFixture.TestData.Matches
                                 .Where(matchFilter)
                                 .SelectMany(m => m.MatchInnings)
@@ -367,7 +367,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                 .SelectMany(m => m.MatchInnings)
                                 .Where(matchInningsFilter)
                                 .SelectMany(mi => mi.PlayerInnings)
-                                .Count(pi => pi.Batter.Player.PlayerId == p.PlayerId && StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType))
+                                .Count(pi => pi.Batter.Player.PlayerId == p.PlayerId && StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(pi.DismissalType) && pi.RunsScored.HasValue)
                             : (decimal?)null)
             }).Where(x => x.Total > 0);
 
