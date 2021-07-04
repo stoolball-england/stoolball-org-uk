@@ -18,10 +18,8 @@ Your batting average is the number of runs you've scored divided by the number o
 Batting average is calculated in three places:
 
 - in `SqlServerPlayerSummaryStatisticsDataSource` for the summary statistics on a player's individual batting statistics.
-- in `SqlServerBestPlayerAverageStatisticsDataSource` for the 'best batting average' tables
-- in `SqlServerBestPlayerTotalStatisticsDataSource` for the 'most runs scored' tables (as the sum of all runs scored, divided by the number of player innings where the player was dismissed, excluding any players who have never scored a run or been dismissed).
-
-  > **considers records where a player's dismissal type is not 'DidNotBat'. Update to consider records where PlayerWasDismissed = 1 AND RunsScored IS NOT NULL for dismissals, and RunsScored IS NOT NULL for runs**
+- in `SqlServerBestPlayerAverageStatisticsDataSource` for the 'best batting average' tables.
+- in `SqlServerBestPlayerTotalStatisticsDataSource` for the 'most runs scored' tables.
 
 ## Bowling average
 
@@ -31,7 +29,8 @@ Your bowling average is the number of wickets you've taken divided by the number
 - Innings are not counted where a bowler's wickets are recorded but their runs conceded are not.
 - 'Best bowling average' tables only show players with a minimum number of qualifying innings, to avoid skewing the tables with outlier results from players who have hardly played.
 
-It's calculated in two places:
+It's calculated in three places:
 
 - in `SqlServerPlayerSummaryStatisticsDataSource` for the summary statistics on a player's individual bowling statistics.
 - in `SqlServerBestPlayerAverageStatisticsDataSource` for the 'best bowling average' tables.
+- in `BowlingFiguresCalculator` for bowling figures in a match.

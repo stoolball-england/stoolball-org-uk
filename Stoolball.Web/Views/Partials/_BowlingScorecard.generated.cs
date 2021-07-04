@@ -33,7 +33,19 @@ namespace ASP
     
     #line default
     #line hidden
+    
+    #line 3 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+    using Stoolball.Statistics;
+    
+    #line default
+    #line hidden
     using Umbraco.Core;
+    
+    #line 4 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+    using Umbraco.Core.Composing;
+    
+    #line default
+    #line hidden
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
@@ -50,7 +62,17 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 3 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 5 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+  
+    var calculator = Current.Factory.GetInstance<IBowlingFiguresCalculator>();
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
+            
+            #line 8 "..\..\Views\Partials\_BowlingScorecard.cshtml"
  if (Model.BowlingFigures.Count > 0)
 {
 
@@ -65,7 +87,7 @@ WriteLiteral(" class=\"bowling-scorecard bowling-figures table-hover table-as-ca
 WriteLiteral(">\r\n        <caption>");
 
             
-            #line 6 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 11 "..\..\Views\Partials\_BowlingScorecard.cshtml"
             Write(Model.BowlingTeam.Team.TeamName);
 
             
@@ -120,13 +142,13 @@ WriteLiteral(" class=\"numeric\"");
 WriteLiteral(">Strike rate</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody>\r\n");
 
             
-            #line 20 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 25 "..\..\Views\Partials\_BowlingScorecard.cshtml"
             
             
             #line default
             #line hidden
             
-            #line 20 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 25 "..\..\Views\Partials\_BowlingScorecard.cshtml"
              foreach (var bowler in Model.BowlingFigures)
             {
 
@@ -141,20 +163,20 @@ WriteLiteral(" class=\"player-name\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 986), Tuple.Create("\"", 1026)
+WriteAttribute("href", Tuple.Create(" href=\"", 1133), Tuple.Create("\"", 1173)
             
-            #line 23 "..\..\Views\Partials\_BowlingScorecard.cshtml"
-, Tuple.Create(Tuple.Create("", 993), Tuple.Create<System.Object, System.Int32>(bowler.Bowler.Player.PlayerRoute
+            #line 28 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+, Tuple.Create(Tuple.Create("", 1140), Tuple.Create<System.Object, System.Int32>(bowler.Bowler.Player.PlayerRoute
             
             #line default
             #line hidden
-, 993), false)
+, 1140), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 23 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 28 "..\..\Views\Partials\_BowlingScorecard.cshtml"
                                                                                                Write(bowler.Bowler.PlayerIdentityName);
 
             
@@ -179,7 +201,7 @@ WriteLiteral(" class=\"scorecard__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 24 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 29 "..\..\Views\Partials\_BowlingScorecard.cshtml"
                                                                                                                                                                    Write(bowler.Overs);
 
             
@@ -204,7 +226,7 @@ WriteLiteral(" class=\"scorecard__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 25 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 30 "..\..\Views\Partials\_BowlingScorecard.cshtml"
                                                                                                                                                                       Write(bowler.Maidens?.ToString() ?? "–");
 
             
@@ -229,7 +251,7 @@ WriteLiteral(" class=\"scorecard__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 26 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 31 "..\..\Views\Partials\_BowlingScorecard.cshtml"
                                                                                                                                                                    Write(bowler.RunsConceded?.ToString() ?? "–");
 
             
@@ -254,7 +276,7 @@ WriteLiteral(" class=\"scorecard__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 27 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 32 "..\..\Views\Partials\_BowlingScorecard.cshtml"
                                                                                                                                                                      Write(bowler.Wickets);
 
             
@@ -279,8 +301,8 @@ WriteLiteral(" class=\"scorecard__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 28 "..\..\Views\Partials\_BowlingScorecard.cshtml"
-                                                                                                                                                                      Write(bowler.BowlingEconomy?.ToString() ?? "–");
+            #line 33 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+                                                                                                                                                                      Write(calculator.BowlingEconomy(bowler)?.ToString() ?? "–");
 
             
             #line default
@@ -304,8 +326,8 @@ WriteLiteral(" class=\"scorecard__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 29 "..\..\Views\Partials\_BowlingScorecard.cshtml"
-                                                                                                                                                                      Write(bowler.BowlingAverage?.ToString() ?? "–");
+            #line 34 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+                                                                                                                                                                      Write(calculator.BowlingAverage(bowler)?.ToString() ?? "–");
 
             
             #line default
@@ -329,8 +351,8 @@ WriteLiteral(" class=\"scorecard__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 30 "..\..\Views\Partials\_BowlingScorecard.cshtml"
-                                                                                                                                                                          Write(bowler.BowlingStrikeRate?.ToString() ?? "–");
+            #line 35 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+                                                                                                                                                                          Write(calculator.BowlingStrikeRate(bowler)?.ToString() ?? "–");
 
             
             #line default
@@ -338,7 +360,7 @@ WriteLiteral(">");
 WriteLiteral("</span></td>\r\n                </tr>\r\n");
 
             
-            #line 32 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 37 "..\..\Views\Partials\_BowlingScorecard.cshtml"
             }
 
             
@@ -347,14 +369,14 @@ WriteLiteral("</span></td>\r\n                </tr>\r\n");
 WriteLiteral("        </tbody>\r\n    </table>\r\n");
 
             
-            #line 35 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 40 "..\..\Views\Partials\_BowlingScorecard.cshtml"
 }
 
             
             #line default
             #line hidden
             
-            #line 36 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 41 "..\..\Views\Partials\_BowlingScorecard.cshtml"
  if (Model.OversBowled.Count > 0)
 {
 
@@ -369,7 +391,7 @@ WriteLiteral(" class=\"bowling-scorecard overs table-hover table-as-cards table-
 WriteLiteral(">\r\n        <caption>");
 
             
-            #line 39 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 44 "..\..\Views\Partials\_BowlingScorecard.cshtml"
             Write(Model.BowlingTeam.Team.TeamName);
 
             
@@ -413,13 +435,13 @@ WriteLiteral(" class=\"numeric\"");
 WriteLiteral(">Total</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody>\r\n");
 
             
-            #line 51 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 56 "..\..\Views\Partials\_BowlingScorecard.cshtml"
             
             
             #line default
             #line hidden
             
-            #line 51 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 56 "..\..\Views\Partials\_BowlingScorecard.cshtml"
               
                 var total = 0;
                 foreach (var over in Model.OversBowled)
@@ -440,20 +462,20 @@ WriteLiteral(" class=\"player-name\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3694), Tuple.Create("\"", 3732)
+WriteAttribute("href", Tuple.Create(" href=\"", 3877), Tuple.Create("\"", 3915)
             
-            #line 60 "..\..\Views\Partials\_BowlingScorecard.cshtml"
-, Tuple.Create(Tuple.Create("", 3701), Tuple.Create<System.Object, System.Int32>(over.Bowler.Player.PlayerRoute
+            #line 65 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+, Tuple.Create(Tuple.Create("", 3884), Tuple.Create<System.Object, System.Int32>(over.Bowler.Player.PlayerRoute
             
             #line default
             #line hidden
-, 3701), false)
+, 3884), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 60 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 65 "..\..\Views\Partials\_BowlingScorecard.cshtml"
                                                                                                  Write(over.Bowler.PlayerIdentityName);
 
             
@@ -478,7 +500,7 @@ WriteLiteral(" class=\"scorecard__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 61 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 66 "..\..\Views\Partials\_BowlingScorecard.cshtml"
                                                                                                                                                                        Write(over.BallsBowled);
 
             
@@ -503,7 +525,7 @@ WriteLiteral(" class=\"scorecard__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 62 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 67 "..\..\Views\Partials\_BowlingScorecard.cshtml"
                                                                                                                                                                        Write(over.Wides);
 
             
@@ -528,7 +550,7 @@ WriteLiteral(" class=\"scorecard__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 63 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 68 "..\..\Views\Partials\_BowlingScorecard.cshtml"
                                                                                                                                                                           Write(over.NoBalls);
 
             
@@ -553,7 +575,7 @@ WriteLiteral(" class=\"scorecard__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 64 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 69 "..\..\Views\Partials\_BowlingScorecard.cshtml"
                                                                                                                                                                       Write(over.RunsConceded);
 
             
@@ -578,7 +600,7 @@ WriteLiteral(" class=\"scorecard__numeric-value\"");
 WriteLiteral(">");
 
             
-            #line 65 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 70 "..\..\Views\Partials\_BowlingScorecard.cshtml"
                                                                                                                                                                        Write(total);
 
             
@@ -587,7 +609,7 @@ WriteLiteral(">");
 WriteLiteral("</span></td>\r\n                    </tr>\r\n");
 
             
-            #line 67 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 72 "..\..\Views\Partials\_BowlingScorecard.cshtml"
                 }
             
             
@@ -596,7 +618,7 @@ WriteLiteral("</span></td>\r\n                    </tr>\r\n");
 WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
 
             
-            #line 71 "..\..\Views\Partials\_BowlingScorecard.cshtml"
+            #line 76 "..\..\Views\Partials\_BowlingScorecard.cshtml"
 }
             
             #line default

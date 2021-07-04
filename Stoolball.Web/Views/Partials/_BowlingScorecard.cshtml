@@ -1,5 +1,10 @@
 ﻿@model MatchInnings
 @using Stoolball.Matches
+@using Stoolball.Statistics
+@using Umbraco.Core.Composing
+@{
+    var calculator = Current.Factory.GetInstance<IBowlingFiguresCalculator>();
+}
 @if (Model.BowlingFigures.Count > 0)
 {
     <table class="bowling-scorecard bowling-figures table-hover table-as-cards table-as-cards-reset-sm">
@@ -25,9 +30,9 @@
                     <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Maidens</span><span class="scorecard__numeric-value">@(bowler.Maidens?.ToString() ?? "–")</span></td>
                     <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Runs</span><span class="scorecard__numeric-value">@(bowler.RunsConceded?.ToString() ?? "–")</span></td>
                     <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Wickets</span><span class="scorecard__numeric-value">@bowler.Wickets</span></td>
-                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Economy</span><span class="scorecard__numeric-value">@(bowler.BowlingEconomy?.ToString() ?? "–")</span></td>
-                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Average</span><span class="scorecard__numeric-value">@(bowler.BowlingAverage?.ToString() ?? "–")</span></td>
-                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Strike rate</span><span class="scorecard__numeric-value">@(bowler.BowlingStrikeRate?.ToString() ?? "–")</span></td>
+                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Economy</span><span class="scorecard__numeric-value">@(calculator.BowlingEconomy(bowler)?.ToString() ?? "–")</span></td>
+                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Average</span><span class="scorecard__numeric-value">@(calculator.BowlingAverage(bowler)?.ToString() ?? "–")</span></td>
+                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Strike rate</span><span class="scorecard__numeric-value">@(calculator.BowlingStrikeRate(bowler)?.ToString() ?? "–")</span></td>
                 </tr>
             }
         </tbody>

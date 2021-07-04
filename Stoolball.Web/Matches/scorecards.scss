@@ -94,9 +94,10 @@ $space-character-width: .25em;
     flex-grow: initial;
 }
 
+// Numeric value needs to be wide enough for two decimal places, eg 55.55
 .scorecard__numeric-value {
     display: inline-block;
-    width: 1.7em;
+    width: 2.5em;
     text-align: right;
 }
 
