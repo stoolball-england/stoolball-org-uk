@@ -276,15 +276,18 @@ namespace Stoolball.Data.SqlServer
 
                     if (competition.CompetitionRoute != auditableCompetition.CompetitionRoute)
                     {
+                        await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, auditableCompetition.CompetitionRoute, null, transaction).ConfigureAwait(false);
+
                         // Update the season routes to match the amended competition route
+                        var seasonRoutes = await connection.QueryAsync<string>($"SELECT SeasonRoute FROM {Tables.Season} WHERE CompetitionId = @CompetitionId", new { auditableCompetition.CompetitionId }, transaction).ConfigureAwait(false);
+                        foreach (var route in seasonRoutes)
+                        {
+                            await _redirectsRepository.InsertRedirect(route, auditableCompetition.CompetitionRoute + route.Substring(competition.CompetitionRoute.Length), null, transaction).ConfigureAwait(false);
+                        }
+
                         await connection.ExecuteAsync($@"UPDATE {Tables.Season} 
                                 SET SeasonRoute = CONCAT(@CompetitionRoute, SUBSTRING(SeasonRoute, {competition.CompetitionRoute.Length + 1}, LEN(SeasonRoute)-{competition.CompetitionRoute.Length})) 
                                 WHERE CompetitionId = @CompetitionId", new { auditableCompetition.CompetitionId, auditableCompetition.CompetitionRoute }, transaction).ConfigureAwait(false);
-                    }
-
-                    if (competition.CompetitionRoute != auditableCompetition.CompetitionRoute)
-                    {
-                        await _redirectsRepository.InsertRedirect(competition.CompetitionRoute, auditableCompetition.CompetitionRoute, null, transaction).ConfigureAwait(false);
                     }
 
                     var redacted = CreateRedactedCopy(auditableCompetition);
