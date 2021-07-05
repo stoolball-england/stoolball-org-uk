@@ -1,14 +1,15 @@
-﻿using Moq;
-using Stoolball.Competitions;
-using Stoolball.Matches;
-using Stoolball.Teams;
-using Stoolball.Web.Matches;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Moq;
+using Stoolball.Competitions;
+using Stoolball.Matches;
+using Stoolball.Security;
+using Stoolball.Teams;
+using Stoolball.Web.Matches;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -23,7 +24,8 @@ namespace Stoolball.Web.Tests.Matches
     {
         private class TestController : CreateLeagueMatchController
         {
-            public TestController(ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource, ICreateMatchSeasonSelector createMatchSeasonSelector, IEditMatchHelper editMatchHelper, Uri requestUrl)
+            public TestController(ITeamDataSource teamDataSource, ISeasonDataSource seasonDataSource, ICreateMatchSeasonSelector createMatchSeasonSelector, IEditMatchHelper editMatchHelper, Uri requestUrl,
+                IAuthorizationPolicy<Competition> competitionAuthorizationPolicy)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -34,7 +36,8 @@ namespace Stoolball.Web.Tests.Matches
                 teamDataSource,
                 seasonDataSource,
                 createMatchSeasonSelector,
-                editMatchHelper)
+                editMatchHelper,
+                competitionAuthorizationPolicy)
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.RawUrl).Returns(requestUrl.AbsolutePath);
@@ -66,7 +69,9 @@ namespace Stoolball.Web.Tests.Matches
 
             var helper = new Mock<IEditMatchHelper>();
 
-            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, seasonSelector.Object, helper.Object, new Uri("https://example.org/teams/example/")))
+            var competitionAuthorizationPolicy = new Mock<IAuthorizationPolicy<Competition>>();
+
+            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, seasonSelector.Object, helper.Object, new Uri("https://example.org/teams/example/"), competitionAuthorizationPolicy.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -87,7 +92,9 @@ namespace Stoolball.Web.Tests.Matches
 
             var helper = new Mock<IEditMatchHelper>();
 
-            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, seasonSelector.Object, helper.Object, new Uri("https://example.org/competitions/example/2020/")))
+            var competitionAuthorizationPolicy = new Mock<IAuthorizationPolicy<Competition>>();
+
+            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, seasonSelector.Object, helper.Object, new Uri("https://example.org/competitions/example/2020/"), competitionAuthorizationPolicy.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -109,7 +116,9 @@ namespace Stoolball.Web.Tests.Matches
             var helper = new Mock<IEditMatchHelper>();
             helper.Setup(x => x.PossibleSeasonsAsListItems(It.IsAny<IEnumerable<Season>>())).Returns(new List<SelectListItem>());
 
-            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, seasonSelector.Object, helper.Object, new Uri("https://example.org/teams/example/")))
+            var competitionAuthorizationPolicy = new Mock<IAuthorizationPolicy<Competition>>();
+
+            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, seasonSelector.Object, helper.Object, new Uri("https://example.org/teams/example/"), competitionAuthorizationPolicy.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -130,7 +139,9 @@ namespace Stoolball.Web.Tests.Matches
 
             var helper = new Mock<IEditMatchHelper>();
 
-            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, seasonSelector.Object, helper.Object, new Uri("https://example.org/competitions/")))
+            var competitionAuthorizationPolicy = new Mock<IAuthorizationPolicy<Competition>>();
+
+            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, seasonSelector.Object, helper.Object, new Uri("https://example.org/competitions/"), competitionAuthorizationPolicy.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -152,7 +163,9 @@ namespace Stoolball.Web.Tests.Matches
 
             var helper = new Mock<IEditMatchHelper>();
 
-            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, seasonSelector.Object, helper.Object, new Uri("https://example.org/teams/example/")))
+            var competitionAuthorizationPolicy = new Mock<IAuthorizationPolicy<Competition>>();
+
+            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, seasonSelector.Object, helper.Object, new Uri("https://example.org/teams/example/"), competitionAuthorizationPolicy.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -177,7 +190,9 @@ namespace Stoolball.Web.Tests.Matches
             var helper = new Mock<IEditMatchHelper>();
             helper.Setup(x => x.PossibleTeamsAsListItems(It.IsAny<IEnumerable<TeamInSeason>>())).Returns(new List<SelectListItem>());
 
-            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, seasonSelector.Object, helper.Object, new Uri("https://example.org/competitions/example/2020/")))
+            var competitionAuthorizationPolicy = new Mock<IAuthorizationPolicy<Competition>>();
+
+            using (var controller = new TestController(teamDataSource.Object, seasonDataSource.Object, seasonSelector.Object, helper.Object, new Uri("https://example.org/competitions/example/2020/"), competitionAuthorizationPolicy.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

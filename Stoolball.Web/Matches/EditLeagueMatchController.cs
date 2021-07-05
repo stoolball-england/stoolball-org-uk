@@ -22,6 +22,7 @@ namespace Stoolball.Web.Matches
     {
         private readonly IMatchDataSource _matchDataSource;
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
+        private readonly IAuthorizationPolicy<Competition> _competitionAuthorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly IEditMatchHelper _editMatchHelper;
@@ -33,14 +34,16 @@ namespace Stoolball.Web.Matches
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IMatchDataSource matchDataSource,
-           IAuthorizationPolicy<Match> authorizationPolicy,
+           IAuthorizationPolicy<Match> matchAuthorizationPolicy,
+           IAuthorizationPolicy<Competition> competitionAuthorizationPolicy,
            IDateTimeFormatter dateFormatter,
            ISeasonDataSource seasonDataSource,
            IEditMatchHelper editMatchHelper)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
-            _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
+            _authorizationPolicy = matchAuthorizationPolicy ?? throw new ArgumentNullException(nameof(matchAuthorizationPolicy));
+            _competitionAuthorizationPolicy = competitionAuthorizationPolicy ?? throw new ArgumentNullException(nameof(competitionAuthorizationPolicy));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _editMatchHelper = editMatchHelper ?? throw new ArgumentNullException(nameof(editMatchHelper));
@@ -74,6 +77,11 @@ namespace Stoolball.Web.Matches
                 }
 
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
+                if (model.Match.Season != null && model.Match.Season.Teams.Count <= 1 && model.Match.Season.Competition != null)
+                {
+                    _competitionAuthorizationPolicy.IsAuthorized(model.Match.Season.Competition).TryGetValue(AuthorizedAction.EditCompetition, out var canEditCompetition);
+                    model.IsAuthorized[AuthorizedAction.EditCompetition] = canEditCompetition;
+                }
 
                 if (model.Match.Season != null)
                 {

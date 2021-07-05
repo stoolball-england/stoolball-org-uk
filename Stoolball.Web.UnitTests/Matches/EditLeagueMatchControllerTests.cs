@@ -30,7 +30,8 @@ namespace Stoolball.Web.Tests.Matches
 
         private class TestController : EditLeagueMatchController
         {
-            public TestController(IMatchDataSource matchDataSource, ISeasonDataSource seasonDataSource, IEditMatchHelper editMatchHelper, Uri requestUrl, UmbracoHelper umbracoHelper)
+            public TestController(IMatchDataSource matchDataSource, ISeasonDataSource seasonDataSource, IEditMatchHelper editMatchHelper, Uri requestUrl, UmbracoHelper umbracoHelper,
+                IAuthorizationPolicy<Stoolball.Matches.Match> matchAuthorizationPolicy, IAuthorizationPolicy<Competition> competitionAuthorizationPolicy)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -39,7 +40,8 @@ namespace Stoolball.Web.Tests.Matches
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
                 matchDataSource,
-                Mock.Of<IAuthorizationPolicy<Stoolball.Matches.Match>>(),
+                matchAuthorizationPolicy,
+                competitionAuthorizationPolicy,
                 Mock.Of<IDateTimeFormatter>(),
                 seasonDataSource,
                 editMatchHelper)
@@ -72,7 +74,11 @@ namespace Stoolball.Web.Tests.Matches
 
             var helper = new Mock<IEditMatchHelper>();
 
-            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/not-a-match"), UmbracoHelper))
+            var matchAuthorizationPolicy = new Mock<IAuthorizationPolicy<Stoolball.Matches.Match>>();
+            var competitionAuthorizationPolicy = new Mock<IAuthorizationPolicy<Competition>>();
+
+            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/not-a-match"), UmbracoHelper,
+                matchAuthorizationPolicy.Object, competitionAuthorizationPolicy.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -91,7 +97,11 @@ namespace Stoolball.Web.Tests.Matches
 
             var helper = new Mock<IEditMatchHelper>();
 
-            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper))
+            var matchAuthorizationPolicy = new Mock<IAuthorizationPolicy<Stoolball.Matches.Match>>();
+            var competitionAuthorizationPolicy = new Mock<IAuthorizationPolicy<Competition>>();
+
+            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper,
+                matchAuthorizationPolicy.Object, competitionAuthorizationPolicy.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -103,20 +113,27 @@ namespace Stoolball.Web.Tests.Matches
         public async Task Route_matching_match_in_the_future_returns_EditLeagueMatchViewModel()
         {
             var season = new Season { Competition = new Competition { CompetitionName = "Example competition", CompetitionRoute = "/competitions/example" }, SeasonRoute = "/competitions/example/2021" };
-            var matchDataSource = new Mock<IMatchDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
+            var match = new Stoolball.Matches.Match
             {
                 StartTime = DateTime.UtcNow.AddHours(1),
                 Season = season,
                 MatchRoute = "/matches/example"
-            });
+            };
+            var matchDataSource = new Mock<IMatchDataSource>();
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(match);
 
             var seasonDataSource = new Mock<ISeasonDataSource>();
             seasonDataSource.Setup(x => x.ReadSeasonByRoute(It.IsAny<string>(), true)).Returns(Task.FromResult(season));
 
             var helper = new Mock<IEditMatchHelper>();
 
-            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper))
+            var matchAuthorizationPolicy = new Mock<IAuthorizationPolicy<Stoolball.Matches.Match>>();
+            matchAuthorizationPolicy.Setup(x => x.IsAuthorized(match)).Returns(new Dictionary<AuthorizedAction, bool>());
+            var competitionAuthorizationPolicy = new Mock<IAuthorizationPolicy<Competition>>();
+            competitionAuthorizationPolicy.Setup(x => x.IsAuthorized(match.Season.Competition)).Returns(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.EditCompetition, false } });
+
+            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper,
+                matchAuthorizationPolicy.Object, competitionAuthorizationPolicy.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -127,13 +144,14 @@ namespace Stoolball.Web.Tests.Matches
         [Fact]
         public async Task MatchU002ESeason_gets_SeasonId_from_Route()
         {
-            var matchDataSource = new Mock<IMatchDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
+            var match = new Stoolball.Matches.Match
             {
                 StartTime = DateTime.UtcNow.AddHours(1),
                 Season = new Season { Competition = new Competition { CompetitionName = "Example competition", CompetitionRoute = "/competitions/example" }, SeasonRoute = "/competitions/example/2021" },
                 MatchRoute = "/matches/example"
-            });
+            };
+            var matchDataSource = new Mock<IMatchDataSource>();
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(match);
 
             var season = new Season { SeasonId = Guid.NewGuid(), Competition = new Competition { CompetitionName = "Example competition", CompetitionRoute = "/competitions/example" }, SeasonRoute = "/competitions/example/2021" };
             var seasonDataSource = new Mock<ISeasonDataSource>();
@@ -141,7 +159,13 @@ namespace Stoolball.Web.Tests.Matches
 
             var helper = new Mock<IEditMatchHelper>();
 
-            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper))
+            var matchAuthorizationPolicy = new Mock<IAuthorizationPolicy<Stoolball.Matches.Match>>();
+            matchAuthorizationPolicy.Setup(x => x.IsAuthorized(match)).Returns(new Dictionary<AuthorizedAction, bool>());
+            var competitionAuthorizationPolicy = new Mock<IAuthorizationPolicy<Competition>>();
+            competitionAuthorizationPolicy.Setup(x => x.IsAuthorized(match.Season.Competition)).Returns(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.EditCompetition, false } });
+
+            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper,
+                matchAuthorizationPolicy.Object, competitionAuthorizationPolicy.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -152,13 +176,14 @@ namespace Stoolball.Web.Tests.Matches
         [Fact]
         public async Task ModelU002ESeason_gets_SeasonId_from_Route()
         {
-            var matchDataSource = new Mock<IMatchDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
+            var match = new Stoolball.Matches.Match
             {
                 StartTime = DateTime.UtcNow.AddHours(1),
                 Season = new Season { Competition = new Competition { CompetitionName = "Example competition", CompetitionRoute = "/competitions/example" }, SeasonRoute = "/competitions/example/2021" },
                 MatchRoute = "/matches/example"
-            });
+            };
+            var matchDataSource = new Mock<IMatchDataSource>();
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(match);
 
             var season = new Season { SeasonId = Guid.NewGuid(), Competition = new Competition { CompetitionName = "Example competition", CompetitionRoute = "/competitions/example" }, SeasonRoute = "/competitions/example/2021" };
             var seasonDataSource = new Mock<ISeasonDataSource>();
@@ -166,7 +191,13 @@ namespace Stoolball.Web.Tests.Matches
 
             var helper = new Mock<IEditMatchHelper>();
 
-            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper))
+            var matchAuthorizationPolicy = new Mock<IAuthorizationPolicy<Stoolball.Matches.Match>>();
+            matchAuthorizationPolicy.Setup(x => x.IsAuthorized(match)).Returns(new Dictionary<AuthorizedAction, bool>());
+            var competitionAuthorizationPolicy = new Mock<IAuthorizationPolicy<Competition>>();
+            competitionAuthorizationPolicy.Setup(x => x.IsAuthorized(match.Season.Competition)).Returns(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.EditCompetition, false } });
+
+            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper,
+                matchAuthorizationPolicy.Object, competitionAuthorizationPolicy.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -177,13 +208,14 @@ namespace Stoolball.Web.Tests.Matches
         [Fact]
         public async Task ModelU002EPossibleSeasons_gets_SeasonId_from_Route()
         {
-            var matchDataSource = new Mock<IMatchDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
+            var match = new Stoolball.Matches.Match
             {
                 StartTime = DateTime.UtcNow.AddHours(1),
                 Season = new Season { Competition = new Competition { CompetitionName = "Example competition", CompetitionRoute = "/competitions/example" }, SeasonRoute = "/competitions/example/2021" },
                 MatchRoute = "/matches/example"
-            });
+            };
+            var matchDataSource = new Mock<IMatchDataSource>();
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(match);
 
             var season = new Season { SeasonId = Guid.NewGuid(), Competition = new Competition { CompetitionName = "Example competition", CompetitionRoute = "/competitions/example" }, SeasonRoute = "/competitions/example/2021" };
             var seasonDataSource = new Mock<ISeasonDataSource>();
@@ -192,7 +224,13 @@ namespace Stoolball.Web.Tests.Matches
             var helper = new Mock<IEditMatchHelper>();
             helper.Setup(x => x.PossibleSeasonsAsListItems(It.IsAny<IEnumerable<Season>>())).Returns((IEnumerable<Season> x) => new List<SelectListItem> { new SelectListItem { Value = season.SeasonId.ToString() } });
 
-            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper))
+            var matchAuthorizationPolicy = new Mock<IAuthorizationPolicy<Stoolball.Matches.Match>>();
+            matchAuthorizationPolicy.Setup(x => x.IsAuthorized(match)).Returns(new Dictionary<AuthorizedAction, bool>());
+            var competitionAuthorizationPolicy = new Mock<IAuthorizationPolicy<Competition>>();
+            competitionAuthorizationPolicy.Setup(x => x.IsAuthorized(match.Season.Competition)).Returns(new Dictionary<AuthorizedAction, bool> { { AuthorizedAction.EditCompetition, false } });
+
+            using (var controller = new TestController(matchDataSource.Object, seasonDataSource.Object, helper.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper,
+                matchAuthorizationPolicy.Object, competitionAuthorizationPolicy.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

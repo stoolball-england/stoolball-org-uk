@@ -35,11 +35,27 @@
 
     @if (Model.IsAuthorized[AuthorizedAction.CreateMatch])
     {
-        using (Html.BeginUmbracoForm<CreateLeagueMatchSurfaceController>
-            ("CreateMatch"))
+        if (Model.Season == null || Model.Season.Teams.Count > 1)
         {
+            using (Html.BeginUmbracoForm<CreateLeagueMatchSurfaceController>
+                ("CreateMatch"))
+            {
             @Html.Partial("_CreateOrEditLeagueMatch")
             <button class="btn btn-primary">Save match</button>
+            }
+        }
+        else
+        {
+            <p>You need at least two teams in the @Model.Season.SeasonFullName() to add a league match.</p>
+            if ( Model.IsAuthorized[AuthorizedAction.EditCompetition])
+            {
+                <p><a href="@Model.Season.SeasonRoute/edit/teams" class="btn btn-secondary">Edit teams</a></p>
+            }
+            else
+            {
+                <p><a href="@Model.Season.Competition.CompetitionRoute">Contact the administrators of the @Model.Season.Competition.CompetitionName</a> 
+                    and ask them to add the teams playing in the @Model.Season.SeasonName(), so that you can add a match.</p>
+            }
         }
     }
     else

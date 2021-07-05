@@ -118,61 +118,139 @@ WriteLiteral("</h1>\r\n\r\n");
             #line 26 "..\..\Views\EditLeagueMatch.cshtml"
      if (Model.IsAuthorized[AuthorizedAction.EditMatch])
     {
-        using (Html.BeginUmbracoForm<EditLeagueMatchSurfaceController>
-            ("UpdateMatch"))
+        if (Model.Match.Season == null || Model.Match.Season.Teams.Count > 1)
         {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("            <button");
-
-WriteLiteral(" class=\"sr-only\"");
-
-WriteLiteral(">Save match</button>\r\n");
-
-            
-            #line 32 "..\..\Views\EditLeagueMatch.cshtml"
-            
-            
-            #line default
-            #line hidden
-            
-            #line 32 "..\..\Views\EditLeagueMatch.cshtml"
-       Write(Html.Partial("_CreateOrEditLeagueMatch"));
-
-            
-            #line default
-            #line hidden
-            
-            #line 32 "..\..\Views\EditLeagueMatch.cshtml"
-                                                     
-            
+            using (Html.BeginUmbracoForm<EditLeagueMatchSurfaceController>
+                ("UpdateMatch"))
+            {
+                
             
             #line default
             #line hidden
             
             #line 33 "..\..\Views\EditLeagueMatch.cshtml"
-       Write(Html.Partial("_EditMatchResultTypeFuture"));
+           Write(Html.Partial("_CreateOrEditLeagueMatch"));
 
             
             #line default
             #line hidden
             
             #line 33 "..\..\Views\EditLeagueMatch.cshtml"
-                                                       
+                                                         
+                
+            
+            #line default
+            #line hidden
+            
+            #line 34 "..\..\Views\EditLeagueMatch.cshtml"
+           Write(Html.Partial("_EditMatchResultTypeFuture"));
 
             
             #line default
             #line hidden
-WriteLiteral("            <button");
+            
+            #line 34 "..\..\Views\EditLeagueMatch.cshtml"
+                                                           
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                <button");
 
 WriteLiteral(" class=\"btn btn-primary\"");
 
 WriteLiteral(">Save match</button>\r\n");
 
             
-            #line 35 "..\..\Views\EditLeagueMatch.cshtml"
+            #line 36 "..\..\Views\EditLeagueMatch.cshtml"
+            }
+        }
+        else
+        {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("            <p>You need at least two teams in the ");
+
+            
+            #line 40 "..\..\Views\EditLeagueMatch.cshtml"
+                                             Write(Model.Season.SeasonFullName());
+
+            
+            #line default
+            #line hidden
+WriteLiteral(" to edit a league match.</p>\r\n");
+
+            
+            #line 41 "..\..\Views\EditLeagueMatch.cshtml"
+            if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
+            {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                <p><a");
+
+WriteAttribute("href", Tuple.Create(" href=\"", 1655), Tuple.Create("\"", 1698)
+            
+            #line 43 "..\..\Views\EditLeagueMatch.cshtml"
+, Tuple.Create(Tuple.Create("", 1662), Tuple.Create<System.Object, System.Int32>(Model.Season.SeasonRoute
+            
+            #line default
+            #line hidden
+, 1662), false)
+, Tuple.Create(Tuple.Create("", 1687), Tuple.Create("/edit/teams", 1687), true)
+);
+
+WriteLiteral(" class=\"btn btn-secondary\"");
+
+WriteLiteral(">Edit teams</a></p>\r\n");
+
+            
+            #line 44 "..\..\Views\EditLeagueMatch.cshtml"
+            }
+            else
+            {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                <p>\r\n                    <a");
+
+WriteAttribute("href", Tuple.Create(" href=\"", 1837), Tuple.Create("\"", 1886)
+            
+            #line 48 "..\..\Views\EditLeagueMatch.cshtml"
+, Tuple.Create(Tuple.Create("", 1844), Tuple.Create<System.Object, System.Int32>(Model.Season.Competition.CompetitionRoute
+            
+            #line default
+            #line hidden
+, 1844), false)
+);
+
+WriteLiteral(">Contact the administrators of the ");
+
+            
+            #line 48 "..\..\Views\EditLeagueMatch.cshtml"
+                                                                                                      Write(Model.Season.Competition.CompetitionName);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</a>\r\n                    and ask them to add the teams playing in the ");
+
+            
+            #line 49 "..\..\Views\EditLeagueMatch.cshtml"
+                                                            Write(Model.Season.SeasonName());
+
+            
+            #line default
+            #line hidden
+WriteLiteral(", so that you can edit this match.\r\n                </p>\r\n");
+
+            
+            #line 51 "..\..\Views\EditLeagueMatch.cshtml"
+            }
         }
     }
     else
@@ -182,14 +260,14 @@ WriteLiteral(">Save match</button>\r\n");
             #line default
             #line hidden
             
-            #line 39 "..\..\Views\EditLeagueMatch.cshtml"
+            #line 56 "..\..\Views\EditLeagueMatch.cshtml"
    Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 39 "..\..\Views\EditLeagueMatch.cshtml"
+            #line 56 "..\..\Views\EditLeagueMatch.cshtml"
                                
     }
 

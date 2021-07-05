@@ -25,6 +25,7 @@ namespace Stoolball.Web.Matches
         private readonly ISeasonDataSource _seasonDataSource;
         private readonly ICreateMatchSeasonSelector _createMatchSeasonSelector;
         private readonly IEditMatchHelper _editMatchHelper;
+        private readonly IAuthorizationPolicy<Competition> _competitionAuthorizationPolicy;
 
         public CreateLeagueMatchController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -35,13 +36,15 @@ namespace Stoolball.Web.Matches
            ITeamDataSource teamDataSource,
            ISeasonDataSource seasonDataSource,
            ICreateMatchSeasonSelector createMatchSeasonSelector,
-           IEditMatchHelper editMatchHelper)
+           IEditMatchHelper editMatchHelper,
+           IAuthorizationPolicy<Competition> competitionAuthorizationPolicy)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
             _createMatchSeasonSelector = createMatchSeasonSelector ?? throw new ArgumentNullException(nameof(createMatchSeasonSelector));
             _editMatchHelper = editMatchHelper ?? throw new ArgumentNullException(nameof(editMatchHelper));
+            _competitionAuthorizationPolicy = competitionAuthorizationPolicy ?? throw new ArgumentNullException(nameof(competitionAuthorizationPolicy));
         }
 
         [HttpGet]
@@ -117,6 +120,11 @@ namespace Stoolball.Web.Matches
             }
 
             model.IsAuthorized[AuthorizedAction.CreateMatch] = User.Identity.IsAuthenticated;
+            if (model.Season != null && model.Season.Teams.Count <= 1 && model.Season.Competition != null)
+            {
+                _competitionAuthorizationPolicy.IsAuthorized(model.Season.Competition).TryGetValue(AuthorizedAction.EditCompetition, out var canEditCompetition);
+                model.IsAuthorized[AuthorizedAction.EditCompetition] = canEditCompetition;
+            }
 
             _editMatchHelper.ConfigureAddMatchModelMetadata(model);
 
