@@ -202,10 +202,14 @@ $selected_background: #555;
 }
 
 .nav-item-admin .dropdown-item > a:hover,
-.nav-item-admin .dropdown-item > a:focus,
-.nav-item-admin .dropdown-item > a:active {
+.nav-item-admin .dropdown-item > a:focus {
     @include remove-link-focus;
     background: $selected_background;
+}
+
+.nav-item-admin .dropdown-item > a:active {
+    @include remove-link-focus;
+    background: theme-color("primary");
 }
 
 @media print {

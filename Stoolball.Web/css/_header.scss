@@ -191,6 +191,11 @@ main {
     color: $white;
 }
 
+
+.header .dropdown-item > a:active {
+    background: theme-color("primary");
+}
+
 // Show a focus ring when navigating with the keyboard
 .header .dropdown > button:focus, .header .dropdown > button:active {
     @include header-focus-ring;
