@@ -283,27 +283,41 @@ WriteLiteral(">Statistics</em>\r\n        </li>\r\n    </ul>\r\n\r\n");
             #line hidden
             
             #line 50 "..\..\Views\CompetitionStatistics.cshtml"
-   Write(Html.Partial("_MostCatches", mostCatches));
+   Write(Html.Partial("_EconomyRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
             #line 50 "..\..\Views\CompetitionStatistics.cshtml"
-                                                  
+                                                                                                                                  
         
             
             #line default
             #line hidden
             
             #line 51 "..\..\Views\CompetitionStatistics.cshtml"
-   Write(Html.Partial("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
+   Write(Html.Partial("_MostCatches", mostCatches));
 
             
             #line default
             #line hidden
             
             #line 51 "..\..\Views\CompetitionStatistics.cshtml"
+                                                  
+        
+            
+            #line default
+            #line hidden
+            
+            #line 52 "..\..\Views\CompetitionStatistics.cshtml"
+   Write(Html.Partial("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
+
+            
+            #line default
+            #line hidden
+            
+            #line 52 "..\..\Views\CompetitionStatistics.cshtml"
                                                                                                                                   
     }
 

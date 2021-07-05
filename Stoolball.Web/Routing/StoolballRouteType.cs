@@ -92,6 +92,7 @@
         MostCatches,
         MostRunOuts,
         BattingAverage,
-        BowlingAverage
+        BowlingAverage,
+        EconomyRate
     }
 }

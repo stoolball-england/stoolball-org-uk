@@ -1,0 +1,32 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<BestStatistic>>
+@using Stoolball.Statistics
+@using Stoolball.Web.Statistics
+@using ClientDependency.Core.Mvc
+@{
+    Html.RequiresCss("/statistics/statistics.min.css");
+}
+@section canonical {@Html.Partial("_CanonicalUrl", new[] { "page" })}
+@section head {
+    @if (Model.StatisticsFilter.Paging.PageNumber == 1)
+    {
+        <meta name="robots" content="index, nofollow">
+    }
+    else
+    {
+        <meta name="robots" content="noindex, nofollow">
+    }
+}
+<div class="container-xl">
+    <h1>Best economy rate@(Model.StatisticsFilter)</h1>
+
+    @if (Model.Results.Any())
+    {
+        @Html.Partial("_StatisticsBasis")
+    }
+    else
+    {
+        @Html.Partial("_NoData")
+    }
+    <p>Players must have bowled at least <strong>@Model.StatisticsFilter.MinimumQualifyingInnings times</strong> to appear in this list.</p>
+    @Html.Partial("_EconomyRate")
+</div>

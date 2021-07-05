@@ -1235,6 +1235,10 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>BowlingAverage.generated.cs</LastGenOutput>
     </Content>
+    <Content Include="Views\EconomyRate.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EconomyRate.generated.cs</LastGenOutput>
+    </Content>
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -1361,6 +1365,7 @@
     <Compile Include="Matches\OnlySportCsvRecord.cs" />
     <Compile Include="Routing\RedirectBareDomainModule.cs" />
     <Compile Include="Statistics\BasePlayerViewModel.cs" />
+    <Compile Include="Statistics\EconomyRateController.cs" />
     <Compile Include="Statistics\BowlingAverageController.cs" />
     <Compile Include="Statistics\MostRunOutsController.cs" />
     <Compile Include="Statistics\MostCatchesController.cs" />
@@ -1396,6 +1401,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CreateTrainingSession.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EconomyRate.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EconomyRate.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\EditTournamentMatches.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1451,6 +1461,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>MostWickets.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_EconomyRate.generated.cs">
+      <DependentUpon>_EconomyRate.cshtml</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Views\Partials\_BowlingAverage.generated.cs">
       <DependentUpon>_BowlingAverage.cshtml</DependentUpon>
@@ -3030,6 +3045,10 @@
     <Content Include="Views\Partials\_BowlingAverage.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_BowlingAverage.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_EconomyRate.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_EconomyRate.generated.cs</LastGenOutput>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

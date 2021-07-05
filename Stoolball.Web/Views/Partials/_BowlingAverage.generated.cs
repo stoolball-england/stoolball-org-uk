@@ -383,7 +383,7 @@ WriteAttribute("href", Tuple.Create(" href=\"", 2914), Tuple.Create("\"", 2952)
 , Tuple.Create(Tuple.Create("", 2936), Tuple.Create("/bowling-average", 2936), true)
 );
 
-WriteLiteral(">Bowling averages – view all</a></p>\r\n");
+WriteLiteral(">Best bowling average – view all</a></p>\r\n");
 
             
             #line 58 "..\..\Views\Partials\_BowlingAverage.cshtml"

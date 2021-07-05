@@ -34,3 +34,18 @@ It's calculated in three places:
 - in `SqlServerPlayerSummaryStatisticsDataSource` for the summary statistics on a player's individual bowling statistics.
 - in `SqlServerBestPlayerAverageStatisticsDataSource` for the 'best bowling average' tables.
 - in `BowlingFiguresCalculator` for bowling figures in a match.
+
+## Economy rate
+
+Your economy rate is the average number of runs conceded for each over you bowl, including extras.
+
+- Completed overs are assumed to be 8 balls.
+- If runs conceded are recorded but not the number is balls bowled, a complete over is assumed.
+- Innings are not counted where overs are recorded runs conceded are not.
+- 'Best economy rate' tables only show players with a minimum number of qualifying innings, to avoid skewing the tables with outlier results from players who have hardly played.
+
+It's calculated in three places:
+
+- in `SqlServerPlayerSummaryStatisticsDataSource` for the summary statistics on a player's individual bowling statistics.
+- in `SqlServerBestPlayerAverageStatisticsDataSource` for the 'best economy rate' tables.
+- in `BowlingFiguresCalculator` for bowling figures in a match.

@@ -14,7 +14,7 @@
     <table class="statistics table-as-cards table-as-cards-reset-md">
         @if (Model.ShowCaption)
         {
-            <caption>Best batting average</caption>
+            <caption>Best economy rate</caption>
         }
         <thead>
             <tr>
@@ -26,7 +26,7 @@
                 }
                 <th scope="col" class="numeric statistic">Matches</th>
                 <th scope="col" class="numeric statistic">Innings</th>
-                <th scope="col" class="numeric statistic">Average</th>
+                <th scope="col" class="numeric statistic">Economy</th>
             </tr>
         </thead>
         <tbody>
@@ -45,7 +45,7 @@
                         }
                         <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Matches</span>@Model.Results[i].Result.TotalMatches</td>
                         <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Innings</span>@Model.Results[i].Result.TotalInnings</td>
-                        <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Average</span>@Math.Round(Model.Results[i].Result.Average.Value, 2)</td>
+                        <td data-stackable="true" class="numeric-md"><span class="table-as-cards__label" aria-hidden="true">Economy</span>@Math.Round(Model.Results[i].Result.Average.Value, 2)</td>
                     </tr>
                 }
             }
@@ -54,7 +54,7 @@
     }
     if (Model.ShowLinkOnly)
     {
-        <p><a href="@Request.RawUrl/batting-average">Best batting average – view all</a></p>
+        <p><a href="@Request.RawUrl/economy-rate">Best economy rate – view all</a></p>
     }
     else
     {

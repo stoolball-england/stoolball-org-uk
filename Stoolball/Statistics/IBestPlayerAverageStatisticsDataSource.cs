@@ -16,6 +16,11 @@ namespace Stoolball.Statistics
         Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBowlingAverage(StatisticsFilter filter);
 
         /// <summary>
+        /// Reads players matching the supplied filter and their bowling economy rates, sorted with the players with the best economy rates first
+        /// </summary>
+        Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestEconomyRate(StatisticsFilter filter);
+
+        /// <summary>
         /// Reads how many players matching the supplied filter have enough data to calculate a batting average.
         /// </summary>
         Task<int> ReadTotalPlayersWithBattingAverage(StatisticsFilter filter);
@@ -24,5 +29,10 @@ namespace Stoolball.Statistics
         /// Reads how many players matching the supplied filter have enough data to calculate a bowling average.
         /// </summary>
         Task<int> ReadTotalPlayersWithBowlingAverage(StatisticsFilter filter);
+
+        /// <summary>
+        /// Reads how many players matching the supplied filter have enough data to calculate a bowling economy rate.
+        /// </summary>
+        Task<int> ReadTotalPlayersWithEconomyRate(StatisticsFilter filter);
     }
 }

@@ -33,7 +33,15 @@ namespace Stoolball.Data.SqlServer
         {
             filter = filter ?? new StatisticsFilter();
 
-            return await ReadBestPlayerTotal("RunsConceded", "Wickets", "ASC", false, $"AND RunsConceded IS NOT NULL", filter).ConfigureAwait(false);
+            return await ReadBestPlayerTotal("RunsConceded", "Wickets", "ASC", true, $"AND RunsConceded IS NOT NULL", filter).ConfigureAwait(false);
+        }
+
+        ///  <inheritdoc/>
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestEconomyRate(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+
+            return await ReadBestPlayerTotal("RunsConceded", $"CAST(BallsBowled AS DECIMAL)/{StatisticsConstants.BALLS_PER_OVER}", "ASC", true, $"AND RunsConceded IS NOT NULL", filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
@@ -50,6 +58,14 @@ namespace Stoolball.Data.SqlServer
             filter = filter ?? new StatisticsFilter();
 
             return await ReadTotalPlayersWithData("RunsConceded", "Wickets", filter).ConfigureAwait(false);
+        }
+
+        ///  <inheritdoc/>
+        public async Task<int> ReadTotalPlayersWithEconomyRate(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+
+            return await ReadTotalPlayersWithData("RunsConceded", $"CAST(BallsBowled AS DECIMAL)/{StatisticsConstants.BALLS_PER_OVER}", filter).ConfigureAwait(false);
         }
 
         private async Task<int> ReadTotalPlayersWithData(string divideThisField, string byThisField, StatisticsFilter filter)
