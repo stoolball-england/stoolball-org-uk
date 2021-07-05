@@ -608,23 +608,23 @@ WriteLiteral(" has been deleted.</p>\r\n");
             #line hidden
 WriteLiteral("                <p><a");
 
-WriteLiteral(" class=\"btn btn-primary\"");
+WriteLiteral(" class=\"btn btn-primary btn-back\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4895), Tuple.Create("\"", 4933)
+WriteAttribute("href", Tuple.Create(" href=\"", 4904), Tuple.Create("\"", 4942)
             
             #line 104 "..\..\Views\DeleteMatch.cshtml"
-, Tuple.Create(Tuple.Create("", 4902), Tuple.Create<System.Object, System.Int32>(Model.Match.Season.SeasonRoute
+, Tuple.Create(Tuple.Create("", 4911), Tuple.Create<System.Object, System.Int32>(Model.Match.Season.SeasonRoute
             
             #line default
             #line hidden
-, 4902), false)
+, 4911), false)
 );
 
 WriteLiteral(">Back to ");
 
             
             #line 104 "..\..\Views\DeleteMatch.cshtml"
-                                                                                        Write(Model.Match.Season.SeasonFullName());
+                                                                                                 Write(Model.Match.Season.SeasonFullName());
 
             
             #line default
@@ -644,14 +644,14 @@ WriteLiteral("                <p><a");
 
 WriteLiteral(" class=\"btn btn-primary btn-back\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 5127), Tuple.Create("\"", 5173)
+WriteAttribute("href", Tuple.Create(" href=\"", 5136), Tuple.Create("\"", 5182)
             
             #line 108 "..\..\Views\DeleteMatch.cshtml"
-, Tuple.Create(Tuple.Create("", 5134), Tuple.Create<System.Object, System.Int32>(Model.Match.Tournament.TournamentRoute
+, Tuple.Create(Tuple.Create("", 5143), Tuple.Create<System.Object, System.Int32>(Model.Match.Tournament.TournamentRoute
             
             #line default
             #line hidden
-, 5134), false)
+, 5143), false)
 );
 
 WriteLiteral(">Back to ");
@@ -678,14 +678,14 @@ WriteLiteral("                <p><a");
 
 WriteLiteral(" class=\"btn btn-primary btn-back\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 5333), Tuple.Create("\"", 5367)
+WriteAttribute("href", Tuple.Create(" href=\"", 5342), Tuple.Create("\"", 5376)
             
             #line 112 "..\..\Views\DeleteMatch.cshtml"
-, Tuple.Create(Tuple.Create("", 5340), Tuple.Create<System.Object, System.Int32>(Constants.Pages.MatchesUrl
+, Tuple.Create(Tuple.Create("", 5349), Tuple.Create<System.Object, System.Int32>(Constants.Pages.MatchesUrl
             
             #line default
             #line hidden
-, 5340), false)
+, 5349), false)
 );
 
 WriteLiteral(">Back to ");
