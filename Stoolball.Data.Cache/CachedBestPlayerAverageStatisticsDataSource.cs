@@ -29,6 +29,14 @@ namespace Stoolball.Data.Cache
             return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadBestBattingAverage(filter).ConfigureAwait(false), new Context(nameof(ReadBestBattingAverage) + _statisticsFilterSerializer.Serialize(filter)));
         }
 
+        /// <inheritdoc />
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBattingStrikeRate(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
+            return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadBestBattingStrikeRate(filter).ConfigureAwait(false), new Context(nameof(ReadBestBattingStrikeRate) + _statisticsFilterSerializer.Serialize(filter)));
+        }
+
         public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBowlingAverage(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
@@ -51,6 +59,15 @@ namespace Stoolball.Data.Cache
             return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadTotalPlayersWithBattingAverage(filter).ConfigureAwait(false), new Context(nameof(ReadTotalPlayersWithBattingAverage) + _statisticsFilterSerializer.Serialize(filter)));
         }
 
+        /// <inheritdoc />
+        public async Task<int> ReadTotalPlayersWithBattingStrikeRate(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
+            return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadTotalPlayersWithBattingStrikeRate(filter).ConfigureAwait(false), new Context(nameof(ReadTotalPlayersWithBattingStrikeRate) + _statisticsFilterSerializer.Serialize(filter)));
+        }
+
+        /// <inheritdoc />
         public async Task<int> ReadTotalPlayersWithBowlingAverage(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
@@ -58,6 +75,7 @@ namespace Stoolball.Data.Cache
             return await cachePolicy.ExecuteAsync(async context => await _statisticsDataSource.ReadTotalPlayersWithBowlingAverage(filter).ConfigureAwait(false), new Context(nameof(ReadTotalPlayersWithBowlingAverage) + _statisticsFilterSerializer.Serialize(filter)));
         }
 
+        /// <inheritdoc />
         public async Task<int> ReadTotalPlayersWithEconomyRate(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();

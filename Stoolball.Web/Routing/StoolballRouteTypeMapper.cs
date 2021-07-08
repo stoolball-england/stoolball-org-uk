@@ -100,7 +100,8 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.MostRunOuts, typeof(MostRunOutsController) },
             { StoolballRouteType.BattingAverage, typeof(BattingAverageController) },
             { StoolballRouteType.BowlingAverage, typeof(BowlingAverageController) },
-            { StoolballRouteType.EconomyRate, typeof(EconomyRateController) }
+            { StoolballRouteType.EconomyRate, typeof(EconomyRateController) },
+            { StoolballRouteType.BattingStrikeRate, typeof(BattingStrikeRateController) }
         };
 
         public Type MapRouteTypeToController(string unparsedRouteType)

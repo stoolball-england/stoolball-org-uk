@@ -25,7 +25,7 @@ namespace Stoolball.Data.SqlServer
         {
             filter = filter ?? new StatisticsFilter();
 
-            return await ReadBestPlayerTotal("RunsScored", "CAST(PlayerWasDismissed AS INT)", "DESC", false, $"AND RunsScored IS NOT NULL", filter).ConfigureAwait(false);
+            return await ReadBestPlayerAverage("RunsScored", "CAST(PlayerWasDismissed AS INT)", 1, "DESC", false, $"AND RunsScored IS NOT NULL", filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
@@ -33,7 +33,7 @@ namespace Stoolball.Data.SqlServer
         {
             filter = filter ?? new StatisticsFilter();
 
-            return await ReadBestPlayerTotal("RunsConceded", "Wickets", "ASC", true, $"AND RunsConceded IS NOT NULL", filter).ConfigureAwait(false);
+            return await ReadBestPlayerAverage("RunsConceded", "Wickets", 1, "ASC", true, $"AND RunsConceded IS NOT NULL", filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
@@ -41,7 +41,15 @@ namespace Stoolball.Data.SqlServer
         {
             filter = filter ?? new StatisticsFilter();
 
-            return await ReadBestPlayerTotal("RunsConceded", $"CAST(BallsBowled AS DECIMAL)/{StatisticsConstants.BALLS_PER_OVER}", "ASC", true, $"AND RunsConceded IS NOT NULL", filter).ConfigureAwait(false);
+            return await ReadBestPlayerAverage("RunsConceded", $"CAST(BallsBowled AS DECIMAL)/{StatisticsConstants.BALLS_PER_OVER}", 1, "ASC", true, $"AND RunsConceded IS NOT NULL", filter).ConfigureAwait(false);
+        }
+
+        ///  <inheritdoc/>
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBattingStrikeRate(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+
+            return await ReadBestPlayerAverage("RunsScored", "BallsFaced", 100, "DESC", false, $"AND RunsScored IS NOT NULL AND BallsFaced IS NOT NULL", filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
@@ -49,7 +57,7 @@ namespace Stoolball.Data.SqlServer
         {
             filter = filter ?? new StatisticsFilter();
 
-            return await ReadTotalPlayersWithData("RunsScored", "CAST(PlayerWasDismissed AS INT)", filter).ConfigureAwait(false);
+            return await ReadTotalPlayersWithData("RunsScored", "CAST(PlayerWasDismissed AS INT)", false, filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
@@ -57,7 +65,7 @@ namespace Stoolball.Data.SqlServer
         {
             filter = filter ?? new StatisticsFilter();
 
-            return await ReadTotalPlayersWithData("RunsConceded", "Wickets", filter).ConfigureAwait(false);
+            return await ReadTotalPlayersWithData("RunsConceded", "Wickets", false, filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
@@ -65,17 +73,24 @@ namespace Stoolball.Data.SqlServer
         {
             filter = filter ?? new StatisticsFilter();
 
-            return await ReadTotalPlayersWithData("RunsConceded", $"CAST(BallsBowled AS DECIMAL)/{StatisticsConstants.BALLS_PER_OVER}", filter).ConfigureAwait(false);
+            return await ReadTotalPlayersWithData("RunsConceded", $"CAST(BallsBowled AS DECIMAL)/{StatisticsConstants.BALLS_PER_OVER}", false, filter).ConfigureAwait(false);
         }
 
-        private async Task<int> ReadTotalPlayersWithData(string divideThisField, string byThisField, StatisticsFilter filter)
+        ///  <inheritdoc/>
+        public async Task<int> ReadTotalPlayersWithBattingStrikeRate(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+
+            return await ReadTotalPlayersWithData("RunsScored", "BallsFaced", true, filter).ConfigureAwait(false);
+        }
+        private async Task<int> ReadTotalPlayersWithData(string divideThisField, string byThisField, bool requireBothFields, StatisticsFilter filter)
         {
             var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var sql = $@"SELECT COUNT(PlayerId) FROM (
                             SELECT PlayerId FROM {Tables.PlayerInMatchStatistics} 
-                            WHERE {divideThisField} IS NOT NULL {where} 
+                            WHERE {divideThisField} IS NOT NULL {(requireBothFields ? $"AND {byThisField} IS NOT NULL" : string.Empty)} {where} 
                             GROUP BY PlayerId 
                             HAVING SUM({byThisField}) > 0 AND 
                                    COUNT(PlayerInMatchStatisticsId) >= @MinimumQualifyingInnings
@@ -85,7 +100,7 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestPlayerTotal(string divideThisField, string byThisField, string sortOrder, bool isFieldingStatistic, string inningsFilter, StatisticsFilter filter)
+        private async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestPlayerAverage(string divideThisField, string byThisField, int multiplier, string sortOrder, bool isFieldingStatistic, string inningsFilter, StatisticsFilter filter)
         {
             var clonedFilter = filter.Clone();
             clonedFilter.SwapBattingFirstFilter = isFieldingStatistic;
@@ -93,7 +108,7 @@ namespace Stoolball.Data.SqlServer
 
             var sql = $@"SELECT PlayerId, PlayerRoute, TotalMatches, TotalInnings, Average
                          FROM(
-                            SELECT PlayerId, PlayerRoute, CAST(SUM({divideThisField}) AS DECIMAL) / SUM({byThisField}) AS Average,
+                            SELECT PlayerId, PlayerRoute, (CAST(SUM({divideThisField}) AS DECIMAL) / SUM({byThisField}))*{multiplier} AS Average,
 		                                (SELECT COUNT(DISTINCT MatchId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS TotalMatches,
 		                                (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {inningsFilter} {where}) AS TotalInnings
                                  FROM {Tables.PlayerInMatchStatistics} AS s 

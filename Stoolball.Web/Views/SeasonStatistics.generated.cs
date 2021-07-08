@@ -327,83 +327,97 @@ WriteLiteral(">Statistics</em>\r\n        </li>\r\n    </ul>\r\n\r\n");
             #line hidden
             
             #line 64 "..\..\Views\SeasonStatistics.cshtml"
-   Write(Html.Partial("_BowlingFigures", bowlingFigures));
+   Write(Html.Partial("_BattingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
             #line 64 "..\..\Views\SeasonStatistics.cshtml"
+                                                                                                                                        
+        
+            
+            #line default
+            #line hidden
+            
+            #line 65 "..\..\Views\SeasonStatistics.cshtml"
+   Write(Html.Partial("_BowlingFigures", bowlingFigures));
+
+            
+            #line default
+            #line hidden
+            
+            #line 65 "..\..\Views\SeasonStatistics.cshtml"
                                                         
         
             
             #line default
             #line hidden
             
-            #line 65 "..\..\Views\SeasonStatistics.cshtml"
+            #line 66 "..\..\Views\SeasonStatistics.cshtml"
    Write(Html.Partial("_MostWickets", mostWickets));
 
             
             #line default
             #line hidden
             
-            #line 65 "..\..\Views\SeasonStatistics.cshtml"
+            #line 66 "..\..\Views\SeasonStatistics.cshtml"
                                                   
         
             
             #line default
             #line hidden
             
-            #line 66 "..\..\Views\SeasonStatistics.cshtml"
+            #line 67 "..\..\Views\SeasonStatistics.cshtml"
    Write(Html.Partial("_BowlingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
-            #line 66 "..\..\Views\SeasonStatistics.cshtml"
+            #line 67 "..\..\Views\SeasonStatistics.cshtml"
                                                                                                                                      
         
             
             #line default
             #line hidden
             
-            #line 67 "..\..\Views\SeasonStatistics.cshtml"
+            #line 68 "..\..\Views\SeasonStatistics.cshtml"
    Write(Html.Partial("_EconomyRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
-            #line 67 "..\..\Views\SeasonStatistics.cshtml"
+            #line 68 "..\..\Views\SeasonStatistics.cshtml"
                                                                                                                                   
         
             
             #line default
             #line hidden
             
-            #line 68 "..\..\Views\SeasonStatistics.cshtml"
+            #line 69 "..\..\Views\SeasonStatistics.cshtml"
    Write(Html.Partial("_MostCatches", mostCatches));
 
             
             #line default
             #line hidden
             
-            #line 68 "..\..\Views\SeasonStatistics.cshtml"
+            #line 69 "..\..\Views\SeasonStatistics.cshtml"
                                                   
         
             
             #line default
             #line hidden
             
-            #line 69 "..\..\Views\SeasonStatistics.cshtml"
+            #line 70 "..\..\Views\SeasonStatistics.cshtml"
    Write(Html.Partial("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
-            #line 69 "..\..\Views\SeasonStatistics.cshtml"
+            #line 70 "..\..\Views\SeasonStatistics.cshtml"
                                                                                                                                   
     }
 
@@ -413,7 +427,7 @@ WriteLiteral(">Statistics</em>\r\n        </li>\r\n    </ul>\r\n\r\n");
 WriteLiteral("    ");
 
             
-            #line 71 "..\..\Views\SeasonStatistics.cshtml"
+            #line 72 "..\..\Views\SeasonStatistics.cshtml"
      if (Model.Context.Competition.Seasons.Count > 1)
     {
         var previous = Model.Context.Competition.Seasons.FirstOrDefault(x => x.FromYear <= Model.Context.FromYear && x.UntilYear <= Model.Context.UntilYear && x.SeasonId != Model.Context.SeasonId);
@@ -435,13 +449,13 @@ WriteLiteral(" class=\"d-print-none\"");
 WriteLiteral(">\r\n");
 
             
-            #line 77 "..\..\Views\SeasonStatistics.cshtml"
+            #line 78 "..\..\Views\SeasonStatistics.cshtml"
             
             
             #line default
             #line hidden
             
-            #line 77 "..\..\Views\SeasonStatistics.cshtml"
+            #line 78 "..\..\Views\SeasonStatistics.cshtml"
              if (previous != null)
             {
 
@@ -450,15 +464,15 @@ WriteLiteral(">\r\n");
             #line hidden
 WriteLiteral("                <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4409), Tuple.Create("\"", 4448)
+WriteAttribute("href", Tuple.Create(" href=\"", 4547), Tuple.Create("\"", 4586)
             
-            #line 79 "..\..\Views\SeasonStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 4416), Tuple.Create<System.Object, System.Int32>(previous.SeasonRoute
+            #line 80 "..\..\Views\SeasonStatistics.cshtml"
+, Tuple.Create(Tuple.Create("", 4554), Tuple.Create<System.Object, System.Int32>(previous.SeasonRoute
             
             #line default
             #line hidden
-, 4416), false)
-, Tuple.Create(Tuple.Create("", 4437), Tuple.Create("/statistics", 4437), true)
+, 4554), false)
+, Tuple.Create(Tuple.Create("", 4575), Tuple.Create("/statistics", 4575), true)
 );
 
 WriteLiteral(" class=\"btn btn-secondary btn-back\"");
@@ -466,7 +480,7 @@ WriteLiteral(" class=\"btn btn-secondary btn-back\"");
 WriteLiteral(">Previous season</a>\r\n");
 
             
-            #line 80 "..\..\Views\SeasonStatistics.cshtml"
+            #line 81 "..\..\Views\SeasonStatistics.cshtml"
             }
 
             
@@ -475,7 +489,7 @@ WriteLiteral(">Previous season</a>\r\n");
 WriteLiteral("            ");
 
             
-            #line 81 "..\..\Views\SeasonStatistics.cshtml"
+            #line 82 "..\..\Views\SeasonStatistics.cshtml"
              if (next != null)
             {
 
@@ -484,15 +498,15 @@ WriteLiteral("            ");
             #line hidden
 WriteLiteral("                <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4586), Tuple.Create("\"", 4621)
+WriteAttribute("href", Tuple.Create(" href=\"", 4724), Tuple.Create("\"", 4759)
             
-            #line 83 "..\..\Views\SeasonStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 4593), Tuple.Create<System.Object, System.Int32>(next.SeasonRoute
+            #line 84 "..\..\Views\SeasonStatistics.cshtml"
+, Tuple.Create(Tuple.Create("", 4731), Tuple.Create<System.Object, System.Int32>(next.SeasonRoute
             
             #line default
             #line hidden
-, 4593), false)
-, Tuple.Create(Tuple.Create("", 4610), Tuple.Create("/statistics", 4610), true)
+, 4731), false)
+, Tuple.Create(Tuple.Create("", 4748), Tuple.Create("/statistics", 4748), true)
 );
 
 WriteLiteral(" class=\"btn btn-secondary\"");
@@ -500,7 +514,7 @@ WriteLiteral(" class=\"btn btn-secondary\"");
 WriteLiteral(">Next season</a>\r\n");
 
             
-            #line 84 "..\..\Views\SeasonStatistics.cshtml"
+            #line 85 "..\..\Views\SeasonStatistics.cshtml"
             }
 
             
@@ -508,15 +522,15 @@ WriteLiteral(">Next season</a>\r\n");
             #line hidden
 WriteLiteral("            <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4695), Tuple.Create("\"", 4756)
+WriteAttribute("href", Tuple.Create(" href=\"", 4833), Tuple.Create("\"", 4894)
             
-            #line 85 "..\..\Views\SeasonStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 4702), Tuple.Create<System.Object, System.Int32>(Model.Context.Competition.CompetitionRoute
+            #line 86 "..\..\Views\SeasonStatistics.cshtml"
+, Tuple.Create(Tuple.Create("", 4840), Tuple.Create<System.Object, System.Int32>(Model.Context.Competition.CompetitionRoute
             
             #line default
             #line hidden
-, 4702), false)
-, Tuple.Create(Tuple.Create("", 4745), Tuple.Create("/statistics", 4745), true)
+, 4840), false)
+, Tuple.Create(Tuple.Create("", 4883), Tuple.Create("/statistics", 4883), true)
 );
 
 WriteLiteral(" class=\"btn btn-secondary\"");
@@ -524,7 +538,7 @@ WriteLiteral(" class=\"btn btn-secondary\"");
 WriteLiteral(">All seasons</a>\r\n        </p>\r\n");
 
             
-            #line 87 "..\..\Views\SeasonStatistics.cshtml"
+            #line 88 "..\..\Views\SeasonStatistics.cshtml"
     }
 
             

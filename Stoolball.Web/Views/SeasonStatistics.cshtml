@@ -61,6 +61,7 @@
         @Html.Partial("_IndividualScores", individualScores)
         @Html.Partial("_MostRuns", mostRuns)
         @Html.Partial("_BattingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true })
+        @Html.Partial("_BattingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true })
         @Html.Partial("_BowlingFigures", bowlingFigures)
         @Html.Partial("_MostWickets", mostWickets)
         @Html.Partial("_BowlingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true })

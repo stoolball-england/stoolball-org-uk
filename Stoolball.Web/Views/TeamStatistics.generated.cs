@@ -294,83 +294,97 @@ WriteLiteral(">Statistics</em>\r\n        </li>\r\n    </ul>\r\n\r\n\r\n");
             #line hidden
             
             #line 57 "..\..\Views\TeamStatistics.cshtml"
-   Write(Html.Partial("_BowlingFigures", bowlingFigures));
+   Write(Html.Partial("_BattingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
             #line 57 "..\..\Views\TeamStatistics.cshtml"
+                                                                                                                                        
+        
+            
+            #line default
+            #line hidden
+            
+            #line 58 "..\..\Views\TeamStatistics.cshtml"
+   Write(Html.Partial("_BowlingFigures", bowlingFigures));
+
+            
+            #line default
+            #line hidden
+            
+            #line 58 "..\..\Views\TeamStatistics.cshtml"
                                                         
         
             
             #line default
             #line hidden
             
-            #line 58 "..\..\Views\TeamStatistics.cshtml"
+            #line 59 "..\..\Views\TeamStatistics.cshtml"
    Write(Html.Partial("_MostWickets", mostWickets));
 
             
             #line default
             #line hidden
             
-            #line 58 "..\..\Views\TeamStatistics.cshtml"
+            #line 59 "..\..\Views\TeamStatistics.cshtml"
                                                   
         
             
             #line default
             #line hidden
             
-            #line 59 "..\..\Views\TeamStatistics.cshtml"
+            #line 60 "..\..\Views\TeamStatistics.cshtml"
    Write(Html.Partial("_BowlingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
-            #line 59 "..\..\Views\TeamStatistics.cshtml"
+            #line 60 "..\..\Views\TeamStatistics.cshtml"
                                                                                                                                      
         
             
             #line default
             #line hidden
             
-            #line 60 "..\..\Views\TeamStatistics.cshtml"
+            #line 61 "..\..\Views\TeamStatistics.cshtml"
    Write(Html.Partial("_EconomyRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
-            #line 60 "..\..\Views\TeamStatistics.cshtml"
+            #line 61 "..\..\Views\TeamStatistics.cshtml"
                                                                                                                                   
         
             
             #line default
             #line hidden
             
-            #line 61 "..\..\Views\TeamStatistics.cshtml"
+            #line 62 "..\..\Views\TeamStatistics.cshtml"
    Write(Html.Partial("_MostCatches", mostCatches));
 
             
             #line default
             #line hidden
             
-            #line 61 "..\..\Views\TeamStatistics.cshtml"
+            #line 62 "..\..\Views\TeamStatistics.cshtml"
                                                   
         
             
             #line default
             #line hidden
             
-            #line 62 "..\..\Views\TeamStatistics.cshtml"
+            #line 63 "..\..\Views\TeamStatistics.cshtml"
    Write(Html.Partial("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
-            #line 62 "..\..\Views\TeamStatistics.cshtml"
+            #line 63 "..\..\Views\TeamStatistics.cshtml"
                                                                                                                                   
     }
 

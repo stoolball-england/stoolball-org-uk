@@ -93,6 +93,7 @@
         MostRunOuts,
         BattingAverage,
         BowlingAverage,
-        EconomyRate
+        EconomyRate,
+        BattingStrikeRate
     }
 }
