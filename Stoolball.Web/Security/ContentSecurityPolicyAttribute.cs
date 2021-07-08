@@ -16,6 +16,7 @@ namespace Stoolball.Web.Security
         private const string CONNECT_SRC = "connect-src";
         private const string TRUSTED_TYPES = "require-trusted-types-for";
         private const string MANIFEST_SRC = "manifest-src";
+        private const string REPORT_URI = "report-uri";
         private const string SOURCE_SEPARATOR = " ";
         private const string DIRECTIVE_SEPARATOR = ";";
 
@@ -76,8 +77,8 @@ namespace Stoolball.Web.Security
                 SetupTrustedTypes();
             }
 
-            filterContext.HttpContext.Response.Headers.Add("Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, FRAME_SRC, CONNECT_SRC, MANIFEST_SRC, TRUSTED_TYPES));
-            filterContext.HttpContext.Response.Headers.Add("X-Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, FRAME_SRC, MANIFEST_SRC, CONNECT_SRC));
+            filterContext.HttpContext.Response.Headers.Add("Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, FRAME_SRC, CONNECT_SRC, MANIFEST_SRC, TRUSTED_TYPES, REPORT_URI));
+            filterContext.HttpContext.Response.Headers.Add("X-Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, FRAME_SRC, MANIFEST_SRC, CONNECT_SRC, REPORT_URI));
         }
 
         private void SetupCloudFlareAnalytics()
@@ -165,6 +166,7 @@ namespace Stoolball.Web.Security
             AddSource(CONNECT_SRC, "'self'");
             AddSource(MANIFEST_SRC, "'self'");
             AddSource(FONT_SRC, "'self'");
+            AddSource(REPORT_URI, "https://stoolball.report-uri.com/r/d/csp/enforce");
         }
 
         private void SetupDirectives()
@@ -179,6 +181,7 @@ namespace Stoolball.Web.Security
             _directives.Add(TRUSTED_TYPES, new List<string>());
             _directives.Add(MANIFEST_SRC, new List<string>());
             _directives.Add(FRAME_SRC, new List<string>());
+            _directives.Add(REPORT_URI, new List<string>());
         }
     }
 }
