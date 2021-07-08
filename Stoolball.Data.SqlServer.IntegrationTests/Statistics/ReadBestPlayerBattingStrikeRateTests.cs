@@ -36,6 +36,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var expected = playerInnings
                 .Where(x => x.RunsScored.HasValue && x.BallsFaced.HasValue)
                 .Select(x => x.Batter.Player.PlayerId)
+                .Where(x => playerInnings.Any(pi => pi.Batter.Player.PlayerId == x && pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced > 0))
                 .Distinct()
                 .Count();
             Assert.Equal(expected, result);
@@ -57,8 +58,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var expected = playerInnings
                 .Where(x => x.RunsScored.HasValue && x.BallsFaced.HasValue)
                 .Select(x => x.Batter.Player.PlayerId)
-                .Where(x =>
-                    playerInnings.Count(pi => pi.Batter.Player.PlayerId == x && pi.RunsScored.HasValue && pi.BallsFaced.HasValue) >= filter.MinimumQualifyingInnings)
+                .Where(x => playerInnings.Any(pi => pi.Batter.Player.PlayerId == x && pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced > 0) &&
+                            playerInnings.Count(pi => pi.Batter.Player.PlayerId == x && pi.RunsScored.HasValue && pi.BallsFaced.HasValue) >= filter.MinimumQualifyingInnings)
                 .Distinct()
                 .Count();
             Assert.Equal(expected, result);
@@ -82,6 +83,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var expected = playerInnings
                 .Where(x => x.RunsScored.HasValue && x.BallsFaced.HasValue)
                 .Select(x => x.Batter.Player.PlayerId)
+                .Where(x => playerInnings.Any(pi => pi.Batter.Player.PlayerId == x && pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced > 0))
                 .Distinct()
                 .Count();
             Assert.Equal(expected, result);
@@ -105,6 +107,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var expected = playerInnings
                 .Where(x => x.RunsScored.HasValue && x.BallsFaced.HasValue)
                 .Select(x => x.Batter.Player.PlayerId)
+                .Where(x => playerInnings.Any(pi => pi.Batter.Player.PlayerId == x && pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced > 0))
                 .Distinct()
                 .Count();
             Assert.Equal(expected, result);
@@ -127,6 +130,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var expected = playerInnings
                 .Where(x => x.RunsScored.HasValue && x.BallsFaced.HasValue)
                 .Select(x => x.Batter.Player.PlayerId)
+                .Where(x => playerInnings.Any(pi => pi.Batter.Player.PlayerId == x && pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced > 0))
                 .Distinct()
                 .Count();
             Assert.Equal(expected, result);
@@ -149,6 +153,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var expected = playerInnings
                 .Where(x => x.RunsScored.HasValue && x.BallsFaced.HasValue)
                 .Select(x => x.Batter.Player.PlayerId)
+                .Where(x => playerInnings.Any(pi => pi.Batter.Player.PlayerId == x && pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced > 0))
                 .Distinct()
                 .Count();
             Assert.Equal(expected, result);
@@ -172,6 +177,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var expected = playerInnings
                 .Where(x => x.RunsScored.HasValue && x.BallsFaced.HasValue)
                 .Select(x => x.Batter.Player.PlayerId)
+                .Where(x => playerInnings.Any(pi => pi.Batter.Player.PlayerId == x && pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced > 0))
                 .Distinct()
                 .Count();
             Assert.Equal(expected, result);
@@ -193,7 +199,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                                                             .SelectMany(m => m.MatchInnings)
                                                                             .SelectMany(mi => mi.PlayerInnings)
                                                                             .Where(pi => pi.Batter.Player.PlayerId == x.PlayerId)
-                                                                            .Any(pi => pi.RunsScored.HasValue && pi.BallsFaced.HasValue));
+                                                                            .Any(pi => pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced.Value > 0));
             foreach (var player in expected)
             {
                 var result = results.SingleOrDefault(x => x.Result.Player.PlayerId == player.PlayerId);
@@ -220,7 +226,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                                                             .SelectMany(m => m.MatchInnings)
                                                                             .SelectMany(mi => mi.PlayerInnings)
                                                                             .Where(pi => pi.Batter.Player.PlayerId == x.PlayerId)
-                                                                            .Any(pi => pi.RunsScored.HasValue && pi.BallsFaced.HasValue));
+                                                                            .Any(pi => pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced.Value > 0));
             foreach (var player in expected)
             {
                 var result = results.SingleOrDefault(x => x.Result.Player.PlayerId == player.PlayerId);
@@ -375,7 +381,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                             .SelectMany(m => m.MatchInnings)
                             .Where(matchInningsFilter)
                             .SelectMany(mi => mi.PlayerInnings)
-                            .Any(pi => pi.Batter.Player.PlayerId == p.PlayerId && pi.RunsScored.HasValue && pi.BallsFaced.HasValue) ?
+                            .Any(pi => pi.Batter.Player.PlayerId == p.PlayerId && pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced.Value > 0) ?
                                 (((decimal)_databaseFixture.TestData.Matches
                                 .Where(matchFilter)
                                 .SelectMany(m => m.MatchInnings)
@@ -432,7 +438,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var results = await dataSource.ReadBestBattingStrikeRate(filter).ConfigureAwait(false);
 
             var playerInnings = _databaseFixture.TestData.Matches.SelectMany(m => m.MatchInnings).SelectMany(mi => mi.PlayerInnings);
-            var expected = _databaseFixture.TestData.Players.Where(x => playerInnings.Count(pi => pi.Batter.Player.PlayerId == x.PlayerId && pi.RunsScored.HasValue && pi.BallsFaced.HasValue) >= filter.MinimumQualifyingInnings);
+            var expected = _databaseFixture.TestData.Players.Where(x => playerInnings.Any(pi => pi.Batter.Player.PlayerId == x.PlayerId && pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced > 0) &&
+                                                                        playerInnings.Count(pi => pi.Batter.Player.PlayerId == x.PlayerId && pi.RunsScored.HasValue && pi.BallsFaced.HasValue) >= filter.MinimumQualifyingInnings);
 
             Assert.Equal(expected.Count(), results.Count());
             foreach (var player in expected)
@@ -455,7 +462,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var expected = _databaseFixture.TestData.Players.Where(x => _databaseFixture.TestData.Matches
                                                                    .SelectMany(m => m.MatchInnings)
                                                                    .SelectMany(mi => mi.PlayerInnings)
-                                                                   .Any(pi => pi.Batter.Player.PlayerId == x.PlayerId && pi.RunsScored.HasValue && pi.BallsFaced.HasValue)
+                                                                   .Any(pi => pi.Batter.Player.PlayerId == x.PlayerId && pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced.Value > 0)
                                                                    );
 
             Assert.Equal(expected.Count(), results.Count());
@@ -488,7 +495,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                                                  .SelectMany(m => m.MatchInnings)
                                                                  .Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId.Value)
                                                                  .SelectMany(mi => mi.PlayerInnings)
-                                                                 .Any(pi => pi.Batter.Player.PlayerId == x.PlayerId && pi.RunsScored.HasValue && pi.BallsFaced.HasValue)
+                                                                 .Any(pi => pi.Batter.Player.PlayerId == x.PlayerId && pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced.Value > 0)
                                                                  );
 
             Assert.Equal(expected.Count(), results.Count());
@@ -522,7 +529,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                                                  .SelectMany(m => m.MatchInnings)
                                                                  .Where(i => i.BattingTeam.Team.TeamId == _databaseFixture.TestData.TeamWithFullDetails.TeamId.Value)
                                                                  .SelectMany(mi => mi.PlayerInnings)
-                                                                 .Any(pi => pi.Batter.Player.PlayerId == x.PlayerId && pi.RunsScored.HasValue && pi.BallsFaced.HasValue)
+                                                                 .Any(pi => pi.Batter.Player.PlayerId == x.PlayerId && pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced.Value > 0)
                                                                  );
 
             Assert.Equal(expected.Count(), results.Count());
@@ -555,7 +562,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                                      .Where(x => x.MatchLocation?.MatchLocationId == _databaseFixture.TestData.MatchLocations.First().MatchLocationId)
                                                      .SelectMany(m => m.MatchInnings)
                                                      .SelectMany(mi => mi.PlayerInnings)
-                                                     .Any(pi => pi.Batter.Player.PlayerId == x.PlayerId && pi.RunsScored.HasValue && pi.BallsFaced.HasValue)
+                                                     .Any(pi => pi.Batter.Player.PlayerId == x.PlayerId && pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced.Value > 0)
                                                      );
 
             Assert.Equal(expected.Count(), results.Count());
@@ -588,7 +595,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                                      .Where(x => x.Season?.Competition?.CompetitionId == _databaseFixture.TestData.Competitions.First().CompetitionId)
                                                      .SelectMany(m => m.MatchInnings)
                                                      .SelectMany(mi => mi.PlayerInnings)
-                                                     .Any(pi => pi.Batter.Player.PlayerId == x.PlayerId && pi.RunsScored.HasValue && pi.BallsFaced.HasValue)
+                                                     .Any(pi => pi.Batter.Player.PlayerId == x.PlayerId && pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced.Value > 0)
                                                      );
 
             Assert.Equal(expected.Count(), results.Count());
@@ -621,7 +628,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                                                      .Where(x => x.Season?.SeasonId == _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId)
                                                      .SelectMany(m => m.MatchInnings)
                                                      .SelectMany(mi => mi.PlayerInnings)
-                                                     .Any(pi => pi.Batter.Player.PlayerId == x.PlayerId && pi.RunsScored.HasValue && pi.BallsFaced.HasValue)
+                                                     .Any(pi => pi.Batter.Player.PlayerId == x.PlayerId && pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced.Value > 0)
                                                      );
 
             Assert.Equal(expected.Count(), results.Count());
@@ -657,11 +664,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             const int pageSize = 10;
             var pageNumber = 1;
 
-            var remaining = _databaseFixture.TestData.Matches
+            var playerInnings = _databaseFixture.TestData.Matches
                 .SelectMany(x => x.MatchInnings)
-                .SelectMany(x => x.PlayerInnings)
+                .SelectMany(x => x.PlayerInnings);
+            var remaining = playerInnings
                 .Where(x => x.RunsScored.HasValue && x.BallsFaced.HasValue)
                 .Select(x => x.Batter.Player.PlayerId)
+                .Where(x => playerInnings.Any(pi => pi.Batter.Player.PlayerId == x && pi.RunsScored.HasValue && pi.BallsFaced.HasValue && pi.BallsFaced > 0))
                 .Distinct()
                 .Count();
 
