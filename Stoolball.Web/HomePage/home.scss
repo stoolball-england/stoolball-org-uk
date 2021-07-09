@@ -87,6 +87,12 @@ $button-shadow: 2px 2px 2px $black;
     border-width: 2px;
 }
 
+@media print {
+    .header { margin:0; }
+    .home__what-is-stoolball { margin: 0; color: $black!important; }
+    .home__what-is-stoolball__content { padding: 0; }
+}
+
 .home__team-finder {
     position: relative;
     z-index: 2;
@@ -120,6 +126,13 @@ $button-shadow: 2px 2px 2px $black;
     padding: $spacer*.5;
     border-radius: $border-radius*2 $border-radius*2 0 0;
     margin-bottom: 0;
+}
+
+@media print {
+    .home__team-finder { padding: $spacer*2 0 $spacer; color: $black!important; }
+    .home__team-finder h2, .home__team-finder label {
+        text-shadow: none;
+    }
 }
 
 .roles .tile {
@@ -295,6 +308,18 @@ $button-shadow: 2px 2px 2px $black;
     }
 }
 
+@media print {
+    .roles .tile__link { min-height: auto; }
+    .roles .tile__link > div {
+        width: auto;
+        height: auto;
+        text-align: left;
+    }
+    .tile__header { padding: 0 $spacer 0 0; color: $black; }
+    .tile__footer { position: static; text-align: left; }
+    .tile__footer .btn { border-color: $black; }
+}
+
 .shop {
     margin-bottom: $spacer*3;
 }
@@ -404,6 +429,17 @@ $button-shadow: 2px 2px 2px $black;
     }
 }
 
+@media print {
+    .shop { margin-bottom: $spacer; }
+    .shop a { @include remove-link-underline;}
+    .shop a::after { margin-left: $spacer; }
+    .shop h2 { padding: 0; color: $black; }
+    .shop .tile {width: 33%;}
+    .shop .tile__link { display: block;}
+    .shop__footer, .shop__price { color: $black; }
+    .shop .btn { border-color: $black; }
+}
+
 // .shop_spreadshirt is a large responsive advert for the Spreadshirt shop
 // The whole advert is a link around an header, image and text that appears like a button
 .shop__spreadshirt {
@@ -415,6 +451,10 @@ $button-shadow: 2px 2px 2px $black;
     border-radius: 40px;
     border: 0;
     margin-bottom: $spacer*4;
+}
+
+.shop__spreadshirt:link, .shop__spreadshirt:visited {
+    color: $link-color;
 }
 
 .shop__spreadshirt:hover, .shop__spreadshirt:focus, .shop__spreadshirt:active {
@@ -442,6 +482,12 @@ $button-shadow: 2px 2px 2px $black;
 
 .shop__spreadshirt p {
     box-shadow: 2px 2px 2px $black;
+}
+
+@media print {
+    .shop__spreadshirt { text-align: left; padding: 0; page-break-inside: avoid; }
+    .shop__spreadshirt > h2 { padding: 0; font-size: 3rem; }
+    .shop__spreadshirt p { margin-right: $spacer; border-color: $black; }
 }
 
 .history h2 {
@@ -588,4 +634,24 @@ $button-shadow: 2px 2px 2px $black;
     .history__grantham .history__title {
         font-size: 4rem;
     }
+}
+
+@media print {
+    .history { page-break-inside: avoid; }
+    .history .tile__link { text-shadow: none; color: $black; max-width: none; text-align: left; }
+    .history .tile__link::after { margin: 0; display: block; }
+    .history h2 { text-align: left; margin: 0; padding: $spacer 0; border-top: none; }
+    .history h2:before, .history h2::after { display: none; }
+    .history h2 a::after { margin-left: $spacer; }
+    .history h2 a::after,
+    .history .tile__link::after {
+        font-size: 1rem;
+        font-family: $font-family-sans-serif;
+        color: $link-color;
+    }
+    .history .tiles { display: block; }
+    .history__tile { width: auto; height: auto; margin: 0; }
+    .history .tile__header { font-size: 2.5rem !important; font-weight: bold; padding: 0; }
+    .history__grantham .history__title::after { content: ':'}
+    .history__subtitle { font-weight: normal; padding: 0; margin: 0; font-size: 1.5rem!important; }
 }
