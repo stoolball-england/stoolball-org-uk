@@ -211,7 +211,7 @@ WriteLiteral("                    ");
 
             
             #line 42 "..\..\Views\CreateMember.cshtml"
-               Write(Html.TextBoxFor(m => createMemberModel.Name, new { @class = "form-control", required = "required", aria_describedby = "form-name" }));
+               Write(Html.TextBoxFor(m => createMemberModel.Name, new { @class = "form-control", required = "required", aria_describedby = "form-name", autocomplete="name" }));
 
             
             #line default
@@ -250,7 +250,7 @@ WriteLiteral("                    ");
 
             
             #line 47 "..\..\Views\CreateMember.cshtml"
-               Write(Html.TextBoxFor(m => createMemberModel.Email, new { @class = "form-control", type = "email", required = "required", aria_describedby = "form-email", autocorrect = "off", autocapitalize = "off" }));
+               Write(Html.TextBoxFor(m => createMemberModel.Email, new { @class = "form-control", type = "email", required = "required", aria_describedby = "form-email", autocorrect = "off", autocapitalize = "off", autocomplete="email" }));
 
             
             #line default
@@ -342,7 +342,7 @@ WriteLiteral("                    ");
 
             
             #line 58 "..\..\Views\CreateMember.cshtml"
-               Write(Html.PasswordFor(m => createMemberModel.Password, new { @class = "form-control", aria_describedby = describedBy, autocorrect = "off", autocapitalize = "off" }));
+               Write(Html.PasswordFor(m => createMemberModel.Password, new { @class = "form-control", aria_describedby = describedBy, autocorrect = "off", autocapitalize = "off", autocomplete="new-password" }));
 
             
             #line default

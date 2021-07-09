@@ -984,7 +984,7 @@ WriteLiteral("        ");
 
             
             #line 188 "..\..\Views\Partials\_CreateOrEditTeam.cshtml"
-   Write(Html.TextBoxFor(m => Model.Team.Facebook, new { @class = "form-control", aria_describedby = "facebook" }));
+   Write(Html.TextBoxFor(m => Model.Team.Facebook, new { @class = "form-control", aria_describedby = "facebook", autocomplete="url" }));
 
             
             #line default
@@ -1095,7 +1095,7 @@ WriteLiteral("        ");
 
             
             #line 203 "..\..\Views\Partials\_CreateOrEditTeam.cshtml"
-   Write(Html.TextBoxFor(m => Model.Team.YouTube, new { @class = "form-control", aria_describedby = "youtube" }));
+   Write(Html.TextBoxFor(m => Model.Team.YouTube, new { @class = "form-control", aria_describedby = "youtube", autocomplete = "url" }));
 
             
             #line default
@@ -1132,7 +1132,7 @@ WriteLiteral("        ");
 
             
             #line 208 "..\..\Views\Partials\_CreateOrEditTeam.cshtml"
-   Write(Html.TextBoxFor(m => Model.Team.Website, new { @class = "form-control", aria_describedby = "website" }));
+   Write(Html.TextBoxFor(m => Model.Team.Website, new { @class = "form-control", aria_describedby = "website", autocomplete = "url" }));
 
             
             #line default

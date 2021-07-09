@@ -185,7 +185,7 @@
 
     <div class="form-group">
         @Html.LabelFor(m => Model.Team.Facebook, RequiredFieldStatus.Optional, new { @class = "has-form-text form-control__facebook" })
-        @Html.TextBoxFor(m => Model.Team.Facebook, new { @class = "form-control", aria_describedby = "facebook" })
+        @Html.TextBoxFor(m => Model.Team.Facebook, new { @class = "form-control", aria_describedby = "facebook", autocomplete="url" })
         @Html.ValidationMessageFor(m => Model.Team.Facebook, null, new { id = "facebook" })
     </div>
     <div class="form-group">
@@ -200,12 +200,12 @@
     </div>
     <div class="form-group">
         @Html.LabelFor(m => Model.Team.YouTube, RequiredFieldStatus.Optional, new { @class = "has-form-text form-control__youtube" })
-        @Html.TextBoxFor(m => Model.Team.YouTube, new { @class = "form-control", aria_describedby = "youtube" })
+        @Html.TextBoxFor(m => Model.Team.YouTube, new { @class = "form-control", aria_describedby = "youtube", autocomplete = "url" })
         @Html.ValidationMessageFor(m => Model.Team.YouTube, null, new { id = "youtube" })
     </div>
     <div class="form-group">
         @Html.LabelFor(m => Model.Team.Website, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
-        @Html.TextBoxFor(m => Model.Team.Website, new { @class = "form-control", aria_describedby = "website" })
+        @Html.TextBoxFor(m => Model.Team.Website, new { @class = "form-control", aria_describedby = "website", autocomplete = "url" })
         @Html.ValidationMessageFor(m => Model.Team.Website, null, new { id = "website" })
     </div>
 

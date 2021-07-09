@@ -201,7 +201,7 @@ WriteLiteral("        ");
 
             
             #line 38 "..\..\Views\Partials\_Login.cshtml"
-   Write(Html.TextBoxFor(m => loginModel.Username, new { @class = "form-control", type = "email", required = "required", aria_describedby = "form-email", autocorrect = "off", autocapitalize = "off" }));
+   Write(Html.TextBoxFor(m => loginModel.Username, new { @class = "form-control", type = "email", required = "required", aria_describedby = "form-email", autocorrect = "off", autocapitalize = "off", autocomplete="username" }));
 
             
             #line default
@@ -240,7 +240,7 @@ WriteLiteral("        ");
 
             
             #line 43 "..\..\Views\Partials\_Login.cshtml"
-   Write(Html.PasswordFor(m => loginModel.Password, new { @class = "form-control", required = "required", aria_describedby = "form-password", autocorrect = "off", autocapitalize = "off" }));
+   Write(Html.PasswordFor(m => loginModel.Password, new { @class = "form-control", required = "required", aria_describedby = "form-password", autocorrect = "off", autocapitalize = "off", autocomplete="current-password" }));
 
             
             #line default

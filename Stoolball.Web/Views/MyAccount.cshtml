@@ -30,7 +30,7 @@
 
                 <div class="form-group">
                     @Html.LabelFor(m => accountUpdate.Name)
-                    @Html.TextBoxFor(m => accountUpdate.Name, new { @class = "form-control", required = "required", aria_describedby = "form-name" })
+                    @Html.TextBoxFor(m => accountUpdate.Name, new { @class = "form-control", required = "required", aria_describedby = "form-name", autocomplete="name" })
                     @Html.ValidationMessageFor(m => accountUpdate.Name, null, new { id = "form-name" })
                 </div>
 

@@ -173,7 +173,7 @@ WriteLiteral("                    ");
 
             
             #line 33 "..\..\Views\MyAccount.cshtml"
-               Write(Html.TextBoxFor(m => accountUpdate.Name, new { @class = "form-control", required = "required", aria_describedby = "form-name" }));
+               Write(Html.TextBoxFor(m => accountUpdate.Name, new { @class = "form-control", required = "required", aria_describedby = "form-name", autocomplete="name" }));
 
             
             #line default
@@ -212,36 +212,36 @@ WriteLiteral(" class=\"gravatar\"");
 
 WriteLiteral(">\r\n                        <img");
 
-WriteAttribute("src", Tuple.Create(" src=\"", 1647), Tuple.Create("\"", 1666)
+WriteAttribute("src", Tuple.Create(" src=\"", 1668), Tuple.Create("\"", 1687)
             
             #line 40 "..\..\Views\MyAccount.cshtml"
-, Tuple.Create(Tuple.Create("", 1653), Tuple.Create<System.Object, System.Int32>(gravatar.Url
+, Tuple.Create(Tuple.Create("", 1674), Tuple.Create<System.Object, System.Int32>(gravatar.Url
             
             #line default
             #line hidden
-, 1653), false)
+, 1674), false)
 );
 
 WriteLiteral(" alt=\"Your account picture from gravatar.com\"");
 
-WriteAttribute("width", Tuple.Create(" width=\"", 1712), Tuple.Create("\"", 1734)
+WriteAttribute("width", Tuple.Create(" width=\"", 1733), Tuple.Create("\"", 1755)
             
             #line 40 "..\..\Views\MyAccount.cshtml"
-                     , Tuple.Create(Tuple.Create("", 1720), Tuple.Create<System.Object, System.Int32>(gravatar.Size
+                     , Tuple.Create(Tuple.Create("", 1741), Tuple.Create<System.Object, System.Int32>(gravatar.Size
             
             #line default
             #line hidden
-, 1720), false)
+, 1741), false)
 );
 
-WriteAttribute("height", Tuple.Create(" height=\"", 1735), Tuple.Create("\"", 1758)
+WriteAttribute("height", Tuple.Create(" height=\"", 1756), Tuple.Create("\"", 1779)
             
             #line 40 "..\..\Views\MyAccount.cshtml"
-                                             , Tuple.Create(Tuple.Create("", 1744), Tuple.Create<System.Object, System.Int32>(gravatar.Size
+                                             , Tuple.Create(Tuple.Create("", 1765), Tuple.Create<System.Object, System.Int32>(gravatar.Size
             
             #line default
             #line hidden
-, 1744), false)
+, 1765), false)
 );
 
 WriteLiteral(" />\r\n                        <div>");

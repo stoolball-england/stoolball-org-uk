@@ -89,7 +89,7 @@ WriteLiteral("    ");
 
             
             #line 9 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
-Write(Html.TextBoxFor(m => Model.MatchLocation.PrimaryAddressableObjectName, new { @class = "form-control", aria_describedby = "paon-validation" }));
+Write(Html.TextBoxFor(m => Model.MatchLocation.PrimaryAddressableObjectName, new { @class = "form-control", aria_describedby = "paon-validation", autocomplete = "address-line1" }));
 
             
             #line default
@@ -133,7 +133,7 @@ WriteLiteral("    ");
 
             
             #line 16 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
-Write(Html.TextBoxFor(m => Model.MatchLocation.SecondaryAddressableObjectName, new { @class = "form-control", aria_describedby = "saon-validation saon-help" }));
+Write(Html.TextBoxFor(m => Model.MatchLocation.SecondaryAddressableObjectName, new { @class = "form-control", aria_describedby = "saon-validation saon-help", autocomplete = "address-line2" }));
 
             
             #line default
@@ -170,7 +170,7 @@ WriteLiteral("    ");
 
             
             #line 22 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
-Write(Html.TextBoxFor(m => Model.MatchLocation.StreetDescription, new { @class = "form-control", aria_describedby = "street-validation" }));
+Write(Html.TextBoxFor(m => Model.MatchLocation.StreetDescription, new { @class = "form-control", aria_describedby = "street-validation", autocomplete = "address-line3" }));
 
             
             #line default
@@ -207,7 +207,7 @@ WriteLiteral("    ");
 
             
             #line 28 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
-Write(Html.TextBoxFor(m => Model.MatchLocation.Locality, new { @class = "form-control", aria_describedby = "locality-validation" }));
+Write(Html.TextBoxFor(m => Model.MatchLocation.Locality, new { @class = "form-control", aria_describedby = "locality-validation", autocomplete = "address-level3" }));
 
             
             #line default
@@ -244,7 +244,7 @@ WriteLiteral("    ");
 
             
             #line 34 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
-Write(Html.TextBoxFor(m => Model.MatchLocation.Town, new { @class = "form-control", aria_describedby = "town-validation" }));
+Write(Html.TextBoxFor(m => Model.MatchLocation.Town, new { @class = "form-control", aria_describedby = "town-validation", autocomplete = "address-level2" }));
 
             
             #line default
@@ -281,7 +281,7 @@ WriteLiteral("    ");
 
             
             #line 40 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
-Write(Html.TextBoxFor(m => Model.MatchLocation.AdministrativeArea, new { @class = "form-control", aria_describedby = "area-validation" }));
+Write(Html.TextBoxFor(m => Model.MatchLocation.AdministrativeArea, new { @class = "form-control", aria_describedby = "area-validation", autocomplete = "address-level1" }));
 
             
             #line default
@@ -307,7 +307,7 @@ WriteLiteral("    ");
 
             
             #line 45 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
-Write(Html.LabelFor(m => Model.MatchLocation.Postcode, RequiredFieldStatus.Optional, new { @class = "has-form-text" }));
+Write(Html.LabelFor(m => Model.MatchLocation.Postcode, RequiredFieldStatus.Optional, new { @class = "has-form-text", autocomplete = "postal-code" }));
 
             
             #line default
