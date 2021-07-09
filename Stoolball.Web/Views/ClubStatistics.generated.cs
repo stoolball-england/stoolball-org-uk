@@ -315,27 +315,41 @@ WriteLiteral(">Statistics</em>\r\n        </li>\r\n    </ul>\r\n\r\n\r\n");
             #line hidden
             
             #line 52 "..\..\Views\ClubStatistics.cshtml"
-   Write(Html.Partial("_MostCatches", mostCatches));
+   Write(Html.Partial("_BowlingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
             #line 52 "..\..\Views\ClubStatistics.cshtml"
-                                                  
+                                                                                                                                        
         
             
             #line default
             #line hidden
             
             #line 53 "..\..\Views\ClubStatistics.cshtml"
-   Write(Html.Partial("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
+   Write(Html.Partial("_MostCatches", mostCatches));
 
             
             #line default
             #line hidden
             
             #line 53 "..\..\Views\ClubStatistics.cshtml"
+                                                  
+        
+            
+            #line default
+            #line hidden
+            
+            #line 54 "..\..\Views\ClubStatistics.cshtml"
+   Write(Html.Partial("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
+
+            
+            #line default
+            #line hidden
+            
+            #line 54 "..\..\Views\ClubStatistics.cshtml"
                                                                                                                                   
     }
 

@@ -21,6 +21,18 @@ Batting average is calculated in three places:
 - in `SqlServerBestPlayerAverageStatisticsDataSource` for the 'best batting average' tables.
 - in `SqlServerBestPlayerTotalStatisticsDataSource` for the 'most runs scored' tables.
 
+## Batting strike rate
+
+Your batting strike rate is the average number of runs you score from 100 legitimate balls faced.
+
+- Only innings with both runs scored and balls faced recorded are counted.
+- 'Best batting strike rate' tables only show players with a minimum number of qualifying innings, to avoid skewing the tables with outlier results from players who have hardly played.
+
+Batting strike rate is calculated in two places:
+
+- in `SqlServerPlayerSummaryStatisticsDataSource` for the summary statistics on a player's individual bowling statistics.
+- in `SqlServerBestPlayerAverageStatisticsDataSource` for the 'best batting strike rate' tables.
+
 ## Bowling average
 
 Your bowling average is the number of wickets you've taken divided by the number of runs conceded from your overs, including extras.
@@ -48,4 +60,19 @@ It's calculated in three places:
 
 - in `SqlServerPlayerSummaryStatisticsDataSource` for the summary statistics on a player's individual bowling statistics.
 - in `SqlServerBestPlayerAverageStatisticsDataSource` for the 'best economy rate' tables.
+- in `BowlingFiguresCalculator` for bowling figures in a match.
+
+## Bowling strike rate
+
+Your bowling strike rate is the average number of balls you bowl to take a wicket.
+
+- You don't have an bowling strike rate until you've taken at least one wicket.
+- Only innings with both overs bowled and wickets taken are counted.
+- Because balls bowled is calculated from overs bowled, it assumes 8 balls per over.
+- 'Best bowling strike rate' tables only show players with a minimum number of qualifying innings, to avoid skewing the tables with outlier results from players who have hardly played.
+
+Bowling strike rate is calculated in three places:
+
+- in `SqlServerPlayerSummaryStatisticsDataSource` for the summary statistics on a player's individual bowling statistics.
+- in `SqlServerBestPlayerAverageStatisticsDataSource` for the 'best bowling strike rate' tables.
 - in `BowlingFiguresCalculator` for bowling figures in a match.

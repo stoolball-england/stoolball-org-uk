@@ -94,6 +94,7 @@
         BattingAverage,
         BowlingAverage,
         EconomyRate,
-        BattingStrikeRate
+        BattingStrikeRate,
+        BowlingStrikeRate
     }
 }

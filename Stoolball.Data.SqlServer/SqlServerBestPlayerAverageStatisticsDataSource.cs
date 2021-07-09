@@ -53,6 +53,14 @@ namespace Stoolball.Data.SqlServer
         }
 
         ///  <inheritdoc/>
+        public async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestBowlingStrikeRate(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+
+            return await ReadBestPlayerAverage("BallsBowled", "WicketsWithBowling", 1, "ASC", true, $"AND BallsBowled IS NOT NULL AND WicketsWithBowling IS NOT NULL", filter).ConfigureAwait(false);
+        }
+
+        ///  <inheritdoc/>
         public async Task<int> ReadTotalPlayersWithBattingAverage(StatisticsFilter filter)
         {
             filter = filter ?? new StatisticsFilter();
@@ -83,6 +91,15 @@ namespace Stoolball.Data.SqlServer
 
             return await ReadTotalPlayersWithData("RunsScored", "BallsFaced", true, filter).ConfigureAwait(false);
         }
+
+        ///  <inheritdoc/>
+        public async Task<int> ReadTotalPlayersWithBowlingStrikeRate(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+
+            return await ReadTotalPlayersWithData("BallsBowled", "WicketsWithBowling", true, filter).ConfigureAwait(false);
+        }
+
         private async Task<int> ReadTotalPlayersWithData(string divideThisField, string byThisField, bool requireBothFields, StatisticsFilter filter)
         {
             var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);

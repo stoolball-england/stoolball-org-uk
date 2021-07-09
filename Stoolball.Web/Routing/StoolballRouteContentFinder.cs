@@ -117,6 +117,7 @@ namespace Stoolball.Web.Routing
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}statistics{SLASH}bowling-average{OPTIONAL_SLASH}", StoolballRouteType.BowlingAverage },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}statistics{SLASH}economy-rate{OPTIONAL_SLASH}", StoolballRouteType.EconomyRate },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}statistics{SLASH}batting-strike-rate{OPTIONAL_SLASH}", StoolballRouteType.BattingStrikeRate },
+                { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}statistics{SLASH}bowling-strike-rate{OPTIONAL_SLASH}", StoolballRouteType.BowlingStrikeRate },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches{SLASH}add{SLASH}training{OPTIONAL_SLASH}", StoolballRouteType.CreateTrainingSession },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}{SEASON}{SLASH}matches{SLASH}add{SLASH}friendly{OPTIONAL_SLASH}", StoolballRouteType.CreateFriendlyMatch },
@@ -145,6 +146,7 @@ namespace Stoolball.Web.Routing
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-average{OPTIONAL_SLASH}", StoolballRouteType.BowlingAverage },
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}economy-rate{OPTIONAL_SLASH}", StoolballRouteType.EconomyRate },
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}batting-strike-rate{OPTIONAL_SLASH}", StoolballRouteType.BattingStrikeRate },
+                { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-strike-rate{OPTIONAL_SLASH}", StoolballRouteType.BowlingStrikeRate },
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures},
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{OPTIONAL_SLASH}", StoolballRouteType.TeamStatistics},
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}individual-scores{OPTIONAL_SLASH}", StoolballRouteType.IndividualScores},
@@ -156,6 +158,7 @@ namespace Stoolball.Web.Routing
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-average{OPTIONAL_SLASH}", StoolballRouteType.BowlingAverage },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}economy-rate{OPTIONAL_SLASH}", StoolballRouteType.EconomyRate },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}batting-strike-rate{OPTIONAL_SLASH}", StoolballRouteType.BattingStrikeRate },
+                { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-strike-rate{OPTIONAL_SLASH}", StoolballRouteType.BowlingStrikeRate },
                 { $"teams{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures},
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.ClubActions },
                 { $"clubs{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}club{OPTIONAL_SLASH}", StoolballRouteType.EditClub },
@@ -183,6 +186,7 @@ namespace Stoolball.Web.Routing
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-average{OPTIONAL_SLASH}", StoolballRouteType.BowlingAverage },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}economy-rate{OPTIONAL_SLASH}" , StoolballRouteType.EconomyRate },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}batting-strike-rate{OPTIONAL_SLASH}" , StoolballRouteType.BattingStrikeRate },
+                { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-strike-rate{OPTIONAL_SLASH}" , StoolballRouteType.BowlingStrikeRate },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.MatchLocationActions },
                 { $"locations{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{SLASH}location{OPTIONAL_SLASH}", StoolballRouteType.EditMatchLocation },
@@ -198,6 +202,7 @@ namespace Stoolball.Web.Routing
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-average{OPTIONAL_SLASH}" , StoolballRouteType.BowlingAverage },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}economy-rate{OPTIONAL_SLASH}" , StoolballRouteType.EconomyRate },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}batting-strike-rate{OPTIONAL_SLASH}" , StoolballRouteType.BattingStrikeRate },
+                { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-strike-rate{OPTIONAL_SLASH}" , StoolballRouteType.BowlingStrikeRate },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}statistics{SLASH}bowling-figures{OPTIONAL_SLASH}", StoolballRouteType.BowlingFigures },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}add{OPTIONAL_SLASH}", StoolballRouteType.CreateSeason },
                 { $"competitions{SLASH}{ANY_VALID_ROUTE}{SLASH}edit{OPTIONAL_SLASH}", StoolballRouteType.CompetitionActions },
@@ -238,7 +243,8 @@ namespace Stoolball.Web.Routing
                 { $"play{SLASH}statistics{SLASH}batting-average{OPTIONAL_SLASH}", StoolballRouteType.BattingAverage },
                 { $"play{SLASH}statistics{SLASH}bowling-average{OPTIONAL_SLASH}", StoolballRouteType.BowlingAverage },
                 { $"play{SLASH}statistics{SLASH}economy-rate{OPTIONAL_SLASH}", StoolballRouteType.EconomyRate },
-                { $"play{SLASH}statistics{SLASH}batting-strike-rate{OPTIONAL_SLASH}", StoolballRouteType.BattingStrikeRate }
+                { $"play{SLASH}statistics{SLASH}batting-strike-rate{OPTIONAL_SLASH}", StoolballRouteType.BattingStrikeRate },
+                { $"play{SLASH}statistics{SLASH}bowling-strike-rate{OPTIONAL_SLASH}", StoolballRouteType.BowlingStrikeRate }
             };
 
             foreach (var routePattern in routeTypes.Keys)

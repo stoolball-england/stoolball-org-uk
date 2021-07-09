@@ -262,7 +262,7 @@ WriteLiteral("    ");
 
             
             #line 44 "..\..\Views\Statistics.cshtml"
-Write(Html.Partial("_MostCatches", mostCatches));
+Write(Html.Partial("_BowlingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
@@ -273,6 +273,17 @@ WriteLiteral("    ");
 
             
             #line 45 "..\..\Views\Statistics.cshtml"
+Write(Html.Partial("_MostCatches", mostCatches));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
+WriteLiteral("    ");
+
+            
+            #line 46 "..\..\Views\Statistics.cshtml"
 Write(Html.Partial("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
