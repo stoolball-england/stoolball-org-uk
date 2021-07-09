@@ -338,16 +338,18 @@ namespace Stoolball.Data.SqlServer
                         transaction).ConfigureAwait(false);
 
                     // Update any transient teams with the amended tournament details
-                    var transientTeamIds = await connection.QueryAsync<Guid>($@"SELECT t.TeamId FROM {Tables.TournamentTeam} tt
+                    var transientTeams = await connection.QueryAsync<Team>($@"SELECT t.TeamId, t.TeamRoute FROM {Tables.TournamentTeam} tt
                                 INNER JOIN {Tables.Team} t ON tt.TeamId = t.TeamId                               
                                 WHERE tt.TournamentId = @TournamentId AND t.TeamType = '{TeamType.Transient.ToString()}'",
                             new { auditableTournament.TournamentId }, transaction).ConfigureAwait(false);
 
-                    if (transientTeamIds.Any())
+                    if (transientTeams.Any())
                     {
+                        var transientTeamIds = transientTeams.Select(x => x.TeamId.Value);
+
                         await connection.ExecuteAsync($@"UPDATE {Tables.Team} SET
                                 PlayerType = @PlayerType,
-                                TeamRoute = CONCAT(@TournamentRoute, SUBSTRING(TeamRoute, {auditableTournament.TournamentRoute.Length + 1}, LEN(TeamRoute)-{auditableTournament.TournamentRoute.Length})) 
+                                TeamRoute = CONCAT(@TournamentRoute, SUBSTRING(TeamRoute, {tournament.TournamentRoute.Length + 1}, LEN(TeamRoute)-{tournament.TournamentRoute.Length})) 
                                 WHERE TeamId IN @transientTeamIds",
                             new
                             {
@@ -368,7 +370,7 @@ namespace Stoolball.Data.SqlServer
                         await connection.ExecuteAsync($"DELETE FROM {Tables.TeamMatchLocation} WHERE TeamId IN @transientTeamIds", new { transientTeamIds }, transaction).ConfigureAwait(false);
                         if (auditableTournament.TournamentLocation != null)
                         {
-                            foreach (var transientTeam in transientTeamIds)
+                            foreach (var transientTeam in transientTeams)
                             {
                                 await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} 
                                         (TeamMatchLocationId, TeamId, MatchLocationId, FromDate) 
@@ -376,7 +378,7 @@ namespace Stoolball.Data.SqlServer
                                     new
                                     {
                                         TeamMatchLocationId = Guid.NewGuid(),
-                                        TeamId = transientTeam,
+                                        transientTeam.TeamId,
                                         auditableTournament.TournamentLocation.MatchLocationId,
                                         FromDate = TimeZoneInfo.ConvertTimeToUtc(auditableTournament.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)).Date
                                     }, transaction).ConfigureAwait(false);
@@ -387,6 +389,10 @@ namespace Stoolball.Data.SqlServer
                     if (tournament.TournamentRoute != auditableTournament.TournamentRoute)
                     {
                         await _redirectsRepository.InsertRedirect(tournament.TournamentRoute, auditableTournament.TournamentRoute, null, transaction).ConfigureAwait(false);
+                        foreach (var transientTeam in transientTeams)
+                        {
+                            await _redirectsRepository.InsertRedirect(transientTeam.TeamRoute, auditableTournament.TournamentRoute + transientTeam.TeamRoute.Substring(tournament.TournamentRoute.Length), null, transaction).ConfigureAwait(false);
+                        }
                     }
 
                     var redacted = CreateRedactedCopy(auditableTournament);
