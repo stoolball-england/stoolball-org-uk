@@ -71,8 +71,9 @@ namespace ASP
             #line 6 "..\..\Views\MatchLocation.cshtml"
   
     Html.RequiresJs("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey, 50);
-    Html.RequiresJs("/js/maps.js", 90);
-    Html.RequiresJs("/matchlocations/match-location.js");
+    Html.RequiresJs("~/js/maps.js", 90);
+    Html.RequiresJs("~/matchlocations/match-location.js");
+    Html.RequiresJs("~/matchlocations/show-all-teams.js");
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditMatchLocation] || Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation];
 
             
@@ -85,7 +86,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 13 "..\..\Views\MatchLocation.cshtml"
+            #line 14 "..\..\Views\MatchLocation.cshtml"
    Write(Model.MatchLocation.NameAndLocalityOrTownIfDifferent());
 
             
@@ -93,16 +94,16 @@ WriteLiteral(">\r\n    <h1>");
             #line hidden
 WriteLiteral("</h1>\r\n\r\n    <ul");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 674), Tuple.Create("\"", 751)
-, Tuple.Create(Tuple.Create("", 682), Tuple.Create("nav", 682), true)
-, Tuple.Create(Tuple.Create(" ", 685), Tuple.Create("nav-tabs", 686), true)
+WriteAttribute("class", Tuple.Create(" class=\"", 736), Tuple.Create("\"", 813)
+, Tuple.Create(Tuple.Create("", 744), Tuple.Create("nav", 744), true)
+, Tuple.Create(Tuple.Create(" ", 747), Tuple.Create("nav-tabs", 748), true)
             
-            #line 15 "..\..\Views\MatchLocation.cshtml"
-, Tuple.Create(Tuple.Create("", 694), Tuple.Create<System.Object, System.Int32>(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty
+            #line 16 "..\..\Views\MatchLocation.cshtml"
+, Tuple.Create(Tuple.Create("", 756), Tuple.Create<System.Object, System.Int32>(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty
             
             #line default
             #line hidden
-, 694), false)
+, 756), false)
 );
 
 WriteLiteral(">\r\n        <li");
@@ -121,15 +122,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 917), Tuple.Create("\"", 971)
+WriteAttribute("href", Tuple.Create(" href=\"", 979), Tuple.Create("\"", 1033)
             
-            #line 20 "..\..\Views\MatchLocation.cshtml"
-, Tuple.Create(Tuple.Create("", 924), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
+            #line 21 "..\..\Views\MatchLocation.cshtml"
+, Tuple.Create(Tuple.Create("", 986), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
             
             #line default
             #line hidden
-, 924), false)
-, Tuple.Create(Tuple.Create("", 963), Tuple.Create("/matches", 963), true)
+, 986), false)
+, Tuple.Create(Tuple.Create("", 1025), Tuple.Create("/matches", 1025), true)
 );
 
 WriteLiteral(">Matches</a>\r\n        </li>\r\n        <li");
@@ -140,27 +141,27 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1063), Tuple.Create("\"", 1120)
+WriteAttribute("href", Tuple.Create(" href=\"", 1125), Tuple.Create("\"", 1182)
             
-            #line 23 "..\..\Views\MatchLocation.cshtml"
-, Tuple.Create(Tuple.Create("", 1070), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
+            #line 24 "..\..\Views\MatchLocation.cshtml"
+, Tuple.Create(Tuple.Create("", 1132), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
             
             #line default
             #line hidden
-, 1070), false)
-, Tuple.Create(Tuple.Create("", 1109), Tuple.Create("/statistics", 1109), true)
+, 1132), false)
+, Tuple.Create(Tuple.Create("", 1171), Tuple.Create("/statistics", 1171), true)
 );
 
 WriteLiteral(">Statistics</a>\r\n        </li>\r\n");
 
             
-            #line 25 "..\..\Views\MatchLocation.cshtml"
+            #line 26 "..\..\Views\MatchLocation.cshtml"
         
             
             #line default
             #line hidden
             
-            #line 25 "..\..\Views\MatchLocation.cshtml"
+            #line 26 "..\..\Views\MatchLocation.cshtml"
          if (authorizedToEdit)
         {
 
@@ -175,21 +176,21 @@ WriteLiteral(">\r\n                <a");
 
 WriteLiteral(" class=\"nav-link nav-link-edit\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1295), Tuple.Create("\"", 1346)
+WriteAttribute("href", Tuple.Create(" href=\"", 1357), Tuple.Create("\"", 1408)
             
-            #line 28 "..\..\Views\MatchLocation.cshtml"
-, Tuple.Create(Tuple.Create("", 1302), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
+            #line 29 "..\..\Views\MatchLocation.cshtml"
+, Tuple.Create(Tuple.Create("", 1364), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
             
             #line default
             #line hidden
-, 1302), false)
-, Tuple.Create(Tuple.Create("", 1341), Tuple.Create("/edit", 1341), true)
+, 1364), false)
+, Tuple.Create(Tuple.Create("", 1403), Tuple.Create("/edit", 1403), true)
 );
 
 WriteLiteral(">Edit ground or sports centre</a>\r\n            </li>\r\n");
 
             
-            #line 30 "..\..\Views\MatchLocation.cshtml"
+            #line 31 "..\..\Views\MatchLocation.cshtml"
         }
 
             
@@ -198,13 +199,13 @@ WriteLiteral(">Edit ground or sports centre</a>\r\n            </li>\r\n");
 WriteLiteral("    </ul>\r\n\r\n");
 
             
-            #line 33 "..\..\Views\MatchLocation.cshtml"
+            #line 34 "..\..\Views\MatchLocation.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 33 "..\..\Views\MatchLocation.cshtml"
+            #line 34 "..\..\Views\MatchLocation.cshtml"
       
         var addressLines = new List<string>();
         if (!string.IsNullOrWhiteSpace(Model.MatchLocation.SecondaryAddressableObjectName))
@@ -252,13 +253,13 @@ WriteLiteral("    </ul>\r\n\r\n");
 WriteLiteral("            <p>\r\n");
 
             
-            #line 74 "..\..\Views\MatchLocation.cshtml"
+            #line 75 "..\..\Views\MatchLocation.cshtml"
                 
             
             #line default
             #line hidden
             
-            #line 74 "..\..\Views\MatchLocation.cshtml"
+            #line 75 "..\..\Views\MatchLocation.cshtml"
                  foreach (var line in addressLines)
                 {
                     
@@ -266,7 +267,7 @@ WriteLiteral("            <p>\r\n");
             #line default
             #line hidden
             
-            #line 76 "..\..\Views\MatchLocation.cshtml"
+            #line 77 "..\..\Views\MatchLocation.cshtml"
                Write(line);
 
             
@@ -275,7 +276,7 @@ WriteLiteral("            <p>\r\n");
 WriteLiteral("<br />\r\n");
 
             
-            #line 77 "..\..\Views\MatchLocation.cshtml"
+            #line 78 "..\..\Views\MatchLocation.cshtml"
                 }
 
             
@@ -284,7 +285,7 @@ WriteLiteral("<br />\r\n");
 WriteLiteral("            </p>\r\n");
 
             
-            #line 79 "..\..\Views\MatchLocation.cshtml"
+            #line 80 "..\..\Views\MatchLocation.cshtml"
         }
     
             
@@ -293,15 +294,16 @@ WriteLiteral("            </p>\r\n");
 WriteLiteral("\r\n");
 
             
-            #line 81 "..\..\Views\MatchLocation.cshtml"
+            #line 82 "..\..\Views\MatchLocation.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 81 "..\..\Views\MatchLocation.cshtml"
+            #line 82 "..\..\Views\MatchLocation.cshtml"
      if (Model.MatchLocation.Teams?.Count > 0)
     {
+        var currentTeams = Model.MatchLocation.Teams.Where(x => !x.UntilYear.HasValue).ToList();
 
             
             #line default
@@ -309,21 +311,59 @@ WriteLiteral("\r\n");
 WriteLiteral("        <h2>Teams based here</h2>\r\n");
 
             
-            #line 84 "..\..\Views\MatchLocation.cshtml"
-        
-            
-            #line default
-            #line hidden
-            
-            #line 84 "..\..\Views\MatchLocation.cshtml"
-   Write(Html.Partial("_TeamList", Model.MatchLocation.Teams));
+            #line 86 "..\..\Views\MatchLocation.cshtml"
+        if (currentTeams.Any())
+        {
 
             
             #line default
             #line hidden
+WriteLiteral("        <div");
+
+WriteLiteral(" class=\"team-list__current\"");
+
+WriteLiteral(">\r\n");
+
+WriteLiteral("            ");
+
             
-            #line 84 "..\..\Views\MatchLocation.cshtml"
-                                                             
+            #line 89 "..\..\Views\MatchLocation.cshtml"
+       Write(Html.Partial("_TeamList", currentTeams));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n        </div>\r\n");
+
+            
+            #line 91 "..\..\Views\MatchLocation.cshtml"
+        }
+        if (currentTeams.Count < Model.MatchLocation.Teams.Count)
+        {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("            <div");
+
+WriteLiteral(" class=\"team-list__all d-none\"");
+
+WriteLiteral(">\r\n");
+
+WriteLiteral("                ");
+
+            
+            #line 95 "..\..\Views\MatchLocation.cshtml"
+           Write(Html.Partial("_TeamList", Model.MatchLocation.Teams));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n            </div>\r\n");
+
+            
+            #line 97 "..\..\Views\MatchLocation.cshtml"
+        }
     }
 
             
@@ -332,13 +372,13 @@ WriteLiteral("        <h2>Teams based here</h2>\r\n");
 WriteLiteral("\r\n");
 
             
-            #line 87 "..\..\Views\MatchLocation.cshtml"
+            #line 100 "..\..\Views\MatchLocation.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 87 "..\..\Views\MatchLocation.cshtml"
+            #line 100 "..\..\Views\MatchLocation.cshtml"
      if (Model.MatchLocation.Latitude.HasValue && Model.MatchLocation.Longitude.HasValue)
     {
         var mapTitle = string.Empty;
@@ -368,7 +408,7 @@ WriteLiteral("\r\n");
 WriteLiteral("        <h2>Map of ");
 
             
-            #line 109 "..\..\Views\MatchLocation.cshtml"
+            #line 122 "..\..\Views\MatchLocation.cshtml"
               Write(mapTitle);
 
             
@@ -377,7 +417,7 @@ WriteLiteral("        <h2>Map of ");
 WriteLiteral("</h2>\r\n");
 
             
-            #line 110 "..\..\Views\MatchLocation.cshtml"
+            #line 123 "..\..\Views\MatchLocation.cshtml"
         if (!string.IsNullOrEmpty(precisionWarning))
         {
 
@@ -387,7 +427,7 @@ WriteLiteral("</h2>\r\n");
 WriteLiteral("            <p>");
 
             
-            #line 112 "..\..\Views\MatchLocation.cshtml"
+            #line 125 "..\..\Views\MatchLocation.cshtml"
           Write(precisionWarning);
 
             
@@ -396,7 +436,7 @@ WriteLiteral("            <p>");
 WriteLiteral("</p>\r\n");
 
             
-            #line 113 "..\..\Views\MatchLocation.cshtml"
+            #line 126 "..\..\Views\MatchLocation.cshtml"
         }
 
             
@@ -409,7 +449,7 @@ WriteLiteral(" id=\"location-map\"");
 WriteLiteral(" data-latitude=\"");
 
             
-            #line 114 "..\..\Views\MatchLocation.cshtml"
+            #line 127 "..\..\Views\MatchLocation.cshtml"
                                          Write(Model.MatchLocation.Latitude);
 
             
@@ -420,7 +460,7 @@ WriteLiteral("\"");
 WriteLiteral(" data-longitude=\"");
 
             
-            #line 114 "..\..\Views\MatchLocation.cshtml"
+            #line 127 "..\..\Views\MatchLocation.cshtml"
                                                                                         Write(Model.MatchLocation.Longitude);
 
             
@@ -431,7 +471,7 @@ WriteLiteral("\"");
 WriteLiteral(" data-precision=\"");
 
             
-            #line 114 "..\..\Views\MatchLocation.cshtml"
+            #line 127 "..\..\Views\MatchLocation.cshtml"
                                                                                                                                         Write(Model.MatchLocation.GeoPrecision.ToString().ToLowerInvariant());
 
             
@@ -441,59 +481,59 @@ WriteLiteral("\"");
 
 WriteLiteral(">\r\n            <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4919), Tuple.Create("\"", 5165)
-, Tuple.Create(Tuple.Create("", 4926), Tuple.Create("https://maps.google.co.uk/?z=16&amp;q=", 4926), true)
+WriteAttribute("href", Tuple.Create(" href=\"", 5412), Tuple.Create("\"", 5658)
+, Tuple.Create(Tuple.Create("", 5419), Tuple.Create("https://maps.google.co.uk/?z=16&amp;q=", 5419), true)
             
-            #line 115 "..\..\Views\MatchLocation.cshtml"
-, Tuple.Create(Tuple.Create("", 4964), Tuple.Create<System.Object, System.Int32>(HttpUtility.UrlEncode(Model.MatchLocation.NameAndLocalityOrTown())
-            
-            #line default
-            #line hidden
-, 4964), false)
-            
-            #line 115 "..\..\Views\MatchLocation.cshtml"
-                                                  , Tuple.Create(Tuple.Create("", 5031), Tuple.Create<System.Object, System.Int32>("@"
+            #line 128 "..\..\Views\MatchLocation.cshtml"
+, Tuple.Create(Tuple.Create("", 5457), Tuple.Create<System.Object, System.Int32>(HttpUtility.UrlEncode(Model.MatchLocation.NameAndLocalityOrTown())
             
             #line default
             #line hidden
-, 5031), false)
+, 5457), false)
             
-            #line 115 "..\..\Views\MatchLocation.cshtml"
-                                                       , Tuple.Create(Tuple.Create("", 5037), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.Latitude
-            
-            #line default
-            #line hidden
-, 5037), false)
-, Tuple.Create(Tuple.Create("", 5066), Tuple.Create(",", 5066), true)
-            
-            #line 115 "..\..\Views\MatchLocation.cshtml"
-                                                                                     , Tuple.Create(Tuple.Create("", 5067), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.Longitude
+            #line 128 "..\..\Views\MatchLocation.cshtml"
+                                                  , Tuple.Create(Tuple.Create("", 5524), Tuple.Create<System.Object, System.Int32>("@"
             
             #line default
             #line hidden
-, 5067), false)
-, Tuple.Create(Tuple.Create("", 5097), Tuple.Create("&amp;ll=", 5097), true)
+, 5524), false)
             
-            #line 115 "..\..\Views\MatchLocation.cshtml"
-                                                                                                                           , Tuple.Create(Tuple.Create("", 5105), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.Latitude
-            
-            #line default
-            #line hidden
-, 5105), false)
-, Tuple.Create(Tuple.Create("", 5134), Tuple.Create(",", 5134), true)
-            
-            #line 115 "..\..\Views\MatchLocation.cshtml"
-                                                                                                                                                         , Tuple.Create(Tuple.Create("", 5135), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.Longitude
+            #line 128 "..\..\Views\MatchLocation.cshtml"
+                                                       , Tuple.Create(Tuple.Create("", 5530), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.Latitude
             
             #line default
             #line hidden
-, 5135), false)
+, 5530), false)
+, Tuple.Create(Tuple.Create("", 5559), Tuple.Create(",", 5559), true)
+            
+            #line 128 "..\..\Views\MatchLocation.cshtml"
+                                                                                     , Tuple.Create(Tuple.Create("", 5560), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.Longitude
+            
+            #line default
+            #line hidden
+, 5560), false)
+, Tuple.Create(Tuple.Create("", 5590), Tuple.Create("&amp;ll=", 5590), true)
+            
+            #line 128 "..\..\Views\MatchLocation.cshtml"
+                                                                                                                           , Tuple.Create(Tuple.Create("", 5598), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.Latitude
+            
+            #line default
+            #line hidden
+, 5598), false)
+, Tuple.Create(Tuple.Create("", 5627), Tuple.Create(",", 5627), true)
+            
+            #line 128 "..\..\Views\MatchLocation.cshtml"
+                                                                                                                                                         , Tuple.Create(Tuple.Create("", 5628), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.Longitude
+            
+            #line default
+            #line hidden
+, 5628), false)
 );
 
 WriteLiteral(">Map of ");
 
             
-            #line 115 "..\..\Views\MatchLocation.cshtml"
+            #line 128 "..\..\Views\MatchLocation.cshtml"
                                                                                                                                                                                                                                                                            Write(mapTitle);
 
             
@@ -502,7 +542,7 @@ WriteLiteral(">Map of ");
 WriteLiteral(" on Google Maps</a></p>\r\n        </div>\r\n");
 
             
-            #line 117 "..\..\Views\MatchLocation.cshtml"
+            #line 130 "..\..\Views\MatchLocation.cshtml"
     }
 
             
@@ -513,7 +553,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 119 "..\..\Views\MatchLocation.cshtml"
+            #line 132 "..\..\Views\MatchLocation.cshtml"
 Write(Html.Raw(Model.MatchLocation.MatchLocationNotes));
 
             

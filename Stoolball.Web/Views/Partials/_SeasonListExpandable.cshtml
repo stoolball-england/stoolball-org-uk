@@ -20,7 +20,7 @@
         } while (!lastSeasonOnwards.Any());
 
     <h2>Competitions</h2>
-    <ul class="season-list__current">
+    <ul class="season-list__abridged">
         @foreach (var season in lastSeasonOnwards)
         {
             <li><a href="@season.SeasonRoute">@season.SeasonFullName()</a></li>

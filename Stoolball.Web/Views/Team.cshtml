@@ -7,7 +7,7 @@
 @using ClientDependency.Core.Mvc
 @{
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam];
-    Html.RequiresJs("/teams/team.js");
+    Html.RequiresJs("~/js/show-all-competitions.js");
 }
 <div class="container-xl">
     <h1>@Model.Team.TeamNameLocationAndPlayerType()</h1>

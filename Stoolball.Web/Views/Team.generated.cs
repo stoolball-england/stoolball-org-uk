@@ -83,7 +83,7 @@ namespace ASP
             #line 8 "..\..\Views\Team.cshtml"
   
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTeam] || Model.IsAuthorized[AuthorizedAction.DeleteTeam];
-    Html.RequiresJs("/teams/team.js");
+    Html.RequiresJs("~/js/show-all-competitions.js");
 
             
             #line default
@@ -133,16 +133,16 @@ WriteLiteral(">\r\n            <p><strong>This team is no longer active.</strong
             #line hidden
 WriteLiteral("\r\n    <ul");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 695), Tuple.Create("\"", 772)
-, Tuple.Create(Tuple.Create("", 703), Tuple.Create("nav", 703), true)
-, Tuple.Create(Tuple.Create(" ", 706), Tuple.Create("nav-tabs", 707), true)
+WriteAttribute("class", Tuple.Create(" class=\"", 710), Tuple.Create("\"", 787)
+, Tuple.Create(Tuple.Create("", 718), Tuple.Create("nav", 718), true)
+, Tuple.Create(Tuple.Create(" ", 721), Tuple.Create("nav-tabs", 722), true)
             
             #line 22 "..\..\Views\Team.cshtml"
-, Tuple.Create(Tuple.Create("", 715), Tuple.Create<System.Object, System.Int32>(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty
+, Tuple.Create(Tuple.Create("", 730), Tuple.Create<System.Object, System.Int32>(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty
             
             #line default
             #line hidden
-, 715), false)
+, 730), false)
 );
 
 WriteLiteral(">\r\n        <li");
@@ -161,15 +161,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 938), Tuple.Create("\"", 974)
+WriteAttribute("href", Tuple.Create(" href=\"", 953), Tuple.Create("\"", 989)
             
             #line 27 "..\..\Views\Team.cshtml"
-, Tuple.Create(Tuple.Create("", 945), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
+, Tuple.Create(Tuple.Create("", 960), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
             
             #line default
             #line hidden
-, 945), false)
-, Tuple.Create(Tuple.Create("", 966), Tuple.Create("/matches", 966), true)
+, 960), false)
+, Tuple.Create(Tuple.Create("", 981), Tuple.Create("/matches", 981), true)
 );
 
 WriteLiteral(">Matches</a>\r\n        </li>\r\n        <li");
@@ -180,15 +180,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1066), Tuple.Create("\"", 1102)
+WriteAttribute("href", Tuple.Create(" href=\"", 1081), Tuple.Create("\"", 1117)
             
             #line 30 "..\..\Views\Team.cshtml"
-, Tuple.Create(Tuple.Create("", 1073), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
+, Tuple.Create(Tuple.Create("", 1088), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
             
             #line default
             #line hidden
-, 1073), false)
-, Tuple.Create(Tuple.Create("", 1094), Tuple.Create("/players", 1094), true)
+, 1088), false)
+, Tuple.Create(Tuple.Create("", 1109), Tuple.Create("/players", 1109), true)
 );
 
 WriteLiteral(">Players</a>\r\n        </li>\r\n        <li");
@@ -199,15 +199,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1194), Tuple.Create("\"", 1233)
+WriteAttribute("href", Tuple.Create(" href=\"", 1209), Tuple.Create("\"", 1248)
             
             #line 33 "..\..\Views\Team.cshtml"
-, Tuple.Create(Tuple.Create("", 1201), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
+, Tuple.Create(Tuple.Create("", 1216), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
             
             #line default
             #line hidden
-, 1201), false)
-, Tuple.Create(Tuple.Create("", 1222), Tuple.Create("/statistics", 1222), true)
+, 1216), false)
+, Tuple.Create(Tuple.Create("", 1237), Tuple.Create("/statistics", 1237), true)
 );
 
 WriteLiteral(">Statistics</a>\r\n        </li>\r\n");
@@ -234,15 +234,15 @@ WriteLiteral(">\r\n                <a");
 
 WriteLiteral(" class=\"nav-link nav-link-edit\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1408), Tuple.Create("\"", 1441)
+WriteAttribute("href", Tuple.Create(" href=\"", 1423), Tuple.Create("\"", 1456)
             
             #line 38 "..\..\Views\Team.cshtml"
-, Tuple.Create(Tuple.Create("", 1415), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
+, Tuple.Create(Tuple.Create("", 1430), Tuple.Create<System.Object, System.Int32>(Model.Team.TeamRoute
             
             #line default
             #line hidden
-, 1415), false)
-, Tuple.Create(Tuple.Create("", 1436), Tuple.Create("/edit", 1436), true)
+, 1430), false)
+, Tuple.Create(Tuple.Create("", 1451), Tuple.Create("/edit", 1451), true)
 );
 
 WriteLiteral(">Edit team</a>\r\n            </li>\r\n");
@@ -453,14 +453,14 @@ WriteLiteral("\r\n    <h2>Contact details</h2>\r\n");
             #line hidden
 WriteLiteral("                <p>Visit <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3696), Tuple.Create("\"", 3722)
+WriteAttribute("href", Tuple.Create(" href=\"", 3711), Tuple.Create("\"", 3737)
             
             #line 98 "..\..\Views\Team.cshtml"
-, Tuple.Create(Tuple.Create("", 3703), Tuple.Create<System.Object, System.Int32>(Model.Team.Website
+, Tuple.Create(Tuple.Create("", 3718), Tuple.Create<System.Object, System.Int32>(Model.Team.Website
             
             #line default
             #line hidden
-, 3703), false)
+, 3718), false)
 );
 
 WriteLiteral(">");

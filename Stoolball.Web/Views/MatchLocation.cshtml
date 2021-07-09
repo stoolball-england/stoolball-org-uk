@@ -5,8 +5,9 @@
 @using Stoolball.Security
 @{
     Html.RequiresJs("https://maps.google.co.uk/maps/api/js?key=" + Model.GoogleMapsApiKey, 50);
-    Html.RequiresJs("/js/maps.js", 90);
-    Html.RequiresJs("/matchlocations/match-location.js");
+    Html.RequiresJs("~/js/maps.js", 90);
+    Html.RequiresJs("~/matchlocations/match-location.js");
+    Html.RequiresJs("~/matchlocations/show-all-teams.js");
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditMatchLocation] || Model.IsAuthorized[AuthorizedAction.DeleteMatchLocation];
 }
 <div class="container-xl">
@@ -80,8 +81,20 @@
     }
     @if (Model.MatchLocation.Teams?.Count > 0)
     {
+        var currentTeams = Model.MatchLocation.Teams.Where(x => !x.UntilYear.HasValue).ToList();
         <h2>Teams based here</h2>
-        @Html.Partial("_TeamList", Model.MatchLocation.Teams)
+        if (currentTeams.Any())
+        {
+        <div class="team-list__current">
+            @Html.Partial("_TeamList", currentTeams)
+        </div>
+        }
+        if (currentTeams.Count < Model.MatchLocation.Teams.Count)
+        {
+            <div class="team-list__all d-none">
+                @Html.Partial("_TeamList", Model.MatchLocation.Teams)
+            </div>
+        }
     }
 
     @if (Model.MatchLocation.Latitude.HasValue && Model.MatchLocation.Longitude.HasValue)

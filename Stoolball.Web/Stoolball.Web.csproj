@@ -904,6 +904,7 @@
     <Content Include="Matches\edit-batting-scorecard.js" />
     <Content Include="Matches\player-autocomplete.js" />
     <Content Include="js\progress.js" />
+    <Content Include="MatchLocations\show-all-teams.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -1092,7 +1093,7 @@
     <Content Include="Scripts\umd\popper.js" />
     <Content Include="Scripts\umd\popper.min.js" />
     <Content Include="service-worker.js" />
-    <Content Include="Teams\team.js" />
+    <Content Include="js\show-all-competitions.js" />
     <Content Include="Teams\teams-map.js" />
     <Content Include="Views\Partials\BlockList\Components\FormattedText.cshtml">
       <Generator>RazorGenerator</Generator>

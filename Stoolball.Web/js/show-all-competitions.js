@@ -16,7 +16,7 @@
       allCompetitions.classList.remove("d-none");
       showAllCompetitions.parentNode.removeChild(showAllCompetitions);
 
-      const currentSeasons = document.querySelector(".season-list__current");
+      const currentSeasons = document.querySelector(".season-list__abridged");
       if (currentSeasons) {
         currentSeasons.parentNode.removeChild(currentSeasons);
       }

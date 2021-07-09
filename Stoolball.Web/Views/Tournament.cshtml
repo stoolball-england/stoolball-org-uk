@@ -7,6 +7,7 @@
 @using Stoolball.Security
 @{
     var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditTournament] || Model.IsAuthorized[AuthorizedAction.DeleteTournament];
+    Html.RequiresJs("~/js/show-all-competitions.js");
     Html.RequiresCss("~/matches/match.min.css");
     Html.RequiresCss("~/css/comments.min.css");
 }
@@ -123,7 +124,7 @@
 
         <p>This tournament is listed in @(the ? string.Empty : "the ") <a href="@season.SeasonRoute">@season.SeasonFullName()</a>.</p>
     }
-    else if (Model.Tournament.Seasons.Count > 1)
+    else if (Model.Tournament.Seasons.Count == 2 || authorizedToEdit)
     {
         <p>This tournament is listed in the following seasons:</p>
 
@@ -134,6 +135,21 @@
             }
         </ul>
     }
+    else if (Model.Tournament.Seasons.Count > 2)
+    {
+        <p>This tournament is listed in the following seasons:</p>
+        <ul class="season-list__abridged">
+            <li><a href="@Model.Tournament.Seasons[0].SeasonRoute">@Model.Tournament.Seasons[0].SeasonFullName()</a></li>
+            <li><a href="@Model.Tournament.Seasons[1].SeasonRoute">@Model.Tournament.Seasons[1].SeasonFullName()</a></li>
+        </ul>
+        <ul class="season-list__all d-none">
+            @foreach (var season in Model.Tournament.Seasons)
+            {
+                <li><a href="@season.SeasonRoute">@season.SeasonFullName()</a></li>
+            }
+        </ul>
+    }
+
     @if (authorizedToEdit)
     {
         <p><a class="btn btn-secondary" href="@Model.Tournament.TournamentRoute/edit/seasons">Edit where to list this tournament</a></p>

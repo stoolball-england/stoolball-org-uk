@@ -87,7 +87,7 @@ WriteLiteral("    <h2>Competitions</h2>\r\n");
 
 WriteLiteral("    <ul");
 
-WriteLiteral(" class=\"season-list__current\"");
+WriteLiteral(" class=\"season-list__abridged\"");
 
 WriteLiteral(">\r\n");
 
@@ -107,14 +107,14 @@ WriteLiteral(">\r\n");
             #line hidden
 WriteLiteral("            <li><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1013), Tuple.Create("\"", 1039)
+WriteAttribute("href", Tuple.Create(" href=\"", 1014), Tuple.Create("\"", 1040)
             
             #line 26 "..\..\Views\Partials\_SeasonListExpandable.cshtml"
-, Tuple.Create(Tuple.Create("", 1020), Tuple.Create<System.Object, System.Int32>(season.SeasonRoute
+, Tuple.Create(Tuple.Create("", 1021), Tuple.Create<System.Object, System.Int32>(season.SeasonRoute
             
             #line default
             #line hidden
-, 1020), false)
+, 1021), false)
 );
 
 WriteLiteral(">");
@@ -207,14 +207,14 @@ WriteLiteral(">\r\n");
             #line hidden
 WriteLiteral("                        <li><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1604), Tuple.Create("\"", 1630)
+WriteAttribute("href", Tuple.Create(" href=\"", 1605), Tuple.Create("\"", 1631)
             
             #line 41 "..\..\Views\Partials\_SeasonListExpandable.cshtml"
-, Tuple.Create(Tuple.Create("", 1611), Tuple.Create<System.Object, System.Int32>(season.SeasonRoute
+, Tuple.Create(Tuple.Create("", 1612), Tuple.Create<System.Object, System.Int32>(season.SeasonRoute
             
             #line default
             #line hidden
-, 1611), false)
+, 1612), false)
 );
 
 WriteLiteral(">");
