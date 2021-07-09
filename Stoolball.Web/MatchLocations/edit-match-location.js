@@ -206,6 +206,11 @@
       return;
     }
 
+    const noMaps = document.querySelectorAll(".no-google-maps");
+    for (let i = 0; i < noMaps.length; i++) {
+      noMaps[i].classList.add("sr-only");
+    }
+
     createMap();
 
     latitude.addEventListener("change", updateMap);

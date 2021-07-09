@@ -43,17 +43,33 @@
 
 <div class="form-group">
     @Html.LabelFor(m => Model.MatchLocation.Postcode, RequiredFieldStatus.Optional, new { @class = "has-form-text", autocomplete = "postal-code" })
-    @Html.TextBoxFor(m => Model.MatchLocation.Postcode, new { @class = "form-control postcode", aria_describedby = "postcode-validation", maxlength="9" })
+    @Html.TextBoxFor(m => Model.MatchLocation.Postcode, new { @class = "form-control postcode", aria_describedby = "postcode-validation", maxlength = "9" })
     @Html.ValidationMessageFor(m => Model.MatchLocation.Postcode, null, new { id = "postcode-validation" })
 </div>
 
-<div id="map" data-apikey="@Model.GoogleMapsApiKey">
-    <p class="alert-danger alert"><strong>You can set the location of this ground or sports centre using Google Maps, 
-        but we can only show you the map if you <a href="/privacy/cookies/">consent to maps</a>.</strong></p>
+<div id="map" data-apikey="@Model.GoogleMapsApiKey" aria-hidden="true">
+    <p class="alert-danger alert">
+        <strong>
+            You can set the location of this ground or sports centre using Google Maps,
+            but we can only show you the map if you <a href="/privacy/cookies/">consent to maps</a>.
+        </strong>
+    </p>
+</div>
+
+<div class="form-group no-google-maps">
+    @Html.LabelFor(m => Model.MatchLocation.Latitude, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+    @Html.TextBoxFor(m => Model.MatchLocation.Latitude, new { @class = "form-control", aria_describedby = "latitude-validation" })
+    @Html.ValidationMessageFor(m => Model.MatchLocation.Latitude, null, new { id = "latitude-validation" })
+</div>
+
+<div class="form-group no-google-maps">
+    @Html.LabelFor(m => Model.MatchLocation.Longitude, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+    @Html.TextBoxFor(m => Model.MatchLocation.Longitude, new { @class = "form-control longitude", aria_describedby = "longitude-validation" })
+    @Html.ValidationMessageFor(m => Model.MatchLocation.Longitude, null, new { id = "longitude-validation" })
 </div>
 
 <fieldset class="form-group" id="geoprecision">
-    <legend>How accurate is the map?</legend>
+    <legend>How accurate is the location?</legend>
     <div class="custom-control custom-radio">
         @Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Exact, new { @class = "custom-control-input", @id = "geo-0", aria_describedby = "precision-validation" })
         <label for="geo-0" class="custom-control-label">It shows exactly where the ground or sports centre is</label>
@@ -71,8 +87,7 @@
         <label for="geo-3" class="custom-control-label">It shows the right town or village, but I don't know where the ground or sports centre is</label>
     </div>
     @Html.ValidationMessageFor(m => Model.MatchLocation.GeoPrecision, null, new { id = "precision-validation" })
-    @Html.HiddenFor(m => Model.MatchLocation.Latitude)
-    @Html.HiddenFor(m => Model.MatchLocation.Longitude)
+
 </fieldset>
 
 <div class="form-group">

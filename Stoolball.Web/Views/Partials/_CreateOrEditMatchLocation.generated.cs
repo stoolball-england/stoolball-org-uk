@@ -318,7 +318,7 @@ WriteLiteral("    ");
 
             
             #line 46 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
-Write(Html.TextBoxFor(m => Model.MatchLocation.Postcode, new { @class = "form-control postcode", aria_describedby = "postcode-validation", maxlength="9" }));
+Write(Html.TextBoxFor(m => Model.MatchLocation.Postcode, new { @class = "form-control postcode", aria_describedby = "postcode-validation", maxlength = "9" }));
 
             
             #line default
@@ -349,22 +349,99 @@ WriteLiteral(" data-apikey=\"");
             #line hidden
 WriteLiteral("\"");
 
+WriteLiteral(" aria-hidden=\"true\"");
+
 WriteLiteral(">\r\n    <p");
 
 WriteLiteral(" class=\"alert-danger alert\"");
 
-WriteLiteral("><strong>You can set the location of this ground or sports centre using Google Ma" +
-"ps, \r\n        but we can only show you the map if you <a");
+WriteLiteral(">\r\n        <strong>\r\n            You can set the location of this ground or sport" +
+"s centre using Google Maps,\r\n            but we can only show you the map if you" +
+" <a");
 
 WriteLiteral(" href=\"/privacy/cookies/\"");
 
-WriteLiteral(">consent to maps</a>.</strong></p>\r\n</div>\r\n\r\n<fieldset");
+WriteLiteral(">consent to maps</a>.\r\n        </strong>\r\n    </p>\r\n</div>\r\n\r\n<div");
+
+WriteLiteral(" class=\"form-group no-google-maps\"");
+
+WriteLiteral(">\r\n");
+
+WriteLiteral("    ");
+
+            
+            #line 60 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
+Write(Html.LabelFor(m => Model.MatchLocation.Latitude, RequiredFieldStatus.Optional, new { @class = "has-form-text" }));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
+WriteLiteral("    ");
+
+            
+            #line 61 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
+Write(Html.TextBoxFor(m => Model.MatchLocation.Latitude, new { @class = "form-control", aria_describedby = "latitude-validation" }));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
+WriteLiteral("    ");
+
+            
+            #line 62 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
+Write(Html.ValidationMessageFor(m => Model.MatchLocation.Latitude, null, new { id = "latitude-validation" }));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n</div>\r\n\r\n<div");
+
+WriteLiteral(" class=\"form-group no-google-maps\"");
+
+WriteLiteral(">\r\n");
+
+WriteLiteral("    ");
+
+            
+            #line 66 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
+Write(Html.LabelFor(m => Model.MatchLocation.Longitude, RequiredFieldStatus.Optional, new { @class = "has-form-text" }));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
+WriteLiteral("    ");
+
+            
+            #line 67 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
+Write(Html.TextBoxFor(m => Model.MatchLocation.Longitude, new { @class = "form-control longitude", aria_describedby = "longitude-validation" }));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
+WriteLiteral("    ");
+
+            
+            #line 68 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
+Write(Html.ValidationMessageFor(m => Model.MatchLocation.Longitude, null, new { id = "longitude-validation" }));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n</div>\r\n\r\n<fieldset");
 
 WriteLiteral(" class=\"form-group\"");
 
 WriteLiteral(" id=\"geoprecision\"");
 
-WriteLiteral(">\r\n    <legend>How accurate is the map?</legend>\r\n    <div");
+WriteLiteral(">\r\n    <legend>How accurate is the location?</legend>\r\n    <div");
 
 WriteLiteral(" class=\"custom-control custom-radio\"");
 
@@ -373,7 +450,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("        ");
 
             
-            #line 58 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
+            #line 74 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
    Write(Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Exact, new { @class = "custom-control-input", @id = "geo-0", aria_describedby = "precision-validation" }));
 
             
@@ -395,7 +472,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("        ");
 
             
-            #line 62 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
+            #line 78 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
    Write(Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Postcode, new { @class = "custom-control-input", @id = "geo-1", aria_describedby = "precision-validation" }));
 
             
@@ -417,7 +494,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("        ");
 
             
-            #line 66 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
+            #line 82 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
    Write(Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Street, new { @class = "custom-control-input", @id = "geo-2", aria_describedby = "precision-validation" }));
 
             
@@ -439,7 +516,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("        ");
 
             
-            #line 70 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
+            #line 86 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
    Write(Html.RadioButtonFor(m => Model.MatchLocation.GeoPrecision, GeoPrecision.Town, new { @class = "custom-control-input", @id = "geo-3", aria_describedby = "precision-validation" }));
 
             
@@ -457,35 +534,13 @@ WriteLiteral(">It shows the right town or village, but I don\'t know where the g
 WriteLiteral("    ");
 
             
-            #line 73 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
+            #line 89 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
 Write(Html.ValidationMessageFor(m => Model.MatchLocation.GeoPrecision, null, new { id = "precision-validation" }));
 
             
             #line default
             #line hidden
-WriteLiteral("\r\n");
-
-WriteLiteral("    ");
-
-            
-            #line 74 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
-Write(Html.HiddenFor(m => Model.MatchLocation.Latitude));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\r\n");
-
-WriteLiteral("    ");
-
-            
-            #line 75 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
-Write(Html.HiddenFor(m => Model.MatchLocation.Longitude));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\r\n</fieldset>\r\n\r\n<div");
+WriteLiteral("\r\n\r\n</fieldset>\r\n\r\n<div");
 
 WriteLiteral(" class=\"form-group\"");
 
@@ -494,7 +549,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("    ");
 
             
-            #line 79 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
+            #line 94 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
 Write(Html.LabelFor(m => Model.MatchLocation.MatchLocationNotes, RequiredFieldStatus.Optional, new { @class = "has-form-text" }));
 
             
@@ -512,7 +567,7 @@ WriteLiteral("><small>Is it easy to find? Is there parking? Disabled facilities?
 WriteLiteral("    ");
 
             
-            #line 81 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
+            #line 96 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
 Write(Html.TextAreaFor(m => Model.MatchLocation.MatchLocationNotes, new { @class = "form-control", aria_describedby = "notes-validation notes-help" }));
 
             
@@ -523,7 +578,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 82 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
+            #line 97 "..\..\Views\Partials\_CreateOrEditMatchLocation.cshtml"
 Write(Html.ValidationMessageFor(m => Model.MatchLocation.MatchLocationNotes, null, new { id = "notes-validation" }));
 
             
@@ -533,7 +588,7 @@ WriteLiteral("\r\n</div>\r\n\r\n<button");
 
 WriteLiteral(" class=\"btn btn-primary\"");
 
-WriteLiteral(">Save ground or sports centre</button>");
+WriteLiteral(">Save ground or sports centre</button>\r\n");
 
         }
     }
