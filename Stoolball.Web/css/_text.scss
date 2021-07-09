@@ -17,6 +17,15 @@ a {
     @include link-underline;
 }
 
+a:visited {
+    color: theme-color("secondary");
+    border-bottom-color: theme-color("secondary");
+}
+
+a.btn-secondary:visited {
+    color: $white;
+}
+
 a:hover {
     text-decoration: none;
     color: darken($link-color, 10%);

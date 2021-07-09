@@ -46,6 +46,10 @@ $selected_background: #555;
     border-color: theme-color("alt-secondary");
 }
 
+.nav-tabs .nav-link:visited {
+    color: $link-color;
+}
+
 .nav-tabs .nav-link:focus {
     outline-offset: 0;
 }
