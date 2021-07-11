@@ -96,7 +96,7 @@ namespace Stoolball.Web
             composition.Register<IBadLanguageFilter, BadLanguageFilter>();
             composition.Register<IStatisticsQueryBuilder, StatisticsQueryBuilder>();
             composition.Register<IStoolballEntityCopier, StoolballEntityCopier>();
-
+            composition.Register<IPlayerNameFormatter, PlayerNameFormatter>();
 
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 
             // be injected anywhere except the one place where it's serving a page of content.

@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Data;
-using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Dapper;
 using Newtonsoft.Json;
 using Stoolball.Logging;
 using Stoolball.Routing;
 using Stoolball.Statistics;
-using Stoolball.Teams;
 using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer
@@ -19,27 +16,20 @@ namespace Stoolball.Data.SqlServer
     /// </summary>
     public class SqlServerPlayerRepository : IPlayerRepository
     {
-        private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IAuditRepository _auditRepository;
         private readonly ILogger _logger;
         private readonly IRouteGenerator _routeGenerator;
+        private readonly IStoolballEntityCopier _copier;
+        private readonly IPlayerNameFormatter _playerNameFormatter;
 
-        public SqlServerPlayerRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator)
+        public SqlServerPlayerRepository(IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator, IStoolballEntityCopier copier,
+            IPlayerNameFormatter playerNameFormatter)
         {
-            _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _routeGenerator = routeGenerator ?? throw new ArgumentNullException(nameof(routeGenerator));
-        }
-
-        private static PlayerIdentity CreateAuditableCopy(PlayerIdentity playerIdentity)
-        {
-            return new PlayerIdentity
-            {
-                PlayerIdentityId = playerIdentity.PlayerIdentityId,
-                PlayerIdentityName = playerIdentity.PlayerIdentityName,
-                Team = new Team { TeamId = playerIdentity.Team.TeamId }
-            };
+            _copier = copier ?? throw new ArgumentNullException(nameof(copier));
+            _playerNameFormatter = playerNameFormatter ?? throw new ArgumentNullException(nameof(playerNameFormatter));
         }
 
         /// <summary>
@@ -99,28 +89,17 @@ namespace Stoolball.Data.SqlServer
                 return matchedPlayerIdentity;
             }
 
-            var auditablePlayerIdentity = CreateAuditableCopy(playerIdentity);
+            var auditablePlayerIdentity = _copier.CreateAuditableCopy(playerIdentity);
 
             auditablePlayerIdentity.PlayerIdentityId = Guid.NewGuid();
-            auditablePlayerIdentity.PlayerIdentityName = CapitaliseName(auditablePlayerIdentity.PlayerIdentityName);
+            auditablePlayerIdentity.PlayerIdentityName = _playerNameFormatter.CapitaliseName(auditablePlayerIdentity.PlayerIdentityName);
 
-            var player = new Player
-            {
-                PlayerId = Guid.NewGuid(),
-                PlayerRoute = _routeGenerator.GenerateRoute($"/players", auditablePlayerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute)
-            };
+            var player = new Player { PlayerId = Guid.NewGuid() };
             player.PlayerIdentities.Add(auditablePlayerIdentity);
 
-            int count;
-            do
-            {
-                count = await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { player.PlayerRoute }, transaction).ConfigureAwait(false);
-                if (count > 0)
-                {
-                    player.PlayerRoute = _routeGenerator.IncrementRoute(player.PlayerRoute);
-                }
-            }
-            while (count > 0);
+            player.PlayerRoute = await _routeGenerator.GenerateUniqueRoute($"/players", auditablePlayerIdentity.PlayerIdentityName, NoiseWords.PlayerRoute,
+               async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Player} WHERE PlayerRoute = @PlayerRoute", new { player.PlayerRoute }, transaction).ConfigureAwait(false)
+            ).ConfigureAwait(false);
 
             await transaction.Connection.ExecuteAsync(
                   $@"INSERT INTO {Tables.Player} 
@@ -157,38 +136,12 @@ namespace Stoolball.Data.SqlServer
                 AuditDate = DateTime.UtcNow
             }, transaction).ConfigureAwait(false);
 
-            _logger.Info(GetType(), LoggingTemplates.Created, player, memberName, memberKey, GetType(), nameof(SqlServerPlayerRepository.CreateOrMatchPlayerIdentity));
+            _logger.Info(GetType(), LoggingTemplates.Created, player, memberName, memberKey, GetType(), nameof(CreateOrMatchPlayerIdentity));
 
             player.PlayerIdentities.Clear();
             auditablePlayerIdentity.Player = player;
             return auditablePlayerIdentity;
         }
 
-        private static string CapitaliseName(string playerIdentityName)
-        {
-            if (playerIdentityName is null)
-            {
-                throw new ArgumentNullException(nameof(playerIdentityName));
-            }
-
-            var segments = Regex.Replace(playerIdentityName, @"\s", " ").Split(' ');
-            for (var i = 0; i < segments.Length; i++)
-            {
-                segments[i] = CapitaliseNameSegment(segments[i]);
-            }
-            segments = string.Join(" ", segments).Split('-');
-            for (var i = 0; i < segments.Length; i++)
-            {
-                segments[i] = CapitaliseNameSegment(segments[i]);
-            }
-            return string.Join("-", segments);
-        }
-
-        private static string CapitaliseNameSegment(string segment)
-        {
-            return segment.Length > 1 && Array.IndexOf(new[] { "de", "la", "di", "da", "della", "van", "von" }, segment) == -1
-              ? segment.Substring(0, 1).ToUpper(CultureInfo.CurrentCulture) + segment.Substring(1)
-              : segment;
-        }
     }
 }

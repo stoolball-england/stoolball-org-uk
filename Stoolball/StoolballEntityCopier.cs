@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Stoolball.Clubs;
+using Stoolball.Statistics;
 using Stoolball.Teams;
 
 namespace Stoolball
@@ -8,6 +9,7 @@ namespace Stoolball
     {
         public Club CreateAuditableCopy(Club club)
         {
+            if (club == null) { return null; }
             return new Club
             {
                 ClubId = club.ClubId,
@@ -17,6 +19,23 @@ namespace Stoolball
                 MemberGroupKey = club.MemberGroupKey,
                 MemberGroupName = club.MemberGroupName
             };
+        }
+
+        public PlayerIdentity CreateAuditableCopy(PlayerIdentity playerIdentity)
+        {
+            if (playerIdentity == null) { return null; }
+            return new PlayerIdentity
+            {
+                PlayerIdentityId = playerIdentity.PlayerIdentityId,
+                PlayerIdentityName = playerIdentity.PlayerIdentityName,
+                Team = CreateAuditableCopy(playerIdentity.Team)
+            };
+        }
+
+        public Team CreateAuditableCopy(Team team)
+        {
+            if (team == null) { return null; }
+            return new Team { TeamId = team.TeamId };
         }
     }
 }
