@@ -20,6 +20,7 @@ namespace Stoolball.Data.SqlServer
             _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
         }
 
+        /// <inheritdoc />
         public async Task DeleteBowlingFigures(Guid matchInningsId, IDbTransaction transaction)
         {
             if (transaction is null)
@@ -27,6 +28,7 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(transaction));
             }
 
+            await transaction.Connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET BowlingFiguresId = NULL WHERE MatchId = (SELECT MatchId FROM {Tables.MatchInnings} WHERE MatchInningsId = @matchInningsId)", new { matchInningsId }, transaction).ConfigureAwait(false);
             await transaction.Connection.ExecuteAsync($"DELETE FROM {Tables.BowlingFigures} WHERE MatchInningsId = @matchInningsId", new { matchInningsId }, transaction).ConfigureAwait(false);
         }
 

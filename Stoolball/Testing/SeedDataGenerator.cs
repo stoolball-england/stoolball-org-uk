@@ -764,11 +764,14 @@ namespace Stoolball.Testing
                         )
                     );
             testData.Members = testData.Matches.SelectMany(x => x.Comments).Select(x => (memberId: x.MemberKey, memberName: x.MemberName)).Distinct(new MemberEqualityComparer()).ToList();
-            testData.TournamentWithFullDetails = CreateTournamentInThePastWithFullDetails(testData.Members);
-            testData.Tournaments.Add(testData.TournamentWithFullDetails);
+            for (var i = 0; i < 10; i++)
+            {
+                testData.TournamentWithFullDetails = CreateTournamentInThePastWithFullDetails(testData.Members);
+                testData.Tournaments.Add(testData.TournamentWithFullDetails);
+            }
 
             testData.Teams = testData.Matches.SelectMany(x => x.Teams).Select(x => x.Team) // teams that got used
-                .Union(testData.TournamentWithFullDetails.Teams.Select(x => x.Team))
+                .Union(testData.Tournaments.SelectMany(x => x.Teams).Select(x => x.Team))
                 .Distinct(new TeamEqualityComparer()).ToList();
             testData.TeamWithFullDetails = testData.Teams.First(x => x.Club != null && x.MatchLocations.Any() && x.Seasons.Any());
             testData.MatchLocations = testData.Matches.Where(m => m.MatchLocation != null).Select(m => m.MatchLocation)

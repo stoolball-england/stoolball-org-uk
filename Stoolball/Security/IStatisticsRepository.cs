@@ -8,6 +8,9 @@ namespace Stoolball.Statistics
 {
     public interface IStatisticsRepository
     {
+        /// <summary>
+        /// Delete bowling figures for a match innings.
+        /// </summary>
         Task DeleteBowlingFigures(Guid matchInningsId, IDbTransaction transaction);
         Task DeletePlayerStatistics(Guid matchId, IDbTransaction transaction);
 
