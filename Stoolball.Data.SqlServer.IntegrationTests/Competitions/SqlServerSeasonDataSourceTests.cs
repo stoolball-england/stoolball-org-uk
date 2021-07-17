@@ -68,6 +68,139 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
         }
 
         [Fact]
+        public async Task Read_season_by_id_with_related_data_returns_basic_fields()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await seasonDataSource.ReadSeasonById(_databaseFixture.SeasonWithFullDetails.SeasonId.Value, true).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.SeasonId, result.SeasonId);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.FromYear, result.FromYear);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.UntilYear, result.UntilYear);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Introduction, result.Introduction);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.PlayersPerTeam, result.PlayersPerTeam);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.EnableTournaments, result.EnableTournaments);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.ResultsTableType, result.ResultsTableType);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.EnableLastPlayerBatsOn, result.EnableLastPlayerBatsOn);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.EnableBonusOrPenaltyRuns, result.EnableBonusOrPenaltyRuns);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.EnableRunsScored, result.EnableRunsScored);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.EnableRunsConceded, result.EnableRunsConceded);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Results, result.Results);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.SeasonRoute, result.SeasonRoute);
+        }
+
+        [Fact]
+        public async Task Read_season_by_id_with_related_data_returns_competition()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await seasonDataSource.ReadSeasonById(_databaseFixture.SeasonWithFullDetails.SeasonId.Value, true).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Competition.CompetitionName, result.Competition.CompetitionName);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Competition.PlayerType, result.Competition.PlayerType);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Competition.UntilYear, result.Competition.UntilYear);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Competition.Introduction, result.Competition.Introduction);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Competition.PublicContactDetails, result.Competition.PublicContactDetails);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Competition.Website, result.Competition.Website);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Competition.Facebook, result.Competition.Facebook);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Competition.Twitter, result.Competition.Twitter);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Competition.Instagram, result.Competition.Instagram);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Competition.YouTube, result.Competition.YouTube);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Competition.CompetitionRoute, result.Competition.CompetitionRoute);
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Competition.MemberGroupName, result.Competition.MemberGroupName);
+        }
+
+        [Fact]
+        public async Task Read_season_by_id_with_related_data_returns_other_seasons_latest_first()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await seasonDataSource.ReadSeasonById(_databaseFixture.SeasonWithFullDetails.SeasonId.Value, true).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Competition.Seasons.Count - 1, result.Competition.Seasons.Count); // -1 because it's *other* seasons, not including this one
+            foreach (var season in _databaseFixture.SeasonWithFullDetails.Competition.Seasons)
+            {
+                var resultSeason = result.Competition.Seasons.SingleOrDefault(x => x.SeasonId == season.SeasonId);
+                if (season.SeasonId == _databaseFixture.SeasonWithFullDetails.SeasonId)
+                {
+                    Assert.Null(resultSeason);
+                }
+                else
+                {
+                    Assert.NotNull(resultSeason);
+
+                    Assert.Equal(season.FromYear, resultSeason.FromYear);
+                    Assert.Equal(season.UntilYear, resultSeason.UntilYear);
+                    Assert.Equal(season.SeasonRoute, resultSeason.SeasonRoute);
+                }
+            }
+
+            int previousFromYear = int.MaxValue, previousUntilYear = int.MaxValue;
+            foreach (var season in result.Competition.Seasons)
+            {
+                Assert.True(season.FromYear <= previousFromYear);
+                Assert.True(season.UntilYear <= previousUntilYear);
+                previousFromYear = season.FromYear;
+                previousUntilYear = season.UntilYear;
+            }
+        }
+
+        [Fact]
+        public async Task Read_season_by_id_with_related_data_returns_teams()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await seasonDataSource.ReadSeasonById(_databaseFixture.SeasonWithFullDetails.SeasonId.Value, true).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.Teams.Count, result.Teams.Count);
+
+            foreach (var teamInSeason in _databaseFixture.SeasonWithFullDetails.Teams)
+            {
+                var resultTeam = result.Teams.SingleOrDefault(x => x.Team.TeamId == teamInSeason.Team.TeamId);
+                Assert.NotNull(resultTeam);
+
+                Assert.Equal(teamInSeason.WithdrawnDate, resultTeam.WithdrawnDate);
+                Assert.Equal(teamInSeason.Team.TeamName, resultTeam.Team.TeamName);
+                Assert.Equal(teamInSeason.Team.TeamRoute, resultTeam.Team.TeamRoute);
+            }
+        }
+
+        [Fact]
+        public async Task Read_season_by_id_with_related_data_returns_default_over_sets()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await seasonDataSource.ReadSeasonById(_databaseFixture.SeasonWithFullDetails.SeasonId.Value, true).ConfigureAwait(false);
+
+            for (var set = 0; set < _databaseFixture.SeasonWithFullDetails.DefaultOverSets.Count; set++)
+            {
+                Assert.Equal(_databaseFixture.SeasonWithFullDetails.DefaultOverSets[set].OverSetId, result.DefaultOverSets[set].OverSetId);
+                Assert.Equal(_databaseFixture.SeasonWithFullDetails.DefaultOverSets[set].Overs, result.DefaultOverSets[set].Overs);
+                Assert.Equal(_databaseFixture.SeasonWithFullDetails.DefaultOverSets[set].BallsPerOver, result.DefaultOverSets[set].BallsPerOver);
+            }
+        }
+
+        [Fact]
+        public async Task Read_season_by_id_with_related_data_returns_match_types()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            var seasonDataSource = new SqlServerSeasonDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await seasonDataSource.ReadSeasonById(_databaseFixture.SeasonWithFullDetails.SeasonId.Value, true).ConfigureAwait(false);
+
+            Assert.Equal(_databaseFixture.SeasonWithFullDetails.MatchTypes.Count, result.MatchTypes.Count);
+            foreach (var matchType in _databaseFixture.SeasonWithFullDetails.MatchTypes)
+            {
+                Assert.Contains(matchType, result.MatchTypes);
+            }
+        }
+
+        [Fact]
         public async Task Read_season_by_route_returns_basic_fields()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();

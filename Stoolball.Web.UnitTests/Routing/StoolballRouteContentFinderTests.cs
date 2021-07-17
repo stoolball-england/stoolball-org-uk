@@ -292,6 +292,8 @@ namespace Stoolball.Web.Tests.Routing
         [InlineData("https://example.org/matches/example-MaTcH/Edit/league/", StoolballRouteType.EditLeagueMatch)]
         [InlineData("https://example.org/matches/example-match/edit/knockout", StoolballRouteType.EditKnockoutMatch)]
         [InlineData("https://example.org/matches/example-MaTcH/Edit/KnockOut/", StoolballRouteType.EditKnockoutMatch)]
+        [InlineData("https://example.org/matches/example-match/edit/Format", StoolballRouteType.EditMatchFormat)]
+        [InlineData("https://example.org/matches/example-MaTcH/Edit/format/", StoolballRouteType.EditMatchFormat)]
         [InlineData("https://example.org/matches/example-match/edit/Training", StoolballRouteType.EditTrainingSession)]
         [InlineData("https://example.org/matches/example-MaTcH/Edit/training/", StoolballRouteType.EditTrainingSession)]
         [InlineData("https://example.org/matches/example-match/edit/start-of-play", StoolballRouteType.EditStartOfPlay)]

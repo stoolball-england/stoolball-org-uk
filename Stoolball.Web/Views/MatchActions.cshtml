@@ -29,6 +29,12 @@
                         break;
                 }
                 <dd>Set the date and time, teams, location and notes.</dd>
+
+                if (Model.Match.MatchType != MatchType.TrainingSession)
+                {
+                    <dt><a href="@Model.Match.MatchRoute/edit/format">Match format</a></dt>
+                    <dd>Set the number of innings, and overs per innings.</dd>
+                }
             }
             else if (Model.IsAuthorized[AuthorizedAction.EditMatchResult] && Model.Match.StartTime <= DateTime.UtcNow && Model.Match.Tournament == null)
             {

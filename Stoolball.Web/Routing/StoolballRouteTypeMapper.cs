@@ -64,6 +64,7 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.EditLeagueMatch, typeof(EditLeagueMatchController) },
             { StoolballRouteType.EditKnockoutMatch, typeof(EditKnockoutMatchController) },
             { StoolballRouteType.EditTrainingSession, typeof(EditTrainingSessionController) },
+            { StoolballRouteType.EditMatchFormat, typeof(EditMatchFormatController) },
             { StoolballRouteType.EditStartOfPlay, typeof(EditStartOfPlayController) },
             { StoolballRouteType.EditBattingScorecard, typeof(EditBattingScorecardController) },
             { StoolballRouteType.EditBowlingScorecard, typeof(EditBowlingScorecardController) },

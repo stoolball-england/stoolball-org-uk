@@ -129,23 +129,21 @@ namespace Stoolball.Data.SqlServer
         /// <returns>A matching <see cref="Season"/> or <c>null</c> if not found</returns>
         public async Task<Season> ReadSeasonByRoute(string route, bool includeRelated = false)
         {
-            return await (includeRelated ? ReadSeasonWithRelatedDataByRoute(route) : ReadSeasonByRoute(route)).ConfigureAwait(false);
+            var normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "competitions", @"^[a-z0-9-]+\/[0-9]{4}(-[0-9]{2})?$");
+
+            return await (includeRelated ?
+                ReadSeasonWithRelatedData("LOWER(s.SeasonRoute) = @Route", new { Route = normalisedRoute }) :
+                ReadSeason("LOWER(s.SeasonRoute) = @Route", new { Route = normalisedRoute })).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Gets a single stoolball season based on its id
         /// </summary>
         /// <returns>A matching <see cref="Season"/> or <c>null</c> if not found</returns>
-        public async Task<Season> ReadSeasonById(Guid seasonId)
+        public async Task<Season> ReadSeasonById(Guid seasonId, bool includeRelated = false)
         {
-            return await ReadSeason("s.SeasonId = @seasonId", new { seasonId }).ConfigureAwait(false);
-        }
-
-        private async Task<Season> ReadSeasonByRoute(string route)
-        {
-            var normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "competitions", @"^[a-z0-9-]+\/[0-9]{4}(-[0-9]{2})?$");
-
-            return await ReadSeason("LOWER(s.SeasonRoute) = @Route", new { Route = normalisedRoute }).ConfigureAwait(false);
+            return await (includeRelated ? ReadSeasonWithRelatedData("s.SeasonId = @seasonId", new { seasonId }) :
+                ReadSeason("s.SeasonId = @seasonId", new { seasonId })).ConfigureAwait(false);
         }
 
         private async Task<Season> ReadSeason(string where, object parameters)
@@ -189,10 +187,8 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
-        private async Task<Season> ReadSeasonWithRelatedDataByRoute(string route)
+        private async Task<Season> ReadSeasonWithRelatedData(string where, object parameters)
         {
-            var normalisedRoute = _routeNormaliser.NormaliseRouteToEntity(route, "competitions", @"^[a-z0-9-]+\/[0-9]{4}(-[0-9]{2})?$");
-
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var seasons = await connection.QueryAsync<Season, Competition, Season, TeamInSeason, Team, OverSet, string, Season>(
@@ -214,7 +210,7 @@ namespace Stoolball.Data.SqlServer
                             LEFT JOIN {Tables.TeamVersion} AS tn ON t.TeamId = tn.TeamId
                             LEFT JOIN {Tables.OverSet} os ON s.SeasonId = os.SeasonId
                             LEFT JOIN {Tables.SeasonMatchType} AS mt ON s.SeasonId = mt.SeasonId
-                            WHERE LOWER(s.SeasonRoute) = @Route
+                            WHERE {where}
                             AND (tn.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC) OR tn.TeamVersionId IS NULL)
                             AND cv.CompetitionVersionId = (SELECT TOP 1 CompetitionVersionId FROM {Tables.CompetitionVersion} WHERE CompetitionId = co.CompetitionId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                             ORDER BY s2.FromYear DESC, s2.UntilYear ASC",
@@ -247,7 +243,7 @@ namespace Stoolball.Data.SqlServer
                         }
                         return season;
                     },
-                    new { Route = normalisedRoute },
+                    parameters,
                     splitOn: "CompetitionName, SeasonId, WithdrawnDate, TeamId, OverSetId, MatchType").ConfigureAwait(false);
 
                 var seasonToReturn = seasons.FirstOrDefault(); // get an example with the properties that are the same for every row

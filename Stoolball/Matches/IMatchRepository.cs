@@ -50,5 +50,10 @@ namespace Stoolball.Matches
         /// Updates the battings scorecard for a single innings of a match
         /// </summary>
         Task<MatchInnings> UpdateBattingScorecard(Match match, Guid matchInningsId, Guid memberKey, string memberName);
+
+        /// <summary>
+        /// Updates the format of a match - how many innings and how many overs are played
+        /// </summary>
+        Task<Match> UpdateMatchFormat(Match match, Guid memberKey, string memberName);
     }
 }

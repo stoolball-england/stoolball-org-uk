@@ -1248,6 +1248,7 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>BowlingStrikeRate.generated.cs</LastGenOutput>
     </Content>
+    <Content Include="Views\EditMatchFormat.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -1352,6 +1353,10 @@
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
     <Compile Include="ContentPage\CookiesController.cs" />
+    <Compile Include="Matches\EditMatchFormatFormData.cs" />
+    <Compile Include="Matches\EditMatchFormatViewModel.cs" />
+    <Compile Include="Matches\EditMatchFormatController.cs" />
+    <Compile Include="Matches\EditMatchFormatSurfaceController.cs" />
     <Compile Include="Matches\EditTournamentMatchesController.cs" />
     <Compile Include="Matches\EditTournamentMatchesSurfaceController.cs" />
     <Compile Include="Matches\EditTrainingSessionSurfaceController.cs" />

@@ -6,6 +6,7 @@ using AngleSharp.Css.Dom;
 using Dapper;
 using Ganss.XSS;
 using Moq;
+using Stoolball.Competitions;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Logging;
 using Stoolball.Matches;
@@ -55,7 +56,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 Mock.Of<IDataRedactor>(),
                 Mock.Of<IStatisticsRepository>(),
                 Mock.Of<IOversHelper>(),
-                Mock.Of<IPlayerInMatchStatisticsBuilder>());
+                Mock.Of<IPlayerInMatchStatisticsBuilder>(),
+                Mock.Of<IMatchInningsFactory>(),
+                Mock.Of<ISeasonDataSource>());
 
             await repo.DeleteMatch(_databaseFixture.TestData.MatchInThePastWithFullDetails, memberKey, memberName).ConfigureAwait(false);
 

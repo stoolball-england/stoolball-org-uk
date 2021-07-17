@@ -253,6 +253,33 @@ WriteLiteral("                <dd>Set the date and time, teams, location and not
 
             
             #line 32 "..\..\Views\MatchActions.cshtml"
+
+                if (Model.Match.MatchType != MatchType.TrainingSession)
+                {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                    <dt><a");
+
+WriteAttribute("href", Tuple.Create(" href=\"", 2005), Tuple.Create("\"", 2047)
+            
+            #line 35 "..\..\Views\MatchActions.cshtml"
+, Tuple.Create(Tuple.Create("", 2012), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
+            
+            #line default
+            #line hidden
+, 2012), false)
+, Tuple.Create(Tuple.Create("", 2035), Tuple.Create("/edit/format", 2035), true)
+);
+
+WriteLiteral(">Match format</a></dt>\r\n");
+
+WriteLiteral("                    <dd>Set the number of innings, and overs per innings.</dd>\r\n");
+
+            
+            #line 37 "..\..\Views\MatchActions.cshtml"
+                }
             }
             else if (Model.IsAuthorized[AuthorizedAction.EditMatchResult] && Model.Match.StartTime <= DateTime.UtcNow && Model.Match.Tournament == null)
             {
@@ -264,21 +291,21 @@ WriteLiteral("                <dd>Set the date and time, teams, location and not
             #line hidden
 WriteLiteral("                    <dt><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2287), Tuple.Create("\"", 2336)
+WriteAttribute("href", Tuple.Create(" href=\"", 2573), Tuple.Create("\"", 2622)
             
-            #line 37 "..\..\Views\MatchActions.cshtml"
-, Tuple.Create(Tuple.Create("", 2294), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
+            #line 43 "..\..\Views\MatchActions.cshtml"
+, Tuple.Create(Tuple.Create("", 2580), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
             
             #line default
             #line hidden
-, 2294), false)
-, Tuple.Create(Tuple.Create("", 2317), Tuple.Create("/edit/start-of-play", 2317), true)
+, 2580), false)
+, Tuple.Create(Tuple.Create("", 2603), Tuple.Create("/edit/start-of-play", 2603), true)
 );
 
 WriteLiteral(">Edit the result of ");
 
             
-            #line 37 "..\..\Views\MatchActions.cshtml"
+            #line 43 "..\..\Views\MatchActions.cshtml"
                                                                                            Write(Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false)));
 
             
@@ -290,7 +317,7 @@ WriteLiteral("                    <dd>Enter scorecards, set who won the toss and
 ", or say why the match didn\'t happen.</dd>\r\n");
 
             
-            #line 39 "..\..\Views\MatchActions.cshtml"
+            #line 45 "..\..\Views\MatchActions.cshtml"
                 }
             }
 
@@ -300,7 +327,7 @@ WriteLiteral("                    <dd>Enter scorecards, set who won the toss and
 WriteLiteral("            ");
 
             
-            #line 41 "..\..\Views\MatchActions.cshtml"
+            #line 47 "..\..\Views\MatchActions.cshtml"
              if (Model.IsAuthorized[AuthorizedAction.DeleteMatch])
             {
 
@@ -309,21 +336,21 @@ WriteLiteral("            ");
             #line hidden
 WriteLiteral("                <dt><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2715), Tuple.Create("\"", 2752)
+WriteAttribute("href", Tuple.Create(" href=\"", 3001), Tuple.Create("\"", 3038)
             
-            #line 43 "..\..\Views\MatchActions.cshtml"
-, Tuple.Create(Tuple.Create("", 2722), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
+            #line 49 "..\..\Views\MatchActions.cshtml"
+, Tuple.Create(Tuple.Create("", 3008), Tuple.Create<System.Object, System.Int32>(Model.Match.MatchRoute
             
             #line default
             #line hidden
-, 2722), false)
-, Tuple.Create(Tuple.Create("", 2745), Tuple.Create("/delete", 2745), true)
+, 3008), false)
+, Tuple.Create(Tuple.Create("", 3031), Tuple.Create("/delete", 3031), true)
 );
 
 WriteLiteral(">Delete ");
 
             
-            #line 43 "..\..\Views\MatchActions.cshtml"
+            #line 49 "..\..\Views\MatchActions.cshtml"
                                                                Write(Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false)));
 
             
@@ -335,7 +362,7 @@ WriteLiteral("                <dd>Match statistics will be lost. Competition res
 "nged. Players that only feature in this match will be deleted.</dd>\r\n");
 
             
-            #line 45 "..\..\Views\MatchActions.cshtml"
+            #line 51 "..\..\Views\MatchActions.cshtml"
             }
 
             
@@ -344,7 +371,7 @@ WriteLiteral("                <dd>Match statistics will be lost. Competition res
 WriteLiteral("        </dl>\r\n");
 
             
-            #line 47 "..\..\Views\MatchActions.cshtml"
+            #line 53 "..\..\Views\MatchActions.cshtml"
     }
     else
     {
@@ -353,14 +380,14 @@ WriteLiteral("        </dl>\r\n");
             #line default
             #line hidden
             
-            #line 50 "..\..\Views\MatchActions.cshtml"
+            #line 56 "..\..\Views\MatchActions.cshtml"
    Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 50 "..\..\Views\MatchActions.cshtml"
+            #line 56 "..\..\Views\MatchActions.cshtml"
                                
     }
 
