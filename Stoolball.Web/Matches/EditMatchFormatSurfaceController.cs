@@ -52,7 +52,7 @@ namespace Stoolball.Web.Matches
 
             var beforeUpdate = await _matchDataSource.ReadMatchByRoute(Request.RawUrl).ConfigureAwait(false);
 
-            if (beforeUpdate == null || beforeUpdate.StartTime <= DateTime.UtcNow || beforeUpdate.Tournament != null || beforeUpdate.MatchType == MatchType.TrainingSession)
+            if (beforeUpdate == null || beforeUpdate.Tournament != null || beforeUpdate.MatchType == MatchType.TrainingSession)
             {
                 return new HttpNotFoundResult();
             }
@@ -64,13 +64,19 @@ namespace Stoolball.Web.Matches
                 FormData = postedData
             };
 
+            var matchIsInTheFuture = model.Match.StartTime > DateTimeOffset.UtcNow;
             if (postedData.MatchInnings < 2 || postedData.MatchInnings % 2 != 0)
             {
                 ModelState.AddModelError("FormData.MatchInnings", $"A match cannot have an odd number of innings or less than 2 innings.");
             }
+            else if (!matchIsInTheFuture && postedData.MatchInnings < model.Match.MatchInnings.Count)
+            {
+                ModelState.AddModelError("FormData.MatchInnings", $"You cannot reduce the number of innings after a match has happened.");
+            }
             else
             {
-                while (postedData.MatchInnings < model.Match.MatchInnings.Count)
+
+                while (matchIsInTheFuture && postedData.MatchInnings < model.Match.MatchInnings.Count)
                 {
                     model.Match.MatchInnings.RemoveAt(model.Match.MatchInnings.Count - 1);
                 }
@@ -95,7 +101,14 @@ namespace Stoolball.Web.Matches
                 {
                     foreach (var overSet in innings.OverSets)
                     {
-                        overSet.Overs = postedData.Overs;
+                        if (!matchIsInTheFuture && postedData.Overs < overSet.Overs)
+                        {
+                            ModelState.AddModelError("FormData.Overs", $"You cannot reduce the number of overs after a match has happened.");
+                        }
+                        else
+                        {
+                            overSet.Overs = postedData.Overs;
+                        }
                     }
                 }
             }

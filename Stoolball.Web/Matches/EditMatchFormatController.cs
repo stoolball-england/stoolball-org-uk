@@ -60,12 +60,6 @@ namespace Stoolball.Web.Matches
             }
             else
             {
-                // This page is only for matches in the future
-                if (model.Match.StartTime <= DateTime.UtcNow)
-                {
-                    return new HttpNotFoundResult();
-                }
-
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Match);
 
                 model.Metadata.PageTitle = "Edit " + model.Match.MatchFullName(x => _dateFormatter.FormatDate(x, false, false, false));
