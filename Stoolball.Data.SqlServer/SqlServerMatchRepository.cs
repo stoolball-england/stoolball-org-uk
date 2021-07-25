@@ -624,13 +624,16 @@ namespace Stoolball.Data.SqlServer
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    await connection.ExecuteAsync($"UPDATE {Tables.OverSet} SET Overs = @Overs WHERE MatchInningsId IN @MatchInningsIds",
-                        new
-                        {
-                            match.MatchInnings[0].OverSets[0].Overs,
-                            MatchInningsIds = match.MatchInnings.Select(x => x.MatchInningsId.Value)
-                        },
-                        transaction).ConfigureAwait(false);
+                    if (match.MatchInnings[0].OverSets.FirstOrDefault()?.Overs != null)
+                    {
+                        await connection.ExecuteAsync($"UPDATE {Tables.OverSet} SET Overs = @Overs WHERE MatchInningsId IN @MatchInningsIds",
+                            new
+                            {
+                                match.MatchInnings[0].OverSets[0].Overs,
+                                MatchInningsIds = match.MatchInnings.Select(x => x.MatchInningsId.Value)
+                            },
+                            transaction).ConfigureAwait(false);
+                    }
 
                     var currentMatchInnings = await connection.QueryAsync<Guid>($"SELECT MatchInningsId FROM {Tables.MatchInnings} WHERE MatchId = @MatchId", new { match.MatchId }, transaction).ConfigureAwait(false);
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Stoolball.Competitions;
 using Stoolball.Dates;
 using Stoolball.Matches;
 using Stoolball.Navigation;
@@ -23,12 +22,10 @@ namespace Stoolball.Web.Matches
         private readonly IAuthorizationPolicy<Match> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateTimeFormatter;
         private readonly IMatchInningsFactory _matchInningsFactory;
-        private readonly ISeasonDataSource _seasonDataSource;
 
         public EditMatchFormatSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory umbracoDatabaseFactory, ServiceContext serviceContext,
             AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IMatchDataSource matchDataSource,
-            IMatchRepository matchRepository, IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IMatchInningsFactory matchInningsFactory,
-            ISeasonDataSource seasonDataSource)
+            IMatchRepository matchRepository, IAuthorizationPolicy<Match> authorizationPolicy, IDateTimeFormatter dateTimeFormatter, IMatchInningsFactory matchInningsFactory)
             : base(umbracoContextAccessor, umbracoDatabaseFactory, serviceContext, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
@@ -36,7 +33,6 @@ namespace Stoolball.Web.Matches
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
             _matchInningsFactory = matchInningsFactory ?? throw new ArgumentNullException(nameof(matchInningsFactory));
-            _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
         }
 
         [HttpPost]
@@ -83,17 +79,20 @@ namespace Stoolball.Web.Matches
 
                 if (postedData.MatchInnings > model.Match.MatchInnings.Count)
                 {
-                    // Get potential default oversets
-                    if (model.Match.Season != null)
-                    {
-                        model.Match.Season = await _seasonDataSource.ReadSeasonById(model.Match.Season.SeasonId.Value, true).ConfigureAwait(false);
-                    }
-
                     while (postedData.MatchInnings > model.Match.MatchInnings.Count)
                     {
                         var battingMatchTeamId = model.Match.MatchInnings.Count % 2 == 0 ? model.Match.MatchInnings[0].BattingMatchTeamId : model.Match.MatchInnings[1].BattingMatchTeamId;
                         var bowlingMatchTeamId = model.Match.MatchInnings.Count % 2 == 1 ? model.Match.MatchInnings[0].BattingMatchTeamId : model.Match.MatchInnings[1].BattingMatchTeamId;
-                        model.Match.MatchInnings.Add(_matchInningsFactory.CreateMatchInnings(model.Match, battingMatchTeamId, bowlingMatchTeamId));
+                        var addedInnings = _matchInningsFactory.CreateMatchInnings(model.Match, battingMatchTeamId, bowlingMatchTeamId);
+                        if (postedData.Overs.HasValue)
+                        {
+                            addedInnings.OverSets[0].Overs = postedData.Overs;
+                        }
+                        else
+                        {
+                            addedInnings.OverSets.Clear();
+                        }
+                        model.Match.MatchInnings.Add(addedInnings);
                     }
                 }
 
