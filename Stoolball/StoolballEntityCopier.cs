@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using Stoolball.Clubs;
+using Stoolball.MatchLocations;
+using Stoolball.Security;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 
@@ -7,6 +9,13 @@ namespace Stoolball
 {
     public class StoolballEntityCopier : IStoolballEntityCopier
     {
+        private readonly IDataRedactor _dataRedactor;
+
+        public StoolballEntityCopier(IDataRedactor dataRedactor)
+        {
+            _dataRedactor = dataRedactor ?? throw new System.ArgumentNullException(nameof(dataRedactor));
+        }
+
         public Club CreateAuditableCopy(Club club)
         {
             if (club == null) { return null; }
@@ -36,6 +45,35 @@ namespace Stoolball
         {
             if (team == null) { return null; }
             return new Team { TeamId = team.TeamId };
+        }
+
+        public MatchLocation CreateAuditableCopy(MatchLocation matchLocation)
+        {
+            if (matchLocation == null) { return null; }
+            return new MatchLocation
+            {
+                MatchLocationId = matchLocation.MatchLocationId,
+                SecondaryAddressableObjectName = matchLocation.SecondaryAddressableObjectName,
+                PrimaryAddressableObjectName = matchLocation.PrimaryAddressableObjectName,
+                StreetDescription = matchLocation.StreetDescription,
+                Locality = matchLocation.Locality,
+                Town = matchLocation.Town,
+                AdministrativeArea = matchLocation.AdministrativeArea,
+                Postcode = matchLocation.Postcode.ToUpperInvariant(),
+                GeoPrecision = matchLocation.GeoPrecision,
+                Latitude = matchLocation.Latitude,
+                Longitude = matchLocation.Longitude,
+                MatchLocationNotes = matchLocation.MatchLocationNotes,
+                MatchLocationRoute = matchLocation.MatchLocationRoute,
+                MemberGroupKey = matchLocation.MemberGroupKey,
+                MemberGroupName = matchLocation.MemberGroupName
+            };
+        }
+        public MatchLocation CreateRedactedCopy(MatchLocation matchLocation)
+        {
+            var redacted = CreateAuditableCopy(matchLocation);
+            redacted.MatchLocationNotes = _dataRedactor.RedactPersonalData(redacted.MatchLocationNotes);
+            return redacted;
         }
     }
 }

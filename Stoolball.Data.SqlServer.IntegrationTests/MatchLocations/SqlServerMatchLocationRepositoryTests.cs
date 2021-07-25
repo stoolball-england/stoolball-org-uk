@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 using System.Transactions;
-using AngleSharp.Css.Dom;
 using Dapper;
-using Ganss.XSS;
 using Moq;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
+using Stoolball.Html;
 using Stoolball.Logging;
+using Stoolball.MatchLocations;
 using Stoolball.Routing;
-using Stoolball.Security;
 using Xunit;
+using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
 {
@@ -27,13 +27,212 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
         }
 
         [Fact]
+        public async Task Create_location_throws_ArgumentNullException_if_location_is_null()
+        {
+            var repo = new SqlServerMatchLocationRepository(
+                _databaseFixture.ConnectionFactory,
+                Mock.Of<IAuditRepository>(),
+                Mock.Of<ILogger>(),
+                Mock.Of<IRouteGenerator>(),
+                Mock.Of<IRedirectsRepository>(),
+                Mock.Of<IHtmlSanitizer>(),
+                Mock.Of<IStoolballEntityCopier>());
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateMatchLocation(null, Guid.NewGuid(), "Member name").ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task Create_location_throws_ArgumentNullException_if_memberName_is_null()
+        {
+            var repo = new SqlServerMatchLocationRepository(
+                _databaseFixture.ConnectionFactory,
+                Mock.Of<IAuditRepository>(),
+                Mock.Of<ILogger>(),
+                Mock.Of<IRouteGenerator>(),
+                Mock.Of<IRedirectsRepository>(),
+                Mock.Of<IHtmlSanitizer>(),
+                Mock.Of<IStoolballEntityCopier>());
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateMatchLocation(new MatchLocation(), Guid.NewGuid(), null).ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task Create_club_throws_ArgumentNullException_if_memberName_is_empty_string()
+        {
+            var repo = new SqlServerMatchLocationRepository(
+                _databaseFixture.ConnectionFactory,
+                Mock.Of<IAuditRepository>(),
+                Mock.Of<ILogger>(),
+                Mock.Of<IRouteGenerator>(),
+                Mock.Of<IRedirectsRepository>(),
+                Mock.Of<IHtmlSanitizer>(),
+                Mock.Of<IStoolballEntityCopier>());
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.CreateMatchLocation(new MatchLocation(), Guid.NewGuid(), string.Empty).ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task Create_minimal_location_succeeds()
+        {
+            var location = new MatchLocation
+            {
+                MemberGroupKey = Guid.NewGuid(),
+                MemberGroupName = "Test group"
+            };
+
+            var route = "/locations/" + Guid.NewGuid();
+            var routeGenerator = new Mock<IRouteGenerator>();
+            routeGenerator.Setup(x => x.GenerateUniqueRoute("/locations", location.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
+
+            var copier = new Mock<IStoolballEntityCopier>();
+            copier.Setup(x => x.CreateAuditableCopy(location)).Returns(location);
+
+            var repo = new SqlServerMatchLocationRepository(
+                _databaseFixture.ConnectionFactory,
+                Mock.Of<IAuditRepository>(),
+                Mock.Of<ILogger>(),
+                routeGenerator.Object,
+                Mock.Of<IRedirectsRepository>(),
+                Mock.Of<IHtmlSanitizer>(),
+                copier.Object);
+
+            var created = await repo.CreateMatchLocation(location, Guid.NewGuid(), "Member name").ConfigureAwait(false);
+
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                var locationResult = await connection.QuerySingleOrDefaultAsync<MatchLocation>($"SELECT MemberGroupKey, MemberGroupName, MatchLocationRoute FROM {Tables.MatchLocation} WHERE MatchLocationId = @MatchLocationId", new { created.MatchLocationId }).ConfigureAwait(false);
+                Assert.NotNull(locationResult);
+                Assert.Equal(location.MemberGroupKey, locationResult.MemberGroupKey);
+                Assert.Equal(location.MemberGroupName, locationResult.MemberGroupName);
+                Assert.Equal(location.MatchLocationRoute, locationResult.MatchLocationRoute);
+            }
+        }
+
+        [Fact]
+        public async Task Create_complete_location_succeeds()
+        {
+            var location = new MatchLocation
+            {
+                SecondaryAddressableObjectName = "Pitch 1",
+                PrimaryAddressableObjectName = "Test ground",
+                StreetDescription = "1 Cricketfield Road",
+                Locality = "Test area",
+                Town = "Test town",
+                AdministrativeArea = "Test county",
+                Postcode = "AB1 1CD",
+                GeoPrecision = GeoPrecision.Postcode,
+                Latitude = 123.456,
+                Longitude = 234.567,
+                MatchLocationNotes = "<p>These are unsanitised notes.</p>",
+                MemberGroupKey = Guid.NewGuid(),
+                MemberGroupName = "Test group"
+            };
+
+            var route = "/locations/" + Guid.NewGuid();
+            var routeGenerator = new Mock<IRouteGenerator>();
+            routeGenerator.Setup(x => x.GenerateUniqueRoute("/locations", location.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
+
+            var copier = new Mock<IStoolballEntityCopier>();
+            copier.Setup(x => x.CreateAuditableCopy(location)).Returns(location);
+
+            var sanitisedNotes = "<p>Sanitised notes</p>";
+            var sanitizer = new Mock<IHtmlSanitizer>();
+            sanitizer.Setup(x => x.Sanitize(location.MatchLocationNotes)).Returns(sanitisedNotes);
+
+            var repo = new SqlServerMatchLocationRepository(
+                _databaseFixture.ConnectionFactory,
+                Mock.Of<IAuditRepository>(),
+                Mock.Of<ILogger>(),
+                routeGenerator.Object,
+                Mock.Of<IRedirectsRepository>(),
+                sanitizer.Object,
+                copier.Object);
+
+            var created = await repo.CreateMatchLocation(location, Guid.NewGuid(), "Member name").ConfigureAwait(false);
+
+            using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
+            {
+                var comparableNameResult = await connection.ExecuteScalarAsync<string>(
+                    $@"SELECT ComparableName FROM {Tables.MatchLocation} WHERE MatchLocationId = @MatchLocationId",
+                    new { created.MatchLocationId }).ConfigureAwait(false);
+                var locationResult = await connection.QuerySingleOrDefaultAsync<MatchLocation>(
+                    $@"SELECT SecondaryAddressableObjectName, PrimaryAddressableObjectName, StreetDescription, Locality,
+                              Town, AdministrativeArea, Postcode, Latitude, Longitude, GeoPrecision, MatchLocationNotes, 
+                              MemberGroupKey, MemberGroupName, MatchLocationRoute 
+                              FROM {Tables.MatchLocation} WHERE MatchLocationId = @MatchLocationId",
+                    new { created.MatchLocationId }).ConfigureAwait(false);
+                Assert.NotNull(locationResult);
+
+                Assert.Equal(location.ComparableName(), comparableNameResult);
+                Assert.Equal(location.SecondaryAddressableObjectName, locationResult.SecondaryAddressableObjectName);
+                Assert.Equal(location.PrimaryAddressableObjectName, locationResult.PrimaryAddressableObjectName);
+                Assert.Equal(location.StreetDescription, locationResult.StreetDescription);
+                Assert.Equal(location.Locality, locationResult.Locality);
+                Assert.Equal(location.Town, locationResult.Town);
+                Assert.Equal(location.AdministrativeArea, locationResult.AdministrativeArea);
+                Assert.Equal(location.Postcode, locationResult.Postcode);
+                Assert.Equal(location.Latitude, locationResult.Latitude);
+                Assert.Equal(location.Longitude, locationResult.Longitude);
+                Assert.Equal(location.GeoPrecision, locationResult.GeoPrecision);
+                Assert.Equal(sanitisedNotes, locationResult.MatchLocationNotes);
+                Assert.Equal(location.MemberGroupKey, locationResult.MemberGroupKey);
+                Assert.Equal(location.MemberGroupName, locationResult.MemberGroupName);
+                Assert.Equal(route, locationResult.MatchLocationRoute);
+            }
+        }
+
+        [Fact]
+        public async Task Create_location_audits_and_logs()
+        {
+            var location = new MatchLocation
+            {
+                PrimaryAddressableObjectName = "New location " + Guid.NewGuid(),
+                MemberGroupKey = Guid.NewGuid(),
+                MemberGroupName = "Test group"
+            };
+
+            var route = "/locations/" + Guid.NewGuid();
+            var routeGenerator = new Mock<IRouteGenerator>();
+            routeGenerator.Setup(x => x.GenerateUniqueRoute("/locations", location.NameAndLocalityOrTownIfDifferent(), NoiseWords.MatchLocationRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult(route));
+            var copier = new Mock<IStoolballEntityCopier>();
+            copier.Setup(x => x.CreateAuditableCopy(location)).Returns(location);
+            var auditRepository = new Mock<IAuditRepository>();
+            var logger = new Mock<ILogger>();
+
+            var repo = new SqlServerMatchLocationRepository(_databaseFixture.ConnectionFactory,
+                auditRepository.Object,
+                logger.Object,
+                routeGenerator.Object,
+                Mock.Of<IRedirectsRepository>(),
+                Mock.Of<IHtmlSanitizer>(),
+                copier.Object);
+            var memberKey = Guid.NewGuid();
+            var memberName = "Person 1";
+
+            var created = await repo.CreateMatchLocation(location, memberKey, memberName).ConfigureAwait(false);
+
+            copier.Verify(x => x.CreateAuditableCopy(It.IsAny<MatchLocation>()), Times.Once);
+            copier.Verify(x => x.CreateRedactedCopy(It.IsAny<MatchLocation>()), Times.Once);
+            auditRepository.Verify(x => x.CreateAudit(It.IsAny<AuditRecord>(), It.IsAny<IDbTransaction>()), Times.Once);
+            logger.Verify(x => x.Info(typeof(SqlServerMatchLocationRepository), LoggingTemplates.Created, It.IsAny<MatchLocation>(), memberName, memberKey, typeof(SqlServerMatchLocationRepository), nameof(SqlServerMatchLocationRepository.CreateMatchLocation)));
+        }
+
+        [Fact]
         public async Task Delete_match_location_succeeds()
         {
-            var sanitizer = new Mock<IHtmlSanitizer>();
-            sanitizer.Setup(x => x.AllowedTags).Returns(new HashSet<string>());
-            sanitizer.Setup(x => x.AllowedAttributes).Returns(new HashSet<string>());
-            sanitizer.Setup(x => x.AllowedCssProperties).Returns(new HashSet<string>());
-            sanitizer.Setup(x => x.AllowedAtRules).Returns(new HashSet<CssRuleType>());
+            var copier = new Mock<IStoolballEntityCopier>();
+            copier.Setup(x => x.CreateAuditableCopy(_databaseFixture.TestData.MatchLocationWithFullDetails))
+                  .Returns(new MatchLocation
+                  {
+                      MatchLocationId = _databaseFixture.TestData.MatchLocationWithFullDetails.MatchLocationId,
+                      SecondaryAddressableObjectName = _databaseFixture.TestData.MatchLocationWithFullDetails.SecondaryAddressableObjectName,
+                      PrimaryAddressableObjectName = _databaseFixture.TestData.MatchLocationWithFullDetails.PrimaryAddressableObjectName,
+                      StreetDescription = _databaseFixture.TestData.MatchLocationWithFullDetails.StreetDescription,
+                      Locality = _databaseFixture.TestData.MatchLocationWithFullDetails.Locality,
+                      Town = _databaseFixture.TestData.MatchLocationWithFullDetails.Town,
+                      AdministrativeArea = _databaseFixture.TestData.MatchLocationWithFullDetails.AdministrativeArea,
+                      Postcode = _databaseFixture.TestData.MatchLocationWithFullDetails.Postcode
+                  });
 
             var memberKey = Guid.NewGuid();
             var memberName = "Dee Leeter";
@@ -44,8 +243,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.MatchLocations
                 Mock.Of<ILogger>(),
                 Mock.Of<IRouteGenerator>(),
                 Mock.Of<IRedirectsRepository>(),
-                sanitizer.Object,
-                Mock.Of<IDataRedactor>());
+                Mock.Of<IHtmlSanitizer>(),
+                copier.Object);
 
             await repo.DeleteMatchLocation(_databaseFixture.TestData.MatchLocationWithFullDetails, memberKey, memberName).ConfigureAwait(false);
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using Ganss.XSS;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Polly;
@@ -27,6 +26,7 @@ using Stoolball.Web.Caching;
 using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
 using Stoolball.Web.Configuration;
+using Stoolball.Web.Html;
 using Stoolball.Web.Logging;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
@@ -60,7 +60,6 @@ namespace Stoolball.Web
             composition.Register<IApiKeyProvider, ConfigApiKeyProvider>();
             composition.Register<IDateTimeFormatter, DateTimeFormatter>();
             composition.Register<ISeasonEstimator, SeasonEstimator>();
-            composition.Register<IHtmlSanitizer, HtmlSanitizer>();
             composition.Register<IHtmlFormatter, Stoolball.Html.HtmlFormatter>();
             composition.Register<ICreateMatchSeasonSelector, CreateMatchSeasonSelector>();
             composition.Register<IMatchNameBuilder, MatchNameBuilder>();
@@ -98,6 +97,8 @@ namespace Stoolball.Web
             composition.Register<IStoolballEntityCopier, StoolballEntityCopier>();
             composition.Register<IPlayerNameFormatter, PlayerNameFormatter>();
             composition.Register<IMatchInningsFactory, MatchInningsFactory>();
+            composition.Register<IHtmlSanitizer, HtmlSanitizer>();
+
 
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 
             // be injected anywhere except the one place where it's serving a page of content.

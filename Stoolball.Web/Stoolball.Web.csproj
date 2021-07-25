@@ -1345,6 +1345,7 @@
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
     <Compile Include="ContentPage\CookiesController.cs" />
+    <Compile Include="Html\HtmlSanitizer.cs" />
     <Compile Include="Matches\EditMatchFormatFormData.cs" />
     <Compile Include="Matches\EditMatchFormatViewModel.cs" />
     <Compile Include="Matches\EditMatchFormatController.cs" />
