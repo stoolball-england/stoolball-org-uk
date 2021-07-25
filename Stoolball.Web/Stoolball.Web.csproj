@@ -1367,6 +1367,7 @@
     <Compile Include="Matches\MatchesCalendarController.cs" />
     <Compile Include="Matches\MatchListSubscriptionsViewModel.cs" />
     <Compile Include="Matches\MatchValidator.cs" />
+    <Compile Include="Matches\ScorecardViewModel.cs" />
     <Compile Include="Matches\TournamentsController.cs" />
     <Compile Include="Matches\MatchesController.cs" />
     <Compile Include="Matches\CreateTrainingSessionSurfaceController.cs" />

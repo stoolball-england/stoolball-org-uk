@@ -60,7 +60,7 @@ namespace ASP
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("RazorGenerator", "2.0.0.0")]
     [System.Web.WebPages.PageVirtualPathAttribute("~/Views/Partials/_BattingScorecard.cshtml")]
-    public partial class _Views_Partials__BattingScorecard_cshtml : System.Web.Mvc.WebViewPage<MatchInnings>
+    public partial class _Views_Partials__BattingScorecard_cshtml : System.Web.Mvc.WebViewPage<ScorecardViewModel>
     {
         public _Views_Partials__BattingScorecard_cshtml()
         {
@@ -71,10 +71,10 @@ namespace ASP
             #line 6 "..\..\Views\Partials\_BattingScorecard.cshtml"
   
     // If no player innings, only show a minimal scorecard
-    var minimalScorecard = !Model.PlayerInnings.Any();
+    var minimalScorecard = !Model.MatchInnings.PlayerInnings.Any();
 
     // If no total, wickets, or batters, don't show anything
-    var nothingToDisplay = (minimalScorecard && !Model.Runs.HasValue && !Model.Wickets.HasValue);
+    var nothingToDisplay = (minimalScorecard && !Model.MatchInnings.Runs.HasValue && !Model.MatchInnings.Wickets.HasValue);
     if (!nothingToDisplay)
     {
 
@@ -89,12 +89,21 @@ WriteLiteral(">\r\n            <caption>");
 
             
             #line 15 "..\..\Views\Partials\_BattingScorecard.cshtml"
-                Write(Model.BattingTeam.Team.TeamName);
+                Write(Model.MatchInnings.BattingTeam.Team.TeamName);
 
             
             #line default
             #line hidden
-WriteLiteral("\'s batting</caption>\r\n\r\n");
+WriteLiteral("\'s batting");
+
+            
+            #line 15 "..\..\Views\Partials\_BattingScorecard.cshtml"
+                                                                        Write(Model.TotalInningsInMatch > 2 ? $" ({(Model.MatchInnings.InningsOrderInMatch/2+Model.MatchInnings.InningsOrderInMatch%2).Ordinalize()} innings)" : null);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</caption>\r\n\r\n");
 
             
             #line 17 "..\..\Views\Partials\_BattingScorecard.cshtml"
@@ -147,7 +156,7 @@ WriteLiteral("            ");
 
             
             #line 23 "..\..\Views\Partials\_BattingScorecard.cshtml"
-             if (Model.PlayerInnings.Count > 0)
+             if (Model.MatchInnings.PlayerInnings.Count > 0)
             {
 
             
@@ -163,7 +172,7 @@ WriteLiteral("                <tbody>\r\n");
             #line hidden
             
             #line 26 "..\..\Views\Partials\_BattingScorecard.cshtml"
-                 foreach (var playerInnings in Model.PlayerInnings)
+                 foreach (var playerInnings in Model.MatchInnings.PlayerInnings)
                 {
 
             
@@ -175,14 +184,14 @@ WriteLiteral(" class=\"player-name\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1199), Tuple.Create("\"", 1246)
+WriteAttribute("href", Tuple.Create(" href=\"", 1437), Tuple.Create("\"", 1484)
             
             #line 29 "..\..\Views\Partials\_BattingScorecard.cshtml"
-, Tuple.Create(Tuple.Create("", 1206), Tuple.Create<System.Object, System.Int32>(playerInnings.Batter.Player.PlayerRoute
+, Tuple.Create(Tuple.Create("", 1444), Tuple.Create<System.Object, System.Int32>(playerInnings.Batter.Player.PlayerRoute
             
             #line default
             #line hidden
-, 1206), false)
+, 1444), false)
 );
 
 WriteLiteral(">");
@@ -275,14 +284,14 @@ WriteLiteral(" class=\"player-name dismissed-by\"");
 
 WriteLiteral(">(<a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2398), Tuple.Create("\"", 2450)
+WriteAttribute("href", Tuple.Create(" href=\"", 2636), Tuple.Create("\"", 2688)
             
             #line 43 "..\..\Views\Partials\_BattingScorecard.cshtml"
-     , Tuple.Create(Tuple.Create("", 2405), Tuple.Create<System.Object, System.Int32>(playerInnings.DismissedBy.Player.PlayerRoute
+     , Tuple.Create(Tuple.Create("", 2643), Tuple.Create<System.Object, System.Int32>(playerInnings.DismissedBy.Player.PlayerRoute
             
             #line default
             #line hidden
-, 2405), false)
+, 2643), false)
 );
 
 WriteLiteral(">");
@@ -342,14 +351,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Bowler</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2871), Tuple.Create("\"", 2918)
+WriteAttribute("href", Tuple.Create(" href=\"", 3109), Tuple.Create("\"", 3156)
             
             #line 50 "..\..\Views\Partials\_BattingScorecard.cshtml"
-                                                                       , Tuple.Create(Tuple.Create("", 2878), Tuple.Create<System.Object, System.Int32>(playerInnings.Bowler.Player.PlayerRoute
+                                                                       , Tuple.Create(Tuple.Create("", 3116), Tuple.Create<System.Object, System.Int32>(playerInnings.Bowler.Player.PlayerRoute
             
             #line default
             #line hidden
-, 2878), false)
+, 3116), false)
 );
 
 WriteLiteral(">");
@@ -528,7 +537,7 @@ WriteLiteral("            <tbody>\r\n");
             
             #line 80 "..\..\Views\Partials\_BattingScorecard.cshtml"
                   
-                    if (Model.Byes.HasValue || !minimalScorecard)
+                    if (Model.MatchInnings.Byes.HasValue || !minimalScorecard)
                     {
                         
             
@@ -536,16 +545,16 @@ WriteLiteral("            <tbody>\r\n");
             #line hidden
             
             #line 83 "..\..\Views\Partials\_BattingScorecard.cshtml"
-                   Write(Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Byes", CssClass = "scorecard__extras", RowValue = Model.Byes?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard }));
+                   Write(Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Byes", CssClass = "scorecard__extras", RowValue = Model.MatchInnings.Byes?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard }));
 
             
             #line default
             #line hidden
             
             #line 83 "..\..\Views\Partials\_BattingScorecard.cshtml"
-                                                                                                                                                                                                                                                     ;
+                                                                                                                                                                                                                                                                  ;
                     }
-                    if (Model.Wides.HasValue || !minimalScorecard)
+                    if (Model.MatchInnings.Wides.HasValue || !minimalScorecard)
                     {
                         
             
@@ -553,16 +562,16 @@ WriteLiteral("            <tbody>\r\n");
             #line hidden
             
             #line 87 "..\..\Views\Partials\_BattingScorecard.cshtml"
-                   Write(Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Wides", CssClass = "scorecard__extras", RowValue = Model.Wides?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard }));
+                   Write(Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Wides", CssClass = "scorecard__extras", RowValue = Model.MatchInnings.Wides?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard }));
 
             
             #line default
             #line hidden
             
             #line 87 "..\..\Views\Partials\_BattingScorecard.cshtml"
-                                                                                                                                                                                                                                                       ;
+                                                                                                                                                                                                                                                                    ;
                     }
-                    if (Model.NoBalls.HasValue || !minimalScorecard)
+                    if (Model.MatchInnings.NoBalls.HasValue || !minimalScorecard)
                     {
                         
             
@@ -570,17 +579,17 @@ WriteLiteral("            <tbody>\r\n");
             #line hidden
             
             #line 91 "..\..\Views\Partials\_BattingScorecard.cshtml"
-                   Write(Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "No balls", CssClass = "scorecard__extras", RowValue = Model.NoBalls?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard }));
+                   Write(Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "No balls", CssClass = "scorecard__extras", RowValue = Model.MatchInnings.NoBalls?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard }));
 
             
             #line default
             #line hidden
             
             #line 91 "..\..\Views\Partials\_BattingScorecard.cshtml"
-                                                                                                                                                                                                                                                            ;
+                                                                                                                                                                                                                                                                         ;
                     }
                     // don't show a 0 here, only if actual runs awarded or taken away
-                    if (Model.BonusOrPenaltyRuns.HasValue && Model.BonusOrPenaltyRuns < 0)
+                    if (Model.MatchInnings.BonusOrPenaltyRuns.HasValue && Model.MatchInnings.BonusOrPenaltyRuns < 0)
                     {
                         
             
@@ -588,16 +597,16 @@ WriteLiteral("            <tbody>\r\n");
             #line hidden
             
             #line 96 "..\..\Views\Partials\_BattingScorecard.cshtml"
-                   Write(Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Penalty runs", CssClass = "scorecard__extras", RowValue = Model.BonusOrPenaltyRuns.Value.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard }));
+                   Write(Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Penalty runs", CssClass = "scorecard__extras", RowValue = Model.MatchInnings.BonusOrPenaltyRuns.Value.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard }));
 
             
             #line default
             #line hidden
             
             #line 96 "..\..\Views\Partials\_BattingScorecard.cshtml"
-                                                                                                                                                                                                                                                                                ;
+                                                                                                                                                                                                                                                                                             ;
                     }
-                    else if (Model.BonusOrPenaltyRuns.HasValue && Model.BonusOrPenaltyRuns > 0)
+                    else if (Model.MatchInnings.BonusOrPenaltyRuns.HasValue && Model.MatchInnings.BonusOrPenaltyRuns > 0)
                     {
                         
             
@@ -605,14 +614,14 @@ WriteLiteral("            <tbody>\r\n");
             #line hidden
             
             #line 100 "..\..\Views\Partials\_BattingScorecard.cshtml"
-                   Write(Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Bonus runs", CssClass = "scorecard__extras", RowValue = Model.BonusOrPenaltyRuns.Value.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard }));
+                   Write(Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Bonus runs", CssClass = "scorecard__extras", RowValue = Model.MatchInnings.BonusOrPenaltyRuns.Value.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard }));
 
             
             #line default
             #line hidden
             
             #line 100 "..\..\Views\Partials\_BattingScorecard.cshtml"
-                                                                                                                                                                                                                                                                              ;
+                                                                                                                                                                                                                                                                                           ;
                     }
                     
             
@@ -620,28 +629,28 @@ WriteLiteral("            <tbody>\r\n");
             #line hidden
             
             #line 102 "..\..\Views\Partials\_BattingScorecard.cshtml"
-               Write(Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Total", CssClass = "scorecard__totals" + (Model.Runs.HasValue ? string.Empty : " d-none d-sm-table-row"), RowValue = Model.Runs?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard }));
+               Write(Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Total", CssClass = "scorecard__totals" + (Model.MatchInnings.Runs.HasValue ? string.Empty : " d-none d-sm-table-row"), RowValue = Model.MatchInnings.Runs?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard }));
 
             
             #line default
             #line hidden
             
             #line 102 "..\..\Views\Partials\_BattingScorecard.cshtml"
-                                                                                                                                                                                                                                                                                                                    ;
+                                                                                                                                                                                                                                                                                                                                              ;
                     
             
             #line default
             #line hidden
             
             #line 103 "..\..\Views\Partials\_BattingScorecard.cshtml"
-               Write(Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Wickets", CssClass = "scorecard__totals" + (Model.Wickets.HasValue ? string.Empty : " d-none d-sm-table-row"), RowValue = (Model.Wickets == -1) ? "all out" : Model.Wickets?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard }));
+               Write(Html.Partial("_BattingScorecardExtrasRow", new ExtrasRowViewModel { RowLabel = "Wickets", CssClass = "scorecard__totals" + (Model.MatchInnings.Wickets.HasValue ? string.Empty : " d-none d-sm-table-row"), RowValue = (Model.MatchInnings.Wickets == -1) ? "all out" : Model.MatchInnings.Wickets?.ToString(CultureInfo.CurrentCulture), IsMinimalScorecard = minimalScorecard }));
 
             
             #line default
             #line hidden
             
             #line 103 "..\..\Views\Partials\_BattingScorecard.cshtml"
-                                                                                                                                                                                                                                                                                                                                                                ;
+                                                                                                                                                                                                                                                                                                                                                                                                       ;
                 
             
             #line default

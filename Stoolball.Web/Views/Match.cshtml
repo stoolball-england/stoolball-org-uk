@@ -115,8 +115,9 @@
         {
             foreach (var innings in Model.Match.MatchInnings)
             {
-                @Html.Partial("_BattingScorecard", innings)
-                @Html.Partial("_BowlingScorecard", innings)
+                var scorecardViewModel = new ScorecardViewModel { MatchInnings = innings, TotalInningsInMatch = Model.Match.MatchInnings.Count };
+                @Html.Partial("_BattingScorecard", scorecardViewModel)
+                @Html.Partial("_BowlingScorecard", scorecardViewModel)
             }
         }
         else

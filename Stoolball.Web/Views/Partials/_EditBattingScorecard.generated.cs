@@ -128,7 +128,16 @@ WriteLiteral(">\r\n    <caption>");
             
             #line default
             #line hidden
-WriteLiteral("\'s batting</caption>\r\n    <thead>\r\n        <tr>\r\n            <th");
+WriteLiteral("\'s batting");
+
+            
+            #line 31 "..\..\Views\Partials\_EditBattingScorecard.cshtml"
+                                                                               Write(Model.Match.MatchInnings.Count > 2 ? $" ({(Model.CurrentInnings.MatchInnings.InningsOrderInMatch/2+Model.CurrentInnings.MatchInnings.InningsOrderInMatch%2).Ordinalize()} innings)" : null);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</caption>\r\n    <thead>\r\n        <tr>\r\n            <th");
 
 WriteLiteral(" class=\"batting-scorecard-editor__header\"");
 
@@ -243,16 +252,16 @@ WriteLiteral(" data-stackable=\"true\"");
 
 WriteLiteral(">\r\n                    <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 5271), Tuple.Create("\"", 5329)
-, Tuple.Create(Tuple.Create("", 5277), Tuple.Create("CurrentInnings_PlayerInningsSearch_", 5277), true)
+WriteAttribute("for", Tuple.Create(" for=\"", 5460), Tuple.Create("\"", 5518)
+, Tuple.Create(Tuple.Create("", 5466), Tuple.Create("CurrentInnings_PlayerInningsSearch_", 5466), true)
             
             #line 60 "..\..\Views\Partials\_EditBattingScorecard.cshtml"
-, Tuple.Create(Tuple.Create("", 5312), Tuple.Create<System.Object, System.Int32>(i
+, Tuple.Create(Tuple.Create("", 5501), Tuple.Create<System.Object, System.Int32>(i
             
             #line default
             #line hidden
-, 5312), false)
-, Tuple.Create(Tuple.Create("", 5316), Tuple.Create("__DismissedBy", 5316), true)
+, 5501), false)
+, Tuple.Create(Tuple.Create("", 5505), Tuple.Create("__DismissedBy", 5505), true)
 );
 
 WriteLiteral(" aria-hidden=\"true\"");
@@ -584,14 +593,14 @@ WriteLiteral(@""" name=""CurrentInnings.PlayerInningsSearch[0].Batter"" id=""Cur
             #line hidden
 WriteLiteral("                        <option");
 
-WriteAttribute("value", Tuple.Create(" value=\"", 12236), Tuple.Create("\"", 12259)
+WriteAttribute("value", Tuple.Create(" value=\"", 12425), Tuple.Create("\"", 12448)
             
             #line 147 "..\..\Views\Partials\_EditBattingScorecard.cshtml"
-, Tuple.Create(Tuple.Create("", 12244), Tuple.Create<System.Object, System.Int32>(listItem.Value
+, Tuple.Create(Tuple.Create("", 12433), Tuple.Create<System.Object, System.Int32>(listItem.Value
             
             #line default
             #line hidden
-, 12244), false)
+, 12433), false)
 );
 
 WriteLiteral(">");

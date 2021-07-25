@@ -28,7 +28,7 @@
     }
 }
 <table class="table-as-cards batting-scorecard-editor" data-autofocus="@Model.Autofocus.ToString().ToLowerInvariant()">
-    <caption>@Model.CurrentInnings.MatchInnings.BattingTeam.Team.TeamName's batting</caption>
+    <caption>@Model.CurrentInnings.MatchInnings.BattingTeam.Team.TeamName's batting@(Model.Match.MatchInnings.Count > 2 ? $" ({(Model.CurrentInnings.MatchInnings.InningsOrderInMatch/2+Model.CurrentInnings.MatchInnings.InningsOrderInMatch%2).Ordinalize()} innings)" : null)</caption>
     <thead>
         <tr>
             <th class="batting-scorecard-editor__header">Batter</th>

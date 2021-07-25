@@ -800,28 +800,18 @@ WriteLiteral(">Map of Maresfield Recreation Ground, Maresfield on Google Maps</a
             NoBalls = 4,
             RunsConceded = 8
         });
+        var scorecardViewModel = new ScorecardViewModel { MatchInnings = innings.CurrentInnings.MatchInnings };
         
             
             #line default
             #line hidden
 WriteLiteral("\r\n\r\n\r\n");
 
-WriteLiteral("        ");
-
-            
-            #line 263 "..\..\Views\StyleGuideStoolballData.cshtml"
-   Write(Html.Partial("_BattingScorecard", innings.CurrentInnings.MatchInnings));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\r\n");
-
 WriteLiteral("    ");
 
             
             #line 264 "..\..\Views\StyleGuideStoolballData.cshtml"
-Write(Html.Partial("_BowlingScorecard", innings.CurrentInnings.MatchInnings));
+Write(Html.Partial("_BattingScorecard", scorecardViewModel));
 
             
             #line default
@@ -832,7 +822,7 @@ WriteLiteral("    ");
 
             
             #line 265 "..\..\Views\StyleGuideStoolballData.cshtml"
-Write(Html.Partial("_EditBattingScorecard", innings));
+Write(Html.Partial("_BowlingScorecard", scorecardViewModel));
 
             
             #line default
@@ -843,6 +833,17 @@ WriteLiteral("    ");
 
             
             #line 266 "..\..\Views\StyleGuideStoolballData.cshtml"
+Write(Html.Partial("_EditBattingScorecard", innings));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
+WriteLiteral("    ");
+
+            
+            #line 267 "..\..\Views\StyleGuideStoolballData.cshtml"
 Write(Html.Partial("_EditBowlingScorecard", innings));
 
             
@@ -851,13 +852,13 @@ Write(Html.Partial("_EditBowlingScorecard", innings));
 WriteLiteral("\r\n");
 
             
-            #line 267 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 268 "..\..\Views\StyleGuideStoolballData.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 267 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 268 "..\..\Views\StyleGuideStoolballData.cshtml"
        
         var comments = new List<HtmlComment> {
             new HtmlComment
@@ -892,7 +893,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 293 "..\..\Views\StyleGuideStoolballData.cshtml"
+            #line 294 "..\..\Views\StyleGuideStoolballData.cshtml"
 Write(Html.Partial("_Comments", comments));
 
             

@@ -96,7 +96,16 @@ WriteLiteral("\'s bowling, <span");
 
 WriteLiteral(" class=\"text-nowrap\"");
 
-WriteLiteral(">over-by-over</span></caption>\r\n    <thead>\r\n        <tr>\r\n            <th");
+WriteLiteral(">over-by-over</span>");
+
+            
+            #line 8 "..\..\Views\Partials\_EditBowlingScorecard.cshtml"
+                                                                                                                              Write(Model.Match.MatchInnings.Count > 2 ? $" ({(Model.CurrentInnings.MatchInnings.InningsOrderInMatch/2+Model.CurrentInnings.MatchInnings.InningsOrderInMatch%2).Ordinalize()} innings)" : null);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</caption>\r\n    <thead>\r\n        <tr>\r\n            <th");
 
 WriteLiteral(" scope=\"col\"");
 
@@ -184,16 +193,16 @@ WriteLiteral(" class=\"bowling-scorecard-editor__field bowling-scorecard-editor_
 
 WriteLiteral(">\r\n                    <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 1858), Tuple.Create("\"", 1914)
-, Tuple.Create(Tuple.Create("", 1864), Tuple.Create("CurrentInnings_OversBowledSearch_", 1864), true)
+WriteAttribute("for", Tuple.Create(" for=\"", 2047), Tuple.Create("\"", 2103)
+, Tuple.Create(Tuple.Create("", 2053), Tuple.Create("CurrentInnings_OversBowledSearch_", 2053), true)
             
             #line 27 "..\..\Views\Partials\_EditBowlingScorecard.cshtml"
-, Tuple.Create(Tuple.Create("", 1897), Tuple.Create<System.Object, System.Int32>(i
+, Tuple.Create(Tuple.Create("", 2086), Tuple.Create<System.Object, System.Int32>(i
             
             #line default
             #line hidden
-, 1897), false)
-, Tuple.Create(Tuple.Create("", 1901), Tuple.Create("__BallsBowled", 1901), true)
+, 2086), false)
+, Tuple.Create(Tuple.Create("", 2090), Tuple.Create("__BallsBowled", 2090), true)
 );
 
 WriteLiteral(" class=\"table-as-cards__label bowling-scorecard-editor__balls-label\"");

@@ -257,11 +257,12 @@
             NoBalls = 4,
             RunsConceded = 8
         });
+        var scorecardViewModel = new ScorecardViewModel { MatchInnings = innings.CurrentInnings.MatchInnings };
         }
 
 
-        @Html.Partial("_BattingScorecard", innings.CurrentInnings.MatchInnings)
-    @Html.Partial("_BowlingScorecard", innings.CurrentInnings.MatchInnings)
+    @Html.Partial("_BattingScorecard", scorecardViewModel)
+    @Html.Partial("_BowlingScorecard", scorecardViewModel)
     @Html.Partial("_EditBattingScorecard", innings)
     @Html.Partial("_EditBowlingScorecard", innings)
     @{ 
