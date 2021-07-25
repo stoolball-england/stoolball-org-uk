@@ -12,14 +12,18 @@ namespace Stoolball.Matches
                 throw new ArgumentNullException(nameof(match));
             }
 
-            var defaultOverSets = new List<OverSet> { new OverSet { Overs = 12, BallsPerOver = 8 } }; // default if none provided
+            var overSets = match.Tournament?.DefaultOverSets ?? match.Season?.DefaultOverSets;
+            if (overSets == null || overSets.Count == 0)
+            {
+                overSets = new List<OverSet> { new OverSet { Overs = 12, BallsPerOver = 8 } }; // default if none provided
+            }
             return new MatchInnings
             {
                 MatchInningsId = Guid.NewGuid(),
                 BattingMatchTeamId = battingMatchTeamId,
                 BowlingMatchTeamId = bowlingMatchTeamId,
                 InningsOrderInMatch = match.MatchInnings.Count + 1,
-                OverSets = match.Tournament?.DefaultOverSets ?? match.Season?.DefaultOverSets ?? defaultOverSets
+                OverSets = overSets
             };
         }
     }
