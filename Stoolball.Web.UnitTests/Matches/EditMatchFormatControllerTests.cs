@@ -100,16 +100,20 @@ namespace Stoolball.Web.Tests.Matches
         }
 
         [Fact]
-        public async Task Route_matching_match_in_the_past_returns_404()
+        public async Task Route_matching_match_in_the_past_returns_EditMatchFormatViewModel()
         {
             var matchDataSource = new Mock<IMatchDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match { StartTime = DateTime.UtcNow.AddHours(-1) });
+            matchDataSource.Setup(x => x.ReadMatchByRoute(It.IsAny<string>())).ReturnsAsync(new Stoolball.Matches.Match
+            {
+                StartTime = DateTime.UtcNow.AddHours(-1),
+                MatchRoute = "/matches/example"
+            });
 
             using (var controller = new TestController(matchDataSource.Object, new Uri("https://example.org/matches/example-match"), UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.IsType<HttpNotFoundResult>(result);
+                Assert.IsType<EditMatchFormatViewModel>(((ViewResult)result).Model);
             }
         }
 

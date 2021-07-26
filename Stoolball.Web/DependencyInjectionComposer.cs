@@ -98,7 +98,8 @@ namespace Stoolball.Web
             composition.Register<IPlayerNameFormatter, PlayerNameFormatter>();
             composition.Register<IMatchInningsFactory, MatchInningsFactory>();
             composition.Register<IHtmlSanitizer, HtmlSanitizer>();
-
+            composition.Register<IUrlFormatter, UrlFormatter>();
+            composition.Register<ISocialMediaAccountFormatter, SocialMediaAccountFormatter>();
 
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 
             // be injected anywhere except the one place where it's serving a page of content.

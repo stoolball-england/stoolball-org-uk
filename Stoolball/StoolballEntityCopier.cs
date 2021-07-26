@@ -24,7 +24,7 @@ namespace Stoolball
             {
                 ClubId = club.ClubId,
                 ClubName = club.ClubName,
-                Teams = club.Teams.Select(x => new Team { TeamId = x.TeamId }).ToList(),
+                Teams = club.Teams.Select(x => CreateAuditableCopy(x)).ToList(),
                 ClubRoute = club.ClubRoute,
                 MemberGroupKey = club.MemberGroupKey,
                 MemberGroupName = club.MemberGroupName
@@ -73,12 +73,16 @@ namespace Stoolball
         public MatchLocation CreateRedactedCopy(MatchLocation matchLocation)
         {
             var redacted = CreateAuditableCopy(matchLocation);
-            redacted.MatchLocationNotes = _dataRedactor.RedactPersonalData(redacted.MatchLocationNotes);
+            if (redacted != null)
+            {
+                redacted.MatchLocationNotes = _dataRedactor.RedactPersonalData(redacted.MatchLocationNotes);
+            }
             return redacted;
         }
 
         public Season CreateAuditableCopy(Season season)
         {
+            if (season == null) return null;
             return new Season
             {
                 SeasonId = season.SeasonId,
@@ -100,7 +104,7 @@ namespace Stoolball
                 ResultsTableType = season.ResultsTableType,
                 EnableRunsScored = season.EnableRunsScored,
                 EnableRunsConceded = season.EnableRunsConceded,
-                Teams = season.Teams.Select(x => new TeamInSeason { WithdrawnDate = x.WithdrawnDate, Team = new Team { TeamId = x.Team.TeamId } }).ToList(),
+                Teams = season.Teams.Select(x => new TeamInSeason { WithdrawnDate = x.WithdrawnDate, Team = CreateAuditableCopy(x.Team) }).ToList(),
                 Results = season.Results,
                 SeasonRoute = season.SeasonRoute
             };
@@ -109,10 +113,49 @@ namespace Stoolball
         public Season CreateRedactedCopy(Season season)
         {
             var redacted = CreateAuditableCopy(season);
-            redacted.Introduction = _dataRedactor.RedactPersonalData(redacted.Introduction);
-            redacted.Results = _dataRedactor.RedactPersonalData(redacted.Results);
+            if (redacted != null)
+            {
+                redacted.Introduction = _dataRedactor.RedactPersonalData(redacted.Introduction);
+                redacted.Results = _dataRedactor.RedactPersonalData(redacted.Results);
+            }
             return redacted;
         }
 
+        public Competition CreateAuditableCopy(Competition competition)
+        {
+            if (competition == null) return null;
+            return new Competition
+            {
+                CompetitionId = competition.CompetitionId,
+                CompetitionName = competition.CompetitionName,
+                FromYear = competition.FromYear,
+                UntilYear = competition.UntilYear,
+                PlayerType = competition.PlayerType,
+                Introduction = competition.Introduction,
+                PublicContactDetails = competition.PublicContactDetails,
+                PrivateContactDetails = competition.PrivateContactDetails,
+                Facebook = competition.Facebook,
+                Twitter = competition.Twitter,
+                Instagram = competition.Instagram,
+                YouTube = competition.YouTube,
+                Website = competition.Website,
+                CompetitionRoute = competition.CompetitionRoute,
+                MemberGroupKey = competition.MemberGroupKey,
+                MemberGroupName = competition.MemberGroupName,
+                Seasons = competition.Seasons.Select(x => CreateAuditableCopy(x)).ToList()
+            };
+        }
+
+        public Competition CreateRedactedCopy(Competition competition)
+        {
+            var redacted = CreateAuditableCopy(competition);
+            if (redacted != null)
+            {
+                redacted.Introduction = _dataRedactor.RedactPersonalData(redacted.Introduction);
+                redacted.PrivateContactDetails = _dataRedactor.RedactAll(redacted.PrivateContactDetails);
+                redacted.PublicContactDetails = _dataRedactor.RedactAll(redacted.PublicContactDetails);
+            }
+            return redacted;
+        }
     }
 }

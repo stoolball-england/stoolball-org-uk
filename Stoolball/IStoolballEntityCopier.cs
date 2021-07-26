@@ -15,5 +15,7 @@ namespace Stoolball
         MatchLocation CreateRedactedCopy(MatchLocation matchLocation);
         Season CreateAuditableCopy(Season season);
         Season CreateRedactedCopy(Season season);
+        Competition CreateAuditableCopy(Competition competition);
+        Competition CreateRedactedCopy(Competition competition);
     }
 }
