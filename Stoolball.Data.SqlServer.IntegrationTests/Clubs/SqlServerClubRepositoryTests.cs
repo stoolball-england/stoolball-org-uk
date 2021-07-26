@@ -95,6 +95,35 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
         }
 
         [Fact]
+        public async Task Create_club_returns_a_copy()
+        {
+            var club = new Club
+            {
+                ClubName = "New club " + Guid.NewGuid(),
+                MemberGroupKey = Guid.NewGuid(),
+                MemberGroupName = "Test group"
+            };
+
+            var copyClub = new Club
+            {
+                ClubName = club.ClubName,
+                MemberGroupKey = club.MemberGroupKey,
+                MemberGroupName = club.MemberGroupName
+            };
+
+            var routeGenerator = new Mock<IRouteGenerator>();
+            routeGenerator.Setup(x => x.GenerateUniqueRoute("/clubs", club.ClubName, NoiseWords.ClubRoute, It.IsAny<Func<string, Task<int>>>())).Returns(Task.FromResult("/clubs/" + Guid.NewGuid()));
+            var copier = new Mock<IStoolballEntityCopier>();
+            copier.Setup(x => x.CreateAuditableCopy(club)).Returns(copyClub);
+
+            var repo = new SqlServerClubRepository(_databaseFixture.ConnectionFactory, Mock.Of<IAuditRepository>(), Mock.Of<ILogger>(), routeGenerator.Object, Mock.Of<IRedirectsRepository>(), copier.Object);
+
+            var createdClub = await repo.CreateClub(club, Guid.NewGuid(), "Person 1").ConfigureAwait(false);
+
+            Assert.Equal(copyClub, createdClub);
+        }
+
+        [Fact]
         public async Task Create_club_adds_teams_only_if_no_existing_club()
         {
             var club = new Club
