@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Stoolball.Clubs;
+using Stoolball.Competitions;
 using Stoolball.MatchLocations;
 using Stoolball.Security;
 using Stoolball.Statistics;
@@ -75,5 +76,43 @@ namespace Stoolball
             redacted.MatchLocationNotes = _dataRedactor.RedactPersonalData(redacted.MatchLocationNotes);
             return redacted;
         }
+
+        public Season CreateAuditableCopy(Season season)
+        {
+            return new Season
+            {
+                SeasonId = season.SeasonId,
+                FromYear = season.FromYear,
+                UntilYear = season.UntilYear,
+                Competition = new Competition
+                {
+                    CompetitionId = season.Competition?.CompetitionId,
+                    CompetitionRoute = season.Competition?.CompetitionRoute
+                },
+                Introduction = season.Introduction,
+                MatchTypes = season.MatchTypes,
+                EnableTournaments = season.EnableTournaments,
+                EnableBonusOrPenaltyRuns = season.EnableBonusOrPenaltyRuns,
+                PlayersPerTeam = season.PlayersPerTeam,
+                DefaultOverSets = season.DefaultOverSets,
+                EnableLastPlayerBatsOn = season.EnableLastPlayerBatsOn,
+                PointsRules = season.PointsRules,
+                ResultsTableType = season.ResultsTableType,
+                EnableRunsScored = season.EnableRunsScored,
+                EnableRunsConceded = season.EnableRunsConceded,
+                Teams = season.Teams.Select(x => new TeamInSeason { WithdrawnDate = x.WithdrawnDate, Team = new Team { TeamId = x.Team.TeamId } }).ToList(),
+                Results = season.Results,
+                SeasonRoute = season.SeasonRoute
+            };
+        }
+
+        public Season CreateRedactedCopy(Season season)
+        {
+            var redacted = CreateAuditableCopy(season);
+            redacted.Introduction = _dataRedactor.RedactPersonalData(redacted.Introduction);
+            redacted.Results = _dataRedactor.RedactPersonalData(redacted.Results);
+            return redacted;
+        }
+
     }
 }

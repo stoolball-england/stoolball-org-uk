@@ -58,7 +58,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 Mock.Of<IOversHelper>(),
                 Mock.Of<IPlayerInMatchStatisticsBuilder>(),
                 Mock.Of<IMatchInningsFactory>(),
-                Mock.Of<ISeasonDataSource>());
+                Mock.Of<ISeasonDataSource>(),
+                Mock.Of<IStoolballEntityCopier>());
 
             await repo.DeleteMatch(_databaseFixture.TestData.MatchInThePastWithFullDetails, memberKey, memberName).ConfigureAwait(false);
 

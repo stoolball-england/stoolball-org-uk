@@ -42,12 +42,13 @@ namespace Stoolball.Data.SqlServer
         private readonly IPlayerInMatchStatisticsBuilder _playerInMatchStatisticsBuilder;
         private readonly IMatchInningsFactory _matchInningsFactory;
         private readonly ISeasonDataSource _seasonDataSource;
+        private readonly IStoolballEntityCopier _copier;
 
         public SqlServerMatchRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
             IRedirectsRepository redirectsRepository, IHtmlSanitizer htmlSanitiser, IMatchNameBuilder matchNameBuilder, IPlayerTypeSelector playerTypeSelector,
             IBowlingScorecardComparer bowlingScorecardComparer, IBattingScorecardComparer battingScorecardComparer, IPlayerRepository playerRepository, IDataRedactor dataRedactor,
             IStatisticsRepository statisticsRepository, IOversHelper oversHelper, IPlayerInMatchStatisticsBuilder playerInMatchStatisticsBuilder, IMatchInningsFactory matchInningsFactory,
-            ISeasonDataSource seasonDataSource)
+            ISeasonDataSource seasonDataSource, IStoolballEntityCopier copier)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
@@ -66,6 +67,7 @@ namespace Stoolball.Data.SqlServer
             _playerInMatchStatisticsBuilder = playerInMatchStatisticsBuilder ?? throw new ArgumentNullException(nameof(playerInMatchStatisticsBuilder));
             _matchInningsFactory = matchInningsFactory ?? throw new ArgumentNullException(nameof(matchInningsFactory));
             _seasonDataSource = seasonDataSource ?? throw new ArgumentNullException(nameof(seasonDataSource));
+            _copier = copier ?? throw new ArgumentNullException(nameof(copier));
             _htmlSanitiser.AllowedTags.Clear();
             _htmlSanitiser.AllowedTags.Add("p");
             _htmlSanitiser.AllowedTags.Add("h2");
@@ -279,7 +281,7 @@ namespace Stoolball.Data.SqlServer
             auditableMatch.EnableBonusOrPenaltyRuns = true;
             if (auditableMatch.Season != null)
             {
-                auditableMatch.Season = await _seasonDataSource.ReadSeasonById(auditableMatch.Season.SeasonId.Value, true).ConfigureAwait(false);
+                auditableMatch.Season = _copier.CreateAuditableCopy(await _seasonDataSource.ReadSeasonById(auditableMatch.Season.SeasonId.Value, true).ConfigureAwait(false));
                 auditableMatch.PlayersPerTeam = auditableMatch.Season.PlayersPerTeam;
                 auditableMatch.LastPlayerBatsOn = auditableMatch.Season.EnableLastPlayerBatsOn;
                 auditableMatch.EnableBonusOrPenaltyRuns = auditableMatch.Season.EnableBonusOrPenaltyRuns;

@@ -6,6 +6,7 @@ using AngleSharp.Css.Dom;
 using Dapper;
 using Ganss.XSS;
 using Moq;
+using Stoolball.Competitions;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Logging;
 using Stoolball.Routing;
@@ -38,13 +39,19 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var memberKey = Guid.NewGuid();
             var memberName = "Dee Leeter";
 
+            var copier = new Mock<IStoolballEntityCopier>();
+            foreach (var season in _databaseFixture.TestData.CompetitionWithFullDetails.Seasons)
+            {
+                copier.Setup(x => x.CreateAuditableCopy(season)).Returns(new Season { SeasonId = season.SeasonId });
+            }
+
             var seasonRepository = new SqlServerSeasonRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
                 Mock.Of<ILogger>(),
                 sanitizer.Object,
                 Mock.Of<IRedirectsRepository>(),
-                Mock.Of<IDataRedactor>()
+                copier.Object
                 );
 
             var competitionRepository = new SqlServerCompetitionRepository(

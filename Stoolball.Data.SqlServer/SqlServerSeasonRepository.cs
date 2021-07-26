@@ -11,7 +11,6 @@ using Stoolball.Competitions;
 using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.Routing;
-using Stoolball.Security;
 using Stoolball.Teams;
 using static Stoolball.Constants;
 
@@ -27,17 +26,17 @@ namespace Stoolball.Data.SqlServer
         private readonly ILogger _logger;
         private readonly IHtmlSanitizer _htmlSanitiser;
         private readonly IRedirectsRepository _redirectsRepository;
-        private readonly IDataRedactor _dataRedactor;
+        private readonly IStoolballEntityCopier _copier;
 
         public SqlServerSeasonRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger,
-            IHtmlSanitizer htmlSanitiser, IRedirectsRepository redirectsRepository, IDataRedactor dataRedactor)
+            IHtmlSanitizer htmlSanitiser, IRedirectsRepository redirectsRepository, IStoolballEntityCopier copier)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _htmlSanitiser = htmlSanitiser ?? throw new ArgumentNullException(nameof(htmlSanitiser));
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
-            _dataRedactor = dataRedactor ?? throw new ArgumentNullException(nameof(dataRedactor));
+            _copier = copier ?? throw new ArgumentNullException(nameof(copier));
             _htmlSanitiser.AllowedTags.Clear();
             _htmlSanitiser.AllowedTags.Add("p");
             _htmlSanitiser.AllowedTags.Add("h2");
@@ -52,43 +51,6 @@ namespace Stoolball.Data.SqlServer
             _htmlSanitiser.AllowedAttributes.Add("href");
             _htmlSanitiser.AllowedCssProperties.Clear();
             _htmlSanitiser.AllowedAtRules.Clear();
-        }
-
-        private static Season CreateAuditableCopy(Season season)
-        {
-            return new Season
-            {
-                SeasonId = season.SeasonId,
-                FromYear = season.FromYear,
-                UntilYear = season.UntilYear,
-                Competition = new Competition
-                {
-                    CompetitionId = season.Competition?.CompetitionId,
-                    CompetitionRoute = season.Competition?.CompetitionRoute
-                },
-                Introduction = season.Introduction,
-                MatchTypes = season.MatchTypes,
-                EnableTournaments = season.EnableTournaments,
-                EnableBonusOrPenaltyRuns = season.EnableBonusOrPenaltyRuns,
-                PlayersPerTeam = season.PlayersPerTeam,
-                DefaultOverSets = season.DefaultOverSets,
-                EnableLastPlayerBatsOn = season.EnableLastPlayerBatsOn,
-                PointsRules = season.PointsRules,
-                ResultsTableType = season.ResultsTableType,
-                EnableRunsScored = season.EnableRunsScored,
-                EnableRunsConceded = season.EnableRunsConceded,
-                Teams = season.Teams.Select(x => new TeamInSeason { WithdrawnDate = x.WithdrawnDate, Team = new Team { TeamId = x.Team.TeamId } }).ToList(),
-                Results = season.Results,
-                SeasonRoute = season.SeasonRoute
-            };
-        }
-
-        private Season CreateRedactedCopy(Season season)
-        {
-            var redacted = CreateAuditableCopy(season);
-            redacted.Introduction = _dataRedactor.RedactPersonalData(redacted.Introduction);
-            redacted.Results = _dataRedactor.RedactPersonalData(redacted.Results);
-            return redacted;
         }
 
         /// <summary>
@@ -107,7 +69,7 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            var auditableSeason = CreateAuditableCopy(season);
+            var auditableSeason = _copier.CreateAuditableCopy(season);
             auditableSeason.SeasonId = Guid.NewGuid();
             auditableSeason.Introduction = _htmlSanitiser.Sanitize(auditableSeason.Introduction);
             auditableSeason.Results = _htmlSanitiser.Sanitize(auditableSeason.Results);
@@ -249,7 +211,7 @@ namespace Stoolball.Data.SqlServer
                         }
                     }
 
-                    var redacted = CreateRedactedCopy(auditableSeason);
+                    var redacted = _copier.CreateRedactedCopy(auditableSeason);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Create,
@@ -304,7 +266,7 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            var auditableSeason = CreateAuditableCopy(season);
+            var auditableSeason = _copier.CreateAuditableCopy(season);
             auditableSeason.Introduction = _htmlSanitiser.Sanitize(auditableSeason.Introduction);
             auditableSeason.Results = _htmlSanitiser.Sanitize(auditableSeason.Results);
 
@@ -362,7 +324,7 @@ namespace Stoolball.Data.SqlServer
                         }
                     }
 
-                    var redacted = CreateRedactedCopy(auditableSeason);
+                    var redacted = _copier.CreateRedactedCopy(auditableSeason);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Update,
@@ -398,7 +360,7 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            var auditableSeason = CreateAuditableCopy(season);
+            var auditableSeason = _copier.CreateAuditableCopy(season);
             auditableSeason.Results = _htmlSanitiser.Sanitize(auditableSeason.Results);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
@@ -435,7 +397,7 @@ namespace Stoolball.Data.SqlServer
                                 transaction).ConfigureAwait(false);
                     }
 
-                    var redacted = CreateRedactedCopy(auditableSeason);
+                    var redacted = _copier.CreateRedactedCopy(auditableSeason);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Update,
@@ -472,7 +434,7 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            var auditableSeason = CreateAuditableCopy(season);
+            var auditableSeason = _copier.CreateAuditableCopy(season);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -495,7 +457,7 @@ namespace Stoolball.Data.SqlServer
                                 transaction).ConfigureAwait(false);
                     }
 
-                    var redacted = CreateRedactedCopy(auditableSeason);
+                    var redacted = _copier.CreateRedactedCopy(auditableSeason);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Update,
@@ -554,7 +516,7 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(transaction));
             }
 
-            var auditableSeasons = seasons.Select(x => CreateAuditableCopy(x));
+            var auditableSeasons = seasons.Select(x => _copier.CreateAuditableCopy(x));
             var seasonIds = auditableSeasons.Select(x => x.SeasonId.Value);
 
             await transaction.Connection.ExecuteAsync($"UPDATE {Tables.PlayerInMatchStatistics} SET SeasonId = NULL WHERE SeasonId IN @seasonIds", new { seasonIds }, transaction).ConfigureAwait(false);
@@ -572,7 +534,7 @@ namespace Stoolball.Data.SqlServer
             {
                 await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableSeason.SeasonRoute, transaction).ConfigureAwait(false);
 
-                var redacted = CreateRedactedCopy(auditableSeason);
+                var redacted = _copier.CreateRedactedCopy(auditableSeason);
                 await _auditRepository.CreateAudit(new AuditRecord
                 {
                     Action = AuditAction.Delete,

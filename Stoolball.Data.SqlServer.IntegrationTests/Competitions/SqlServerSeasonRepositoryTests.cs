@@ -6,10 +6,10 @@ using AngleSharp.Css.Dom;
 using Dapper;
 using Ganss.XSS;
 using Moq;
+using Stoolball.Competitions;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Logging;
 using Stoolball.Routing;
-using Stoolball.Security;
 using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
@@ -38,13 +38,16 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             var memberKey = Guid.NewGuid();
             var memberName = "Dee Leeter";
 
+            var copier = new Mock<IStoolballEntityCopier>();
+            copier.Setup(x => x.CreateAuditableCopy(_databaseFixture.TestData.SeasonWithFullDetails)).Returns(new Season { SeasonId = _databaseFixture.TestData.SeasonWithFullDetails.SeasonId });
+
             var seasonRepository = new SqlServerSeasonRepository(
                 _databaseFixture.ConnectionFactory,
                 Mock.Of<IAuditRepository>(),
                 Mock.Of<ILogger>(),
                 sanitizer.Object,
                 Mock.Of<IRedirectsRepository>(),
-                Mock.Of<IDataRedactor>()
+                copier.Object
                 );
 
             await seasonRepository.DeleteSeason(_databaseFixture.TestData.SeasonWithFullDetails, memberKey, memberName).ConfigureAwait(false);
