@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Dapper;
-using Ganss.XSS;
 using Newtonsoft.Json;
+using Stoolball.Html;
 using Stoolball.Logging;
-using Stoolball.MatchLocations;
 using Stoolball.Routing;
 using Stoolball.Security;
 using Stoolball.Teams;
@@ -27,10 +26,13 @@ namespace Stoolball.Data.SqlServer
         private readonly IRedirectsRepository _redirectsRepository;
         private readonly IMemberGroupHelper _memberGroupHelper;
         private readonly IHtmlSanitizer _htmlSanitiser;
-        private readonly IDataRedactor _dataRedactor;
+        private readonly IStoolballEntityCopier _copier;
+        private readonly IUrlFormatter _urlFormatter;
+        private readonly ISocialMediaAccountFormatter _socialMediaAccountFormatter;
 
         public SqlServerTeamRepository(IDatabaseConnectionFactory databaseConnectionFactory, IAuditRepository auditRepository, ILogger logger, IRouteGenerator routeGenerator,
-            IRedirectsRepository redirectsRepository, IMemberGroupHelper memberGroupHelper, IHtmlSanitizer htmlSanitiser, IDataRedactor dataRedactor)
+            IRedirectsRepository redirectsRepository, IMemberGroupHelper memberGroupHelper, IHtmlSanitizer htmlSanitiser, IStoolballEntityCopier copier,
+            IUrlFormatter urlFormatter, ISocialMediaAccountFormatter socialMediaAccountFormatter)
         {
             _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
@@ -39,61 +41,9 @@ namespace Stoolball.Data.SqlServer
             _redirectsRepository = redirectsRepository ?? throw new ArgumentNullException(nameof(redirectsRepository));
             _memberGroupHelper = memberGroupHelper ?? throw new ArgumentNullException(nameof(memberGroupHelper));
             _htmlSanitiser = htmlSanitiser ?? throw new ArgumentNullException(nameof(htmlSanitiser));
-            _dataRedactor = dataRedactor ?? throw new ArgumentNullException(nameof(dataRedactor));
-            _htmlSanitiser.AllowedTags.Clear();
-            _htmlSanitiser.AllowedTags.Add("p");
-            _htmlSanitiser.AllowedTags.Add("h2");
-            _htmlSanitiser.AllowedTags.Add("strong");
-            _htmlSanitiser.AllowedTags.Add("em");
-            _htmlSanitiser.AllowedTags.Add("ul");
-            _htmlSanitiser.AllowedTags.Add("ol");
-            _htmlSanitiser.AllowedTags.Add("li");
-            _htmlSanitiser.AllowedTags.Add("a");
-            _htmlSanitiser.AllowedTags.Add("br");
-            _htmlSanitiser.AllowedAttributes.Clear();
-            _htmlSanitiser.AllowedAttributes.Add("href");
-            _htmlSanitiser.AllowedCssProperties.Clear();
-            _htmlSanitiser.AllowedAtRules.Clear();
-        }
-
-        private static Team CreateAuditableCopy(Team team)
-        {
-            return new Team
-            {
-                TeamId = team.TeamId,
-                TeamName = team.TeamName,
-                TeamType = team.TeamType,
-                AgeRangeLower = team.AgeRangeLower,
-                AgeRangeUpper = team.AgeRangeUpper,
-                UntilYear = team.UntilYear,
-                PlayerType = team.PlayerType,
-                Introduction = team.Introduction,
-                PlayingTimes = team.PlayingTimes,
-                Cost = team.Cost,
-                ClubMark = team.ClubMark,
-                MatchLocations = team.MatchLocations.Select(x => new MatchLocation { MatchLocationId = x.MatchLocationId }).ToList(),
-                PublicContactDetails = team.PublicContactDetails,
-                PrivateContactDetails = team.PrivateContactDetails,
-                Facebook = team.Facebook,
-                Twitter = team.Twitter,
-                Instagram = team.Instagram,
-                YouTube = team.YouTube,
-                Website = team.Website,
-                TeamRoute = team.TeamRoute,
-                MemberGroupKey = team.MemberGroupKey,
-                MemberGroupName = team.MemberGroupName
-            };
-        }
-
-        private Team CreateRedactedCopy(Team team)
-        {
-            var redacted = CreateAuditableCopy(team);
-            redacted.Introduction = _dataRedactor.RedactPersonalData(team.Introduction);
-            redacted.PlayingTimes = _dataRedactor.RedactPersonalData(team.PlayingTimes);
-            redacted.Cost = _dataRedactor.RedactPersonalData(team.Cost);
-            redacted.PublicContactDetails = _dataRedactor.RedactAll(team.PublicContactDetails);
-            redacted.PrivateContactDetails = _dataRedactor.RedactAll(team.PrivateContactDetails);
-            return redacted;
+            _copier = copier ?? throw new ArgumentNullException(nameof(copier));
+            _urlFormatter = urlFormatter ?? throw new ArgumentNullException(nameof(urlFormatter));
+            _socialMediaAccountFormatter = socialMediaAccountFormatter ?? throw new ArgumentNullException(nameof(socialMediaAccountFormatter));
         }
 
         /// <summary>
@@ -119,7 +69,7 @@ namespace Stoolball.Data.SqlServer
                 {
                     var auditableTeam = await CreateTeam(team, transaction, memberUsername).ConfigureAwait(false);
 
-                    var redacted = CreateRedactedCopy(auditableTeam);
+                    var redacted = _copier.CreateRedactedCopy(auditableTeam);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Create,
@@ -157,10 +107,10 @@ namespace Stoolball.Data.SqlServer
 
             if (string.IsNullOrWhiteSpace(memberUsername))
             {
-                throw new ArgumentException($"'{nameof(memberUsername)}' cannot be null or whitespace", nameof(memberUsername));
+                throw new ArgumentNullException(nameof(memberUsername));
             }
 
-            var auditableTeam = CreateAuditableCopy(team);
+            var auditableTeam = _copier.CreateAuditableCopy(team);
 
             auditableTeam.TeamId = Guid.NewGuid();
             auditableTeam.Introduction = _htmlSanitiser.Sanitize(auditableTeam.Introduction);
@@ -168,24 +118,17 @@ namespace Stoolball.Data.SqlServer
             auditableTeam.Cost = _htmlSanitiser.Sanitize(auditableTeam.Cost);
             auditableTeam.PublicContactDetails = _htmlSanitiser.Sanitize(auditableTeam.PublicContactDetails);
             auditableTeam.PrivateContactDetails = _htmlSanitiser.Sanitize(auditableTeam.PrivateContactDetails);
-            auditableTeam.Facebook = PrefixUrlProtocol(auditableTeam.Facebook);
-            auditableTeam.Twitter = PrefixAtSign(auditableTeam.Twitter);
-            auditableTeam.Instagram = PrefixAtSign(auditableTeam.Instagram);
-            auditableTeam.YouTube = PrefixUrlProtocol(auditableTeam.YouTube);
-            auditableTeam.Website = PrefixUrlProtocol(auditableTeam.Website);
+            auditableTeam.Facebook = _urlFormatter.PrefixHttpsProtocol(auditableTeam.Facebook)?.ToString();
+            auditableTeam.Twitter = _socialMediaAccountFormatter.PrefixAtSign(auditableTeam.Twitter);
+            auditableTeam.Instagram = _socialMediaAccountFormatter.PrefixAtSign(auditableTeam.Instagram);
+            auditableTeam.YouTube = _urlFormatter.PrefixHttpsProtocol(auditableTeam.YouTube)?.ToString();
+            auditableTeam.Website = _urlFormatter.PrefixHttpsProtocol(auditableTeam.Website)?.ToString();
 
             // Create a route. Generally {team.teamRoute} will be blank, but allowing a pre-populated prefix is useful for transient teams
-            auditableTeam.TeamRoute = _routeGenerator.GenerateRoute($"{auditableTeam.TeamRoute}/teams", auditableTeam.TeamName, NoiseWords.TeamRoute);
-            int count;
-            do
-            {
-                count = await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { auditableTeam.TeamRoute }, transaction).ConfigureAwait(false);
-                if (count > 0)
-                {
-                    auditableTeam.TeamRoute = _routeGenerator.IncrementRoute(auditableTeam.TeamRoute);
-                }
-            }
-            while (count > 0);
+            auditableTeam.TeamRoute = await _routeGenerator.GenerateUniqueRoute(
+                $"{auditableTeam.TeamRoute}/teams", auditableTeam.TeamName, NoiseWords.TeamRoute,
+                async route => await transaction.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { auditableTeam.TeamRoute }, transaction).ConfigureAwait(false)
+            ).ConfigureAwait(false);
 
             // Create an owner group
             var group = _memberGroupHelper.CreateOrFindGroup("team", auditableTeam.TeamName, NoiseWords.TeamRoute);
@@ -270,38 +213,28 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            var auditableTeam = CreateAuditableCopy(team);
+            var auditableTeam = _copier.CreateAuditableCopy(team);
             auditableTeam.Introduction = _htmlSanitiser.Sanitize(auditableTeam.Introduction);
             auditableTeam.PlayingTimes = _htmlSanitiser.Sanitize(auditableTeam.PlayingTimes);
             auditableTeam.Cost = _htmlSanitiser.Sanitize(auditableTeam.Cost);
             auditableTeam.PublicContactDetails = _htmlSanitiser.Sanitize(auditableTeam.PublicContactDetails);
             auditableTeam.PrivateContactDetails = _htmlSanitiser.Sanitize(auditableTeam.PrivateContactDetails);
-            auditableTeam.Facebook = PrefixUrlProtocol(auditableTeam.Facebook);
-            auditableTeam.Twitter = PrefixAtSign(auditableTeam.Twitter);
-            auditableTeam.Instagram = PrefixAtSign(auditableTeam.Instagram);
-            auditableTeam.YouTube = PrefixUrlProtocol(auditableTeam.YouTube);
-            auditableTeam.Website = PrefixUrlProtocol(auditableTeam.Website);
+            auditableTeam.Facebook = _urlFormatter.PrefixHttpsProtocol(auditableTeam.Facebook)?.ToString();
+            auditableTeam.Twitter = _socialMediaAccountFormatter.PrefixAtSign(auditableTeam.Twitter);
+            auditableTeam.Instagram = _socialMediaAccountFormatter.PrefixAtSign(auditableTeam.Instagram);
+            auditableTeam.YouTube = _urlFormatter.PrefixHttpsProtocol(auditableTeam.YouTube)?.ToString();
+            auditableTeam.Website = _urlFormatter.PrefixHttpsProtocol(auditableTeam.Website)?.ToString();
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var baseRoute = _routeGenerator.GenerateRoute("/teams", auditableTeam.TeamName, NoiseWords.TeamRoute);
-                    if (!_routeGenerator.IsMatchingRoute(team.TeamRoute, baseRoute))
-                    {
-                        auditableTeam.TeamRoute = baseRoute;
-                        int count;
-                        do
-                        {
-                            count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { auditableTeam.TeamRoute }, transaction).ConfigureAwait(false);
-                            if (count > 0)
-                            {
-                                auditableTeam.TeamRoute = _routeGenerator.IncrementRoute(auditableTeam.TeamRoute);
-                            }
-                        }
-                        while (count > 0);
-                    }
+                    auditableTeam.TeamRoute = await _routeGenerator.GenerateUniqueRoute(
+                        team.TeamRoute,
+                        "/teams", auditableTeam.TeamName, NoiseWords.TeamRoute,
+                        async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { auditableTeam.TeamRoute }, transaction).ConfigureAwait(false)
+                    ).ConfigureAwait(false);
 
                     await connection.ExecuteAsync(
                         $@"UPDATE {Tables.Team} SET
@@ -377,7 +310,7 @@ namespace Stoolball.Data.SqlServer
                         await _redirectsRepository.InsertRedirect(team.TeamRoute, auditableTeam.TeamRoute, null, transaction).ConfigureAwait(false);
                     }
 
-                    var redacted = CreateRedactedCopy(auditableTeam);
+                    var redacted = _copier.CreateRedactedCopy(auditableTeam);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Update,
@@ -413,16 +346,16 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(memberName));
             }
 
-            var auditableTeam = CreateAuditableCopy(team);
+            var auditableTeam = _copier.CreateAuditableCopy(team);
             auditableTeam.Introduction = _htmlSanitiser.Sanitize(auditableTeam.Introduction);
             auditableTeam.Cost = _htmlSanitiser.Sanitize(auditableTeam.Cost);
             auditableTeam.PublicContactDetails = _htmlSanitiser.Sanitize(auditableTeam.PublicContactDetails);
             auditableTeam.PrivateContactDetails = _htmlSanitiser.Sanitize(auditableTeam.PrivateContactDetails);
-            auditableTeam.Facebook = PrefixUrlProtocol(auditableTeam.Facebook);
-            auditableTeam.Twitter = PrefixAtSign(auditableTeam.Twitter);
-            auditableTeam.Instagram = PrefixAtSign(auditableTeam.Instagram);
-            auditableTeam.YouTube = PrefixUrlProtocol(auditableTeam.YouTube);
-            auditableTeam.Website = PrefixUrlProtocol(auditableTeam.Website);
+            auditableTeam.Facebook = _urlFormatter.PrefixHttpsProtocol(auditableTeam.Facebook)?.ToString();
+            auditableTeam.Twitter = _socialMediaAccountFormatter.PrefixAtSign(auditableTeam.Twitter);
+            auditableTeam.Instagram = _socialMediaAccountFormatter.PrefixAtSign(auditableTeam.Instagram);
+            auditableTeam.YouTube = _urlFormatter.PrefixHttpsProtocol(auditableTeam.YouTube)?.ToString();
+            auditableTeam.Website = _urlFormatter.PrefixHttpsProtocol(auditableTeam.Website)?.ToString();
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -430,21 +363,11 @@ namespace Stoolball.Data.SqlServer
                 using (var transaction = connection.BeginTransaction())
                 {
                     var routePrefix = Regex.Match(auditableTeam.TeamRoute, @"^\/tournaments\/[a-z0-9-]+\/teams").Value;
-                    var baseRoute = _routeGenerator.GenerateRoute(routePrefix, auditableTeam.TeamName, NoiseWords.TeamRoute);
-                    if (!_routeGenerator.IsMatchingRoute(team.TeamRoute, baseRoute))
-                    {
-                        auditableTeam.TeamRoute = baseRoute;
-                        int count;
-                        do
-                        {
-                            count = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { auditableTeam.TeamRoute }, transaction).ConfigureAwait(false);
-                            if (count > 0)
-                            {
-                                auditableTeam.TeamRoute = _routeGenerator.IncrementRoute(auditableTeam.TeamRoute);
-                            }
-                        }
-                        while (count > 0);
-                    }
+                    auditableTeam.TeamRoute = await _routeGenerator.GenerateUniqueRoute(
+                        team.TeamRoute,
+                        routePrefix, auditableTeam.TeamName, NoiseWords.TeamRoute,
+                        async route => await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {Tables.Team} WHERE TeamRoute = @TeamRoute", new { auditableTeam.TeamRoute }, transaction).ConfigureAwait(false)
+                    ).ConfigureAwait(false);
 
                     await connection.ExecuteAsync(
                         $@"UPDATE {Tables.Team} SET
@@ -488,7 +411,7 @@ namespace Stoolball.Data.SqlServer
                         await _redirectsRepository.InsertRedirect(team.TeamRoute, auditableTeam.TeamRoute, null, transaction).ConfigureAwait(false);
                     }
 
-                    var redacted = CreateRedactedCopy(auditableTeam);
+                    var redacted = _copier.CreateRedactedCopy(auditableTeam);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Update,
@@ -520,7 +443,7 @@ namespace Stoolball.Data.SqlServer
                 throw new ArgumentNullException(nameof(team));
             }
 
-            var auditableTeam = CreateAuditableCopy(team);
+            var auditableTeam = _copier.CreateAuditableCopy(team);
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
@@ -552,7 +475,7 @@ namespace Stoolball.Data.SqlServer
 
                     await _redirectsRepository.DeleteRedirectsByDestinationPrefix(auditableTeam.TeamRoute, transaction).ConfigureAwait(false);
 
-                    var redacted = CreateRedactedCopy(auditableTeam);
+                    var redacted = _copier.CreateRedactedCopy(auditableTeam);
                     await _auditRepository.CreateAudit(new AuditRecord
                     {
                         Action = AuditAction.Delete,
@@ -570,26 +493,6 @@ namespace Stoolball.Data.SqlServer
                 }
             }
 
-        }
-
-        private static string PrefixUrlProtocol(string url)
-        {
-            url = url?.Trim();
-            if (!string.IsNullOrEmpty(url) && !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-            {
-                url = "https://" + url;
-            }
-            return url;
-        }
-
-        private static string PrefixAtSign(string account)
-        {
-            account = account?.Trim();
-            if (!string.IsNullOrEmpty(account) && !account.StartsWith("@", StringComparison.OrdinalIgnoreCase))
-            {
-                account = "@" + account;
-            }
-            return account;
         }
     }
 }

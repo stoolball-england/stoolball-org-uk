@@ -45,7 +45,43 @@ namespace Stoolball
         public Team CreateAuditableCopy(Team team)
         {
             if (team == null) { return null; }
-            return new Team { TeamId = team.TeamId };
+            return new Team
+            {
+                TeamId = team.TeamId,
+                TeamName = team.TeamName,
+                TeamType = team.TeamType,
+                AgeRangeLower = team.AgeRangeLower,
+                AgeRangeUpper = team.AgeRangeUpper,
+                UntilYear = team.UntilYear,
+                PlayerType = team.PlayerType,
+                Introduction = team.Introduction,
+                PlayingTimes = team.PlayingTimes,
+                Cost = team.Cost,
+                ClubMark = team.ClubMark,
+                MatchLocations = team.MatchLocations.Select(x => new MatchLocation { MatchLocationId = x.MatchLocationId }).ToList(),
+                PublicContactDetails = team.PublicContactDetails,
+                PrivateContactDetails = team.PrivateContactDetails,
+                Facebook = team.Facebook,
+                Twitter = team.Twitter,
+                Instagram = team.Instagram,
+                YouTube = team.YouTube,
+                Website = team.Website,
+                TeamRoute = team.TeamRoute,
+                MemberGroupKey = team.MemberGroupKey,
+                MemberGroupName = team.MemberGroupName
+            };
+        }
+
+        public Team CreateRedactedCopy(Team team)
+        {
+            if (team == null) { return null; }
+            var redacted = CreateAuditableCopy(team);
+            redacted.Introduction = _dataRedactor.RedactPersonalData(team.Introduction);
+            redacted.PlayingTimes = _dataRedactor.RedactPersonalData(team.PlayingTimes);
+            redacted.Cost = _dataRedactor.RedactPersonalData(team.Cost);
+            redacted.PublicContactDetails = _dataRedactor.RedactAll(team.PublicContactDetails);
+            redacted.PrivateContactDetails = _dataRedactor.RedactAll(team.PrivateContactDetails);
+            return redacted;
         }
 
         public MatchLocation CreateAuditableCopy(MatchLocation matchLocation)
