@@ -49,6 +49,15 @@ namespace Stoolball.Data.SqlServer
             }
         }
 
+        public async virtual Task<IEnumerable<StatisticsResult<int>>> ReadCatches(StatisticsFilter filter)
+        {
+            filter = filter ?? new StatisticsFilter();
+
+            if (filter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue) { throw new NotSupportedException("MaxResultsAllowingExtraResultsIfValuesAreEqual is not supported by " + nameof(ReadCatches)); }
+
+            return await ReadBestFiguresInAMatch<int>("Catches", null, null, new[] { "Catches DESC" }, 1, filter).ConfigureAwait(false);
+        }
+
         public async virtual Task<IEnumerable<StatisticsResult<PlayerInnings>>> ReadPlayerInnings(StatisticsFilter filter, StatisticsSortOrder sortOrder)
         {
             filter = filter ?? new StatisticsFilter();
@@ -105,7 +114,12 @@ namespace Stoolball.Data.SqlServer
         {
             var select = $@"SELECT PlayerId, PlayerRoute, PlayerIdentityId, PlayerIdentityName, TeamId, TeamName,
                 OppositionTeamId AS TeamId, OppositionTeamName AS TeamName, MatchRoute, MatchStartTime AS StartTime, MatchName, 
-                {primaryFieldName}, {string.Join(", ", selectFields)}";
+                {primaryFieldName}";
+
+            if (selectFields != null && selectFields.Any())
+            {
+                select += $", { string.Join(", ", selectFields)}";
+            }
 
             var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);
             where = $"WHERE {primaryFieldName} IS NOT NULL AND {primaryFieldName} >= {minimumValue} {where}";
@@ -141,7 +155,7 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 return await connection.QueryAsync<Player, PlayerIdentity, Team, Team, MatchListing, T, StatisticsResult<T>>(sql,
-                    (player, playerIdentity, team, oppositionTeam, match, playerInnings) =>
+                    (player, playerIdentity, team, oppositionTeam, match, t) =>
                     {
                         player.PlayerIdentities.Add(playerIdentity);
                         return new StatisticsResult<T>
@@ -150,7 +164,7 @@ namespace Stoolball.Data.SqlServer
                             Team = team,
                             OppositionTeam = oppositionTeam,
                             Match = match,
-                            Result = playerInnings
+                            Result = t
                         };
                     },
                     parameters,
