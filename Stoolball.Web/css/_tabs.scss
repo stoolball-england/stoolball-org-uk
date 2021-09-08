@@ -116,6 +116,11 @@ $selected_background: #555;
     background-image: url(/images/icons/settings-white-24dp.svg);
 }
 
+.nav-tabs > .nav-item-admin button.nav-link-filter {
+    background-image: url(/images/icons/iconmonstr-filter-1-white.svg);
+    background-size: 15px;
+}
+
 // For the occasional page where there are no standard tabs, only admin options, remove the line
 .nav-tabs-admin-only {
     border-bottom: none;
@@ -145,7 +150,6 @@ $selected_background: #555;
         text-align: initial;
         display: inherit;
     }
-
     // Now we show the button text as well as the icon, and reversed is the hover/focus/active style
     .nav-tabs > .nav-item-admin .nav-link {
         width: auto;
@@ -187,6 +191,19 @@ $selected_background: #555;
         background-image: url(/images/icons/settings-white-24dp.svg);
         color: $white;
         background-color: $black;
+    }
+
+    .nav-tabs > .nav-item-admin button.nav-link-filter {
+        background-image: url(/images/icons/iconmonstr-filter-1-grey.svg);
+        background-position-x: 14px;
+    }
+
+    .nav-tabs > .nav-item-admin .nav-link-filter:hover,
+    .nav-tabs > .nav-item-admin .nav-link-filter:focus,
+    .nav-tabs > .nav-item-admin .nav-link-filter:active {
+        color: $white;
+        background-color: $black;
+        background-image: url(/images/icons/iconmonstr-filter-1-white.svg);
     }
 }
 

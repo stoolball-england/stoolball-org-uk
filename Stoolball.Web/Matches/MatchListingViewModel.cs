@@ -14,7 +14,7 @@ namespace Stoolball.Web.Matches
         public List<MatchListing> Matches { get; internal set; } = new List<MatchListing>();
         public IDateTimeFormatter DateTimeFormatter { get; set; }
         public MatchFilter MatchFilter { get; set; } = new MatchFilter();
-
+        public string FilterDescription { get; set; }
         public List<MatchType> MatchTypesToLabel { get; internal set; } = new List<MatchType>();
         public bool ShowMatchDate { get; set; } = true;
         public bool HighlightNextMatch { get; set; } = true;

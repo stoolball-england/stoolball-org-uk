@@ -18,6 +18,8 @@ namespace Stoolball.Web.Matches
     {
         private readonly IMatchListingDataSource _matchesDataSource;
         private readonly IDateTimeFormatter _dateTimeFormatter;
+        private readonly IMatchFilterUrlParser _matchesFilterUrlParser;
+        private readonly IMatchFilterHumanizer _matchFilterHumanizer;
 
         public MatchesController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -26,11 +28,15 @@ namespace Stoolball.Web.Matches
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IMatchListingDataSource matchesDataSource,
-           IDateTimeFormatter dateTimeFormatter)
+           IDateTimeFormatter dateTimeFormatter,
+           IMatchFilterUrlParser matchesFilterUrlParser,
+           IMatchFilterHumanizer matchFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchesDataSource = matchesDataSource ?? throw new ArgumentNullException(nameof(matchesDataSource));
             _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
+            _matchesFilterUrlParser = matchesFilterUrlParser ?? throw new ArgumentNullException(nameof(matchesFilterUrlParser));
+            _matchFilterHumanizer = matchFilterHumanizer ?? throw new ArgumentNullException(nameof(matchFilterHumanizer));
         }
 
         [HttpGet]
@@ -42,31 +48,29 @@ namespace Stoolball.Web.Matches
                 throw new ArgumentNullException(nameof(contentModel));
             }
 
-            _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
             var model = new MatchListingViewModel(contentModel.Content, Services?.UserService)
             {
-                MatchFilter = new MatchFilter
-                {
-                    Query = Request.QueryString["q"]?.Trim(),
-                    FromDate = DateTimeOffset.UtcNow.Date,
-                    IncludeMatches = true,
-                    IncludeTournamentMatches = false,
-                    IncludeTournaments = false
-                },
+                MatchFilter = _matchesFilterUrlParser.ParseUrl(Request.Url),
                 DateTimeFormatter = _dateTimeFormatter
             };
 
+            if (Request.QueryString["from"] == null)
+            {
+                model.MatchFilter.FromDate = DateTimeOffset.UtcNow.Date;
+            }
+            model.MatchFilter.IncludeMatches = true;
+            model.MatchFilter.IncludeTournamentMatches = false;
+            model.MatchFilter.IncludeTournaments = false;
+
+            _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
             model.MatchFilter.Paging.PageNumber = pageNumber > 0 ? pageNumber : 1;
             model.MatchFilter.Paging.PageSize = Constants.Defaults.PageSize;
             model.MatchFilter.Paging.PageUrl = Request.Url;
             model.MatchFilter.Paging.Total = await _matchesDataSource.ReadTotalMatches(model.MatchFilter).ConfigureAwait(false);
             model.Matches = await _matchesDataSource.ReadMatchListings(model.MatchFilter, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            model.Metadata.PageTitle = Constants.Pages.Matches;
-            if (!string.IsNullOrEmpty(model.MatchFilter.Query))
-            {
-                model.Metadata.PageTitle += $" matching '{model.MatchFilter.Query}'";
-            }
+            model.FilterDescription = _matchFilterHumanizer.Humanize(model.MatchFilter);
+            model.Metadata.PageTitle = Constants.Pages.Matches + model.FilterDescription;
 
             return CurrentTemplate(model);
         }

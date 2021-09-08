@@ -70,5 +70,9 @@
   {
     "outputFile": "Matches/edit-tournament-matches.css",
     "inputFile": "Matches/edit-tournament-matches.scss"
+  },
+  {
+    "outputFile": "css/filter.css",
+    "inputFile": "css/filter.scss"
   }
 ]

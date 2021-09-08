@@ -1,0 +1,35 @@
+﻿@import "_theme.scss";
+@import "../Content/bootstrap/_functions.scss";
+@import "../Content/bootstrap/_mixins.scss";
+@import "../Content/bootstrap/_variables.scss";
+
+.filter {
+    padding: $table-cell-padding 0 $table-cell-padding $table-cell-padding/2;
+    margin: -$spacer 0 $spacer;
+    border-bottom: theme-color("primary") solid 1px;
+}
+
+.filter__applied {
+    background: no-repeat left center / 15px url(/images/icons/iconmonstr-filter-1-grey.svg);
+    color: #777;
+    padding: 0 0 0 25px;
+    margin: 0;
+}
+
+.filter__edit {
+  margin-bottom: 0;
+}
+
+.filter__edit .form-group:last-child {
+    margin-bottom: 0;
+}
+
+.filter__edit label {
+    display: inline-block;
+    margin-right: $spacer/2;
+}
+
+.filter__edit .form-control {
+    display: inline-block;
+    margin-right: $spacer/2;
+}

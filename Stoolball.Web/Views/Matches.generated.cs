@@ -26,9 +26,15 @@ namespace ASP
     using System.Web.Security;
     using System.Web.UI;
     using System.Web.WebPages;
-    using Examine;
     
     #line 2 "..\..\Views\Matches.cshtml"
+    using ClientDependency.Core.Mvc;
+    
+    #line default
+    #line hidden
+    using Examine;
+    
+    #line 3 "..\..\Views\Matches.cshtml"
     using Stoolball.Web.Matches;
     
     #line default
@@ -52,7 +58,7 @@ namespace ASP
 DefineSection("canonical", () => {
 
             
-            #line 3 "..\..\Views\Matches.cshtml"
+            #line 4 "..\..\Views\Matches.cshtml"
                Write(Html.Partial("_CanonicalUrl", new[] { "page", "q" }));
 
             
@@ -60,20 +66,29 @@ DefineSection("canonical", () => {
             #line hidden
 });
 
-WriteLiteral("<div");
+            
+            #line 5 "..\..\Views\Matches.cshtml"
+   
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n<div");
 
 WriteLiteral(" class=\"container-xl\"");
 
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 5 "..\..\Views\Matches.cshtml"
+            #line 10 "..\..\Views\Matches.cshtml"
    Write(Stoolball.Constants.Pages.Matches);
 
             
             #line default
             #line hidden
-WriteLiteral("</h1>\r\n\r\n    <ul");
+WriteLiteral("</h1>\r\n    \r\n    <ul");
 
 WriteLiteral(" class=\"nav nav-tabs nav-tabs-has-add\"");
 
@@ -95,16 +110,41 @@ WriteLiteral(" href=\"/tournaments\"");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteLiteral(">Tournaments</a>\r\n        </li>\r\n    </ul>\r\n\r\n");
+WriteLiteral(">Tournaments</a>\r\n        </li>\r\n        <li");
+
+WriteLiteral(" class=\"nav-item nav-item-admin\"");
+
+WriteLiteral(">\r\n            <button");
+
+WriteLiteral(" type=\"button\"");
+
+WriteLiteral(" class=\"nav-link nav-link-filter\"");
+
+WriteLiteral(">Edit filter</button>\r\n        </li>\r\n    </ul>\r\n");
+
+WriteLiteral("    ");
 
             
-            #line 16 "..\..\Views\Matches.cshtml"
+            #line 23 "..\..\Views\Matches.cshtml"
+Write(Html.Partial("_MatchFilter", new MatchFilterViewModel { 
+        FilterDescription = Model.FilterDescription,
+        from = Model.MatchFilter.FromDate,
+        to = Model.MatchFilter.UntilDate
+    }));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n\r\n");
+
+            
+            #line 29 "..\..\Views\Matches.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 16 "..\..\Views\Matches.cshtml"
+            #line 29 "..\..\Views\Matches.cshtml"
      if (Model.Matches.Count > 0)
     {
         
@@ -112,14 +152,14 @@ WriteLiteral(">Tournaments</a>\r\n        </li>\r\n    </ul>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 18 "..\..\Views\Matches.cshtml"
+            #line 31 "..\..\Views\Matches.cshtml"
    Write(Html.Partial("_MatchList", Model));
 
             
             #line default
             #line hidden
             
-            #line 18 "..\..\Views\Matches.cshtml"
+            #line 31 "..\..\Views\Matches.cshtml"
                                           
     }
     else
@@ -131,7 +171,7 @@ WriteLiteral(">Tournaments</a>\r\n        </li>\r\n    </ul>\r\n\r\n");
 WriteLiteral("        <p>There are no matches yet this season.</p>\r\n");
 
             
-            #line 23 "..\..\Views\Matches.cshtml"
+            #line 36 "..\..\Views\Matches.cshtml"
     }
 
             
@@ -142,7 +182,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 25 "..\..\Views\Matches.cshtml"
+            #line 38 "..\..\Views\Matches.cshtml"
 Write(Html.Partial("_Paging", Model.MatchFilter.Paging));
 
             
@@ -153,7 +193,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 26 "..\..\Views\Matches.cshtml"
+            #line 39 "..\..\Views\Matches.cshtml"
 Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel()));
 
             

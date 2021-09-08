@@ -661,6 +661,12 @@
     <Content Include="css\cookies.page.min.css">
       <DependentUpon>cookies.page.css</DependentUpon>
     </Content>
+    <Content Include="css\filter.css">
+      <DependentUpon>filter.scss</DependentUpon>
+    </Content>
+    <Content Include="css\filter.min.css">
+      <DependentUpon>filter.css</DependentUpon>
+    </Content>
     <Content Include="css\who-are-stoolball-england.page.css">
       <DependentUpon>who-are-stoolball-england.page.scss</DependentUpon>
     </Content>
@@ -714,8 +720,11 @@
     </Content>
     <Content Include="images\icons\drag-indicator-24dp.svg" />
     <Content Include="images\icons\iconmonstr-calendar-5.svg" />
+    <Content Include="images\icons\iconmonstr-filter-1-white.svg" />
+    <Content Include="images\icons\iconmonstr-filter-1-grey.svg" />
     <Content Include="images\icons\iconmonstr-rss-feed-3.svg" />
     <Content Include="images\logos\stoolball-england-rss.gif" />
+    <Content Include="js\filter.js" />
     <Content Include="js\libs\markerclustererplus.1.0.3.min.js" />
     <Content Include="js\libs\sortable.1.13.0.min.js" />
     <Content Include="Matches\close-of-play.js" />
@@ -849,6 +858,7 @@
     <Content Include="Content\bootstrap\bootstrap-reboot.scss" />
     <Content Include="Content\bootstrap\bootstrap-grid.scss" />
     <Content Include="css\comments.scss" />
+    <Content Include="css\filter.scss" />
     <None Include="css\tinymce.scss" />
     <Content Include="css\tinymce.css">
       <DependentUpon>tinymce.scss</DependentUpon>
@@ -1358,9 +1368,11 @@
     <Compile Include="Matches\EditTournamentSeasonsSurfaceController.cs" />
     <Compile Include="Matches\IMatchValidator.cs" />
     <Compile Include="Matches\MatchesCalendarController.cs" />
+    <Compile Include="Matches\MatchFilterViewModel.cs" />
     <Compile Include="Matches\MatchListSubscriptionsViewModel.cs" />
     <Compile Include="Matches\MatchValidator.cs" />
     <Compile Include="Matches\ScorecardViewModel.cs" />
+    <Compile Include="Matches\MatchFilterUrlParser.cs" />
     <Compile Include="Matches\TournamentsController.cs" />
     <Compile Include="Matches\MatchesController.cs" />
     <Compile Include="Matches\CreateTrainingSessionSurfaceController.cs" />
@@ -3088,6 +3100,7 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_BowlingStrikeRate.generated.cs</LastGenOutput>
     </Content>
+    <Content Include="Views\Partials\_MatchFilter.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
