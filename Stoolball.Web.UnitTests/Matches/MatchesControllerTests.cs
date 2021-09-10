@@ -84,7 +84,7 @@ namespace Stoolball.Web.Tests.Matches
         }
 
         [Fact]
-        public async Task Humanized_filter_is_added_to_page_title()
+        public async Task Page_title_is_set_to_humanized_filter()
         {
             var filter = new MatchFilter();
             var dataSource = new Mock<IMatchListingDataSource>();
@@ -97,7 +97,7 @@ namespace Stoolball.Web.Tests.Matches
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Contains("humanized filter", ((MatchListingViewModel)((ViewResult)result).Model).Metadata.PageTitle, StringComparison.Ordinal);
+                Assert.Equal("humanized filter", ((MatchListingViewModel)((ViewResult)result).Model).Metadata.PageTitle);
             }
         }
     }

@@ -26,9 +26,15 @@ namespace ASP
     using System.Web.Security;
     using System.Web.UI;
     using System.Web.WebPages;
-    using Examine;
     
     #line 2 "..\..\Views\Tournaments.cshtml"
+    using ClientDependency.Core.Mvc;
+    
+    #line default
+    #line hidden
+    using Examine;
+    
+    #line 3 "..\..\Views\Tournaments.cshtml"
     using Stoolball.Web.Matches;
     
     #line default
@@ -52,7 +58,7 @@ namespace ASP
 DefineSection("canonical", () => {
 
             
-            #line 3 "..\..\Views\Tournaments.cshtml"
+            #line 4 "..\..\Views\Tournaments.cshtml"
                Write(Html.Partial("_CanonicalUrl", new[] { "page", "q" }));
 
             
@@ -60,14 +66,23 @@ DefineSection("canonical", () => {
             #line hidden
 });
 
-WriteLiteral("<div");
+            
+            #line 5 "..\..\Views\Tournaments.cshtml"
+  
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n<div");
 
 WriteLiteral(" class=\"container-xl\"");
 
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 5 "..\..\Views\Tournaments.cshtml"
+            #line 10 "..\..\Views\Tournaments.cshtml"
    Write(Stoolball.Constants.Pages.Tournaments);
 
             
@@ -95,16 +110,42 @@ WriteLiteral(">\r\n            <em");
 
 WriteLiteral(" class=\"nav-link active\"");
 
-WriteLiteral(">Tournaments</em>\r\n        </li>\r\n    </ul>\r\n\r\n");
+WriteLiteral(">Tournaments</em>\r\n        </li>\r\n        <li");
+
+WriteLiteral(" class=\"nav-item nav-item-admin\"");
+
+WriteLiteral(">\r\n            <button");
+
+WriteLiteral(" type=\"button\"");
+
+WriteLiteral(" class=\"nav-link nav-link-filter\"");
+
+WriteLiteral(">Edit filter</button>\r\n        </li>\r\n    </ul>\r\n");
+
+WriteLiteral("    ");
 
             
-            #line 16 "..\..\Views\Tournaments.cshtml"
+            #line 23 "..\..\Views\Tournaments.cshtml"
+Write(Html.Partial("_MatchFilter", new MatchFilterViewModel
+    {
+        FilterDescription = Model.FilterDescription,
+        from = Model.MatchFilter.FromDate,
+        to = Model.MatchFilter.UntilDate
+    }));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n\r\n");
+
+            
+            #line 30 "..\..\Views\Tournaments.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 16 "..\..\Views\Tournaments.cshtml"
+            #line 30 "..\..\Views\Tournaments.cshtml"
      if (Model.Matches.Count > 0)
     {
         
@@ -112,14 +153,14 @@ WriteLiteral(">Tournaments</em>\r\n        </li>\r\n    </ul>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 18 "..\..\Views\Tournaments.cshtml"
+            #line 32 "..\..\Views\Tournaments.cshtml"
    Write(Html.Partial("_MatchList", Model));
 
             
             #line default
             #line hidden
             
-            #line 18 "..\..\Views\Tournaments.cshtml"
+            #line 32 "..\..\Views\Tournaments.cshtml"
                                           
     }
     else
@@ -128,10 +169,16 @@ WriteLiteral(">Tournaments</em>\r\n        </li>\r\n    </ul>\r\n\r\n");
             
             #line default
             #line hidden
-WriteLiteral("        <p>There are no tournaments yet this season.</p>\r\n");
+WriteLiteral("        <p>There are no tournaments matching this filter.</p>\r\n");
+
+WriteLiteral("        <p>Find out how to <a");
+
+WriteLiteral(" href=\"/organise/website/\"");
+
+WriteLiteral(">add matches and results to our website</a>.</p>\r\n");
 
             
-            #line 23 "..\..\Views\Tournaments.cshtml"
+            #line 38 "..\..\Views\Tournaments.cshtml"
     }
 
             
@@ -142,7 +189,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 25 "..\..\Views\Tournaments.cshtml"
+            #line 40 "..\..\Views\Tournaments.cshtml"
 Write(Html.Partial("_Paging", Model.MatchFilter.Paging));
 
             
@@ -153,7 +200,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 26 "..\..\Views\Tournaments.cshtml"
+            #line 41 "..\..\Views\Tournaments.cshtml"
 Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { FilenameWithoutExtension = "tournaments" }));
 
             

@@ -1,7 +1,8 @@
 ﻿@model MatchFilterViewModel
 @using Stoolball.Web.Matches
+@using System.Globalization
 <div class="filter">
-    <p class="filter__applied">Showing @(string.IsNullOrEmpty(Model.FilterDescription) ? "all matches" : "matches " + Model.FilterDescription).</p>
+    <p class="filter__applied">Showing @Model.FilterDescription.ToFirstLower(CultureInfo.CurrentCulture).</p>
     <form method="get" action="@Request.Url.AbsolutePath" class="filter__edit d-none">
         <div class="form-group">
             @Html.LabelFor(m => Model.from, "Matches from", new { aria_label = "Match date is on or after" })

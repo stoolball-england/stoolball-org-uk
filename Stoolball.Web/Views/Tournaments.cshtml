@@ -1,6 +1,11 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<MatchListingViewModel>
+@using ClientDependency.Core.Mvc
 @using Stoolball.Web.Matches
 @section canonical {@Html.Partial("_CanonicalUrl", new[] { "page", "q" })}
+@{
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
+}
 <div class="container-xl">
     <h1>@Stoolball.Constants.Pages.Tournaments</h1>
 
@@ -11,7 +16,16 @@
         <li class="nav-item">
             <em class="nav-link active">Tournaments</em>
         </li>
+        <li class="nav-item nav-item-admin">
+            <button type="button" class="nav-link nav-link-filter">Edit filter</button>
+        </li>
     </ul>
+    @Html.Partial("_MatchFilter", new MatchFilterViewModel
+    {
+        FilterDescription = Model.FilterDescription,
+        from = Model.MatchFilter.FromDate,
+        to = Model.MatchFilter.UntilDate
+    })
 
     @if (Model.Matches.Count > 0)
     {
@@ -19,7 +33,8 @@
     }
     else
     {
-        <p>There are no tournaments yet this season.</p>
+        <p>There are no tournaments matching this filter.</p>
+        <p>Find out how to <a href="/organise/website/">add matches and results to our website</a>.</p>
     }
 
     @Html.Partial("_Paging", Model.MatchFilter.Paging)

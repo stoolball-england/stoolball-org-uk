@@ -18,7 +18,7 @@ namespace Stoolball.Web.Matches
     {
         private readonly IMatchListingDataSource _matchesDataSource;
         private readonly IDateTimeFormatter _dateTimeFormatter;
-        private readonly IMatchFilterUrlParser _matchesFilterUrlParser;
+        private readonly IMatchFilterUrlParser _matchFilterUrlParser;
         private readonly IMatchFilterHumanizer _matchFilterHumanizer;
 
         public MatchesController(IGlobalSettings globalSettings,
@@ -29,13 +29,13 @@ namespace Stoolball.Web.Matches
            UmbracoHelper umbracoHelper,
            IMatchListingDataSource matchesDataSource,
            IDateTimeFormatter dateTimeFormatter,
-           IMatchFilterUrlParser matchesFilterUrlParser,
+           IMatchFilterUrlParser matchFilterUrlParser,
            IMatchFilterHumanizer matchFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchesDataSource = matchesDataSource ?? throw new ArgumentNullException(nameof(matchesDataSource));
             _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
-            _matchesFilterUrlParser = matchesFilterUrlParser ?? throw new ArgumentNullException(nameof(matchesFilterUrlParser));
+            _matchFilterUrlParser = matchFilterUrlParser ?? throw new ArgumentNullException(nameof(matchFilterUrlParser));
             _matchFilterHumanizer = matchFilterHumanizer ?? throw new ArgumentNullException(nameof(matchFilterHumanizer));
         }
 
@@ -50,7 +50,7 @@ namespace Stoolball.Web.Matches
 
             var model = new MatchListingViewModel(contentModel.Content, Services?.UserService)
             {
-                MatchFilter = _matchesFilterUrlParser.ParseUrl(Request.Url),
+                MatchFilter = _matchFilterUrlParser.ParseUrl(Request.Url),
                 DateTimeFormatter = _dateTimeFormatter
             };
 
@@ -70,7 +70,7 @@ namespace Stoolball.Web.Matches
             model.Matches = await _matchesDataSource.ReadMatchListings(model.MatchFilter, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
             model.FilterDescription = _matchFilterHumanizer.Humanize(model.MatchFilter);
-            model.Metadata.PageTitle = Constants.Pages.Matches + model.FilterDescription;
+            model.Metadata.PageTitle = model.FilterDescription;
 
             return CurrentTemplate(model);
         }

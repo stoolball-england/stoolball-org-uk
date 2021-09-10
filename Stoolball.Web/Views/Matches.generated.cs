@@ -168,10 +168,16 @@ WriteLiteral("\r\n\r\n");
             
             #line default
             #line hidden
-WriteLiteral("        <p>There are no matches yet this season.</p>\r\n");
+WriteLiteral("        <p>There are no matches matching this filter.</p>\r\n");
+
+WriteLiteral("        <p>Find out how to <a");
+
+WriteLiteral(" href=\"/organise/website/\"");
+
+WriteLiteral(">add matches and results to our website</a>.</p>\r\n");
 
             
-            #line 36 "..\..\Views\Matches.cshtml"
+            #line 37 "..\..\Views\Matches.cshtml"
     }
 
             
@@ -182,7 +188,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 38 "..\..\Views\Matches.cshtml"
+            #line 39 "..\..\Views\Matches.cshtml"
 Write(Html.Partial("_Paging", Model.MatchFilter.Paging));
 
             
@@ -193,7 +199,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 39 "..\..\Views\Matches.cshtml"
+            #line 40 "..\..\Views\Matches.cshtml"
 Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel()));
 
             
