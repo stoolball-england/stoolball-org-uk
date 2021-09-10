@@ -91,7 +91,7 @@ namespace Stoolball.Web.Tests.Matches
             var matchFilterUrlParser = new Mock<IMatchFilterUrlParser>();
             matchFilterUrlParser.Setup(x => x.ParseUrl(new Uri("https://example.org"))).Returns(filter);
             var matchFilterHumanizer = new Mock<IMatchFilterHumanizer>();
-            matchFilterHumanizer.Setup(x => x.Humanize(filter)).Returns("humanized filter");
+            matchFilterHumanizer.Setup(x => x.MatchesAndTournamentsMatchingFilter(filter)).Returns("humanized filter");
 
             using (var controller = new TestController(dataSource.Object, matchFilterUrlParser.Object, matchFilterHumanizer.Object))
             {

@@ -17,10 +17,10 @@ namespace Stoolball.UnitTests.Matches
             dateTimeFormatter.Setup(x => x.FormatDate(filter.FromDate.Value, false, true, false)).Returns(filter.FromDate.Value.ToString("d", CultureInfo.CurrentCulture));
             var humanizer = new MatchFilterHumanizer(dateTimeFormatter.Object);
 
-            var result = humanizer.Humanize(filter);
+            var result = humanizer.MatchingFilter(filter);
 
             dateTimeFormatter.Verify(x => x.FormatDate(filter.FromDate.Value, false, true, false), Times.Once);
-            Assert.Equal(result, "Matches and tournaments from " + filter.FromDate.Value.ToString("d", CultureInfo.CurrentCulture) + " onwards");
+            Assert.Equal(result, " from " + filter.FromDate.Value.ToString("d", CultureInfo.CurrentCulture) + " onwards");
         }
 
         [Fact]
@@ -31,10 +31,10 @@ namespace Stoolball.UnitTests.Matches
             dateTimeFormatter.Setup(x => x.FormatDate(filter.UntilDate.Value, false, true, false)).Returns(filter.UntilDate.Value.ToString("d", CultureInfo.CurrentCulture));
             var humanizer = new MatchFilterHumanizer(dateTimeFormatter.Object);
 
-            var result = humanizer.Humanize(filter);
+            var result = humanizer.MatchingFilter(filter);
 
             dateTimeFormatter.Verify(x => x.FormatDate(filter.UntilDate.Value, false, true, false), Times.Once);
-            Assert.Equal(result, "Matches and tournaments up to " + filter.UntilDate.Value.ToString("d", CultureInfo.CurrentCulture));
+            Assert.Equal(result, " up to " + filter.UntilDate.Value.ToString("d", CultureInfo.CurrentCulture));
         }
 
         [Fact]
@@ -46,11 +46,11 @@ namespace Stoolball.UnitTests.Matches
             dateTimeFormatter.Setup(x => x.FormatDate(filter.UntilDate.Value, false, true, false)).Returns(filter.UntilDate.Value.ToString("d", CultureInfo.CurrentCulture));
             var humanizer = new MatchFilterHumanizer(dateTimeFormatter.Object);
 
-            var result = humanizer.Humanize(filter);
+            var result = humanizer.MatchingFilter(filter);
 
             dateTimeFormatter.Verify(x => x.FormatDate(filter.FromDate.Value, false, true, false), Times.Once);
             dateTimeFormatter.Verify(x => x.FormatDate(filter.UntilDate.Value, false, true, false), Times.Once);
-            Assert.Equal(result, "Matches and tournaments from " + filter.FromDate.Value.ToString("d", CultureInfo.CurrentCulture) + " up to " + filter.UntilDate.Value.ToString("d", CultureInfo.CurrentCulture));
+            Assert.Equal(result, " from " + filter.FromDate.Value.ToString("d", CultureInfo.CurrentCulture) + " up to " + filter.UntilDate.Value.ToString("d", CultureInfo.CurrentCulture));
         }
 
         [Theory]
@@ -63,7 +63,7 @@ namespace Stoolball.UnitTests.Matches
             var dateTimeFormatter = new Mock<IDateTimeFormatter>();
             var humanizer = new MatchFilterHumanizer(dateTimeFormatter.Object);
 
-            var result = humanizer.Humanize(filter);
+            var result = humanizer.MatchesAndTournaments(filter);
 
             if (includeMatches)
             {
@@ -91,7 +91,7 @@ namespace Stoolball.UnitTests.Matches
             var dateTimeFormatter = new Mock<IDateTimeFormatter>();
             var humanizer = new MatchFilterHumanizer(dateTimeFormatter.Object);
 
-            var result = humanizer.Humanize(filter);
+            var result = humanizer.MatchesAndTournamentsMatchingFilter(filter);
 
             Assert.StartsWith("All ", result);
         }

@@ -4,5 +4,6 @@
     {
         public string BaseRoute { get; set; }
         public string FilenameWithoutExtension { get; set; } = "matches";
+        public string QueryString { get; set; }
     }
 }

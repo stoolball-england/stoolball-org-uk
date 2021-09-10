@@ -22,5 +22,27 @@ namespace Stoolball.Matches
         public Guid? TournamentId { get; set; }
         public List<Guid> MatchLocationIds { get; internal set; } = new List<Guid>();
         public Paging Paging { get; set; } = new Paging();
+
+        public MatchFilter Clone()
+        {
+            return new MatchFilter
+            {
+                Query = Query,
+                TeamIds = TeamIds,
+                CompetitionIds = CompetitionIds,
+                SeasonIds = SeasonIds,
+                MatchTypes = MatchTypes,
+                PlayerTypes = PlayerTypes,
+                MatchResultTypes = MatchResultTypes,
+                IncludeMatches = IncludeMatches,
+                IncludeTournamentMatches = IncludeTournamentMatches,
+                IncludeTournaments = IncludeTournaments,
+                FromDate = FromDate,
+                UntilDate = UntilDate,
+                TournamentId = TournamentId,
+                MatchLocationIds = MatchLocationIds,
+                Paging = Paging
+            };
+        }
     }
 }

@@ -42,5 +42,5 @@
     }
 
     @Html.Partial("_Paging", Model.MatchFilter.Paging)
-    @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { FilenameWithoutExtension = "tournaments" })
+    @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { FilenameWithoutExtension = "tournaments", QueryString = unpagedQueryString })
 </div>

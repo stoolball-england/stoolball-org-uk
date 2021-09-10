@@ -213,7 +213,7 @@ WriteLiteral("    ");
 
             
             #line 44 "..\..\Views\Matches.cshtml"
-Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel()));
+Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { QueryString = unpagedQueryString }));
 
             
             #line default

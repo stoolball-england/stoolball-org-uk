@@ -27,7 +27,7 @@ namespace Stoolball.Web.Tests.Matches
 
         private class TestController : TournamentsRssController
         {
-            public TestController(IMatchListingDataSource matchDataSource, UmbracoHelper umbracoHelper)
+            public TestController(IMatchListingDataSource matchDataSource, IMatchFilterUrlParser matchFilterUrlParser, IMatchFilterHumanizer matchFilterHumanizer, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -36,7 +36,9 @@ namespace Stoolball.Web.Tests.Matches
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
                 matchDataSource,
-                Mock.Of<IDateTimeFormatter>())
+                Mock.Of<IDateTimeFormatter>(),
+                matchFilterUrlParser,
+                matchFilterHumanizer)
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -56,10 +58,14 @@ namespace Stoolball.Web.Tests.Matches
         [Fact]
         public async Task No_matches_returns_MatchListingViewModel()
         {
+            var filter = new MatchFilter();
+            var matchFilterUrlParser = new Mock<IMatchFilterUrlParser>();
+            matchFilterUrlParser.Setup(x => x.ParseUrl(new Uri("https://example.org"))).Returns(filter);
+            var matchFilterHumanizer = new Mock<IMatchFilterHumanizer>();
             var matchDataSource = new Mock<IMatchListingDataSource>();
-            matchDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.LatestUpdateFirst)).ReturnsAsync(new List<MatchListing>());
+            matchDataSource.Setup(x => x.ReadMatchListings(filter, MatchSortOrder.LatestUpdateFirst)).ReturnsAsync(new List<MatchListing>());
 
-            using (var controller = new TestController(matchDataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(matchDataSource.Object, matchFilterUrlParser.Object, matchFilterHumanizer.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

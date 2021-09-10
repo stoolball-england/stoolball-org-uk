@@ -30,6 +30,7 @@ namespace Stoolball.Web.Matches
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly IMatchesRssQueryStringParser _queryStringParser;
+        private readonly IMatchFilterHumanizer _matchFilterHumanizer;
 
         public MatchesRssController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -43,7 +44,8 @@ namespace Stoolball.Web.Matches
            IMatchLocationDataSource matchLocationDataSource,
            IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
-           IMatchesRssQueryStringParser queryStringParser)
+           IMatchesRssQueryStringParser queryStringParser,
+           IMatchFilterHumanizer matchFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
@@ -53,6 +55,7 @@ namespace Stoolball.Web.Matches
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
             _queryStringParser = queryStringParser ?? throw new ArgumentNullException(nameof(queryStringParser));
+            _matchFilterHumanizer = matchFilterHumanizer ?? throw new ArgumentNullException(nameof(matchFilterHumanizer));
         }
 
         [HttpGet]
@@ -100,7 +103,11 @@ namespace Stoolball.Web.Matches
                 model.MatchFilter.MatchLocationIds.Add(location.MatchLocationId.Value);
             }
 
-            model.Metadata.PageTitle = pageTitle;
+            // Remove date from filter and describe the remainder in the feed title, because the date range is not the subject of the feed,
+            // it's just what we're including in the feed right now to return only currently relevant data.
+            var clonedFilter = model.MatchFilter.Clone();
+            clonedFilter.FromDate = clonedFilter.UntilDate = null;
+            model.Metadata.PageTitle = pageTitle + _matchFilterHumanizer.MatchingFilter(clonedFilter);
             model.Metadata.Description = $"New or updated stoolball matches on the Stoolball England website";
             if (model.MatchFilter.PlayerTypes.Any())
             {

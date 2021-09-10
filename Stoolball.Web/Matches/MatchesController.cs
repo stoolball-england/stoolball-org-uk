@@ -69,7 +69,7 @@ namespace Stoolball.Web.Matches
             model.MatchFilter.Paging.Total = await _matchesDataSource.ReadTotalMatches(model.MatchFilter).ConfigureAwait(false);
             model.Matches = await _matchesDataSource.ReadMatchListings(model.MatchFilter, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            model.FilterDescription = _matchFilterHumanizer.Humanize(model.MatchFilter);
+            model.FilterDescription = _matchFilterHumanizer.MatchesAndTournamentsMatchingFilter(model.MatchFilter);
             model.Metadata.PageTitle = model.FilterDescription;
 
             return CurrentTemplate(model);

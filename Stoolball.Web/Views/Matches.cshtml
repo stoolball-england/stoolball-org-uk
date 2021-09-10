@@ -41,5 +41,5 @@
     }
 
     @Html.Partial("_Paging", Model.MatchFilter.Paging)
-    @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel())
+    @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { QueryString = unpagedQueryString })
 </div>

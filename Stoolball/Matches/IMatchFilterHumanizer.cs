@@ -2,6 +2,8 @@
 {
     public interface IMatchFilterHumanizer
     {
-        string Humanize(MatchFilter filter);
+        string MatchesAndTournaments(MatchFilter filter);
+        string MatchesAndTournamentsMatchingFilter(MatchFilter filter);
+        string MatchingFilter(MatchFilter filter);
     }
 }

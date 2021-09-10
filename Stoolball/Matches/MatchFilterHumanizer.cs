@@ -13,7 +13,7 @@ namespace Stoolball.Matches
             _dateTimeFormatter = dateTimeFormatter ?? throw new System.ArgumentNullException(nameof(dateTimeFormatter));
         }
 
-        public string Humanize(MatchFilter filter)
+        public string MatchingFilter(MatchFilter filter)
         {
             if (filter == null) return string.Empty;
 
@@ -36,19 +36,13 @@ namespace Stoolball.Matches
                 description.Append(" up to ").Append(_dateTimeFormatter.FormatDate(filter.UntilDate.Value, false, true, false));
             }
 
-            if (description.Length == 0)
-            {
-                description.Insert(0, "All " + MatchesAndTournaments(filter).ToLower(CultureInfo.CurrentCulture));
-            }
-            else
-            {
-                description.Insert(0, MatchesAndTournaments(filter));
-            }
             return description.ToString().TrimEnd();
         }
 
-        private static string MatchesAndTournaments(MatchFilter filter)
+        public string MatchesAndTournaments(MatchFilter filter)
         {
+            if (filter == null) return string.Empty;
+
             if (filter.IncludeMatches && !filter.IncludeTournaments)
             {
                 return "Matches";
@@ -62,6 +56,20 @@ namespace Stoolball.Matches
                 return "Tournaments";
             }
             return string.Empty;
+        }
+
+        public string MatchesAndTournamentsMatchingFilter(MatchFilter filter)
+        {
+            var filterDescription = MatchingFilter(filter);
+            if (filterDescription.Length == 0)
+            {
+                filterDescription = "All " + MatchesAndTournaments(filter).ToLower(CultureInfo.CurrentCulture) + filterDescription;
+            }
+            else
+            {
+                filterDescription = MatchesAndTournaments(filter) + filterDescription;
+            }
+            return filterDescription;
         }
     }
 }

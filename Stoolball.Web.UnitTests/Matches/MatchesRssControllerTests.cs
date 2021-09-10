@@ -32,7 +32,7 @@ namespace Stoolball.Web.Tests.Matches
 
         private class TestController : MatchesRssController
         {
-            public TestController(IMatchListingDataSource matchDataSource, IMatchesRssQueryStringParser queryStringParser, UmbracoHelper umbracoHelper)
+            public TestController(IMatchListingDataSource matchDataSource, IMatchesRssQueryStringParser queryStringParser, IMatchFilterHumanizer matchFilterHumanizer, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -46,7 +46,8 @@ namespace Stoolball.Web.Tests.Matches
                 Mock.Of<IMatchLocationDataSource>(),
                 matchDataSource,
                 Mock.Of<IDateTimeFormatter>(),
-                queryStringParser)
+                queryStringParser,
+                matchFilterHumanizer)
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -69,11 +70,12 @@ namespace Stoolball.Web.Tests.Matches
             var filter = new MatchFilter();
             var queryStringParser = new Mock<IMatchesRssQueryStringParser>();
             queryStringParser.Setup(x => x.ParseFilterFromQueryString(It.IsAny<NameValueCollection>())).Returns(filter);
+            var matchFilterHumanizer = new Mock<IMatchFilterHumanizer>();
 
             var matchDataSource = new Mock<IMatchListingDataSource>();
             matchDataSource.Setup(x => x.ReadMatchListings(filter, MatchSortOrder.LatestUpdateFirst)).ReturnsAsync(new List<MatchListing>());
 
-            using (var controller = new TestController(matchDataSource.Object, queryStringParser.Object, UmbracoHelper))
+            using (var controller = new TestController(matchDataSource.Object, queryStringParser.Object, matchFilterHumanizer.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

@@ -15,12 +15,17 @@ namespace Stoolball.Web.Matches
             _ = DateTimeOffset.TryParse(queryString["from"], out var fromDate);
             _ = DateTimeOffset.TryParse(queryString["to"], out var untilDate);
 
-            return new MatchFilter
+            var filter = new MatchFilter
             {
                 Query = queryString["q"]?.Trim(),
                 FromDate = fromDate != DateTimeOffset.MinValue ? fromDate : (DateTimeOffset?)null,
                 UntilDate = untilDate != DateTimeOffset.MinValue ? untilDate : (DateTimeOffset?)null
             };
+
+            // Ensure the UntilDate filter is inclusive, by advancing from midnight at the start of the day to midnight at the end
+            if (filter.UntilDate.HasValue) { filter.UntilDate = filter.UntilDate.Value.AddDays(1).AddSeconds(-1); }
+
+            return filter;
         }
     }
 }

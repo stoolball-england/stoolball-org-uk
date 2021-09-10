@@ -214,7 +214,7 @@ WriteLiteral("    ");
 
             
             #line 45 "..\..\Views\Tournaments.cshtml"
-Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { FilenameWithoutExtension = "tournaments" }));
+Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { FilenameWithoutExtension = "tournaments", QueryString = unpagedQueryString }));
 
             
             #line default

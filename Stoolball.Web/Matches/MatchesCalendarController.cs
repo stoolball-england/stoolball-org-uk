@@ -32,6 +32,8 @@ namespace Stoolball.Web.Matches
         private readonly ITournamentDataSource _tournamentDataSource;
         private readonly IMatchDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
+        private readonly IMatchFilterUrlParser _matchFilterUrlParser;
+        private readonly IMatchFilterHumanizer _matchFilterHumanizer;
 
         public MatchesCalendarController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -46,7 +48,9 @@ namespace Stoolball.Web.Matches
            IMatchListingDataSource matchListingDataSource,
            ITournamentDataSource tournamentDataSource,
            IMatchDataSource matchDataSource,
-           IDateTimeFormatter dateFormatter)
+           IDateTimeFormatter dateFormatter,
+           IMatchFilterUrlParser matchFilterUrlParser,
+           IMatchFilterHumanizer matchFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
@@ -57,6 +61,8 @@ namespace Stoolball.Web.Matches
             _tournamentDataSource = tournamentDataSource ?? throw new ArgumentNullException(nameof(tournamentDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
+            _matchFilterUrlParser = matchFilterUrlParser ?? throw new ArgumentNullException(nameof(matchFilterUrlParser));
+            _matchFilterHumanizer = matchFilterHumanizer ?? throw new ArgumentNullException(nameof(matchFilterHumanizer));
         }
 
         [HttpGet]
@@ -70,15 +76,17 @@ namespace Stoolball.Web.Matches
 
             var model = new MatchListingViewModel(contentModel.Content, Services?.UserService)
             {
-                MatchFilter = new MatchFilter
-                {
-                    IncludeMatches = true,
-                    IncludeTournaments = true,
-                    IncludeTournamentMatches = false,
-                    FromDate = DateTimeOffset.UtcNow
-                },
+                MatchFilter = _matchFilterUrlParser.ParseUrl(Request.Url),
                 DateTimeFormatter = _dateFormatter
             };
+
+            if (Request.QueryString["from"] == null)
+            {
+                model.MatchFilter.FromDate = DateTimeOffset.UtcNow.Date;
+            }
+            model.MatchFilter.IncludeMatches = true;
+            model.MatchFilter.IncludeTournaments = true;
+            model.MatchFilter.IncludeTournamentMatches = false;
 
             var pageTitle = "Stoolball matches and tournaments";
             var legacyTournamentsCalendarUrl = Regex.Match(Request.RawUrl, "/tournaments/(all|mixed|ladies|junior)/calendar.ics", RegexOptions.IgnoreCase);
@@ -160,7 +168,11 @@ namespace Stoolball.Web.Matches
             }
 
 
-            model.Metadata.PageTitle = pageTitle;
+            // Remove date from filter and describe the remainder in the feed title, because the date range is not the subject of the feed,
+            // it's just what we're including in the feed right now to return only currently relevant data.
+            var clonedFilter = model.MatchFilter.Clone();
+            clonedFilter.FromDate = clonedFilter.UntilDate = null;
+            model.Metadata.PageTitle = pageTitle + _matchFilterHumanizer.MatchingFilter(clonedFilter);
             if (model.MatchFilter.PlayerTypes.Any())
             {
                 model.Metadata.PageTitle = $"{model.MatchFilter.PlayerTypes.First().Humanize(LetterCasing.Sentence).Replace("Junior mixed", "Junior")} {model.Metadata.PageTitle.ToLower(CultureInfo.CurrentCulture)}";

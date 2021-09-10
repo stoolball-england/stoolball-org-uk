@@ -22,6 +22,8 @@ namespace Stoolball.Web.Matches
     {
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
+        private readonly IMatchFilterUrlParser _matchFilterUrlParser;
+        private readonly IMatchFilterHumanizer _matchFilterHumanizer;
 
         public TournamentsRssController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -30,11 +32,15 @@ namespace Stoolball.Web.Matches
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IMatchListingDataSource matchDataSource,
-           IDateTimeFormatter dateFormatter)
+           IDateTimeFormatter dateFormatter,
+           IMatchFilterUrlParser matchFilterUrlParser,
+           IMatchFilterHumanizer matchFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _matchDataSource = matchDataSource ?? throw new System.ArgumentNullException(nameof(matchDataSource));
-            _dateFormatter = dateFormatter ?? throw new System.ArgumentNullException(nameof(dateFormatter));
+            _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
+            _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
+            _matchFilterUrlParser = matchFilterUrlParser ?? throw new ArgumentNullException(nameof(matchFilterUrlParser));
+            _matchFilterHumanizer = matchFilterHumanizer ?? throw new ArgumentNullException(nameof(matchFilterHumanizer));
         }
 
         [HttpGet]
@@ -43,27 +49,30 @@ namespace Stoolball.Web.Matches
         {
             if (contentModel is null)
             {
-                throw new System.ArgumentNullException(nameof(contentModel));
+                throw new ArgumentNullException(nameof(contentModel));
             }
-
-            if (!int.TryParse(Request.QueryString["days"], out var daysAhead))
-            {
-                daysAhead = 365;
-            }
-
 
             var model = new MatchListingViewModel(contentModel.Content, Services?.UserService)
             {
-                MatchFilter = new MatchFilter
-                {
-                    IncludeTournaments = true,
-                    IncludeTournamentMatches = false,
-                    IncludeMatches = false,
-                    FromDate = DateTimeOffset.UtcNow.AddDays(-1),
-                    UntilDate = DateTimeOffset.UtcNow.AddDays(daysAhead)
-                },
+                MatchFilter = _matchFilterUrlParser.ParseUrl(Request.Url),
                 DateTimeFormatter = _dateFormatter
             };
+
+            model.MatchFilter.IncludeTournaments = true;
+            model.MatchFilter.IncludeTournamentMatches = false;
+            model.MatchFilter.IncludeMatches = false;
+            if (!model.MatchFilter.FromDate.HasValue)
+            {
+                model.MatchFilter.FromDate = DateTimeOffset.UtcNow.AddDays(-1);
+            }
+            if (!model.MatchFilter.UntilDate.HasValue)
+            {
+                if (!int.TryParse(Request.QueryString["days"], out var daysAhead))
+                {
+                    daysAhead = 365;
+                }
+                model.MatchFilter.UntilDate = DateTimeOffset.UtcNow.AddDays(daysAhead);
+            }
 
             var playerType = Path.GetFileNameWithoutExtension(Request.RawUrl.ToUpperInvariant());
             switch (playerType)
@@ -84,7 +93,11 @@ namespace Stoolball.Web.Matches
                     break;
             }
 
-            model.Metadata.PageTitle = "Stoolball tournaments";
+            // Remove date from filter and describe the remainder in the feed title, because the date range is not the subject of the feed,
+            // it's just what we're including in the feed right now to return only currently relevant data.
+            var clonedFilter = model.MatchFilter.Clone();
+            clonedFilter.FromDate = clonedFilter.UntilDate = null;
+            model.Metadata.PageTitle = "Stoolball tournaments" + _matchFilterHumanizer.MatchingFilter(clonedFilter);
             model.Metadata.Description = $"New or updated stoolball tournaments on the Stoolball England website";
             if (!string.IsNullOrEmpty(playerType))
             {
