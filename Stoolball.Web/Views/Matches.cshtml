@@ -1,10 +1,14 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<MatchListingViewModel>
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Matches
-@section canonical {@Html.Partial("_CanonicalUrl", new[] { "page", "q" })}
+@section canonical {@Html.Partial("_CanonicalUrl", Array.Empty<string>())}
 @{ 
     Html.RequiresJs("/js/filter.js");
     Html.RequiresCss("/css/filter.min.css");
+
+    var clonedQueryString = HttpUtility.ParseQueryString(Request.QueryString.ToString());
+    clonedQueryString.Remove("page");
+    var unpagedQueryString = clonedQueryString.Count > 0 ? "?" + clonedQueryString : string.Empty;
 }
 <div class="container-xl">
     <h1>@Stoolball.Constants.Pages.Matches</h1>
@@ -14,7 +18,7 @@
             <em class="nav-link active">Matches</em>
         </li>
         <li class="nav-item">
-            <a href="/tournaments" class="nav-link">Tournaments</a>
+            <a href="/tournaments@(unpagedQueryString)" class="nav-link">Tournaments</a>
         </li>
         <li class="nav-item nav-item-admin">
             <button type="button" class="nav-link nav-link-filter">Edit filter</button>
