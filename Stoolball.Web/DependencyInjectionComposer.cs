@@ -85,7 +85,7 @@ namespace Stoolball.Web
             composition.Register<IStatisticsBreadcrumbBuilder, StatisticsBreadcrumbBuilder>();
             composition.Register<IContactDetailsParser, ContactDetailsParser>();
             composition.Register<IMatchesRssQueryStringParser, MatchesRssQueryStringParser>();
-            composition.Register<IMatchFilterSerializer, MatchFilterQueryStringSerializer>();
+            composition.Register<IMatchFilterQueryStringSerializer, MatchFilterQueryStringSerializer>();
             composition.Register<IStatisticsFilterSerializer, StatisticsFilterQueryStringSerializer>();
             composition.Register<ITeamListingFilterSerializer, TeamListingFilterQueryStringSerializer>();
             composition.Register<IMatchLocationFilterSerializer, MatchLocationFilterQueryStringSerializer>();

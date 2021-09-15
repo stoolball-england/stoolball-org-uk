@@ -134,7 +134,7 @@ WriteLiteral("</title>\r\n        <link />https://www.stoolball.org.uk/tournamen
      foreach (var tournament in Model.Matches)
     {
         var prefix = tournament.PlayerType.Humanize(LetterCasing.Sentence);
-        if (Model.MatchFilter.UntilDate.Value.Date != DateTimeOffset.Now.AddDays(365).Date) 
+        if (Model.AppliedMatchFilter.UntilDate.Value.Date != DateTimeOffset.Now.AddDays(365).Date) 
 		{
             prefix = "New " + prefix.ToLower(CultureInfo.CurrentCulture);
         }

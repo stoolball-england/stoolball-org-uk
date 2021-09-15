@@ -77,29 +77,29 @@ namespace Stoolball.Web.Matches
 
             var model = new MatchListingViewModel(contentModel.Content, Services?.UserService)
             {
-                MatchFilter = _matchFilterQueryStringParser.ParseQueryString(new MatchFilter(), HttpUtility.ParseQueryString(Request.Url.Query)),
+                AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(new MatchFilter(), HttpUtility.ParseQueryString(Request.Url.Query)),
                 DateTimeFormatter = _dateFormatter
             };
 
             if (Request.QueryString["from"] == null)
             {
-                model.MatchFilter.FromDate = DateTimeOffset.UtcNow.Date;
+                model.AppliedMatchFilter.FromDate = DateTimeOffset.UtcNow.Date;
             }
-            model.MatchFilter.IncludeMatches = true;
-            model.MatchFilter.IncludeTournaments = true;
-            model.MatchFilter.IncludeTournamentMatches = false;
+            model.AppliedMatchFilter.IncludeMatches = true;
+            model.AppliedMatchFilter.IncludeTournaments = true;
+            model.AppliedMatchFilter.IncludeTournamentMatches = false;
 
             var pageTitle = "Stoolball matches and tournaments";
             var legacyTournamentsCalendarUrl = Regex.Match(Request.RawUrl, "/tournaments/(all|mixed|ladies|junior)/calendar.ics", RegexOptions.IgnoreCase);
 
             if (Request.RawUrl.StartsWith("/matches.ics", StringComparison.OrdinalIgnoreCase))
             {
-                model.MatchFilter.IncludeTournaments = false;
+                model.AppliedMatchFilter.IncludeTournaments = false;
                 pageTitle = "Stoolball matches";
             }
             else if (legacyTournamentsCalendarUrl.Success || Request.RawUrl.StartsWith("/tournaments.ics", StringComparison.OrdinalIgnoreCase))
             {
-                model.MatchFilter.IncludeMatches = false;
+                model.AppliedMatchFilter.IncludeMatches = false;
                 pageTitle = "Stoolball tournaments";
 
                 if (legacyTournamentsCalendarUrl.Success)
@@ -107,15 +107,15 @@ namespace Stoolball.Web.Matches
                     switch (legacyTournamentsCalendarUrl.Groups[1].Value.ToUpperInvariant())
                     {
                         case "MIXED":
-                            model.MatchFilter.PlayerTypes.Add(PlayerType.Mixed);
+                            model.AppliedMatchFilter.PlayerTypes.Add(PlayerType.Mixed);
                             break;
                         case "LADIES":
-                            model.MatchFilter.PlayerTypes.Add(PlayerType.Ladies);
+                            model.AppliedMatchFilter.PlayerTypes.Add(PlayerType.Ladies);
                             break;
                         case "JUNIOR":
-                            model.MatchFilter.PlayerTypes.Add(PlayerType.JuniorMixed);
-                            model.MatchFilter.PlayerTypes.Add(PlayerType.JuniorGirls);
-                            model.MatchFilter.PlayerTypes.Add(PlayerType.JuniorBoys);
+                            model.AppliedMatchFilter.PlayerTypes.Add(PlayerType.JuniorMixed);
+                            model.AppliedMatchFilter.PlayerTypes.Add(PlayerType.JuniorGirls);
+                            model.AppliedMatchFilter.PlayerTypes.Add(PlayerType.JuniorBoys);
                             break;
                         default:
                             break;
@@ -144,43 +144,43 @@ namespace Stoolball.Web.Matches
                     return new HttpNotFoundResult();
                 }
                 pageTitle += " for " + club.ClubName;
-                model.MatchFilter.TeamIds.AddRange(club.Teams.Select(x => x.TeamId.Value));
+                model.AppliedMatchFilter.TeamIds.AddRange(club.Teams.Select(x => x.TeamId.Value));
             }
             else if (Request.RawUrl.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
                 var team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl).ConfigureAwait(false);
                 if (team == null) { return new HttpNotFoundResult(); }
                 pageTitle += " for " + team.TeamName;
-                model.MatchFilter.TeamIds.Add(team.TeamId.Value);
+                model.AppliedMatchFilter.TeamIds.Add(team.TeamId.Value);
             }
             else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
                 var competition = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false);
                 if (competition == null) { return new HttpNotFoundResult(); }
                 pageTitle += " in the " + competition.CompetitionName;
-                model.MatchFilter.CompetitionIds.Add(competition.CompetitionId.Value);
+                model.AppliedMatchFilter.CompetitionIds.Add(competition.CompetitionId.Value);
             }
             else if (Request.RawUrl.StartsWith("/locations/", StringComparison.OrdinalIgnoreCase))
             {
                 var location = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl).ConfigureAwait(false);
                 if (location == null) { return new HttpNotFoundResult(); }
                 pageTitle += " at " + location.NameAndLocalityOrTown();
-                model.MatchFilter.MatchLocationIds.Add(location.MatchLocationId.Value);
+                model.AppliedMatchFilter.MatchLocationIds.Add(location.MatchLocationId.Value);
             }
 
 
             // Remove date from filter and describe the remainder in the feed title, because the date range is not the subject of the feed,
             // it's just what we're including in the feed right now to return only currently relevant data.
-            var clonedFilter = model.MatchFilter.Clone();
+            var clonedFilter = model.AppliedMatchFilter.Clone();
             clonedFilter.FromDate = clonedFilter.UntilDate = null;
             model.Metadata.PageTitle = pageTitle + _matchFilterHumanizer.MatchingFilter(clonedFilter);
-            if (model.MatchFilter.PlayerTypes.Any())
+            if (model.AppliedMatchFilter.PlayerTypes.Any())
             {
-                model.Metadata.PageTitle = $"{model.MatchFilter.PlayerTypes.First().Humanize(LetterCasing.Sentence).Replace("Junior mixed", "Junior")} {model.Metadata.PageTitle.ToLower(CultureInfo.CurrentCulture)}";
+                model.Metadata.PageTitle = $"{model.AppliedMatchFilter.PlayerTypes.First().Humanize(LetterCasing.Sentence).Replace("Junior mixed", "Junior")} {model.Metadata.PageTitle.ToLower(CultureInfo.CurrentCulture)}";
             }
             if (!model.Matches.Any())
             {
-                model.Matches = await _matchListingDataSource.ReadMatchListings(model.MatchFilter, MatchSortOrder.LatestUpdateFirst).ConfigureAwait(false);
+                model.Matches = await _matchListingDataSource.ReadMatchListings(model.AppliedMatchFilter, MatchSortOrder.LatestUpdateFirst).ConfigureAwait(false);
             }
 
             return CurrentTemplate(model);

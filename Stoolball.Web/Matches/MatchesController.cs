@@ -4,6 +4,7 @@ using System.Web;
 using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
+using Stoolball.Navigation;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -51,26 +52,26 @@ namespace Stoolball.Web.Matches
 
             var model = new MatchListingViewModel(contentModel.Content, Services?.UserService)
             {
-                MatchFilter = _matchFilterQueryStringParser.ParseQueryString(new MatchFilter(), HttpUtility.ParseQueryString(Request.Url.Query)),
+                DefaultMatchFilter = new MatchFilter
+                {
+                    FromDate = DateTimeOffset.UtcNow.Date,
+                    IncludeMatches = true,
+                    IncludeTournamentMatches = false,
+                    IncludeTournaments = false,
+                    Paging = new Paging
+                    {
+                        PageNumber = int.TryParse(Request.QueryString["page"], out var pageNumber) ? pageNumber > 0 ? pageNumber : 1 : 1,
+                        PageSize = Constants.Defaults.PageSize,
+                        PageUrl = Request.Url
+                    }
+                },
                 DateTimeFormatter = _dateTimeFormatter
             };
+            model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, HttpUtility.ParseQueryString(Request.Url.Query));
+            model.AppliedMatchFilter.Paging.Total = await _matchesDataSource.ReadTotalMatches(model.AppliedMatchFilter).ConfigureAwait(false);
+            model.Matches = await _matchesDataSource.ReadMatchListings(model.AppliedMatchFilter, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            if (Request.QueryString["from"] == null)
-            {
-                model.MatchFilter.FromDate = DateTimeOffset.UtcNow.Date;
-            }
-            model.MatchFilter.IncludeMatches = true;
-            model.MatchFilter.IncludeTournamentMatches = false;
-            model.MatchFilter.IncludeTournaments = false;
-
-            _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
-            model.MatchFilter.Paging.PageNumber = pageNumber > 0 ? pageNumber : 1;
-            model.MatchFilter.Paging.PageSize = Constants.Defaults.PageSize;
-            model.MatchFilter.Paging.PageUrl = Request.Url;
-            model.MatchFilter.Paging.Total = await _matchesDataSource.ReadTotalMatches(model.MatchFilter).ConfigureAwait(false);
-            model.Matches = await _matchesDataSource.ReadMatchListings(model.MatchFilter, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
-
-            model.FilterDescription = _matchFilterHumanizer.MatchesAndTournamentsMatchingFilter(model.MatchFilter);
+            model.FilterDescription = _matchFilterHumanizer.MatchesAndTournamentsMatchingFilter(model.AppliedMatchFilter);
             model.Metadata.PageTitle = model.FilterDescription;
 
             return CurrentTemplate(model);

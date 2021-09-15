@@ -12,9 +12,9 @@ namespace Stoolball.Data.Cache
     {
         private readonly ICacheableMatchListingDataSource _matchListingDataSource;
         private readonly IReadOnlyPolicyRegistry<string> _policyRegistry;
-        private readonly IMatchFilterSerializer _matchFilterSerializer;
+        private readonly IMatchFilterQueryStringSerializer _matchFilterSerializer;
 
-        public CachedMatchListingDataSource(IReadOnlyPolicyRegistry<string> policyRegistry, ICacheableMatchListingDataSource matchListingDataSource, IMatchFilterSerializer matchFilterSerializer)
+        public CachedMatchListingDataSource(IReadOnlyPolicyRegistry<string> policyRegistry, ICacheableMatchListingDataSource matchListingDataSource, IMatchFilterQueryStringSerializer matchFilterSerializer)
         {
             _policyRegistry = policyRegistry ?? throw new ArgumentNullException(nameof(policyRegistry));
             _matchListingDataSource = matchListingDataSource ?? throw new ArgumentNullException(nameof(matchListingDataSource));

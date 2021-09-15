@@ -6,10 +6,6 @@
     Html.RequiresJs("/js/filter.js");
     Html.RequiresCss("/css/filter.min.css");
     Html.RequiresCss("~/matches/matches.min.css");
-
-    var clonedQueryString = HttpUtility.ParseQueryString(Request.QueryString.ToString());
-    clonedQueryString.Remove("page");
-    var unpagedQueryString = clonedQueryString.Count > 0 ? "?" + clonedQueryString : string.Empty;
 }
 @{
     var matchMenu = new AddMatchMenuViewModel { BaseRoute = Model.Team.TeamRoute, EnableTournaments = true };
@@ -72,5 +68,5 @@
         <p>There are no matches for this team matching this filter.</p>
         <p>Find out how to <a href="/organise/website/">add matches and results to our website</a>.</p>
     }
-    @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.Team.TeamRoute })
+    @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.Team.TeamRoute, MatchFilter = Model.MatchFilter })
 </div>

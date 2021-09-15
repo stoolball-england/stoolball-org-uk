@@ -141,7 +141,7 @@ WriteLiteral(">\r\n");
                 matchClass = "match-list__match ";
                 matchClass += (match.StartTime <= DateTime.UtcNow.AddHours(-6)) ? "match-list__past" : "match-list__future";
                 if (!dateOfNextMatch.HasValue && matchClass.Contains("match-list__future")) { dateOfNextMatch = match.StartTime.Date; }
-                if (dateOfNextMatch == match.StartTime.Date && Model.HighlightNextMatch && Model.MatchFilter.Paging.PageNumber == 1) { matchClass += " match-list__next"; }
+                if (dateOfNextMatch == match.StartTime.Date && Model.HighlightNextMatch && Model.AppliedMatchFilter.Paging.PageNumber == 1) { matchClass += " match-list__next"; }
             }
 
 
@@ -150,36 +150,36 @@ WriteLiteral(">\r\n");
             #line hidden
 WriteLiteral("            <li");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 2526), Tuple.Create("\"", 2545)
+WriteAttribute("class", Tuple.Create(" class=\"", 2533), Tuple.Create("\"", 2552)
             
             #line 56 "..\..\Views\Partials\_MatchList.cshtml"
-, Tuple.Create(Tuple.Create("", 2534), Tuple.Create<System.Object, System.Int32>(matchClass
+, Tuple.Create(Tuple.Create("", 2541), Tuple.Create<System.Object, System.Int32>(matchClass
             
             #line default
             #line hidden
-, 2534), false)
+, 2541), false)
 );
 
 WriteLiteral(">\r\n                <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2567), Tuple.Create("\"", 2591)
+WriteAttribute("href", Tuple.Create(" href=\"", 2574), Tuple.Create("\"", 2598)
             
             #line 57 "..\..\Views\Partials\_MatchList.cshtml"
-, Tuple.Create(Tuple.Create("", 2574), Tuple.Create<System.Object, System.Int32>(match.MatchRoute
+, Tuple.Create(Tuple.Create("", 2581), Tuple.Create<System.Object, System.Int32>(match.MatchRoute
             
             #line default
             #line hidden
-, 2574), false)
+, 2581), false)
 );
 
-WriteAttribute("class", Tuple.Create(" class=\"", 2592), Tuple.Create("\"", 2653)
+WriteAttribute("class", Tuple.Create(" class=\"", 2599), Tuple.Create("\"", 2660)
             
             #line 57 "..\..\Views\Partials\_MatchList.cshtml"
-, Tuple.Create(Tuple.Create("", 2600), Tuple.Create<System.Object, System.Int32>(Model.ShowMatchDate ? "list-results__title" : null
+, Tuple.Create(Tuple.Create("", 2607), Tuple.Create<System.Object, System.Int32>(Model.ShowMatchDate ? "list-results__title" : null
             
             #line default
             #line hidden
-, 2600), false)
+, 2607), false)
 );
 
 WriteLiteral(">");
@@ -200,14 +200,14 @@ WriteLiteral(">");
             #line hidden
 WriteLiteral("</a>\r\n                <p");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 2706), Tuple.Create("\"", 2768)
+WriteAttribute("class", Tuple.Create(" class=\"", 2713), Tuple.Create("\"", 2775)
             
             #line 58 "..\..\Views\Partials\_MatchList.cshtml"
-, Tuple.Create(Tuple.Create("", 2714), Tuple.Create<System.Object, System.Int32>(Model.ShowMatchDate ? "list-results__detail" : null
+, Tuple.Create(Tuple.Create("", 2721), Tuple.Create<System.Object, System.Int32>(Model.ShowMatchDate ? "list-results__detail" : null
             
             #line default
             #line hidden
-, 2714), false)
+, 2721), false)
 );
 
 WriteLiteral(">\r\n");
@@ -262,7 +262,7 @@ WriteLiteral("                </p>\r\n            </li>\r\n");
                 matchClass = "match-list__match ";
                 matchClass += (match.StartTime <= DateTime.UtcNow.AddHours(-2)) ? "match-list__past" : "match-list__future";
                 if (!dateOfNextMatch.HasValue && matchClass.Contains("match-list__future")) { dateOfNextMatch = match.StartTime.Date; }
-                if (dateOfNextMatch == match.StartTime.Date && Model.HighlightNextMatch && Model.MatchFilter.Paging.PageNumber == 1) { matchClass += " match-list__next"; }
+                if (dateOfNextMatch == match.StartTime.Date && Model.HighlightNextMatch && Model.AppliedMatchFilter.Paging.PageNumber == 1) { matchClass += " match-list__next"; }
             }
 
             string matchType = null;
@@ -277,38 +277,38 @@ WriteLiteral("                </p>\r\n            </li>\r\n");
             #line hidden
 WriteLiteral("            <li");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 4030), Tuple.Create("\"", 4049)
+WriteAttribute("class", Tuple.Create(" class=\"", 4044), Tuple.Create("\"", 4063)
             
             #line 83 "..\..\Views\Partials\_MatchList.cshtml"
-, Tuple.Create(Tuple.Create("", 4038), Tuple.Create<System.Object, System.Int32>(matchClass
+, Tuple.Create(Tuple.Create("", 4052), Tuple.Create<System.Object, System.Int32>(matchClass
             
             #line default
             #line hidden
-, 4038), false)
+, 4052), false)
 );
 
 WriteLiteral(">\r\n                <p");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 4071), Tuple.Create("\"", 4132)
+WriteAttribute("class", Tuple.Create(" class=\"", 4085), Tuple.Create("\"", 4146)
             
             #line 84 "..\..\Views\Partials\_MatchList.cshtml"
-, Tuple.Create(Tuple.Create("", 4079), Tuple.Create<System.Object, System.Int32>(Model.ShowMatchDate ? "list-results__title" : null
+, Tuple.Create(Tuple.Create("", 4093), Tuple.Create<System.Object, System.Int32>(Model.ShowMatchDate ? "list-results__title" : null
             
             #line default
             #line hidden
-, 4079), false)
+, 4093), false)
 );
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4136), Tuple.Create("\"", 4160)
+WriteAttribute("href", Tuple.Create(" href=\"", 4150), Tuple.Create("\"", 4174)
             
             #line 84 "..\..\Views\Partials\_MatchList.cshtml"
-          , Tuple.Create(Tuple.Create("", 4143), Tuple.Create<System.Object, System.Int32>(match.MatchRoute
+          , Tuple.Create(Tuple.Create("", 4157), Tuple.Create<System.Object, System.Int32>(match.MatchRoute
             
             #line default
             #line hidden
-, 4143), false)
+, 4157), false)
 );
 
 WriteLiteral(">");

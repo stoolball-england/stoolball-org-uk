@@ -61,10 +61,6 @@ namespace ASP
     Html.RequiresJs("/js/filter.js");
     Html.RequiresCss("/css/filter.min.css");
 
-    var clonedQueryString = HttpUtility.ParseQueryString(Request.QueryString.ToString());
-    clonedQueryString.Remove("page");
-    var unpagedQueryString = clonedQueryString.Count > 0 ? "?" + clonedQueryString : string.Empty;
-
             
             #line default
             #line hidden
@@ -89,7 +85,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 16 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 12 "..\..\Views\MatchesForMatchLocation.cshtml"
    Write(Model.MatchLocation.NameAndLocalityOrTownIfDifferent());
 
             
@@ -107,14 +103,14 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 750), Tuple.Create("\"", 796)
+WriteAttribute("href", Tuple.Create(" href=\"", 518), Tuple.Create("\"", 564)
             
-            #line 20 "..\..\Views\MatchesForMatchLocation.cshtml"
-, Tuple.Create(Tuple.Create("", 757), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
+            #line 16 "..\..\Views\MatchesForMatchLocation.cshtml"
+, Tuple.Create(Tuple.Create("", 525), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
             
             #line default
             #line hidden
-, 757), false)
+, 525), false)
 );
 
 WriteLiteral(">Summary</a>\r\n        </li>\r\n        <li");
@@ -133,15 +129,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 988), Tuple.Create("\"", 1045)
+WriteAttribute("href", Tuple.Create(" href=\"", 756), Tuple.Create("\"", 813)
             
-            #line 26 "..\..\Views\MatchesForMatchLocation.cshtml"
-, Tuple.Create(Tuple.Create("", 995), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
+            #line 22 "..\..\Views\MatchesForMatchLocation.cshtml"
+, Tuple.Create(Tuple.Create("", 763), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
             
             #line default
             #line hidden
-, 995), false)
-, Tuple.Create(Tuple.Create("", 1034), Tuple.Create("/statistics", 1034), true)
+, 763), false)
+, Tuple.Create(Tuple.Create("", 802), Tuple.Create("/statistics", 802), true)
 );
 
 WriteLiteral(">Statistics</a>\r\n        </li>\r\n        <li");
@@ -159,7 +155,7 @@ WriteLiteral(">Edit filter</button>\r\n        </li>\r\n    </ul>\r\n");
 WriteLiteral("    ");
 
             
-            #line 32 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 28 "..\..\Views\MatchesForMatchLocation.cshtml"
 Write(Html.Partial("_MatchFilter", new MatchFilterViewModel
     {
         FilterDescription = Model.FilterDescription,
@@ -173,13 +169,13 @@ Write(Html.Partial("_MatchFilter", new MatchFilterViewModel
 WriteLiteral("\r\n\r\n");
 
             
-            #line 39 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 35 "..\..\Views\MatchesForMatchLocation.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 39 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 35 "..\..\Views\MatchesForMatchLocation.cshtml"
      if (Model.Matches.Matches.Count > 0)
     {
         
@@ -187,14 +183,14 @@ WriteLiteral("\r\n\r\n");
             #line default
             #line hidden
             
-            #line 41 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 37 "..\..\Views\MatchesForMatchLocation.cshtml"
    Write(Html.Partial("_MatchList", Model.Matches));
 
             
             #line default
             #line hidden
             
-            #line 41 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 37 "..\..\Views\MatchesForMatchLocation.cshtml"
                                                   
     }
     else
@@ -212,7 +208,7 @@ WriteLiteral(" href=\"/organise/website/\"");
 WriteLiteral(">add matches and results to our website</a>.</p>\r\n");
 
             
-            #line 47 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 43 "..\..\Views\MatchesForMatchLocation.cshtml"
     }
 
             
@@ -221,8 +217,8 @@ WriteLiteral(">add matches and results to our website</a>.</p>\r\n");
 WriteLiteral("    ");
 
             
-            #line 48 "..\..\Views\MatchesForMatchLocation.cshtml"
-Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.MatchLocation.MatchLocationRoute }));
+            #line 44 "..\..\Views\MatchesForMatchLocation.cshtml"
+Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.MatchLocation.MatchLocationRoute, MatchFilter = Model.MatchFilter }));
 
             
             #line default

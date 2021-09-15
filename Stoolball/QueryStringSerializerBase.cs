@@ -27,6 +27,10 @@ namespace Stoolball
         {
             Serializer.Add(key, value.ToString(CultureInfo.InvariantCulture));
         }
+        protected void Serialize(int value, string key, int defaultValue)
+        {
+            if (value != defaultValue) { Serializer.Add(key, value.ToString(CultureInfo.InvariantCulture)); }
+        }
 
         protected void Serialize(int? value, string key)
         {
@@ -35,12 +39,32 @@ namespace Stoolball
 
         protected void Serialize(DateTimeOffset? value, string key)
         {
-            if (value.HasValue) { Serializer.Add(key, value.Value.ToString("yyyy-M-d", CultureInfo.InvariantCulture)); }
+            if (value.HasValue) { Serializer.Add(key, value.Value.ToString("yyyy-MM-d", CultureInfo.InvariantCulture)); }
+        }
+
+        protected void Serialize(DateTimeOffset? value, string key, DateTimeOffset? defaultValue)
+        {
+            if (value != defaultValue)
+            {
+                if (value.HasValue)
+                {
+                    Serialize(value, key);
+                }
+                else
+                {
+                    Serializer.Add(key, string.Empty);
+                }
+            }
         }
 
         protected void Serialize(bool value, string key)
         {
             if (value) { Serializer.Add(key, value ? "1" : "0"); }
+        }
+
+        protected void Serialize(bool value, string key, bool defaultValue)
+        {
+            if (value != defaultValue) { Serializer.Add(key, value ? "1" : "0"); }
         }
 
         protected void Serialize(bool? value, string key)

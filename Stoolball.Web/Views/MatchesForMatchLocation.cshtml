@@ -4,10 +4,6 @@
 @{
     Html.RequiresJs("/js/filter.js");
     Html.RequiresCss("/css/filter.min.css");
-
-    var clonedQueryString = HttpUtility.ParseQueryString(Request.QueryString.ToString());
-    clonedQueryString.Remove("page");
-    var unpagedQueryString = clonedQueryString.Count > 0 ? "?" + clonedQueryString : string.Empty;
 }
 @section head {
     <meta name="robots" content="noindex,follow" />
@@ -45,5 +41,5 @@
         <p>There are no matches at this location matching this filter.</p>
         <p>Find out how to <a href="/organise/website/">add matches and results to our website</a>.</p>
     }
-    @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.MatchLocation.MatchLocationRoute })
+    @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.MatchLocation.MatchLocationRoute, MatchFilter = Model.MatchFilter })
 </div>

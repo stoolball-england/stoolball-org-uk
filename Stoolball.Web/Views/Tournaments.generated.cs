@@ -35,11 +35,23 @@ namespace ASP
     using Examine;
     
     #line 3 "..\..\Views\Tournaments.cshtml"
+    using Stoolball.Matches;
+    
+    #line default
+    #line hidden
+    
+    #line 4 "..\..\Views\Tournaments.cshtml"
     using Stoolball.Web.Matches;
     
     #line default
     #line hidden
     using Umbraco.Core;
+    
+    #line 5 "..\..\Views\Tournaments.cshtml"
+    using Umbraco.Core.Composing;
+    
+    #line default
+    #line hidden
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
@@ -58,7 +70,7 @@ namespace ASP
 DefineSection("canonical", () => {
 
             
-            #line 4 "..\..\Views\Tournaments.cshtml"
+            #line 6 "..\..\Views\Tournaments.cshtml"
                Write(Html.Partial("_CanonicalUrl", Array.Empty<string>()));
 
             
@@ -67,14 +79,13 @@ DefineSection("canonical", () => {
 });
 
             
-            #line 5 "..\..\Views\Tournaments.cshtml"
+            #line 7 "..\..\Views\Tournaments.cshtml"
   
     Html.RequiresJs("/js/filter.js");
     Html.RequiresCss("/css/filter.min.css");
 
-    var clonedQueryString = HttpUtility.ParseQueryString(Request.QueryString.ToString());
-    clonedQueryString.Remove("page");
-    var unpagedQueryString = clonedQueryString.Count > 0 ? "?" + clonedQueryString : string.Empty;
+    var serialiser = Current.Factory.GetInstance<IMatchFilterQueryStringSerializer>();
+    var queryString = serialiser.Serialize(Model.AppliedMatchFilter, Model.DefaultMatchFilter);
 
             
             #line default
@@ -86,7 +97,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 14 "..\..\Views\Tournaments.cshtml"
+            #line 15 "..\..\Views\Tournaments.cshtml"
    Write(Stoolball.Constants.Pages.Tournaments);
 
             
@@ -102,15 +113,15 @@ WriteLiteral(" class=\"nav-item\"");
 
 WriteLiteral(">\r\n            <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 706), Tuple.Create("\"", 742)
-, Tuple.Create(Tuple.Create("", 713), Tuple.Create("/matches", 713), true)
+WriteAttribute("href", Tuple.Create(" href=\"", 718), Tuple.Create("\"", 747)
+, Tuple.Create(Tuple.Create("", 725), Tuple.Create("/matches", 725), true)
             
-            #line 18 "..\..\Views\Tournaments.cshtml"
-, Tuple.Create(Tuple.Create("", 721), Tuple.Create<System.Object, System.Int32>(unpagedQueryString
+            #line 19 "..\..\Views\Tournaments.cshtml"
+, Tuple.Create(Tuple.Create("", 733), Tuple.Create<System.Object, System.Int32>(queryString
             
             #line default
             #line hidden
-, 721), false)
+, 733), false)
 );
 
 WriteLiteral(" class=\"nav-link\"");
@@ -138,12 +149,12 @@ WriteLiteral(">Edit filter</button>\r\n        </li>\r\n    </ul>\r\n");
 WriteLiteral("    ");
 
             
-            #line 27 "..\..\Views\Tournaments.cshtml"
+            #line 28 "..\..\Views\Tournaments.cshtml"
 Write(Html.Partial("_MatchFilter", new MatchFilterViewModel
     {
         FilterDescription = Model.FilterDescription,
-        from = Model.MatchFilter.FromDate,
-        to = Model.MatchFilter.UntilDate
+        from = Model.AppliedMatchFilter.FromDate,
+        to = Model.AppliedMatchFilter.UntilDate
     }));
 
             
@@ -152,13 +163,13 @@ Write(Html.Partial("_MatchFilter", new MatchFilterViewModel
 WriteLiteral("\r\n\r\n");
 
             
-            #line 34 "..\..\Views\Tournaments.cshtml"
+            #line 35 "..\..\Views\Tournaments.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 34 "..\..\Views\Tournaments.cshtml"
+            #line 35 "..\..\Views\Tournaments.cshtml"
      if (Model.Matches.Count > 0)
     {
         
@@ -166,14 +177,14 @@ WriteLiteral("\r\n\r\n");
             #line default
             #line hidden
             
-            #line 36 "..\..\Views\Tournaments.cshtml"
+            #line 37 "..\..\Views\Tournaments.cshtml"
    Write(Html.Partial("_MatchList", Model));
 
             
             #line default
             #line hidden
             
-            #line 36 "..\..\Views\Tournaments.cshtml"
+            #line 37 "..\..\Views\Tournaments.cshtml"
                                           
     }
     else
@@ -191,7 +202,7 @@ WriteLiteral(" href=\"/organise/website/\"");
 WriteLiteral(">add matches and results to our website</a>.</p>\r\n");
 
             
-            #line 42 "..\..\Views\Tournaments.cshtml"
+            #line 43 "..\..\Views\Tournaments.cshtml"
     }
 
             
@@ -202,8 +213,8 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 44 "..\..\Views\Tournaments.cshtml"
-Write(Html.Partial("_Paging", Model.MatchFilter.Paging));
+            #line 45 "..\..\Views\Tournaments.cshtml"
+Write(Html.Partial("_Paging", Model.AppliedMatchFilter.Paging));
 
             
             #line default
@@ -213,8 +224,8 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 45 "..\..\Views\Tournaments.cshtml"
-Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { FilenameWithoutExtension = "tournaments", QueryString = unpagedQueryString }));
+            #line 46 "..\..\Views\Tournaments.cshtml"
+Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { MatchFilter = Model.AppliedMatchFilter }));
 
             
             #line default

@@ -61,10 +61,6 @@ namespace ASP
     Html.RequiresJs("/js/filter.js");
     Html.RequiresCss("/css/filter.min.css");
 
-    var clonedQueryString = HttpUtility.ParseQueryString(Request.QueryString.ToString());
-    clonedQueryString.Remove("page");
-    var unpagedQueryString = clonedQueryString.Count > 0 ? "?" + clonedQueryString : string.Empty;
-
             
             #line default
             #line hidden
@@ -89,7 +85,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 16 "..\..\Views\MatchesForClub.cshtml"
+            #line 12 "..\..\Views\MatchesForClub.cshtml"
    Write(Model.Club.ClubName);
 
             
@@ -107,14 +103,14 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 697), Tuple.Create("\"", 725)
+WriteAttribute("href", Tuple.Create(" href=\"", 465), Tuple.Create("\"", 493)
             
-            #line 20 "..\..\Views\MatchesForClub.cshtml"
-, Tuple.Create(Tuple.Create("", 704), Tuple.Create<System.Object, System.Int32>(Model.Club.ClubRoute
+            #line 16 "..\..\Views\MatchesForClub.cshtml"
+, Tuple.Create(Tuple.Create("", 472), Tuple.Create<System.Object, System.Int32>(Model.Club.ClubRoute
             
             #line default
             #line hidden
-, 704), false)
+, 472), false)
 );
 
 WriteLiteral(">Summary</a>\r\n        </li>\r\n        <li");
@@ -133,15 +129,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 917), Tuple.Create("\"", 956)
+WriteAttribute("href", Tuple.Create(" href=\"", 685), Tuple.Create("\"", 724)
             
-            #line 26 "..\..\Views\MatchesForClub.cshtml"
-, Tuple.Create(Tuple.Create("", 924), Tuple.Create<System.Object, System.Int32>(Model.Club.ClubRoute
+            #line 22 "..\..\Views\MatchesForClub.cshtml"
+, Tuple.Create(Tuple.Create("", 692), Tuple.Create<System.Object, System.Int32>(Model.Club.ClubRoute
             
             #line default
             #line hidden
-, 924), false)
-, Tuple.Create(Tuple.Create("", 945), Tuple.Create("/statistics", 945), true)
+, 692), false)
+, Tuple.Create(Tuple.Create("", 713), Tuple.Create("/statistics", 713), true)
 );
 
 WriteLiteral(">Statistics</a>\r\n        </li>\r\n        <li");
@@ -159,7 +155,7 @@ WriteLiteral(">Edit filter</button>\r\n        </li>\r\n    </ul>\r\n");
 WriteLiteral("    ");
 
             
-            #line 32 "..\..\Views\MatchesForClub.cshtml"
+            #line 28 "..\..\Views\MatchesForClub.cshtml"
 Write(Html.Partial("_MatchFilter", new MatchFilterViewModel
     {
         FilterDescription = Model.FilterDescription,
@@ -173,13 +169,13 @@ Write(Html.Partial("_MatchFilter", new MatchFilterViewModel
 WriteLiteral("\r\n\r\n");
 
             
-            #line 39 "..\..\Views\MatchesForClub.cshtml"
+            #line 35 "..\..\Views\MatchesForClub.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 39 "..\..\Views\MatchesForClub.cshtml"
+            #line 35 "..\..\Views\MatchesForClub.cshtml"
      if (Model.Matches.Matches.Count > 0)
     {
         
@@ -187,14 +183,14 @@ WriteLiteral("\r\n\r\n");
             #line default
             #line hidden
             
-            #line 41 "..\..\Views\MatchesForClub.cshtml"
+            #line 37 "..\..\Views\MatchesForClub.cshtml"
    Write(Html.Partial("_MatchList", Model.Matches));
 
             
             #line default
             #line hidden
             
-            #line 41 "..\..\Views\MatchesForClub.cshtml"
+            #line 37 "..\..\Views\MatchesForClub.cshtml"
                                                   
     }
     else
@@ -212,7 +208,7 @@ WriteLiteral(" href=\"/organise/website/\"");
 WriteLiteral(">add matches and results to our website</a>.</p>\r\n");
 
             
-            #line 47 "..\..\Views\MatchesForClub.cshtml"
+            #line 43 "..\..\Views\MatchesForClub.cshtml"
     }
 
             
@@ -221,8 +217,8 @@ WriteLiteral(">add matches and results to our website</a>.</p>\r\n");
 WriteLiteral("    ");
 
             
-            #line 48 "..\..\Views\MatchesForClub.cshtml"
-Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.Club.ClubRoute }));
+            #line 44 "..\..\Views\MatchesForClub.cshtml"
+Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.Club.ClubRoute, MatchFilter = Model.MatchFilter }));
 
             
             #line default

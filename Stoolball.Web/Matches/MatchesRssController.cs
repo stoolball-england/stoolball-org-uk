@@ -69,7 +69,7 @@ namespace Stoolball.Web.Matches
 
             var model = new MatchListingViewModel(contentModel.Content, Services?.UserService)
             {
-                MatchFilter = _queryStringParser.ParseFilterFromQueryString(Request.QueryString),
+                AppliedMatchFilter = _queryStringParser.ParseFilterFromQueryString(Request.QueryString),
                 DateTimeFormatter = _dateFormatter
             };
 
@@ -79,42 +79,42 @@ namespace Stoolball.Web.Matches
                 var club = await _clubDataSource.ReadClubByRoute(Request.RawUrl).ConfigureAwait(false);
                 if (club == null) { return new HttpNotFoundResult(); }
                 pageTitle += " for " + club.ClubName;
-                model.MatchFilter.TeamIds.AddRange(club.Teams.Select(x => x.TeamId.Value));
+                model.AppliedMatchFilter.TeamIds.AddRange(club.Teams.Select(x => x.TeamId.Value));
             }
             else if (Request.RawUrl.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
             {
                 var team = await _teamDataSource.ReadTeamByRoute(Request.RawUrl).ConfigureAwait(false);
                 if (team == null) { return new HttpNotFoundResult(); }
                 pageTitle += " for " + team.TeamName;
-                model.MatchFilter.TeamIds.Add(team.TeamId.Value);
+                model.AppliedMatchFilter.TeamIds.Add(team.TeamId.Value);
             }
             else if (Request.RawUrl.StartsWith("/competitions/", StringComparison.OrdinalIgnoreCase))
             {
                 var competition = await _competitionDataSource.ReadCompetitionByRoute(Request.RawUrl).ConfigureAwait(false);
                 if (competition == null) { return new HttpNotFoundResult(); }
                 pageTitle += " in the " + competition.CompetitionName;
-                model.MatchFilter.CompetitionIds.Add(competition.CompetitionId.Value);
+                model.AppliedMatchFilter.CompetitionIds.Add(competition.CompetitionId.Value);
             }
             else if (Request.RawUrl.StartsWith("/locations/", StringComparison.OrdinalIgnoreCase))
             {
                 var location = await _matchLocationDataSource.ReadMatchLocationByRoute(Request.RawUrl).ConfigureAwait(false);
                 if (location == null) { return new HttpNotFoundResult(); }
                 pageTitle += " at " + location.NameAndLocalityOrTown();
-                model.MatchFilter.MatchLocationIds.Add(location.MatchLocationId.Value);
+                model.AppliedMatchFilter.MatchLocationIds.Add(location.MatchLocationId.Value);
             }
 
             // Remove date from filter and describe the remainder in the feed title, because the date range is not the subject of the feed,
             // it's just what we're including in the feed right now to return only currently relevant data.
-            var clonedFilter = model.MatchFilter.Clone();
+            var clonedFilter = model.AppliedMatchFilter.Clone();
             clonedFilter.FromDate = clonedFilter.UntilDate = null;
             model.Metadata.PageTitle = pageTitle + _matchFilterHumanizer.MatchingFilter(clonedFilter);
             model.Metadata.Description = $"New or updated stoolball matches on the Stoolball England website";
-            if (model.MatchFilter.PlayerTypes.Any())
+            if (model.AppliedMatchFilter.PlayerTypes.Any())
             {
-                model.Metadata.PageTitle = $"{model.MatchFilter.PlayerTypes.First().Humanize(LetterCasing.Sentence)} {model.Metadata.PageTitle.ToLower(CultureInfo.CurrentCulture)}";
-                model.Metadata.Description = $"New or updated {model.MatchFilter.PlayerTypes.First()} stoolball matches on the Stoolball England website";
+                model.Metadata.PageTitle = $"{model.AppliedMatchFilter.PlayerTypes.First().Humanize(LetterCasing.Sentence)} {model.Metadata.PageTitle.ToLower(CultureInfo.CurrentCulture)}";
+                model.Metadata.Description = $"New or updated {model.AppliedMatchFilter.PlayerTypes.First()} stoolball matches on the Stoolball England website";
             }
-            model.Matches = await _matchDataSource.ReadMatchListings(model.MatchFilter, MatchSortOrder.LatestUpdateFirst).ConfigureAwait(false);
+            model.Matches = await _matchDataSource.ReadMatchListings(model.AppliedMatchFilter, MatchSortOrder.LatestUpdateFirst).ConfigureAwait(false);
 
             return View(Request.QueryString["format"] == "tweet" ? "MatchTweets" : "MatchesRss", model);
         }

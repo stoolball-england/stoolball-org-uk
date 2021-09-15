@@ -1,14 +1,15 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<MatchListingViewModel>
 @using ClientDependency.Core.Mvc
+@using Stoolball.Matches
 @using Stoolball.Web.Matches
+@using Umbraco.Core.Composing
 @section canonical {@Html.Partial("_CanonicalUrl", Array.Empty<string>())}
 @{ 
     Html.RequiresJs("/js/filter.js");
     Html.RequiresCss("/css/filter.min.css");
 
-    var clonedQueryString = HttpUtility.ParseQueryString(Request.QueryString.ToString());
-    clonedQueryString.Remove("page");
-    var unpagedQueryString = clonedQueryString.Count > 0 ? "?" + clonedQueryString : string.Empty;
+    var serialiser = Current.Factory.GetInstance<IMatchFilterQueryStringSerializer>();
+    var queryString = serialiser.Serialize(Model.AppliedMatchFilter, Model.DefaultMatchFilter);
 }
 <div class="container-xl">
     <h1>@Stoolball.Constants.Pages.Matches</h1>
@@ -18,17 +19,17 @@
             <em class="nav-link active">Matches</em>
         </li>
         <li class="nav-item">
-            <a href="/tournaments@(unpagedQueryString)" class="nav-link">Tournaments</a>
+            <a href="/tournaments@(queryString)" class="nav-link">Tournaments</a>
         </li>
         <li class="nav-item nav-item-admin">
             <button type="button" class="nav-link nav-link-filter">Edit filter</button>
         </li>
     </ul>
-    @Html.Partial("_MatchFilter", new MatchFilterViewModel { 
-        FilterDescription = Model.FilterDescription,
-        from = Model.MatchFilter.FromDate,
-        to = Model.MatchFilter.UntilDate
-    })
+    @Html.Partial("_MatchFilter", new MatchFilterViewModel {
+    FilterDescription = Model.FilterDescription,
+    from = Model.AppliedMatchFilter.FromDate,
+    to = Model.AppliedMatchFilter.UntilDate
+})
 
     @if (Model.Matches.Count > 0)
     {
@@ -40,6 +41,6 @@
         <p>Find out how to <a href="/organise/website/">add matches and results to our website</a>.</p>
     }
 
-    @Html.Partial("_Paging", Model.MatchFilter.Paging)
-    @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { QueryString = unpagedQueryString })
+    @Html.Partial("_Paging", Model.AppliedMatchFilter.Paging)
+    @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { MatchFilter = Model.AppliedMatchFilter })
 </div>

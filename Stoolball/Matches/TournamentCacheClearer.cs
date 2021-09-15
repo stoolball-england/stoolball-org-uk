@@ -11,11 +11,11 @@ namespace Stoolball.Matches
     {
         private readonly IClubDataSource _clubDataSource;
         private readonly IMatchFilterFactory _matchFilterFactory;
-        private readonly IMatchFilterSerializer _matchFilterSerializer;
+        private readonly IMatchFilterQueryStringSerializer _matchFilterSerializer;
         private readonly IClearableCache _cache;
 
         public TournamentCacheClearer(IClubDataSource clubDataSource,
-            IMatchFilterFactory matchFilterFactory, IMatchFilterSerializer matchFilterSerializer, IClearableCache cache)
+            IMatchFilterFactory matchFilterFactory, IMatchFilterQueryStringSerializer matchFilterSerializer, IClearableCache cache)
         {
             _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
             _matchFilterFactory = matchFilterFactory ?? throw new ArgumentNullException(nameof(matchFilterFactory));

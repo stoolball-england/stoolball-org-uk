@@ -80,7 +80,7 @@ namespace Stoolball.Web.Tests.Matches
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Equal(filter, ((MatchListingViewModel)((ViewResult)result).Model).MatchFilter);
+                Assert.Equal(filter, ((MatchListingViewModel)((ViewResult)result).Model).AppliedMatchFilter);
             }
         }
 
