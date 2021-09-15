@@ -736,6 +736,12 @@
       <DependentUpon>edit-tournament-matches.css</DependentUpon>
     </Content>
     <Content Include="Matches\match.js" />
+    <Content Include="Matches\matches.css">
+      <DependentUpon>matches.scss</DependentUpon>
+    </Content>
+    <Content Include="Matches\matches.min.css">
+      <DependentUpon>matches.css</DependentUpon>
+    </Content>
     <Content Include="Matches\scorecards.css">
       <DependentUpon>scorecards.scss</DependentUpon>
     </Content>
@@ -1014,6 +1020,7 @@
     <Content Include="Secret-InstrumentationKey.ApplicationInsights.live.xdt.config" />
     <Content Include="Media\Web.config" />
     <Content Include="Matches\edit-tournament-matches.scss" />
+    <Content Include="Matches\matches.scss" />
     <None Include="Secret-StoolballApiKeys.Web.live.xdt.config" />
     <None Include="Status\offline.json" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
@@ -1372,7 +1379,6 @@
     <Compile Include="Matches\MatchListSubscriptionsViewModel.cs" />
     <Compile Include="Matches\MatchValidator.cs" />
     <Compile Include="Matches\ScorecardViewModel.cs" />
-    <Compile Include="Matches\MatchFilterUrlParser.cs" />
     <Compile Include="Matches\TournamentsController.cs" />
     <Compile Include="Matches\MatchesController.cs" />
     <Compile Include="Matches\CreateTrainingSessionSurfaceController.cs" />

@@ -88,7 +88,6 @@
     <Compile Include="Matches\EditTrainingSessionControllerTests.cs" />
     <Compile Include="Matches\EditTournamentSeasonsControllerTests.cs" />
     <Compile Include="Matches\MatchesCalendarControllerTests.cs" />
-    <Compile Include="Matches\MatchFilterUrlParserTests.cs" />
     <Compile Include="Matches\MatchValidatorTests.cs" />
     <Compile Include="Matches\TournamentsControllerTests.cs" />
     <Compile Include="Matches\MatchesControllerTests.cs" />

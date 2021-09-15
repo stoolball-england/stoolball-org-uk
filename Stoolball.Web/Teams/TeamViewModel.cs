@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Web.Matches;
@@ -15,6 +16,8 @@ namespace Stoolball.Web.Teams
         }
         public Team Team { get; set; }
         public MatchListingViewModel Matches { get; set; }
+        public MatchFilter MatchFilter { get; set; }
+        public string FilterDescription { get; set; }
         public bool IsInACurrentLeague { get; set; }
         public bool IsInACurrentKnockoutCompetition { get; set; }
         public IList<Player> Players { get; internal set; } = new List<Player>();

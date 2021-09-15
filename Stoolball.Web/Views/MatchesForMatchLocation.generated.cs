@@ -26,9 +26,15 @@ namespace ASP
     using System.Web.Security;
     using System.Web.UI;
     using System.Web.WebPages;
-    using Examine;
     
     #line 2 "..\..\Views\MatchesForMatchLocation.cshtml"
+    using ClientDependency.Core.Mvc;
+    
+    #line default
+    #line hidden
+    using Examine;
+    
+    #line 3 "..\..\Views\MatchesForMatchLocation.cshtml"
     using Stoolball.Web.Matches;
     
     #line default
@@ -49,6 +55,21 @@ namespace ASP
         }
         public override void Execute()
         {
+            
+            #line 4 "..\..\Views\MatchesForMatchLocation.cshtml"
+  
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
+
+    var clonedQueryString = HttpUtility.ParseQueryString(Request.QueryString.ToString());
+    clonedQueryString.Remove("page");
+    var unpagedQueryString = clonedQueryString.Count > 0 ? "?" + clonedQueryString : string.Empty;
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
 DefineSection("head", () => {
 
 WriteLiteral("\r\n    <meta");
@@ -68,7 +89,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 7 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 16 "..\..\Views\MatchesForMatchLocation.cshtml"
    Write(Model.MatchLocation.NameAndLocalityOrTownIfDifferent());
 
             
@@ -86,14 +107,14 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 392), Tuple.Create("\"", 438)
+WriteAttribute("href", Tuple.Create(" href=\"", 750), Tuple.Create("\"", 796)
             
-            #line 11 "..\..\Views\MatchesForMatchLocation.cshtml"
-, Tuple.Create(Tuple.Create("", 399), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
+            #line 20 "..\..\Views\MatchesForMatchLocation.cshtml"
+, Tuple.Create(Tuple.Create("", 757), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
             
             #line default
             #line hidden
-, 399), false)
+, 757), false)
 );
 
 WriteLiteral(">Summary</a>\r\n        </li>\r\n        <li");
@@ -112,27 +133,53 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 630), Tuple.Create("\"", 687)
+WriteAttribute("href", Tuple.Create(" href=\"", 988), Tuple.Create("\"", 1045)
             
-            #line 17 "..\..\Views\MatchesForMatchLocation.cshtml"
-, Tuple.Create(Tuple.Create("", 637), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
+            #line 26 "..\..\Views\MatchesForMatchLocation.cshtml"
+, Tuple.Create(Tuple.Create("", 995), Tuple.Create<System.Object, System.Int32>(Model.MatchLocation.MatchLocationRoute
             
             #line default
             #line hidden
-, 637), false)
-, Tuple.Create(Tuple.Create("", 676), Tuple.Create("/statistics", 676), true)
+, 995), false)
+, Tuple.Create(Tuple.Create("", 1034), Tuple.Create("/statistics", 1034), true)
 );
 
-WriteLiteral(">Statistics</a>\r\n        </li>\r\n    </ul>\r\n\r\n");
+WriteLiteral(">Statistics</a>\r\n        </li>\r\n        <li");
+
+WriteLiteral(" class=\"nav-item nav-item-admin\"");
+
+WriteLiteral(">\r\n            <button");
+
+WriteLiteral(" type=\"button\"");
+
+WriteLiteral(" class=\"nav-link nav-link-filter\"");
+
+WriteLiteral(">Edit filter</button>\r\n        </li>\r\n    </ul>\r\n");
+
+WriteLiteral("    ");
 
             
-            #line 21 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 32 "..\..\Views\MatchesForMatchLocation.cshtml"
+Write(Html.Partial("_MatchFilter", new MatchFilterViewModel
+    {
+        FilterDescription = Model.FilterDescription,
+        from = Model.MatchFilter.FromDate,
+        to = Model.MatchFilter.UntilDate
+    }));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n\r\n");
+
+            
+            #line 39 "..\..\Views\MatchesForMatchLocation.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 21 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 39 "..\..\Views\MatchesForMatchLocation.cshtml"
      if (Model.Matches.Matches.Count > 0)
     {
         
@@ -140,14 +187,14 @@ WriteLiteral(">Statistics</a>\r\n        </li>\r\n    </ul>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 23 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 41 "..\..\Views\MatchesForMatchLocation.cshtml"
    Write(Html.Partial("_MatchList", Model.Matches));
 
             
             #line default
             #line hidden
             
-            #line 23 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 41 "..\..\Views\MatchesForMatchLocation.cshtml"
                                                   
     }
     else
@@ -156,10 +203,16 @@ WriteLiteral(">Statistics</a>\r\n        </li>\r\n    </ul>\r\n\r\n");
             
             #line default
             #line hidden
-WriteLiteral("        <p>There are no matches at this location this season.</p>\r\n");
+WriteLiteral("        <p>There are no matches at this location matching this filter.</p>\r\n");
+
+WriteLiteral("        <p>Find out how to <a");
+
+WriteLiteral(" href=\"/organise/website/\"");
+
+WriteLiteral(">add matches and results to our website</a>.</p>\r\n");
 
             
-            #line 28 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 47 "..\..\Views\MatchesForMatchLocation.cshtml"
     }
 
             
@@ -168,7 +221,7 @@ WriteLiteral("        <p>There are no matches at this location this season.</p>\
 WriteLiteral("    ");
 
             
-            #line 29 "..\..\Views\MatchesForMatchLocation.cshtml"
+            #line 48 "..\..\Views\MatchesForMatchLocation.cshtml"
 Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.MatchLocation.MatchLocationRoute }));
 
             

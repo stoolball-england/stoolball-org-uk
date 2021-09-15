@@ -1,8 +1,11 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.SeasonViewModel>
+@using ClientDependency.Core.Mvc
 @using Stoolball.Web.Matches
 @using Stoolball.Matches
 @{ 
-    var matchMenu = new AddMatchMenuViewModel { BaseRoute = Model.Season.SeasonRoute, EnableTournaments = Model.Season.EnableTournaments };
+    Html.RequiresCss("~/matches/matches.min.css");
+
+    var matchMenu = new AddMatchMenuViewModel { BaseRoute = Model.Season.SeasonRoute, EnableTournaments = Model.Season.EnableTournaments, IsFirstAdminButton = true };
     matchMenu.MatchTypes.AddRange(Model.Season.MatchTypes);
 }
 @section head {
@@ -44,6 +47,7 @@
     else
     {
         <p>There are no matches for this season.</p>
+        <p>Find out how to <a href="/organise/website/">add matches and results to our website</a>.</p>
     }
     @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.Season.Competition.CompetitionRoute })
 </div>

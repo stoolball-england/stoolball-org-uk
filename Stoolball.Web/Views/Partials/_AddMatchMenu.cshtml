@@ -11,15 +11,17 @@
 
     if (enableTrainingSessions)
     {
-        <li class="nav-item nav-item-admin d-none d-md-flex nav-item-admin-md-first">
+        var andIsFirstAdminItem = Model.IsFirstAdminButton ? " nav-item-admin-md-first" : string.Empty;
+        <li class="nav-item nav-item-admin d-none d-lg-flex@(andIsFirstAdminItem)">
             <a href="@Model.BaseRoute/matches/add/training" class="nav-link nav-link-add">Add training session</a>
         </li>
     }
     if (totalMatchTypesSmall > 1 || maxButtons == 3)
     {
+        var andIsFirstAdminItem = (Model.IsFirstAdminButton) ? " nav-item-admin-md-first" : string.Empty;
         var onlyWhenCombiningButtons = (totalMatchTypesLarge == 1) ? (maxButtons > 2) ? "d-lg-none" : "d-md-none" : string.Empty;
         var onlyWhenLast = (maxButtons > 2) ? "nav-item-admin-md-last" : "nav-item-admin-sm-last";
-        <li class="nav-item nav-item-admin @onlyWhenLast @onlyWhenCombiningButtons">
+        <li class="nav-item nav-item-admin @onlyWhenLast @onlyWhenCombiningButtons@andIsFirstAdminItem">
             <div class="dropdown">
                 <button class="btn nav-link nav-link-add" type="button" id="add-match-menu__button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Add match
@@ -27,7 +29,7 @@
                 <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="add-match-menu__button">
                     @if (enableTrainingSessions)
                     {
-                        <li class="dropdown-item d-md-none">
+                        <li class="dropdown-item d-lg-none">
                             <a href="@Model.BaseRoute/matches/add/training">Add training session</a>
                         </li>
                     }
@@ -41,7 +43,7 @@
                     @if (Model.EnableTournaments)
                     {
                         var combineTournamentsBelow = (maxButtons > 2) ? "d-lg-none" : "d-md-none";
-                        <li class="dropdown-item @combineTournamentsBelow">
+                        <li class="dropdown-item d-add-tournament-none">
                             <a href="@Model.BaseRoute/matches/add/tournament">Add tournament</a>
                         </li>
                     }
@@ -52,7 +54,7 @@
     if (totalMatchTypesLarge == 1)
     {
         var onlyWhenMenuIsHidden = (totalMatchTypesSmall > 1) ? (totalMatchTypesSmall > 2 ? "d-none d-lg-flex" : "d-none d-md-flex") : string.Empty;
-        var andIsFirstAdminItem = (totalMatchTypesSmall > 1 && !enableTrainingSessions) ? " nav-item-admin-md-first" : string.Empty;
+        var andIsFirstAdminItem = (totalMatchTypesSmall > 1 && !enableTrainingSessions && Model.IsFirstAdminButton) ? " nav-item-admin-md-first" : string.Empty;
 
         <li class="nav-item nav-item-admin @onlyWhenMenuIsHidden@andIsFirstAdminItem">
             <a href="@Model.BaseRoute/matches/add/@matchTypes[0].ToString().ToLowerInvariant().Replace("match", string.Empty)" class="nav-link nav-link-add">Add match</a>
@@ -60,7 +62,7 @@
     }
     if (Model.EnableTournaments)
     {
-        <li class="nav-item nav-item-admin d-none @(maxButtons > 2 ? "d-lg-flex" : "d-md-flex")">
+        <li class="nav-item nav-item-admin d-none d-add-tournament-flex">
             <a href="@Model.BaseRoute/matches/add/tournament" class="nav-link nav-link-add">Add tournament</a>
         </li>
     }

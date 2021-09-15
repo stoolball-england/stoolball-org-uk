@@ -1,4 +1,5 @@
 ﻿using Stoolball.Clubs;
+using Stoolball.Matches;
 using Stoolball.Web.Matches;
 using Stoolball.Web.Routing;
 using Umbraco.Core.Models.PublishedContent;
@@ -13,5 +14,7 @@ namespace Stoolball.Web.Clubs
         }
         public Club Club { get; set; }
         public MatchListingViewModel Matches { get; set; }
+        public MatchFilter MatchFilter { get; set; }
+        public string FilterDescription { get; set; }
     }
 }

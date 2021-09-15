@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -30,7 +31,11 @@ namespace Stoolball.Web.Tests.Teams
 
         private class TestController : MatchesForTeamController
         {
-            public TestController(ITeamDataSource teamDataSource, IMatchListingDataSource matchDataSource, ICreateMatchSeasonSelector createMatchSeasonSelector, UmbracoHelper umbracoHelper)
+            public TestController(ITeamDataSource teamDataSource,
+                IMatchListingDataSource matchDataSource,
+                ICreateMatchSeasonSelector createMatchSeasonSelector,
+                IMatchFilterQueryStringParser matchFilterQueryStringParser,
+                UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -43,7 +48,9 @@ namespace Stoolball.Web.Tests.Teams
                 matchDataSource,
                 Mock.Of<IDateTimeFormatter>(),
                 createMatchSeasonSelector,
-                Mock.Of<IAuthorizationPolicy<Team>>())
+                Mock.Of<IAuthorizationPolicy<Team>>(),
+                matchFilterQueryStringParser,
+                Mock.Of<IMatchFilterHumanizer>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -66,12 +73,16 @@ namespace Stoolball.Web.Tests.Teams
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Team>(null));
 
+            var filter = new MatchFilter();
+            var matchFilterQueryStringParser = new Mock<IMatchFilterQueryStringParser>();
+            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<NameValueCollection>())).Returns(filter);
+
             var matchesDataSource = new Mock<IMatchListingDataSource>();
-            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
+            matchesDataSource.Setup(x => x.ReadMatchListings(filter, MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
 
             var seasonSelector = new Mock<ICreateMatchSeasonSelector>();
 
-            using (var controller = new TestController(teamDataSource.Object, matchesDataSource.Object, seasonSelector.Object, UmbracoHelper))
+            using (var controller = new TestController(teamDataSource.Object, matchesDataSource.Object, seasonSelector.Object, matchFilterQueryStringParser.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -85,13 +96,17 @@ namespace Stoolball.Web.Tests.Teams
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team { TeamId = Guid.NewGuid() });
 
+            var filter = new MatchFilter();
+            var matchFilterQueryStringParser = new Mock<IMatchFilterQueryStringParser>();
+            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<NameValueCollection>())).Returns(filter);
+
             var matchesDataSource = new Mock<IMatchListingDataSource>();
-            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
+            matchesDataSource.Setup(x => x.ReadMatchListings(filter, MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
 
             var seasonSelector = new Mock<ICreateMatchSeasonSelector>();
             seasonSelector.Setup(x => x.SelectPossibleSeasons(It.IsAny<IEnumerable<TeamInSeason>>(), It.IsAny<MatchType>())).Returns(new List<Season>());
 
-            using (var controller = new TestController(teamDataSource.Object, matchesDataSource.Object, seasonSelector.Object, UmbracoHelper))
+            using (var controller = new TestController(teamDataSource.Object, matchesDataSource.Object, seasonSelector.Object, matchFilterQueryStringParser.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

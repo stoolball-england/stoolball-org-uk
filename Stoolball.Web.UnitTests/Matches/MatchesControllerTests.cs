@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -21,7 +22,7 @@ namespace Stoolball.Web.Tests.Matches
     {
         private class TestController : MatchesController
         {
-            public TestController(IMatchListingDataSource matchesDataSource, IMatchFilterUrlParser matchFilterUrlParser, IMatchFilterHumanizer matchFilterHumanizer)
+            public TestController(IMatchListingDataSource matchesDataSource, IMatchFilterQueryStringParser matchFilterUrlParser, IMatchFilterHumanizer matchFilterHumanizer)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -54,11 +55,11 @@ namespace Stoolball.Web.Tests.Matches
         public async Task Returns_MatchListingViewModel()
         {
             var dataSource = new Mock<IMatchListingDataSource>();
-            var matchFilterUrlParser = new Mock<IMatchFilterUrlParser>();
-            matchFilterUrlParser.Setup(x => x.ParseUrl(new Uri("https://example.org"))).Returns(new MatchFilter());
+            var matchFilterQueryStringParser = new Mock<IMatchFilterQueryStringParser>();
+            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<NameValueCollection>())).Returns(new MatchFilter());
             var matchFilterHumanizer = new Mock<IMatchFilterHumanizer>();
 
-            using (var controller = new TestController(dataSource.Object, matchFilterUrlParser.Object, matchFilterHumanizer.Object))
+            using (var controller = new TestController(dataSource.Object, matchFilterQueryStringParser.Object, matchFilterHumanizer.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -71,11 +72,11 @@ namespace Stoolball.Web.Tests.Matches
         {
             var dataSource = new Mock<IMatchListingDataSource>();
             var filter = new MatchFilter();
-            var matchFilterUrlParser = new Mock<IMatchFilterUrlParser>();
-            matchFilterUrlParser.Setup(x => x.ParseUrl(new Uri("https://example.org"))).Returns(filter);
+            var matchFilterQueryStringParser = new Mock<IMatchFilterQueryStringParser>();
+            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<NameValueCollection>())).Returns(filter);
             var matchFilterHumanizer = new Mock<IMatchFilterHumanizer>();
 
-            using (var controller = new TestController(dataSource.Object, matchFilterUrlParser.Object, matchFilterHumanizer.Object))
+            using (var controller = new TestController(dataSource.Object, matchFilterQueryStringParser.Object, matchFilterHumanizer.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -88,12 +89,12 @@ namespace Stoolball.Web.Tests.Matches
         {
             var filter = new MatchFilter();
             var dataSource = new Mock<IMatchListingDataSource>();
-            var matchFilterUrlParser = new Mock<IMatchFilterUrlParser>();
-            matchFilterUrlParser.Setup(x => x.ParseUrl(new Uri("https://example.org"))).Returns(filter);
+            var matchFilterQueryStringParser = new Mock<IMatchFilterQueryStringParser>();
+            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<NameValueCollection>())).Returns(filter);
             var matchFilterHumanizer = new Mock<IMatchFilterHumanizer>();
             matchFilterHumanizer.Setup(x => x.MatchesAndTournamentsMatchingFilter(filter)).Returns("humanized filter");
 
-            using (var controller = new TestController(dataSource.Object, matchFilterUrlParser.Object, matchFilterHumanizer.Object))
+            using (var controller = new TestController(dataSource.Object, matchFilterQueryStringParser.Object, matchFilterHumanizer.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

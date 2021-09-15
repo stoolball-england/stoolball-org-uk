@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -31,7 +32,7 @@ namespace Stoolball.Web.Tests.Matches
 
         private class TestController : MatchesCalendarController
         {
-            public TestController(IMatchListingDataSource matchListingDataSource, IMatchFilterUrlParser matchFilterUrlParser, IMatchFilterHumanizer matchFilterHumanizer, UmbracoHelper umbracoHelper)
+            public TestController(IMatchListingDataSource matchListingDataSource, IMatchFilterQueryStringParser matchFilterUrlParser, IMatchFilterHumanizer matchFilterHumanizer, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -78,11 +79,11 @@ namespace Stoolball.Web.Tests.Matches
             var matchDataSource = new Mock<IMatchListingDataSource>();
             matchDataSource.Setup(x => x.ReadMatchListings(filter, MatchSortOrder.LatestUpdateFirst)).ReturnsAsync(new List<MatchListing>());
 
-            var matchFilterUrlParser = new Mock<IMatchFilterUrlParser>();
-            matchFilterUrlParser.Setup(x => x.ParseUrl(new Uri("https://example.org"))).Returns(filter);
+            var matchFilterQueryStringParser = new Mock<IMatchFilterQueryStringParser>();
+            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<NameValueCollection>())).Returns(filter);
             var matchFilterHumanizer = new Mock<IMatchFilterHumanizer>();
 
-            using (var controller = new TestController(matchDataSource.Object, matchFilterUrlParser.Object, matchFilterHumanizer.Object, UmbracoHelper))
+            using (var controller = new TestController(matchDataSource.Object, matchFilterQueryStringParser.Object, matchFilterHumanizer.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

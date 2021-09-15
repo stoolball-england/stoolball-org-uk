@@ -74,5 +74,9 @@
   {
     "outputFile": "css/filter.css",
     "inputFile": "css/filter.scss"
+  },
+  {
+    "outputFile": "Matches/matches.css",
+    "inputFile": "Matches/matches.scss"
   }
 ]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -29,7 +30,7 @@ namespace Stoolball.Web.Tests.MatchLocations
 
         private class TestController : MatchesForMatchLocationController
         {
-            public TestController(IMatchLocationDataSource matchLocationDataSource, IMatchListingDataSource matchDataSource, UmbracoHelper umbracoHelper)
+            public TestController(IMatchLocationDataSource matchLocationDataSource, IMatchListingDataSource matchDataSource, IMatchFilterQueryStringParser matchFilterQueryStringParser, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -41,7 +42,9 @@ namespace Stoolball.Web.Tests.MatchLocations
                 matchLocationDataSource,
                 matchDataSource,
                 Mock.Of<IAuthorizationPolicy<MatchLocation>>(),
-                Mock.Of<IDateTimeFormatter>())
+                Mock.Of<IDateTimeFormatter>(),
+                matchFilterQueryStringParser,
+                Mock.Of<IMatchFilterHumanizer>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -64,10 +67,14 @@ namespace Stoolball.Web.Tests.MatchLocations
             var locationDataSource = new Mock<IMatchLocationDataSource>();
             locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<MatchLocation>(null));
 
-            var matchesDataSource = new Mock<IMatchListingDataSource>();
-            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
+            var filter = new MatchFilter();
+            var matchFilterQueryStringParser = new Mock<IMatchFilterQueryStringParser>();
+            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<NameValueCollection>())).Returns(filter);
 
-            using (var controller = new TestController(locationDataSource.Object, matchesDataSource.Object, UmbracoHelper))
+            var matchesDataSource = new Mock<IMatchListingDataSource>();
+            matchesDataSource.Setup(x => x.ReadMatchListings(filter, MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
+
+            using (var controller = new TestController(locationDataSource.Object, matchesDataSource.Object, matchFilterQueryStringParser.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -81,10 +88,14 @@ namespace Stoolball.Web.Tests.MatchLocations
             var locationDataSource = new Mock<IMatchLocationDataSource>();
             locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).ReturnsAsync(new MatchLocation { MatchLocationId = Guid.NewGuid() });
 
-            var matchesDataSource = new Mock<IMatchListingDataSource>();
-            matchesDataSource.Setup(x => x.ReadMatchListings(It.IsAny<MatchFilter>(), MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
+            var filter = new MatchFilter();
+            var matchFilterQueryStringParser = new Mock<IMatchFilterQueryStringParser>();
+            matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<NameValueCollection>())).Returns(filter);
 
-            using (var controller = new TestController(locationDataSource.Object, matchesDataSource.Object, UmbracoHelper))
+            var matchesDataSource = new Mock<IMatchListingDataSource>();
+            matchesDataSource.Setup(x => x.ReadMatchListings(filter, MatchSortOrder.MatchDateEarliestFirst)).ReturnsAsync(new List<MatchListing>());
+
+            using (var controller = new TestController(locationDataSource.Object, matchesDataSource.Object, matchFilterQueryStringParser.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

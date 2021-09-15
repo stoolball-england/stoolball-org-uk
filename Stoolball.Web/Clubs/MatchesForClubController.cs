@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Stoolball.Clubs;
 using Stoolball.Dates;
@@ -26,6 +27,8 @@ namespace Stoolball.Web.Clubs
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly IMatchFilterFactory _matchFilterFactory;
         private readonly IAuthorizationPolicy<Club> _authorizationPolicy;
+        private readonly IMatchFilterQueryStringParser _matchFilterQueryStringParser;
+        private readonly IMatchFilterHumanizer _matchFilterHumanizer;
 
         public MatchesForClubController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -37,7 +40,9 @@ namespace Stoolball.Web.Clubs
            IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
            IMatchFilterFactory matchFilterFactory,
-           IAuthorizationPolicy<Club> authorizationPolicy)
+           IAuthorizationPolicy<Club> authorizationPolicy,
+           IMatchFilterQueryStringParser matchFilterUrlParser,
+           IMatchFilterHumanizer matchFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
@@ -45,6 +50,8 @@ namespace Stoolball.Web.Clubs
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
             _matchFilterFactory = matchFilterFactory ?? throw new ArgumentNullException(nameof(matchFilterFactory));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
+            _matchFilterQueryStringParser = matchFilterUrlParser ?? throw new ArgumentNullException(nameof(matchFilterUrlParser));
+            _matchFilterHumanizer = matchFilterHumanizer ?? throw new ArgumentNullException(nameof(matchFilterHumanizer));
         }
 
         [HttpGet]
@@ -73,16 +80,19 @@ namespace Stoolball.Web.Clubs
                     }
                 };
 
+                var filter = _matchFilterFactory.MatchesForTeams(club.Teams.Select(team => team.TeamId.Value).ToList());
+                model.MatchFilter = _matchFilterQueryStringParser.ParseQueryString(filter.filter, HttpUtility.ParseQueryString(Request.Url.Query));
+
                 // Only get matches if there are teams, otherwise matches for all teams will be returned
                 if (model.Club.Teams.Count > 0)
                 {
-                    var filter = _matchFilterFactory.MatchesForTeams(club.Teams.Select(team => team.TeamId.Value).ToList());
-                    model.Matches.Matches = await _matchDataSource.ReadMatchListings(filter.filter, filter.sortOrder).ConfigureAwait(false);
+                    model.Matches.Matches = await _matchDataSource.ReadMatchListings(model.MatchFilter, filter.sortOrder).ConfigureAwait(false);
                 }
 
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Club);
 
-                model.Metadata.PageTitle = $"Matches for {model.Club.ClubName}";
+                model.FilterDescription = _matchFilterHumanizer.MatchesAndTournamentsMatchingFilter(model.MatchFilter);
+                model.Metadata.PageTitle = $"{model.FilterDescription} for {model.Club.ClubName}";
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
 

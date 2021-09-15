@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
@@ -18,7 +19,7 @@ namespace Stoolball.Web.Matches
     {
         private readonly IMatchListingDataSource _matchesDataSource;
         private readonly IDateTimeFormatter _dateTimeFormatter;
-        private readonly IMatchFilterUrlParser _matchFilterUrlParser;
+        private readonly IMatchFilterQueryStringParser _matchFilterQueryStringParser;
         private readonly IMatchFilterHumanizer _matchFilterHumanizer;
 
         public MatchesController(IGlobalSettings globalSettings,
@@ -29,13 +30,13 @@ namespace Stoolball.Web.Matches
            UmbracoHelper umbracoHelper,
            IMatchListingDataSource matchesDataSource,
            IDateTimeFormatter dateTimeFormatter,
-           IMatchFilterUrlParser matchFilterUrlParser,
+           IMatchFilterQueryStringParser matchFilterQueryStringParser,
            IMatchFilterHumanizer matchFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchesDataSource = matchesDataSource ?? throw new ArgumentNullException(nameof(matchesDataSource));
             _dateTimeFormatter = dateTimeFormatter ?? throw new ArgumentNullException(nameof(dateTimeFormatter));
-            _matchFilterUrlParser = matchFilterUrlParser ?? throw new ArgumentNullException(nameof(matchFilterUrlParser));
+            _matchFilterQueryStringParser = matchFilterQueryStringParser ?? throw new ArgumentNullException(nameof(matchFilterQueryStringParser));
             _matchFilterHumanizer = matchFilterHumanizer ?? throw new ArgumentNullException(nameof(matchFilterHumanizer));
         }
 
@@ -50,7 +51,7 @@ namespace Stoolball.Web.Matches
 
             var model = new MatchListingViewModel(contentModel.Content, Services?.UserService)
             {
-                MatchFilter = _matchFilterUrlParser.ParseUrl(Request.Url),
+                MatchFilter = _matchFilterQueryStringParser.ParseQueryString(new MatchFilter(), HttpUtility.ParseQueryString(Request.Url.Query)),
                 DateTimeFormatter = _dateTimeFormatter
             };
 

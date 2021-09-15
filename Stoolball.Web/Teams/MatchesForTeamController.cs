@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
@@ -28,6 +29,8 @@ namespace Stoolball.Web.Teams
         private readonly IDateTimeFormatter _dateFormatter;
         private readonly ICreateMatchSeasonSelector _createMatchSeasonSelector;
         private readonly IAuthorizationPolicy<Team> _authorizationPolicy;
+        private readonly IMatchFilterQueryStringParser _matchFilterQueryStringParser;
+        private readonly IMatchFilterHumanizer _matchFilterHumanizer;
 
         public MatchesForTeamController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -40,7 +43,9 @@ namespace Stoolball.Web.Teams
            IMatchListingDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
            ICreateMatchSeasonSelector createMatchSeasonSelector,
-           IAuthorizationPolicy<Team> authorizationPolicy)
+           IAuthorizationPolicy<Team> authorizationPolicy,
+           IMatchFilterQueryStringParser matchFilterQueryStringParser,
+           IMatchFilterHumanizer matchFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource ?? throw new ArgumentNullException(nameof(teamDataSource));
@@ -49,6 +54,8 @@ namespace Stoolball.Web.Teams
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
             _createMatchSeasonSelector = createMatchSeasonSelector ?? throw new ArgumentNullException(nameof(createMatchSeasonSelector));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
+            _matchFilterQueryStringParser = matchFilterQueryStringParser ?? throw new ArgumentNullException(nameof(matchFilterQueryStringParser));
+            _matchFilterHumanizer = matchFilterHumanizer ?? throw new ArgumentNullException(nameof(matchFilterHumanizer));
         }
 
         [HttpGet]
@@ -68,22 +75,24 @@ namespace Stoolball.Web.Teams
             }
             else
             {
-                var filter = _matchFilterFactory.MatchesForTeams(new List<Guid> { team.TeamId.Value });
                 var model = new TeamViewModel(contentModel.Content, Services?.UserService)
                 {
                     Team = team,
                     Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
                     {
-                        Matches = await _matchDataSource.ReadMatchListings(filter.filter, filter.sortOrder).ConfigureAwait(false),
                         DateTimeFormatter = _dateFormatter
                     },
                 };
+                var filter = _matchFilterFactory.MatchesForTeams(new List<Guid> { team.TeamId.Value });
+                model.MatchFilter = _matchFilterQueryStringParser.ParseQueryString(filter.filter, HttpUtility.ParseQueryString(Request.Url.Query));
+                model.Matches.Matches = await _matchDataSource.ReadMatchListings(model.MatchFilter, filter.sortOrder).ConfigureAwait(false);
 
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team);
                 model.IsInACurrentLeague = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, MatchType.LeagueMatch).Any();
                 model.IsInACurrentKnockoutCompetition = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, MatchType.KnockoutMatch).Any();
 
-                model.Metadata.PageTitle = $"Matches for {model.Team.TeamName} stoolball team";
+                model.FilterDescription = _matchFilterHumanizer.MatchesAndTournamentsMatchingFilter(model.MatchFilter);
+                model.Metadata.PageTitle = $"{model.FilterDescription} for {model.Team.TeamName} stoolball team";
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
                 if (model.Team.Club != null)

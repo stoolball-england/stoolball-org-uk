@@ -72,25 +72,38 @@ namespace ASP
 
     if (enableTrainingSessions)
     {
+        var andIsFirstAdminItem = Model.IsFirstAdminButton ? " nav-item-admin-md-first" : string.Empty;
 
             
             #line default
             #line hidden
 WriteLiteral("        <li");
 
-WriteLiteral(" class=\"nav-item nav-item-admin d-none d-md-flex nav-item-admin-md-first\"");
-
-WriteLiteral(">\r\n            <a");
-
-WriteAttribute("href", Tuple.Create(" href=\"", 797), Tuple.Create("\"", 841)
+WriteAttribute("class", Tuple.Create(" class=\"", 812), Tuple.Create("\"", 882)
+, Tuple.Create(Tuple.Create("", 820), Tuple.Create("nav-item", 820), true)
+, Tuple.Create(Tuple.Create(" ", 828), Tuple.Create("nav-item-admin", 829), true)
+, Tuple.Create(Tuple.Create(" ", 843), Tuple.Create("d-none", 844), true)
+, Tuple.Create(Tuple.Create(" ", 850), Tuple.Create("d-lg-flex", 851), true)
             
             #line 15 "..\..\Views\Partials\_AddMatchMenu.cshtml"
-, Tuple.Create(Tuple.Create("", 804), Tuple.Create<System.Object, System.Int32>(Model.BaseRoute
+, Tuple.Create(Tuple.Create("", 860), Tuple.Create<System.Object, System.Int32>(andIsFirstAdminItem
             
             #line default
             #line hidden
-, 804), false)
-, Tuple.Create(Tuple.Create("", 820), Tuple.Create("/matches/add/training", 820), true)
+, 860), false)
+);
+
+WriteLiteral(">\r\n            <a");
+
+WriteAttribute("href", Tuple.Create(" href=\"", 900), Tuple.Create("\"", 944)
+            
+            #line 16 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+, Tuple.Create(Tuple.Create("", 907), Tuple.Create<System.Object, System.Int32>(Model.BaseRoute
+            
+            #line default
+            #line hidden
+, 907), false)
+, Tuple.Create(Tuple.Create("", 923), Tuple.Create("/matches/add/training", 923), true)
 );
 
 WriteLiteral(" class=\"nav-link nav-link-add\"");
@@ -98,10 +111,11 @@ WriteLiteral(" class=\"nav-link nav-link-add\"");
 WriteLiteral(">Add training session</a>\r\n        </li>\r\n");
 
             
-            #line 17 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+            #line 18 "..\..\Views\Partials\_AddMatchMenu.cshtml"
     }
     if (totalMatchTypesSmall > 1 || maxButtons == 3)
     {
+        var andIsFirstAdminItem = (Model.IsFirstAdminButton) ? " nav-item-admin-md-first" : string.Empty;
         var onlyWhenCombiningButtons = (totalMatchTypesLarge == 1) ? (maxButtons > 2) ? "d-lg-none" : "d-md-none" : string.Empty;
         var onlyWhenLast = (maxButtons > 2) ? "nav-item-admin-md-last" : "nav-item-admin-sm-last";
 
@@ -110,23 +124,30 @@ WriteLiteral(">Add training session</a>\r\n        </li>\r\n");
             #line hidden
 WriteLiteral("        <li");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 1224), Tuple.Create("\"", 1295)
-, Tuple.Create(Tuple.Create("", 1232), Tuple.Create("nav-item", 1232), true)
-, Tuple.Create(Tuple.Create(" ", 1240), Tuple.Create("nav-item-admin", 1241), true)
+WriteAttribute("class", Tuple.Create(" class=\"", 1434), Tuple.Create("\"", 1525)
+, Tuple.Create(Tuple.Create("", 1442), Tuple.Create("nav-item", 1442), true)
+, Tuple.Create(Tuple.Create(" ", 1450), Tuple.Create("nav-item-admin", 1451), true)
             
-            #line 22 "..\..\Views\Partials\_AddMatchMenu.cshtml"
-, Tuple.Create(Tuple.Create(" ", 1255), Tuple.Create<System.Object, System.Int32>(onlyWhenLast
-            
-            #line default
-            #line hidden
-, 1256), false)
-            
-            #line 22 "..\..\Views\Partials\_AddMatchMenu.cshtml"
-, Tuple.Create(Tuple.Create(" ", 1269), Tuple.Create<System.Object, System.Int32>(onlyWhenCombiningButtons
+            #line 24 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+, Tuple.Create(Tuple.Create(" ", 1465), Tuple.Create<System.Object, System.Int32>(onlyWhenLast
             
             #line default
             #line hidden
-, 1270), false)
+, 1466), false)
+            
+            #line 24 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+, Tuple.Create(Tuple.Create(" ", 1479), Tuple.Create<System.Object, System.Int32>(onlyWhenCombiningButtons
+            
+            #line default
+            #line hidden
+, 1480), false)
+            
+            #line 24 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+  , Tuple.Create(Tuple.Create("", 1505), Tuple.Create<System.Object, System.Int32>(andIsFirstAdminItem
+            
+            #line default
+            #line hidden
+, 1505), false)
 );
 
 WriteLiteral(">\r\n            <div");
@@ -156,13 +177,13 @@ WriteLiteral(" aria-labelledby=\"add-match-menu__button\"");
 WriteLiteral(">\r\n");
 
             
-            #line 28 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+            #line 30 "..\..\Views\Partials\_AddMatchMenu.cshtml"
                     
             
             #line default
             #line hidden
             
-            #line 28 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+            #line 30 "..\..\Views\Partials\_AddMatchMenu.cshtml"
                      if (enableTrainingSessions)
                     {
 
@@ -171,25 +192,25 @@ WriteLiteral(">\r\n");
             #line hidden
 WriteLiteral("                        <li");
 
-WriteLiteral(" class=\"dropdown-item d-md-none\"");
+WriteLiteral(" class=\"dropdown-item d-lg-none\"");
 
 WriteLiteral(">\r\n                            <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1831), Tuple.Create("\"", 1875)
+WriteAttribute("href", Tuple.Create(" href=\"", 2061), Tuple.Create("\"", 2105)
             
-            #line 31 "..\..\Views\Partials\_AddMatchMenu.cshtml"
-, Tuple.Create(Tuple.Create("", 1838), Tuple.Create<System.Object, System.Int32>(Model.BaseRoute
+            #line 33 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+, Tuple.Create(Tuple.Create("", 2068), Tuple.Create<System.Object, System.Int32>(Model.BaseRoute
             
             #line default
             #line hidden
-, 1838), false)
-, Tuple.Create(Tuple.Create("", 1854), Tuple.Create("/matches/add/training", 1854), true)
+, 2068), false)
+, Tuple.Create(Tuple.Create("", 2084), Tuple.Create("/matches/add/training", 2084), true)
 );
 
 WriteLiteral(">Add training session</a>\r\n                        </li>\r\n");
 
             
-            #line 33 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+            #line 35 "..\..\Views\Partials\_AddMatchMenu.cshtml"
                     }
 
             
@@ -198,7 +219,7 @@ WriteLiteral(">Add training session</a>\r\n                        </li>\r\n");
 WriteLiteral("                    ");
 
             
-            #line 34 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+            #line 36 "..\..\Views\Partials\_AddMatchMenu.cshtml"
                      for (var i = 0; i < totalMatchTypesLarge; i++)
                     {
                         var lastChildClass = (i == totalMatchTypesLarge - 1 && Model.EnableTournaments) ? "last-child-md" : string.Empty;
@@ -208,41 +229,41 @@ WriteLiteral("                    ");
             #line hidden
 WriteLiteral("                        <li");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 2215), Tuple.Create("\"", 2252)
-, Tuple.Create(Tuple.Create("", 2223), Tuple.Create("dropdown-item", 2223), true)
+WriteAttribute("class", Tuple.Create(" class=\"", 2445), Tuple.Create("\"", 2482)
+, Tuple.Create(Tuple.Create("", 2453), Tuple.Create("dropdown-item", 2453), true)
             
-            #line 37 "..\..\Views\Partials\_AddMatchMenu.cshtml"
-, Tuple.Create(Tuple.Create(" ", 2236), Tuple.Create<System.Object, System.Int32>(lastChildClass
+            #line 39 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+, Tuple.Create(Tuple.Create(" ", 2466), Tuple.Create<System.Object, System.Int32>(lastChildClass
             
             #line default
             #line hidden
-, 2237), false)
+, 2467), false)
 );
 
 WriteLiteral(">\r\n                            <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2286), Tuple.Create("\"", 2397)
+WriteAttribute("href", Tuple.Create(" href=\"", 2516), Tuple.Create("\"", 2627)
             
-            #line 38 "..\..\Views\Partials\_AddMatchMenu.cshtml"
-, Tuple.Create(Tuple.Create("", 2293), Tuple.Create<System.Object, System.Int32>(Model.BaseRoute
-            
-            #line default
-            #line hidden
-, 2293), false)
-, Tuple.Create(Tuple.Create("", 2309), Tuple.Create("/matches/add/", 2309), true)
-            
-            #line 38 "..\..\Views\Partials\_AddMatchMenu.cshtml"
-, Tuple.Create(Tuple.Create("", 2322), Tuple.Create<System.Object, System.Int32>(matchTypes[i].ToString().ToLowerInvariant().Replace("match", string.Empty)
+            #line 40 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+, Tuple.Create(Tuple.Create("", 2523), Tuple.Create<System.Object, System.Int32>(Model.BaseRoute
             
             #line default
             #line hidden
-, 2322), false)
+, 2523), false)
+, Tuple.Create(Tuple.Create("", 2539), Tuple.Create("/matches/add/", 2539), true)
+            
+            #line 40 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+, Tuple.Create(Tuple.Create("", 2552), Tuple.Create<System.Object, System.Int32>(matchTypes[i].ToString().ToLowerInvariant().Replace("match", string.Empty)
+            
+            #line default
+            #line hidden
+, 2552), false)
 );
 
 WriteLiteral(">Add ");
 
             
-            #line 38 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+            #line 40 "..\..\Views\Partials\_AddMatchMenu.cshtml"
                                                                                                                                               Write(matchTypes[i].Humanize(LetterCasing.LowerCase));
 
             
@@ -251,7 +272,7 @@ WriteLiteral(">Add ");
 WriteLiteral("</a>\r\n                        </li>\r\n");
 
             
-            #line 40 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+            #line 42 "..\..\Views\Partials\_AddMatchMenu.cshtml"
                     }
 
             
@@ -260,7 +281,7 @@ WriteLiteral("</a>\r\n                        </li>\r\n");
 WriteLiteral("                    ");
 
             
-            #line 41 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+            #line 43 "..\..\Views\Partials\_AddMatchMenu.cshtml"
                      if (Model.EnableTournaments)
                     {
                         var combineTournamentsBelow = (maxButtons > 2) ? "d-lg-none" : "d-md-none";
@@ -270,34 +291,25 @@ WriteLiteral("                    ");
             #line hidden
 WriteLiteral("                        <li");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 2712), Tuple.Create("\"", 2758)
-, Tuple.Create(Tuple.Create("", 2720), Tuple.Create("dropdown-item", 2720), true)
-            
-            #line 44 "..\..\Views\Partials\_AddMatchMenu.cshtml"
-, Tuple.Create(Tuple.Create(" ", 2733), Tuple.Create<System.Object, System.Int32>(combineTournamentsBelow
-            
-            #line default
-            #line hidden
-, 2734), false)
-);
+WriteLiteral(" class=\"dropdown-item d-add-tournament-none\"");
 
 WriteLiteral(">\r\n                            <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2792), Tuple.Create("\"", 2838)
+WriteAttribute("href", Tuple.Create(" href=\"", 3019), Tuple.Create("\"", 3065)
             
-            #line 45 "..\..\Views\Partials\_AddMatchMenu.cshtml"
-, Tuple.Create(Tuple.Create("", 2799), Tuple.Create<System.Object, System.Int32>(Model.BaseRoute
+            #line 47 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+, Tuple.Create(Tuple.Create("", 3026), Tuple.Create<System.Object, System.Int32>(Model.BaseRoute
             
             #line default
             #line hidden
-, 2799), false)
-, Tuple.Create(Tuple.Create("", 2815), Tuple.Create("/matches/add/tournament", 2815), true)
+, 3026), false)
+, Tuple.Create(Tuple.Create("", 3042), Tuple.Create("/matches/add/tournament", 3042), true)
 );
 
 WriteLiteral(">Add tournament</a>\r\n                        </li>\r\n");
 
             
-            #line 47 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+            #line 49 "..\..\Views\Partials\_AddMatchMenu.cshtml"
                     }
 
             
@@ -306,12 +318,12 @@ WriteLiteral(">Add tournament</a>\r\n                        </li>\r\n");
 WriteLiteral("                </ul>\r\n            </div>\r\n        </li>\r\n");
 
             
-            #line 51 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+            #line 53 "..\..\Views\Partials\_AddMatchMenu.cshtml"
     }
     if (totalMatchTypesLarge == 1)
     {
         var onlyWhenMenuIsHidden = (totalMatchTypesSmall > 1) ? (totalMatchTypesSmall > 2 ? "d-none d-lg-flex" : "d-none d-md-flex") : string.Empty;
-        var andIsFirstAdminItem = (totalMatchTypesSmall > 1 && !enableTrainingSessions) ? " nav-item-admin-md-first" : string.Empty;
+        var andIsFirstAdminItem = (totalMatchTypesSmall > 1 && !enableTrainingSessions && Model.IsFirstAdminButton) ? " nav-item-admin-md-first" : string.Empty;
 
 
             
@@ -319,43 +331,43 @@ WriteLiteral("                </ul>\r\n            </div>\r\n        </li>\r\n")
             #line hidden
 WriteLiteral("        <li");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 3319), Tuple.Create("\"", 3392)
-, Tuple.Create(Tuple.Create("", 3327), Tuple.Create("nav-item", 3327), true)
-, Tuple.Create(Tuple.Create(" ", 3335), Tuple.Create("nav-item-admin", 3336), true)
+WriteAttribute("class", Tuple.Create(" class=\"", 3574), Tuple.Create("\"", 3647)
+, Tuple.Create(Tuple.Create("", 3582), Tuple.Create("nav-item", 3582), true)
+, Tuple.Create(Tuple.Create(" ", 3590), Tuple.Create("nav-item-admin", 3591), true)
             
-            #line 57 "..\..\Views\Partials\_AddMatchMenu.cshtml"
-, Tuple.Create(Tuple.Create(" ", 3350), Tuple.Create<System.Object, System.Int32>(onlyWhenMenuIsHidden
-            
-            #line default
-            #line hidden
-, 3351), false)
-            
-            #line 57 "..\..\Views\Partials\_AddMatchMenu.cshtml"
-, Tuple.Create(Tuple.Create("", 3372), Tuple.Create<System.Object, System.Int32>(andIsFirstAdminItem
+            #line 59 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+, Tuple.Create(Tuple.Create(" ", 3605), Tuple.Create<System.Object, System.Int32>(onlyWhenMenuIsHidden
             
             #line default
             #line hidden
-, 3372), false)
+, 3606), false)
+            
+            #line 59 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+, Tuple.Create(Tuple.Create("", 3627), Tuple.Create<System.Object, System.Int32>(andIsFirstAdminItem
+            
+            #line default
+            #line hidden
+, 3627), false)
 );
 
 WriteLiteral(">\r\n            <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3410), Tuple.Create("\"", 3521)
+WriteAttribute("href", Tuple.Create(" href=\"", 3665), Tuple.Create("\"", 3776)
             
-            #line 58 "..\..\Views\Partials\_AddMatchMenu.cshtml"
-, Tuple.Create(Tuple.Create("", 3417), Tuple.Create<System.Object, System.Int32>(Model.BaseRoute
-            
-            #line default
-            #line hidden
-, 3417), false)
-, Tuple.Create(Tuple.Create("", 3433), Tuple.Create("/matches/add/", 3433), true)
-            
-            #line 58 "..\..\Views\Partials\_AddMatchMenu.cshtml"
-, Tuple.Create(Tuple.Create("", 3446), Tuple.Create<System.Object, System.Int32>(matchTypes[0].ToString().ToLowerInvariant().Replace("match", string.Empty)
+            #line 60 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+, Tuple.Create(Tuple.Create("", 3672), Tuple.Create<System.Object, System.Int32>(Model.BaseRoute
             
             #line default
             #line hidden
-, 3446), false)
+, 3672), false)
+, Tuple.Create(Tuple.Create("", 3688), Tuple.Create("/matches/add/", 3688), true)
+            
+            #line 60 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+, Tuple.Create(Tuple.Create("", 3701), Tuple.Create<System.Object, System.Int32>(matchTypes[0].ToString().ToLowerInvariant().Replace("match", string.Empty)
+            
+            #line default
+            #line hidden
+, 3701), false)
 );
 
 WriteLiteral(" class=\"nav-link nav-link-add\"");
@@ -363,7 +375,7 @@ WriteLiteral(" class=\"nav-link nav-link-add\"");
 WriteLiteral(">Add match</a>\r\n        </li>\r\n");
 
             
-            #line 60 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+            #line 62 "..\..\Views\Partials\_AddMatchMenu.cshtml"
     }
     if (Model.EnableTournaments)
     {
@@ -373,30 +385,19 @@ WriteLiteral(">Add match</a>\r\n        </li>\r\n");
             #line hidden
 WriteLiteral("        <li");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 3642), Tuple.Create("\"", 3726)
-, Tuple.Create(Tuple.Create("", 3650), Tuple.Create("nav-item", 3650), true)
-, Tuple.Create(Tuple.Create(" ", 3658), Tuple.Create("nav-item-admin", 3659), true)
-, Tuple.Create(Tuple.Create(" ", 3673), Tuple.Create("d-none", 3674), true)
-            
-            #line 63 "..\..\Views\Partials\_AddMatchMenu.cshtml"
-, Tuple.Create(Tuple.Create(" ", 3680), Tuple.Create<System.Object, System.Int32>(maxButtons > 2 ? "d-lg-flex" : "d-md-flex"
-            
-            #line default
-            #line hidden
-, 3681), false)
-);
+WriteLiteral(" class=\"nav-item nav-item-admin d-none d-add-tournament-flex\"");
 
 WriteLiteral(">\r\n            <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3744), Tuple.Create("\"", 3790)
+WriteAttribute("href", Tuple.Create(" href=\"", 3975), Tuple.Create("\"", 4021)
             
-            #line 64 "..\..\Views\Partials\_AddMatchMenu.cshtml"
-, Tuple.Create(Tuple.Create("", 3751), Tuple.Create<System.Object, System.Int32>(Model.BaseRoute
+            #line 66 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+, Tuple.Create(Tuple.Create("", 3982), Tuple.Create<System.Object, System.Int32>(Model.BaseRoute
             
             #line default
             #line hidden
-, 3751), false)
-, Tuple.Create(Tuple.Create("", 3767), Tuple.Create("/matches/add/tournament", 3767), true)
+, 3982), false)
+, Tuple.Create(Tuple.Create("", 3998), Tuple.Create("/matches/add/tournament", 3998), true)
 );
 
 WriteLiteral(" class=\"nav-link nav-link-add\"");
@@ -404,7 +405,7 @@ WriteLiteral(" class=\"nav-link nav-link-add\"");
 WriteLiteral(">Add tournament</a>\r\n        </li>\r\n");
 
             
-            #line 66 "..\..\Views\Partials\_AddMatchMenu.cshtml"
+            #line 68 "..\..\Views\Partials\_AddMatchMenu.cshtml"
     }
 
             

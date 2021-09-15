@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Humanizer;
 using Stoolball.Clubs;
@@ -32,7 +33,7 @@ namespace Stoolball.Web.Matches
         private readonly ITournamentDataSource _tournamentDataSource;
         private readonly IMatchDataSource _matchDataSource;
         private readonly IDateTimeFormatter _dateFormatter;
-        private readonly IMatchFilterUrlParser _matchFilterUrlParser;
+        private readonly IMatchFilterQueryStringParser _matchFilterQueryStringParser;
         private readonly IMatchFilterHumanizer _matchFilterHumanizer;
 
         public MatchesCalendarController(IGlobalSettings globalSettings,
@@ -49,7 +50,7 @@ namespace Stoolball.Web.Matches
            ITournamentDataSource tournamentDataSource,
            IMatchDataSource matchDataSource,
            IDateTimeFormatter dateFormatter,
-           IMatchFilterUrlParser matchFilterUrlParser,
+           IMatchFilterQueryStringParser matchFilterQueryStringParser,
            IMatchFilterHumanizer matchFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
@@ -61,7 +62,7 @@ namespace Stoolball.Web.Matches
             _tournamentDataSource = tournamentDataSource ?? throw new ArgumentNullException(nameof(tournamentDataSource));
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
-            _matchFilterUrlParser = matchFilterUrlParser ?? throw new ArgumentNullException(nameof(matchFilterUrlParser));
+            _matchFilterQueryStringParser = matchFilterQueryStringParser ?? throw new ArgumentNullException(nameof(matchFilterQueryStringParser));
             _matchFilterHumanizer = matchFilterHumanizer ?? throw new ArgumentNullException(nameof(matchFilterHumanizer));
         }
 
@@ -76,7 +77,7 @@ namespace Stoolball.Web.Matches
 
             var model = new MatchListingViewModel(contentModel.Content, Services?.UserService)
             {
-                MatchFilter = _matchFilterUrlParser.ParseUrl(Request.Url),
+                MatchFilter = _matchFilterQueryStringParser.ParseQueryString(new MatchFilter(), HttpUtility.ParseQueryString(Request.Url.Query)),
                 DateTimeFormatter = _dateFormatter
             };
 

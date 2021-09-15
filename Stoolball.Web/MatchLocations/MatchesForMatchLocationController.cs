@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Stoolball.Dates;
 using Stoolball.Matches;
@@ -25,6 +26,8 @@ namespace Stoolball.Web.MatchLocations
         private readonly IMatchListingDataSource _matchDataSource;
         private readonly IAuthorizationPolicy<MatchLocation> _authorizationPolicy;
         private readonly IDateTimeFormatter _dateFormatter;
+        private readonly IMatchFilterQueryStringParser _matchFilterQueryStringParser;
+        private readonly IMatchFilterHumanizer _matchFilterHumanizer;
 
         public MatchesForMatchLocationController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -36,7 +39,9 @@ namespace Stoolball.Web.MatchLocations
            IMatchLocationDataSource matchLocationDataSource,
            IMatchListingDataSource matchDataSource,
            IAuthorizationPolicy<MatchLocation> authorizationPolicy,
-           IDateTimeFormatter dateFormatter)
+           IDateTimeFormatter dateFormatter,
+           IMatchFilterQueryStringParser matchFilterQueryStringParser,
+           IMatchFilterHumanizer matchFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchFilterFactory = matchFilterFactory ?? throw new ArgumentNullException(nameof(matchFilterFactory));
@@ -44,6 +49,8 @@ namespace Stoolball.Web.MatchLocations
             _matchDataSource = matchDataSource ?? throw new ArgumentNullException(nameof(matchDataSource));
             _authorizationPolicy = authorizationPolicy ?? throw new ArgumentNullException(nameof(authorizationPolicy));
             _dateFormatter = dateFormatter ?? throw new ArgumentNullException(nameof(dateFormatter));
+            _matchFilterQueryStringParser = matchFilterQueryStringParser ?? throw new ArgumentNullException(nameof(matchFilterQueryStringParser));
+            _matchFilterHumanizer = matchFilterHumanizer ?? throw new ArgumentNullException(nameof(matchFilterHumanizer));
         }
 
         [HttpGet]
@@ -63,20 +70,23 @@ namespace Stoolball.Web.MatchLocations
             }
             else
             {
-                var filter = _matchFilterFactory.MatchesForMatchLocation(location.MatchLocationId.Value);
                 var model = new MatchLocationViewModel(contentModel.Content, Services?.UserService)
                 {
                     MatchLocation = location,
                     Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
                     {
-                        Matches = await _matchDataSource.ReadMatchListings(filter.filter, filter.sortOrder).ConfigureAwait(false),
                         DateTimeFormatter = _dateFormatter
                     },
                 };
 
+                var filter = _matchFilterFactory.MatchesForMatchLocation(location.MatchLocationId.Value);
+                model.MatchFilter = _matchFilterQueryStringParser.ParseQueryString(filter.filter, HttpUtility.ParseQueryString(Request.Url.Query));
+                model.Matches.Matches = await _matchDataSource.ReadMatchListings(model.MatchFilter, filter.sortOrder).ConfigureAwait(false);
+
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation);
 
-                model.Metadata.PageTitle = $"Matches for {model.MatchLocation.NameAndLocalityOrTownIfDifferent()}";
+                model.FilterDescription = _matchFilterHumanizer.MatchesAndTournamentsMatchingFilter(model.MatchFilter);
+                model.Metadata.PageTitle = $"{model.FilterDescription} at {model.MatchLocation.NameAndLocalityOrTownIfDifferent()}";
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.MatchLocations, Url = new Uri(Constants.Pages.MatchLocationsUrl, UriKind.Relative) });
 
