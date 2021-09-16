@@ -208,6 +208,20 @@ WriteLiteral(" href=\"https://example.org\"");
 WriteLiteral(">Edit a thing</a>\r\n        </li>\r\n    </ul>\r\n    <p>Text below tabs.</p>\r\n    <ul" +
 "");
 
+WriteLiteral(" class=\"nav nav-tabs\"");
+
+WriteLiteral(">\r\n        <li");
+
+WriteLiteral(" class=\"nav-item nav-item-admin\"");
+
+WriteLiteral(">\r\n            <a");
+
+WriteLiteral(" class=\"nav-link nav-link-edit\"");
+
+WriteLiteral(" href=\"https://example.org\"");
+
+WriteLiteral(">Admin only</a>\r\n        </li>\r\n    </ul>\r\n    <ul");
+
 WriteLiteral(" class=\"nav nav-tabs nav-tabs-has-add nav-tabs-has-edit\"");
 
 WriteLiteral(">\r\n        <li");
@@ -230,7 +244,7 @@ WriteLiteral(" class=\"nav-link nav-link-filter\"");
 
 WriteLiteral(">Edit filter</button>\r\n        </li>\r\n        <li");
 
-WriteLiteral(" class=\"nav-item nav-item-admin d-none d-md-flex\"");
+WriteLiteral(" class=\"nav-item nav-item-admin\"");
 
 WriteLiteral(">\r\n            <a");
 
@@ -243,7 +257,7 @@ WriteLiteral(">Add a thing</a>\r\n        </li>\r\n    </ul>\r\n");
 WriteLiteral("    ");
 
             
-            #line 54 "..\..\Views\StyleGuide.cshtml"
+            #line 59 "..\..\Views\StyleGuide.cshtml"
 Write(Html.Partial("_MatchFilter", new MatchFilterViewModel
     {
         FilterDescription = "a description of the applied filter"
@@ -257,7 +271,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 58 "..\..\Views\StyleGuide.cshtml"
+            #line 63 "..\..\Views\StyleGuide.cshtml"
 Write(Html.GetBlockListHtml(Model, "blockList"));
 
             
@@ -324,7 +338,7 @@ WriteLiteral(" href=\"https://example.org\"");
 WriteLiteral(">Definition list title</a> ");
 
             
-            #line 104 "..\..\Views\StyleGuide.cshtml"
+            #line 109 "..\..\Views\StyleGuide.cshtml"
                                                                Write(Html.Partial("_AdminOnly"));
 
             
@@ -386,7 +400,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("        ");
 
             
-            #line 128 "..\..\Views\StyleGuide.cshtml"
+            #line 133 "..\..\Views\StyleGuide.cshtml"
    Write(Html.GetBlockListHtml(Model, "productBlockList", "BlockList"));
 
             
@@ -397,7 +411,7 @@ WriteLiteral("\r\n    </ul>\r\n");
 WriteLiteral("    ");
 
             
-            #line 130 "..\..\Views\StyleGuide.cshtml"
+            #line 135 "..\..\Views\StyleGuide.cshtml"
 Write(Html.GetBlockListHtml(Model, "cookiesBlockList"));
 
             

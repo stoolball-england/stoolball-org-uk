@@ -127,7 +127,7 @@ WriteLiteral(">\r\n    <h1>Statistics for all teams</h1>\r\n\r\n");
             #line hidden
 WriteLiteral("        <ul");
 
-WriteLiteral(" class=\"nav nav-tabs nav-tabs-admin-only\"");
+WriteLiteral(" class=\"nav nav-tabs\"");
 
 WriteLiteral(">\r\n            <li");
 
@@ -137,15 +137,15 @@ WriteLiteral(">\r\n                <a");
 
 WriteLiteral(" class=\"nav-link nav-link-edit\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1774), Tuple.Create("\"", 1826)
+WriteAttribute("href", Tuple.Create(" href=\"", 1754), Tuple.Create("\"", 1806)
             
             #line 30 "..\..\Views\Statistics.cshtml"
-, Tuple.Create(Tuple.Create("", 1781), Tuple.Create<System.Object, System.Int32>(Stoolball.Constants.Pages.StatisticsUrl
+, Tuple.Create(Tuple.Create("", 1761), Tuple.Create<System.Object, System.Int32>(Stoolball.Constants.Pages.StatisticsUrl
             
             #line default
             #line hidden
-, 1781), false)
-, Tuple.Create(Tuple.Create("", 1821), Tuple.Create("/edit", 1821), true)
+, 1761), false)
+, Tuple.Create(Tuple.Create("", 1801), Tuple.Create("/edit", 1801), true)
 );
 
 WriteLiteral(">Edit statistics</a>\r\n            </li>\r\n        </ul>\r\n");
