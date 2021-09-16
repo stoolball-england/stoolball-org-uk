@@ -77,17 +77,22 @@ namespace Stoolball.Web.Matches
 
             var model = new MatchListingViewModel(contentModel.Content, Services?.UserService)
             {
-                AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(new MatchFilter(), HttpUtility.ParseQueryString(Request.Url.Query)),
+                DefaultMatchFilter = new MatchFilter
+                {
+                    FromDate = DateTimeOffset.UtcNow.Date,
+                    IncludeMatches = true,
+                    IncludeTournaments = true,
+                    IncludeTournamentMatches = false
+                },
                 DateTimeFormatter = _dateFormatter
             };
+            model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, HttpUtility.ParseQueryString(Request.Url.Query));
 
-            if (Request.QueryString["from"] == null)
+            // Don't allow matches in the past - this is a calendar for planning future events
+            if (model.AppliedMatchFilter.FromDate < model.DefaultMatchFilter.FromDate)
             {
-                model.AppliedMatchFilter.FromDate = DateTimeOffset.UtcNow.Date;
+                model.AppliedMatchFilter.FromDate = model.DefaultMatchFilter.FromDate;
             }
-            model.AppliedMatchFilter.IncludeMatches = true;
-            model.AppliedMatchFilter.IncludeTournaments = true;
-            model.AppliedMatchFilter.IncludeTournamentMatches = false;
 
             var pageTitle = "Stoolball matches and tournaments";
             var legacyTournamentsCalendarUrl = Regex.Match(Request.RawUrl, "/tournaments/(all|mixed|ladies|junior)/calendar.ics", RegexOptions.IgnoreCase);
@@ -168,11 +173,12 @@ namespace Stoolball.Web.Matches
                 model.AppliedMatchFilter.MatchLocationIds.Add(location.MatchLocationId.Value);
             }
 
-
-            // Remove date from filter and describe the remainder in the feed title, because the date range is not the subject of the feed,
-            // it's just what we're including in the feed right now to return only currently relevant data.
+            // Remove from date from filter if it's the default, and describe the remainder in the feed title.
             var clonedFilter = model.AppliedMatchFilter.Clone();
-            clonedFilter.FromDate = clonedFilter.UntilDate = null;
+            if (clonedFilter.FromDate == model.DefaultMatchFilter.FromDate)
+            {
+                clonedFilter.FromDate = null;
+            }
             model.Metadata.PageTitle = pageTitle + _matchFilterHumanizer.MatchingFilter(clonedFilter);
             if (model.AppliedMatchFilter.PlayerTypes.Any())
             {

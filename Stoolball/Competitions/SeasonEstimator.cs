@@ -24,7 +24,7 @@ namespace Stoolball.Competitions
             else
             {
                 // Summer/outdoor season
-                var fromDate = new DateTimeOffset(dateToEstimateFrom.Year, summerSeasonStartMonth, 1, 0, 0, 1, new TimeSpan());
+                var fromDate = new DateTimeOffset(dateToEstimateFrom.Year, summerSeasonStartMonth, 1, 0, 0, 0, new TimeSpan());
                 var untilDate = new DateTimeOffset(dateToEstimateFrom.Year, winterSeasonStartMonth - 1, 30, 23, 59, 59, new TimeSpan());
                 return (fromDate, untilDate);
             }

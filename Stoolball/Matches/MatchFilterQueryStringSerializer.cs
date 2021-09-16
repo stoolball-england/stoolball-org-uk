@@ -25,8 +25,8 @@ namespace Stoolball.Statistics
             Serialize(filter.IncludeMatches, "matches", defaultFilter.IncludeMatches);
             Serialize(filter.IncludeTournamentMatches, "tournamentmatches", defaultFilter.IncludeTournamentMatches);
             Serialize(filter.IncludeTournaments, "tournaments", defaultFilter.IncludeTournaments);
-            Serialize(filter.FromDate, "from", defaultFilter.FromDate);
-            Serialize(filter.UntilDate, "to", defaultFilter.UntilDate);
+            Serialize(filter.FromDate, "from", defaultFilter.FromDate?.Date);
+            Serialize(filter.UntilDate, "to", defaultFilter.UntilDate?.Date);
             Serialize(filter.TournamentId, "tournament", defaultFilter.TournamentId);
             Serialize(filter.MatchLocationIds, "location", defaultFilter.MatchLocationIds);
             Serialize(filter.Paging.PageNumber, "page", defaultFilter.Paging.PageNumber);

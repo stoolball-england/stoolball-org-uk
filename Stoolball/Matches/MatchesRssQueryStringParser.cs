@@ -43,11 +43,11 @@ namespace Stoolball.Matches
             {
                 if (DateTimeOffset.TryParse(queryString["from"], out var from))
                 {
-                    filter.FromDate = from.Date;
+                    filter.FromDate = from.Date > DateTimeOffset.UtcNow.Date ? from.Date : DateTimeOffset.UtcNow.Date;
                 }
                 else
                 {
-                    filter.FromDate = DateTimeOffset.UtcNow.Date.AddDays(-1);
+                    filter.FromDate = DateTimeOffset.UtcNow.Date;
                 }
 
                 if (DateTimeOffset.TryParse(queryString["to"], out var to))
@@ -65,7 +65,7 @@ namespace Stoolball.Matches
             }
 
             // Ensure the UntilDate filter is inclusive, by advancing from midnight at the start of the day to midnight at the end
-            if (filter.UntilDate.HasValue) { filter.UntilDate = filter.UntilDate.Value.AddDays(1); }
+            if (filter.UntilDate.HasValue) { filter.UntilDate = filter.UntilDate.Value.AddDays(1).AddSeconds(-1); }
         }
 
         private static void ParsePlayerTypeFilter(NameValueCollection queryString, MatchFilter filter)
