@@ -16,7 +16,8 @@ namespace Stoolball.Web.Teams
         }
         public Team Team { get; set; }
         public MatchListingViewModel Matches { get; set; }
-        public MatchFilter MatchFilter { get; set; }
+        public MatchFilter DefaultMatchFilter { get; set; }
+        public MatchFilter AppliedMatchFilter { get; set; }
         public string FilterDescription { get; set; }
         public bool IsInACurrentLeague { get; set; }
         public bool IsInACurrentKnockoutCompetition { get; set; }

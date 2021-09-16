@@ -53,11 +53,11 @@
         @Html.Partial("_AddMatchMenu", matchMenu)
     </ul>
     @Html.Partial("_MatchFilter", new MatchFilterViewModel
-    {
-        FilterDescription = Model.FilterDescription,
-        from = Model.MatchFilter.FromDate,
-        to = Model.MatchFilter.UntilDate
-    })
+{
+    FilterDescription = Model.FilterDescription,
+    from = Model.AppliedMatchFilter.FromDate,
+    to = Model.AppliedMatchFilter.UntilDate
+})
 
     @if (Model.Matches.Matches.Count > 0)
     {
@@ -68,5 +68,5 @@
         <p>There are no matches for this team matching this filter.</p>
         <p>Find out how to <a href="/organise/website/">add matches and results to our website</a>.</p>
     }
-    @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.Team.TeamRoute, MatchFilter = Model.MatchFilter })
+    @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.Team.TeamRoute, DefaultMatchFilter = Model.DefaultMatchFilter, AppliedMatchFilter = Model.AppliedMatchFilter })
 </div>

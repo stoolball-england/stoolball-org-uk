@@ -224,7 +224,7 @@ WriteLiteral("    ");
 
             
             #line 45 "..\..\Views\Matches.cshtml"
-Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { MatchFilter = Model.AppliedMatchFilter }));
+Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { DefaultMatchFilter = Model.DefaultMatchFilter, AppliedMatchFilter = Model.AppliedMatchFilter }));
 
             
             #line default

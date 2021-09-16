@@ -157,11 +157,11 @@ WriteLiteral("    ");
             
             #line 28 "..\..\Views\MatchesForMatchLocation.cshtml"
 Write(Html.Partial("_MatchFilter", new MatchFilterViewModel
-    {
-        FilterDescription = Model.FilterDescription,
-        from = Model.MatchFilter.FromDate,
-        to = Model.MatchFilter.UntilDate
-    }));
+{
+    FilterDescription = Model.FilterDescription,
+    from = Model.AppliedMatchFilter.FromDate,
+    to = Model.AppliedMatchFilter.UntilDate
+}));
 
             
             #line default
@@ -218,7 +218,7 @@ WriteLiteral("    ");
 
             
             #line 44 "..\..\Views\MatchesForMatchLocation.cshtml"
-Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.MatchLocation.MatchLocationRoute, MatchFilter = Model.MatchFilter }));
+Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.MatchLocation.MatchLocationRoute, DefaultMatchFilter = Model.DefaultMatchFilter, AppliedMatchFilter = Model.AppliedMatchFilter }));
 
             
             #line default

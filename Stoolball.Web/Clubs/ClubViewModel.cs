@@ -14,7 +14,8 @@ namespace Stoolball.Web.Clubs
         }
         public Club Club { get; set; }
         public MatchListingViewModel Matches { get; set; }
-        public MatchFilter MatchFilter { get; set; }
+        public MatchFilter DefaultMatchFilter { get; set; }
+        public MatchFilter AppliedMatchFilter { get; set; }
         public string FilterDescription { get; set; }
     }
 }

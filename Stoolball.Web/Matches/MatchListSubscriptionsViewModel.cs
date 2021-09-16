@@ -6,6 +6,7 @@ namespace Stoolball.Web.Matches
     {
         public string BaseRoute { get; set; }
         public string FilenameWithoutExtension { get; set; } = "matches";
-        public MatchFilter MatchFilter { get; set; }
+        public MatchFilter AppliedMatchFilter { get; set; }
+        public MatchFilter DefaultMatchFilter { get; set; }
     }
 }

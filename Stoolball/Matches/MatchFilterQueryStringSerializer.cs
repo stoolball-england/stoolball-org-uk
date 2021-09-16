@@ -15,20 +15,20 @@ namespace Stoolball.Statistics
             defaultFilter = defaultFilter ?? new MatchFilter();
             ResetSerializer();
 
-            Serialize(filter.Query, "q");
-            Serialize(filter.TeamIds, "team");
-            Serialize(filter.CompetitionIds, "competition");
-            Serialize(filter.SeasonIds, "season");
-            Serialize(filter.MatchTypes, "matchtype");
-            Serialize(filter.PlayerTypes, "playertype");
-            Serialize(filter.MatchResultTypes, "matchresulttype");
+            Serialize(filter.Query, "q", defaultFilter.Query);
+            Serialize(filter.TeamIds, "team", defaultFilter.TeamIds);
+            Serialize(filter.CompetitionIds, "competition", defaultFilter.CompetitionIds);
+            Serialize(filter.SeasonIds, "season", defaultFilter.SeasonIds);
+            Serialize(filter.MatchTypes, "matchtype", defaultFilter.MatchTypes);
+            Serialize(filter.PlayerTypes, "playertype", defaultFilter.PlayerTypes);
+            Serialize(filter.MatchResultTypes, "matchresulttype", defaultFilter.MatchResultTypes);
             Serialize(filter.IncludeMatches, "matches", defaultFilter.IncludeMatches);
             Serialize(filter.IncludeTournamentMatches, "tournamentmatches", defaultFilter.IncludeTournamentMatches);
             Serialize(filter.IncludeTournaments, "tournaments", defaultFilter.IncludeTournaments);
             Serialize(filter.FromDate, "from", defaultFilter.FromDate);
             Serialize(filter.UntilDate, "to", defaultFilter.UntilDate);
-            Serialize(filter.TournamentId, "tournament");
-            Serialize(filter.MatchLocationIds, "location");
+            Serialize(filter.TournamentId, "tournament", defaultFilter.TournamentId);
+            Serialize(filter.MatchLocationIds, "location", defaultFilter.MatchLocationIds);
             Serialize(filter.Paging.PageNumber, "page", defaultFilter.Paging.PageNumber);
             Serialize(filter.Paging.PageSize, "pagesize", defaultFilter.Paging.PageSize);
 

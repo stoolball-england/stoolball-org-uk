@@ -75,23 +75,24 @@ namespace Stoolball.Web.Teams
             }
             else
             {
+                var filter = _matchFilterFactory.MatchesForTeams(new List<Guid> { team.TeamId.Value });
                 var model = new TeamViewModel(contentModel.Content, Services?.UserService)
                 {
                     Team = team,
+                    DefaultMatchFilter = filter.filter,
                     Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
                     {
                         DateTimeFormatter = _dateFormatter
                     },
                 };
-                var filter = _matchFilterFactory.MatchesForTeams(new List<Guid> { team.TeamId.Value });
-                model.MatchFilter = _matchFilterQueryStringParser.ParseQueryString(filter.filter, HttpUtility.ParseQueryString(Request.Url.Query));
-                model.Matches.Matches = await _matchDataSource.ReadMatchListings(model.MatchFilter, filter.sortOrder).ConfigureAwait(false);
+                model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, HttpUtility.ParseQueryString(Request.Url.Query));
+                model.Matches.Matches = await _matchDataSource.ReadMatchListings(model.AppliedMatchFilter, filter.sortOrder).ConfigureAwait(false);
 
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Team);
                 model.IsInACurrentLeague = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, MatchType.LeagueMatch).Any();
                 model.IsInACurrentKnockoutCompetition = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, MatchType.KnockoutMatch).Any();
 
-                model.FilterDescription = _matchFilterHumanizer.MatchesAndTournamentsMatchingFilter(model.MatchFilter);
+                model.FilterDescription = _matchFilterHumanizer.MatchesAndTournamentsMatchingFilter(model.AppliedMatchFilter);
                 model.Metadata.PageTitle = $"{model.FilterDescription} for {model.Team.TeamName} stoolball team";
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });

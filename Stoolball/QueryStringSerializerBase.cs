@@ -19,7 +19,15 @@ namespace Stoolball
         {
             if (!string.IsNullOrWhiteSpace(value))
             {
-                Serializer.Add(key, value.ToString(CultureInfo.InvariantCulture));
+                Serializer.Add(key, value);
+            }
+        }
+
+        protected void Serialize(string value, string key, string defaultValue)
+        {
+            if (value != defaultValue)
+            {
+                Serializer.Add(key, value);
             }
         }
 
@@ -39,7 +47,7 @@ namespace Stoolball
 
         protected void Serialize(DateTimeOffset? value, string key)
         {
-            if (value.HasValue) { Serializer.Add(key, value.Value.ToString("yyyy-MM-d", CultureInfo.InvariantCulture)); }
+            if (value.HasValue) { Serializer.Add(key, value.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)); }
         }
 
         protected void Serialize(DateTimeOffset? value, string key, DateTimeOffset? defaultValue)
@@ -76,10 +84,33 @@ namespace Stoolball
         {
             if (value.HasValue) { Serializer.Add(key, value.Value.ToString()); }
         }
+        protected void Serialize(Guid? value, string key, Guid? defaultValue)
+        {
+            if (value != defaultValue)
+            {
+                if (value.HasValue)
+                {
+                    Serializer.Add(key, value.Value.ToString());
+                }
+                else
+                {
+                    Serializer.Add(key, string.Empty);
+                }
+            }
+        }
 
         protected void Serialize<T>(List<T> value, string key)
         {
             var sortedList = value.Select(x => x.ToString()).OrderBy(x => x);
+            foreach (var item in sortedList)
+            {
+                Serializer.Add(key, item);
+            }
+        }
+
+        protected void Serialize<T>(List<T> value, string key, List<T> defaultValues)
+        {
+            var sortedList = value.Select(x => x.ToString()).Where(x => !defaultValues.Select(d => d.ToString()).Contains(x)).OrderBy(x => x);
             foreach (var item in sortedList)
             {
                 Serializer.Add(key, item);

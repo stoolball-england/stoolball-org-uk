@@ -1,5 +1,11 @@
 ﻿@model  Stoolball.Web.Matches.MatchListSubscriptionsViewModel
+@using Umbraco.Core.Composing
+@using Stoolball.Matches
+@{ 
+    var serialiser = Current.Factory.GetInstance<IMatchFilterQueryStringSerializer>();
+    var queryString = serialiser.Serialize(Model.AppliedMatchFilter, Model.DefaultMatchFilter);
+}
 <ul class="list-unstyled">
-    <li><a type="text/calendar" href="webcal://@(Request.Url.Host == "localhost" ? Request.Url.Authority : "www.stoolball.org.uk")@Model.BaseRoute/@(Model.FilenameWithoutExtension).ics" rel="nofollow">Add to calendar</a></li>
-    <li><a type="application/rss+xml" href="@Model.BaseRoute/@(Model.FilenameWithoutExtension).rss" rel="nofollow">Subscribe with RSS</a></li>
+    <li><a type="text/calendar" href="webcal://@(Request.Url.Host == "localhost" ? Request.Url.Authority : "www.stoolball.org.uk")@Model.BaseRoute/@(Model.FilenameWithoutExtension).ics@(queryString)" rel="nofollow">Add to calendar</a></li>
+    <li><a type="application/rss+xml" href="@Model.BaseRoute/@(Model.FilenameWithoutExtension).rss@(queryString)" rel="nofollow">Subscribe with RSS</a></li>
 </ul>

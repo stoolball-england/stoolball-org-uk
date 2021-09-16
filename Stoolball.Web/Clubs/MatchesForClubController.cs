@@ -71,27 +71,27 @@ namespace Stoolball.Web.Clubs
             }
             else
             {
+                var filter = _matchFilterFactory.MatchesForTeams(club.Teams.Select(team => team.TeamId.Value).ToList());
                 var model = new ClubViewModel(contentModel.Content, Services?.UserService)
                 {
                     Club = club,
+                    DefaultMatchFilter = filter.filter,
                     Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
                     {
                         DateTimeFormatter = _dateFormatter
                     }
                 };
-
-                var filter = _matchFilterFactory.MatchesForTeams(club.Teams.Select(team => team.TeamId.Value).ToList());
-                model.MatchFilter = _matchFilterQueryStringParser.ParseQueryString(filter.filter, HttpUtility.ParseQueryString(Request.Url.Query));
+                model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, HttpUtility.ParseQueryString(Request.Url.Query));
 
                 // Only get matches if there are teams, otherwise matches for all teams will be returned
                 if (model.Club.Teams.Count > 0)
                 {
-                    model.Matches.Matches = await _matchDataSource.ReadMatchListings(model.MatchFilter, filter.sortOrder).ConfigureAwait(false);
+                    model.Matches.Matches = await _matchDataSource.ReadMatchListings(model.AppliedMatchFilter, filter.sortOrder).ConfigureAwait(false);
                 }
 
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Club);
 
-                model.FilterDescription = _matchFilterHumanizer.MatchesAndTournamentsMatchingFilter(model.MatchFilter);
+                model.FilterDescription = _matchFilterHumanizer.MatchesAndTournamentsMatchingFilter(model.AppliedMatchFilter);
                 model.Metadata.PageTitle = $"{model.FilterDescription} for {model.Club.ClubName}";
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });

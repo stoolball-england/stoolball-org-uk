@@ -247,8 +247,8 @@ WriteLiteral("    ");
 Write(Html.Partial("_MatchFilter", new MatchFilterViewModel
     {
         FilterDescription = Model.FilterDescription,
-        from = Model.MatchFilter.FromDate,
-        to = Model.MatchFilter.UntilDate
+        from = Model.AppliedMatchFilter.FromDate,
+        to = Model.AppliedMatchFilter.UntilDate
     }));
 
             
@@ -306,7 +306,7 @@ WriteLiteral("    ");
 
             
             #line 71 "..\..\Views\MatchesForTeam.cshtml"
-Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.Team.TeamRoute, MatchFilter = Model.MatchFilter }));
+Write(Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.Team.TeamRoute, DefaultMatchFilter = Model.DefaultMatchFilter, AppliedMatchFilter = Model.AppliedMatchFilter }));
 
             
             #line default

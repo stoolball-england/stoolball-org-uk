@@ -70,22 +70,22 @@ namespace Stoolball.Web.MatchLocations
             }
             else
             {
+                var filter = _matchFilterFactory.MatchesForMatchLocation(location.MatchLocationId.Value);
                 var model = new MatchLocationViewModel(contentModel.Content, Services?.UserService)
                 {
                     MatchLocation = location,
+                    DefaultMatchFilter = filter.filter,
                     Matches = new MatchListingViewModel(contentModel.Content, Services?.UserService)
                     {
                         DateTimeFormatter = _dateFormatter
                     },
                 };
-
-                var filter = _matchFilterFactory.MatchesForMatchLocation(location.MatchLocationId.Value);
-                model.MatchFilter = _matchFilterQueryStringParser.ParseQueryString(filter.filter, HttpUtility.ParseQueryString(Request.Url.Query));
-                model.Matches.Matches = await _matchDataSource.ReadMatchListings(model.MatchFilter, filter.sortOrder).ConfigureAwait(false);
+                model.AppliedMatchFilter = _matchFilterQueryStringParser.ParseQueryString(model.DefaultMatchFilter, HttpUtility.ParseQueryString(Request.Url.Query));
+                model.Matches.Matches = await _matchDataSource.ReadMatchListings(model.AppliedMatchFilter, filter.sortOrder).ConfigureAwait(false);
 
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation);
 
-                model.FilterDescription = _matchFilterHumanizer.MatchesAndTournamentsMatchingFilter(model.MatchFilter);
+                model.FilterDescription = _matchFilterHumanizer.MatchesAndTournamentsMatchingFilter(model.AppliedMatchFilter);
                 model.Metadata.PageTitle = $"{model.FilterDescription} at {model.MatchLocation.NameAndLocalityOrTownIfDifferent()}";
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.MatchLocations, Url = new Uri(Constants.Pages.MatchLocationsUrl, UriKind.Relative) });

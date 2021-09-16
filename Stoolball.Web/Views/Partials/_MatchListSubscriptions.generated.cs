@@ -27,7 +27,19 @@ namespace ASP
     using System.Web.UI;
     using System.Web.WebPages;
     using Examine;
+    
+    #line 3 "..\..\Views\Partials\_MatchListSubscriptions.cshtml"
+    using Stoolball.Matches;
+    
+    #line default
+    #line hidden
     using Umbraco.Core;
+    
+    #line 2 "..\..\Views\Partials\_MatchListSubscriptions.cshtml"
+    using Umbraco.Core.Composing;
+    
+    #line default
+    #line hidden
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
@@ -43,7 +55,16 @@ namespace ASP
         }
         public override void Execute()
         {
-WriteLiteral("<ul");
+            
+            #line 4 "..\..\Views\Partials\_MatchListSubscriptions.cshtml"
+   
+    var serialiser = Current.Factory.GetInstance<IMatchFilterQueryStringSerializer>();
+    var queryString = serialiser.Serialize(Model.AppliedMatchFilter, Model.DefaultMatchFilter);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n<ul");
 
 WriteLiteral(" class=\"list-unstyled\"");
 
@@ -51,31 +72,38 @@ WriteLiteral(">\r\n    <li><a");
 
 WriteLiteral(" type=\"text/calendar\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 122), Tuple.Create("\"", 275)
-, Tuple.Create(Tuple.Create("", 129), Tuple.Create("webcal://", 129), true)
+WriteAttribute("href", Tuple.Create(" href=\"", 372), Tuple.Create("\"", 539)
+, Tuple.Create(Tuple.Create("", 379), Tuple.Create("webcal://", 379), true)
             
-            #line 3 "..\..\Views\Partials\_MatchListSubscriptions.cshtml"
-, Tuple.Create(Tuple.Create("", 138), Tuple.Create<System.Object, System.Int32>(Request.Url.Host == "localhost" ? Request.Url.Authority : "www.stoolball.org.uk"
-            
-            #line default
-            #line hidden
-, 138), false)
-            
-            #line 3 "..\..\Views\Partials\_MatchListSubscriptions.cshtml"
-                                                   , Tuple.Create(Tuple.Create("", 221), Tuple.Create<System.Object, System.Int32>(Model.BaseRoute
+            #line 9 "..\..\Views\Partials\_MatchListSubscriptions.cshtml"
+, Tuple.Create(Tuple.Create("", 388), Tuple.Create<System.Object, System.Int32>(Request.Url.Host == "localhost" ? Request.Url.Authority : "www.stoolball.org.uk"
             
             #line default
             #line hidden
-, 221), false)
-, Tuple.Create(Tuple.Create("", 237), Tuple.Create("/", 237), true)
+, 388), false)
             
-            #line 3 "..\..\Views\Partials\_MatchListSubscriptions.cshtml"
-                                                                     , Tuple.Create(Tuple.Create("", 238), Tuple.Create<System.Object, System.Int32>(Model.FilenameWithoutExtension
+            #line 9 "..\..\Views\Partials\_MatchListSubscriptions.cshtml"
+                                                   , Tuple.Create(Tuple.Create("", 471), Tuple.Create<System.Object, System.Int32>(Model.BaseRoute
             
             #line default
             #line hidden
-, 238), false)
-, Tuple.Create(Tuple.Create("", 271), Tuple.Create(".ics", 271), true)
+, 471), false)
+, Tuple.Create(Tuple.Create("", 487), Tuple.Create("/", 487), true)
+            
+            #line 9 "..\..\Views\Partials\_MatchListSubscriptions.cshtml"
+                                                                     , Tuple.Create(Tuple.Create("", 488), Tuple.Create<System.Object, System.Int32>(Model.FilenameWithoutExtension
+            
+            #line default
+            #line hidden
+, 488), false)
+, Tuple.Create(Tuple.Create("", 521), Tuple.Create(".ics", 521), true)
+            
+            #line 9 "..\..\Views\Partials\_MatchListSubscriptions.cshtml"
+                                                                                                          , Tuple.Create(Tuple.Create("", 525), Tuple.Create<System.Object, System.Int32>(queryString
+            
+            #line default
+            #line hidden
+, 525), false)
 );
 
 WriteLiteral(" rel=\"nofollow\"");
@@ -84,23 +112,30 @@ WriteLiteral(">Add to calendar</a></li>\r\n    <li><a");
 
 WriteLiteral(" type=\"application/rss+xml\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 355), Tuple.Create("\"", 416)
+WriteAttribute("href", Tuple.Create(" href=\"", 619), Tuple.Create("\"", 694)
             
-            #line 4 "..\..\Views\Partials\_MatchListSubscriptions.cshtml"
-, Tuple.Create(Tuple.Create("", 362), Tuple.Create<System.Object, System.Int32>(Model.BaseRoute
-            
-            #line default
-            #line hidden
-, 362), false)
-, Tuple.Create(Tuple.Create("", 378), Tuple.Create("/", 378), true)
-            
-            #line 4 "..\..\Views\Partials\_MatchListSubscriptions.cshtml"
-, Tuple.Create(Tuple.Create("", 379), Tuple.Create<System.Object, System.Int32>(Model.FilenameWithoutExtension
+            #line 10 "..\..\Views\Partials\_MatchListSubscriptions.cshtml"
+, Tuple.Create(Tuple.Create("", 626), Tuple.Create<System.Object, System.Int32>(Model.BaseRoute
             
             #line default
             #line hidden
-, 379), false)
-, Tuple.Create(Tuple.Create("", 412), Tuple.Create(".rss", 412), true)
+, 626), false)
+, Tuple.Create(Tuple.Create("", 642), Tuple.Create("/", 642), true)
+            
+            #line 10 "..\..\Views\Partials\_MatchListSubscriptions.cshtml"
+, Tuple.Create(Tuple.Create("", 643), Tuple.Create<System.Object, System.Int32>(Model.FilenameWithoutExtension
+            
+            #line default
+            #line hidden
+, 643), false)
+, Tuple.Create(Tuple.Create("", 676), Tuple.Create(".rss", 676), true)
+            
+            #line 10 "..\..\Views\Partials\_MatchListSubscriptions.cshtml"
+                    , Tuple.Create(Tuple.Create("", 680), Tuple.Create<System.Object, System.Int32>(queryString
+            
+            #line default
+            #line hidden
+, 680), false)
 );
 
 WriteLiteral(" rel=\"nofollow\"");
