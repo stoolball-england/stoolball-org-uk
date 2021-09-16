@@ -27,7 +27,7 @@ namespace ASP
     using System.Web.UI;
     using System.Web.WebPages;
     
-    #line 3 "..\..\Views\StyleGuide.cshtml"
+    #line 4 "..\..\Views\StyleGuide.cshtml"
     using ClientDependency.Core.Mvc;
     
     #line default
@@ -39,6 +39,12 @@ namespace ASP
     #line default
     #line hidden
     using Examine;
+    
+    #line 3 "..\..\Views\StyleGuide.cshtml"
+    using Stoolball.Web.Matches;
+    
+    #line default
+    #line hidden
     using Umbraco.Core;
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
@@ -56,10 +62,12 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 4 "..\..\Views\StyleGuide.cshtml"
+            #line 5 "..\..\Views\StyleGuide.cshtml"
   
     Html.RequiresCss("~/css/news.min.css");
     Html.RequiresCss("~/css/shop.page.min.css");
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
 
             
             #line default
@@ -75,7 +83,7 @@ WriteLiteral(" data-show-consent=\"true\"");
 WriteLiteral(">");
 
             
-            #line 9 "..\..\Views\StyleGuide.cshtml"
+            #line 12 "..\..\Views\StyleGuide.cshtml"
                             Write(Model.Name);
 
             
@@ -101,15 +109,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 607), Tuple.Create("\"", 676)
+WriteAttribute("href", Tuple.Create(" href=\"", 722), Tuple.Create("\"", 791)
             
-            #line 16 "..\..\Views\StyleGuide.cshtml"
-, Tuple.Create(Tuple.Create("", 614), Tuple.Create<System.Object, System.Int32>(Umbraco.AssignedContentItem.Url()
+            #line 19 "..\..\Views\StyleGuide.cshtml"
+, Tuple.Create(Tuple.Create("", 729), Tuple.Create<System.Object, System.Int32>(Umbraco.AssignedContentItem.Url()
             
             #line default
             #line hidden
-, 614), false)
-, Tuple.Create(Tuple.Create("", 648), Tuple.Create("?alttemplate=styleguideforms", 648), true)
+, 729), false)
+, Tuple.Create(Tuple.Create("", 763), Tuple.Create("?alttemplate=styleguideforms", 763), true)
 );
 
 WriteLiteral(">Forms</a>\r\n        </li>\r\n        <li");
@@ -120,15 +128,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 766), Tuple.Create("\"", 843)
+WriteAttribute("href", Tuple.Create(" href=\"", 881), Tuple.Create("\"", 958)
             
-            #line 19 "..\..\Views\StyleGuide.cshtml"
-, Tuple.Create(Tuple.Create("", 773), Tuple.Create<System.Object, System.Int32>(Umbraco.AssignedContentItem.Url()
+            #line 22 "..\..\Views\StyleGuide.cshtml"
+, Tuple.Create(Tuple.Create("", 888), Tuple.Create<System.Object, System.Int32>(Umbraco.AssignedContentItem.Url()
             
             #line default
             #line hidden
-, 773), false)
-, Tuple.Create(Tuple.Create("", 807), Tuple.Create("?alttemplate=styleguidestoolballdata", 807), true)
+, 888), false)
+, Tuple.Create(Tuple.Create("", 922), Tuple.Create("?alttemplate=styleguidestoolballdata", 922), true)
 );
 
 WriteLiteral(">Stoolball data</a>\r\n        </li>\r\n        <li");
@@ -197,12 +205,59 @@ WriteLiteral(" class=\"nav-link nav-link-edit\"");
 
 WriteLiteral(" href=\"https://example.org\"");
 
-WriteLiteral(">Edit a thing</a>\r\n        </li>\r\n    </ul>\r\n    <p>Text below tabs.</p>\r\n");
+WriteLiteral(">Edit a thing</a>\r\n        </li>\r\n    </ul>\r\n    <p>Text below tabs.</p>\r\n    <ul" +
+"");
+
+WriteLiteral(" class=\"nav nav-tabs nav-tabs-has-add nav-tabs-has-edit\"");
+
+WriteLiteral(">\r\n        <li");
+
+WriteLiteral(" class=\"nav-item\"");
+
+WriteLiteral(">\r\n            <em");
+
+WriteLiteral(" class=\"nav-link active\"");
+
+WriteLiteral(">Tabs with filter</em>\r\n        </li>\r\n        <li");
+
+WriteLiteral(" class=\"nav-item nav-item-admin\"");
+
+WriteLiteral(">\r\n            <button");
+
+WriteLiteral(" type=\"button\"");
+
+WriteLiteral(" class=\"nav-link nav-link-filter\"");
+
+WriteLiteral(">Edit filter</button>\r\n        </li>\r\n        <li");
+
+WriteLiteral(" class=\"nav-item nav-item-admin d-none d-md-flex\"");
+
+WriteLiteral(">\r\n            <a");
+
+WriteLiteral(" class=\"nav-link nav-link-add\"");
+
+WriteLiteral(" href=\"https://example.org\"");
+
+WriteLiteral(">Add a thing</a>\r\n        </li>\r\n    </ul>\r\n");
 
 WriteLiteral("    ");
 
             
-            #line 40 "..\..\Views\StyleGuide.cshtml"
+            #line 54 "..\..\Views\StyleGuide.cshtml"
+Write(Html.Partial("_MatchFilter", new MatchFilterViewModel
+    {
+        FilterDescription = "a description of the applied filter"
+    }));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
+WriteLiteral("    ");
+
+            
+            #line 58 "..\..\Views\StyleGuide.cshtml"
 Write(Html.GetBlockListHtml(Model, "blockList"));
 
             
@@ -236,7 +291,7 @@ WriteLiteral(@">
         </tbody>
     </table>
     <p>A paragraph following a table.</p>
-    
+
     <table>
         <thead>
             <tr>
@@ -269,7 +324,7 @@ WriteLiteral(" href=\"https://example.org\"");
 WriteLiteral(">Definition list title</a> ");
 
             
-            #line 86 "..\..\Views\StyleGuide.cshtml"
+            #line 104 "..\..\Views\StyleGuide.cshtml"
                                                                Write(Html.Partial("_AdminOnly"));
 
             
@@ -331,7 +386,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("        ");
 
             
-            #line 110 "..\..\Views\StyleGuide.cshtml"
+            #line 128 "..\..\Views\StyleGuide.cshtml"
    Write(Html.GetBlockListHtml(Model, "productBlockList", "BlockList"));
 
             
@@ -342,7 +397,7 @@ WriteLiteral("\r\n    </ul>\r\n");
 WriteLiteral("    ");
 
             
-            #line 112 "..\..\Views\StyleGuide.cshtml"
+            #line 130 "..\..\Views\StyleGuide.cshtml"
 Write(Html.GetBlockListHtml(Model, "cookiesBlockList"));
 
             

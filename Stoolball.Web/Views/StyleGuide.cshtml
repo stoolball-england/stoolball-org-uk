@@ -1,9 +1,12 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.StyleGuide>
 @using ContentModels = Umbraco.Web.PublishedModels;
+@using Stoolball.Web.Matches
 @using ClientDependency.Core.Mvc;
 @{
     Html.RequiresCss("~/css/news.min.css");
     Html.RequiresCss("~/css/shop.page.min.css");
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
 }
 <div class="container-xl">
     <h1 data-show-consent="true">@Model.Name</h1>
@@ -37,6 +40,21 @@
         </li>
     </ul>
     <p>Text below tabs.</p>
+    <ul class="nav nav-tabs nav-tabs-has-add nav-tabs-has-edit">
+        <li class="nav-item">
+            <em class="nav-link active">Tabs with filter</em>
+        </li>
+        <li class="nav-item nav-item-admin">
+            <button type="button" class="nav-link nav-link-filter">Edit filter</button>
+        </li>
+        <li class="nav-item nav-item-admin d-none d-md-flex">
+            <a class="nav-link nav-link-add" href="https://example.org">Add a thing</a>
+        </li>
+    </ul>
+    @Html.Partial("_MatchFilter", new MatchFilterViewModel
+    {
+        FilterDescription = "a description of the applied filter"
+    })
     @Html.GetBlockListHtml(Model, "blockList")
     <p>A paragraph followed by a table.</p>
     <table>
@@ -61,7 +79,7 @@
         </tbody>
     </table>
     <p>A paragraph following a table.</p>
-    
+
     <table>
         <thead>
             <tr>
