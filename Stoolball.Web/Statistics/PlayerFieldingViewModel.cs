@@ -14,5 +14,6 @@ namespace Stoolball.Web.Statistics
         public FieldingStatistics FieldingStatistics { get; set; }
         public List<StatisticsResult<PlayerInnings>> Catches { get; internal set; } = new List<StatisticsResult<PlayerInnings>>();
         public List<StatisticsResult<PlayerInnings>> RunOuts { get; internal set; } = new List<StatisticsResult<PlayerInnings>>();
+        public string FilterDescription { get; set; }
     }
 }

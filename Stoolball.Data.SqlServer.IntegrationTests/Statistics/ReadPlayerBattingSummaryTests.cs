@@ -6,6 +6,7 @@ using Moq;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Matches;
 using Stoolball.Statistics;
+using Stoolball.Testing;
 using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
@@ -14,6 +15,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
     public class ReadPlayerBattingSummaryTests
     {
         private readonly SqlServerTestDataFixture _databaseFixture;
+        private readonly DateRangeGenerator _dateRangeGenerator = new DateRangeGenerator();
 
         public ReadPlayerBattingSummaryTests(SqlServerTestDataFixture databaseFixture)
         {
@@ -343,23 +345,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                 _databaseFixture.TestData.Matches).ConfigureAwait(false);
         }
 
-        private StatisticsFilter SelectDateRangeToTest()
-        {
-            var allMatchDates = _databaseFixture.TestData.Matches.Select(x => x.StartTime).OrderBy(x => x);
-            var oneThirdOfTheTimeBetweenFirstAndLast = (allMatchDates.Last() - allMatchDates.First()) / 3;
-            var ranges = new[] {
-                new StatisticsFilter { FromDate = allMatchDates.First(), UntilDate= allMatchDates.First().Add(oneThirdOfTheTimeBetweenFirstAndLast) },
-                new StatisticsFilter{FromDate = allMatchDates.First().Add(oneThirdOfTheTimeBetweenFirstAndLast), UntilDate = allMatchDates.Last().Add(-oneThirdOfTheTimeBetweenFirstAndLast) },
-                new StatisticsFilter{FromDate = allMatchDates.Last().Add(-oneThirdOfTheTimeBetweenFirstAndLast), UntilDate = allMatchDates.Last() }
-            };
-
-            return ranges[new Random().Next(3)];
-        }
 
         [Fact]
         public async Task Read_batting_statistics_returns_TotalInnings_supporting_filter_by_date()
         {
-            var filter = SelectDateRangeToTest();
+            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
             await TestTotalInnings(filter,
                " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
                new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
@@ -369,7 +359,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_batting_statistics_returns_TotalInningsWithRunsScored_supporting_filter_by_date()
         {
-            var filter = SelectDateRangeToTest();
+            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
             await TestTotalInningsWithRunsScored(filter,
                " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
                new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
@@ -379,7 +369,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_batting_statistics_returns_TotalInningsWithRunsScoredAndBallsFaced_supporting_filter_by_date()
         {
-            var filter = SelectDateRangeToTest();
+            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
             await TestTotalInningsWithRunsScoredAndBallsFaced(filter,
               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
               new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
@@ -389,7 +379,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_batting_statistics_returns_NotOuts_supporting_filter_by_date()
         {
-            var filter = SelectDateRangeToTest();
+            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
             await TestNotOuts(filter,
                " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
                new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
@@ -399,7 +389,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_batting_statistics_returns_TotalRunsScored_supporting_filter_by_date()
         {
-            var filter = SelectDateRangeToTest();
+            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
             await TestTotalRunsScored(filter,
                " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
                new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
@@ -409,7 +399,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_batting_statistics_returns_Fifties_supporting_filter_by_date()
         {
-            var filter = SelectDateRangeToTest();
+            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
             await TestFifties(filter,
               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
               new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
@@ -419,7 +409,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_batting_statistics_returns_Hundreds_supporting_filter_by_date()
         {
-            var filter = SelectDateRangeToTest();
+            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
             await TestHundreds(filter,
                " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
                new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
@@ -429,7 +419,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_batting_statistics_returns_BestInnings_supporting_filter_by_date()
         {
-            var filter = SelectDateRangeToTest();
+            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
             await TestBestInnings(filter,
               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
               new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
@@ -439,7 +429,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_batting_statistics_returns_StrikeRate_supporting_filter_by_date()
         {
-            var filter = SelectDateRangeToTest();
+            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
             await TestStrikeRate(filter,
                " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
                new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
@@ -449,7 +439,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_batting_statistics_returns_Average_supporting_filter_by_date()
         {
-            var filter = SelectDateRangeToTest();
+            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
             await TestAverage(filter,
                 " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
                 new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },

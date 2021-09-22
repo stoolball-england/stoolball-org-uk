@@ -35,6 +35,7 @@ namespace Stoolball
         {
             Serializer.Add(key, value.ToString(CultureInfo.InvariantCulture));
         }
+
         protected void Serialize(int value, string key, int defaultValue)
         {
             if (value != defaultValue) { Serializer.Add(key, value.ToString(CultureInfo.InvariantCulture)); }
@@ -43,6 +44,20 @@ namespace Stoolball
         protected void Serialize(int? value, string key)
         {
             if (value.HasValue) { Serializer.Add(key, value.Value.ToString(CultureInfo.InvariantCulture)); }
+        }
+        protected void Serialize(int? value, string key, int? defaultValue)
+        {
+            if (value != defaultValue)
+            {
+                if (value.HasValue)
+                {
+                    Serializer.Add(key, value.Value.ToString(CultureInfo.InvariantCulture));
+                }
+                else
+                {
+                    Serializer.Add(key, string.Empty);
+                }
+            }
         }
 
         protected void Serialize(DateTimeOffset? value, string key)
@@ -80,10 +95,26 @@ namespace Stoolball
             if (value.HasValue) { Serializer.Add(key, value.Value ? "1" : "0"); }
         }
 
+        protected void Serialize(bool? value, string key, bool? defaultValue)
+        {
+            if (value != defaultValue)
+            {
+                if (value.HasValue)
+                {
+                    Serializer.Add(key, value.Value ? "1" : "0");
+                }
+                else
+                {
+                    Serializer.Add(key, string.Empty);
+                }
+            }
+        }
+
         protected void Serialize(Guid? value, string key)
         {
             if (value.HasValue) { Serializer.Add(key, value.Value.ToString()); }
         }
+
         protected void Serialize(Guid? value, string key, Guid? defaultValue)
         {
             if (value != defaultValue)

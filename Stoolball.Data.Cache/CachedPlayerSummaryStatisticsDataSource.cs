@@ -10,9 +10,9 @@ namespace Stoolball.Data.Cache
     {
         private readonly IReadOnlyPolicyRegistry<string> _policyRegistry;
         private readonly ICacheablePlayerSummaryStatisticsDataSource _playerSummaryStatisticsDataSource;
-        private readonly IStatisticsFilterSerializer _statisticsFilterSerializer;
+        private readonly IStatisticsFilterQueryStringSerializer _statisticsFilterSerializer;
 
-        public CachedPlayerSummaryStatisticsDataSource(IReadOnlyPolicyRegistry<string> policyRegistry, ICacheablePlayerSummaryStatisticsDataSource playerSummaryStatisticsDataSource, IStatisticsFilterSerializer statisticsFilterSerializer)
+        public CachedPlayerSummaryStatisticsDataSource(IReadOnlyPolicyRegistry<string> policyRegistry, ICacheablePlayerSummaryStatisticsDataSource playerSummaryStatisticsDataSource, IStatisticsFilterQueryStringSerializer statisticsFilterSerializer)
         {
             _policyRegistry = policyRegistry ?? throw new System.ArgumentNullException(nameof(policyRegistry));
             _playerSummaryStatisticsDataSource = playerSummaryStatisticsDataSource ?? throw new System.ArgumentNullException(nameof(playerSummaryStatisticsDataSource));

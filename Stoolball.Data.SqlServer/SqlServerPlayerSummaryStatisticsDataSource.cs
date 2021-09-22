@@ -57,6 +57,8 @@ namespace Stoolball.Data.SqlServer
             if (filter == null) { throw new ArgumentNullException(nameof(filter)); }
             if (filter?.Player?.PlayerId == null) { throw new ArgumentException("Player.PlayerId must be specified", nameof(filter)); }
 
+            var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);
+
             // A player can have multiple sets of bowling figures per innings if they have multiple identities in that innings,
             // which could happen if 'John Smith' was also entered as 'John', for example.
             // 
@@ -65,26 +67,26 @@ namespace Stoolball.Data.SqlServer
             var totalInningsSql = $@"SELECT SUM(BowlingFiguresPerInnings) FROM (
                                          SELECT COUNT(DISTINCT MatchInningsPair) AS BowlingFiguresPerInnings 
                                          FROM {Tables.PlayerInMatchStatistics} 
-                                         WHERE PlayerId = @PlayerId AND BowlingFiguresId IS NOT NULL 
+                                         WHERE BowlingFiguresId IS NOT NULL {where}
                                          GROUP BY MatchTeamId
                                     ) AS BowlingFiguresPerInnings";
 
             var totalInningsWithRunsSql = $@"SELECT SUM(BowlingFiguresPerInnings) FROM (
                                                 SELECT COUNT(DISTINCT MatchInningsPair) AS BowlingFiguresPerInnings 
                                                 FROM {Tables.PlayerInMatchStatistics} 
-                                                WHERE PlayerId = @PlayerId AND BowlingFiguresId IS NOT NULL AND RunsConceded IS NOT NULL
+                                                WHERE BowlingFiguresId IS NOT NULL AND RunsConceded IS NOT NULL {where}
                                                 GROUP BY MatchTeamId
                                         ) AS BowlingFiguresWithRunsPerInnings";
 
             var totalInningsWithBallsBowledSql = $@"SELECT SUM(BowlingFiguresPerInnings) FROM (
                                                 SELECT COUNT(DISTINCT MatchInningsPair) AS BowlingFiguresPerInnings 
                                                 FROM {Tables.PlayerInMatchStatistics} 
-                                                WHERE PlayerId = @PlayerId AND BowlingFiguresId IS NOT NULL AND BallsBowled IS NOT NULL
+                                                WHERE BowlingFiguresId IS NOT NULL AND BallsBowled IS NOT NULL {where}
                                                 GROUP BY MatchTeamId
                                         ) AS BowlingFiguresWithOvers";
 
             var bestFiguresSql = $@"FROM {Tables.PlayerInMatchStatistics} 
-								WHERE PlayerId = @PlayerId AND Wickets IS NOT NULL 
+								WHERE Wickets IS NOT NULL {where}
 								GROUP BY MatchTeamId, MatchInningsPair 
 								ORDER BY SUM(Wickets) DESC, CASE WHEN SUM(RunsConceded) IS NULL THEN 0 ELSE 1 END DESC, SUM(RunsConceded) ASC";
 
@@ -96,24 +98,21 @@ namespace Stoolball.Data.SqlServer
                                 ({totalInningsSql}) AS TotalInnings,
                                 ({totalInningsWithRunsSql}) AS TotalInningsWithRunsConceded,
                                 ({totalInningsWithBallsBowledSql}) AS TotalInningsWithBallsBowled,
-                                (SELECT SUM(BallsBowled)/{StatisticsConstants.BALLS_PER_OVER} + CAST((SUM(BallsBowled)%{StatisticsConstants.BALLS_PER_OVER})AS DECIMAL) / 10 FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalOvers,
-                                (SELECT SUM(Maidens) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalMaidens,
-                                (SELECT SUM(RunsConceded) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalRunsConceded,
-                                (SELECT SUM(Wickets) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalWickets,
-                                (SELECT COUNT(MatchTeamId) FROM (SELECT MatchTeamId FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId GROUP BY MatchTeamId, MatchInningsPair HAVING SUM(Wickets) >= 5) AS FiveWicketInnings) AS FiveWicketInnings,
+                                (SELECT SUM(BallsBowled)/{StatisticsConstants.BALLS_PER_OVER} + CAST((SUM(BallsBowled)%{StatisticsConstants.BALLS_PER_OVER})AS DECIMAL) / 10 FROM {Tables.PlayerInMatchStatistics} WHERE 1=1 {where}) AS TotalOvers,
+                                (SELECT SUM(Maidens) FROM {Tables.PlayerInMatchStatistics} WHERE 1=1 {where}) AS TotalMaidens,
+                                (SELECT SUM(RunsConceded) FROM {Tables.PlayerInMatchStatistics} WHERE 1=1 {where}) AS TotalRunsConceded,
+                                (SELECT SUM(Wickets) FROM {Tables.PlayerInMatchStatistics} WHERE 1=1 {where}) AS TotalWickets,
+                                (SELECT COUNT(MatchTeamId) FROM (SELECT MatchTeamId FROM {Tables.PlayerInMatchStatistics} WHERE 1=1 {where} GROUP BY MatchTeamId, MatchInningsPair HAVING SUM(Wickets) >= 5) AS FiveWicketInnings) AS FiveWicketInnings,
                                 (SELECT TOP 1 SUM(Wickets) {bestFiguresSql}) AS BestInningsWickets,
                                 (SELECT TOP 1 SUM(RunsConceded) {bestFiguresSql}) AS BestInningsRunsConceded,
-                                (SELECT CASE WHEN SUM(BallsBowled) > 0 THEN SUM(RunsConceded)/(CAST(SUM(BallsBowled) AS DECIMAL)/{StatisticsConstants.BALLS_PER_OVER}) ELSE NULL END FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId AND RunsConceded IS NOT NULL) AS Economy,
-                                (SELECT CASE WHEN SUM(Wickets) > 0 THEN CAST(SUM(RunsConceded) AS DECIMAL)/SUM(Wickets) ELSE NULL END FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId AND RunsConceded IS NOT NULL) AS Average,
-                                (SELECT CASE WHEN SUM(Wickets) > 0 THEN CAST(SUM(BallsBowled) AS DECIMAL)/SUM(Wickets) ELSE NULL END FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId AND BallsBowled IS NOT NULL) AS StrikeRate
+                                (SELECT CASE WHEN SUM(BallsBowled) > 0 THEN SUM(RunsConceded)/(CAST(SUM(BallsBowled) AS DECIMAL)/{StatisticsConstants.BALLS_PER_OVER}) ELSE NULL END FROM {Tables.PlayerInMatchStatistics} WHERE RunsConceded IS NOT NULL {where}) AS Economy,
+                                (SELECT CASE WHEN SUM(Wickets) > 0 THEN CAST(SUM(RunsConceded) AS DECIMAL)/SUM(Wickets) ELSE NULL END FROM {Tables.PlayerInMatchStatistics} WHERE RunsConceded IS NOT NULL {where}) AS Average,
+                                (SELECT CASE WHEN SUM(Wickets) > 0 THEN CAST(SUM(BallsBowled) AS DECIMAL)/SUM(Wickets) ELSE NULL END FROM {Tables.PlayerInMatchStatistics} WHERE BallsBowled IS NOT NULL {where}) AS StrikeRate
 	                     ) AS BowlingStatistics";
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                return await connection.QuerySingleAsync<BowlingStatistics>(sql, new
-                {
-                    filter.Player.PlayerId
-                })
+                return await connection.QuerySingleAsync<BowlingStatistics>(sql, parameters)
                 .ConfigureAwait(false);
             }
         }
@@ -123,21 +122,20 @@ namespace Stoolball.Data.SqlServer
             if (filter == null) { throw new ArgumentNullException(nameof(filter)); }
             if (filter?.Player?.PlayerId == null) { throw new ArgumentException("Player.PlayerId must be specified", nameof(filter)); }
 
+            var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);
+
             var sql = $@"SELECT TotalCatches, MostCatches, TotalRunOuts, MostRunOuts
                          FROM (
 	                        SELECT 
-                                (SELECT SUM(Catches) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalCatches,
-                                (SELECT SUM(RunOuts) FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId) AS TotalRunOuts,
-                                (SELECT MAX(Catches) FROM (SELECT SUM(Catches) AS Catches FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId GROUP BY MatchTeamId, MatchInningsPair) AS CatchesPerInnings) AS MostCatches,
-                                (SELECT MAX(RunOuts) FROM (SELECT SUM(RunOuts) AS RunOuts FROM {Tables.PlayerInMatchStatistics} WHERE PlayerId = @PlayerId GROUP BY MatchTeamId, MatchInningsPair) AS RunOutsPerInnings) AS MostRunOuts
+                                (SELECT SUM(Catches) FROM {Tables.PlayerInMatchStatistics} WHERE 1=1 {where}) AS TotalCatches,
+                                (SELECT SUM(RunOuts) FROM {Tables.PlayerInMatchStatistics} WHERE 1=1 {where}) AS TotalRunOuts,
+                                (SELECT MAX(Catches) FROM (SELECT SUM(Catches) AS Catches FROM {Tables.PlayerInMatchStatistics} WHERE 1=1 {where} GROUP BY MatchTeamId, MatchInningsPair) AS CatchesPerInnings) AS MostCatches,
+                                (SELECT MAX(RunOuts) FROM (SELECT SUM(RunOuts) AS RunOuts FROM {Tables.PlayerInMatchStatistics} WHERE 1=1 {where} GROUP BY MatchTeamId, MatchInningsPair) AS RunOutsPerInnings) AS MostRunOuts
 	                     ) AS FieldingStatistics";
 
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                return await connection.QuerySingleAsync<FieldingStatistics>(sql, new
-                {
-                    filter.Player.PlayerId
-                })
+                return await connection.QuerySingleAsync<FieldingStatistics>(sql, parameters)
                 .ConfigureAwait(false);
             }
         }

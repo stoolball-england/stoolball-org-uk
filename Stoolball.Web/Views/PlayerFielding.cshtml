@@ -1,28 +1,48 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<PlayerFieldingViewModel>
 @using ClientDependency.Core.Mvc
+@using Umbraco.Core.Composing
+@using Stoolball.Statistics
 @using Stoolball.Web.Statistics
 @using Stoolball.Matches
+@using Stoolball.Web.Filtering
 @{
     Html.RequiresCss("/statistics/statistics.min.css");
-    var catches = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
+
+    var catches = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.AppliedFilter };
     catches.Results.AddRange(Model.Catches);
-    var runOuts = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
+    var runOuts = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.AppliedFilter };
     runOuts.Results.AddRange(Model.RunOuts);
+
+    var serialiser = Current.Factory.GetInstance<IStatisticsFilterQueryStringSerializer>();
+    var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
 }
 <div class="container-xl">
     @Html.Partial("_PlayerHeader")
 
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link" href="@Model.Player.PlayerRoute">Batting</a>
+            <a class="nav-link" href="@Model.Player.PlayerRoute@(queryString)">Batting</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="@Model.Player.PlayerRoute/bowling">Bowling</a>
+            <a class="nav-link" href="@Model.Player.PlayerRoute/bowling@(queryString)">Bowling</a>
         </li>
         <li class="nav-item">
             <em class="nav-link active">Fielding</em>
         </li>
+        <li class="nav-item nav-item-admin">
+            <button type="button" class="nav-link nav-link-filter">Edit filter</button>
+        </li>
     </ul>
+    @Html.Partial("_Filters", new FilterViewModel
+{
+    FilteredItemTypeSingular = "Statistics",
+    FilteredItemTypePlural = "Statistics",
+    FilterDescription = Model.FilterDescription,
+    from = Model.AppliedFilter.FromDate,
+    to = Model.AppliedFilter.UntilDate
+})
 
     <table class="table-as-cards table-as-cards-reset-sm">
         <thead>

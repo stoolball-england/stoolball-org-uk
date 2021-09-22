@@ -34,18 +34,30 @@ namespace ASP
     #line hidden
     using Examine;
     
-    #line 4 "..\..\Views\PlayerBowling.cshtml"
+    #line 5 "..\..\Views\PlayerBowling.cshtml"
     using Stoolball.Statistics;
     
     #line default
     #line hidden
     
-    #line 3 "..\..\Views\PlayerBowling.cshtml"
+    #line 6 "..\..\Views\PlayerBowling.cshtml"
+    using Stoolball.Web.Filtering;
+    
+    #line default
+    #line hidden
+    
+    #line 4 "..\..\Views\PlayerBowling.cshtml"
     using Stoolball.Web.Statistics;
     
     #line default
     #line hidden
     using Umbraco.Core;
+    
+    #line 3 "..\..\Views\PlayerBowling.cshtml"
+    using Umbraco.Core.Composing;
+    
+    #line default
+    #line hidden
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
@@ -62,12 +74,18 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 5 "..\..\Views\PlayerBowling.cshtml"
+            #line 7 "..\..\Views\PlayerBowling.cshtml"
   
     Html.RequiresCss("/statistics/statistics.min.css");
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
 
-    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = false, StatisticsFilter = Model.StatisticsFilter };
+    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = false, StatisticsFilter = Model.AppliedFilter };
     bowlingFigures.Results.AddRange(Model.BowlingFigures);
+
+    var serialiser = Current.Factory.GetInstance<IStatisticsFilterQueryStringSerializer>();
+    var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
+
             
             #line default
             #line hidden
@@ -80,7 +98,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("    ");
 
             
-            #line 11 "..\..\Views\PlayerBowling.cshtml"
+            #line 19 "..\..\Views\PlayerBowling.cshtml"
 Write(Html.Partial("_PlayerHeader"));
 
             
@@ -98,14 +116,21 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 634), Tuple.Create("\"", 666)
+WriteAttribute("href", Tuple.Create(" href=\"", 963), Tuple.Create("\"", 1009)
             
-            #line 15 "..\..\Views\PlayerBowling.cshtml"
-, Tuple.Create(Tuple.Create("", 641), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
+            #line 23 "..\..\Views\PlayerBowling.cshtml"
+, Tuple.Create(Tuple.Create("", 970), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
             
             #line default
             #line hidden
-, 641), false)
+, 970), false)
+            
+            #line 23 "..\..\Views\PlayerBowling.cshtml"
+, Tuple.Create(Tuple.Create("", 995), Tuple.Create<System.Object, System.Int32>(queryString
+            
+            #line default
+            #line hidden
+, 995), false)
 );
 
 WriteLiteral(">Batting</a>\r\n        </li>\r\n        <li");
@@ -124,18 +149,53 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 858), Tuple.Create("\"", 899)
+WriteAttribute("href", Tuple.Create(" href=\"", 1201), Tuple.Create("\"", 1256)
             
-            #line 21 "..\..\Views\PlayerBowling.cshtml"
-, Tuple.Create(Tuple.Create("", 865), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
+            #line 29 "..\..\Views\PlayerBowling.cshtml"
+, Tuple.Create(Tuple.Create("", 1208), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
             
             #line default
             #line hidden
-, 865), false)
-, Tuple.Create(Tuple.Create("", 890), Tuple.Create("/fielding", 890), true)
+, 1208), false)
+, Tuple.Create(Tuple.Create("", 1233), Tuple.Create("/fielding", 1233), true)
+            
+            #line 29 "..\..\Views\PlayerBowling.cshtml"
+, Tuple.Create(Tuple.Create("", 1242), Tuple.Create<System.Object, System.Int32>(queryString
+            
+            #line default
+            #line hidden
+, 1242), false)
 );
 
-WriteLiteral(">Fielding</a>\r\n        </li>\r\n    </ul>\r\n\r\n    <table");
+WriteLiteral(">Fielding</a>\r\n        </li>\r\n        <li");
+
+WriteLiteral(" class=\"nav-item nav-item-admin\"");
+
+WriteLiteral(">\r\n            <button");
+
+WriteLiteral(" type=\"button\"");
+
+WriteLiteral(" class=\"nav-link nav-link-filter\"");
+
+WriteLiteral(">Edit filter</button>\r\n        </li>\r\n    </ul>\r\n");
+
+WriteLiteral("    ");
+
+            
+            #line 35 "..\..\Views\PlayerBowling.cshtml"
+Write(Html.Partial("_Filters", new FilterViewModel
+{
+    FilteredItemTypeSingular = "Statistics",
+    FilteredItemTypePlural = "Statistics",
+    FilterDescription = Model.FilterDescription,
+    from = Model.AppliedFilter.FromDate,
+    to = Model.AppliedFilter.UntilDate
+}));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n\r\n    <table");
 
 WriteLiteral(" class=\"table-as-cards table-as-cards-reset-md\"");
 
@@ -195,7 +255,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Innings</span>");
 
             
-            #line 42 "..\..\Views\PlayerBowling.cshtml"
+            #line 61 "..\..\Views\PlayerBowling.cshtml"
                                                                                                           Write(Model.BowlingStatistics.TotalInnings);
 
             
@@ -214,7 +274,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Overs</span>");
 
             
-            #line 43 "..\..\Views\PlayerBowling.cshtml"
+            #line 62 "..\..\Views\PlayerBowling.cshtml"
                                                                                                         Write(Math.Round(Model.BowlingStatistics.TotalOvers, 1));
 
             
@@ -233,7 +293,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Maidens</span>");
 
             
-            #line 44 "..\..\Views\PlayerBowling.cshtml"
+            #line 63 "..\..\Views\PlayerBowling.cshtml"
                                                                                                           Write(Model.BowlingStatistics.TotalMaidens);
 
             
@@ -252,7 +312,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Runs</span>");
 
             
-            #line 45 "..\..\Views\PlayerBowling.cshtml"
+            #line 64 "..\..\Views\PlayerBowling.cshtml"
                                                                                                        Write(Model.BowlingStatistics.TotalRunsConceded);
 
             
@@ -271,7 +331,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Wickets</span>");
 
             
-            #line 46 "..\..\Views\PlayerBowling.cshtml"
+            #line 65 "..\..\Views\PlayerBowling.cshtml"
                                                                                                           Write(Model.BowlingStatistics.TotalWickets);
 
             
@@ -290,7 +350,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">5 wickets</span>");
 
             
-            #line 47 "..\..\Views\PlayerBowling.cshtml"
+            #line 66 "..\..\Views\PlayerBowling.cshtml"
                                                                                                             Write(Model.BowlingStatistics.FiveWicketInnings);
 
             
@@ -309,7 +369,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Best</span>");
 
             
-            #line 48 "..\..\Views\PlayerBowling.cshtml"
+            #line 67 "..\..\Views\PlayerBowling.cshtml"
                                                                                                         Write(Model.BowlingStatistics.BestInningsWickets.HasValue ? Model.BowlingStatistics.BestInningsWickets + "/" + (Model.BowlingStatistics.BestInningsRunsConceded.HasValue ? Model.BowlingStatistics.BestInningsRunsConceded.Value.ToString() : "–") : "–");
 
             
@@ -328,7 +388,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Economy</span>");
 
             
-            #line 49 "..\..\Views\PlayerBowling.cshtml"
+            #line 68 "..\..\Views\PlayerBowling.cshtml"
                                                                                                            Write(Model.BowlingStatistics.Economy.HasValue ? Math.Round(Model.BowlingStatistics.Economy.Value, 2).ToString() : "–");
 
             
@@ -347,7 +407,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Average</span>");
 
             
-            #line 50 "..\..\Views\PlayerBowling.cshtml"
+            #line 69 "..\..\Views\PlayerBowling.cshtml"
                                                                                                            Write(Model.BowlingStatistics.Average.HasValue ? Math.Round(Model.BowlingStatistics.Average.Value, 2).ToString() : "–");
 
             
@@ -366,7 +426,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Strike rate</span>");
 
             
-            #line 51 "..\..\Views\PlayerBowling.cshtml"
+            #line 70 "..\..\Views\PlayerBowling.cshtml"
                                                                                                                Write(Model.BowlingStatistics.StrikeRate.HasValue ? Math.Round(Model.BowlingStatistics.StrikeRate.Value, 2).ToString() : "–");
 
             
@@ -375,13 +435,13 @@ WriteLiteral(">Strike rate</span>");
 WriteLiteral("</td>\r\n            </tr>\r\n        </tbody>\r\n    </table>\r\n\r\n");
 
             
-            #line 56 "..\..\Views\PlayerBowling.cshtml"
+            #line 75 "..\..\Views\PlayerBowling.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 56 "..\..\Views\PlayerBowling.cshtml"
+            #line 75 "..\..\Views\PlayerBowling.cshtml"
      if ((Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithRunsConceded && Model.BowlingStatistics.Average.HasValue) ||
        (Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithRunsConceded && Model.BowlingStatistics.Economy.HasValue) ||
        (Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithBallsBowled && Model.BowlingStatistics.StrikeRate.HasValue))
@@ -397,13 +457,13 @@ WriteLiteral(" class=\"table-small-print\"");
 WriteLiteral(">\r\n            <small>\r\n");
 
             
-            #line 62 "..\..\Views\PlayerBowling.cshtml"
+            #line 81 "..\..\Views\PlayerBowling.cshtml"
                 
             
             #line default
             #line hidden
             
-            #line 62 "..\..\Views\PlayerBowling.cshtml"
+            #line 81 "..\..\Views\PlayerBowling.cshtml"
                  if (Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithRunsConceded)
                 {
                     if (Model.BowlingStatistics.Economy.HasValue && Model.BowlingStatistics.Average.HasValue &&
@@ -418,7 +478,7 @@ WriteLiteral("                        ");
 WriteLiteral("Economy, average and strike rate are based on ");
 
             
-            #line 67 "..\..\Views\PlayerBowling.cshtml"
+            #line 86 "..\..\Views\PlayerBowling.cshtml"
                                                                     Write(Model.BowlingStatistics.TotalInningsWithRunsConceded);
 
             
@@ -427,7 +487,7 @@ WriteLiteral("Economy, average and strike rate are based on ");
 WriteLiteral(" innings with overs, runs and wickets recorded.\r\n");
 
             
-            #line 68 "..\..\Views\PlayerBowling.cshtml"
+            #line 87 "..\..\Views\PlayerBowling.cshtml"
                     }
                     else if (Model.BowlingStatistics.Economy.HasValue && Model.BowlingStatistics.Average.HasValue)
                     {
@@ -440,7 +500,7 @@ WriteLiteral("                        ");
 WriteLiteral("Economy and average are based on ");
 
             
-            #line 71 "..\..\Views\PlayerBowling.cshtml"
+            #line 90 "..\..\Views\PlayerBowling.cshtml"
                                                        Write(Model.BowlingStatistics.TotalInningsWithRunsConceded);
 
             
@@ -449,7 +509,7 @@ WriteLiteral("Economy and average are based on ");
 WriteLiteral(" innings with overs, runs and wickets recorded.\r\n");
 
             
-            #line 72 "..\..\Views\PlayerBowling.cshtml"
+            #line 91 "..\..\Views\PlayerBowling.cshtml"
                     }
                     else if (Model.BowlingStatistics.Economy.HasValue)
                     {
@@ -462,7 +522,7 @@ WriteLiteral("                        ");
 WriteLiteral("Economy is based on ");
 
             
-            #line 75 "..\..\Views\PlayerBowling.cshtml"
+            #line 94 "..\..\Views\PlayerBowling.cshtml"
                                           Write(Model.BowlingStatistics.TotalInningsWithRunsConceded);
 
             
@@ -471,7 +531,7 @@ WriteLiteral("Economy is based on ");
 WriteLiteral(" innings with overs and runs recorded.\r\n");
 
             
-            #line 76 "..\..\Views\PlayerBowling.cshtml"
+            #line 95 "..\..\Views\PlayerBowling.cshtml"
                     }
                     else if (Model.BowlingStatistics.Average.HasValue)
                     {
@@ -484,7 +544,7 @@ WriteLiteral("                        ");
 WriteLiteral("The average is based on ");
 
             
-            #line 79 "..\..\Views\PlayerBowling.cshtml"
+            #line 98 "..\..\Views\PlayerBowling.cshtml"
                                               Write(Model.BowlingStatistics.TotalInningsWithRunsConceded);
 
             
@@ -493,7 +553,7 @@ WriteLiteral("The average is based on ");
 WriteLiteral(" innings with runs and wickets recorded.\r\n");
 
             
-            #line 80 "..\..\Views\PlayerBowling.cshtml"
+            #line 99 "..\..\Views\PlayerBowling.cshtml"
                     }
                 }
 
@@ -503,7 +563,7 @@ WriteLiteral(" innings with runs and wickets recorded.\r\n");
 WriteLiteral("                ");
 
             
-            #line 82 "..\..\Views\PlayerBowling.cshtml"
+            #line 101 "..\..\Views\PlayerBowling.cshtml"
                  if (Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithBallsBowled && Model.BowlingStatistics.StrikeRate.HasValue &&
                     (!Model.BowlingStatistics.Economy.HasValue || !Model.BowlingStatistics.Average.HasValue || Model.BowlingStatistics.TotalInningsWithRunsConceded != Model.BowlingStatistics.TotalInningsWithBallsBowled))
                 {
@@ -516,7 +576,7 @@ WriteLiteral("                    ");
 WriteLiteral("The strike rate is based on ");
 
             
-            #line 85 "..\..\Views\PlayerBowling.cshtml"
+            #line 104 "..\..\Views\PlayerBowling.cshtml"
                                               Write(Model.BowlingStatistics.TotalInningsWithBallsBowled);
 
             
@@ -525,7 +585,7 @@ WriteLiteral("The strike rate is based on ");
 WriteLiteral(" innings with overs and wickets recorded.\r\n");
 
             
-            #line 86 "..\..\Views\PlayerBowling.cshtml"
+            #line 105 "..\..\Views\PlayerBowling.cshtml"
                 }
 
             
@@ -534,7 +594,7 @@ WriteLiteral(" innings with overs and wickets recorded.\r\n");
 WriteLiteral("            </small>\r\n        </p>\r\n");
 
             
-            #line 89 "..\..\Views\PlayerBowling.cshtml"
+            #line 108 "..\..\Views\PlayerBowling.cshtml"
 
     }
 
@@ -546,7 +606,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 92 "..\..\Views\PlayerBowling.cshtml"
+            #line 111 "..\..\Views\PlayerBowling.cshtml"
 Write(Html.Partial("_BowlingFigures", bowlingFigures));
 
             

@@ -13,9 +13,9 @@ namespace Stoolball.Data.Cache
     {
         private readonly ICacheableBestPerformanceInAMatchStatisticsDataSource _statisticsDataSource;
         private readonly IReadOnlyPolicyRegistry<string> _policyRegistry;
-        private readonly IStatisticsFilterSerializer _statisticsFilterSerializer;
+        private readonly IStatisticsFilterQueryStringSerializer _statisticsFilterSerializer;
 
-        public CachedBestPerformanceInAMatchStatisticsDataSource(IReadOnlyPolicyRegistry<string> policyRegistry, ICacheableBestPerformanceInAMatchStatisticsDataSource statisticsDataSource, IStatisticsFilterSerializer statisticsFilterSerializer)
+        public CachedBestPerformanceInAMatchStatisticsDataSource(IReadOnlyPolicyRegistry<string> policyRegistry, ICacheableBestPerformanceInAMatchStatisticsDataSource statisticsDataSource, IStatisticsFilterQueryStringSerializer statisticsFilterSerializer)
         {
             _policyRegistry = policyRegistry ?? throw new ArgumentNullException(nameof(policyRegistry));
             _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));

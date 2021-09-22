@@ -974,7 +974,7 @@ namespace Stoolball.Testing
         }
 
 
-        private List<Match> GenerateMatchData()
+        public List<Match> GenerateMatchData()
         {
             // Create utilities to randomise and build data
             _teams = GenerateTeams();

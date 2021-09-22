@@ -34,18 +34,36 @@ namespace ASP
     #line hidden
     using Examine;
     
-    #line 4 "..\..\Views\PlayerFielding.cshtml"
+    #line 6 "..\..\Views\PlayerFielding.cshtml"
     using Stoolball.Matches;
     
     #line default
     #line hidden
     
-    #line 3 "..\..\Views\PlayerFielding.cshtml"
+    #line 4 "..\..\Views\PlayerFielding.cshtml"
+    using Stoolball.Statistics;
+    
+    #line default
+    #line hidden
+    
+    #line 7 "..\..\Views\PlayerFielding.cshtml"
+    using Stoolball.Web.Filtering;
+    
+    #line default
+    #line hidden
+    
+    #line 5 "..\..\Views\PlayerFielding.cshtml"
     using Stoolball.Web.Statistics;
     
     #line default
     #line hidden
     using Umbraco.Core;
+    
+    #line 3 "..\..\Views\PlayerFielding.cshtml"
+    using Umbraco.Core.Composing;
+    
+    #line default
+    #line hidden
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
@@ -62,13 +80,19 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 5 "..\..\Views\PlayerFielding.cshtml"
+            #line 8 "..\..\Views\PlayerFielding.cshtml"
   
     Html.RequiresCss("/statistics/statistics.min.css");
-    var catches = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
+
+    var catches = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.AppliedFilter };
     catches.Results.AddRange(Model.Catches);
-    var runOuts = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
+    var runOuts = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.AppliedFilter };
     runOuts.Results.AddRange(Model.RunOuts);
+
+    var serialiser = Current.Factory.GetInstance<IStatisticsFilterQueryStringSerializer>();
+    var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
 
             
             #line default
@@ -82,7 +106,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("    ");
 
             
-            #line 13 "..\..\Views\PlayerFielding.cshtml"
+            #line 22 "..\..\Views\PlayerFielding.cshtml"
 Write(Html.Partial("_PlayerHeader"));
 
             
@@ -100,14 +124,21 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 784), Tuple.Create("\"", 816)
+WriteAttribute("href", Tuple.Create(" href=\"", 1139), Tuple.Create("\"", 1185)
             
-            #line 17 "..\..\Views\PlayerFielding.cshtml"
-, Tuple.Create(Tuple.Create("", 791), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
+            #line 26 "..\..\Views\PlayerFielding.cshtml"
+, Tuple.Create(Tuple.Create("", 1146), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
             
             #line default
             #line hidden
-, 791), false)
+, 1146), false)
+            
+            #line 26 "..\..\Views\PlayerFielding.cshtml"
+, Tuple.Create(Tuple.Create("", 1171), Tuple.Create<System.Object, System.Int32>(queryString
+            
+            #line default
+            #line hidden
+, 1171), false)
 );
 
 WriteLiteral(">Batting</a>\r\n        </li>\r\n        <li");
@@ -118,15 +149,22 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 908), Tuple.Create("\"", 948)
+WriteAttribute("href", Tuple.Create(" href=\"", 1277), Tuple.Create("\"", 1331)
             
-            #line 20 "..\..\Views\PlayerFielding.cshtml"
-, Tuple.Create(Tuple.Create("", 915), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
+            #line 29 "..\..\Views\PlayerFielding.cshtml"
+, Tuple.Create(Tuple.Create("", 1284), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
             
             #line default
             #line hidden
-, 915), false)
-, Tuple.Create(Tuple.Create("", 940), Tuple.Create("/bowling", 940), true)
+, 1284), false)
+, Tuple.Create(Tuple.Create("", 1309), Tuple.Create("/bowling", 1309), true)
+            
+            #line 29 "..\..\Views\PlayerFielding.cshtml"
+, Tuple.Create(Tuple.Create("", 1317), Tuple.Create<System.Object, System.Int32>(queryString
+            
+            #line default
+            #line hidden
+, 1317), false)
 );
 
 WriteLiteral(">Bowling</a>\r\n        </li>\r\n        <li");
@@ -137,7 +175,35 @@ WriteLiteral(">\r\n            <em");
 
 WriteLiteral(" class=\"nav-link active\"");
 
-WriteLiteral(">Fielding</em>\r\n        </li>\r\n    </ul>\r\n\r\n    <table");
+WriteLiteral(">Fielding</em>\r\n        </li>\r\n        <li");
+
+WriteLiteral(" class=\"nav-item nav-item-admin\"");
+
+WriteLiteral(">\r\n            <button");
+
+WriteLiteral(" type=\"button\"");
+
+WriteLiteral(" class=\"nav-link nav-link-filter\"");
+
+WriteLiteral(">Edit filter</button>\r\n        </li>\r\n    </ul>\r\n");
+
+WriteLiteral("    ");
+
+            
+            #line 38 "..\..\Views\PlayerFielding.cshtml"
+Write(Html.Partial("_Filters", new FilterViewModel
+{
+    FilteredItemTypeSingular = "Statistics",
+    FilteredItemTypePlural = "Statistics",
+    FilterDescription = Model.FilterDescription,
+    from = Model.AppliedFilter.FromDate,
+    to = Model.AppliedFilter.UntilDate
+}));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n\r\n    <table");
 
 WriteLiteral(" class=\"table-as-cards table-as-cards-reset-sm\"");
 
@@ -171,7 +237,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Catches</span>");
 
             
-            #line 38 "..\..\Views\PlayerFielding.cshtml"
+            #line 58 "..\..\Views\PlayerFielding.cshtml"
                                                                                                           Write(Model.FieldingStatistics.TotalCatches);
 
             
@@ -190,7 +256,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Most catches</span>");
 
             
-            #line 39 "..\..\Views\PlayerFielding.cshtml"
+            #line 59 "..\..\Views\PlayerFielding.cshtml"
                                                                                                                Write(Model.FieldingStatistics.MostCatches);
 
             
@@ -209,7 +275,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Run-outs</span>");
 
             
-            #line 40 "..\..\Views\PlayerFielding.cshtml"
+            #line 60 "..\..\Views\PlayerFielding.cshtml"
                                                                                                            Write(Model.FieldingStatistics.TotalRunOuts);
 
             
@@ -228,7 +294,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Most run-outs</span>");
 
             
-            #line 41 "..\..\Views\PlayerFielding.cshtml"
+            #line 61 "..\..\Views\PlayerFielding.cshtml"
                                                                                                                 Write(Model.FieldingStatistics.MostRunOuts);
 
             
@@ -239,7 +305,7 @@ WriteLiteral("</td>\r\n            </tr>\r\n        </tbody>\r\n    </table>\r\n
 WriteLiteral("    ");
 
             
-            #line 46 "..\..\Views\PlayerFielding.cshtml"
+            #line 66 "..\..\Views\PlayerFielding.cshtml"
 Write(Html.Partial("_Catches", catches));
 
             
@@ -248,13 +314,13 @@ Write(Html.Partial("_Catches", catches));
 WriteLiteral("\r\n");
 
             
-            #line 47 "..\..\Views\PlayerFielding.cshtml"
+            #line 67 "..\..\Views\PlayerFielding.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 47 "..\..\Views\PlayerFielding.cshtml"
+            #line 67 "..\..\Views\PlayerFielding.cshtml"
      if (Model.FieldingStatistics.TotalCatches > catches.Results.Count)
     {
 
@@ -263,21 +329,21 @@ WriteLiteral("\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2275), Tuple.Create("\"", 2326)
+WriteAttribute("href", Tuple.Create(" href=\"", 3088), Tuple.Create("\"", 3139)
             
-            #line 49 "..\..\Views\PlayerFielding.cshtml"
-, Tuple.Create(Tuple.Create("", 2282), Tuple.Create<System.Object, System.Int32>(Request.RawUrl.TrimEnd("/fielding")
+            #line 69 "..\..\Views\PlayerFielding.cshtml"
+, Tuple.Create(Tuple.Create("", 3095), Tuple.Create<System.Object, System.Int32>(Request.RawUrl.TrimEnd("/fielding")
             
             #line default
             #line hidden
-, 2282), false)
-, Tuple.Create(Tuple.Create("", 2318), Tuple.Create("/catches", 2318), true)
+, 3095), false)
+, Tuple.Create(Tuple.Create("", 3131), Tuple.Create("/catches", 3131), true)
 );
 
 WriteLiteral(">Catches – view all</a></p>\r\n");
 
             
-            #line 50 "..\..\Views\PlayerFielding.cshtml"
+            #line 70 "..\..\Views\PlayerFielding.cshtml"
     }
 
             
@@ -286,7 +352,7 @@ WriteLiteral(">Catches – view all</a></p>\r\n");
 WriteLiteral("    ");
 
             
-            #line 51 "..\..\Views\PlayerFielding.cshtml"
+            #line 71 "..\..\Views\PlayerFielding.cshtml"
 Write(Html.Partial("_RunOuts", runOuts));
 
             
@@ -295,13 +361,13 @@ Write(Html.Partial("_RunOuts", runOuts));
 WriteLiteral("\r\n");
 
             
-            #line 52 "..\..\Views\PlayerFielding.cshtml"
+            #line 72 "..\..\Views\PlayerFielding.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 52 "..\..\Views\PlayerFielding.cshtml"
+            #line 72 "..\..\Views\PlayerFielding.cshtml"
      if (Model.FieldingStatistics.TotalRunOuts > catches.Results.Count)
     {
 
@@ -310,21 +376,21 @@ WriteLiteral("\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2496), Tuple.Create("\"", 2548)
+WriteAttribute("href", Tuple.Create(" href=\"", 3309), Tuple.Create("\"", 3361)
             
-            #line 54 "..\..\Views\PlayerFielding.cshtml"
-, Tuple.Create(Tuple.Create("", 2503), Tuple.Create<System.Object, System.Int32>(Request.RawUrl.TrimEnd("/fielding")
+            #line 74 "..\..\Views\PlayerFielding.cshtml"
+, Tuple.Create(Tuple.Create("", 3316), Tuple.Create<System.Object, System.Int32>(Request.RawUrl.TrimEnd("/fielding")
             
             #line default
             #line hidden
-, 2503), false)
-, Tuple.Create(Tuple.Create("", 2539), Tuple.Create("/run-outs", 2539), true)
+, 3316), false)
+, Tuple.Create(Tuple.Create("", 3352), Tuple.Create("/run-outs", 3352), true)
 );
 
 WriteLiteral(">Run-outs – view all</a></p>\r\n");
 
             
-            #line 55 "..\..\Views\PlayerFielding.cshtml"
+            #line 75 "..\..\Views\PlayerFielding.cshtml"
     }
 
             
