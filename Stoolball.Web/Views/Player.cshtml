@@ -2,8 +2,11 @@
 @using ClientDependency.Core.Mvc
 @using Stoolball.Web.Statistics
 @using Stoolball.Matches
+@using Stoolball.Web.Filtering
 @{
     Html.RequiresCss("/statistics/statistics.min.css");
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
 
     var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = false, StatisticsFilter = Model.StatisticsFilter };
     individualScores.Results.AddRange(Model.PlayerInnings);
@@ -21,7 +24,18 @@
         <li class="nav-item">
             <a class="nav-link" href="@Model.Player.PlayerRoute/fielding">Fielding</a>
         </li>
+        <li class="nav-item nav-item-admin">
+            <button type="button" class="nav-link nav-link-filter">Edit filter</button>
+        </li>
     </ul>
+    @Html.Partial("_Filters", new FilterViewModel
+    {
+      FilteredItemTypeSingular = "Statistics",
+      FilteredItemTypePlural = "Statistics",
+      FilterDescription = Model.FilterDescription,
+      from = Model.StatisticsFilter.FromDate,
+      to = Model.StatisticsFilter.UntilDate
+    })
 
     <table class="table-as-cards table-as-cards-reset-sm">
         <thead>
@@ -49,19 +63,21 @@
             </tr>
         </tbody>
     </table>
-    @if ((Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScored && Model.BattingStatistics.Average.HasValue) || 
+    @if ((Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScored && Model.BattingStatistics.Average.HasValue) ||
         (Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScoredAndBallsFaced && Model.BattingStatistics.StrikeRate.HasValue))
     {
-        <p class="table-small-print"><small>
-        @if (Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScored && Model.BattingStatistics.Average.HasValue)
-        {
-            @:The average is based on @(Model.BattingStatistics.TotalInningsWithRunsScored) innings with runs recorded.
-        }
-        @if (Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScoredAndBallsFaced && Model.BattingStatistics.StrikeRate.HasValue)
-        {
-            @:The strike rate is based on @(Model.BattingStatistics.TotalInningsWithRunsScoredAndBallsFaced) innings with runs and balls faced recorded.
-        }
-        </small></p>
+        <p class="table-small-print">
+            <small>
+                @if (Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScored && Model.BattingStatistics.Average.HasValue)
+                {
+                    @:The average is based on @(Model.BattingStatistics.TotalInningsWithRunsScored) innings with runs recorded.
+                }
+                @if (Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScoredAndBallsFaced && Model.BattingStatistics.StrikeRate.HasValue)
+                {
+                    @:The strike rate is based on @(Model.BattingStatistics.TotalInningsWithRunsScoredAndBallsFaced) innings with runs and balls faced recorded.
+                }
+            </small>
+        </p>
 
     }
 

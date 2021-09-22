@@ -1186,9 +1186,12 @@ namespace Stoolball.Testing
             };
 
             var match = CreateMatchInThePastWithMinimalDetails();
-            match.StartTime = DateTimeOffset.UtcNow.AddMonths(_randomiser.Next(30) * -1 - 1);
             match.Teams.Add(teamAInMatch);
             match.Teams.Add(teamBInMatch);
+
+            // create a date accurate to the minute, otherwise integration tests can fail due to fractions of a second which are never seen in real data
+            match.StartTime = DateTimeOffset.UtcNow.AddMonths(_randomiser.Next(30) * -1 - 1);
+            match.StartTime = new DateTimeOffset(match.StartTime.Year, match.StartTime.Month, match.StartTime.Day, match.StartTime.Hour, match.StartTime.Minute, 0, TimeSpan.Zero);
 
             // Some matches should have multiple innings
             if (_randomiser.Next(4) == 0)

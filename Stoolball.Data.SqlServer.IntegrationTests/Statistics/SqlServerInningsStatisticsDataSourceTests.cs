@@ -135,7 +135,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var filter = new StatisticsFilter
             {
                 FromDate = allMatchDates.First().Add(oneThirdOfTheTimeBetweenFirstAndLast),
-                UntilDate = allMatchDates.Last().Add(oneThirdOfTheTimeBetweenFirstAndLast)
+                UntilDate = allMatchDates.Last().Add(-oneThirdOfTheTimeBetweenFirstAndLast)
             };
             var queryBuilder = new Mock<IStatisticsQueryBuilder>();
             queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate", new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } }));
