@@ -3,9 +3,13 @@
 @using Stoolball.Matches
 @using Stoolball.Statistics
 @using Stoolball.Web.Statistics
+@using Stoolball.Web.Filtering
 @using ClientDependency.Core.Mvc
 @{
     Html.RequiresCss("/statistics/statistics.min.css");
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
+    
     var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
     individualScores.Results.AddRange(Model.PlayerInnings);
     var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
@@ -23,25 +27,43 @@
 <div class="container-xl">
     <h1>Statistics for all teams</h1>
 
-    @if (Model.IsAuthorized[AuthorizedAction.EditStatistics])
-    {
-        <ul class="nav nav-tabs">
+    <ul class="nav nav-tabs">
+        <li class="nav-item nav-item-admin">
+            <button type="button" class="nav-link nav-link-filter">Edit filter</button>
+        </li>
+        @if (Model.IsAuthorized[AuthorizedAction.EditStatistics])
+        {
             <li class="nav-item nav-item-admin">
                 <a class="nav-link nav-link-edit" href="@Stoolball.Constants.Pages.StatisticsUrl/edit">Edit statistics</a>
             </li>
-        </ul>
-    }
+        }
+    </ul>
+    @Html.Partial("_Filters", new FilterViewModel
+    {
+      FilteredItemTypeSingular = "Statistics",
+      FilteredItemTypePlural = "Statistics",
+      FilterDescription = Model.FilterDescription,
+      from = Model.StatisticsFilter.FromDate,
+      to = Model.StatisticsFilter.UntilDate
+    })
 
-    @Html.Partial("_StatisticsBasis")
-    @Html.Partial("_IndividualScores", individualScores)
-    @Html.Partial("_MostRuns", mostRuns)
-    @Html.Partial("_BattingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true })
-    @Html.Partial("_BattingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true })
-    @Html.Partial("_BowlingFigures", bowlingFigures)
-    @Html.Partial("_MostWickets", mostWickets)
-    @Html.Partial("_BowlingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true })
-    @Html.Partial("_EconomyRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true })
-    @Html.Partial("_BowlingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true })
-    @Html.Partial("_MostCatches", mostCatches)
-    @Html.Partial("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true })
+    @if (!Model.PlayerInnings.Any() && !Model.BowlingFigures.Any() && !Model.MostRuns.Any() && !Model.MostWickets.Any() && !Model.MostCatches.Any())
+    {
+        @Html.Partial("_NoData")
+    }
+    else
+    {
+        @Html.Partial("_StatisticsBasis")
+        @Html.Partial("_IndividualScores", individualScores)
+        @Html.Partial("_MostRuns", mostRuns)
+        @Html.Partial("_BattingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true })
+        @Html.Partial("_BattingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true })
+        @Html.Partial("_BowlingFigures", bowlingFigures)
+        @Html.Partial("_MostWickets", mostWickets)
+        @Html.Partial("_BowlingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true })
+        @Html.Partial("_EconomyRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true })
+        @Html.Partial("_BowlingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true })
+        @Html.Partial("_MostCatches", mostCatches)
+        @Html.Partial("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true })
+    }
 </div>

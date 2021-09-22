@@ -150,7 +150,7 @@ WriteLiteral("    ");
 
             
             #line 28 "..\..\Views\Matches.cshtml"
-Write(Html.Partial("_MatchFilter", new MatchFilterViewModel {
+Write(Html.Partial("_Filters", new MatchFilterViewModel {
     FilterDescription = Model.FilterDescription,
     from = Model.AppliedMatchFilter.FromDate,
     to = Model.AppliedMatchFilter.UntilDate

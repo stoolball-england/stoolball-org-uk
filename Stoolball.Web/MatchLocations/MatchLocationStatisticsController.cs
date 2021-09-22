@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Stoolball.MatchLocations;
 using Stoolball.Navigation;
@@ -22,6 +23,8 @@ namespace Stoolball.Web.MatchLocations
         private readonly IMatchLocationDataSource _matchLocationDataSource;
         private readonly IBestPerformanceInAMatchStatisticsDataSource _bestPerformanceDataSource;
         private readonly IBestPlayerTotalStatisticsDataSource _bestPlayerTotalDataSource;
+        private readonly IStatisticsFilterQueryStringParser _statisticsFilterQueryStringParser;
+        private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
 
         public MatchLocationStatisticsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -31,12 +34,16 @@ namespace Stoolball.Web.MatchLocations
            UmbracoHelper umbracoHelper,
            IMatchLocationDataSource matchLocationDataSource,
            IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource,
-           IBestPlayerTotalStatisticsDataSource bestPlayerTotalDataSource)
+           IBestPlayerTotalStatisticsDataSource bestPlayerTotalDataSource,
+           IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
+           IStatisticsFilterHumanizer statisticsFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchLocationDataSource = matchLocationDataSource ?? throw new ArgumentNullException(nameof(matchLocationDataSource));
             _bestPerformanceDataSource = bestPerformanceDataSource ?? throw new ArgumentNullException(nameof(bestPerformanceDataSource));
             _bestPlayerTotalDataSource = bestPlayerTotalDataSource ?? throw new ArgumentNullException(nameof(bestPlayerTotalDataSource));
+            _statisticsFilterQueryStringParser = statisticsFilterQueryStringParser ?? throw new ArgumentNullException(nameof(statisticsFilterQueryStringParser));
+            _statisticsFilterHumanizer = statisticsFilterHumanizer ?? throw new ArgumentNullException(nameof(statisticsFilterHumanizer));
         }
 
         [HttpGet]
@@ -59,7 +66,7 @@ namespace Stoolball.Web.MatchLocations
             }
             else
             {
-                model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
+                model.StatisticsFilter = _statisticsFilterQueryStringParser.ParseQueryString(new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 }, HttpUtility.ParseQueryString(Request.Url.Query));
                 model.StatisticsFilter.MatchLocation = model.Context;
                 model.PlayerInnings = (await _bestPerformanceDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
                 model.BowlingFigures = (await _bestPerformanceDataSource.ReadBowlingFigures(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
@@ -69,7 +76,8 @@ namespace Stoolball.Web.MatchLocations
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.MatchLocations, Url = new Uri(Constants.Pages.MatchLocationsUrl, UriKind.Relative) });
 
-                model.Metadata.PageTitle = $"Statistics for {model.Context.NameAndLocalityOrTown()}";
+                model.FilterDescription = _statisticsFilterHumanizer.StatisticsMatchingFilter(model.StatisticsFilter);
+                model.Metadata.PageTitle = $"Statistics for {model.Context.NameAndLocalityOrTown()}" + _statisticsFilterHumanizer.MatchingFilter(model.StatisticsFilter);
                 model.Metadata.Description = $"Statistics for stoolball matches played at {model.Context.NameAndLocalityOrTown()}.";
 
                 return CurrentTemplate(model);

@@ -6,7 +6,7 @@
 .filter {
     padding: $table-cell-padding 0 $table-cell-padding $table-cell-padding/2;
     margin: -$spacer 0 $spacer;
-    border-bottom: theme-color("primary") solid 1px;
+    border-bottom: theme-color("alt-secondary") solid 1px;
 }
 
 .filter__applied {

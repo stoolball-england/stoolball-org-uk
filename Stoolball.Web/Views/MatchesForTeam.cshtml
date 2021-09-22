@@ -52,7 +52,7 @@
         </li>
         @Html.Partial("_AddMatchMenu", matchMenu)
     </ul>
-    @Html.Partial("_MatchFilter", new MatchFilterViewModel
+    @Html.Partial("_Filters", new MatchFilterViewModel
 {
     FilterDescription = Model.FilterDescription,
     from = Model.AppliedMatchFilter.FromDate,

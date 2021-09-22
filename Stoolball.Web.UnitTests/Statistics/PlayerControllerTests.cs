@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -25,7 +26,9 @@ namespace Stoolball.Web.Tests.Statistics
 
         private class TestController : PlayerController
         {
-            public TestController(IPlayerDataSource playerDataSource, UmbracoHelper umbracoHelper)
+            public TestController(IPlayerDataSource playerDataSource,
+                IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
+                UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -35,7 +38,9 @@ namespace Stoolball.Web.Tests.Statistics
                 umbracoHelper,
                 playerDataSource,
                 Mock.Of<IPlayerSummaryStatisticsDataSource>(),
-                Mock.Of<IBestPerformanceInAMatchStatisticsDataSource>())
+                Mock.Of<IBestPerformanceInAMatchStatisticsDataSource>(),
+                statisticsFilterQueryStringParser,
+                Mock.Of<IStatisticsFilterHumanizer>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -58,10 +63,12 @@ namespace Stoolball.Web.Tests.Statistics
         [Fact]
         public async Task Route_not_matching_player_returns_404()
         {
+            var statisticsFilterQueryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
+            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter());
             var dataSource = new Mock<IPlayerDataSource>();
             dataSource.Setup(x => x.ReadPlayerByRoute(It.IsAny<string>())).Returns(Task.FromResult<Player>(null));
 
-            using (var controller = new TestController(dataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(dataSource.Object, statisticsFilterQueryStringParser.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -72,10 +79,12 @@ namespace Stoolball.Web.Tests.Statistics
         [Fact]
         public async Task Route_matching_player_returns_PlayerBattingViewModel()
         {
+            var statisticsFilterQueryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
+            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter());
             var dataSource = new Mock<IPlayerDataSource>();
             dataSource.Setup(x => x.ReadPlayerByRoute(It.IsAny<string>())).Returns(Task.FromResult<Player>(new Player()));
 
-            using (var controller = new TestController(dataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(dataSource.Object, statisticsFilterQueryStringParser.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

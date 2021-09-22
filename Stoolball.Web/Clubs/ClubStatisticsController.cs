@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Stoolball.Clubs;
 using Stoolball.Navigation;
@@ -23,6 +24,8 @@ namespace Stoolball.Web.Clubs
         private readonly IBestPerformanceInAMatchStatisticsDataSource _bestPerformanceDataSource;
         private readonly IInningsStatisticsDataSource _inningsStatisticsDataSource;
         private readonly IBestPlayerTotalStatisticsDataSource _bestPlayerTotalDataSource;
+        private readonly IStatisticsFilterQueryStringParser _statisticsFilterQueryStringParser;
+        private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
 
         public ClubStatisticsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -33,13 +36,17 @@ namespace Stoolball.Web.Clubs
            IClubDataSource clubDataSource,
            IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource,
            IInningsStatisticsDataSource inningsStatisticsDataSource,
-           IBestPlayerTotalStatisticsDataSource bestPlayerTotalDataSource)
+           IBestPlayerTotalStatisticsDataSource bestPlayerTotalDataSource,
+           IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
+           IStatisticsFilterHumanizer statisticsFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _clubDataSource = clubDataSource ?? throw new ArgumentNullException(nameof(clubDataSource));
             _bestPerformanceDataSource = bestPerformanceDataSource ?? throw new ArgumentNullException(nameof(bestPerformanceDataSource));
             _inningsStatisticsDataSource = inningsStatisticsDataSource ?? throw new ArgumentNullException(nameof(inningsStatisticsDataSource));
             _bestPlayerTotalDataSource = bestPlayerTotalDataSource ?? throw new ArgumentNullException(nameof(bestPlayerTotalDataSource));
+            _statisticsFilterQueryStringParser = statisticsFilterQueryStringParser ?? throw new ArgumentNullException(nameof(statisticsFilterQueryStringParser));
+            _statisticsFilterHumanizer = statisticsFilterHumanizer ?? throw new ArgumentNullException(nameof(statisticsFilterHumanizer));
         }
 
         [HttpGet]
@@ -62,7 +69,7 @@ namespace Stoolball.Web.Clubs
             }
             else
             {
-                model.StatisticsFilter = new StatisticsFilter { Club = model.Context };
+                model.StatisticsFilter = _statisticsFilterQueryStringParser.ParseQueryString(new StatisticsFilter { Club = model.Context }, HttpUtility.ParseQueryString(Request.Url.Query));
                 model.InningsStatistics = await _inningsStatisticsDataSource.ReadInningsStatistics(model.StatisticsFilter).ConfigureAwait(false);
 
                 model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual = 10;
@@ -74,7 +81,8 @@ namespace Stoolball.Web.Clubs
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
 
-                model.Metadata.PageTitle = $"Statistics for {model.Context.ClubName}.";
+                model.FilterDescription = _statisticsFilterHumanizer.StatisticsMatchingFilter(model.StatisticsFilter);
+                model.Metadata.PageTitle = $"Statistics for {model.Context.ClubName}" + _statisticsFilterHumanizer.MatchingFilter(model.StatisticsFilter);
                 model.Metadata.Description = $"Statistics for matches played by all teams in {model.Context.ClubName}.";
 
                 return CurrentTemplate(model);

@@ -1362,6 +1362,7 @@
     <Compile Include="Competitions\CompetitionsViewModel.cs" />
     <Compile Include="Competitions\SeasonsApiController.cs" />
     <Compile Include="ContentPage\CookiesController.cs" />
+    <Compile Include="Filtering\FilterViewModel.cs" />
     <Compile Include="Html\HtmlSanitizer.cs" />
     <Compile Include="Matches\EditMatchFormatFormData.cs" />
     <Compile Include="Matches\EditMatchFormatViewModel.cs" />
@@ -3106,7 +3107,7 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_BowlingStrikeRate.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\Partials\_MatchFilter.cshtml" />
+    <Content Include="Views\Partials\_Filters.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

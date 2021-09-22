@@ -10,14 +10,18 @@ namespace Stoolball.Data.SqlServer
     public class SqlServerInningsStatisticsDataSource : IInningsStatisticsDataSource, ICacheableInningsStatisticsDataSource
     {
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
-        public SqlServerInningsStatisticsDataSource(IDatabaseConnectionFactory databaseConnectionFactory)
+        private readonly IStatisticsQueryBuilder _statisticsQueryBuilder;
+
+        public SqlServerInningsStatisticsDataSource(IDatabaseConnectionFactory databaseConnectionFactory, IStatisticsQueryBuilder statisticsQueryBuilder)
         {
-            _databaseConnectionFactory = databaseConnectionFactory;
+            _databaseConnectionFactory = databaseConnectionFactory ?? throw new System.ArgumentNullException(nameof(databaseConnectionFactory));
+            _statisticsQueryBuilder = statisticsQueryBuilder ?? throw new System.ArgumentNullException(nameof(statisticsQueryBuilder));
         }
 
         public async Task<InningsStatistics> ReadInningsStatistics(StatisticsFilter statisticsFilter)
         {
             if (statisticsFilter == null) { statisticsFilter = new StatisticsFilter(); }
+            var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(statisticsFilter);
 
             var sql = $@"SELECT AVG(CAST(TeamRunsScored AS DECIMAL)) AS AverageRunsScored, 
                                 MAX(TeamRunsScored) AS HighestRunsScored, 
@@ -35,28 +39,13 @@ namespace Stoolball.Data.SqlServer
                                    SUM(DISTINCT TeamRunsConceded) AS TeamRunsConceded,
                                    SUM(DISTINCT TeamWicketsTaken) AS TeamWicketsTaken
                             FROM {Tables.PlayerInMatchStatistics} 
-                            <<WHERE>>
+                            WHERE 1=1 {where}
                             GROUP BY MatchId, MatchTeamId, MatchInningsPair
                         ) AS MatchData";
 
-            var where = string.Empty;
-            if (statisticsFilter.Club != null)
-            {
-                where = "WHERE ClubId = @ClubId ";
-            }
-            else if (statisticsFilter.Team != null)
-            {
-                where = "WHERE TeamId = @TeamId ";
-            }
-
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                return await connection.QuerySingleAsync<InningsStatistics>(sql.Replace("<<WHERE>>", where), new
-                {
-                    statisticsFilter.Club?.ClubId,
-                    statisticsFilter.Team?.TeamId
-                })
-                .ConfigureAwait(false);
+                return await connection.QuerySingleAsync<InningsStatistics>(sql, parameters).ConfigureAwait(false);
             }
         }
     }

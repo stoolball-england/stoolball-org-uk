@@ -244,12 +244,12 @@ WriteLiteral("    ");
 
             
             #line 55 "..\..\Views\MatchesForTeam.cshtml"
-Write(Html.Partial("_MatchFilter", new MatchFilterViewModel
-    {
-        FilterDescription = Model.FilterDescription,
-        from = Model.AppliedMatchFilter.FromDate,
-        to = Model.AppliedMatchFilter.UntilDate
-    }));
+Write(Html.Partial("_Filters", new MatchFilterViewModel
+{
+    FilterDescription = Model.FilterDescription,
+    from = Model.AppliedMatchFilter.FromDate,
+    to = Model.AppliedMatchFilter.UntilDate
+}));
 
             
             #line default

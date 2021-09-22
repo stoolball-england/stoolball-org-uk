@@ -258,7 +258,7 @@ WriteLiteral("    ");
 
             
             #line 59 "..\..\Views\StyleGuide.cshtml"
-Write(Html.Partial("_MatchFilter", new MatchFilterViewModel
+Write(Html.Partial("_Filters", new MatchFilterViewModel
     {
         FilterDescription = "a description of the applied filter"
     }));

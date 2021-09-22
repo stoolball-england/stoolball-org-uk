@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -29,7 +30,10 @@ namespace Stoolball.Web.Tests.Competitions
 
         private class TestController : CompetitionStatisticsController
         {
-            public TestController(ICompetitionDataSource competitionDataSource, IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource, UmbracoHelper umbracoHelper)
+            public TestController(ICompetitionDataSource competitionDataSource,
+                IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource,
+                IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
+                UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -39,7 +43,9 @@ namespace Stoolball.Web.Tests.Competitions
                 umbracoHelper,
                 competitionDataSource,
                 bestPerformanceDataSource,
-                Mock.Of<IBestPlayerTotalStatisticsDataSource>())
+                Mock.Of<IBestPlayerTotalStatisticsDataSource>(),
+                statisticsFilterQueryStringParser,
+                Mock.Of<IStatisticsFilterHumanizer>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -64,9 +70,11 @@ namespace Stoolball.Web.Tests.Competitions
         {
             var competitionDataSource = new Mock<ICompetitionDataSource>();
             competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).Returns(Task.FromResult<Competition>(null));
+            var statisticsFilterQueryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
+            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter());
             var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
 
-            using (var controller = new TestController(competitionDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(competitionDataSource.Object, statisticsDataSource.Object, statisticsFilterQueryStringParser.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -77,12 +85,14 @@ namespace Stoolball.Web.Tests.Competitions
         [Fact]
         public async Task Route_matching_competition_returns_StatisticsSummaryViewModel()
         {
+            var statisticsFilterQueryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
+            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter());
             var competitionDataSource = new Mock<ICompetitionDataSource>();
             competitionDataSource.Setup(x => x.ReadCompetitionByRoute(It.IsAny<string>())).ReturnsAsync(new Competition { CompetitionId = Guid.NewGuid() });
             var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
             statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new StatisticsResult<PlayerInnings>[] { new StatisticsResult<PlayerInnings>() } as IEnumerable<StatisticsResult<PlayerInnings>>));
 
-            using (var controller = new TestController(competitionDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(competitionDataSource.Object, statisticsDataSource.Object, statisticsFilterQueryStringParser.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

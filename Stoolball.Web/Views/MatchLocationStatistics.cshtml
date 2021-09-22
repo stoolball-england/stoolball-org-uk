@@ -4,8 +4,11 @@
 @using Stoolball.Matches
 @using Stoolball.MatchLocations
 @using Stoolball.Statistics
+@using Stoolball.Web.Filtering
 @{
     Html.RequiresCss("/statistics/statistics.min.css");
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
 
     var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
     individualScores.Results.AddRange(Model.PlayerInnings);
@@ -31,8 +34,18 @@
         <li class="nav-item">
             <em class="nav-link active">Statistics</em>
         </li>
+        <li class="nav-item nav-item-admin">
+            <button type="button" class="nav-link nav-link-filter">Edit filter</button>
+        </li>
     </ul>
-
+    @Html.Partial("_Filters", new FilterViewModel
+    {
+      FilteredItemTypeSingular = "Statistics",
+      FilteredItemTypePlural = "Statistics",
+      FilterDescription = Model.FilterDescription,
+      from = Model.StatisticsFilter.FromDate,
+      to = Model.StatisticsFilter.UntilDate
+    })
 
     @if (!Model.PlayerInnings.Any() && !Model.BowlingFigures.Any() && !Model.MostRuns.Any() && !Model.MostWickets.Any() && !Model.MostCatches.Any())
     {

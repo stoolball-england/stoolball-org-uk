@@ -52,6 +52,12 @@ namespace ASP
     #line default
     #line hidden
     
+    #line 7 "..\..\Views\CompetitionStatistics.cshtml"
+    using Stoolball.Web.Filtering;
+    
+    #line default
+    #line hidden
+    
     #line 3 "..\..\Views\CompetitionStatistics.cshtml"
     using Stoolball.Web.Statistics;
     
@@ -74,9 +80,11 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 7 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 8 "..\..\Views\CompetitionStatistics.cshtml"
   
     Html.RequiresCss("/statistics/statistics.min.css");
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
 
     var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
     individualScores.Results.AddRange(Model.PlayerInnings);
@@ -86,7 +94,7 @@ namespace ASP
     mostRuns.Results.AddRange(Model.MostRuns);
     var mostWickets = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
     mostWickets.Results.AddRange(Model.MostWickets);
-    var mostCatches= new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    var mostCatches = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
     mostCatches.Results.AddRange(Model.MostCatches);
 
             
@@ -99,7 +107,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 22 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 25 "..\..\Views\CompetitionStatistics.cshtml"
    Write(Model.Context.CompetitionNameAndPlayerType());
 
             
@@ -108,13 +116,13 @@ WriteLiteral(">\r\n    <h1>");
 WriteLiteral("</h1>\r\n\r\n");
 
             
-            #line 24 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 27 "..\..\Views\CompetitionStatistics.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 24 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 27 "..\..\Views\CompetitionStatistics.cshtml"
      if (Model.Context.UntilYear.HasValue)
     {
 
@@ -128,7 +136,7 @@ WriteLiteral(" class=\"alert alert-info\"");
 WriteLiteral("><strong>This competition isn\'t played any more.</strong></p>\r\n");
 
             
-            #line 27 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 30 "..\..\Views\CompetitionStatistics.cshtml"
     }
 
             
@@ -146,14 +154,14 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1838), Tuple.Create("\"", 1876)
+WriteAttribute("href", Tuple.Create(" href=\"", 1956), Tuple.Create("\"", 1994)
             
-            #line 31 "..\..\Views\CompetitionStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 1845), Tuple.Create<System.Object, System.Int32>(Model.Context.CompetitionRoute
+            #line 34 "..\..\Views\CompetitionStatistics.cshtml"
+, Tuple.Create(Tuple.Create("", 1963), Tuple.Create<System.Object, System.Int32>(Model.Context.CompetitionRoute
             
             #line default
             #line hidden
-, 1845), false)
+, 1963), false)
 );
 
 WriteLiteral(">Summary</a>\r\n        </li>\r\n        <li");
@@ -164,16 +172,44 @@ WriteLiteral(">\r\n            <em");
 
 WriteLiteral(" class=\"nav-link active\"");
 
-WriteLiteral(">Statistics</em>\r\n        </li>\r\n    </ul>\r\n\r\n");
+WriteLiteral(">Statistics</em>\r\n        </li>\r\n        <li");
+
+WriteLiteral(" class=\"nav-item nav-item-admin\"");
+
+WriteLiteral(">\r\n            <button");
+
+WriteLiteral(" type=\"button\"");
+
+WriteLiteral(" class=\"nav-link nav-link-filter\"");
+
+WriteLiteral(">Edit filter</button>\r\n        </li>\r\n    </ul>\r\n");
+
+WriteLiteral("    ");
 
             
-            #line 38 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 43 "..\..\Views\CompetitionStatistics.cshtml"
+Write(Html.Partial("_Filters", new FilterViewModel
+    {
+      FilteredItemTypeSingular = "Statistics",
+      FilteredItemTypePlural = "Statistics",
+      FilterDescription = Model.FilterDescription,
+      from = Model.StatisticsFilter.FromDate,
+      to = Model.StatisticsFilter.UntilDate
+    }));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n\r\n");
+
+            
+            #line 52 "..\..\Views\CompetitionStatistics.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 38 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 52 "..\..\Views\CompetitionStatistics.cshtml"
      if (!Model.PlayerInnings.Any() && !Model.BowlingFigures.Any() && !Model.MostRuns.Any() && !Model.MostWickets.Any() && !Model.MostCatches.Any())
     {
         
@@ -181,14 +217,14 @@ WriteLiteral(">Statistics</em>\r\n        </li>\r\n    </ul>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 40 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 54 "..\..\Views\CompetitionStatistics.cshtml"
    Write(Html.Partial("_NoData"));
 
             
             #line default
             #line hidden
             
-            #line 40 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 54 "..\..\Views\CompetitionStatistics.cshtml"
                                 
     }
     else
@@ -198,154 +234,154 @@ WriteLiteral(">Statistics</em>\r\n        </li>\r\n    </ul>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 44 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 58 "..\..\Views\CompetitionStatistics.cshtml"
    Write(Html.Partial("_IndividualScores", individualScores));
 
             
             #line default
             #line hidden
             
-            #line 44 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 58 "..\..\Views\CompetitionStatistics.cshtml"
                                                             
         
             
             #line default
             #line hidden
             
-            #line 45 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 59 "..\..\Views\CompetitionStatistics.cshtml"
    Write(Html.Partial("_MostRuns", mostRuns));
 
             
             #line default
             #line hidden
             
-            #line 45 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 59 "..\..\Views\CompetitionStatistics.cshtml"
                                             
         
             
             #line default
             #line hidden
             
-            #line 46 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 60 "..\..\Views\CompetitionStatistics.cshtml"
    Write(Html.Partial("_BattingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
-            #line 46 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 60 "..\..\Views\CompetitionStatistics.cshtml"
                                                                                                                                      
         
             
             #line default
             #line hidden
             
-            #line 47 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 61 "..\..\Views\CompetitionStatistics.cshtml"
    Write(Html.Partial("_BattingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
-            #line 47 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 61 "..\..\Views\CompetitionStatistics.cshtml"
                                                                                                                                         
         
             
             #line default
             #line hidden
             
-            #line 48 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 62 "..\..\Views\CompetitionStatistics.cshtml"
    Write(Html.Partial("_BowlingFigures", bowlingFigures));
 
             
             #line default
             #line hidden
             
-            #line 48 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 62 "..\..\Views\CompetitionStatistics.cshtml"
                                                         
         
             
             #line default
             #line hidden
             
-            #line 49 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 63 "..\..\Views\CompetitionStatistics.cshtml"
    Write(Html.Partial("_MostWickets", mostWickets));
 
             
             #line default
             #line hidden
             
-            #line 49 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 63 "..\..\Views\CompetitionStatistics.cshtml"
                                                   
         
             
             #line default
             #line hidden
             
-            #line 50 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 64 "..\..\Views\CompetitionStatistics.cshtml"
    Write(Html.Partial("_BowlingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
-            #line 50 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 64 "..\..\Views\CompetitionStatistics.cshtml"
                                                                                                                                      
         
             
             #line default
             #line hidden
             
-            #line 51 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 65 "..\..\Views\CompetitionStatistics.cshtml"
    Write(Html.Partial("_EconomyRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
-            #line 51 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 65 "..\..\Views\CompetitionStatistics.cshtml"
                                                                                                                                   
         
             
             #line default
             #line hidden
             
-            #line 52 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 66 "..\..\Views\CompetitionStatistics.cshtml"
    Write(Html.Partial("_BowlingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
-            #line 52 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 66 "..\..\Views\CompetitionStatistics.cshtml"
                                                                                                                                         
         
             
             #line default
             #line hidden
             
-            #line 53 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 67 "..\..\Views\CompetitionStatistics.cshtml"
    Write(Html.Partial("_MostCatches", mostCatches));
 
             
             #line default
             #line hidden
             
-            #line 53 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 67 "..\..\Views\CompetitionStatistics.cshtml"
                                                   
         
             
             #line default
             #line hidden
             
-            #line 54 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 68 "..\..\Views\CompetitionStatistics.cshtml"
    Write(Html.Partial("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
 
             
             #line default
             #line hidden
             
-            #line 54 "..\..\Views\CompetitionStatistics.cshtml"
+            #line 68 "..\..\Views\CompetitionStatistics.cshtml"
                                                                                                                                   
     }
 

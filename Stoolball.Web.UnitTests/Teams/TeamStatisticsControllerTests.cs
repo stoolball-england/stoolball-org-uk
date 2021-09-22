@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -29,7 +30,11 @@ namespace Stoolball.Web.Tests.Teams
 
         private class TestController : TeamStatisticsController
         {
-            public TestController(ITeamDataSource teamDataSource, IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource, IInningsStatisticsDataSource inningsStatisticsDataSource, UmbracoHelper umbracoHelper)
+            public TestController(ITeamDataSource teamDataSource,
+                IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource,
+                IInningsStatisticsDataSource inningsStatisticsDataSource,
+                IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
+                UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -40,7 +45,9 @@ namespace Stoolball.Web.Tests.Teams
                 teamDataSource,
                 bestPerformanceDataSource,
                 inningsStatisticsDataSource,
-                Mock.Of<IBestPlayerTotalStatisticsDataSource>())
+                Mock.Of<IBestPlayerTotalStatisticsDataSource>(),
+                statisticsFilterQueryStringParser,
+                Mock.Of<IStatisticsFilterHumanizer>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -65,10 +72,12 @@ namespace Stoolball.Web.Tests.Teams
         {
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<Team>(null));
+            var statisticsFilterQueryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
+            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter());
             var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
             var inningsDataSource = new Mock<IInningsStatisticsDataSource>();
 
-            using (var controller = new TestController(teamDataSource.Object, statisticsDataSource.Object, inningsDataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(teamDataSource.Object, statisticsDataSource.Object, inningsDataSource.Object, statisticsFilterQueryStringParser.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -81,11 +90,13 @@ namespace Stoolball.Web.Tests.Teams
         {
             var teamDataSource = new Mock<ITeamDataSource>();
             teamDataSource.Setup(x => x.ReadTeamByRoute(It.IsAny<string>(), true)).ReturnsAsync(new Team { TeamId = Guid.NewGuid() });
+            var statisticsFilterQueryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
+            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter());
             var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
             statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new StatisticsResult<PlayerInnings>[] { new StatisticsResult<PlayerInnings>() } as IEnumerable<StatisticsResult<PlayerInnings>>));
             var inningsDataSource = new Mock<IInningsStatisticsDataSource>();
 
-            using (var controller = new TestController(teamDataSource.Object, statisticsDataSource.Object, inningsDataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(teamDataSource.Object, statisticsDataSource.Object, inningsDataSource.Object, statisticsFilterQueryStringParser.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

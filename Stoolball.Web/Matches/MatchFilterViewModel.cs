@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Stoolball.Web.Filtering;
 
 namespace Stoolball.Web.Matches
 {
-    public class MatchFilterViewModel
+    public class MatchFilterViewModel : FilterViewModel
     {
-        public string FilterDescription { get; set; }
-        public DateTimeOffset? from { get; set; }
-        public DateTimeOffset? to { get; set; }
+        public MatchFilterViewModel()
+        {
+            FilteredItemTypeSingular = "Match";
+            FilteredItemTypePlural = "Matches";
+        }
     }
 }

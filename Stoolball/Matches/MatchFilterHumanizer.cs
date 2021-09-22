@@ -1,10 +1,10 @@
-﻿using System.Globalization;
-using System.Text;
+﻿using System.Text;
 using Stoolball.Dates;
+using Stoolball.Filtering;
 
 namespace Stoolball.Matches
 {
-    public class MatchFilterHumanizer : IMatchFilterHumanizer
+    public class MatchFilterHumanizer : BaseFilterHumanizer, IMatchFilterHumanizer
     {
         private readonly IDateTimeFormatter _dateTimeFormatter;
 
@@ -23,18 +23,7 @@ namespace Stoolball.Matches
             {
                 description.Append(" matching '").Append(filter.Query).Append("' ");
             }
-            if (filter.FromDate.HasValue)
-            {
-                description.Append(" from ").Append(_dateTimeFormatter.FormatDate(filter.FromDate.Value, false, true, false));
-                if (!filter.UntilDate.HasValue)
-                {
-                    description.Append(" onwards");
-                }
-            }
-            if (filter.UntilDate.HasValue)
-            {
-                description.Append(" up to ").Append(_dateTimeFormatter.FormatDate(filter.UntilDate.Value, false, true, false));
-            }
+            AppendDateFilter(filter.FromDate, filter.UntilDate, description, _dateTimeFormatter);
 
             return description.ToString().TrimEnd();
         }
@@ -60,16 +49,7 @@ namespace Stoolball.Matches
 
         public string MatchesAndTournamentsMatchingFilter(MatchFilter filter)
         {
-            var filterDescription = MatchingFilter(filter);
-            if (filterDescription.Length == 0)
-            {
-                filterDescription = "All " + MatchesAndTournaments(filter).ToLower(CultureInfo.CurrentCulture) + filterDescription;
-            }
-            else
-            {
-                filterDescription = MatchesAndTournaments(filter) + filterDescription;
-            }
-            return filterDescription;
+            return EntitiesMatchingFilter(MatchesAndTournaments(filter), MatchingFilter(filter));
         }
     }
 }

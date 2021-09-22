@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -29,7 +30,10 @@ namespace Stoolball.Web.Tests.MatchLocations
 
         private class TestController : MatchLocationStatisticsController
         {
-            public TestController(IMatchLocationDataSource matchLocationDataSource, IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource, UmbracoHelper umbracoHelper)
+            public TestController(IMatchLocationDataSource matchLocationDataSource,
+                IBestPerformanceInAMatchStatisticsDataSource bestPerformanceDataSource,
+                IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
+                UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -39,7 +43,9 @@ namespace Stoolball.Web.Tests.MatchLocations
                 umbracoHelper,
                 matchLocationDataSource,
                 bestPerformanceDataSource,
-                Mock.Of<IBestPlayerTotalStatisticsDataSource>())
+                Mock.Of<IBestPlayerTotalStatisticsDataSource>(),
+                statisticsFilterQueryStringParser,
+                Mock.Of<IStatisticsFilterHumanizer>())
             {
                 var request = new Mock<HttpRequestBase>();
                 request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
@@ -62,11 +68,13 @@ namespace Stoolball.Web.Tests.MatchLocations
         [Fact]
         public async Task Route_not_matching_location_returns_404()
         {
+            var statisticsFilterQueryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
+            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter());
             var locationDataSource = new Mock<IMatchLocationDataSource>();
             locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).Returns(Task.FromResult<MatchLocation>(null));
             var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
 
-            using (var controller = new TestController(locationDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(locationDataSource.Object, statisticsDataSource.Object, statisticsFilterQueryStringParser.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -77,12 +85,14 @@ namespace Stoolball.Web.Tests.MatchLocations
         [Fact]
         public async Task Route_matching_location_returns_StatisticsSummaryViewModel()
         {
+            var statisticsFilterQueryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
+            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter());
             var locationDataSource = new Mock<IMatchLocationDataSource>();
             locationDataSource.Setup(x => x.ReadMatchLocationByRoute(It.IsAny<string>(), false)).ReturnsAsync(new MatchLocation { MatchLocationId = Guid.NewGuid() });
             var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
             statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(new StatisticsResult<PlayerInnings>[] { new StatisticsResult<PlayerInnings>() } as IEnumerable<StatisticsResult<PlayerInnings>>));
 
-            using (var controller = new TestController(locationDataSource.Object, statisticsDataSource.Object, UmbracoHelper))
+            using (var controller = new TestController(locationDataSource.Object, statisticsDataSource.Object, statisticsFilterQueryStringParser.Object, UmbracoHelper))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Stoolball.Security;
 using Stoolball.Statistics;
@@ -20,6 +21,8 @@ namespace Stoolball.Web.Statistics
     {
         private readonly IBestPerformanceInAMatchStatisticsDataSource _bestPerformanceInAMatchStatisticsDataSource;
         private readonly IBestPlayerTotalStatisticsDataSource _bestTotalStatisticsDataSource;
+        private readonly IStatisticsFilterQueryStringParser _statisticsFilterQueryStringParser;
+        private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
 
         public StatisticsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -28,11 +31,15 @@ namespace Stoolball.Web.Statistics
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
            IBestPerformanceInAMatchStatisticsDataSource bestPerformanceInAMatchStatisticsDataSource,
-           IBestPlayerTotalStatisticsDataSource bestTotalStatisticsDataSource)
+           IBestPlayerTotalStatisticsDataSource bestTotalStatisticsDataSource,
+           IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
+           IStatisticsFilterHumanizer statisticsFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _bestPerformanceInAMatchStatisticsDataSource = bestPerformanceInAMatchStatisticsDataSource ?? throw new ArgumentNullException(nameof(bestPerformanceInAMatchStatisticsDataSource));
             _bestTotalStatisticsDataSource = bestTotalStatisticsDataSource ?? throw new ArgumentNullException(nameof(bestTotalStatisticsDataSource));
+            _statisticsFilterQueryStringParser = statisticsFilterQueryStringParser ?? throw new ArgumentNullException(nameof(statisticsFilterQueryStringParser));
+            _statisticsFilterHumanizer = statisticsFilterHumanizer ?? throw new ArgumentNullException(nameof(statisticsFilterHumanizer));
         }
 
         [HttpGet]
@@ -47,14 +54,15 @@ namespace Stoolball.Web.Statistics
             var model = new StatisticsSummaryViewModel(contentModel.Content, Services?.UserService);
             model.IsAuthorized[AuthorizedAction.EditStatistics] = Members.IsMemberAuthorized(null, new[] { Groups.Administrators }, null);
 
-            model.StatisticsFilter = new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
+            model.StatisticsFilter = _statisticsFilterQueryStringParser.ParseQueryString(new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 }, HttpUtility.ParseQueryString(Request.Url.Query));
             model.PlayerInnings = (await _bestPerformanceInAMatchStatisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
             model.MostRuns = (await _bestTotalStatisticsDataSource.ReadMostRunsScored(model.StatisticsFilter).ConfigureAwait(false)).ToList();
             model.MostWickets = (await _bestTotalStatisticsDataSource.ReadMostWickets(model.StatisticsFilter).ConfigureAwait(false)).ToList();
             model.BowlingFigures = (await _bestPerformanceInAMatchStatisticsDataSource.ReadBowlingFigures(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
             model.MostCatches = (await _bestTotalStatisticsDataSource.ReadMostCatches(model.StatisticsFilter).ConfigureAwait(false)).ToList();
 
-            model.Metadata.PageTitle = $"Statistics for all teams";
+            model.FilterDescription = _statisticsFilterHumanizer.StatisticsMatchingFilter(model.StatisticsFilter);
+            model.Metadata.PageTitle = "Statistics for all teams" + _statisticsFilterHumanizer.MatchingFilter(model.StatisticsFilter);
 
             return CurrentTemplate(model);
         }
