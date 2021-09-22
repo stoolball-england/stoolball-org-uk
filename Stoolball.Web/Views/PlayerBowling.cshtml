@@ -41,72 +41,79 @@
     to = Model.AppliedFilter.UntilDate
 })
 
-    <table class="table-as-cards table-as-cards-reset-md">
-        <thead>
-            <tr>
-                <th scope="col">Innings</th>
-                <th scope="col">Overs</th>
-                <th scope="col">Maidens</th>
-                <th scope="col">Runs</th>
-                <th scope="col">Wickets</th>
-                <th scope="col">5 wickets</th>
-                <th scope="col">Best</th>
-                <th scope="col">Economy</th>
-                <th scope="col">Average</th>
-                <th scope="col" class="text-wrap">Strike rate</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Innings</span>@Model.BowlingStatistics.TotalInnings</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Overs</span>@Math.Round(Model.BowlingStatistics.TotalOvers, 1)</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Maidens</span>@Model.BowlingStatistics.TotalMaidens</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Runs</span>@Model.BowlingStatistics.TotalRunsConceded</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Wickets</span>@Model.BowlingStatistics.TotalWickets</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">5 wickets</span>@Model.BowlingStatistics.FiveWicketInnings</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Best</span>@(Model.BowlingStatistics.BestInningsWickets.HasValue ? Model.BowlingStatistics.BestInningsWickets + "/" + (Model.BowlingStatistics.BestInningsRunsConceded.HasValue ? Model.BowlingStatistics.BestInningsRunsConceded.Value.ToString() : "–") : "–")</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Economy</span>@(Model.BowlingStatistics.Economy.HasValue ? Math.Round(Model.BowlingStatistics.Economy.Value, 2).ToString() : "–")</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Average</span>@(Model.BowlingStatistics.Average.HasValue ? Math.Round(Model.BowlingStatistics.Average.Value, 2).ToString() : "–")</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Strike rate</span>@(Model.BowlingStatistics.StrikeRate.HasValue ? Math.Round(Model.BowlingStatistics.StrikeRate.Value, 2).ToString() : "–")</td>
-            </tr>
-        </tbody>
-    </table>
-
-    @if ((Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithRunsConceded && Model.BowlingStatistics.Average.HasValue) ||
-       (Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithRunsConceded && Model.BowlingStatistics.Economy.HasValue) ||
-       (Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithBallsBowled && Model.BowlingStatistics.StrikeRate.HasValue))
+    @if (Model.BowlingStatistics.TotalInnings == 0)
     {
-        <p class="table-small-print">
-            <small>
-                @if (Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithRunsConceded)
-                {
-                    if (Model.BowlingStatistics.Economy.HasValue && Model.BowlingStatistics.Average.HasValue &&
-                        Model.BowlingStatistics.TotalInningsWithRunsConceded == Model.BowlingStatistics.TotalInningsWithBallsBowled && Model.BowlingStatistics.StrikeRate.HasValue)
-                    {
-                        @:Economy, average and strike rate are based on @(Model.BowlingStatistics.TotalInningsWithRunsConceded) innings with overs, runs and wickets recorded.
-                    }
-                    else if (Model.BowlingStatistics.Economy.HasValue && Model.BowlingStatistics.Average.HasValue)
-                    {
-                        @:Economy and average are based on @(Model.BowlingStatistics.TotalInningsWithRunsConceded) innings with overs, runs and wickets recorded.
-                    }
-                    else if (Model.BowlingStatistics.Economy.HasValue)
-                    {
-                        @:Economy is based on @(Model.BowlingStatistics.TotalInningsWithRunsConceded) innings with overs and runs recorded.
-                    }
-                    else if (Model.BowlingStatistics.Average.HasValue)
-                    {
-                        @:The average is based on @(Model.BowlingStatistics.TotalInningsWithRunsConceded) innings with runs and wickets recorded.
-                    }
-                }
-                @if (Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithBallsBowled && Model.BowlingStatistics.StrikeRate.HasValue &&
-                    (!Model.BowlingStatistics.Economy.HasValue || !Model.BowlingStatistics.Average.HasValue || Model.BowlingStatistics.TotalInningsWithRunsConceded != Model.BowlingStatistics.TotalInningsWithBallsBowled))
-                {
-                    @:The strike rate is based on @(Model.BowlingStatistics.TotalInningsWithBallsBowled) innings with overs and wickets recorded.
-                }
-            </small>
-        </p>
-
+        @Html.Partial("_NoData")
     }
+    else
+    {
+        <table class="table-as-cards table-as-cards-reset-md">
+            <thead>
+                <tr>
+                    <th scope="col">Innings</th>
+                    <th scope="col">Overs</th>
+                    <th scope="col">Maidens</th>
+                    <th scope="col">Runs</th>
+                    <th scope="col">Wickets</th>
+                    <th scope="col">5 wickets</th>
+                    <th scope="col">Best</th>
+                    <th scope="col">Economy</th>
+                    <th scope="col">Average</th>
+                    <th scope="col" class="text-wrap">Strike rate</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Innings</span>@Model.BowlingStatistics.TotalInnings</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Overs</span>@Math.Round(Model.BowlingStatistics.TotalOvers, 1)</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Maidens</span>@Model.BowlingStatistics.TotalMaidens</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Runs</span>@Model.BowlingStatistics.TotalRunsConceded</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Wickets</span>@Model.BowlingStatistics.TotalWickets</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">5 wickets</span>@Model.BowlingStatistics.FiveWicketInnings</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Best</span>@(Model.BowlingStatistics.BestInningsWickets.HasValue ? Model.BowlingStatistics.BestInningsWickets + "/" + (Model.BowlingStatistics.BestInningsRunsConceded.HasValue ? Model.BowlingStatistics.BestInningsRunsConceded.Value.ToString() : "–") : "–")</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Economy</span>@(Model.BowlingStatistics.Economy.HasValue ? Math.Round(Model.BowlingStatistics.Economy.Value, 2).ToString() : "–")</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Average</span>@(Model.BowlingStatistics.Average.HasValue ? Math.Round(Model.BowlingStatistics.Average.Value, 2).ToString() : "–")</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Strike rate</span>@(Model.BowlingStatistics.StrikeRate.HasValue ? Math.Round(Model.BowlingStatistics.StrikeRate.Value, 2).ToString() : "–")</td>
+                </tr>
+            </tbody>
+        </table>
 
-    @Html.Partial("_BowlingFigures", bowlingFigures)
-</div>
+        if ((Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithRunsConceded && Model.BowlingStatistics.Average.HasValue) ||
+           (Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithRunsConceded && Model.BowlingStatistics.Economy.HasValue) ||
+           (Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithBallsBowled && Model.BowlingStatistics.StrikeRate.HasValue))
+        {
+            <p class="table-small-print">
+                <small>
+                    @if (Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithRunsConceded)
+                    {
+                        if (Model.BowlingStatistics.Economy.HasValue && Model.BowlingStatistics.Average.HasValue &&
+                            Model.BowlingStatistics.TotalInningsWithRunsConceded == Model.BowlingStatistics.TotalInningsWithBallsBowled && Model.BowlingStatistics.StrikeRate.HasValue)
+                        {
+                            @:Economy, average and strike rate are based on @(Model.BowlingStatistics.TotalInningsWithRunsConceded) innings with overs, runs and wickets recorded.
+                        }
+                        else if (Model.BowlingStatistics.Economy.HasValue && Model.BowlingStatistics.Average.HasValue)
+                        {
+                            @:Economy and average are based on @(Model.BowlingStatistics.TotalInningsWithRunsConceded) innings with overs, runs and wickets recorded.
+                        }
+                        else if (Model.BowlingStatistics.Economy.HasValue)
+                        {
+                            @:Economy is based on @(Model.BowlingStatistics.TotalInningsWithRunsConceded) innings with overs and runs recorded.
+                        }
+                        else if (Model.BowlingStatistics.Average.HasValue)
+                        {
+                            @:The average is based on @(Model.BowlingStatistics.TotalInningsWithRunsConceded) innings with runs and wickets recorded.
+                        }
+                    }
+                    @if (Model.BowlingStatistics.TotalInnings != Model.BowlingStatistics.TotalInningsWithBallsBowled && Model.BowlingStatistics.StrikeRate.HasValue &&
+                        (!Model.BowlingStatistics.Economy.HasValue || !Model.BowlingStatistics.Average.HasValue || Model.BowlingStatistics.TotalInningsWithRunsConceded != Model.BowlingStatistics.TotalInningsWithBallsBowled))
+                    {
+                        @:The strike rate is based on @(Model.BowlingStatistics.TotalInningsWithBallsBowled) innings with overs and wickets recorded.
+                    }
+                </small>
+            </p>
+
+        }
+
+        @Html.Partial("_BowlingFigures", bowlingFigures)
+    }
+    </div>

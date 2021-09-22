@@ -202,44 +202,77 @@ Write(Html.Partial("_Filters", new FilterViewModel
             
             #line default
             #line hidden
-WriteLiteral("\r\n\r\n    <table");
+WriteLiteral("\r\n\r\n");
+
+            
+            #line 45 "..\..\Views\Player.cshtml"
+    
+            
+            #line default
+            #line hidden
+            
+            #line 45 "..\..\Views\Player.cshtml"
+     if (Model.BattingStatistics.TotalInnings == 0)
+    {
+        
+            
+            #line default
+            #line hidden
+            
+            #line 47 "..\..\Views\Player.cshtml"
+   Write(Html.Partial("_NoData"));
+
+            
+            #line default
+            #line hidden
+            
+            #line 47 "..\..\Views\Player.cshtml"
+                                
+    }
+    else
+    {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("        <table");
 
 WriteLiteral(" class=\"table-as-cards table-as-cards-reset-sm\"");
 
-WriteLiteral(">\r\n        <thead>\r\n            <tr>\r\n                <th");
+WriteLiteral(">\r\n            <thead>\r\n                <tr>\r\n                    <th");
 
 WriteLiteral(" scope=\"col\"");
 
-WriteLiteral(">Innings</th>\r\n                <th");
+WriteLiteral(">Innings</th>\r\n                    <th");
 
 WriteLiteral(" scope=\"col\"");
 
-WriteLiteral(">Not out</th>\r\n                <th");
+WriteLiteral(">Not out</th>\r\n                    <th");
 
 WriteLiteral(" scope=\"col\"");
 
-WriteLiteral(">Runs</th>\r\n                <th");
+WriteLiteral(">Runs</th>\r\n                    <th");
 
 WriteLiteral(" scope=\"col\"");
 
-WriteLiteral(">50s</th>\r\n                <th");
+WriteLiteral(">50s</th>\r\n                    <th");
 
 WriteLiteral(" scope=\"col\"");
 
-WriteLiteral(">100s</th>\r\n                <th");
+WriteLiteral(">100s</th>\r\n                    <th");
 
 WriteLiteral(" scope=\"col\"");
 
-WriteLiteral(">Best</th>\r\n                <th");
+WriteLiteral(">Best</th>\r\n                    <th");
 
 WriteLiteral(" scope=\"col\"");
 
-WriteLiteral(">Average</th>\r\n                <th");
+WriteLiteral(">Average</th>\r\n                    <th");
 
 WriteLiteral(" scope=\"col\"");
 
-WriteLiteral(">Strike rate</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody>\r\n        " +
-"    <tr>\r\n                <td");
+WriteLiteral(">Strike rate</th>\r\n                </tr>\r\n            </thead>\r\n            <tbod" +
+"y>\r\n                <tr>\r\n                    <td");
 
 WriteLiteral(" data-stackable=\"true\"");
 
@@ -252,13 +285,13 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Innings</span>");
 
             
-            #line 60 "..\..\Views\Player.cshtml"
-                                                                                                          Write(Model.BattingStatistics.TotalInnings);
+            #line 66 "..\..\Views\Player.cshtml"
+                                                                                                              Write(Model.BattingStatistics.TotalInnings);
 
             
             #line default
             #line hidden
-WriteLiteral("</td>\r\n                <td");
+WriteLiteral("</td>\r\n                    <td");
 
 WriteLiteral(" data-stackable=\"true\"");
 
@@ -271,13 +304,13 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Not out</span>");
 
             
-            #line 61 "..\..\Views\Player.cshtml"
-                                                                                                          Write(Model.BattingStatistics.NotOuts);
+            #line 67 "..\..\Views\Player.cshtml"
+                                                                                                              Write(Model.BattingStatistics.NotOuts);
 
             
             #line default
             #line hidden
-WriteLiteral("</td>\r\n                <td");
+WriteLiteral("</td>\r\n                    <td");
 
 WriteLiteral(" data-stackable=\"true\"");
 
@@ -290,13 +323,13 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Runs</span>");
 
             
-            #line 62 "..\..\Views\Player.cshtml"
-                                                                                                       Write(Model.BattingStatistics.TotalRunsScored);
+            #line 68 "..\..\Views\Player.cshtml"
+                                                                                                           Write(Model.BattingStatistics.TotalRunsScored);
 
             
             #line default
             #line hidden
-WriteLiteral("</td>\r\n                <td");
+WriteLiteral("</td>\r\n                    <td");
 
 WriteLiteral(" data-stackable=\"true\"");
 
@@ -309,13 +342,13 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">50s</span>");
 
             
-            #line 63 "..\..\Views\Player.cshtml"
-                                                                                                      Write(Model.BattingStatistics.Fifties);
+            #line 69 "..\..\Views\Player.cshtml"
+                                                                                                          Write(Model.BattingStatistics.Fifties);
 
             
             #line default
             #line hidden
-WriteLiteral("</td>\r\n                <td");
+WriteLiteral("</td>\r\n                    <td");
 
 WriteLiteral(" data-stackable=\"true\"");
 
@@ -328,13 +361,13 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">100s</span>");
 
             
-            #line 64 "..\..\Views\Player.cshtml"
-                                                                                                       Write(Model.BattingStatistics.Hundreds);
+            #line 70 "..\..\Views\Player.cshtml"
+                                                                                                           Write(Model.BattingStatistics.Hundreds);
 
             
             #line default
             #line hidden
-WriteLiteral("</td>\r\n                <td");
+WriteLiteral("</td>\r\n                    <td");
 
 WriteLiteral(" data-stackable=\"true\"");
 
@@ -347,20 +380,20 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Best</span>");
 
             
-            #line 65 "..\..\Views\Player.cshtml"
-                                                                                                       Write(Model.BattingStatistics.BestInningsRunsScored);
+            #line 71 "..\..\Views\Player.cshtml"
+                                                                                                           Write(Model.BattingStatistics.BestInningsRunsScored);
 
             
             #line default
             #line hidden
             
-            #line 65 "..\..\Views\Player.cshtml"
-                                                                                                                                                      Write(Model.BattingStatistics.BestInningsWasDismissed == false ? "*" : string.Empty);
+            #line 71 "..\..\Views\Player.cshtml"
+                                                                                                                                                          Write(Model.BattingStatistics.BestInningsWasDismissed == false ? "*" : string.Empty);
 
             
             #line default
             #line hidden
-WriteLiteral("</td>\r\n                <td");
+WriteLiteral("</td>\r\n                    <td");
 
 WriteLiteral(" data-stackable=\"true\"");
 
@@ -373,13 +406,13 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Average</span>");
 
             
-            #line 66 "..\..\Views\Player.cshtml"
-                                                                                                           Write(Model.BattingStatistics.Average.HasValue ? Math.Round(Model.BattingStatistics.Average.Value, 2).ToString() : "–");
+            #line 72 "..\..\Views\Player.cshtml"
+                                                                                                               Write(Model.BattingStatistics.Average.HasValue ? Math.Round(Model.BattingStatistics.Average.Value, 2).ToString() : "–");
 
             
             #line default
             #line hidden
-WriteLiteral("</td>\r\n                <td");
+WriteLiteral("</td>\r\n                    <td");
 
 WriteLiteral(" data-stackable=\"true\"");
 
@@ -392,56 +425,50 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Strike rate</span>");
 
             
-            #line 67 "..\..\Views\Player.cshtml"
-                                                                                                               Write(Model.BattingStatistics.StrikeRate.HasValue ? Math.Round(Model.BattingStatistics.StrikeRate.Value, 2).ToString() : "–");
+            #line 73 "..\..\Views\Player.cshtml"
+                                                                                                                   Write(Model.BattingStatistics.StrikeRate.HasValue ? Math.Round(Model.BattingStatistics.StrikeRate.Value, 2).ToString() : "–");
 
             
             #line default
             #line hidden
-WriteLiteral("</td>\r\n            </tr>\r\n        </tbody>\r\n    </table>\r\n");
+WriteLiteral("</td>\r\n                </tr>\r\n            </tbody>\r\n        </table>\r\n");
 
             
-            #line 71 "..\..\Views\Player.cshtml"
-    
-            
-            #line default
-            #line hidden
-            
-            #line 71 "..\..\Views\Player.cshtml"
-     if ((Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScored && Model.BattingStatistics.Average.HasValue) ||
-        (Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScoredAndBallsFaced && Model.BattingStatistics.StrikeRate.HasValue))
-    {
+            #line 77 "..\..\Views\Player.cshtml"
+        if ((Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScored && Model.BattingStatistics.Average.HasValue) ||
+            (Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScoredAndBallsFaced && Model.BattingStatistics.StrikeRate.HasValue))
+        {
 
             
             #line default
             #line hidden
-WriteLiteral("        <p");
+WriteLiteral("            <p");
 
 WriteLiteral(" class=\"table-small-print\"");
 
-WriteLiteral(">\r\n            <small>\r\n");
+WriteLiteral(">\r\n                <small>\r\n");
 
             
-            #line 76 "..\..\Views\Player.cshtml"
-                
+            #line 82 "..\..\Views\Player.cshtml"
+                    
             
             #line default
             #line hidden
             
-            #line 76 "..\..\Views\Player.cshtml"
-                 if (Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScored && Model.BattingStatistics.Average.HasValue)
-                {
+            #line 82 "..\..\Views\Player.cshtml"
+                     if (Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScored && Model.BattingStatistics.Average.HasValue)
+                    {
 
             
             #line default
             #line hidden
-WriteLiteral("                    ");
+WriteLiteral("                        ");
 
 WriteLiteral("The average is based on ");
 
             
-            #line 78 "..\..\Views\Player.cshtml"
-                                          Write(Model.BattingStatistics.TotalInningsWithRunsScored);
+            #line 84 "..\..\Views\Player.cshtml"
+                                              Write(Model.BattingStatistics.TotalInningsWithRunsScored);
 
             
             #line default
@@ -449,29 +476,29 @@ WriteLiteral("The average is based on ");
 WriteLiteral(" innings with runs recorded.\r\n");
 
             
-            #line 79 "..\..\Views\Player.cshtml"
-                }
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                ");
-
-            
-            #line 80 "..\..\Views\Player.cshtml"
-                 if (Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScoredAndBallsFaced && Model.BattingStatistics.StrikeRate.HasValue)
-                {
+            #line 85 "..\..\Views\Player.cshtml"
+                    }
 
             
             #line default
             #line hidden
 WriteLiteral("                    ");
 
+            
+            #line 86 "..\..\Views\Player.cshtml"
+                     if (Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScoredAndBallsFaced && Model.BattingStatistics.StrikeRate.HasValue)
+                    {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                        ");
+
 WriteLiteral("The strike rate is based on ");
 
             
-            #line 82 "..\..\Views\Player.cshtml"
-                                              Write(Model.BattingStatistics.TotalInningsWithRunsScoredAndBallsFaced);
+            #line 88 "..\..\Views\Player.cshtml"
+                                                  Write(Model.BattingStatistics.TotalInningsWithRunsScoredAndBallsFaced);
 
             
             #line default
@@ -479,34 +506,39 @@ WriteLiteral("The strike rate is based on ");
 WriteLiteral(" innings with runs and balls faced recorded.\r\n");
 
             
-            #line 83 "..\..\Views\Player.cshtml"
-                }
+            #line 89 "..\..\Views\Player.cshtml"
+                    }
 
             
             #line default
             #line hidden
-WriteLiteral("            </small>\r\n        </p>\r\n");
+WriteLiteral("                </small>\r\n            </p>\r\n");
 
             
-            #line 86 "..\..\Views\Player.cshtml"
+            #line 92 "..\..\Views\Player.cshtml"
 
+        }
+
+        
+            
+            #line default
+            #line hidden
+            
+            #line 95 "..\..\Views\Player.cshtml"
+   Write(Html.Partial("_IndividualScores", individualScores));
+
+            
+            #line default
+            #line hidden
+            
+            #line 95 "..\..\Views\Player.cshtml"
+                                                            
     }
 
             
             #line default
             #line hidden
-WriteLiteral("\r\n");
-
-WriteLiteral("    ");
-
-            
-            #line 89 "..\..\Views\Player.cshtml"
-Write(Html.Partial("_IndividualScores", individualScores));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\r\n</div>\r\n");
+WriteLiteral("</div>\r\n");
 
         }
     }

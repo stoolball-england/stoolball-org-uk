@@ -44,33 +44,40 @@
     to = Model.AppliedFilter.UntilDate
 })
 
-    <table class="table-as-cards table-as-cards-reset-sm">
-        <thead>
-            <tr>
-                <th scope="col">Catches</th>
-                <th scope="col">Most catches</th>
-                <th scope="col">Run-outs</th>
-                <th scope="col">Most run-outs</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Catches</span>@Model.FieldingStatistics.TotalCatches</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Most catches</span>@Model.FieldingStatistics.MostCatches</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Run-outs</span>@Model.FieldingStatistics.TotalRunOuts</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Most run-outs</span>@Model.FieldingStatistics.MostRunOuts</td>
-            </tr>
-        </tbody>
-    </table>
-
-    @Html.Partial("_Catches", catches)
-    @if (Model.FieldingStatistics.TotalCatches > catches.Results.Count)
+    @if (Model.FieldingStatistics.TotalCatches == 0 && Model.FieldingStatistics.TotalRunOuts == 0)
     {
-        <p><a href="@Request.RawUrl.TrimEnd("/fielding")/catches">Catches – view all</a></p>
+        @Html.Partial("_NoData")
     }
-    @Html.Partial("_RunOuts", runOuts)
-    @if (Model.FieldingStatistics.TotalRunOuts > catches.Results.Count)
+    else
     {
-        <p><a href="@Request.RawUrl.TrimEnd("/fielding")/run-outs">Run-outs – view all</a></p>
+        <table class="table-as-cards table-as-cards-reset-sm">
+            <thead>
+                <tr>
+                    <th scope="col">Catches</th>
+                    <th scope="col">Most catches</th>
+                    <th scope="col">Run-outs</th>
+                    <th scope="col">Most run-outs</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Catches</span>@Model.FieldingStatistics.TotalCatches</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Most catches</span>@Model.FieldingStatistics.MostCatches</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Run-outs</span>@Model.FieldingStatistics.TotalRunOuts</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Most run-outs</span>@Model.FieldingStatistics.MostRunOuts</td>
+                </tr>
+            </tbody>
+        </table>
+
+        @Html.Partial("_Catches", catches)
+        if (Model.FieldingStatistics.TotalCatches > catches.Results.Count)
+        {
+            <p><a href="@Request.RawUrl.TrimEnd("/fielding")/catches">Catches – view all</a></p>
+        }
+        @Html.Partial("_RunOuts", runOuts)
+        if (Model.FieldingStatistics.TotalRunOuts > catches.Results.Count)
+        {
+            <p><a href="@Request.RawUrl.TrimEnd("/fielding")/run-outs">Run-outs – view all</a></p>
+        }
     }
 </div>

@@ -42,49 +42,56 @@
     to = Model.AppliedFilter.UntilDate
 })
 
-    <table class="table-as-cards table-as-cards-reset-sm">
-        <thead>
-            <tr>
-                <th scope="col">Innings</th>
-                <th scope="col">Not out</th>
-                <th scope="col">Runs</th>
-                <th scope="col">50s</th>
-                <th scope="col">100s</th>
-                <th scope="col">Best</th>
-                <th scope="col">Average</th>
-                <th scope="col">Strike rate</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Innings</span>@Model.BattingStatistics.TotalInnings</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Not out</span>@Model.BattingStatistics.NotOuts</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Runs</span>@Model.BattingStatistics.TotalRunsScored</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">50s</span>@Model.BattingStatistics.Fifties</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">100s</span>@Model.BattingStatistics.Hundreds</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Best</span>@Model.BattingStatistics.BestInningsRunsScored@(Model.BattingStatistics.BestInningsWasDismissed == false ? "*" : string.Empty)</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Average</span>@(Model.BattingStatistics.Average.HasValue ? Math.Round(Model.BattingStatistics.Average.Value, 2).ToString() : "–")</td>
-                <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Strike rate</span>@(Model.BattingStatistics.StrikeRate.HasValue ? Math.Round(Model.BattingStatistics.StrikeRate.Value, 2).ToString() : "–")</td>
-            </tr>
-        </tbody>
-    </table>
-    @if ((Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScored && Model.BattingStatistics.Average.HasValue) ||
-        (Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScoredAndBallsFaced && Model.BattingStatistics.StrikeRate.HasValue))
+    @if (Model.BattingStatistics.TotalInnings == 0)
     {
-        <p class="table-small-print">
-            <small>
-                @if (Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScored && Model.BattingStatistics.Average.HasValue)
-                {
-                    @:The average is based on @(Model.BattingStatistics.TotalInningsWithRunsScored) innings with runs recorded.
-                }
-                @if (Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScoredAndBallsFaced && Model.BattingStatistics.StrikeRate.HasValue)
-                {
-                    @:The strike rate is based on @(Model.BattingStatistics.TotalInningsWithRunsScoredAndBallsFaced) innings with runs and balls faced recorded.
-                }
-            </small>
-        </p>
-
+        @Html.Partial("_NoData")
     }
+    else
+    {
+        <table class="table-as-cards table-as-cards-reset-sm">
+            <thead>
+                <tr>
+                    <th scope="col">Innings</th>
+                    <th scope="col">Not out</th>
+                    <th scope="col">Runs</th>
+                    <th scope="col">50s</th>
+                    <th scope="col">100s</th>
+                    <th scope="col">Best</th>
+                    <th scope="col">Average</th>
+                    <th scope="col">Strike rate</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Innings</span>@Model.BattingStatistics.TotalInnings</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Not out</span>@Model.BattingStatistics.NotOuts</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Runs</span>@Model.BattingStatistics.TotalRunsScored</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">50s</span>@Model.BattingStatistics.Fifties</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">100s</span>@Model.BattingStatistics.Hundreds</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Best</span>@Model.BattingStatistics.BestInningsRunsScored@(Model.BattingStatistics.BestInningsWasDismissed == false ? "*" : string.Empty)</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Average</span>@(Model.BattingStatistics.Average.HasValue ? Math.Round(Model.BattingStatistics.Average.Value, 2).ToString() : "–")</td>
+                    <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Strike rate</span>@(Model.BattingStatistics.StrikeRate.HasValue ? Math.Round(Model.BattingStatistics.StrikeRate.Value, 2).ToString() : "–")</td>
+                </tr>
+            </tbody>
+        </table>
+        if ((Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScored && Model.BattingStatistics.Average.HasValue) ||
+            (Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScoredAndBallsFaced && Model.BattingStatistics.StrikeRate.HasValue))
+        {
+            <p class="table-small-print">
+                <small>
+                    @if (Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScored && Model.BattingStatistics.Average.HasValue)
+                    {
+                        @:The average is based on @(Model.BattingStatistics.TotalInningsWithRunsScored) innings with runs recorded.
+                    }
+                    @if (Model.BattingStatistics.TotalInnings != Model.BattingStatistics.TotalInningsWithRunsScoredAndBallsFaced && Model.BattingStatistics.StrikeRate.HasValue)
+                    {
+                        @:The strike rate is based on @(Model.BattingStatistics.TotalInningsWithRunsScoredAndBallsFaced) innings with runs and balls faced recorded.
+                    }
+                </small>
+            </p>
 
-    @Html.Partial("_IndividualScores", individualScores)
+        }
+
+        @Html.Partial("_IndividualScores", individualScores)
+    }
 </div>
