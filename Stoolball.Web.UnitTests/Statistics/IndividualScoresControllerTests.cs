@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
@@ -29,7 +30,11 @@ namespace Stoolball.Web.Tests.Statistics
 
         private class TestController : IndividualScoresController
         {
-            public TestController(IStatisticsFilterFactory statisticsFilterUrlParser, IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper, string queryString)
+            public TestController(IStatisticsFilterFactory statisticsFilterFactory,
+                IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
+                IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource,
+                UmbracoHelper umbracoHelper,
+                string queryString)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -37,9 +42,10 @@ namespace Stoolball.Web.Tests.Statistics
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
                 umbracoHelper,
-                statisticsFilterUrlParser,
+                statisticsFilterFactory,
                 statisticsDataSource,
                 Mock.Of<IStatisticsBreadcrumbBuilder>(),
+                statisticsFilterQueryStringParser,
                 Mock.Of<IStatisticsFilterHumanizer>())
             {
                 var request = new Mock<HttpRequestBase>();
@@ -65,15 +71,21 @@ namespace Stoolball.Web.Tests.Statistics
         [Fact]
         public async Task Player_with_no_innings_returns_StatisticsViewModel()
         {
-            var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
-            var filterFactory = new Mock<IStatisticsFilterFactory>();
-            filterFactory.Setup(x => x.FromRoute(_requestUrl.AbsolutePath)).Returns(Task.FromResult(new StatisticsFilter()));
-
             var playerId = Guid.NewGuid();
-            var results = new List<StatisticsResult<PlayerInnings>>();
-            _ = statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<PlayerInnings>>));
+            var defaultFilter = new StatisticsFilter();
+            var appliedFilter = defaultFilter.Clone();
 
-            using (var controller = new TestController(filterFactory.Object, statisticsDataSource.Object, UmbracoHelper, $"player={playerId}"))
+            var filterFactory = new Mock<IStatisticsFilterFactory>();
+            filterFactory.Setup(x => x.FromRoute(_requestUrl.AbsolutePath)).Returns(Task.FromResult(defaultFilter));
+
+            var queryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
+            queryStringParser.Setup(x => x.ParseQueryString(defaultFilter, It.IsAny<NameValueCollection>())).Returns(appliedFilter);
+
+            var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
+            var results = new List<StatisticsResult<PlayerInnings>>();
+            _ = statisticsDataSource.Setup(x => x.ReadPlayerInnings(appliedFilter, StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<PlayerInnings>>));
+
+            using (var controller = new TestController(filterFactory.Object, queryStringParser.Object, statisticsDataSource.Object, UmbracoHelper, $"player={playerId}"))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
@@ -84,11 +96,16 @@ namespace Stoolball.Web.Tests.Statistics
         [Fact]
         public async Task Player_with_innings_returns_StatisticsViewModel()
         {
-            var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
-            var filterFactory = new Mock<IStatisticsFilterFactory>();
-            filterFactory.Setup(x => x.FromRoute(_requestUrl.AbsolutePath)).Returns(Task.FromResult(new StatisticsFilter()));
-
             var playerId = Guid.NewGuid();
+            var defaultFilter = new StatisticsFilter();
+            var appliedFilter = defaultFilter.Clone();
+
+            var filterFactory = new Mock<IStatisticsFilterFactory>();
+            filterFactory.Setup(x => x.FromRoute(_requestUrl.AbsolutePath)).Returns(Task.FromResult(defaultFilter));
+
+            var queryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
+            queryStringParser.Setup(x => x.ParseQueryString(defaultFilter, It.IsAny<NameValueCollection>())).Returns(appliedFilter);
+
             var results = new List<StatisticsResult<PlayerInnings>> {
                 new StatisticsResult<PlayerInnings> {
                     Player = new Player {
@@ -100,9 +117,10 @@ namespace Stoolball.Web.Tests.Statistics
                     }
                 }
             };
-            statisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>(), StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<PlayerInnings>>));
+            var statisticsDataSource = new Mock<IBestPerformanceInAMatchStatisticsDataSource>();
+            statisticsDataSource.Setup(x => x.ReadPlayerInnings(appliedFilter, StatisticsSortOrder.BestFirst)).Returns(Task.FromResult(results as IEnumerable<StatisticsResult<PlayerInnings>>));
 
-            using (var controller = new TestController(filterFactory.Object, statisticsDataSource.Object, UmbracoHelper, $"player={playerId}"))
+            using (var controller = new TestController(filterFactory.Object, queryStringParser.Object, statisticsDataSource.Object, UmbracoHelper, $"player={playerId}"))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 

@@ -71,6 +71,8 @@ namespace ASP
             #line 6 "..\..\Views\Partials\_BowlingFigures.cshtml"
   
     var dateTimeFormatter = Current.Factory.CreateInstance<DateTimeFormatter>();
+    var serialiser = Current.Factory.GetInstance<IStatisticsFilterQueryStringSerializer>();
+    var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
 
             
             #line default
@@ -78,7 +80,7 @@ namespace ASP
 WriteLiteral("\r\n");
 
             
-            #line 9 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 11 "..\..\Views\Partials\_BowlingFigures.cshtml"
  if (Model.Results.Any())
 {
 
@@ -92,13 +94,13 @@ WriteLiteral(" class=\"statistics table-as-cards table-as-cards-reset-md\"");
 WriteLiteral(">\r\n");
 
             
-            #line 12 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 14 "..\..\Views\Partials\_BowlingFigures.cshtml"
         
             
             #line default
             #line hidden
             
-            #line 12 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 14 "..\..\Views\Partials\_BowlingFigures.cshtml"
          if (Model.ShowCaption)
         {
 
@@ -108,7 +110,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("            <caption>Best bowling figures</caption>\r\n");
 
             
-            #line 15 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 17 "..\..\Views\Partials\_BowlingFigures.cshtml"
         }
 
             
@@ -123,13 +125,13 @@ WriteLiteral(" class=\"table-order\"");
 WriteLiteral(">#</th>\r\n");
 
             
-            #line 19 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 21 "..\..\Views\Partials\_BowlingFigures.cshtml"
                 
             
             #line default
             #line hidden
             
-            #line 19 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 21 "..\..\Views\Partials\_BowlingFigures.cshtml"
                  if (Model.ShowPlayerColumn)
                 {
 
@@ -143,7 +145,7 @@ WriteLiteral(" scope=\"col\"");
 WriteLiteral(">Player</th>\r\n");
 
             
-            #line 22 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 24 "..\..\Views\Partials\_BowlingFigures.cshtml"
 
                 }
 
@@ -173,13 +175,13 @@ WriteLiteral(" class=\"numeric statistic\"");
 WriteLiteral(">Runs</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody>\r\n");
 
             
-            #line 31 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 33 "..\..\Views\Partials\_BowlingFigures.cshtml"
             
             
             #line default
             #line hidden
             
-            #line 31 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 33 "..\..\Views\Partials\_BowlingFigures.cshtml"
               
                 int? previousWickets = null;
                 int? previousRuns = null;
@@ -199,7 +201,7 @@ WriteLiteral(" class=\"table-as-cards__header-md\"");
 WriteLiteral(">");
 
             
-            #line 40 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 42 "..\..\Views\Partials\_BowlingFigures.cshtml"
                                                           Write(equalToPrevious ? "=" : ((Model.AppliedFilter.Paging.PageSize * (Model.AppliedFilter.Paging.PageNumber - 1)) + i + 1).ToString());
 
             
@@ -208,13 +210,13 @@ WriteLiteral(">");
 WriteLiteral("</td>\r\n");
 
             
-            #line 41 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 43 "..\..\Views\Partials\_BowlingFigures.cshtml"
                         
             
             #line default
             #line hidden
             
-            #line 41 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 43 "..\..\Views\Partials\_BowlingFigures.cshtml"
                          if (Model.ShowPlayerColumn)
                         {
 
@@ -233,20 +235,20 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Player</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1924), Tuple.Create("\"", 1967)
+WriteAttribute("href", Tuple.Create(" href=\"", 2104), Tuple.Create("\"", 2147)
             
-            #line 43 "..\..\Views\Partials\_BowlingFigures.cshtml"
-                                                   , Tuple.Create(Tuple.Create("", 1931), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Player.PlayerRoute
+            #line 45 "..\..\Views\Partials\_BowlingFigures.cshtml"
+                                                   , Tuple.Create(Tuple.Create("", 2111), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Player.PlayerRoute
             
             #line default
             #line hidden
-, 1931), false)
+, 2111), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 43 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 45 "..\..\Views\Partials\_BowlingFigures.cshtml"
                                                                                                                                                                      Write(Model.Results[i].Player.PlayerName());
 
             
@@ -255,7 +257,7 @@ WriteLiteral(">");
 WriteLiteral("</a></td>\r\n");
 
             
-            #line 44 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 46 "..\..\Views\Partials\_BowlingFigures.cshtml"
                         }
 
             
@@ -273,20 +275,20 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Match</span><div><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2170), Tuple.Create("\"", 2211)
+WriteAttribute("href", Tuple.Create(" href=\"", 2350), Tuple.Create("\"", 2391)
             
-            #line 45 "..\..\Views\Partials\_BowlingFigures.cshtml"
-                                                   , Tuple.Create(Tuple.Create("", 2177), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
+            #line 47 "..\..\Views\Partials\_BowlingFigures.cshtml"
+                                                   , Tuple.Create(Tuple.Create("", 2357), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
             
             #line default
             #line hidden
-, 2177), false)
+, 2357), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 45 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 47 "..\..\Views\Partials\_BowlingFigures.cshtml"
                                                                                                                                                                   Write(Model.Results[i].Match.MatchName);
 
             
@@ -307,7 +309,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">When</span>");
 
             
-            #line 46 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 48 "..\..\Views\Partials\_BowlingFigures.cshtml"
                                                                                                                                     Write(dateTimeFormatter.FormatDate(Model.Results[i].Match.StartTime, false, true, false));
 
             
@@ -332,7 +334,7 @@ WriteLiteral(" class=\"wickets\"");
 WriteLiteral(">");
 
             
-            #line 47 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 49 "..\..\Views\Partials\_BowlingFigures.cshtml"
                                                                                                                                                            Write(Model.Results[i].Result.Wickets);
 
             
@@ -341,13 +343,13 @@ WriteLiteral(">");
 WriteLiteral("</span></td>\r\n");
 
             
-            #line 48 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 50 "..\..\Views\Partials\_BowlingFigures.cshtml"
                         
             
             #line default
             #line hidden
             
-            #line 48 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 50 "..\..\Views\Partials\_BowlingFigures.cshtml"
                          if (Model.Results[i].Result.RunsConceded.HasValue)
                         {
 
@@ -369,7 +371,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">Runs</span>");
 
             
-            #line 50 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 52 "..\..\Views\Partials\_BowlingFigures.cshtml"
                                                                                                                                       Write(Model.Results[i].Result.RunsConceded.Value);
 
             
@@ -378,7 +380,7 @@ WriteLiteral(">Runs</span>");
 WriteLiteral("</td>\r\n");
 
             
-            #line 51 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 53 "..\..\Views\Partials\_BowlingFigures.cshtml"
                         }
                         else
                         {
@@ -395,7 +397,7 @@ WriteLiteral(" class=\"numeric-md table-as-cards__missing-data\"");
 WriteLiteral(">–</td>\r\n");
 
             
-            #line 55 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 57 "..\..\Views\Partials\_BowlingFigures.cshtml"
                         }
 
             
@@ -404,7 +406,7 @@ WriteLiteral(">–</td>\r\n");
 WriteLiteral("                    </tr>\r\n");
 
             
-            #line 57 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 59 "..\..\Views\Partials\_BowlingFigures.cshtml"
                 }
             
             
@@ -413,7 +415,7 @@ WriteLiteral("                    </tr>\r\n");
 WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
 
             
-            #line 61 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 63 "..\..\Views\Partials\_BowlingFigures.cshtml"
     if (Model.AppliedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
     {
 
@@ -422,21 +424,28 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3410), Tuple.Create("\"", 3468)
+WriteAttribute("href", Tuple.Create(" href=\"", 3590), Tuple.Create("\"", 3672)
             
-            #line 63 "..\..\Views\Partials\_BowlingFigures.cshtml"
-, Tuple.Create(Tuple.Create("", 3417), Tuple.Create<System.Object, System.Int32>(Request.RawUrl.TrimEnd("/bowling")
+            #line 65 "..\..\Views\Partials\_BowlingFigures.cshtml"
+, Tuple.Create(Tuple.Create("", 3597), Tuple.Create<System.Object, System.Int32>(Request.Url.AbsolutePath.TrimEnd("/bowling")
             
             #line default
             #line hidden
-, 3417), false)
-, Tuple.Create(Tuple.Create("", 3452), Tuple.Create("/bowling-figures", 3452), true)
+, 3597), false)
+, Tuple.Create(Tuple.Create("", 3642), Tuple.Create("/bowling-figures", 3642), true)
+            
+            #line 65 "..\..\Views\Partials\_BowlingFigures.cshtml"
+  , Tuple.Create(Tuple.Create("", 3658), Tuple.Create<System.Object, System.Int32>(queryString
+            
+            #line default
+            #line hidden
+, 3658), false)
 );
 
-WriteLiteral(">Bowling figures – view all</a></p>\r\n");
+WriteLiteral(">Bowling figures – view all and filter</a></p>\r\n");
 
             
-            #line 64 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 66 "..\..\Views\Partials\_BowlingFigures.cshtml"
     }
     else
     {
@@ -445,14 +454,14 @@ WriteLiteral(">Bowling figures – view all</a></p>\r\n");
             #line default
             #line hidden
             
-            #line 67 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 69 "..\..\Views\Partials\_BowlingFigures.cshtml"
    Write(Html.Partial("_Paging", Model.AppliedFilter.Paging));
 
             
             #line default
             #line hidden
             
-            #line 67 "..\..\Views\Partials\_BowlingFigures.cshtml"
+            #line 69 "..\..\Views\Partials\_BowlingFigures.cshtml"
                                                             
     }
 }

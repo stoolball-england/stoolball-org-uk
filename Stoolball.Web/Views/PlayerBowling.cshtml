@@ -9,7 +9,13 @@
     Html.RequiresJs("/js/filter.js");
     Html.RequiresCss("/css/filter.min.css");
 
-    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = false, AppliedFilter = Model.AppliedFilter };
+    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) 
+    { 
+        ShowCaption = true, 
+        ShowPlayerColumn = false, 
+        DefaultFilter = Model.DefaultFilter,
+        AppliedFilter = Model.AppliedFilter 
+    };
     bowlingFigures.Results.AddRange(Model.BowlingFigures);
 
     var serialiser = Current.Factory.GetInstance<IStatisticsFilterQueryStringSerializer>();

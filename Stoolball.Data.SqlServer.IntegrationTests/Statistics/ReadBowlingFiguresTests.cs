@@ -6,6 +6,7 @@ using Moq;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Navigation;
 using Stoolball.Statistics;
+using Stoolball.Testing;
 using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
@@ -117,7 +118,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             Assert.Equal(expected, result);
         }
 
-
         [Fact]
         public async Task Read_total_bowling_figures_supports_filter_by_season_id()
         {
@@ -129,6 +129,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var result = await dataSource.ReadTotalBowlingFigures(filter).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Matches.Where(x => x.Season?.SeasonId == _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId)
+                .SelectMany(x => x.MatchInnings)
+                .SelectMany(x => x.BowlingFigures)
+                .Count();
+            Assert.Equal(expected, result);
+        }
+
+        [Fact]
+        public async Task Read_total_bowling_figures_supports_filter_by_date()
+        {
+            var dateRangeGenerator = new DateRangeGenerator();
+            var (fromDate, untilDate) = dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
+
+            var filter = new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate };
+            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate", new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } }));
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
+
+            var result = await dataSource.ReadTotalBowlingFigures(filter).ConfigureAwait(false);
+
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate)
                 .SelectMany(x => x.MatchInnings)
                 .SelectMany(x => x.BowlingFigures)
                 .Count();
@@ -429,6 +449,38 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var results = await dataSource.ReadBowlingFigures(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
 
             var expected = _databaseFixture.TestData.Matches.Where(x => x.Season?.SeasonId == _databaseFixture.TestData.Competitions.First().Seasons.First().SeasonId)
+                .SelectMany(x => x.MatchInnings)
+                .SelectMany(x => x.BowlingFigures)
+                .ToList();
+            Assert.Equal(expected.Count, results.Count());
+            foreach (var expectedFigures in expected)
+            {
+                Assert.NotNull(results.SingleOrDefault(x => x.Result.BowlingFiguresId == expectedFigures.BowlingFiguresId));
+            }
+        }
+
+        [Fact]
+        public async Task Read_bowling_figures_supports_filter_by_date()
+        {
+            var dateRangeGenerator = new DateRangeGenerator();
+            var (fromDate, untilDate) = dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
+
+            var filter = new StatisticsFilter
+            {
+                Paging = new Paging
+                {
+                    PageSize = int.MaxValue
+                },
+                FromDate = fromDate,
+                UntilDate = untilDate
+            };
+            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate", new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } }));
+            var dataSource = new SqlServerBestPerformanceInAMatchStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object);
+
+            var results = await dataSource.ReadBowlingFigures(filter, StatisticsSortOrder.BestFirst).ConfigureAwait(false);
+
+            var expected = _databaseFixture.TestData.Matches.Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate)
                 .SelectMany(x => x.MatchInnings)
                 .SelectMany(x => x.BowlingFigures)
                 .ToList();
