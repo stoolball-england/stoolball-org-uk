@@ -84,7 +84,7 @@ namespace Stoolball.Web.Tests.Statistics
             playerPerformanceStatisticsDataSource.Setup(x => x.ReadPlayerInnings(It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(new List<StatisticsResult<PlayerInnings>>() as IEnumerable<StatisticsResult<PlayerInnings>>));
 
             var playerSummaryStatisticsDataSource = new Mock<IPlayerSummaryStatisticsDataSource>();
-            playerSummaryStatisticsDataSource.Setup(x => x.ReadFieldingStatistics(It.IsAny<StatisticsFilter>())).Returns(Task.FromResult(new FieldingStatistics()));
+            playerSummaryStatisticsDataSource.Setup(x => x.ReadFieldingStatistics(appliedFilter)).Returns(Task.FromResult(new FieldingStatistics()));
 
             using (var controller = new TestController(filterFactory.Object, queryStringParser.Object, playerSummaryStatisticsDataSource.Object, playerPerformanceStatisticsDataSource.Object, UmbracoHelper, $"player={playerId}"))
             {

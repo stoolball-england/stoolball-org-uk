@@ -77,7 +77,7 @@
         @Html.Partial("_RunOuts", runOuts)
         if (Model.FieldingStatistics.TotalRunOuts > catches.Results.Count)
         {
-            <p><a href="@Request.Url.AbsolutePath.TrimEnd("/fielding")/run-outs">Run-outs – view all</a></p>
+            <p><a href="@Request.Url.AbsolutePath.TrimEnd("/fielding")/run-outs@(queryString)">Run-outs – view all and filter</a></p>
         }
     }
 </div>

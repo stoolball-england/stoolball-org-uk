@@ -190,8 +190,8 @@ WriteLiteral("    ");
             #line 33 "..\..\Views\Catches.cshtml"
 Write(Html.Partial("_Filters", new FilterViewModel
 {
-    FilteredItemTypeSingular = "Statistics",
-    FilteredItemTypePlural = "Statistics",
+    FilteredItemTypeSingular = "Catch",
+    FilteredItemTypePlural = "Catches",
     FilterDescription = Model.FilterDescription,
     from = Model.AppliedFilter.FromDate,
     to = Model.AppliedFilter.UntilDate

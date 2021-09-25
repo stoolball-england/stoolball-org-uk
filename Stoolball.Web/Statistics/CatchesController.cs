@@ -70,7 +70,7 @@ namespace Stoolball.Web.Statistics
 
             _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.AppliedFilter);
 
-            model.FilterDescription = _statisticsFilterHumanizer.StatisticsMatchingUserFilter(model.AppliedFilter);
+            model.FilterDescription = "Catches" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
             model.Metadata.PageTitle = "Catches" + _statisticsFilterHumanizer.MatchingFixedFilter(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
 
             return CurrentTemplate(model);

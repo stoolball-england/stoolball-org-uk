@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Stoolball.Matches;
 using Stoolball.Statistics;
@@ -21,6 +22,7 @@ namespace Stoolball.Web.Statistics
         private readonly IPlayerSummaryStatisticsDataSource _playerSummaryStatisticsDataSource;
         private readonly IPlayerPerformanceStatisticsDataSource _playerPerformanceDataSource;
         private readonly IStatisticsBreadcrumbBuilder _statisticsBreadcrumbBuilder;
+        private readonly IStatisticsFilterQueryStringParser _statisticsFilterQueryStringParser;
         private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
 
         public RunOutsController(IGlobalSettings globalSettings,
@@ -33,6 +35,7 @@ namespace Stoolball.Web.Statistics
            IPlayerSummaryStatisticsDataSource playerSummaryStatisticsDataSource,
            IPlayerPerformanceStatisticsDataSource playerPerformanceDataSource,
            IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder,
+           IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
            IStatisticsFilterHumanizer statisticsFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
@@ -40,6 +43,7 @@ namespace Stoolball.Web.Statistics
             _playerSummaryStatisticsDataSource = playerSummaryStatisticsDataSource ?? throw new ArgumentNullException(nameof(playerSummaryStatisticsDataSource));
             _playerPerformanceDataSource = playerPerformanceDataSource ?? throw new ArgumentNullException(nameof(playerPerformanceDataSource));
             _statisticsBreadcrumbBuilder = statisticsBreadcrumbBuilder ?? throw new ArgumentNullException(nameof(statisticsBreadcrumbBuilder));
+            _statisticsFilterQueryStringParser = statisticsFilterQueryStringParser ?? throw new ArgumentNullException(nameof(statisticsFilterQueryStringParser));
             _statisticsFilterHumanizer = statisticsFilterHumanizer ?? throw new ArgumentNullException(nameof(statisticsFilterHumanizer));
         }
 
@@ -53,19 +57,21 @@ namespace Stoolball.Web.Statistics
             }
 
             var model = new StatisticsViewModel<PlayerInnings>(contentModel.Content, Services?.UserService) { ShowCaption = false };
-            model.AppliedFilter = await _statisticsFilterFactory.FromRoute(Request.Url.AbsolutePath).ConfigureAwait(false);
-            var catchesFilter = new StatisticsFilter
-            {
-                RunOutByPlayerIdentityIds = model.AppliedFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList(),
-                Paging = model.AppliedFilter.Paging
-            };
-            model.Results = (await _playerPerformanceDataSource.ReadPlayerInnings(catchesFilter).ConfigureAwait(false)).ToList();
+            model.DefaultFilter = await _statisticsFilterFactory.FromRoute(Request.Url.AbsolutePath).ConfigureAwait(false);
+            model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, HttpUtility.ParseQueryString(Request.Url.Query));
+
+            var runOutsFilter = model.AppliedFilter.Clone();
+            runOutsFilter.Player = null;
+            runOutsFilter.RunOutByPlayerIdentityIds = model.AppliedFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList();
+            model.Results = (await _playerPerformanceDataSource.ReadPlayerInnings(runOutsFilter).ConfigureAwait(false)).ToList();
 
             model.AppliedFilter.Paging.PageUrl = Request.Url;
             model.AppliedFilter.Paging.Total = (await _playerSummaryStatisticsDataSource.ReadFieldingStatistics(model.AppliedFilter).ConfigureAwait(false)).TotalRunOuts;
 
             _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.AppliedFilter);
-            model.Metadata.PageTitle = "Run-outs" + _statisticsFilterHumanizer.MatchingFixedFilter(model.AppliedFilter);
+
+            model.FilterDescription = "Run-outs" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
+            model.Metadata.PageTitle = "Run-outs" + _statisticsFilterHumanizer.MatchingFixedFilter(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
 
             return CurrentTemplate(model);
         }
