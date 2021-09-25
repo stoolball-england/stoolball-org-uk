@@ -1,11 +1,14 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<BestStatistic>>
 @using Stoolball.Statistics
+@using Stoolball.Web.Filtering 
 @using Stoolball.Web.Statistics
 @using ClientDependency.Core.Mvc
 @using Umbraco.Core.Composing
 @{
     var humanizer = Current.Factory.GetInstance<IStatisticsFilterHumanizer>();
     Html.RequiresCss("/statistics/statistics.min.css");
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
 }
 @section canonical {@Html.Partial("_CanonicalUrl", new[] { "page" })}
 @section head {
@@ -21,6 +24,27 @@
 <div class="container-xl">
     <h1>Most runs@(humanizer.MatchingFixedFilter(Model.AppliedFilter))</h1>
 
-    @Html.Partial("_StatisticsBasis")
-    @Html.Partial("_MostRuns")
+    <ul class="nav nav-tabs">
+        <li class="nav-item nav-item-admin">
+            <button type="button" class="nav-link nav-link-filter">Edit filter</button>
+        </li>
+    </ul>
+    @Html.Partial("_Filters", new FilterViewModel
+    {
+        FilteredItemTypeSingular = "Runs",
+        FilteredItemTypePlural = "Runs",
+        FilterDescription = Model.FilterDescription,
+        from = Model.AppliedFilter.FromDate,
+        to = Model.AppliedFilter.UntilDate
+    })
+
+    @if (Model.Results.Any())
+    {
+        @Html.Partial("_StatisticsBasis")
+        @Html.Partial("_MostRuns")
+    }
+    else
+    {
+        @Html.Partial("_NoData")
+    }
 </div>
