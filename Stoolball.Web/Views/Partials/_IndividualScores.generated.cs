@@ -77,6 +77,8 @@ namespace ASP
             #line 7 "..\..\Views\Partials\_IndividualScores.cshtml"
   
     var dateTimeFormatter = Current.Factory.CreateInstance<DateTimeFormatter>();
+    var serialiser = Current.Factory.GetInstance<IStatisticsFilterQueryStringSerializer>();
+    var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
 
             
             #line default
@@ -84,7 +86,7 @@ namespace ASP
 WriteLiteral("\r\n");
 
             
-            #line 10 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 12 "..\..\Views\Partials\_IndividualScores.cshtml"
  if (Model.Results.Any())
 {
 
@@ -98,13 +100,13 @@ WriteLiteral(" class=\"statistics table-as-cards table-as-cards-reset-md\"");
 WriteLiteral(">\r\n");
 
             
-            #line 13 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 15 "..\..\Views\Partials\_IndividualScores.cshtml"
         
             
             #line default
             #line hidden
             
-            #line 13 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 15 "..\..\Views\Partials\_IndividualScores.cshtml"
          if (Model.ShowCaption)
         {
 
@@ -114,7 +116,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("            <caption>Highest individual scores</caption>\r\n");
 
             
-            #line 16 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 18 "..\..\Views\Partials\_IndividualScores.cshtml"
         }
 
             
@@ -129,13 +131,13 @@ WriteLiteral(" class=\"table-order\"");
 WriteLiteral(">#</th>\r\n");
 
             
-            #line 20 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 22 "..\..\Views\Partials\_IndividualScores.cshtml"
                 
             
             #line default
             #line hidden
             
-            #line 20 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 22 "..\..\Views\Partials\_IndividualScores.cshtml"
                  if (Model.ShowPlayerColumn)
                 {
 
@@ -149,7 +151,7 @@ WriteLiteral(" scope=\"col\"");
 WriteLiteral(">Player</th>\r\n");
 
             
-            #line 23 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 25 "..\..\Views\Partials\_IndividualScores.cshtml"
 
                 }
 
@@ -179,13 +181,13 @@ WriteLiteral(" class=\"numeric statistic\"");
 WriteLiteral(">Balls</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody>\r\n");
 
             
-            #line 32 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 34 "..\..\Views\Partials\_IndividualScores.cshtml"
             
             
             #line default
             #line hidden
             
-            #line 32 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 34 "..\..\Views\Partials\_IndividualScores.cshtml"
               
                 int? previousRunsScored = null;
                 bool? previousNotOut = null;
@@ -206,7 +208,7 @@ WriteLiteral(" class=\"table-as-cards__header-md\"");
 WriteLiteral(">");
 
             
-            #line 42 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 44 "..\..\Views\Partials\_IndividualScores.cshtml"
                                                           Write(equalToPrevious ? "=" : ((Model.AppliedFilter.Paging.PageSize * (Model.AppliedFilter.Paging.PageNumber - 1)) + i + 1).ToString());
 
             
@@ -215,13 +217,13 @@ WriteLiteral(">");
 WriteLiteral("</td>\r\n");
 
             
-            #line 43 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 45 "..\..\Views\Partials\_IndividualScores.cshtml"
                         
             
             #line default
             #line hidden
             
-            #line 43 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 45 "..\..\Views\Partials\_IndividualScores.cshtml"
                          if (Model.ShowPlayerColumn)
                         {
 
@@ -240,20 +242,20 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Player</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2042), Tuple.Create("\"", 2085)
+WriteAttribute("href", Tuple.Create(" href=\"", 2222), Tuple.Create("\"", 2265)
             
-            #line 45 "..\..\Views\Partials\_IndividualScores.cshtml"
-                                                   , Tuple.Create(Tuple.Create("", 2049), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Player.PlayerRoute
+            #line 47 "..\..\Views\Partials\_IndividualScores.cshtml"
+                                                   , Tuple.Create(Tuple.Create("", 2229), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Player.PlayerRoute
             
             #line default
             #line hidden
-, 2049), false)
+, 2229), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 45 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 47 "..\..\Views\Partials\_IndividualScores.cshtml"
                                                                                                                                                                      Write(Model.Results[i].Player.PlayerName());
 
             
@@ -262,7 +264,7 @@ WriteLiteral(">");
 WriteLiteral("</a></td>\r\n");
 
             
-            #line 46 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 48 "..\..\Views\Partials\_IndividualScores.cshtml"
                         }
 
             
@@ -280,20 +282,20 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Match</span><div><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2288), Tuple.Create("\"", 2329)
+WriteAttribute("href", Tuple.Create(" href=\"", 2468), Tuple.Create("\"", 2509)
             
-            #line 47 "..\..\Views\Partials\_IndividualScores.cshtml"
-                                                   , Tuple.Create(Tuple.Create("", 2295), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
+            #line 49 "..\..\Views\Partials\_IndividualScores.cshtml"
+                                                   , Tuple.Create(Tuple.Create("", 2475), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
             
             #line default
             #line hidden
-, 2295), false)
+, 2475), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 47 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 49 "..\..\Views\Partials\_IndividualScores.cshtml"
                                                                                                                                                                   Write(Model.Results[i].Match.MatchName);
 
             
@@ -314,7 +316,7 @@ WriteLiteral(" aria-hidden=\"true\"");
 WriteLiteral(">When</span>");
 
             
-            #line 48 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 50 "..\..\Views\Partials\_IndividualScores.cshtml"
                                                                                                                                     Write(dateTimeFormatter.FormatDate(Model.Results[i].Match.StartTime, false, true, false));
 
             
@@ -323,13 +325,13 @@ WriteLiteral(">When</span>");
 WriteLiteral("</td>\r\n");
 
             
-            #line 49 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 51 "..\..\Views\Partials\_IndividualScores.cshtml"
                         
             
             #line default
             #line hidden
             
-            #line 49 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 51 "..\..\Views\Partials\_IndividualScores.cshtml"
                          if (notOut)
                         {
 
@@ -355,7 +357,7 @@ WriteLiteral(" class=\"runs-scored\"");
 WriteLiteral(">");
 
             
-            #line 51 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 53 "..\..\Views\Partials\_IndividualScores.cshtml"
                                                                                                                                                                 Write(Model.Results[i].Result.RunsScored);
 
             
@@ -364,7 +366,7 @@ WriteLiteral(">");
 WriteLiteral("*</span></td>\r\n");
 
             
-            #line 52 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 54 "..\..\Views\Partials\_IndividualScores.cshtml"
                         }
                         else
                         {
@@ -391,7 +393,7 @@ WriteLiteral(" class=\"runs-scored\"");
 WriteLiteral(">");
 
             
-            #line 55 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 57 "..\..\Views\Partials\_IndividualScores.cshtml"
                                                                                                                                                                                Write(Model.Results[i].Result.RunsScored);
 
             
@@ -400,7 +402,7 @@ WriteLiteral(">");
 WriteLiteral("</span></td>\r\n");
 
             
-            #line 56 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 58 "..\..\Views\Partials\_IndividualScores.cshtml"
                         }
 
             
@@ -409,7 +411,7 @@ WriteLiteral("</span></td>\r\n");
 WriteLiteral("                        ");
 
             
-            #line 57 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 59 "..\..\Views\Partials\_IndividualScores.cshtml"
                          if (Model.Results[i].Result.BallsFaced.HasValue)
                         {
 
@@ -435,7 +437,7 @@ WriteLiteral(" class=\"balls-faced\"");
 WriteLiteral(">");
 
             
-            #line 59 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 61 "..\..\Views\Partials\_IndividualScores.cshtml"
                                                                                                                                                                  Write(Model.Results[i].Result.BallsFaced.Value.ToString());
 
             
@@ -444,7 +446,7 @@ WriteLiteral(">");
 WriteLiteral("</span></td>\r\n");
 
             
-            #line 60 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 62 "..\..\Views\Partials\_IndividualScores.cshtml"
                         }
                         else
                         {
@@ -461,7 +463,7 @@ WriteLiteral(" class=\"numeric-md table-as-cards__missing-data\"");
 WriteLiteral(">–</td>\r\n");
 
             
-            #line 64 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 66 "..\..\Views\Partials\_IndividualScores.cshtml"
                         }
 
             
@@ -470,7 +472,7 @@ WriteLiteral(">–</td>\r\n");
 WriteLiteral("                    </tr>\r\n");
 
             
-            #line 66 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 68 "..\..\Views\Partials\_IndividualScores.cshtml"
                 }
             
             
@@ -479,7 +481,7 @@ WriteLiteral("                    </tr>\r\n");
 WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
 
             
-            #line 70 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 72 "..\..\Views\Partials\_IndividualScores.cshtml"
     if (Model.AppliedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
     {
 
@@ -488,21 +490,28 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3983), Tuple.Create("\"", 4023)
+WriteAttribute("href", Tuple.Create(" href=\"", 4163), Tuple.Create("\"", 4227)
             
-            #line 72 "..\..\Views\Partials\_IndividualScores.cshtml"
-, Tuple.Create(Tuple.Create("", 3990), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
+            #line 74 "..\..\Views\Partials\_IndividualScores.cshtml"
+, Tuple.Create(Tuple.Create("", 4170), Tuple.Create<System.Object, System.Int32>(Request.Url.AbsolutePath
             
             #line default
             #line hidden
-, 3990), false)
-, Tuple.Create(Tuple.Create("", 4005), Tuple.Create("/individual-scores", 4005), true)
+, 4170), false)
+, Tuple.Create(Tuple.Create("", 4195), Tuple.Create("/individual-scores", 4195), true)
+            
+            #line 74 "..\..\Views\Partials\_IndividualScores.cshtml"
+, Tuple.Create(Tuple.Create("", 4213), Tuple.Create<System.Object, System.Int32>(queryString
+            
+            #line default
+            #line hidden
+, 4213), false)
 );
 
-WriteLiteral(">Individual scores – view all</a></p>\r\n");
+WriteLiteral(">Individual scores – view all and filter</a></p>\r\n");
 
             
-            #line 73 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 75 "..\..\Views\Partials\_IndividualScores.cshtml"
     }
     else
     {
@@ -511,14 +520,14 @@ WriteLiteral(">Individual scores – view all</a></p>\r\n");
             #line default
             #line hidden
             
-            #line 76 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 78 "..\..\Views\Partials\_IndividualScores.cshtml"
    Write(Html.Partial("_Paging", Model.AppliedFilter.Paging));
 
             
             #line default
             #line hidden
             
-            #line 76 "..\..\Views\Partials\_IndividualScores.cshtml"
+            #line 78 "..\..\Views\Partials\_IndividualScores.cshtml"
                                                             
     }
 }

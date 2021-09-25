@@ -27,14 +27,14 @@ namespace ASP
     using System.Web.UI;
     using System.Web.WebPages;
     
-    #line 5 "..\..\Views\IndividualScores.cshtml"
+    #line 6 "..\..\Views\IndividualScores.cshtml"
     using ClientDependency.Core.Mvc;
     
     #line default
     #line hidden
     using Examine;
     
-    #line 4 "..\..\Views\IndividualScores.cshtml"
+    #line 5 "..\..\Views\IndividualScores.cshtml"
     using Stoolball.Matches;
     
     #line default
@@ -47,13 +47,19 @@ namespace ASP
     #line hidden
     
     #line 3 "..\..\Views\IndividualScores.cshtml"
+    using Stoolball.Web.Filtering;
+    
+    #line default
+    #line hidden
+    
+    #line 4 "..\..\Views\IndividualScores.cshtml"
     using Stoolball.Web.Statistics;
     
     #line default
     #line hidden
     using Umbraco.Core;
     
-    #line 6 "..\..\Views\IndividualScores.cshtml"
+    #line 7 "..\..\Views\IndividualScores.cshtml"
     using Umbraco.Core.Composing;
     
     #line default
@@ -74,10 +80,12 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 7 "..\..\Views\IndividualScores.cshtml"
+            #line 8 "..\..\Views\IndividualScores.cshtml"
   
     var humanizer = Current.Factory.GetInstance<IStatisticsFilterHumanizer>();
     Html.RequiresCss("/statistics/statistics.min.css");
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
     if (Model.AppliedFilter.Player != null)
     {
         Model.ShowPlayerColumn = false;
@@ -91,7 +99,7 @@ WriteLiteral("\r\n");
 DefineSection("canonical", () => {
 
             
-            #line 15 "..\..\Views\IndividualScores.cshtml"
+            #line 18 "..\..\Views\IndividualScores.cshtml"
                Write(Html.Partial("_CanonicalUrl", new[] { "page" }));
 
             
@@ -104,13 +112,13 @@ DefineSection("head", () => {
 WriteLiteral("\r\n");
 
             
-            #line 17 "..\..\Views\IndividualScores.cshtml"
+            #line 20 "..\..\Views\IndividualScores.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 17 "..\..\Views\IndividualScores.cshtml"
+            #line 20 "..\..\Views\IndividualScores.cshtml"
      if (Model.AppliedFilter.Paging.PageNumber == 1)
     {
 
@@ -126,7 +134,7 @@ WriteLiteral(" content=\"index, nofollow\"");
 WriteLiteral(">\r\n");
 
             
-            #line 20 "..\..\Views\IndividualScores.cshtml"
+            #line 23 "..\..\Views\IndividualScores.cshtml"
     }
     else
     {
@@ -143,7 +151,7 @@ WriteLiteral(" content=\"noindex, nofollow\"");
 WriteLiteral(">\r\n");
 
             
-            #line 24 "..\..\Views\IndividualScores.cshtml"
+            #line 27 "..\..\Views\IndividualScores.cshtml"
     }
 
             
@@ -158,35 +166,107 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>Highest individual scores");
 
             
-            #line 27 "..\..\Views\IndividualScores.cshtml"
+            #line 30 "..\..\Views\IndividualScores.cshtml"
                              Write(humanizer.MatchingFixedFilter(Model.AppliedFilter));
 
             
             #line default
             #line hidden
-WriteLiteral("</h1>\r\n\r\n");
+WriteLiteral("</h1>\r\n\r\n    <ul");
+
+WriteLiteral(" class=\"nav nav-tabs\"");
+
+WriteLiteral(">\r\n        <li");
+
+WriteLiteral(" class=\"nav-item nav-item-admin\"");
+
+WriteLiteral(">\r\n            <button");
+
+WriteLiteral(" type=\"button\"");
+
+WriteLiteral(" class=\"nav-link nav-link-filter\"");
+
+WriteLiteral(">Edit filter</button>\r\n        </li>\r\n    </ul>\r\n");
 
 WriteLiteral("    ");
 
             
-            #line 29 "..\..\Views\IndividualScores.cshtml"
-Write(Html.Partial("_StatisticsBasis"));
+            #line 37 "..\..\Views\IndividualScores.cshtml"
+Write(Html.Partial("_Filters", new FilterViewModel
+    {
+        FilteredItemTypeSingular = "Score",
+        FilteredItemTypePlural = "Scores",
+        FilterDescription = Model.FilterDescription,
+        from = Model.AppliedFilter.FromDate,
+        to = Model.AppliedFilter.UntilDate
+    }));
 
             
             #line default
             #line hidden
-WriteLiteral("\r\n");
-
-WriteLiteral("    ");
+WriteLiteral("\r\n\r\n");
 
             
-            #line 30 "..\..\Views\IndividualScores.cshtml"
-Write(Html.Partial("_IndividualScores"));
+            #line 46 "..\..\Views\IndividualScores.cshtml"
+    
+            
+            #line default
+            #line hidden
+            
+            #line 46 "..\..\Views\IndividualScores.cshtml"
+     if (Model.Results.Any())
+    {
+        
+            
+            #line default
+            #line hidden
+            
+            #line 48 "..\..\Views\IndividualScores.cshtml"
+   Write(Html.Partial("_StatisticsBasis"));
 
             
             #line default
             #line hidden
-WriteLiteral("\r\n</div>");
+            
+            #line 48 "..\..\Views\IndividualScores.cshtml"
+                                         
+        
+            
+            #line default
+            #line hidden
+            
+            #line 49 "..\..\Views\IndividualScores.cshtml"
+   Write(Html.Partial("_IndividualScores"));
+
+            
+            #line default
+            #line hidden
+            
+            #line 49 "..\..\Views\IndividualScores.cshtml"
+                                          
+    }
+    else
+    {
+        
+            
+            #line default
+            #line hidden
+            
+            #line 53 "..\..\Views\IndividualScores.cshtml"
+   Write(Html.Partial("_NoData"));
+
+            
+            #line default
+            #line hidden
+            
+            #line 53 "..\..\Views\IndividualScores.cshtml"
+                                
+    }
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</div>");
 
         }
     }

@@ -6,6 +6,8 @@
 @using Umbraco.Core.Composing
 @{
     var dateTimeFormatter = Current.Factory.CreateInstance<DateTimeFormatter>();
+    var serialiser = Current.Factory.GetInstance<IStatisticsFilterQueryStringSerializer>();
+    var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
 }
 @if (Model.Results.Any())
 {
@@ -69,7 +71,7 @@
     </table>
     if (Model.AppliedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
     {
-        <p><a href="@Request.RawUrl/individual-scores">Individual scores – view all</a></p>
+        <p><a href="@Request.Url.AbsolutePath/individual-scores@(queryString)">Individual scores – view all and filter</a></p>
     }
     else
     {
