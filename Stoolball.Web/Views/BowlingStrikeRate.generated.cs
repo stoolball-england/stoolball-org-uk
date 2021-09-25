@@ -46,6 +46,12 @@ namespace ASP
     #line default
     #line hidden
     using Umbraco.Core;
+    
+    #line 5 "..\..\Views\BowlingStrikeRate.cshtml"
+    using Umbraco.Core.Composing;
+    
+    #line default
+    #line hidden
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
@@ -62,8 +68,9 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 5 "..\..\Views\BowlingStrikeRate.cshtml"
+            #line 6 "..\..\Views\BowlingStrikeRate.cshtml"
   
+    var humanizer = Current.Factory.GetInstance<IStatisticsFilterHumanizer>();
     Html.RequiresCss("/statistics/statistics.min.css");
 
             
@@ -74,7 +81,7 @@ WriteLiteral("\r\n");
 DefineSection("canonical", () => {
 
             
-            #line 8 "..\..\Views\BowlingStrikeRate.cshtml"
+            #line 10 "..\..\Views\BowlingStrikeRate.cshtml"
                Write(Html.Partial("_CanonicalUrl", new[] { "page" }));
 
             
@@ -87,14 +94,14 @@ DefineSection("head", () => {
 WriteLiteral("\r\n");
 
             
-            #line 10 "..\..\Views\BowlingStrikeRate.cshtml"
+            #line 12 "..\..\Views\BowlingStrikeRate.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 10 "..\..\Views\BowlingStrikeRate.cshtml"
-     if (Model.StatisticsFilter.Paging.PageNumber == 1)
+            #line 12 "..\..\Views\BowlingStrikeRate.cshtml"
+     if (Model.AppliedFilter.Paging.PageNumber == 1)
     {
 
             
@@ -109,7 +116,7 @@ WriteLiteral(" content=\"index, nofollow\"");
 WriteLiteral(">\r\n");
 
             
-            #line 13 "..\..\Views\BowlingStrikeRate.cshtml"
+            #line 15 "..\..\Views\BowlingStrikeRate.cshtml"
     }
     else
     {
@@ -126,7 +133,7 @@ WriteLiteral(" content=\"noindex, nofollow\"");
 WriteLiteral(">\r\n");
 
             
-            #line 17 "..\..\Views\BowlingStrikeRate.cshtml"
+            #line 19 "..\..\Views\BowlingStrikeRate.cshtml"
     }
 
             
@@ -141,8 +148,8 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>Best bowling strike rate");
 
             
-            #line 20 "..\..\Views\BowlingStrikeRate.cshtml"
-                            Write(Model.StatisticsFilter);
+            #line 22 "..\..\Views\BowlingStrikeRate.cshtml"
+                            Write(humanizer.MatchingFixedFilter(Model.AppliedFilter));
 
             
             #line default
@@ -150,13 +157,13 @@ WriteLiteral(">\r\n    <h1>Best bowling strike rate");
 WriteLiteral("</h1>\r\n\r\n");
 
             
-            #line 22 "..\..\Views\BowlingStrikeRate.cshtml"
+            #line 24 "..\..\Views\BowlingStrikeRate.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 22 "..\..\Views\BowlingStrikeRate.cshtml"
+            #line 24 "..\..\Views\BowlingStrikeRate.cshtml"
      if (Model.Results.Any())
     {
         
@@ -164,14 +171,14 @@ WriteLiteral("</h1>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 24 "..\..\Views\BowlingStrikeRate.cshtml"
+            #line 26 "..\..\Views\BowlingStrikeRate.cshtml"
    Write(Html.Partial("_StatisticsBasis"));
 
             
             #line default
             #line hidden
             
-            #line 24 "..\..\Views\BowlingStrikeRate.cshtml"
+            #line 26 "..\..\Views\BowlingStrikeRate.cshtml"
                                          
     }
     else
@@ -181,14 +188,14 @@ WriteLiteral("</h1>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 28 "..\..\Views\BowlingStrikeRate.cshtml"
+            #line 30 "..\..\Views\BowlingStrikeRate.cshtml"
    Write(Html.Partial("_NoData"));
 
             
             #line default
             #line hidden
             
-            #line 28 "..\..\Views\BowlingStrikeRate.cshtml"
+            #line 30 "..\..\Views\BowlingStrikeRate.cshtml"
                                 
     }
 
@@ -198,8 +205,8 @@ WriteLiteral("</h1>\r\n\r\n");
 WriteLiteral("    <p>Players must have overs recorded in at least <strong>");
 
             
-            #line 30 "..\..\Views\BowlingStrikeRate.cshtml"
-                                                       Write(Model.StatisticsFilter.MinimumQualifyingInnings);
+            #line 32 "..\..\Views\BowlingStrikeRate.cshtml"
+                                                       Write(Model.AppliedFilter.MinimumQualifyingInnings);
 
             
             #line default
@@ -209,7 +216,7 @@ WriteLiteral(" innings</strong> to appear in this list.</p>\r\n");
 WriteLiteral("    ");
 
             
-            #line 31 "..\..\Views\BowlingStrikeRate.cshtml"
+            #line 33 "..\..\Views\BowlingStrikeRate.cshtml"
 Write(Html.Partial("_BowlingStrikeRate"));
 
             

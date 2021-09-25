@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Stoolball.Matches;
 using Stoolball.Statistics;
@@ -17,10 +18,12 @@ namespace Stoolball.Web.Statistics
 {
     public class CatchesController : RenderMvcControllerAsync
     {
-        private readonly IStatisticsFilterUrlParser _statisticsFilterUrlParser;
+        private readonly IStatisticsFilterFactory _statisticsFilterFactory;
         private readonly IPlayerSummaryStatisticsDataSource _playerSummaryStatisticsDataSource;
         private readonly IPlayerPerformanceStatisticsDataSource _playerPerformanceDataSource;
         private readonly IStatisticsBreadcrumbBuilder _statisticsBreadcrumbBuilder;
+        private readonly IStatisticsFilterQueryStringParser _statisticsFilterQueryStringParser;
+        private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
 
         public CatchesController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -28,16 +31,20 @@ namespace Stoolball.Web.Statistics
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           IStatisticsFilterUrlParser statisticsFilterUrlParser,
+           IStatisticsFilterFactory statisticsFilterFactory,
            IPlayerSummaryStatisticsDataSource playerSummaryStatisticsDataSource,
            IPlayerPerformanceStatisticsDataSource playerPerformanceDataSource,
-           IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder)
+           IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder,
+           IStatisticsFilterQueryStringParser statisticsFilterQueryStringParser,
+           IStatisticsFilterHumanizer statisticsFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _statisticsFilterUrlParser = statisticsFilterUrlParser ?? throw new ArgumentNullException(nameof(statisticsFilterUrlParser));
+            _statisticsFilterFactory = statisticsFilterFactory ?? throw new ArgumentNullException(nameof(statisticsFilterFactory));
             _playerSummaryStatisticsDataSource = playerSummaryStatisticsDataSource ?? throw new ArgumentNullException(nameof(playerSummaryStatisticsDataSource));
             _playerPerformanceDataSource = playerPerformanceDataSource ?? throw new ArgumentNullException(nameof(playerPerformanceDataSource));
             _statisticsBreadcrumbBuilder = statisticsBreadcrumbBuilder ?? throw new ArgumentNullException(nameof(statisticsBreadcrumbBuilder));
+            _statisticsFilterQueryStringParser = statisticsFilterQueryStringParser ?? throw new ArgumentNullException(nameof(statisticsFilterQueryStringParser));
+            _statisticsFilterHumanizer = statisticsFilterHumanizer ?? throw new ArgumentNullException(nameof(statisticsFilterHumanizer));
         }
 
         [HttpGet]
@@ -50,29 +57,23 @@ namespace Stoolball.Web.Statistics
             }
 
             var model = new StatisticsViewModel<PlayerInnings>(contentModel.Content, Services?.UserService) { ShowCaption = false };
-            model.StatisticsFilter = await _statisticsFilterUrlParser.ParseUrl(new Uri(Request.Url, Request.RawUrl)).ConfigureAwait(false);
-            model.StatisticsFilter.Paging.PageSize = Constants.Defaults.PageSize;
-            var catchesFilter = new StatisticsFilter
-            {
-                CaughtByPlayerIdentityIds = model.StatisticsFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList(),
-                Paging = model.StatisticsFilter.Paging
-            };
+            model.DefaultFilter = await _statisticsFilterFactory.FromRoute(Request.Url.AbsolutePath).ConfigureAwait(false);
+            model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, HttpUtility.ParseQueryString(Request.Url.Query));
+
+            var catchesFilter = model.AppliedFilter.Clone();
+            catchesFilter.Player = null;
+            catchesFilter.CaughtByPlayerIdentityIds = model.AppliedFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList();
             model.Results = (await _playerPerformanceDataSource.ReadPlayerInnings(catchesFilter).ConfigureAwait(false)).ToList();
 
-            if (!model.Results.Any())
-            {
-                return new HttpNotFoundResult();
-            }
-            else
-            {
-                model.StatisticsFilter.Paging.PageUrl = Request.Url;
-                model.StatisticsFilter.Paging.Total = (await _playerSummaryStatisticsDataSource.ReadFieldingStatistics(model.StatisticsFilter).ConfigureAwait(false)).TotalCatches;
+            model.AppliedFilter.Paging.PageUrl = Request.Url;
+            model.AppliedFilter.Paging.Total = (await _playerSummaryStatisticsDataSource.ReadFieldingStatistics(model.AppliedFilter).ConfigureAwait(false)).TotalCatches;
 
-                _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.StatisticsFilter);
-                model.Metadata.PageTitle = "Catches" + model.StatisticsFilter.ToString();
+            _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.AppliedFilter);
 
-                return CurrentTemplate(model);
-            }
+            model.FilterDescription = _statisticsFilterHumanizer.StatisticsMatchingUserFilter(model.AppliedFilter);
+            model.Metadata.PageTitle = "Catches" + _statisticsFilterHumanizer.MatchingFixedFilter(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
+
+            return CurrentTemplate(model);
         }
     }
 }

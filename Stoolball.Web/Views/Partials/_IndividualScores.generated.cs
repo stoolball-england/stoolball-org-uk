@@ -207,7 +207,7 @@ WriteLiteral(">");
 
             
             #line 42 "..\..\Views\Partials\_IndividualScores.cshtml"
-                                                          Write(equalToPrevious ? "=" : ((Model.StatisticsFilter.Paging.PageSize * (Model.StatisticsFilter.Paging.PageNumber - 1)) + i + 1).ToString());
+                                                          Write(equalToPrevious ? "=" : ((Model.AppliedFilter.Paging.PageSize * (Model.AppliedFilter.Paging.PageNumber - 1)) + i + 1).ToString());
 
             
             #line default
@@ -240,14 +240,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Player</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2048), Tuple.Create("\"", 2091)
+WriteAttribute("href", Tuple.Create(" href=\"", 2042), Tuple.Create("\"", 2085)
             
             #line 45 "..\..\Views\Partials\_IndividualScores.cshtml"
-                                                   , Tuple.Create(Tuple.Create("", 2055), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Player.PlayerRoute
+                                                   , Tuple.Create(Tuple.Create("", 2049), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Player.PlayerRoute
             
             #line default
             #line hidden
-, 2055), false)
+, 2049), false)
 );
 
 WriteLiteral(">");
@@ -280,14 +280,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Match</span><div><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2294), Tuple.Create("\"", 2335)
+WriteAttribute("href", Tuple.Create(" href=\"", 2288), Tuple.Create("\"", 2329)
             
             #line 47 "..\..\Views\Partials\_IndividualScores.cshtml"
-                                                   , Tuple.Create(Tuple.Create("", 2301), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
+                                                   , Tuple.Create(Tuple.Create("", 2295), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
             
             #line default
             #line hidden
-, 2301), false)
+, 2295), false)
 );
 
 WriteLiteral(">");
@@ -480,7 +480,7 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
 
             
             #line 70 "..\..\Views\Partials\_IndividualScores.cshtml"
-    if (Model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
+    if (Model.AppliedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
     {
 
             
@@ -488,15 +488,15 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3992), Tuple.Create("\"", 4032)
+WriteAttribute("href", Tuple.Create(" href=\"", 3983), Tuple.Create("\"", 4023)
             
             #line 72 "..\..\Views\Partials\_IndividualScores.cshtml"
-, Tuple.Create(Tuple.Create("", 3999), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
+, Tuple.Create(Tuple.Create("", 3990), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
             
             #line default
             #line hidden
-, 3999), false)
-, Tuple.Create(Tuple.Create("", 4014), Tuple.Create("/individual-scores", 4014), true)
+, 3990), false)
+, Tuple.Create(Tuple.Create("", 4005), Tuple.Create("/individual-scores", 4005), true)
 );
 
 WriteLiteral(">Individual scores – view all</a></p>\r\n");
@@ -512,14 +512,14 @@ WriteLiteral(">Individual scores – view all</a></p>\r\n");
             #line hidden
             
             #line 76 "..\..\Views\Partials\_IndividualScores.cshtml"
-   Write(Html.Partial("_Paging", Model.StatisticsFilter.Paging));
+   Write(Html.Partial("_Paging", Model.AppliedFilter.Paging));
 
             
             #line default
             #line hidden
             
             #line 76 "..\..\Views\Partials\_IndividualScores.cshtml"
-                                                               
+                                                            
     }
 }
             

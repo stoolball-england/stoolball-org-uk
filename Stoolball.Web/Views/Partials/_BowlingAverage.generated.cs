@@ -207,7 +207,7 @@ WriteLiteral(">");
 
             
             #line 40 "..\..\Views\Partials\_BowlingAverage.cshtml"
-                                                          Write(equalToPrevious ? "=" : ((Model.StatisticsFilter.Paging.PageSize * (Model.StatisticsFilter.Paging.PageNumber - 1)) + i + 1).ToString());
+                                                          Write(equalToPrevious ? "=" : ((Model.AppliedFilter.Paging.PageSize * (Model.AppliedFilter.Paging.PageNumber - 1)) + i + 1).ToString());
 
             
             #line default
@@ -224,14 +224,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Player</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1760), Tuple.Create("\"", 1810)
+WriteAttribute("href", Tuple.Create(" href=\"", 1754), Tuple.Create("\"", 1804)
             
             #line 41 "..\..\Views\Partials\_BowlingAverage.cshtml"
-                                               , Tuple.Create(Tuple.Create("", 1767), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Player.PlayerRoute
+                                               , Tuple.Create(Tuple.Create("", 1761), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Player.PlayerRoute
             
             #line default
             #line hidden
-, 1767), false)
+, 1761), false)
 );
 
 WriteLiteral(">");
@@ -372,15 +372,15 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2914), Tuple.Create("\"", 2952)
+WriteAttribute("href", Tuple.Create(" href=\"", 2908), Tuple.Create("\"", 2946)
             
             #line 57 "..\..\Views\Partials\_BowlingAverage.cshtml"
-, Tuple.Create(Tuple.Create("", 2921), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
+, Tuple.Create(Tuple.Create("", 2915), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
             
             #line default
             #line hidden
-, 2921), false)
-, Tuple.Create(Tuple.Create("", 2936), Tuple.Create("/bowling-average", 2936), true)
+, 2915), false)
+, Tuple.Create(Tuple.Create("", 2930), Tuple.Create("/bowling-average", 2930), true)
 );
 
 WriteLiteral(">Best bowling average – view all</a></p>\r\n");
@@ -396,14 +396,14 @@ WriteLiteral(">Best bowling average – view all</a></p>\r\n");
             #line hidden
             
             #line 61 "..\..\Views\Partials\_BowlingAverage.cshtml"
-   Write(Html.Partial("_Paging", Model.StatisticsFilter.Paging));
+   Write(Html.Partial("_Paging", Model.AppliedFilter.Paging));
 
             
             #line default
             #line hidden
             
             #line 61 "..\..\Views\Partials\_BowlingAverage.cshtml"
-                                                               
+                                                            
     }
 }
             

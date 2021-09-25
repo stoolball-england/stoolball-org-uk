@@ -207,7 +207,7 @@ WriteLiteral(">");
 
             
             #line 40 "..\..\Views\Partials\_EconomyRate.cshtml"
-                                                          Write(equalToPrevious ? "=" : ((Model.StatisticsFilter.Paging.PageSize * (Model.StatisticsFilter.Paging.PageNumber - 1)) + i + 1).ToString());
+                                                          Write(equalToPrevious ? "=" : ((Model.AppliedFilter.Paging.PageSize * (Model.AppliedFilter.Paging.PageNumber - 1)) + i + 1).ToString());
 
             
             #line default
@@ -224,14 +224,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Player</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1757), Tuple.Create("\"", 1807)
+WriteAttribute("href", Tuple.Create(" href=\"", 1751), Tuple.Create("\"", 1801)
             
             #line 41 "..\..\Views\Partials\_EconomyRate.cshtml"
-                                               , Tuple.Create(Tuple.Create("", 1764), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Player.PlayerRoute
+                                               , Tuple.Create(Tuple.Create("", 1758), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Player.PlayerRoute
             
             #line default
             #line hidden
-, 1764), false)
+, 1758), false)
 );
 
 WriteLiteral(">");
@@ -372,15 +372,15 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2911), Tuple.Create("\"", 2946)
+WriteAttribute("href", Tuple.Create(" href=\"", 2905), Tuple.Create("\"", 2940)
             
             #line 57 "..\..\Views\Partials\_EconomyRate.cshtml"
-, Tuple.Create(Tuple.Create("", 2918), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
+, Tuple.Create(Tuple.Create("", 2912), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
             
             #line default
             #line hidden
-, 2918), false)
-, Tuple.Create(Tuple.Create("", 2933), Tuple.Create("/economy-rate", 2933), true)
+, 2912), false)
+, Tuple.Create(Tuple.Create("", 2927), Tuple.Create("/economy-rate", 2927), true)
 );
 
 WriteLiteral(">Best economy rate – view all</a></p>\r\n");
@@ -396,14 +396,14 @@ WriteLiteral(">Best economy rate – view all</a></p>\r\n");
             #line hidden
             
             #line 61 "..\..\Views\Partials\_EconomyRate.cshtml"
-   Write(Html.Partial("_Paging", Model.StatisticsFilter.Paging));
+   Write(Html.Partial("_Paging", Model.AppliedFilter.Paging));
 
             
             #line default
             #line hidden
             
             #line 61 "..\..\Views\Partials\_EconomyRate.cshtml"
-                                                               
+                                                            
     }
 }
             

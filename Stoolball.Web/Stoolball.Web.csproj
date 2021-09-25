@@ -1723,7 +1723,7 @@
     <Compile Include="MatchLocations\MatchLocationStatisticsController.cs" />
     <Compile Include="Competitions\CompetitionStatisticsController.cs" />
     <Compile Include="Statistics\BowlingFiguresController.cs" />
-    <Compile Include="Statistics\StatisticsFilterUrlParser.cs" />
+    <Compile Include="Statistics\StatisticsFilterFactory.cs" />
     <Compile Include="Teams\TeamStatisticsController.cs" />
     <Compile Include="Statistics\StatisticsSummaryViewModel.cs" />
     <Compile Include="Statistics\StatisticsController.cs" />

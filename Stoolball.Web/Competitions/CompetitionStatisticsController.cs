@@ -76,8 +76,8 @@ namespace Stoolball.Web.Competitions
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
 
-                model.FilterDescription = _statisticsFilterHumanizer.StatisticsMatchingFilter(model.StatisticsFilter);
-                model.Metadata.PageTitle = $"Statistics for {model.Context.CompetitionName}" + _statisticsFilterHumanizer.MatchingFilter(model.StatisticsFilter);
+                model.FilterDescription = _statisticsFilterHumanizer.StatisticsMatchingUserFilter(model.StatisticsFilter);
+                model.Metadata.PageTitle = $"Statistics for {model.Context.CompetitionName}" + _statisticsFilterHumanizer.MatchingUserFilter(model.StatisticsFilter);
                 model.Metadata.Description = $"Statistics for stoolball matches played in all the years of the {model.Context.CompetitionName}.";
 
                 return CurrentTemplate(model);

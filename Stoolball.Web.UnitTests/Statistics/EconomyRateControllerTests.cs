@@ -19,6 +19,8 @@ namespace Stoolball.Web.Tests.Statistics
 {
     public class EconomyRateControllerTests : UmbracoBaseTest
     {
+        internal static readonly Uri _requestUrl = new Uri("https://example.org" + Constants.Pages.StatisticsUrl + "/economy-rate?querystring=example");
+
         public EconomyRateControllerTests()
         {
             Setup();
@@ -26,7 +28,7 @@ namespace Stoolball.Web.Tests.Statistics
 
         private class TestController : EconomyRateController
         {
-            public TestController(IStatisticsFilterUrlParser statisticsFilterUrlParser, IBestPlayerAverageStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
+            public TestController(IStatisticsFilterFactory statisticsFilterUrlParser, IBestPlayerAverageStatisticsDataSource statisticsDataSource, UmbracoHelper umbracoHelper)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
@@ -36,11 +38,12 @@ namespace Stoolball.Web.Tests.Statistics
                 umbracoHelper,
                 statisticsFilterUrlParser,
                 statisticsDataSource,
-                Mock.Of<IStatisticsBreadcrumbBuilder>())
+                Mock.Of<IStatisticsBreadcrumbBuilder>(),
+                Mock.Of<IStatisticsFilterHumanizer>())
             {
                 var request = new Mock<HttpRequestBase>();
-                request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
-                request.SetupGet(x => x.RawUrl).Returns(Stoolball.Constants.Pages.StatisticsUrl + "/economy-rate");
+                request.SetupGet(x => x.Url).Returns(_requestUrl);
+                request.SetupGet(x => x.RawUrl).Returns(_requestUrl.PathAndQuery);
 
                 var context = new Mock<HttpContextBase>();
                 context.SetupGet(x => x.Request).Returns(request.Object);
@@ -62,8 +65,8 @@ namespace Stoolball.Web.Tests.Statistics
         {
             var filter = new StatisticsFilter();
             var statisticsDataSource = new Mock<IBestPlayerAverageStatisticsDataSource>();
-            var urlParser = new Mock<IStatisticsFilterUrlParser>();
-            urlParser.Setup(x => x.ParseUrl(It.IsAny<Uri>())).Returns(Task.FromResult(filter));
+            var urlParser = new Mock<IStatisticsFilterFactory>();
+            urlParser.Setup(x => x.FromRoute(_requestUrl.AbsolutePath)).Returns(Task.FromResult(filter));
 
             var playerId = Guid.NewGuid();
             var results = new List<StatisticsResult<BestStatistic>>();
@@ -82,8 +85,8 @@ namespace Stoolball.Web.Tests.Statistics
         {
             var filter = new StatisticsFilter();
             var statisticsDataSource = new Mock<IBestPlayerAverageStatisticsDataSource>();
-            var urlParser = new Mock<IStatisticsFilterUrlParser>();
-            urlParser.Setup(x => x.ParseUrl(It.IsAny<Uri>())).Returns(Task.FromResult(filter));
+            var urlParser = new Mock<IStatisticsFilterFactory>();
+            urlParser.Setup(x => x.FromRoute(_requestUrl.AbsolutePath)).Returns(Task.FromResult(filter));
 
             var playerId = Guid.NewGuid();
             var results = new List<StatisticsResult<BestStatistic>> {

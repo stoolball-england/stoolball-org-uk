@@ -85,8 +85,8 @@ namespace Stoolball.Web.Teams
                     model.Breadcrumbs.Add(new Breadcrumb { Name = model.Context.Club.ClubName, Url = new Uri(model.Context.Club.ClubRoute, UriKind.Relative) });
                 }
 
-                model.FilterDescription = _statisticsFilterHumanizer.StatisticsMatchingFilter(model.StatisticsFilter);
-                model.Metadata.PageTitle = $"Statistics for {model.Context.TeamName} stoolball team" + _statisticsFilterHumanizer.MatchingFilter(model.StatisticsFilter);
+                model.FilterDescription = _statisticsFilterHumanizer.StatisticsMatchingUserFilter(model.StatisticsFilter);
+                model.Metadata.PageTitle = $"Statistics for {model.Context.TeamName} stoolball team" + _statisticsFilterHumanizer.MatchingUserFilter(model.StatisticsFilter);
                 model.Metadata.Description = $"Statistics for {model.Context.TeamName}, a {model.Context.Description().Substring(2)}";
 
                 return CurrentTemplate(model);

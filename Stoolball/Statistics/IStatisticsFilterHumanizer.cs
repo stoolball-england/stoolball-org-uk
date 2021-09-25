@@ -2,7 +2,8 @@
 {
     public interface IStatisticsFilterHumanizer
     {
-        string MatchingFilter(StatisticsFilter filter);
-        string StatisticsMatchingFilter(StatisticsFilter filter);
+        string MatchingUserFilter(StatisticsFilter filter);
+        string MatchingFixedFilter(StatisticsFilter filter);
+        string StatisticsMatchingUserFilter(StatisticsFilter filter);
     }
 }

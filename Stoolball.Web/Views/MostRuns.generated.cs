@@ -46,6 +46,12 @@ namespace ASP
     #line default
     #line hidden
     using Umbraco.Core;
+    
+    #line 5 "..\..\Views\MostRuns.cshtml"
+    using Umbraco.Core.Composing;
+    
+    #line default
+    #line hidden
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
@@ -62,8 +68,9 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 5 "..\..\Views\MostRuns.cshtml"
+            #line 6 "..\..\Views\MostRuns.cshtml"
   
+    var humanizer = Current.Factory.GetInstance<IStatisticsFilterHumanizer>();
     Html.RequiresCss("/statistics/statistics.min.css");
 
             
@@ -74,7 +81,7 @@ WriteLiteral("\r\n");
 DefineSection("canonical", () => {
 
             
-            #line 8 "..\..\Views\MostRuns.cshtml"
+            #line 10 "..\..\Views\MostRuns.cshtml"
                Write(Html.Partial("_CanonicalUrl", new[] { "page" }));
 
             
@@ -87,14 +94,14 @@ DefineSection("head", () => {
 WriteLiteral("\r\n");
 
             
-            #line 10 "..\..\Views\MostRuns.cshtml"
+            #line 12 "..\..\Views\MostRuns.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 10 "..\..\Views\MostRuns.cshtml"
-     if (Model.StatisticsFilter.Paging.PageNumber == 1)
+            #line 12 "..\..\Views\MostRuns.cshtml"
+     if (Model.AppliedFilter.Paging.PageNumber == 1)
     {
 
             
@@ -109,7 +116,7 @@ WriteLiteral(" content=\"index, nofollow\"");
 WriteLiteral(">\r\n");
 
             
-            #line 13 "..\..\Views\MostRuns.cshtml"
+            #line 15 "..\..\Views\MostRuns.cshtml"
     }
     else
     {
@@ -126,7 +133,7 @@ WriteLiteral(" content=\"noindex, nofollow\"");
 WriteLiteral(">\r\n");
 
             
-            #line 17 "..\..\Views\MostRuns.cshtml"
+            #line 19 "..\..\Views\MostRuns.cshtml"
     }
 
             
@@ -141,8 +148,8 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>Most runs");
 
             
-            #line 20 "..\..\Views\MostRuns.cshtml"
-             Write(Model.StatisticsFilter);
+            #line 22 "..\..\Views\MostRuns.cshtml"
+             Write(humanizer.MatchingFixedFilter(Model.AppliedFilter));
 
             
             #line default
@@ -152,7 +159,7 @@ WriteLiteral("</h1>\r\n\r\n");
 WriteLiteral("    ");
 
             
-            #line 22 "..\..\Views\MostRuns.cshtml"
+            #line 24 "..\..\Views\MostRuns.cshtml"
 Write(Html.Partial("_StatisticsBasis"));
 
             
@@ -163,7 +170,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 23 "..\..\Views\MostRuns.cshtml"
+            #line 25 "..\..\Views\MostRuns.cshtml"
 Write(Html.Partial("_MostRuns"));
 
             

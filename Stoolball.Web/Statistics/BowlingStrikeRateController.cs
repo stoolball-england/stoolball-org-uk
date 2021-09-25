@@ -16,9 +16,10 @@ namespace Stoolball.Web.Statistics
 {
     public class BowlingStrikeRateController : RenderMvcControllerAsync
     {
-        private readonly IStatisticsFilterUrlParser _statisticsFilterUrlParser;
+        private readonly IStatisticsFilterFactory _statisticsFilterFactory;
         private readonly IBestPlayerAverageStatisticsDataSource _statisticsDataSource;
         private readonly IStatisticsBreadcrumbBuilder _statisticsBreadcrumbBuilder;
+        private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
 
         public BowlingStrikeRateController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -26,14 +27,16 @@ namespace Stoolball.Web.Statistics
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           IStatisticsFilterUrlParser statisticsFilterUrlParser,
+           IStatisticsFilterFactory statisticsFilterFactory,
            IBestPlayerAverageStatisticsDataSource statisticsDataSource,
-           IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder)
+           IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder,
+           IStatisticsFilterHumanizer statisticsFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _statisticsFilterUrlParser = statisticsFilterUrlParser ?? throw new ArgumentNullException(nameof(statisticsFilterUrlParser));
+            _statisticsFilterFactory = statisticsFilterFactory ?? throw new ArgumentNullException(nameof(statisticsFilterFactory));
             _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
             _statisticsBreadcrumbBuilder = statisticsBreadcrumbBuilder ?? throw new ArgumentNullException(nameof(statisticsBreadcrumbBuilder));
+            _statisticsFilterHumanizer = statisticsFilterHumanizer ?? throw new ArgumentNullException(nameof(statisticsFilterHumanizer));
         }
 
         [HttpGet]
@@ -46,23 +49,23 @@ namespace Stoolball.Web.Statistics
             }
 
             var model = new StatisticsViewModel<BestStatistic>(contentModel.Content, Services?.UserService) { ShowCaption = false };
-            model.StatisticsFilter = await _statisticsFilterUrlParser.ParseUrl(new Uri(Request.Url, Request.RawUrl)).ConfigureAwait(false);
-            model.StatisticsFilter.Paging.PageSize = Constants.Defaults.PageSize;
-            if (model.StatisticsFilter.Team != null) { model.ShowTeamsColumn = false; }
-            model.StatisticsFilter.MinimumQualifyingInnings = 10;
-            if (model.StatisticsFilter.Team != null ||
-                model.StatisticsFilter.Club != null ||
-                model.StatisticsFilter.Competition != null ||
-                model.StatisticsFilter.Season != null ||
-                model.StatisticsFilter.MatchLocation != null) { model.StatisticsFilter.MinimumQualifyingInnings = 5; }
 
-            model.Results = (await _statisticsDataSource.ReadBestBowlingStrikeRate(model.StatisticsFilter).ConfigureAwait(false)).ToList();
+            model.AppliedFilter = await _statisticsFilterFactory.FromRoute(Request.Url.AbsolutePath).ConfigureAwait(false);
+            if (model.AppliedFilter.Team != null) { model.ShowTeamsColumn = false; }
+            model.AppliedFilter.MinimumQualifyingInnings = 10;
+            if (model.AppliedFilter.Team != null ||
+                model.AppliedFilter.Club != null ||
+                model.AppliedFilter.Competition != null ||
+                model.AppliedFilter.Season != null ||
+                model.AppliedFilter.MatchLocation != null) { model.AppliedFilter.MinimumQualifyingInnings = 5; }
 
-            model.StatisticsFilter.Paging.PageUrl = Request.Url;
-            model.StatisticsFilter.Paging.Total = await _statisticsDataSource.ReadTotalPlayersWithBowlingStrikeRate(model.StatisticsFilter).ConfigureAwait(false);
+            model.Results = (await _statisticsDataSource.ReadBestBowlingStrikeRate(model.AppliedFilter).ConfigureAwait(false)).ToList();
 
-            _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.StatisticsFilter);
-            model.Metadata.PageTitle = "Best bowling strike rate" + model.StatisticsFilter.ToString();
+            model.AppliedFilter.Paging.PageUrl = Request.Url;
+            model.AppliedFilter.Paging.Total = await _statisticsDataSource.ReadTotalPlayersWithBowlingStrikeRate(model.AppliedFilter).ConfigureAwait(false);
+
+            _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.AppliedFilter);
+            model.Metadata.PageTitle = "Best bowling strike rate" + _statisticsFilterHumanizer.MatchingFixedFilter(model.AppliedFilter);
 
             return CurrentTemplate(model);
         }

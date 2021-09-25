@@ -27,25 +27,37 @@ namespace ASP
     using System.Web.UI;
     using System.Web.WebPages;
     
-    #line 4 "..\..\Views\RunOuts.cshtml"
+    #line 5 "..\..\Views\RunOuts.cshtml"
     using ClientDependency.Core.Mvc;
     
     #line default
     #line hidden
     using Examine;
     
-    #line 3 "..\..\Views\RunOuts.cshtml"
+    #line 4 "..\..\Views\RunOuts.cshtml"
     using Stoolball.Matches;
     
     #line default
     #line hidden
     
     #line 2 "..\..\Views\RunOuts.cshtml"
+    using Stoolball.Statistics;
+    
+    #line default
+    #line hidden
+    
+    #line 3 "..\..\Views\RunOuts.cshtml"
     using Stoolball.Web.Statistics;
     
     #line default
     #line hidden
     using Umbraco.Core;
+    
+    #line 6 "..\..\Views\RunOuts.cshtml"
+    using Umbraco.Core.Composing;
+    
+    #line default
+    #line hidden
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
@@ -62,8 +74,9 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 5 "..\..\Views\RunOuts.cshtml"
+            #line 7 "..\..\Views\RunOuts.cshtml"
   
+    var humanizer = Current.Factory.GetInstance<IStatisticsFilterHumanizer>();
     Html.RequiresCss("/statistics/statistics.min.css");
 
             
@@ -74,7 +87,7 @@ WriteLiteral("\r\n");
 DefineSection("canonical", () => {
 
             
-            #line 8 "..\..\Views\RunOuts.cshtml"
+            #line 11 "..\..\Views\RunOuts.cshtml"
                Write(Html.Partial("_CanonicalUrl", new[] { "page" }));
 
             
@@ -87,14 +100,14 @@ DefineSection("head", () => {
 WriteLiteral("\r\n");
 
             
-            #line 10 "..\..\Views\RunOuts.cshtml"
+            #line 13 "..\..\Views\RunOuts.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 10 "..\..\Views\RunOuts.cshtml"
-     if (Model.StatisticsFilter.Paging.PageNumber == 1)
+            #line 13 "..\..\Views\RunOuts.cshtml"
+     if (Model.AppliedFilter.Paging.PageNumber == 1)
     {
 
             
@@ -109,7 +122,7 @@ WriteLiteral(" content=\"index, nofollow\"");
 WriteLiteral(">\r\n");
 
             
-            #line 13 "..\..\Views\RunOuts.cshtml"
+            #line 16 "..\..\Views\RunOuts.cshtml"
     }
     else
     {
@@ -126,7 +139,7 @@ WriteLiteral(" content=\"noindex, nofollow\"");
 WriteLiteral(">\r\n");
 
             
-            #line 17 "..\..\Views\RunOuts.cshtml"
+            #line 20 "..\..\Views\RunOuts.cshtml"
     }
 
             
@@ -141,8 +154,8 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>Run-outs");
 
             
-            #line 20 "..\..\Views\RunOuts.cshtml"
-            Write(Model.StatisticsFilter);
+            #line 23 "..\..\Views\RunOuts.cshtml"
+            Write(humanizer.MatchingFixedFilter(Model.AppliedFilter));
 
             
             #line default
@@ -152,7 +165,7 @@ WriteLiteral("</h1>\r\n");
 WriteLiteral("    ");
 
             
-            #line 21 "..\..\Views\RunOuts.cshtml"
+            #line 24 "..\..\Views\RunOuts.cshtml"
 Write(Html.Partial("_RunOuts"));
 
             

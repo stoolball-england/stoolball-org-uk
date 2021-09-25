@@ -176,9 +176,9 @@ WriteLiteral("                    <tr>\r\n");
             #line hidden
             
             #line 33 "..\..\Views\Partials\_Catches.cshtml"
-                           
+                          
                             var rowspan = 1;
-                            var row = i+1;
+                            var row = i + 1;
                             while (row < Model.Results.Count())
                             {
                                 if (Model.Results[row].Match.MatchRoute == Model.Results[i].Match.MatchRoute)
@@ -213,28 +213,28 @@ WriteLiteral("\r\n\r\n");
             #line hidden
 WriteLiteral("                            <td");
 
-WriteAttribute("rowspan", Tuple.Create(" rowspan=\"", 1944), Tuple.Create("\"", 1962)
+WriteAttribute("rowspan", Tuple.Create(" rowspan=\"", 1945), Tuple.Create("\"", 1963)
             
             #line 52 "..\..\Views\Partials\_Catches.cshtml"
-, Tuple.Create(Tuple.Create("", 1954), Tuple.Create<System.Object, System.Int32>(rowspan
+, Tuple.Create(Tuple.Create("", 1955), Tuple.Create<System.Object, System.Int32>(rowspan
             
             #line default
             #line hidden
-, 1954), false)
+, 1955), false)
 );
 
 WriteLiteral(" class=\"table-as-cards__header-md match__stacked\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2015), Tuple.Create("\"", 2056)
+WriteAttribute("href", Tuple.Create(" href=\"", 2016), Tuple.Create("\"", 2057)
             
             #line 52 "..\..\Views\Partials\_Catches.cshtml"
-                             , Tuple.Create(Tuple.Create("", 2022), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
+                             , Tuple.Create(Tuple.Create("", 2023), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
             
             #line default
             #line hidden
-, 2022), false)
+, 2023), false)
 );
 
 WriteLiteral(">");
@@ -269,14 +269,14 @@ WriteLiteral("                            <td");
 
 WriteLiteral(" class=\"text-nowrap d-none d-md-table-cell\"");
 
-WriteAttribute("rowspan", Tuple.Create(" rowspan=\"", 2326), Tuple.Create("\"", 2344)
+WriteAttribute("rowspan", Tuple.Create(" rowspan=\"", 2327), Tuple.Create("\"", 2345)
             
             #line 53 "..\..\Views\Partials\_Catches.cshtml"
-    , Tuple.Create(Tuple.Create("", 2336), Tuple.Create<System.Object, System.Int32>(rowspan
+    , Tuple.Create(Tuple.Create("", 2337), Tuple.Create<System.Object, System.Int32>(rowspan
             
             #line default
             #line hidden
-, 2336), false)
+, 2337), false)
 );
 
 WriteLiteral("><span");
@@ -312,14 +312,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Batter</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2661), Tuple.Create("\"", 2718)
+WriteAttribute("href", Tuple.Create(" href=\"", 2662), Tuple.Create("\"", 2719)
             
             #line 54 "..\..\Views\Partials\_Catches.cshtml"
-                                                   , Tuple.Create(Tuple.Create("", 2668), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Batter.Player.PlayerRoute
+                                                   , Tuple.Create(Tuple.Create("", 2669), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Batter.Player.PlayerRoute
             
             #line default
             #line hidden
-, 2668), false)
+, 2669), false)
 );
 
 WriteLiteral(">");
@@ -356,14 +356,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Batter</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3033), Tuple.Create("\"", 3090)
+WriteAttribute("href", Tuple.Create(" href=\"", 3034), Tuple.Create("\"", 3091)
             
             #line 58 "..\..\Views\Partials\_Catches.cshtml"
-                                                                                             , Tuple.Create(Tuple.Create("", 3040), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Batter.Player.PlayerRoute
+                                                                                             , Tuple.Create(Tuple.Create("", 3041), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Batter.Player.PlayerRoute
             
             #line default
             #line hidden
-, 3040), false)
+, 3041), false)
 );
 
 WriteLiteral(">");
@@ -441,14 +441,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Bowler</span><div><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3745), Tuple.Create("\"", 3802)
+WriteAttribute("href", Tuple.Create(" href=\"", 3746), Tuple.Create("\"", 3803)
             
             #line 66 "..\..\Views\Partials\_Catches.cshtml"
-                                                        , Tuple.Create(Tuple.Create("", 3752), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Bowler.Player.PlayerRoute
+                                                        , Tuple.Create(Tuple.Create("", 3753), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Bowler.Player.PlayerRoute
             
             #line default
             #line hidden
-, 3752), false)
+, 3753), false)
 );
 
 WriteLiteral(">");
@@ -562,7 +562,7 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
             
             #line 85 "..\..\Views\Partials\_Catches.cshtml"
-Write(Html.Partial("_Paging", Model.StatisticsFilter.Paging));
+Write(Html.Partial("_Paging", Model.AppliedFilter.Paging));
 
             
             #line default

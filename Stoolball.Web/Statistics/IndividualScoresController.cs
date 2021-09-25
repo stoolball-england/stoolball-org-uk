@@ -17,9 +17,10 @@ namespace Stoolball.Web.Statistics
 {
     public class IndividualScoresController : RenderMvcControllerAsync
     {
-        private readonly IStatisticsFilterUrlParser _statisticsFilterUrlParser;
+        private readonly IStatisticsFilterFactory _statisticsFilterFactory;
         private readonly IBestPerformanceInAMatchStatisticsDataSource _statisticsDataSource;
         private readonly IStatisticsBreadcrumbBuilder _statisticsBreadcrumbBuilder;
+        private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
 
         public IndividualScoresController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -27,14 +28,16 @@ namespace Stoolball.Web.Statistics
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           IStatisticsFilterUrlParser statisticsFilterUrlParser,
+           IStatisticsFilterFactory statisticsFilterFactory,
            IBestPerformanceInAMatchStatisticsDataSource statisticsDataSource,
-           IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder)
+           IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder,
+           IStatisticsFilterHumanizer statisticsFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _statisticsFilterUrlParser = statisticsFilterUrlParser ?? throw new ArgumentNullException(nameof(statisticsFilterUrlParser));
+            _statisticsFilterFactory = statisticsFilterFactory ?? throw new ArgumentNullException(nameof(statisticsFilterFactory));
             _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
             _statisticsBreadcrumbBuilder = statisticsBreadcrumbBuilder ?? throw new ArgumentNullException(nameof(statisticsBreadcrumbBuilder));
+            _statisticsFilterHumanizer = statisticsFilterHumanizer ?? throw new ArgumentNullException(nameof(statisticsFilterHumanizer));
         }
 
         [HttpGet]
@@ -47,24 +50,16 @@ namespace Stoolball.Web.Statistics
             }
 
             var model = new StatisticsViewModel<PlayerInnings>(contentModel.Content, Services?.UserService) { ShowCaption = false };
-            model.StatisticsFilter = await _statisticsFilterUrlParser.ParseUrl(new Uri(Request.Url, Request.RawUrl)).ConfigureAwait(false);
-            model.StatisticsFilter.Paging.PageSize = Constants.Defaults.PageSize;
-            model.Results = (await _statisticsDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+            model.AppliedFilter = await _statisticsFilterFactory.FromRoute(Request.Url.AbsolutePath).ConfigureAwait(false);
+            model.Results = (await _statisticsDataSource.ReadPlayerInnings(model.AppliedFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
 
-            if (!model.Results.Any())
-            {
-                return new HttpNotFoundResult();
-            }
-            else
-            {
-                model.StatisticsFilter.Paging.PageUrl = Request.Url;
-                model.StatisticsFilter.Paging.Total = await _statisticsDataSource.ReadTotalPlayerInnings(model.StatisticsFilter).ConfigureAwait(false);
+            model.AppliedFilter.Paging.PageUrl = Request.Url;
+            model.AppliedFilter.Paging.Total = await _statisticsDataSource.ReadTotalPlayerInnings(model.AppliedFilter).ConfigureAwait(false);
 
-                _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.StatisticsFilter);
-                model.Metadata.PageTitle = "Highest individual scores" + model.StatisticsFilter.ToString();
+            _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.AppliedFilter);
+            model.Metadata.PageTitle = "Highest individual scores" + _statisticsFilterHumanizer.MatchingFixedFilter(model.AppliedFilter);
 
-                return CurrentTemplate(model);
-            }
+            return CurrentTemplate(model);
         }
 
     }

@@ -12,7 +12,9 @@ namespace Stoolball.Web.Statistics
         {
         }
         public List<StatisticsResult<T>> Results { get; internal set; } = new List<StatisticsResult<T>>();
-        public StatisticsFilter StatisticsFilter { get; set; } = new StatisticsFilter();
+        public StatisticsFilter DefaultFilter { get; set; } = new StatisticsFilter();
+        public StatisticsFilter AppliedFilter { get; set; } = new StatisticsFilter();
+        public string FilterDescription { get; set; }
         public bool ShowLinkOnly { get; set; }
         public bool ShowCaption { get; set; } = true;
         public bool ShowPlayerColumn { get; set; } = true;

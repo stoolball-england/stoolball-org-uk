@@ -13,12 +13,12 @@ namespace Stoolball.Statistics
             _dateTimeFormatter = dateTimeFormatter ?? throw new System.ArgumentNullException(nameof(dateTimeFormatter));
         }
 
-        public string StatisticsMatchingFilter(StatisticsFilter filter)
+        public string StatisticsMatchingUserFilter(StatisticsFilter filter)
         {
-            return EntitiesMatchingFilter("Statistics", MatchingFilter(filter));
+            return EntitiesMatchingFilter("Statistics", MatchingUserFilter(filter));
         }
 
-        public string MatchingFilter(StatisticsFilter filter)
+        public string MatchingUserFilter(StatisticsFilter filter)
         {
             if (filter == null) return string.Empty;
 
@@ -26,6 +26,38 @@ namespace Stoolball.Statistics
 
             AppendDateFilter(filter.FromDate, filter.UntilDate, description, _dateTimeFormatter);
 
+            return description.ToString().TrimEnd();
+        }
+
+        public string MatchingFixedFilter(StatisticsFilter filter)
+        {
+            if (filter == null) return string.Empty;
+
+            var description = new StringBuilder();
+            if (filter.Player != null)
+            {
+                description.Append(" for ").Append(filter.Player.PlayerName());
+            }
+            if (filter.Club != null)
+            {
+                description.Append(" for ").Append(filter.Club.ClubName);
+            }
+            if (filter.Team != null)
+            {
+                description.Append(" for ").Append(filter.Team.TeamName);
+            }
+            if (filter.Competition != null)
+            {
+                description.Append(" in the ").Append(filter.Competition.CompetitionName);
+            }
+            if (filter.Season != null)
+            {
+                description.Append(" in the ").Append(filter.Season.SeasonFullName());
+            }
+            if (filter.MatchLocation != null)
+            {
+                description.Append(" at ").Append(filter.MatchLocation.NameAndLocalityOrTown());
+            }
             return description.ToString().TrimEnd();
         }
     }

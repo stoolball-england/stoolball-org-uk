@@ -13,6 +13,11 @@ namespace Stoolball.Statistics
 
             var updatedFilter = filter.Clone();
 
+            if (int.TryParse(queryString["page"], out var pageNumber))
+            {
+                updatedFilter.Paging.PageNumber = pageNumber > 0 ? pageNumber : 1;
+            }
+
             var (fromDate, untilDate) = ParseDateFilter(updatedFilter.FromDate, updatedFilter.UntilDate, queryString);
             updatedFilter.FromDate = fromDate;
             updatedFilter.UntilDate = untilDate;

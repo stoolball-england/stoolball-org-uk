@@ -349,101 +349,101 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
         [Fact]
         public async Task Read_batting_statistics_returns_TotalInnings_supporting_filter_by_date()
         {
-            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestTotalInnings(filter,
+            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
+            await TestTotalInnings(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
                " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate)).ConfigureAwait(false);
+               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
+               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task Read_batting_statistics_returns_TotalInningsWithRunsScored_supporting_filter_by_date()
         {
-            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestTotalInningsWithRunsScored(filter,
+            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
+            await TestTotalInningsWithRunsScored(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
                " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate)).ConfigureAwait(false);
+               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
+               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task Read_batting_statistics_returns_TotalInningsWithRunsScoredAndBallsFaced_supporting_filter_by_date()
         {
-            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestTotalInningsWithRunsScoredAndBallsFaced(filter,
+            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
+            await TestTotalInningsWithRunsScoredAndBallsFaced(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-              new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
-              _databaseFixture.TestData.Matches.Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate)).ConfigureAwait(false);
+              new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
+              _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task Read_batting_statistics_returns_NotOuts_supporting_filter_by_date()
         {
-            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestNotOuts(filter,
+            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
+            await TestNotOuts(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
                " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate)).ConfigureAwait(false);
+               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
+               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task Read_batting_statistics_returns_TotalRunsScored_supporting_filter_by_date()
         {
-            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestTotalRunsScored(filter,
+            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
+            await TestTotalRunsScored(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
                " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate)).ConfigureAwait(false);
+               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
+               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task Read_batting_statistics_returns_Fifties_supporting_filter_by_date()
         {
-            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestFifties(filter,
+            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
+            await TestFifties(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-              new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
-              _databaseFixture.TestData.Matches.Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate)).ConfigureAwait(false);
+              new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
+              _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task Read_batting_statistics_returns_Hundreds_supporting_filter_by_date()
         {
-            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestHundreds(filter,
+            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
+            await TestHundreds(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
                " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate)).ConfigureAwait(false);
+               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
+               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task Read_batting_statistics_returns_BestInnings_supporting_filter_by_date()
         {
-            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestBestInnings(filter,
+            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
+            await TestBestInnings(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
               " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-              new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
-              _databaseFixture.TestData.Matches.Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate)).ConfigureAwait(false);
+              new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
+              _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task Read_batting_statistics_returns_StrikeRate_supporting_filter_by_date()
         {
-            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestStrikeRate(filter,
+            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
+            await TestStrikeRate(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
                " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-               new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
-               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate)).ConfigureAwait(false);
+               new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
+               _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task Read_batting_statistics_returns_Average_supporting_filter_by_date()
         {
-            var filter = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
-            await TestAverage(filter,
+            var (fromDate, untilDate) = _dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
+            await TestAverage(new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate },
                 " AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate",
-                new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } },
-                _databaseFixture.TestData.Matches.Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate)).ConfigureAwait(false);
+                new Dictionary<string, object> { { "FromDate", fromDate }, { "UntilDate", untilDate } },
+                _databaseFixture.TestData.Matches.Where(x => x.StartTime >= fromDate && x.StartTime <= untilDate)).ConfigureAwait(false);
         }
     }
 }

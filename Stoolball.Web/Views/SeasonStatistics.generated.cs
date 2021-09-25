@@ -78,15 +78,15 @@ namespace ASP
   
     Html.RequiresCss("/statistics/statistics.min.css");
 
-    var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, AppliedFilter = Model.StatisticsFilter };
     individualScores.Results.AddRange(Model.PlayerInnings);
-    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, AppliedFilter = Model.StatisticsFilter };
     bowlingFigures.Results.AddRange(Model.BowlingFigures);
-    var mostRuns = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    var mostRuns = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, AppliedFilter = Model.StatisticsFilter };
     mostRuns.Results.AddRange(Model.MostRuns);
-    var mostWickets = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    var mostWickets = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, AppliedFilter = Model.StatisticsFilter };
     mostWickets.Results.AddRange(Model.MostWickets);
-    var mostCatches = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    var mostCatches = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, AppliedFilter = Model.StatisticsFilter };
     mostCatches.Results.AddRange(Model.MostCatches);
 
             
@@ -147,14 +147,14 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1880), Tuple.Create("\"", 1913)
+WriteAttribute("href", Tuple.Create(" href=\"", 1865), Tuple.Create("\"", 1898)
             
             #line 33 "..\..\Views\SeasonStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 1887), Tuple.Create<System.Object, System.Int32>(Model.Context.SeasonRoute
+, Tuple.Create(Tuple.Create("", 1872), Tuple.Create<System.Object, System.Int32>(Model.Context.SeasonRoute
             
             #line default
             #line hidden
-, 1887), false)
+, 1872), false)
 );
 
 WriteLiteral(">Summary</a>\r\n        </li>\r\n        <li");
@@ -165,15 +165,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2005), Tuple.Create("\"", 2046)
+WriteAttribute("href", Tuple.Create(" href=\"", 1990), Tuple.Create("\"", 2031)
             
             #line 36 "..\..\Views\SeasonStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 2012), Tuple.Create<System.Object, System.Int32>(Model.Context.SeasonRoute
+, Tuple.Create(Tuple.Create("", 1997), Tuple.Create<System.Object, System.Int32>(Model.Context.SeasonRoute
             
             #line default
             #line hidden
-, 2012), false)
-, Tuple.Create(Tuple.Create("", 2038), Tuple.Create("/matches", 2038), true)
+, 1997), false)
+, Tuple.Create(Tuple.Create("", 2023), Tuple.Create("/matches", 2023), true)
 );
 
 WriteLiteral(">Matches</a>\r\n        </li>\r\n        <li");
@@ -184,15 +184,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2138), Tuple.Create("\"", 2175)
+WriteAttribute("href", Tuple.Create(" href=\"", 2123), Tuple.Create("\"", 2160)
             
             #line 39 "..\..\Views\SeasonStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 2145), Tuple.Create<System.Object, System.Int32>(Model.Context.SeasonRoute
+, Tuple.Create(Tuple.Create("", 2130), Tuple.Create<System.Object, System.Int32>(Model.Context.SeasonRoute
             
             #line default
             #line hidden
-, 2145), false)
-, Tuple.Create(Tuple.Create("", 2171), Tuple.Create("/map", 2171), true)
+, 2130), false)
+, Tuple.Create(Tuple.Create("", 2156), Tuple.Create("/map", 2156), true)
 );
 
 WriteLiteral(">Map</a>\r\n        </li>\r\n");
@@ -222,15 +222,15 @@ WriteLiteral(">\r\n                <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2565), Tuple.Create("\"", 2604)
+WriteAttribute("href", Tuple.Create(" href=\"", 2550), Tuple.Create("\"", 2589)
             
             #line 47 "..\..\Views\SeasonStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 2572), Tuple.Create<System.Object, System.Int32>(Model.Context.SeasonRoute
+, Tuple.Create(Tuple.Create("", 2557), Tuple.Create<System.Object, System.Int32>(Model.Context.SeasonRoute
             
             #line default
             #line hidden
-, 2572), false)
-, Tuple.Create(Tuple.Create("", 2598), Tuple.Create("/table", 2598), true)
+, 2557), false)
+, Tuple.Create(Tuple.Create("", 2583), Tuple.Create("/table", 2583), true)
 );
 
 WriteLiteral(">Table</a>\r\n            </li>\r\n");
@@ -478,15 +478,15 @@ WriteLiteral(">\r\n");
             #line hidden
 WriteLiteral("                <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4685), Tuple.Create("\"", 4724)
+WriteAttribute("href", Tuple.Create(" href=\"", 4670), Tuple.Create("\"", 4709)
             
             #line 81 "..\..\Views\SeasonStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 4692), Tuple.Create<System.Object, System.Int32>(previous.SeasonRoute
+, Tuple.Create(Tuple.Create("", 4677), Tuple.Create<System.Object, System.Int32>(previous.SeasonRoute
             
             #line default
             #line hidden
-, 4692), false)
-, Tuple.Create(Tuple.Create("", 4713), Tuple.Create("/statistics", 4713), true)
+, 4677), false)
+, Tuple.Create(Tuple.Create("", 4698), Tuple.Create("/statistics", 4698), true)
 );
 
 WriteLiteral(" class=\"btn btn-secondary btn-back\"");
@@ -512,15 +512,15 @@ WriteLiteral("            ");
             #line hidden
 WriteLiteral("                <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4862), Tuple.Create("\"", 4897)
+WriteAttribute("href", Tuple.Create(" href=\"", 4847), Tuple.Create("\"", 4882)
             
             #line 85 "..\..\Views\SeasonStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 4869), Tuple.Create<System.Object, System.Int32>(next.SeasonRoute
+, Tuple.Create(Tuple.Create("", 4854), Tuple.Create<System.Object, System.Int32>(next.SeasonRoute
             
             #line default
             #line hidden
-, 4869), false)
-, Tuple.Create(Tuple.Create("", 4886), Tuple.Create("/statistics", 4886), true)
+, 4854), false)
+, Tuple.Create(Tuple.Create("", 4871), Tuple.Create("/statistics", 4871), true)
 );
 
 WriteLiteral(" class=\"btn btn-secondary\"");
@@ -536,15 +536,15 @@ WriteLiteral(">Next season</a>\r\n");
             #line hidden
 WriteLiteral("            <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4971), Tuple.Create("\"", 5032)
+WriteAttribute("href", Tuple.Create(" href=\"", 4956), Tuple.Create("\"", 5017)
             
             #line 87 "..\..\Views\SeasonStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 4978), Tuple.Create<System.Object, System.Int32>(Model.Context.Competition.CompetitionRoute
+, Tuple.Create(Tuple.Create("", 4963), Tuple.Create<System.Object, System.Int32>(Model.Context.Competition.CompetitionRoute
             
             #line default
             #line hidden
-, 4978), false)
-, Tuple.Create(Tuple.Create("", 5021), Tuple.Create("/statistics", 5021), true)
+, 4963), false)
+, Tuple.Create(Tuple.Create("", 5006), Tuple.Create("/statistics", 5006), true)
 );
 
 WriteLiteral(" class=\"btn btn-secondary\"");

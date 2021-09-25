@@ -16,9 +16,10 @@ namespace Stoolball.Web.Statistics
 {
     public class MostWicketsController : RenderMvcControllerAsync
     {
-        private readonly IStatisticsFilterUrlParser _statisticsFilterUrlParser;
+        private readonly IStatisticsFilterFactory _statisticsFilterFactory;
         private readonly IBestPlayerTotalStatisticsDataSource _statisticsDataSource;
         private readonly IStatisticsBreadcrumbBuilder _statisticsBreadcrumbBuilder;
+        private readonly IStatisticsFilterHumanizer _statisticsFilterHumanizer;
 
         public MostWicketsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -26,14 +27,16 @@ namespace Stoolball.Web.Statistics
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           IStatisticsFilterUrlParser statisticsFilterUrlParser,
+           IStatisticsFilterFactory statisticsFilterFactory,
            IBestPlayerTotalStatisticsDataSource statisticsDataSource,
-           IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder)
+           IStatisticsBreadcrumbBuilder statisticsBreadcrumbBuilder,
+           IStatisticsFilterHumanizer statisticsFilterHumanizer)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _statisticsFilterUrlParser = statisticsFilterUrlParser ?? throw new ArgumentNullException(nameof(statisticsFilterUrlParser));
+            _statisticsFilterFactory = statisticsFilterFactory ?? throw new ArgumentNullException(nameof(statisticsFilterFactory));
             _statisticsDataSource = statisticsDataSource ?? throw new ArgumentNullException(nameof(statisticsDataSource));
             _statisticsBreadcrumbBuilder = statisticsBreadcrumbBuilder ?? throw new ArgumentNullException(nameof(statisticsBreadcrumbBuilder));
+            _statisticsFilterHumanizer = statisticsFilterHumanizer ?? throw new ArgumentNullException(nameof(statisticsFilterHumanizer));
         }
 
         [HttpGet]
@@ -46,26 +49,18 @@ namespace Stoolball.Web.Statistics
             }
 
             var model = new StatisticsViewModel<BestStatistic>(contentModel.Content, Services?.UserService) { ShowCaption = false };
-            model.StatisticsFilter = await _statisticsFilterUrlParser.ParseUrl(new Uri(Request.Url, Request.RawUrl)).ConfigureAwait(false);
-            model.StatisticsFilter.Paging.PageSize = Constants.Defaults.PageSize;
-            if (model.StatisticsFilter.Team != null) { model.ShowTeamsColumn = false; }
+            model.AppliedFilter = await _statisticsFilterFactory.FromRoute(Request.Url.AbsolutePath).ConfigureAwait(false);
+            if (model.AppliedFilter.Team != null) { model.ShowTeamsColumn = false; }
 
-            model.Results = (await _statisticsDataSource.ReadMostWickets(model.StatisticsFilter).ConfigureAwait(false)).ToList();
+            model.Results = (await _statisticsDataSource.ReadMostWickets(model.AppliedFilter).ConfigureAwait(false)).ToList();
 
-            if (!model.Results.Any())
-            {
-                return new HttpNotFoundResult();
-            }
-            else
-            {
-                model.StatisticsFilter.Paging.PageUrl = Request.Url;
-                model.StatisticsFilter.Paging.Total = await _statisticsDataSource.ReadTotalPlayersWithWickets(model.StatisticsFilter).ConfigureAwait(false);
+            model.AppliedFilter.Paging.PageUrl = Request.Url;
+            model.AppliedFilter.Paging.Total = await _statisticsDataSource.ReadTotalPlayersWithWickets(model.AppliedFilter).ConfigureAwait(false);
 
-                _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.StatisticsFilter);
-                model.Metadata.PageTitle = "Most wickets" + model.StatisticsFilter.ToString();
+            _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.AppliedFilter);
+            model.Metadata.PageTitle = "Most wickets" + _statisticsFilterHumanizer.MatchingFixedFilter(model.AppliedFilter);
 
-                return CurrentTemplate(model);
-            }
+            return CurrentTemplate(model);
         }
 
     }

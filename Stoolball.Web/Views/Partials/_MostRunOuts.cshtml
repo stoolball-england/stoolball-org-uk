@@ -36,7 +36,7 @@
                     var equalToPrevious = Model.Results[i].Result.Total == previousRunOuts;
                     previousRunOuts = Model.Results[i].Result.Total;
                     <tr>
-                        <td class="table-as-cards__header-md">@(equalToPrevious ? "=" : ((Model.StatisticsFilter.Paging.PageSize * (Model.StatisticsFilter.Paging.PageNumber - 1)) + i + 1).ToString())</td>
+                        <td class="table-as-cards__header-md">@(equalToPrevious ? "=" : ((Model.AppliedFilter.Paging.PageSize * (Model.AppliedFilter.Paging.PageNumber - 1)) + i + 1).ToString())</td>
                         <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Player</span><a href="@Model.Results[i].Result.Player.PlayerRoute">@(Model.Results[i].Result.Player.PlayerName())</a></td>
                         @if (Model.ShowTeamsColumn)
                         {
@@ -50,12 +50,12 @@
         </tbody>
     </table>
     }
-    if (Model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue || Model.ShowLinkOnly)
+    if (Model.AppliedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue || Model.ShowLinkOnly)
     {
         <p><a href="@Request.RawUrl/most-run-outs">Most run-outs – view all</a></p>
     }
     else
     {
-        @Html.Partial("_Paging", Model.StatisticsFilter.Paging)
+        @Html.Partial("_Paging", Model.AppliedFilter.Paging)
     }
 }

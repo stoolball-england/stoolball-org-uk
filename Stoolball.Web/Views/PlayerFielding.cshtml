@@ -10,9 +10,9 @@
     Html.RequiresJs("/js/filter.js");
     Html.RequiresCss("/css/filter.min.css");
 
-    var catches = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.AppliedFilter };
+    var catches = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, AppliedFilter = Model.AppliedFilter };
     catches.Results.AddRange(Model.Catches);
-    var runOuts = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.AppliedFilter };
+    var runOuts = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, AppliedFilter = Model.AppliedFilter };
     runOuts.Results.AddRange(Model.RunOuts);
 
     var serialiser = Current.Factory.GetInstance<IStatisticsFilterQueryStringSerializer>();
@@ -72,12 +72,12 @@
         @Html.Partial("_Catches", catches)
         if (Model.FieldingStatistics.TotalCatches > catches.Results.Count)
         {
-            <p><a href="@Request.RawUrl.TrimEnd("/fielding")/catches">Catches – view all</a></p>
+            <p><a href="@Request.Url.AbsolutePath.TrimEnd("/fielding")/catches@(queryString)">Catches – view all and filter</a></p>
         }
         @Html.Partial("_RunOuts", runOuts)
         if (Model.FieldingStatistics.TotalRunOuts > catches.Results.Count)
         {
-            <p><a href="@Request.RawUrl.TrimEnd("/fielding")/run-outs">Run-outs – view all</a></p>
+            <p><a href="@Request.Url.AbsolutePath.TrimEnd("/fielding")/run-outs">Run-outs – view all</a></p>
         }
     }
 </div>

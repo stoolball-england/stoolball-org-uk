@@ -76,7 +76,7 @@ namespace Stoolball.Web.Tests.Statistics
         public async Task Route_matching_player_returns_PlayerFieldingViewModel()
         {
             var statisticsFilterQueryStringParser = new Mock<IStatisticsFilterQueryStringParser>();
-            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter());
+            statisticsFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<StatisticsFilter>(), It.IsAny<NameValueCollection>())).Returns(new StatisticsFilter { Player = new Player() });
             var dataSource = new Mock<IPlayerDataSource>();
             dataSource.Setup(x => x.ReadPlayerByRoute(It.IsAny<string>())).Returns(Task.FromResult<Player>(new Player()));
 

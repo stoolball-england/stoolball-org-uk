@@ -46,6 +46,12 @@ namespace ASP
     #line default
     #line hidden
     using Umbraco.Core;
+    
+    #line 5 "..\..\Views\BowlingFigures.cshtml"
+    using Umbraco.Core.Composing;
+    
+    #line default
+    #line hidden
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
@@ -62,10 +68,11 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 5 "..\..\Views\BowlingFigures.cshtml"
+            #line 6 "..\..\Views\BowlingFigures.cshtml"
   
+    var humanizer = Current.Factory.GetInstance<IStatisticsFilterHumanizer>();
     Html.RequiresCss("/statistics/statistics.min.css");
-    if (Model.StatisticsFilter.Player != null)
+    if (Model.AppliedFilter.Player != null)
     {
         Model.ShowPlayerColumn = false;
     }
@@ -78,7 +85,7 @@ WriteLiteral("\r\n");
 DefineSection("canonical", () => {
 
             
-            #line 12 "..\..\Views\BowlingFigures.cshtml"
+            #line 14 "..\..\Views\BowlingFigures.cshtml"
                Write(Html.Partial("_CanonicalUrl", new[] { "page" }));
 
             
@@ -91,14 +98,14 @@ DefineSection("head", () => {
 WriteLiteral("\r\n");
 
             
-            #line 14 "..\..\Views\BowlingFigures.cshtml"
+            #line 16 "..\..\Views\BowlingFigures.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 14 "..\..\Views\BowlingFigures.cshtml"
-     if (Model.StatisticsFilter.Paging.PageNumber == 1)
+            #line 16 "..\..\Views\BowlingFigures.cshtml"
+     if (Model.AppliedFilter.Paging.PageNumber == 1)
     {
 
             
@@ -113,7 +120,7 @@ WriteLiteral(" content=\"index, nofollow\"");
 WriteLiteral(">\r\n");
 
             
-            #line 17 "..\..\Views\BowlingFigures.cshtml"
+            #line 19 "..\..\Views\BowlingFigures.cshtml"
     }
     else
     {
@@ -130,7 +137,7 @@ WriteLiteral(" content=\"noindex, nofollow\"");
 WriteLiteral(">\r\n");
 
             
-            #line 21 "..\..\Views\BowlingFigures.cshtml"
+            #line 23 "..\..\Views\BowlingFigures.cshtml"
     }
 
             
@@ -145,8 +152,8 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>Best bowling figures");
 
             
-            #line 24 "..\..\Views\BowlingFigures.cshtml"
-                        Write(Model.StatisticsFilter);
+            #line 26 "..\..\Views\BowlingFigures.cshtml"
+                        Write(humanizer.MatchingFixedFilter(Model.AppliedFilter));
 
             
             #line default
@@ -156,7 +163,7 @@ WriteLiteral("</h1>\r\n\r\n");
 WriteLiteral("    ");
 
             
-            #line 26 "..\..\Views\BowlingFigures.cshtml"
+            #line 28 "..\..\Views\BowlingFigures.cshtml"
 Write(Html.Partial("_StatisticsBasis"));
 
             
@@ -167,7 +174,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 27 "..\..\Views\BowlingFigures.cshtml"
+            #line 29 "..\..\Views\BowlingFigures.cshtml"
 Write(Html.Partial("_BowlingFigures"));
 
             

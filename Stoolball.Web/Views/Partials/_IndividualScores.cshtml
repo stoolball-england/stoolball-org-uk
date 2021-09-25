@@ -39,7 +39,7 @@
                     previousRunsScored = Model.Results[i].Result.RunsScored;
                     previousNotOut = notOut;
                     <tr>
-                        <td class="table-as-cards__header-md">@(equalToPrevious ? "=" : ((Model.StatisticsFilter.Paging.PageSize * (Model.StatisticsFilter.Paging.PageNumber - 1)) + i + 1).ToString())</td>
+                        <td class="table-as-cards__header-md">@(equalToPrevious ? "=" : ((Model.AppliedFilter.Paging.PageSize * (Model.AppliedFilter.Paging.PageNumber - 1)) + i + 1).ToString())</td>
                         @if (Model.ShowPlayerColumn)
                         {
                             <td data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Player</span><a href="@Model.Results[i].Player.PlayerRoute">@(Model.Results[i].Player.PlayerName())</a></td>
@@ -67,12 +67,12 @@
             }
         </tbody>
     </table>
-    if (Model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
+    if (Model.AppliedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
     {
         <p><a href="@Request.RawUrl/individual-scores">Individual scores – view all</a></p>
     }
     else
     {
-        @Html.Partial("_Paging", Model.StatisticsFilter.Paging)
+        @Html.Partial("_Paging", Model.AppliedFilter.Paging)
     }
 }

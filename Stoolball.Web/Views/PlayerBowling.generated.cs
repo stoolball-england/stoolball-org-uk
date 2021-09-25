@@ -80,7 +80,7 @@ namespace ASP
     Html.RequiresJs("/js/filter.js");
     Html.RequiresCss("/css/filter.min.css");
 
-    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = false, StatisticsFilter = Model.AppliedFilter };
+    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = false, AppliedFilter = Model.AppliedFilter };
     bowlingFigures.Results.AddRange(Model.BowlingFigures);
 
     var serialiser = Current.Factory.GetInstance<IStatisticsFilterQueryStringSerializer>();
@@ -116,21 +116,21 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 963), Tuple.Create("\"", 1009)
+WriteAttribute("href", Tuple.Create(" href=\"", 960), Tuple.Create("\"", 1006)
             
             #line 23 "..\..\Views\PlayerBowling.cshtml"
-, Tuple.Create(Tuple.Create("", 970), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
+, Tuple.Create(Tuple.Create("", 967), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
             
             #line default
             #line hidden
-, 970), false)
+, 967), false)
             
             #line 23 "..\..\Views\PlayerBowling.cshtml"
-, Tuple.Create(Tuple.Create("", 995), Tuple.Create<System.Object, System.Int32>(queryString
+, Tuple.Create(Tuple.Create("", 992), Tuple.Create<System.Object, System.Int32>(queryString
             
             #line default
             #line hidden
-, 995), false)
+, 992), false)
 );
 
 WriteLiteral(">Batting</a>\r\n        </li>\r\n        <li");
@@ -149,22 +149,22 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1201), Tuple.Create("\"", 1256)
+WriteAttribute("href", Tuple.Create(" href=\"", 1198), Tuple.Create("\"", 1253)
             
             #line 29 "..\..\Views\PlayerBowling.cshtml"
-, Tuple.Create(Tuple.Create("", 1208), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
+, Tuple.Create(Tuple.Create("", 1205), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
             
             #line default
             #line hidden
-, 1208), false)
-, Tuple.Create(Tuple.Create("", 1233), Tuple.Create("/fielding", 1233), true)
+, 1205), false)
+, Tuple.Create(Tuple.Create("", 1230), Tuple.Create("/fielding", 1230), true)
             
             #line 29 "..\..\Views\PlayerBowling.cshtml"
-, Tuple.Create(Tuple.Create("", 1242), Tuple.Create<System.Object, System.Int32>(queryString
+, Tuple.Create(Tuple.Create("", 1239), Tuple.Create<System.Object, System.Int32>(queryString
             
             #line default
             #line hidden
-, 1242), false)
+, 1239), false)
 );
 
 WriteLiteral(">Fielding</a>\r\n        </li>\r\n        <li");

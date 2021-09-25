@@ -27,25 +27,43 @@ namespace ASP
     using System.Web.UI;
     using System.Web.WebPages;
     
-    #line 4 "..\..\Views\Catches.cshtml"
+    #line 6 "..\..\Views\Catches.cshtml"
     using ClientDependency.Core.Mvc;
     
     #line default
     #line hidden
     using Examine;
     
-    #line 3 "..\..\Views\Catches.cshtml"
+    #line 5 "..\..\Views\Catches.cshtml"
     using Stoolball.Matches;
     
     #line default
     #line hidden
     
     #line 2 "..\..\Views\Catches.cshtml"
+    using Stoolball.Statistics;
+    
+    #line default
+    #line hidden
+    
+    #line 3 "..\..\Views\Catches.cshtml"
+    using Stoolball.Web.Filtering;
+    
+    #line default
+    #line hidden
+    
+    #line 4 "..\..\Views\Catches.cshtml"
     using Stoolball.Web.Statistics;
     
     #line default
     #line hidden
     using Umbraco.Core;
+    
+    #line 7 "..\..\Views\Catches.cshtml"
+    using Umbraco.Core.Composing;
+    
+    #line default
+    #line hidden
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
@@ -62,9 +80,12 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 5 "..\..\Views\Catches.cshtml"
+            #line 8 "..\..\Views\Catches.cshtml"
   
+    var humanizer = Current.Factory.GetInstance<IStatisticsFilterHumanizer>();
     Html.RequiresCss("/statistics/statistics.min.css");
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
 
             
             #line default
@@ -74,7 +95,7 @@ WriteLiteral("\r\n");
 DefineSection("canonical", () => {
 
             
-            #line 8 "..\..\Views\Catches.cshtml"
+            #line 14 "..\..\Views\Catches.cshtml"
                Write(Html.Partial("_CanonicalUrl", new[] { "page" }));
 
             
@@ -87,14 +108,14 @@ DefineSection("head", () => {
 WriteLiteral("\r\n");
 
             
-            #line 10 "..\..\Views\Catches.cshtml"
+            #line 16 "..\..\Views\Catches.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 10 "..\..\Views\Catches.cshtml"
-     if (Model.StatisticsFilter.Paging.PageNumber == 1)
+            #line 16 "..\..\Views\Catches.cshtml"
+     if (Model.AppliedFilter.Paging.PageNumber == 1)
     {
 
             
@@ -109,7 +130,7 @@ WriteLiteral(" content=\"index, nofollow\"");
 WriteLiteral(">\r\n");
 
             
-            #line 13 "..\..\Views\Catches.cshtml"
+            #line 19 "..\..\Views\Catches.cshtml"
     }
     else
     {
@@ -126,7 +147,7 @@ WriteLiteral(" content=\"noindex, nofollow\"");
 WriteLiteral(">\r\n");
 
             
-            #line 17 "..\..\Views\Catches.cshtml"
+            #line 23 "..\..\Views\Catches.cshtml"
     }
 
             
@@ -141,24 +162,93 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>Catches");
 
             
-            #line 20 "..\..\Views\Catches.cshtml"
-           Write(Model.StatisticsFilter);
+            #line 26 "..\..\Views\Catches.cshtml"
+           Write(humanizer.MatchingFixedFilter(Model.AppliedFilter));
 
             
             #line default
             #line hidden
-WriteLiteral("</h1>\r\n");
+WriteLiteral("</h1>\r\n\r\n    <ul");
+
+WriteLiteral(" class=\"nav nav-tabs\"");
+
+WriteLiteral(">\r\n        <li");
+
+WriteLiteral(" class=\"nav-item nav-item-admin\"");
+
+WriteLiteral(">\r\n            <button");
+
+WriteLiteral(" type=\"button\"");
+
+WriteLiteral(" class=\"nav-link nav-link-filter\"");
+
+WriteLiteral(">Edit filter</button>\r\n        </li>\r\n    </ul>\r\n");
 
 WriteLiteral("    ");
 
             
-            #line 21 "..\..\Views\Catches.cshtml"
-Write(Html.Partial("_Catches"));
+            #line 33 "..\..\Views\Catches.cshtml"
+Write(Html.Partial("_Filters", new FilterViewModel
+{
+    FilteredItemTypeSingular = "Statistics",
+    FilteredItemTypePlural = "Statistics",
+    FilterDescription = Model.FilterDescription,
+    from = Model.AppliedFilter.FromDate,
+    to = Model.AppliedFilter.UntilDate
+}));
 
             
             #line default
             #line hidden
-WriteLiteral("\r\n</div>");
+WriteLiteral("\r\n\r\n");
+
+            
+            #line 42 "..\..\Views\Catches.cshtml"
+    
+            
+            #line default
+            #line hidden
+            
+            #line 42 "..\..\Views\Catches.cshtml"
+     if (Model.Results.Any())
+    {
+        
+            
+            #line default
+            #line hidden
+            
+            #line 44 "..\..\Views\Catches.cshtml"
+   Write(Html.Partial("_Catches"));
+
+            
+            #line default
+            #line hidden
+            
+            #line 44 "..\..\Views\Catches.cshtml"
+                                 
+    }
+    else
+    {
+        
+            
+            #line default
+            #line hidden
+            
+            #line 48 "..\..\Views\Catches.cshtml"
+   Write(Html.Partial("_NoData"));
+
+            
+            #line default
+            #line hidden
+            
+            #line 48 "..\..\Views\Catches.cshtml"
+                                
+    }
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</div>");
 
         }
     }

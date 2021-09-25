@@ -46,6 +46,12 @@ namespace ASP
     #line default
     #line hidden
     using Umbraco.Core;
+    
+    #line 5 "..\..\Views\MostWickets.cshtml"
+    using Umbraco.Core.Composing;
+    
+    #line default
+    #line hidden
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
@@ -62,8 +68,9 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 5 "..\..\Views\MostWickets.cshtml"
+            #line 6 "..\..\Views\MostWickets.cshtml"
   
+    var humanizer = Current.Factory.GetInstance<IStatisticsFilterHumanizer>();
     Html.RequiresCss("/statistics/statistics.min.css");
 
             
@@ -74,7 +81,7 @@ WriteLiteral("\n");
 DefineSection("canonical", () => {
 
             
-            #line 8 "..\..\Views\MostWickets.cshtml"
+            #line 10 "..\..\Views\MostWickets.cshtml"
                Write(Html.Partial("_CanonicalUrl", new[] { "page" }));
 
             
@@ -87,14 +94,14 @@ DefineSection("head", () => {
 WriteLiteral("\n");
 
             
-            #line 10 "..\..\Views\MostWickets.cshtml"
+            #line 12 "..\..\Views\MostWickets.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 10 "..\..\Views\MostWickets.cshtml"
-     if (Model.StatisticsFilter.Paging.PageNumber == 1)
+            #line 12 "..\..\Views\MostWickets.cshtml"
+     if (Model.AppliedFilter.Paging.PageNumber == 1)
     {
 
             
@@ -109,7 +116,7 @@ WriteLiteral(" content=\"index, nofollow\"");
 WriteLiteral(">\n");
 
             
-            #line 13 "..\..\Views\MostWickets.cshtml"
+            #line 15 "..\..\Views\MostWickets.cshtml"
     }
     else
     {
@@ -126,7 +133,7 @@ WriteLiteral(" content=\"noindex, nofollow\"");
 WriteLiteral(">\n");
 
             
-            #line 17 "..\..\Views\MostWickets.cshtml"
+            #line 19 "..\..\Views\MostWickets.cshtml"
     }
 
             
@@ -141,8 +148,8 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\n    <h1>Most wickets");
 
             
-            #line 20 "..\..\Views\MostWickets.cshtml"
-                Write(Model.StatisticsFilter);
+            #line 22 "..\..\Views\MostWickets.cshtml"
+                Write(humanizer.MatchingFixedFilter(Model.AppliedFilter));
 
             
             #line default
@@ -152,7 +159,7 @@ WriteLiteral("</h1>\n\n");
 WriteLiteral("    ");
 
             
-            #line 22 "..\..\Views\MostWickets.cshtml"
+            #line 24 "..\..\Views\MostWickets.cshtml"
 Write(Html.Partial("_StatisticsBasis"));
 
             
@@ -163,7 +170,7 @@ WriteLiteral("\n");
 WriteLiteral("    ");
 
             
-            #line 23 "..\..\Views\MostWickets.cshtml"
+            #line 25 "..\..\Views\MostWickets.cshtml"
 Write(Html.Partial("_MostWickets"));
 
             

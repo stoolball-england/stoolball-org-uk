@@ -205,7 +205,7 @@ WriteLiteral(">");
 
             
             #line 38 "..\..\Views\Partials\_MostWickets.cshtml"
-                                                          Write(equalToPrevious ? "=" : ((Model.StatisticsFilter.Paging.PageSize * (Model.StatisticsFilter.Paging.PageNumber - 1)) + i + 1).ToString());
+                                                          Write(equalToPrevious ? "=" : ((Model.AppliedFilter.Paging.PageSize * (Model.AppliedFilter.Paging.PageNumber - 1)) + i + 1).ToString());
 
             
             #line default
@@ -222,14 +222,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Player</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1706), Tuple.Create("\"", 1756)
+WriteAttribute("href", Tuple.Create(" href=\"", 1700), Tuple.Create("\"", 1750)
             
             #line 39 "..\..\Views\Partials\_MostWickets.cshtml"
-                                               , Tuple.Create(Tuple.Create("", 1713), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Player.PlayerRoute
+                                               , Tuple.Create(Tuple.Create("", 1707), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Player.PlayerRoute
             
             #line default
             #line hidden
-, 1713), false)
+, 1707), false)
 );
 
 WriteLiteral(">");
@@ -361,7 +361,7 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
 
             
             #line 52 "..\..\Views\Partials\_MostWickets.cshtml"
-    if (Model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
+    if (Model.AppliedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
     {
 
             
@@ -369,15 +369,15 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2890), Tuple.Create("\"", 2925)
+WriteAttribute("href", Tuple.Create(" href=\"", 2881), Tuple.Create("\"", 2916)
             
             #line 54 "..\..\Views\Partials\_MostWickets.cshtml"
-, Tuple.Create(Tuple.Create("", 2897), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
+, Tuple.Create(Tuple.Create("", 2888), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
             
             #line default
             #line hidden
-, 2897), false)
-, Tuple.Create(Tuple.Create("", 2912), Tuple.Create("/most-wickets", 2912), true)
+, 2888), false)
+, Tuple.Create(Tuple.Create("", 2903), Tuple.Create("/most-wickets", 2903), true)
 );
 
 WriteLiteral(">Most wickets – view all</a></p>\r\n");
@@ -393,14 +393,14 @@ WriteLiteral(">Most wickets – view all</a></p>\r\n");
             #line hidden
             
             #line 58 "..\..\Views\Partials\_MostWickets.cshtml"
-   Write(Html.Partial("_Paging", Model.StatisticsFilter.Paging));
+   Write(Html.Partial("_Paging", Model.AppliedFilter.Paging));
 
             
             #line default
             #line hidden
             
             #line 58 "..\..\Views\Partials\_MostWickets.cshtml"
-                                                               
+                                                            
     }
 }
             

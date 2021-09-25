@@ -207,7 +207,7 @@ WriteLiteral(">");
 
             
             #line 40 "..\..\Views\Partials\_BattingStrikeRate.cshtml"
-                                                          Write(equalToPrevious ? "=" : ((Model.StatisticsFilter.Paging.PageSize * (Model.StatisticsFilter.Paging.PageNumber - 1)) + i + 1).ToString());
+                                                          Write(equalToPrevious ? "=" : ((Model.AppliedFilter.Paging.PageSize * (Model.AppliedFilter.Paging.PageNumber - 1)) + i + 1).ToString());
 
             
             #line default
@@ -224,14 +224,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Player</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1768), Tuple.Create("\"", 1818)
+WriteAttribute("href", Tuple.Create(" href=\"", 1762), Tuple.Create("\"", 1812)
             
             #line 41 "..\..\Views\Partials\_BattingStrikeRate.cshtml"
-                                               , Tuple.Create(Tuple.Create("", 1775), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Player.PlayerRoute
+                                               , Tuple.Create(Tuple.Create("", 1769), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Player.PlayerRoute
             
             #line default
             #line hidden
-, 1775), false)
+, 1769), false)
 );
 
 WriteLiteral(">");
@@ -372,15 +372,15 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2926), Tuple.Create("\"", 2968)
+WriteAttribute("href", Tuple.Create(" href=\"", 2920), Tuple.Create("\"", 2962)
             
             #line 57 "..\..\Views\Partials\_BattingStrikeRate.cshtml"
-, Tuple.Create(Tuple.Create("", 2933), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
+, Tuple.Create(Tuple.Create("", 2927), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
             
             #line default
             #line hidden
-, 2933), false)
-, Tuple.Create(Tuple.Create("", 2948), Tuple.Create("/batting-strike-rate", 2948), true)
+, 2927), false)
+, Tuple.Create(Tuple.Create("", 2942), Tuple.Create("/batting-strike-rate", 2942), true)
 );
 
 WriteLiteral(">Best batting strike rate – view all</a></p>\r\n");
@@ -396,14 +396,14 @@ WriteLiteral(">Best batting strike rate – view all</a></p>\r\n");
             #line hidden
             
             #line 61 "..\..\Views\Partials\_BattingStrikeRate.cshtml"
-   Write(Html.Partial("_Paging", Model.StatisticsFilter.Paging));
+   Write(Html.Partial("_Paging", Model.AppliedFilter.Paging));
 
             
             #line default
             #line hidden
             
             #line 61 "..\..\Views\Partials\_BattingStrikeRate.cshtml"
-                                                               
+                                                            
     }
 }
             

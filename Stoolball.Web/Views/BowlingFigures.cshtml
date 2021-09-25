@@ -2,16 +2,18 @@
 @using Stoolball.Web.Statistics
 @using Stoolball.Statistics
 @using ClientDependency.Core.Mvc
+@using Umbraco.Core.Composing
 @{
+    var humanizer = Current.Factory.GetInstance<IStatisticsFilterHumanizer>();
     Html.RequiresCss("/statistics/statistics.min.css");
-    if (Model.StatisticsFilter.Player != null)
+    if (Model.AppliedFilter.Player != null)
     {
         Model.ShowPlayerColumn = false;
     }
 }
 @section canonical {@Html.Partial("_CanonicalUrl", new[] { "page" })}
 @section head {
-    @if (Model.StatisticsFilter.Paging.PageNumber == 1)
+    @if (Model.AppliedFilter.Paging.PageNumber == 1)
     {
         <meta name="robots" content="index, nofollow">
     }
@@ -21,7 +23,7 @@
     }
 }
 <div class="container-xl">
-    <h1>Best bowling figures@(Model.StatisticsFilter)</h1>
+    <h1>Best bowling figures@(humanizer.MatchingFixedFilter(Model.AppliedFilter))</h1>
 
     @Html.Partial("_StatisticsBasis")
     @Html.Partial("_BowlingFigures")

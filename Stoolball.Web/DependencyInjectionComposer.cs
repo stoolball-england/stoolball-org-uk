@@ -81,7 +81,7 @@ namespace Stoolball.Web
             composition.Register<IPlayerInMatchStatisticsBuilder, PlayerInMatchStatisticsBuilder>();
             composition.Register<IPlayerIdentityFinder, PlayerIdentityFinder>();
             composition.Register<IOversHelper, OversHelper>();
-            composition.Register<IStatisticsFilterUrlParser, StatisticsFilterUrlParser>();
+            composition.Register<IStatisticsFilterFactory, StatisticsFilterFactory>();
             composition.Register<IStatisticsBreadcrumbBuilder, StatisticsBreadcrumbBuilder>();
             composition.Register<IContactDetailsParser, ContactDetailsParser>();
             composition.Register<IMatchesRssQueryStringParser, MatchesRssQueryStringParser>();
@@ -104,6 +104,7 @@ namespace Stoolball.Web
             composition.Register<IStatisticsFilterQueryStringParser, StatisticsFilterQueryStringParser>();
             composition.Register<IMatchFilterHumanizer, MatchFilterHumanizer>();
             composition.Register<IStatisticsFilterHumanizer, StatisticsFilterHumanizer>();
+            composition.Register<IStoolballEntityRouteParser, StoolballEntityRouteParser>();
 
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 
             // be injected anywhere except the one place where it's serving a page of content.

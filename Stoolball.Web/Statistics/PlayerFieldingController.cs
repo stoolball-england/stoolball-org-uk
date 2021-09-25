@@ -65,30 +65,27 @@ namespace Stoolball.Web.Statistics
             }
             else
             {
-                model.DefaultFilter = new StatisticsFilter { Player = model.Player };
+                model.DefaultFilter = new StatisticsFilter { Player = model.Player, Paging = new Paging { PageSize = 5 } };
                 model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, HttpUtility.ParseQueryString(Request.Url.Query));
                 model.FieldingStatistics = await _summaryStatisticsDataSource.ReadFieldingStatistics(model.AppliedFilter).ConfigureAwait(false);
 
-                var catchesFilter = new StatisticsFilter
-                {
-                    CaughtByPlayerIdentityIds = model.AppliedFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList(),
-                    Paging = new Paging { PageSize = 5 }
-                };
+                var catchesFilter = model.AppliedFilter.Clone();
+                catchesFilter.Player = null;
+                catchesFilter.CaughtByPlayerIdentityIds = model.AppliedFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList();
+
                 model.Catches = (await _playerPerformanceStatisticsDataSource.ReadPlayerInnings(catchesFilter).ConfigureAwait(false)).ToList();
 
-                var runOutsFilter = new StatisticsFilter
-                {
-                    RunOutByPlayerIdentityIds = model.AppliedFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList(),
-                    Paging = new Paging { PageSize = 5 }
-                };
+                var runOutsFilter = model.AppliedFilter.Clone();
+                runOutsFilter.Player = null;
+                runOutsFilter.RunOutByPlayerIdentityIds = model.AppliedFilter.Player.PlayerIdentities.Select(x => x.PlayerIdentityId.Value).ToList();
                 model.RunOuts = (await _playerPerformanceStatisticsDataSource.ReadPlayerInnings(runOutsFilter).ConfigureAwait(false)).ToList();
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Statistics, Url = new Uri(Constants.Pages.StatisticsUrl, UriKind.Relative) });
 
-                model.FilterDescription = _statisticsFilterHumanizer.StatisticsMatchingFilter(model.AppliedFilter);
+                model.FilterDescription = _statisticsFilterHumanizer.StatisticsMatchingUserFilter(model.AppliedFilter);
 
                 var teams = model.Player.PlayerIdentities.Select(x => x.Team.TeamName).Distinct().ToList();
-                model.Metadata.PageTitle = $"Fielding statistics for {model.Player.PlayerName()}" + _statisticsFilterHumanizer.MatchingFilter(model.AppliedFilter);
+                model.Metadata.PageTitle = $"Fielding statistics for {model.Player.PlayerName()}" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
                 model.Metadata.Description = $"Fielding statistics for {model.Player.PlayerName()}, a player for {teams.Humanize()} stoolball {(teams.Count > 1 ? "teams" : "team")}";
 
                 return CurrentTemplate(model);

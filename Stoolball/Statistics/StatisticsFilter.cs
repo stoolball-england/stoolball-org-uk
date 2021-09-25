@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Stoolball.Clubs;
 using Stoolball.Competitions;
 using Stoolball.Matches;
@@ -68,36 +67,6 @@ namespace Stoolball.Statistics
                 MaxResultsAllowingExtraResultsIfValuesAreEqual = MaxResultsAllowingExtraResultsIfValuesAreEqual,
                 MinimumQualifyingInnings = MinimumQualifyingInnings
             };
-        }
-
-        public override string ToString()
-        {
-            var description = new StringBuilder();
-            if (Player != null)
-            {
-                description.Append(" for ").Append(Player.PlayerName());
-            }
-            if (Club != null)
-            {
-                description.Append(" for ").Append(Club.ClubName);
-            }
-            if (Team != null)
-            {
-                description.Append(" for ").Append(Team.TeamName);
-            }
-            if (Competition != null)
-            {
-                description.Append(" in the ").Append(Competition.CompetitionName);
-            }
-            if (Season != null)
-            {
-                description.Append(" in the ").Append(Season.SeasonFullName());
-            }
-            if (MatchLocation != null)
-            {
-                description.Append(" at ").Append(MatchLocation.NameAndLocalityOrTown());
-            }
-            return description.ToString().TrimEnd();
         }
     }
 }

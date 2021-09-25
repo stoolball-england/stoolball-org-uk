@@ -199,7 +199,7 @@ WriteLiteral(">");
 
             
             #line 37 "..\..\Views\Partials\_MostCatches.cshtml"
-                                                          Write(equalToPrevious ? "=" : ((Model.StatisticsFilter.Paging.PageSize * (Model.StatisticsFilter.Paging.PageNumber - 1)) + i + 1).ToString());
+                                                          Write(equalToPrevious ? "=" : ((Model.AppliedFilter.Paging.PageSize * (Model.AppliedFilter.Paging.PageNumber - 1)) + i + 1).ToString());
 
             
             #line default
@@ -216,14 +216,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Player</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1634), Tuple.Create("\"", 1684)
+WriteAttribute("href", Tuple.Create(" href=\"", 1628), Tuple.Create("\"", 1678)
             
             #line 38 "..\..\Views\Partials\_MostCatches.cshtml"
-                                               , Tuple.Create(Tuple.Create("", 1641), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Player.PlayerRoute
+                                               , Tuple.Create(Tuple.Create("", 1635), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Player.PlayerRoute
             
             #line default
             #line hidden
-, 1641), false)
+, 1635), false)
 );
 
 WriteLiteral(">");
@@ -334,7 +334,7 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
 
             
             #line 50 "..\..\Views\Partials\_MostCatches.cshtml"
-    if (Model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
+    if (Model.AppliedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
     {
 
             
@@ -342,15 +342,15 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2636), Tuple.Create("\"", 2671)
+WriteAttribute("href", Tuple.Create(" href=\"", 2627), Tuple.Create("\"", 2662)
             
             #line 52 "..\..\Views\Partials\_MostCatches.cshtml"
-, Tuple.Create(Tuple.Create("", 2643), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
+, Tuple.Create(Tuple.Create("", 2634), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
             
             #line default
             #line hidden
-, 2643), false)
-, Tuple.Create(Tuple.Create("", 2658), Tuple.Create("/most-catches", 2658), true)
+, 2634), false)
+, Tuple.Create(Tuple.Create("", 2649), Tuple.Create("/most-catches", 2649), true)
 );
 
 WriteLiteral(">Most catches – view all</a></p>\r\n");
@@ -366,14 +366,14 @@ WriteLiteral(">Most catches – view all</a></p>\r\n");
             #line hidden
             
             #line 56 "..\..\Views\Partials\_MostCatches.cshtml"
-   Write(Html.Partial("_Paging", Model.StatisticsFilter.Paging));
+   Write(Html.Partial("_Paging", Model.AppliedFilter.Paging));
 
             
             #line default
             #line hidden
             
             #line 56 "..\..\Views\Partials\_MostCatches.cshtml"
-                                                               
+                                                            
     }
 }
             

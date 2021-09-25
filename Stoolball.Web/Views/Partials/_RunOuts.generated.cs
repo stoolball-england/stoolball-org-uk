@@ -468,14 +468,14 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
             
             #line 74 "..\..\Views\Partials\_RunOuts.cshtml"
-Write(Html.Partial("_Paging", Model.StatisticsFilter.Paging));
+Write(Html.Partial("_Paging", Model.AppliedFilter.Paging));
 
             
             #line default
             #line hidden
             
             #line 74 "..\..\Views\Partials\_RunOuts.cshtml"
-                                                           
+                                                        
 }
             
             #line default

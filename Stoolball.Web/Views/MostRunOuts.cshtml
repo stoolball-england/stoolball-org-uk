@@ -2,30 +2,28 @@
 @using Stoolball.Statistics
 @using Stoolball.Web.Statistics
 @using ClientDependency.Core.Mvc
-@{
-    Html.RequiresCss("/statistics/statistics.min.css");
+@using Umbraco.Core.Composing
+@{ 
+    var humanizer = Current.Factory.GetInstance<IStatisticsFilterHumanizer>();
+    Html.RequiresCss("/statistics/statistics.min.css"); 
 }
 @section canonical {@Html.Partial("_CanonicalUrl", new[] { "page" })}
 @section head {
-    @if (Model.StatisticsFilter.Paging.PageNumber == 1)
+    @if (Model.AppliedFilter.Paging.PageNumber == 1)
     {
-        <meta name="robots" content="index, nofollow">
-    }
-    else
-    {
-        <meta name="robots" content="noindex, nofollow">
-    }
+<meta name="robots" content="index, nofollow"> }
+                else
+                {
+<meta name="robots" content="noindex, nofollow">}
 }
 <div class="container-xl">
-    <h1>Most run-outs@(Model.StatisticsFilter)</h1>
+    <h1>Most run-outs@(humanizer.MatchingFixedFilter(Model.AppliedFilter))</h1>
 
     @if (Model.Results.Any())
     {
-        @Html.Partial("_StatisticsBasis")
-    }
-    else
-    {
-        @Html.Partial("_NoData")
-    }
+@Html.Partial("_StatisticsBasis") }
+            else
+            {
+@Html.Partial("_NoData")}
     @Html.Partial("_MostRunOuts")
 </div>

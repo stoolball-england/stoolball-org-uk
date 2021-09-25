@@ -201,7 +201,7 @@ WriteLiteral(">");
 
             
             #line 39 "..\..\Views\Partials\_MostRunOuts.cshtml"
-                                                          Write(equalToPrevious ? "=" : ((Model.StatisticsFilter.Paging.PageSize * (Model.StatisticsFilter.Paging.PageNumber - 1)) + i + 1).ToString());
+                                                          Write(equalToPrevious ? "=" : ((Model.AppliedFilter.Paging.PageSize * (Model.AppliedFilter.Paging.PageNumber - 1)) + i + 1).ToString());
 
             
             #line default
@@ -218,14 +218,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Player</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1695), Tuple.Create("\"", 1745)
+WriteAttribute("href", Tuple.Create(" href=\"", 1689), Tuple.Create("\"", 1739)
             
             #line 40 "..\..\Views\Partials\_MostRunOuts.cshtml"
-                                               , Tuple.Create(Tuple.Create("", 1702), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Player.PlayerRoute
+                                               , Tuple.Create(Tuple.Create("", 1696), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Result.Player.PlayerRoute
             
             #line default
             #line hidden
-, 1702), false)
+, 1696), false)
 );
 
 WriteLiteral(">");
@@ -337,7 +337,7 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             
             #line 52 "..\..\Views\Partials\_MostRunOuts.cshtml"
     }
-    if (Model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue || Model.ShowLinkOnly)
+    if (Model.AppliedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue || Model.ShowLinkOnly)
     {
 
             
@@ -345,15 +345,15 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2727), Tuple.Create("\"", 2763)
+WriteAttribute("href", Tuple.Create(" href=\"", 2718), Tuple.Create("\"", 2754)
             
             #line 55 "..\..\Views\Partials\_MostRunOuts.cshtml"
-, Tuple.Create(Tuple.Create("", 2734), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
+, Tuple.Create(Tuple.Create("", 2725), Tuple.Create<System.Object, System.Int32>(Request.RawUrl
             
             #line default
             #line hidden
-, 2734), false)
-, Tuple.Create(Tuple.Create("", 2749), Tuple.Create("/most-run-outs", 2749), true)
+, 2725), false)
+, Tuple.Create(Tuple.Create("", 2740), Tuple.Create("/most-run-outs", 2740), true)
 );
 
 WriteLiteral(">Most run-outs – view all</a></p>\r\n");
@@ -369,14 +369,14 @@ WriteLiteral(">Most run-outs – view all</a></p>\r\n");
             #line hidden
             
             #line 59 "..\..\Views\Partials\_MostRunOuts.cshtml"
-   Write(Html.Partial("_Paging", Model.StatisticsFilter.Paging));
+   Write(Html.Partial("_Paging", Model.AppliedFilter.Paging));
 
             
             #line default
             #line hidden
             
             #line 59 "..\..\Views\Partials\_MostRunOuts.cshtml"
-                                                               
+                                                            
     }
 }
             

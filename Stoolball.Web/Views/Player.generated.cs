@@ -86,7 +86,7 @@ namespace ASP
     Html.RequiresJs("/js/filter.js");
     Html.RequiresCss("/css/filter.min.css");
 
-    var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = false, StatisticsFilter = Model.AppliedFilter };
+    var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = false, AppliedFilter = Model.AppliedFilter };
     individualScores.Results.AddRange(Model.PlayerInnings);
 
     var serialiser = Current.Factory.GetInstance<IStatisticsFilterQueryStringSerializer>();
@@ -130,22 +130,22 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1091), Tuple.Create("\"", 1145)
+WriteAttribute("href", Tuple.Create(" href=\"", 1088), Tuple.Create("\"", 1142)
             
             #line 27 "..\..\Views\Player.cshtml"
-, Tuple.Create(Tuple.Create("", 1098), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
+, Tuple.Create(Tuple.Create("", 1095), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
             
             #line default
             #line hidden
-, 1098), false)
-, Tuple.Create(Tuple.Create("", 1123), Tuple.Create("/bowling", 1123), true)
+, 1095), false)
+, Tuple.Create(Tuple.Create("", 1120), Tuple.Create("/bowling", 1120), true)
             
             #line 27 "..\..\Views\Player.cshtml"
-, Tuple.Create(Tuple.Create("", 1131), Tuple.Create<System.Object, System.Int32>(queryString
+, Tuple.Create(Tuple.Create("", 1128), Tuple.Create<System.Object, System.Int32>(queryString
             
             #line default
             #line hidden
-, 1131), false)
+, 1128), false)
 );
 
 WriteLiteral(">Bowling</a>\r\n        </li>\r\n        <li");
@@ -156,22 +156,22 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1237), Tuple.Create("\"", 1292)
+WriteAttribute("href", Tuple.Create(" href=\"", 1234), Tuple.Create("\"", 1289)
             
             #line 30 "..\..\Views\Player.cshtml"
-, Tuple.Create(Tuple.Create("", 1244), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
+, Tuple.Create(Tuple.Create("", 1241), Tuple.Create<System.Object, System.Int32>(Model.Player.PlayerRoute
             
             #line default
             #line hidden
-, 1244), false)
-, Tuple.Create(Tuple.Create("", 1269), Tuple.Create("/fielding", 1269), true)
+, 1241), false)
+, Tuple.Create(Tuple.Create("", 1266), Tuple.Create("/fielding", 1266), true)
             
             #line 30 "..\..\Views\Player.cshtml"
-, Tuple.Create(Tuple.Create("", 1278), Tuple.Create<System.Object, System.Int32>(queryString
+, Tuple.Create(Tuple.Create("", 1275), Tuple.Create<System.Object, System.Int32>(queryString
             
             #line default
             #line hidden
-, 1278), false)
+, 1275), false)
 );
 
 WriteLiteral(">Fielding</a>\r\n        </li>\r\n        <li");

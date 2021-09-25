@@ -200,7 +200,7 @@ WriteLiteral(">");
 
             
             #line 40 "..\..\Views\Partials\_BowlingFigures.cshtml"
-                                                          Write(equalToPrevious ? "=" : ((Model.StatisticsFilter.Paging.PageSize * (Model.StatisticsFilter.Paging.PageNumber - 1)) + i + 1).ToString());
+                                                          Write(equalToPrevious ? "=" : ((Model.AppliedFilter.Paging.PageSize * (Model.AppliedFilter.Paging.PageNumber - 1)) + i + 1).ToString());
 
             
             #line default
@@ -233,14 +233,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Player</span><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1930), Tuple.Create("\"", 1973)
+WriteAttribute("href", Tuple.Create(" href=\"", 1924), Tuple.Create("\"", 1967)
             
             #line 43 "..\..\Views\Partials\_BowlingFigures.cshtml"
-                                                   , Tuple.Create(Tuple.Create("", 1937), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Player.PlayerRoute
+                                                   , Tuple.Create(Tuple.Create("", 1931), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Player.PlayerRoute
             
             #line default
             #line hidden
-, 1937), false)
+, 1931), false)
 );
 
 WriteLiteral(">");
@@ -273,14 +273,14 @@ WriteLiteral(" aria-hidden=\"true\"");
 
 WriteLiteral(">Match</span><div><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2176), Tuple.Create("\"", 2217)
+WriteAttribute("href", Tuple.Create(" href=\"", 2170), Tuple.Create("\"", 2211)
             
             #line 45 "..\..\Views\Partials\_BowlingFigures.cshtml"
-                                                   , Tuple.Create(Tuple.Create("", 2183), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
+                                                   , Tuple.Create(Tuple.Create("", 2177), Tuple.Create<System.Object, System.Int32>(Model.Results[i].Match.MatchRoute
             
             #line default
             #line hidden
-, 2183), false)
+, 2177), false)
 );
 
 WriteLiteral(">");
@@ -414,7 +414,7 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
 
             
             #line 61 "..\..\Views\Partials\_BowlingFigures.cshtml"
-    if (Model.StatisticsFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
+    if (Model.AppliedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
     {
 
             
@@ -422,15 +422,15 @@ WriteLiteral("\r\n        </tbody>\r\n    </table>\r\n");
             #line hidden
 WriteLiteral("        <p><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 3419), Tuple.Create("\"", 3477)
+WriteAttribute("href", Tuple.Create(" href=\"", 3410), Tuple.Create("\"", 3468)
             
             #line 63 "..\..\Views\Partials\_BowlingFigures.cshtml"
-, Tuple.Create(Tuple.Create("", 3426), Tuple.Create<System.Object, System.Int32>(Request.RawUrl.TrimEnd("/bowling")
+, Tuple.Create(Tuple.Create("", 3417), Tuple.Create<System.Object, System.Int32>(Request.RawUrl.TrimEnd("/bowling")
             
             #line default
             #line hidden
-, 3426), false)
-, Tuple.Create(Tuple.Create("", 3461), Tuple.Create("/bowling-figures", 3461), true)
+, 3417), false)
+, Tuple.Create(Tuple.Create("", 3452), Tuple.Create("/bowling-figures", 3452), true)
 );
 
 WriteLiteral(">Bowling figures – view all</a></p>\r\n");
@@ -446,14 +446,14 @@ WriteLiteral(">Bowling figures – view all</a></p>\r\n");
             #line hidden
             
             #line 67 "..\..\Views\Partials\_BowlingFigures.cshtml"
-   Write(Html.Partial("_Paging", Model.StatisticsFilter.Paging));
+   Write(Html.Partial("_Paging", Model.AppliedFilter.Paging));
 
             
             #line default
             #line hidden
             
             #line 67 "..\..\Views\Partials\_BowlingFigures.cshtml"
-                                                               
+                                                            
     }
 }
             

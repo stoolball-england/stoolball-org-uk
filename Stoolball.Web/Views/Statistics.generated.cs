@@ -86,15 +86,15 @@ namespace ASP
     Html.RequiresJs("/js/filter.js");
     Html.RequiresCss("/css/filter.min.css");
     
-    var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, AppliedFilter = Model.StatisticsFilter };
     individualScores.Results.AddRange(Model.PlayerInnings);
-    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, StatisticsFilter = Model.StatisticsFilter };
+    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, AppliedFilter = Model.StatisticsFilter };
     bowlingFigures.Results.AddRange(Model.BowlingFigures);
-    var mostRuns = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
+    var mostRuns = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, AppliedFilter = Model.StatisticsFilter };
     mostRuns.Results.AddRange(Model.MostRuns);
-    var mostWickets = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
+    var mostWickets = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, AppliedFilter = Model.StatisticsFilter };
     mostWickets.Results.AddRange(Model.MostWickets);
-    var mostCatches = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, StatisticsFilter = Model.StatisticsFilter };
+    var mostCatches = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, AppliedFilter = Model.StatisticsFilter };
     mostCatches.Results.AddRange(Model.MostCatches);
 
             
@@ -156,15 +156,15 @@ WriteLiteral(">\r\n                <a");
 
 WriteLiteral(" class=\"nav-link nav-link-edit\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2031), Tuple.Create("\"", 2083)
+WriteAttribute("href", Tuple.Create(" href=\"", 2016), Tuple.Create("\"", 2068)
             
             #line 37 "..\..\Views\Statistics.cshtml"
-, Tuple.Create(Tuple.Create("", 2038), Tuple.Create<System.Object, System.Int32>(Stoolball.Constants.Pages.StatisticsUrl
+, Tuple.Create(Tuple.Create("", 2023), Tuple.Create<System.Object, System.Int32>(Stoolball.Constants.Pages.StatisticsUrl
             
             #line default
             #line hidden
-, 2038), false)
-, Tuple.Create(Tuple.Create("", 2078), Tuple.Create("/edit", 2078), true)
+, 2023), false)
+, Tuple.Create(Tuple.Create("", 2063), Tuple.Create("/edit", 2063), true)
 );
 
 WriteLiteral(">Edit statistics</a>\r\n            </li>\r\n");

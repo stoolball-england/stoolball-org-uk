@@ -46,6 +46,12 @@ namespace ASP
     #line default
     #line hidden
     using Umbraco.Core;
+    
+    #line 5 "..\..\Views\MostCatches.cshtml"
+    using Umbraco.Core.Composing;
+    
+    #line default
+    #line hidden
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
@@ -62,8 +68,11 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 5 "..\..\Views\MostCatches.cshtml"
-   Html.RequiresCss("/statistics/statistics.min.css"); 
+            #line 6 "..\..\Views\MostCatches.cshtml"
+  
+    var humanizer = Current.Factory.GetInstance<IStatisticsFilterHumanizer>();
+    Html.RequiresCss("/statistics/statistics.min.css"); 
+
             
             #line default
             #line hidden
@@ -72,7 +81,7 @@ WriteLiteral("\n");
 DefineSection("canonical", () => {
 
             
-            #line 6 "..\..\Views\MostCatches.cshtml"
+            #line 10 "..\..\Views\MostCatches.cshtml"
                Write(Html.Partial("_CanonicalUrl", new[] { "page" }));
 
             
@@ -85,14 +94,14 @@ DefineSection("head", () => {
 WriteLiteral("\n");
 
             
-            #line 8 "..\..\Views\MostCatches.cshtml"
+            #line 12 "..\..\Views\MostCatches.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 8 "..\..\Views\MostCatches.cshtml"
-     if (Model.StatisticsFilter.Paging.PageNumber == 1)
+            #line 12 "..\..\Views\MostCatches.cshtml"
+     if (Model.AppliedFilter.Paging.PageNumber == 1)
     {
 
             
@@ -104,13 +113,13 @@ WriteLiteral(" name=\"robots\"");
 
 WriteLiteral(" content=\"index, nofollow\"");
 
-WriteLiteral("> ");
+WriteLiteral(">\n");
 
             
-            #line 10 "..\..\Views\MostCatches.cshtml"
-                                               }
-                else
-                {
+            #line 15 "..\..\Views\MostCatches.cshtml"
+ }
+else
+{
 
             
             #line default
@@ -121,11 +130,11 @@ WriteLiteral(" name=\"robots\"");
 
 WriteLiteral(" content=\"noindex, nofollow\"");
 
-WriteLiteral(">");
+WriteLiteral(">\n");
 
             
-            #line 13 "..\..\Views\MostCatches.cshtml"
-                                                }
+            #line 19 "..\..\Views\MostCatches.cshtml"
+}
 
             
             #line default
@@ -139,8 +148,8 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\n    <h1>Most catches");
 
             
-            #line 16 "..\..\Views\MostCatches.cshtml"
-                Write(Model.StatisticsFilter);
+            #line 22 "..\..\Views\MostCatches.cshtml"
+                Write(humanizer.MatchingFixedFilter(Model.AppliedFilter));
 
             
             #line default
@@ -150,7 +159,7 @@ WriteLiteral("</h1>\n\n");
 WriteLiteral("    ");
 
             
-            #line 18 "..\..\Views\MostCatches.cshtml"
+            #line 24 "..\..\Views\MostCatches.cshtml"
 Write(Html.Partial("_StatisticsBasis"));
 
             
@@ -161,7 +170,7 @@ WriteLiteral("\n");
 WriteLiteral("    ");
 
             
-            #line 19 "..\..\Views\MostCatches.cshtml"
+            #line 25 "..\..\Views\MostCatches.cshtml"
 Write(Html.Partial("_MostCatches"));
 
             
