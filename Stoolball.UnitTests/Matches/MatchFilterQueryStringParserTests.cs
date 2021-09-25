@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Web;
 using Stoolball.Matches;
 using Xunit;
@@ -7,6 +8,22 @@ namespace Stoolball.Web.Tests.Matches
 {
     public class MatchFilterQueryStringParserTests
     {
+        [Fact]
+        public void Null_filter_throws_ArgumentNullException()
+        {
+            var parser = new MatchFilterQueryStringParser();
+
+            Assert.Throws<ArgumentNullException>(() => _ = parser.ParseQueryString(null, new NameValueCollection()));
+        }
+
+        [Fact]
+        public void Null_querystring_throws_ArgumentNullException()
+        {
+            var parser = new MatchFilterQueryStringParser();
+
+            Assert.Throws<ArgumentNullException>(() => _ = parser.ParseQueryString(new MatchFilter(), null));
+        }
+
         [Theory]
         [InlineData("?to=2021-12-31")]
         [InlineData("?from=")]
@@ -53,6 +70,16 @@ namespace Stoolball.Web.Tests.Matches
             var filter = parser.ParseQueryString(new MatchFilter(), HttpUtility.ParseQueryString("to=2022-06-09"));
 
             Assert.Equal(new DateTime(2022, 6, 9), filter.UntilDate.Value.Date);
+        }
+
+        [Fact]
+        public void Query_is_parsed_and_trimmed()
+        {
+            var parser = new MatchFilterQueryStringParser();
+
+            var filter = parser.ParseQueryString(new MatchFilter(), HttpUtility.ParseQueryString("q=%20hello%20world%20"));
+
+            Assert.Equal("hello world", filter.Query);
         }
     }
 }
