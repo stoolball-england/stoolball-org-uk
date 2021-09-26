@@ -85,16 +85,16 @@ namespace ASP
     Html.RequiresCss("/statistics/statistics.min.css");
     Html.RequiresJs("/js/filter.js");
     Html.RequiresCss("/css/filter.min.css");
-    
-    var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, AppliedFilter = Model.StatisticsFilter };
+
+    var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
     individualScores.Results.AddRange(Model.PlayerInnings);
-    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, AppliedFilter = Model.StatisticsFilter };
+    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
     bowlingFigures.Results.AddRange(Model.BowlingFigures);
-    var mostRuns = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, AppliedFilter = Model.StatisticsFilter };
+    var mostRuns = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
     mostRuns.Results.AddRange(Model.MostRuns);
-    var mostWickets = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, AppliedFilter = Model.StatisticsFilter };
+    var mostWickets = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
     mostWickets.Results.AddRange(Model.MostWickets);
-    var mostCatches = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, AppliedFilter = Model.StatisticsFilter };
+    var mostCatches = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
     mostCatches.Results.AddRange(Model.MostCatches);
 
             
@@ -156,15 +156,15 @@ WriteLiteral(">\r\n                <a");
 
 WriteLiteral(" class=\"nav-link nav-link-edit\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2016), Tuple.Create("\"", 2068)
+WriteAttribute("href", Tuple.Create(" href=\"", 2182), Tuple.Create("\"", 2234)
             
             #line 37 "..\..\Views\Statistics.cshtml"
-, Tuple.Create(Tuple.Create("", 2023), Tuple.Create<System.Object, System.Int32>(Stoolball.Constants.Pages.StatisticsUrl
+, Tuple.Create(Tuple.Create("", 2189), Tuple.Create<System.Object, System.Int32>(Stoolball.Constants.Pages.StatisticsUrl
             
             #line default
             #line hidden
-, 2023), false)
-, Tuple.Create(Tuple.Create("", 2063), Tuple.Create("/edit", 2063), true)
+, 2189), false)
+, Tuple.Create(Tuple.Create("", 2229), Tuple.Create("/edit", 2229), true)
 );
 
 WriteLiteral(">Edit statistics</a>\r\n            </li>\r\n");
@@ -183,13 +183,13 @@ WriteLiteral("    ");
             
             #line 41 "..\..\Views\Statistics.cshtml"
 Write(Html.Partial("_Filters", new FilterViewModel
-    {
-      FilteredItemTypeSingular = "Statistics",
-      FilteredItemTypePlural = "Statistics",
-      FilterDescription = Model.FilterDescription,
-      from = Model.StatisticsFilter.FromDate,
-      to = Model.StatisticsFilter.UntilDate
-    }));
+{
+    FilteredItemTypeSingular = "Statistics",
+    FilteredItemTypePlural = "Statistics",
+    FilterDescription = Model.FilterDescription,
+    from = Model.AppliedFilter.FromDate,
+    to = Model.AppliedFilter.UntilDate
+}));
 
             
             #line default

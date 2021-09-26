@@ -78,15 +78,15 @@ namespace ASP
   
     Html.RequiresCss("/statistics/statistics.min.css");
 
-    var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, AppliedFilter = Model.StatisticsFilter };
+    var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
     individualScores.Results.AddRange(Model.PlayerInnings);
-    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, AppliedFilter = Model.StatisticsFilter };
+    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
     bowlingFigures.Results.AddRange(Model.BowlingFigures);
-    var mostRuns = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, AppliedFilter = Model.StatisticsFilter };
+    var mostRuns = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
     mostRuns.Results.AddRange(Model.MostRuns);
-    var mostWickets = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, AppliedFilter = Model.StatisticsFilter };
+    var mostWickets = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
     mostWickets.Results.AddRange(Model.MostWickets);
-    var mostCatches = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, AppliedFilter = Model.StatisticsFilter };
+    var mostCatches = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
     mostCatches.Results.AddRange(Model.MostCatches);
 
             
@@ -147,14 +147,14 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1865), Tuple.Create("\"", 1898)
+WriteAttribute("href", Tuple.Create(" href=\"", 2035), Tuple.Create("\"", 2068)
             
             #line 33 "..\..\Views\SeasonStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 1872), Tuple.Create<System.Object, System.Int32>(Model.Context.SeasonRoute
+, Tuple.Create(Tuple.Create("", 2042), Tuple.Create<System.Object, System.Int32>(Model.Context.SeasonRoute
             
             #line default
             #line hidden
-, 1872), false)
+, 2042), false)
 );
 
 WriteLiteral(">Summary</a>\r\n        </li>\r\n        <li");
@@ -165,15 +165,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1990), Tuple.Create("\"", 2031)
+WriteAttribute("href", Tuple.Create(" href=\"", 2160), Tuple.Create("\"", 2201)
             
             #line 36 "..\..\Views\SeasonStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 1997), Tuple.Create<System.Object, System.Int32>(Model.Context.SeasonRoute
+, Tuple.Create(Tuple.Create("", 2167), Tuple.Create<System.Object, System.Int32>(Model.Context.SeasonRoute
             
             #line default
             #line hidden
-, 1997), false)
-, Tuple.Create(Tuple.Create("", 2023), Tuple.Create("/matches", 2023), true)
+, 2167), false)
+, Tuple.Create(Tuple.Create("", 2193), Tuple.Create("/matches", 2193), true)
 );
 
 WriteLiteral(">Matches</a>\r\n        </li>\r\n        <li");
@@ -184,15 +184,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2123), Tuple.Create("\"", 2160)
+WriteAttribute("href", Tuple.Create(" href=\"", 2293), Tuple.Create("\"", 2330)
             
             #line 39 "..\..\Views\SeasonStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 2130), Tuple.Create<System.Object, System.Int32>(Model.Context.SeasonRoute
+, Tuple.Create(Tuple.Create("", 2300), Tuple.Create<System.Object, System.Int32>(Model.Context.SeasonRoute
             
             #line default
             #line hidden
-, 2130), false)
-, Tuple.Create(Tuple.Create("", 2156), Tuple.Create("/map", 2156), true)
+, 2300), false)
+, Tuple.Create(Tuple.Create("", 2326), Tuple.Create("/map", 2326), true)
 );
 
 WriteLiteral(">Map</a>\r\n        </li>\r\n");
@@ -222,15 +222,15 @@ WriteLiteral(">\r\n                <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2550), Tuple.Create("\"", 2589)
+WriteAttribute("href", Tuple.Create(" href=\"", 2720), Tuple.Create("\"", 2759)
             
             #line 47 "..\..\Views\SeasonStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 2557), Tuple.Create<System.Object, System.Int32>(Model.Context.SeasonRoute
+, Tuple.Create(Tuple.Create("", 2727), Tuple.Create<System.Object, System.Int32>(Model.Context.SeasonRoute
             
             #line default
             #line hidden
-, 2557), false)
-, Tuple.Create(Tuple.Create("", 2583), Tuple.Create("/table", 2583), true)
+, 2727), false)
+, Tuple.Create(Tuple.Create("", 2753), Tuple.Create("/table", 2753), true)
 );
 
 WriteLiteral(">Table</a>\r\n            </li>\r\n");
@@ -478,15 +478,15 @@ WriteLiteral(">\r\n");
             #line hidden
 WriteLiteral("                <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4670), Tuple.Create("\"", 4709)
+WriteAttribute("href", Tuple.Create(" href=\"", 4840), Tuple.Create("\"", 4879)
             
             #line 81 "..\..\Views\SeasonStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 4677), Tuple.Create<System.Object, System.Int32>(previous.SeasonRoute
+, Tuple.Create(Tuple.Create("", 4847), Tuple.Create<System.Object, System.Int32>(previous.SeasonRoute
             
             #line default
             #line hidden
-, 4677), false)
-, Tuple.Create(Tuple.Create("", 4698), Tuple.Create("/statistics", 4698), true)
+, 4847), false)
+, Tuple.Create(Tuple.Create("", 4868), Tuple.Create("/statistics", 4868), true)
 );
 
 WriteLiteral(" class=\"btn btn-secondary btn-back\"");
@@ -512,15 +512,15 @@ WriteLiteral("            ");
             #line hidden
 WriteLiteral("                <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4847), Tuple.Create("\"", 4882)
+WriteAttribute("href", Tuple.Create(" href=\"", 5017), Tuple.Create("\"", 5052)
             
             #line 85 "..\..\Views\SeasonStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 4854), Tuple.Create<System.Object, System.Int32>(next.SeasonRoute
+, Tuple.Create(Tuple.Create("", 5024), Tuple.Create<System.Object, System.Int32>(next.SeasonRoute
             
             #line default
             #line hidden
-, 4854), false)
-, Tuple.Create(Tuple.Create("", 4871), Tuple.Create("/statistics", 4871), true)
+, 5024), false)
+, Tuple.Create(Tuple.Create("", 5041), Tuple.Create("/statistics", 5041), true)
 );
 
 WriteLiteral(" class=\"btn btn-secondary\"");
@@ -536,15 +536,15 @@ WriteLiteral(">Next season</a>\r\n");
             #line hidden
 WriteLiteral("            <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4956), Tuple.Create("\"", 5017)
+WriteAttribute("href", Tuple.Create(" href=\"", 5126), Tuple.Create("\"", 5187)
             
             #line 87 "..\..\Views\SeasonStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 4963), Tuple.Create<System.Object, System.Int32>(Model.Context.Competition.CompetitionRoute
+, Tuple.Create(Tuple.Create("", 5133), Tuple.Create<System.Object, System.Int32>(Model.Context.Competition.CompetitionRoute
             
             #line default
             #line hidden
-, 4963), false)
-, Tuple.Create(Tuple.Create("", 5006), Tuple.Create("/statistics", 5006), true)
+, 5133), false)
+, Tuple.Create(Tuple.Create("", 5176), Tuple.Create("/statistics", 5176), true)
 );
 
 WriteLiteral(" class=\"btn btn-secondary\"");

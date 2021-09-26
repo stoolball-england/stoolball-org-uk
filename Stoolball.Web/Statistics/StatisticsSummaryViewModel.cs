@@ -13,7 +13,8 @@ namespace Stoolball.Web.Statistics
         {
         }
         public string FilterDescription { get; set; }
-        public StatisticsFilter StatisticsFilter { get; set; } = new StatisticsFilter();
+        public StatisticsFilter DefaultFilter { get; set; } = new StatisticsFilter();
+        public StatisticsFilter AppliedFilter { get; set; } = new StatisticsFilter();
         public List<StatisticsResult<PlayerInnings>> PlayerInnings { get; internal set; } = new List<StatisticsResult<PlayerInnings>>();
         public List<StatisticsResult<BowlingFigures>> BowlingFigures { get; internal set; } = new List<StatisticsResult<BowlingFigures>>();
         public List<StatisticsResult<BestStatistic>> MostRuns { get; internal set; } = new List<StatisticsResult<BestStatistic>>();

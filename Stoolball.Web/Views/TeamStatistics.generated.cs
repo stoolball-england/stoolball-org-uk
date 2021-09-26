@@ -86,15 +86,15 @@ namespace ASP
     Html.RequiresJs("/js/filter.js");
     Html.RequiresCss("/css/filter.min.css");
 
-    var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, AppliedFilter = Model.StatisticsFilter };
+    var individualScores = new StatisticsViewModel<PlayerInnings>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
     individualScores.Results.AddRange(Model.PlayerInnings);
-    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, AppliedFilter = Model.StatisticsFilter };
+    var bowlingFigures = new StatisticsViewModel<BowlingFigures>(Model, Services.UserService) { ShowCaption = true, ShowPlayerColumn = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
     bowlingFigures.Results.AddRange(Model.BowlingFigures);
-    var mostRuns = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = false, AppliedFilter = Model.StatisticsFilter };
+    var mostRuns = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = false, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
     mostRuns.Results.AddRange(Model.MostRuns);
-    var mostWickets = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = false, AppliedFilter = Model.StatisticsFilter };
+    var mostWickets = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = false, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
     mostWickets.Results.AddRange(Model.MostWickets);
-    var mostCatches = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = false, AppliedFilter = Model.StatisticsFilter };
+    var mostCatches = new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowCaption = true, ShowTeamsColumn = false, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter };
     mostCatches.Results.AddRange(Model.MostCatches);
 
             
@@ -155,14 +155,14 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1957), Tuple.Create("\"", 1988)
+WriteAttribute("href", Tuple.Create(" href=\"", 2127), Tuple.Create("\"", 2158)
             
             #line 36 "..\..\Views\TeamStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 1964), Tuple.Create<System.Object, System.Int32>(Model.Context.TeamRoute
+, Tuple.Create(Tuple.Create("", 2134), Tuple.Create<System.Object, System.Int32>(Model.Context.TeamRoute
             
             #line default
             #line hidden
-, 1964), false)
+, 2134), false)
 );
 
 WriteLiteral(">Summary</a>\r\n        </li>\r\n        <li");
@@ -173,15 +173,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2080), Tuple.Create("\"", 2119)
+WriteAttribute("href", Tuple.Create(" href=\"", 2250), Tuple.Create("\"", 2289)
             
             #line 39 "..\..\Views\TeamStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 2087), Tuple.Create<System.Object, System.Int32>(Model.Context.TeamRoute
+, Tuple.Create(Tuple.Create("", 2257), Tuple.Create<System.Object, System.Int32>(Model.Context.TeamRoute
             
             #line default
             #line hidden
-, 2087), false)
-, Tuple.Create(Tuple.Create("", 2111), Tuple.Create("/matches", 2111), true)
+, 2257), false)
+, Tuple.Create(Tuple.Create("", 2281), Tuple.Create("/matches", 2281), true)
 );
 
 WriteLiteral(">Matches</a>\r\n        </li>\r\n        <li");
@@ -192,15 +192,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 2211), Tuple.Create("\"", 2250)
+WriteAttribute("href", Tuple.Create(" href=\"", 2381), Tuple.Create("\"", 2420)
             
             #line 42 "..\..\Views\TeamStatistics.cshtml"
-, Tuple.Create(Tuple.Create("", 2218), Tuple.Create<System.Object, System.Int32>(Model.Context.TeamRoute
+, Tuple.Create(Tuple.Create("", 2388), Tuple.Create<System.Object, System.Int32>(Model.Context.TeamRoute
             
             #line default
             #line hidden
-, 2218), false)
-, Tuple.Create(Tuple.Create("", 2242), Tuple.Create("/players", 2242), true)
+, 2388), false)
+, Tuple.Create(Tuple.Create("", 2412), Tuple.Create("/players", 2412), true)
 );
 
 WriteLiteral(">Players</a>\r\n        </li>\r\n        <li");
@@ -232,8 +232,8 @@ Write(Html.Partial("_Filters", new FilterViewModel
       FilteredItemTypeSingular = "Statistics",
       FilteredItemTypePlural = "Statistics",
       FilterDescription = Model.FilterDescription,
-      from = Model.StatisticsFilter.FromDate,
-      to = Model.StatisticsFilter.UntilDate
+      from = Model.AppliedFilter.FromDate,
+      to = Model.AppliedFilter.UntilDate
     }));
 
             

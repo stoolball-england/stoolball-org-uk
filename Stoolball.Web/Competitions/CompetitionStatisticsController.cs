@@ -66,18 +66,18 @@ namespace Stoolball.Web.Competitions
             }
             else
             {
-                model.StatisticsFilter = _statisticsFilterQueryStringParser.ParseQueryString(new StatisticsFilter { MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 }, HttpUtility.ParseQueryString(Request.Url.Query));
-                model.StatisticsFilter.Competition = model.Context;
-                model.PlayerInnings = (await _bestPerformanceDataSource.ReadPlayerInnings(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
-                model.BowlingFigures = (await _bestPerformanceDataSource.ReadBowlingFigures(model.StatisticsFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
-                model.MostRuns = (await _bestPlayerTotalDataSource.ReadMostRunsScored(model.StatisticsFilter).ConfigureAwait(false)).ToList();
-                model.MostWickets = (await _bestPlayerTotalDataSource.ReadMostWickets(model.StatisticsFilter).ConfigureAwait(false)).ToList();
-                model.MostCatches = (await _bestPlayerTotalDataSource.ReadMostCatches(model.StatisticsFilter).ConfigureAwait(false)).ToList();
+                model.DefaultFilter = new StatisticsFilter { Competition = model.Context, MaxResultsAllowingExtraResultsIfValuesAreEqual = 10 };
+                model.AppliedFilter = _statisticsFilterQueryStringParser.ParseQueryString(model.DefaultFilter, HttpUtility.ParseQueryString(Request.Url.Query));
+                model.PlayerInnings = (await _bestPerformanceDataSource.ReadPlayerInnings(model.AppliedFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+                model.BowlingFigures = (await _bestPerformanceDataSource.ReadBowlingFigures(model.AppliedFilter, StatisticsSortOrder.BestFirst).ConfigureAwait(false)).ToList();
+                model.MostRuns = (await _bestPlayerTotalDataSource.ReadMostRunsScored(model.AppliedFilter).ConfigureAwait(false)).ToList();
+                model.MostWickets = (await _bestPlayerTotalDataSource.ReadMostWickets(model.AppliedFilter).ConfigureAwait(false)).ToList();
+                model.MostCatches = (await _bestPlayerTotalDataSource.ReadMostCatches(model.AppliedFilter).ConfigureAwait(false)).ToList();
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Competitions, Url = new Uri(Constants.Pages.CompetitionsUrl, UriKind.Relative) });
 
-                model.FilterDescription = _statisticsFilterHumanizer.StatisticsMatchingUserFilter(model.StatisticsFilter);
-                model.Metadata.PageTitle = $"Statistics for {model.Context.CompetitionName}" + _statisticsFilterHumanizer.MatchingUserFilter(model.StatisticsFilter);
+                model.FilterDescription = _statisticsFilterHumanizer.StatisticsMatchingUserFilter(model.AppliedFilter);
+                model.Metadata.PageTitle = $"Statistics for {model.Context.CompetitionName}" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
                 model.Metadata.Description = $"Statistics for stoolball matches played in all the years of the {model.Context.CompetitionName}.";
 
                 return CurrentTemplate(model);
