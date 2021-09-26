@@ -27,27 +27,33 @@ namespace ASP
     using System.Web.UI;
     using System.Web.WebPages;
     
-    #line 4 "..\..\Views\MostCatches.cshtml"
+    #line 5 "..\..\Views\MostCatches.cshtml"
     using ClientDependency.Core.Mvc;
     
     #line default
     #line hidden
     using Examine;
     
-    #line 2 "..\..\Views\MostCatches.cshtml"
+    #line 3 "..\..\Views\MostCatches.cshtml"
     using Stoolball.Statistics;
     
     #line default
     #line hidden
     
-    #line 3 "..\..\Views\MostCatches.cshtml"
+    #line 2 "..\..\Views\MostCatches.cshtml"
+    using Stoolball.Web.Filtering;
+    
+    #line default
+    #line hidden
+    
+    #line 4 "..\..\Views\MostCatches.cshtml"
     using Stoolball.Web.Statistics;
     
     #line default
     #line hidden
     using Umbraco.Core;
     
-    #line 5 "..\..\Views\MostCatches.cshtml"
+    #line 6 "..\..\Views\MostCatches.cshtml"
     using Umbraco.Core.Composing;
     
     #line default
@@ -68,20 +74,22 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 6 "..\..\Views\MostCatches.cshtml"
+            #line 7 "..\..\Views\MostCatches.cshtml"
   
     var humanizer = Current.Factory.GetInstance<IStatisticsFilterHumanizer>();
-    Html.RequiresCss("/statistics/statistics.min.css"); 
+    Html.RequiresCss("/statistics/statistics.min.css");
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
 
             
             #line default
             #line hidden
-WriteLiteral("\n");
+WriteLiteral("\r\n");
 
 DefineSection("canonical", () => {
 
             
-            #line 10 "..\..\Views\MostCatches.cshtml"
+            #line 13 "..\..\Views\MostCatches.cshtml"
                Write(Html.Partial("_CanonicalUrl", new[] { "page" }));
 
             
@@ -91,50 +99,50 @@ DefineSection("canonical", () => {
 
 DefineSection("head", () => {
 
-WriteLiteral("\n");
+WriteLiteral("\r\n");
 
             
-            #line 12 "..\..\Views\MostCatches.cshtml"
+            #line 15 "..\..\Views\MostCatches.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 12 "..\..\Views\MostCatches.cshtml"
+            #line 15 "..\..\Views\MostCatches.cshtml"
      if (Model.AppliedFilter.Paging.PageNumber == 1)
     {
 
             
             #line default
             #line hidden
-WriteLiteral("<meta");
+WriteLiteral("        <meta");
 
 WriteLiteral(" name=\"robots\"");
 
 WriteLiteral(" content=\"index, nofollow\"");
 
-WriteLiteral(">\n");
+WriteLiteral(">\r\n");
 
             
-            #line 15 "..\..\Views\MostCatches.cshtml"
- }
-else
-{
+            #line 18 "..\..\Views\MostCatches.cshtml"
+    }
+    else
+    {
 
             
             #line default
             #line hidden
-WriteLiteral("<meta");
+WriteLiteral("        <meta");
 
 WriteLiteral(" name=\"robots\"");
 
 WriteLiteral(" content=\"noindex, nofollow\"");
 
-WriteLiteral(">\n");
+WriteLiteral(">\r\n");
 
             
-            #line 19 "..\..\Views\MostCatches.cshtml"
-}
+            #line 22 "..\..\Views\MostCatches.cshtml"
+    }
 
             
             #line default
@@ -145,38 +153,110 @@ WriteLiteral("<div");
 
 WriteLiteral(" class=\"container-xl\"");
 
-WriteLiteral(">\n    <h1>Most catches");
+WriteLiteral(">\r\n    <h1>Most catches");
 
             
-            #line 22 "..\..\Views\MostCatches.cshtml"
+            #line 25 "..\..\Views\MostCatches.cshtml"
                 Write(humanizer.MatchingFixedFilter(Model.AppliedFilter));
 
             
             #line default
             #line hidden
-WriteLiteral("</h1>\n\n");
+WriteLiteral("</h1>\r\n\r\n    <ul");
+
+WriteLiteral(" class=\"nav nav-tabs\"");
+
+WriteLiteral(">\r\n        <li");
+
+WriteLiteral(" class=\"nav-item nav-item-admin\"");
+
+WriteLiteral(">\r\n            <button");
+
+WriteLiteral(" type=\"button\"");
+
+WriteLiteral(" class=\"nav-link nav-link-filter\"");
+
+WriteLiteral(">Edit filter</button>\r\n        </li>\r\n    </ul>\r\n");
 
 WriteLiteral("    ");
 
             
-            #line 24 "..\..\Views\MostCatches.cshtml"
-Write(Html.Partial("_StatisticsBasis"));
+            #line 32 "..\..\Views\MostCatches.cshtml"
+Write(Html.Partial("_Filters", new FilterViewModel
+    {
+        FilteredItemTypeSingular = "Catch",
+        FilteredItemTypePlural = "Catches",
+        FilterDescription = Model.FilterDescription,
+        from = Model.AppliedFilter.FromDate,
+        to = Model.AppliedFilter.UntilDate
+    }));
 
             
             #line default
             #line hidden
-WriteLiteral("\n");
-
-WriteLiteral("    ");
+WriteLiteral("\r\n\r\n");
 
             
-            #line 25 "..\..\Views\MostCatches.cshtml"
-Write(Html.Partial("_MostCatches"));
+            #line 41 "..\..\Views\MostCatches.cshtml"
+    
+            
+            #line default
+            #line hidden
+            
+            #line 41 "..\..\Views\MostCatches.cshtml"
+     if (Model.Results.Any())
+    {
+        
+            
+            #line default
+            #line hidden
+            
+            #line 43 "..\..\Views\MostCatches.cshtml"
+   Write(Html.Partial("_StatisticsBasis"));
 
             
             #line default
             #line hidden
-WriteLiteral("\n</div>");
+            
+            #line 43 "..\..\Views\MostCatches.cshtml"
+                                         
+        
+            
+            #line default
+            #line hidden
+            
+            #line 44 "..\..\Views\MostCatches.cshtml"
+   Write(Html.Partial("_MostCatches"));
+
+            
+            #line default
+            #line hidden
+            
+            #line 44 "..\..\Views\MostCatches.cshtml"
+                                     
+    }
+    else
+    {
+        
+            
+            #line default
+            #line hidden
+            
+            #line 48 "..\..\Views\MostCatches.cshtml"
+   Write(Html.Partial("_NoData"));
+
+            
+            #line default
+            #line hidden
+            
+            #line 48 "..\..\Views\MostCatches.cshtml"
+                                
+    }
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</div>");
 
         }
     }

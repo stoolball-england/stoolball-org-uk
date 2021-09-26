@@ -6,6 +6,8 @@
 @using Umbraco.Core.Composing
 @{
     var dateTimeFormatter = Current.Factory.CreateInstance<DateTimeFormatter>();
+    var serialiser = Current.Factory.GetInstance<IStatisticsFilterQueryStringSerializer>();
+    var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
 }
 @if (Model.Results.Any())
 {
@@ -49,7 +51,7 @@
     </table>
     if (Model.AppliedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue)
     {
-        <p><a href="@Request.RawUrl/most-catches">Most catches – view all</a></p>
+        <p><a href="@Request.Url.AbsolutePath/most-catches@(queryString)">Most catches – view all and filter</a></p>
     }
     else
     {
