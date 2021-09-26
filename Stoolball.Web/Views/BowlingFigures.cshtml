@@ -45,10 +45,10 @@
     @if (Model.Results.Any())
     {
         @Html.Partial("_StatisticsBasis")
-        @Html.Partial("_BowlingFigures")
     }
     else
     {
         @Html.Partial("_NoData")
     }
+    @Html.Partial("_BowlingFigures")
 </div>

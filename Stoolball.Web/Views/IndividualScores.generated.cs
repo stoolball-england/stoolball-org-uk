@@ -230,20 +230,6 @@ WriteLiteral("\r\n\r\n");
             
             #line 48 "..\..\Views\IndividualScores.cshtml"
                                          
-        
-            
-            #line default
-            #line hidden
-            
-            #line 49 "..\..\Views\IndividualScores.cshtml"
-   Write(Html.Partial("_IndividualScores"));
-
-            
-            #line default
-            #line hidden
-            
-            #line 49 "..\..\Views\IndividualScores.cshtml"
-                                          
     }
     else
     {
@@ -252,21 +238,30 @@ WriteLiteral("\r\n\r\n");
             #line default
             #line hidden
             
-            #line 53 "..\..\Views\IndividualScores.cshtml"
+            #line 52 "..\..\Views\IndividualScores.cshtml"
    Write(Html.Partial("_NoData"));
 
             
             #line default
             #line hidden
             
-            #line 53 "..\..\Views\IndividualScores.cshtml"
+            #line 52 "..\..\Views\IndividualScores.cshtml"
                                 
     }
 
             
             #line default
             #line hidden
-WriteLiteral("</div>");
+WriteLiteral("    ");
+
+            
+            #line 54 "..\..\Views\IndividualScores.cshtml"
+Write(Html.Partial("_IndividualScores"));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n</div>");
 
         }
     }

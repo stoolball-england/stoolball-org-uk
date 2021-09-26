@@ -220,20 +220,6 @@ WriteLiteral("\r\n\r\n");
             
             #line 43 "..\..\Views\MostCatches.cshtml"
                                          
-        
-            
-            #line default
-            #line hidden
-            
-            #line 44 "..\..\Views\MostCatches.cshtml"
-   Write(Html.Partial("_MostCatches"));
-
-            
-            #line default
-            #line hidden
-            
-            #line 44 "..\..\Views\MostCatches.cshtml"
-                                     
     }
     else
     {
@@ -242,21 +228,30 @@ WriteLiteral("\r\n\r\n");
             #line default
             #line hidden
             
-            #line 48 "..\..\Views\MostCatches.cshtml"
+            #line 47 "..\..\Views\MostCatches.cshtml"
    Write(Html.Partial("_NoData"));
 
             
             #line default
             #line hidden
             
-            #line 48 "..\..\Views\MostCatches.cshtml"
+            #line 47 "..\..\Views\MostCatches.cshtml"
                                 
     }
 
             
             #line default
             #line hidden
-WriteLiteral("</div>");
+WriteLiteral("    ");
+
+            
+            #line 49 "..\..\Views\MostCatches.cshtml"
+Write(Html.Partial("_MostCatches"));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n</div>");
 
         }
     }

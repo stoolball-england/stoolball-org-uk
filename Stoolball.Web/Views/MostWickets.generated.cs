@@ -221,20 +221,6 @@ WriteLiteral("\r\n\r\n\r\n");
             
             #line 45 "..\..\Views\MostWickets.cshtml"
                                          
-        
-            
-            #line default
-            #line hidden
-            
-            #line 46 "..\..\Views\MostWickets.cshtml"
-   Write(Html.Partial("_MostWickets"));
-
-            
-            #line default
-            #line hidden
-            
-            #line 46 "..\..\Views\MostWickets.cshtml"
-                                     
     }
     else
     {
@@ -243,21 +229,30 @@ WriteLiteral("\r\n\r\n\r\n");
             #line default
             #line hidden
             
-            #line 50 "..\..\Views\MostWickets.cshtml"
+            #line 49 "..\..\Views\MostWickets.cshtml"
    Write(Html.Partial("_NoData"));
 
             
             #line default
             #line hidden
             
-            #line 50 "..\..\Views\MostWickets.cshtml"
+            #line 49 "..\..\Views\MostWickets.cshtml"
                                 
     }
 
             
             #line default
             #line hidden
-WriteLiteral("</div>");
+WriteLiteral("    ");
+
+            
+            #line 51 "..\..\Views\MostWickets.cshtml"
+Write(Html.Partial("_MostWickets"));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n</div>");
 
         }
     }

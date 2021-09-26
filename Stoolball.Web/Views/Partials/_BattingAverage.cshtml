@@ -6,6 +6,8 @@
 @using Umbraco.Core.Composing
 @{
     var dateTimeFormatter = Current.Factory.CreateInstance<DateTimeFormatter>();
+    var serialiser = Current.Factory.GetInstance<IStatisticsFilterQueryStringSerializer>();
+    var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
 }
 @if (Model.Results.Any() || Model.ShowLinkOnly)
 {
@@ -54,7 +56,7 @@
     }
     if (Model.ShowLinkOnly)
     {
-        <p><a href="@Request.RawUrl/batting-average">Best batting average – view all</a></p>
+        <p><a href="@Request.Url.AbsolutePath/batting-average@(queryString)">Best batting average – view all and filter</a></p>
     }
     else
     {

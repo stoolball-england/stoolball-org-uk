@@ -46,10 +46,10 @@
     @if (Model.Results.Any())
     {
         @Html.Partial("_StatisticsBasis")
-        @Html.Partial("_IndividualScores")
     }
     else
     {
         @Html.Partial("_NoData")
     }
+    @Html.Partial("_IndividualScores")
 </div>

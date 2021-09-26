@@ -7,6 +7,7 @@ using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Statistics;
+using Stoolball.Testing;
 using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
@@ -154,7 +155,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             Assert.Equal(expected, result);
         }
 
-
         [Fact]
         public async Task Read_total_players_with_batting_average_supports_filter_by_season_id()
         {
@@ -177,6 +177,30 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             Assert.Equal(expected, result);
         }
 
+        [Fact]
+        public async Task Read_total_players_with_batting_average_supports_filter_by_date()
+        {
+            var dateRangeGenerator = new DateRangeGenerator();
+            var (fromDate, untilDate) = dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
+
+            var filter = new StatisticsFilter { FromDate = fromDate, UntilDate = untilDate };
+            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
+            queryBuilder.Setup(x => x.BuildWhereClause(filter)).Returns((" AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate", new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } }));
+            var dataSource = new SqlServerBestPlayerAverageStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, Mock.Of<IPlayerDataSource>());
+
+            var result = await dataSource.ReadTotalPlayersWithBattingAverage(filter).ConfigureAwait(false);
+
+            var playerInnings = _databaseFixture.TestData.Matches
+                .Where(x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate)
+                .SelectMany(x => x.MatchInnings)
+                .SelectMany(x => x.PlayerInnings);
+            var expected = playerInnings
+                .Where(x => StatisticsConstants.DISMISSALS_THAT_ARE_OUT.Contains(x.DismissalType) && x.RunsScored.HasValue)
+                .Select(x => x.Batter.Player.PlayerId)
+                .Distinct()
+                .Count();
+            Assert.Equal(expected, result);
+        }
         [Fact]
         public async Task Read_best_batting_average_returns_player()
         {
@@ -329,7 +353,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             await ActAndAssertStatistics(filter, dataSource, x => x.Season?.Competition?.CompetitionId == filter.Competition.CompetitionId, x => true).ConfigureAwait(false);
         }
 
-
         [Fact]
         public async Task Read_best_batting_average_supports_statistics_filtered_by_season_id()
         {
@@ -348,6 +371,30 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var dataSource = new SqlServerBestPlayerAverageStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
 
             await ActAndAssertStatistics(filter, dataSource, x => x.Season?.SeasonId == filter.Season.SeasonId, x => true).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task Read_best_batting_average_supports_statistics_filtered_by_date()
+        {
+            var dateRangeGenerator = new DateRangeGenerator();
+            var (fromDate, untilDate) = dateRangeGenerator.SelectDateRangeToTest(_databaseFixture.TestData.Matches);
+
+            var filter = new StatisticsFilter
+            {
+                Paging = new Paging
+                {
+                    PageSize = int.MaxValue
+                },
+                FromDate = fromDate,
+                UntilDate = untilDate
+            };
+            var queryBuilder = new Mock<IStatisticsQueryBuilder>();
+            queryBuilder.Setup(x => x.BuildWhereClause(It.IsAny<StatisticsFilter>())).Returns((" AND MatchStartTime >= @FromDate AND MatchStartTime <= @UntilDate", new Dictionary<string, object> { { "FromDate", filter.FromDate }, { "UntilDate", filter.UntilDate } }));
+            var playerDataSource = new Mock<IPlayerDataSource>();
+            playerDataSource.Setup(x => x.ReadPlayers(It.IsAny<PlayerFilter>())).Returns(Task.FromResult(_databaseFixture.TestData.Players));
+            var dataSource = new SqlServerBestPlayerAverageStatisticsDataSource(_databaseFixture.ConnectionFactory, queryBuilder.Object, playerDataSource.Object);
+
+            await ActAndAssertStatistics(filter, dataSource, x => x.StartTime >= filter.FromDate && x.StartTime <= filter.UntilDate, x => true).ConfigureAwait(false);
         }
 
         private async Task ActAndAssertStatistics(StatisticsFilter filter, SqlServerBestPlayerAverageStatisticsDataSource dataSource, Func<Stoolball.Matches.Match, bool> matchFilter, Func<MatchInnings, bool> matchInningsFilter)

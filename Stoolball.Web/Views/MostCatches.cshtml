@@ -41,10 +41,10 @@
     @if (Model.Results.Any())
     {
         @Html.Partial("_StatisticsBasis")
-        @Html.Partial("_MostCatches")
     }
     else
     {
         @Html.Partial("_NoData")
     }
+    @Html.Partial("_MostCatches")
 </div>

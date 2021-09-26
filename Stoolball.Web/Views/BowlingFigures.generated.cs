@@ -224,20 +224,6 @@ WriteLiteral("\r\n\r\n");
             
             #line 47 "..\..\Views\BowlingFigures.cshtml"
                                          
-        
-            
-            #line default
-            #line hidden
-            
-            #line 48 "..\..\Views\BowlingFigures.cshtml"
-   Write(Html.Partial("_BowlingFigures"));
-
-            
-            #line default
-            #line hidden
-            
-            #line 48 "..\..\Views\BowlingFigures.cshtml"
-                                        
     }
     else
     {
@@ -246,21 +232,30 @@ WriteLiteral("\r\n\r\n");
             #line default
             #line hidden
             
-            #line 52 "..\..\Views\BowlingFigures.cshtml"
+            #line 51 "..\..\Views\BowlingFigures.cshtml"
    Write(Html.Partial("_NoData"));
 
             
             #line default
             #line hidden
             
-            #line 52 "..\..\Views\BowlingFigures.cshtml"
+            #line 51 "..\..\Views\BowlingFigures.cshtml"
                                 
     }
 
             
             #line default
             #line hidden
-WriteLiteral("</div>");
+WriteLiteral("    ");
+
+            
+            #line 53 "..\..\Views\BowlingFigures.cshtml"
+Write(Html.Partial("_BowlingFigures"));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n</div>");
 
         }
     }
