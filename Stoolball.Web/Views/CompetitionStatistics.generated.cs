@@ -263,28 +263,28 @@ WriteLiteral("\r\n\r\n");
             #line hidden
             
             #line 60 "..\..\Views\CompetitionStatistics.cshtml"
-   Write(Html.Partial("_BattingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
+   Write(Html.Partial("_BattingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter }));
 
             
             #line default
             #line hidden
             
             #line 60 "..\..\Views\CompetitionStatistics.cshtml"
-                                                                                                                                     
+                                                                                                                                                                                                               
         
             
             #line default
             #line hidden
             
             #line 61 "..\..\Views\CompetitionStatistics.cshtml"
-   Write(Html.Partial("_BattingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
+   Write(Html.Partial("_BattingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter }));
 
             
             #line default
             #line hidden
             
             #line 61 "..\..\Views\CompetitionStatistics.cshtml"
-                                                                                                                                        
+                                                                                                                                                                                                                  
         
             
             #line default
@@ -319,42 +319,42 @@ WriteLiteral("\r\n\r\n");
             #line hidden
             
             #line 64 "..\..\Views\CompetitionStatistics.cshtml"
-   Write(Html.Partial("_BowlingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
+   Write(Html.Partial("_BowlingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter }));
 
             
             #line default
             #line hidden
             
             #line 64 "..\..\Views\CompetitionStatistics.cshtml"
-                                                                                                                                     
+                                                                                                                                                                                                               
         
             
             #line default
             #line hidden
             
             #line 65 "..\..\Views\CompetitionStatistics.cshtml"
-   Write(Html.Partial("_EconomyRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
+   Write(Html.Partial("_EconomyRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter }));
 
             
             #line default
             #line hidden
             
             #line 65 "..\..\Views\CompetitionStatistics.cshtml"
-                                                                                                                                  
+                                                                                                                                                                                                            
         
             
             #line default
             #line hidden
             
             #line 66 "..\..\Views\CompetitionStatistics.cshtml"
-   Write(Html.Partial("_BowlingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
+   Write(Html.Partial("_BowlingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter }));
 
             
             #line default
             #line hidden
             
             #line 66 "..\..\Views\CompetitionStatistics.cshtml"
-                                                                                                                                        
+                                                                                                                                                                                                                  
         
             
             #line default
@@ -375,14 +375,14 @@ WriteLiteral("\r\n\r\n");
             #line hidden
             
             #line 68 "..\..\Views\CompetitionStatistics.cshtml"
-   Write(Html.Partial("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
+   Write(Html.Partial("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter }));
 
             
             #line default
             #line hidden
             
             #line 68 "..\..\Views\CompetitionStatistics.cshtml"
-                                                                                                                                  
+                                                                                                                                                                                                            
     }
 
             

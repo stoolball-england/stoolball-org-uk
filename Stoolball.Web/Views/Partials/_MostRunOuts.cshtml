@@ -6,6 +6,8 @@
 @using Umbraco.Core.Composing
 @{
     var dateTimeFormatter = Current.Factory.CreateInstance<DateTimeFormatter>();
+    var serialiser = Current.Factory.GetInstance<IStatisticsFilterQueryStringSerializer>();
+    var queryString = serialiser.Serialize(Model.AppliedFilter, Model.DefaultFilter);
 }
 @if (Model.Results.Any() || Model.ShowLinkOnly)
 {
@@ -52,7 +54,7 @@
     }
     if (Model.AppliedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual.HasValue || Model.ShowLinkOnly)
     {
-        <p><a href="@Request.RawUrl/most-run-outs">Most run-outs – view all</a></p>
+        <p><a href="@Request.Url.AbsolutePath/most-run-outs@(queryString)">Most run-outs – view all and filter</a></p>
     }
     else
     {

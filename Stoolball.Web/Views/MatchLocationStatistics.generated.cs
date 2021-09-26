@@ -253,28 +253,28 @@ WriteLiteral("\r\n\r\n");
             #line hidden
             
             #line 58 "..\..\Views\MatchLocationStatistics.cshtml"
-   Write(Html.Partial("_BattingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
+   Write(Html.Partial("_BattingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter }));
 
             
             #line default
             #line hidden
             
             #line 58 "..\..\Views\MatchLocationStatistics.cshtml"
-                                                                                                                                     
+                                                                                                                                                                                                               
         
             
             #line default
             #line hidden
             
             #line 59 "..\..\Views\MatchLocationStatistics.cshtml"
-   Write(Html.Partial("_BattingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
+   Write(Html.Partial("_BattingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter }));
 
             
             #line default
             #line hidden
             
             #line 59 "..\..\Views\MatchLocationStatistics.cshtml"
-                                                                                                                                        
+                                                                                                                                                                                                                  
         
             
             #line default
@@ -309,42 +309,42 @@ WriteLiteral("\r\n\r\n");
             #line hidden
             
             #line 62 "..\..\Views\MatchLocationStatistics.cshtml"
-   Write(Html.Partial("_BowlingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
+   Write(Html.Partial("_BowlingAverage", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter }));
 
             
             #line default
             #line hidden
             
             #line 62 "..\..\Views\MatchLocationStatistics.cshtml"
-                                                                                                                                     
+                                                                                                                                                                                                               
         
             
             #line default
             #line hidden
             
             #line 63 "..\..\Views\MatchLocationStatistics.cshtml"
-   Write(Html.Partial("_EconomyRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
+   Write(Html.Partial("_EconomyRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter }));
 
             
             #line default
             #line hidden
             
             #line 63 "..\..\Views\MatchLocationStatistics.cshtml"
-                                                                                                                                  
+                                                                                                                                                                                                            
         
             
             #line default
             #line hidden
             
             #line 64 "..\..\Views\MatchLocationStatistics.cshtml"
-   Write(Html.Partial("_BowlingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
+   Write(Html.Partial("_BowlingStrikeRate", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter }));
 
             
             #line default
             #line hidden
             
             #line 64 "..\..\Views\MatchLocationStatistics.cshtml"
-                                                                                                                                        
+                                                                                                                                                                                                                  
         
             
             #line default
@@ -365,14 +365,14 @@ WriteLiteral("\r\n\r\n");
             #line hidden
             
             #line 66 "..\..\Views\MatchLocationStatistics.cshtml"
-   Write(Html.Partial("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true }));
+   Write(Html.Partial("_MostRunOuts", new StatisticsViewModel<BestStatistic>(Model, Services.UserService) { ShowLinkOnly = true, DefaultFilter = Model.DefaultFilter, AppliedFilter = Model.AppliedFilter }));
 
             
             #line default
             #line hidden
             
             #line 66 "..\..\Views\MatchLocationStatistics.cshtml"
-                                                                                                                                  
+                                                                                                                                                                                                            
     }
 
             

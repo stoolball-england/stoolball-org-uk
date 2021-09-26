@@ -27,27 +27,33 @@ namespace ASP
     using System.Web.UI;
     using System.Web.WebPages;
     
-    #line 4 "..\..\Views\MostRunOuts.cshtml"
+    #line 5 "..\..\Views\MostRunOuts.cshtml"
     using ClientDependency.Core.Mvc;
     
     #line default
     #line hidden
     using Examine;
     
-    #line 2 "..\..\Views\MostRunOuts.cshtml"
+    #line 3 "..\..\Views\MostRunOuts.cshtml"
     using Stoolball.Statistics;
     
     #line default
     #line hidden
     
-    #line 3 "..\..\Views\MostRunOuts.cshtml"
+    #line 2 "..\..\Views\MostRunOuts.cshtml"
+    using Stoolball.Web.Filtering;
+    
+    #line default
+    #line hidden
+    
+    #line 4 "..\..\Views\MostRunOuts.cshtml"
     using Stoolball.Web.Statistics;
     
     #line default
     #line hidden
     using Umbraco.Core;
     
-    #line 5 "..\..\Views\MostRunOuts.cshtml"
+    #line 6 "..\..\Views\MostRunOuts.cshtml"
     using Umbraco.Core.Composing;
     
     #line default
@@ -68,20 +74,22 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 6 "..\..\Views\MostRunOuts.cshtml"
-   
+            #line 7 "..\..\Views\MostRunOuts.cshtml"
+  
     var humanizer = Current.Factory.GetInstance<IStatisticsFilterHumanizer>();
-    Html.RequiresCss("/statistics/statistics.min.css"); 
+    Html.RequiresCss("/statistics/statistics.min.css");
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
 
             
             #line default
             #line hidden
-WriteLiteral("\n");
+WriteLiteral("\r\n");
 
 DefineSection("canonical", () => {
 
             
-            #line 10 "..\..\Views\MostRunOuts.cshtml"
+            #line 13 "..\..\Views\MostRunOuts.cshtml"
                Write(Html.Partial("_CanonicalUrl", new[] { "page" }));
 
             
@@ -91,50 +99,50 @@ DefineSection("canonical", () => {
 
 DefineSection("head", () => {
 
-WriteLiteral("\n");
+WriteLiteral("\r\n");
 
             
-            #line 12 "..\..\Views\MostRunOuts.cshtml"
+            #line 15 "..\..\Views\MostRunOuts.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 12 "..\..\Views\MostRunOuts.cshtml"
+            #line 15 "..\..\Views\MostRunOuts.cshtml"
      if (Model.AppliedFilter.Paging.PageNumber == 1)
     {
 
             
             #line default
             #line hidden
-WriteLiteral("<meta");
+WriteLiteral("        <meta");
 
 WriteLiteral(" name=\"robots\"");
 
 WriteLiteral(" content=\"index, nofollow\"");
 
-WriteLiteral("> ");
+WriteLiteral(">\r\n");
 
             
-            #line 14 "..\..\Views\MostRunOuts.cshtml"
-                                               }
-                else
-                {
+            #line 18 "..\..\Views\MostRunOuts.cshtml"
+ }
+    else
+    {
 
             
             #line default
             #line hidden
-WriteLiteral("<meta");
+WriteLiteral("        <meta");
 
 WriteLiteral(" name=\"robots\"");
 
 WriteLiteral(" content=\"noindex, nofollow\"");
 
-WriteLiteral(">");
+WriteLiteral(">\r\n");
 
             
-            #line 17 "..\..\Views\MostRunOuts.cshtml"
-                                                }
+            #line 22 "..\..\Views\MostRunOuts.cshtml"
+}
 
             
             #line default
@@ -145,71 +153,110 @@ WriteLiteral("<div");
 
 WriteLiteral(" class=\"container-xl\"");
 
-WriteLiteral(">\n    <h1>Most run-outs");
+WriteLiteral(">\r\n    <h1>Most run-outs");
 
             
-            #line 20 "..\..\Views\MostRunOuts.cshtml"
+            #line 25 "..\..\Views\MostRunOuts.cshtml"
                  Write(humanizer.MatchingFixedFilter(Model.AppliedFilter));
 
             
             #line default
             #line hidden
-WriteLiteral("</h1>\n\n");
+WriteLiteral("</h1>\r\n\r\n    <ul");
+
+WriteLiteral(" class=\"nav nav-tabs\"");
+
+WriteLiteral(">\r\n        <li");
+
+WriteLiteral(" class=\"nav-item nav-item-admin\"");
+
+WriteLiteral(">\r\n            <button");
+
+WriteLiteral(" type=\"button\"");
+
+WriteLiteral(" class=\"nav-link nav-link-filter\"");
+
+WriteLiteral(">Edit filter</button>\r\n        </li>\r\n    </ul>\r\n");
+
+WriteLiteral("    ");
 
             
-            #line 22 "..\..\Views\MostRunOuts.cshtml"
+            #line 32 "..\..\Views\MostRunOuts.cshtml"
+Write(Html.Partial("_Filters", new FilterViewModel
+    {
+        FilteredItemTypeSingular = "Run-out",
+        FilteredItemTypePlural = "Run-outs",
+        FilterDescription = Model.FilterDescription,
+        from = Model.AppliedFilter.FromDate,
+        to = Model.AppliedFilter.UntilDate
+    }));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n\r\n");
+
+            
+            #line 41 "..\..\Views\MostRunOuts.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 22 "..\..\Views\MostRunOuts.cshtml"
+            #line 41 "..\..\Views\MostRunOuts.cshtml"
      if (Model.Results.Any())
     {
+        
+            
+            #line default
+            #line hidden
+            
+            #line 43 "..\..\Views\MostRunOuts.cshtml"
+   Write(Html.Partial("_StatisticsBasis"));
 
             
             #line default
             #line hidden
             
-            #line 24 "..\..\Views\MostRunOuts.cshtml"
-Write(Html.Partial("_StatisticsBasis"));
+            #line 43 "..\..\Views\MostRunOuts.cshtml"
+                                          
+        
+            
+            #line default
+            #line hidden
+            
+            #line 44 "..\..\Views\MostRunOuts.cshtml"
+   Write(Html.Partial("_MostRunOuts"));
 
             
             #line default
             #line hidden
             
-            #line 24 "..\..\Views\MostRunOuts.cshtml"
-                                  }
-            else
-            {
+            #line 44 "..\..\Views\MostRunOuts.cshtml"
+                                     
+    }
+    else
+    {
+        
+            
+            #line default
+            #line hidden
+            
+            #line 48 "..\..\Views\MostRunOuts.cshtml"
+   Write(Html.Partial("_NoData"));
 
             
             #line default
             #line hidden
             
-            #line 27 "..\..\Views\MostRunOuts.cshtml"
-Write(Html.Partial("_NoData"));
+            #line 48 "..\..\Views\MostRunOuts.cshtml"
+                                
+    }
 
             
             #line default
             #line hidden
-            
-            #line 27 "..\..\Views\MostRunOuts.cshtml"
-                        }
-
-            
-            #line default
-            #line hidden
-WriteLiteral("    ");
-
-            
-            #line 28 "..\..\Views\MostRunOuts.cshtml"
-Write(Html.Partial("_MostRunOuts"));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\n</div>");
+WriteLiteral("</div>");
 
         }
     }
