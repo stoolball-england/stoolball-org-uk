@@ -96,6 +96,7 @@ namespace Stoolball.Web.Security
         private void SetupYouTube()
         {
             AddSource(FRAME_SRC, "https://www.youtube-nocookie.com");
+            AddSource(IMG_SRC, "https://i.ytimg.com");
         }
 
         private void SetupTinyMCE()
