@@ -18,6 +18,7 @@ namespace Stoolball.Web.Security
         private const string MANIFEST_SRC = "manifest-src";
         private const string REPORT_URI = "report-uri";
         private const string REPORT_TO = "report-to";
+        private const string WORKER_SRC = "worker-src";
         private const string SOURCE_SEPARATOR = " ";
         private const string DIRECTIVE_SEPARATOR = ";";
 
@@ -78,7 +79,7 @@ namespace Stoolball.Web.Security
                 SetupTrustedTypes();
             }
 
-            filterContext.HttpContext.Response.Headers.Add("Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, FRAME_SRC, CONNECT_SRC, MANIFEST_SRC, TRUSTED_TYPES, REPORT_URI, REPORT_TO));
+            filterContext.HttpContext.Response.Headers.Add("Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, FRAME_SRC, CONNECT_SRC, MANIFEST_SRC, TRUSTED_TYPES, WORKER_SRC, REPORT_URI, REPORT_TO));
             filterContext.HttpContext.Response.Headers.Add("X-Content-Security-Policy", CreatePolicy(DEFAULT_SRC, STYLE_SRC, SCRIPT_SRC, IMG_SRC, FONT_SRC, FRAME_SRC, MANIFEST_SRC, CONNECT_SRC, REPORT_URI));
         }
 
@@ -171,6 +172,7 @@ namespace Stoolball.Web.Security
             AddSource(CONNECT_SRC, "'self'");
             AddSource(MANIFEST_SRC, "'self'");
             AddSource(FONT_SRC, "'self'");
+            AddSource(WORKER_SRC, "'self'");
             AddSource(REPORT_URI, "https://stoolball.report-uri.com/r/d/csp/enforce");
             AddSource(REPORT_TO, "default");
         }
@@ -187,6 +189,7 @@ namespace Stoolball.Web.Security
             AddDirective(TRUSTED_TYPES);
             AddDirective(MANIFEST_SRC);
             AddDirective(FRAME_SRC);
+            AddDirective(WORKER_SRC);
             AddDirective(REPORT_URI);
             AddDirective(REPORT_TO);
         }
