@@ -184,8 +184,8 @@ WriteLiteral("    ");
             #line 32 "..\..\Views\BattingAverage.cshtml"
 Write(Html.Partial("_Filters", new FilterViewModel
     {
-        FilteredItemTypeSingular = "Run-out",
-        FilteredItemTypePlural = "Run-outs",
+        FilteredItemTypeSingular = "Innings",
+        FilteredItemTypePlural = "Innings",
         FilterDescription = Model.FilterDescription,
         from = Model.AppliedFilter.FromDate,
         to = Model.AppliedFilter.UntilDate
