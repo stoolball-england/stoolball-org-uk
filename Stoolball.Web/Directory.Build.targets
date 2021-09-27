@@ -240,7 +240,7 @@
       <TempWebConfig>$(ProjectDir)Web.temp.config</TempWebConfig>
       <TemplateProductionTransform>$(ProjectDir)Web.live.xdt.template.config</TemplateProductionTransform>
       <ActualProductionTransform>$(ProjectDir)Web.live.xdt.config</ActualProductionTransform>
-      <FeaturePolicy>accelerometer 'none';ambient-light-sensor 'none';autoplay 'none';battery 'none';camera 'none';display-capture 'none';document-domain 'none';encrypted-media 'none';execution-while-not-rendered 'none';execution-while-out-of-viewport 'none';fullscreen 'none';geolocation 'none';gyroscope 'none';layout-animations 'none';legacy-image-formats 'none';magnetometer 'none';microphone 'none';midi 'none';navigation-override 'none';oversized-images 'none';payment 'none';picture-in-picture 'none';publickey-credentials 'none';sync-xhr 'none';usb 'none';wake-lock 'none';xr-spatial-tracking 'none'</FeaturePolicy>
+      <PermissionsPolicy>accelerometer=(),ambient-light-sensor=(),autoplay=(),battery=(),camera=(),cross-origin-isolated=(),display-capture=(),document-domain=(),encrypted-media=(),execution-while-not-rendered=(),execution-while-out-of-viewport=(),fullscreen=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),midi=(),navigation-override=(),payment=(),picture-in-picture=(),publickey-credentials-get=(),screen-wake-lock=(),sync-xhr=(),usb=(),web-share=(),xr-spatial-tracking=()</PermissionsPolicy>
       <TemplateAppInsightsConfig>$(ProjectDir)ApplicationInsights.template.config</TemplateAppInsightsConfig>
       <ActualAppInsightsConfig>$(ProjectDir)ApplicationInsights.config</ActualAppInsightsConfig>
     </PropertyGroup>
@@ -265,8 +265,8 @@
     <ReplaceFileText
       InputFilename="$(OriginalWebConfig)"
       OutputFilename="$(OriginalWebConfig)"
-      MatchExpression="__FEATURE_POLICY__"
-      ReplacementText="$(FeaturePolicy)" />
+      MatchExpression="__PERMISSIONS_POLICY__"
+      ReplacementText="$(PermissionsPolicy)" />
 
     <!-- Create $(ActualProductionTransform) file from $(TemplateProductionTransform), 
          replacing tokens in the template, again to avoid duplication in the XDT file -->
@@ -275,7 +275,7 @@
     <ReplaceFileText
           InputFilename="$(ActualProductionTransform)"
           OutputFilename="$(ActualProductionTransform)"
-          MatchExpression="__FEATURE_POLICY__"
-          ReplacementText="$(FeaturePolicy)" />
+          MatchExpression="__PERMISSIONS_POLICY__"
+          ReplacementText="$(PermissionsPolicy)" />
   </Target>
 </Project>
