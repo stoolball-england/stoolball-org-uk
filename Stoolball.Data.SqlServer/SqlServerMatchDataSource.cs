@@ -114,10 +114,10 @@ namespace Stoolball.Data.SqlServer
                     matchToReturn.Teams = matches.Select(match => match.Teams.SingleOrDefault()).OfType<TeamInMatch>().OrderBy(x => x.TeamRole).ToList();
                 }
 
-                if (matchToReturn.MatchType == MatchType.TrainingSession) { return matchToReturn; }
-
                 if (matchToReturn != null)
                 {
+                    if (matchToReturn.MatchType == MatchType.TrainingSession) { return matchToReturn; }
+
                     // Add match innings and player innings within that to the match
                     var unprocessedInningsWithBatting = await connection.QueryAsync<MatchInnings, OverSet, MatchTeamIds, PlayerInnings, PlayerDto, PlayerDto, PlayerDto, MatchInnings>(
                         $@"SELECT i.MatchInningsId, i.Byes, i.Wides, i.NoBalls, i.BonusOrPenaltyRuns, i.Runs, i.Wickets, i.InningsOrderInMatch,

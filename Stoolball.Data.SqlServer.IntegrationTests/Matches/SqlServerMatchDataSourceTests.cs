@@ -19,6 +19,18 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
         }
 
         [Fact]
+        public async Task Read_match_by_route_returns_null_for_route_that_does_not_find_a_match()
+        {
+            var routeNormaliser = new Mock<IRouteNormaliser>();
+            routeNormaliser.Setup(x => x.NormaliseRouteToEntity(_databaseFixture.MatchInThePastWithMinimalDetails.MatchRoute, "matches")).Returns("/matches/this-does-not-exist");
+            var matchDataSource = new SqlServerMatchDataSource(_databaseFixture.ConnectionFactory, routeNormaliser.Object);
+
+            var result = await matchDataSource.ReadMatchByRoute("/matches/this-does-not-exist").ConfigureAwait(false);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
         public async Task Read_match_by_route_reads_minimal_match_in_the_past()
         {
             var routeNormaliser = new Mock<IRouteNormaliser>();
