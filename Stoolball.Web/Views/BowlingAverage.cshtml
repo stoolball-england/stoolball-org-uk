@@ -1,4 +1,5 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<StatisticsViewModel<BestStatistic>>
+@using Stoolball.Web.Filtering
 @using Stoolball.Statistics
 @using Stoolball.Web.Statistics
 @using ClientDependency.Core.Mvc
@@ -6,6 +7,8 @@
 @{
     var humanizer = Current.Factory.GetInstance<IStatisticsFilterHumanizer>();
     Html.RequiresCss("/statistics/statistics.min.css");
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
 }
 @section canonical {@Html.Partial("_CanonicalUrl", new[] { "page" })}
 @section head {
@@ -20,6 +23,20 @@
 }
 <div class="container-xl">
     <h1>Best bowling average@(humanizer.MatchingFixedFilter(Model.AppliedFilter))</h1>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item nav-item-admin">
+            <button type="button" class="nav-link nav-link-filter">Edit filter</button>
+        </li>
+    </ul>
+    @Html.Partial("_Filters", new FilterViewModel
+    {
+        FilteredItemTypeSingular = "Innings",
+        FilteredItemTypePlural = "Innings",
+        FilterDescription = Model.FilterDescription,
+        from = Model.AppliedFilter.FromDate,
+        to = Model.AppliedFilter.UntilDate
+    })
 
     @if (Model.Results.Any())
     {
