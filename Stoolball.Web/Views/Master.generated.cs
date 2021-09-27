@@ -181,12 +181,60 @@ WriteAttribute("href", Tuple.Create(" href=\"", 1733), Tuple.Create("\"", 1753)
 , 1740), false)
 );
 
+WriteLiteral(" />\r\n    <link");
+
+WriteLiteral(" rel=\"preload\"");
+
+WriteLiteral(" href=\"/fonts/mada-v9-latin-regular.woff2\"");
+
+WriteLiteral(" as=\"font\"");
+
+WriteLiteral(" type=\"font/woff2\"");
+
+WriteLiteral(" crossorigin=\"\"");
+
+WriteLiteral(" />\r\n    <link");
+
+WriteLiteral(" rel=\"preload\"");
+
+WriteLiteral(" href=\"/fonts/mada-v9-latin-700.woff2\"");
+
+WriteLiteral(" as=\"font\"");
+
+WriteLiteral(" type=\"font/woff2\"");
+
+WriteLiteral(" crossorigin=\"\"");
+
+WriteLiteral(" />\r\n    <link");
+
+WriteLiteral(" rel=\"preload\"");
+
+WriteLiteral(" href=\"/fonts/assistant-v6-latin-600.woff2\"");
+
+WriteLiteral(" as=\"font\"");
+
+WriteLiteral(" type=\"font/woff2\"");
+
+WriteLiteral(" crossorigin=\"\"");
+
+WriteLiteral(" />\r\n    <link");
+
+WriteLiteral(" rel=\"preload\"");
+
+WriteLiteral(" href=\"/fonts/assistant-v6-latin-700.woff2\"");
+
+WriteLiteral(" as=\"font\"");
+
+WriteLiteral(" type=\"font/woff2\"");
+
+WriteLiteral(" crossorigin=\"\"");
+
 WriteLiteral(" />\r\n");
 
 WriteLiteral("    ");
 
             
-            #line 46 "..\..\Views\Master.cshtml"
+            #line 50 "..\..\Views\Master.cshtml"
 Write(RenderSection("canonical", required: false));
 
             
@@ -195,26 +243,26 @@ Write(RenderSection("canonical", required: false));
 WriteLiteral("\r\n");
 
             
-            #line 47 "..\..\Views\Master.cshtml"
+            #line 51 "..\..\Views\Master.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 47 "..\..\Views\Master.cshtml"
+            #line 51 "..\..\Views\Master.cshtml"
      if (!IsSectionDefined("canonical")) {
             
             #line default
             #line hidden
             
-            #line 47 "..\..\Views\Master.cshtml"
+            #line 51 "..\..\Views\Master.cshtml"
                                      Write(Html.Partial("_CanonicalUrl", Array.Empty<string>()));
 
             
             #line default
             #line hidden
             
-            #line 47 "..\..\Views\Master.cshtml"
+            #line 51 "..\..\Views\Master.cshtml"
                                                                                                }
 
             
@@ -223,7 +271,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 48 "..\..\Views\Master.cshtml"
+            #line 52 "..\..\Views\Master.cshtml"
 Write(RenderSection("head", false));
 
             
@@ -234,7 +282,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 49 "..\..\Views\Master.cshtml"
+            #line 53 "..\..\Views\Master.cshtml"
 Write(Html.RenderCssHere());
 
             
@@ -251,7 +299,7 @@ WriteLiteral("><span>Skip to content</span></a>\r\n");
 WriteLiteral("    ");
 
             
-            #line 53 "..\..\Views\Master.cshtml"
+            #line 57 "..\..\Views\Master.cshtml"
 Write(Html.Partial("_Header"));
 
             
@@ -262,7 +310,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 54 "..\..\Views\Master.cshtml"
+            #line 58 "..\..\Views\Master.cshtml"
 Write(Html.Partial("_Breadcrumb", Model.Breadcrumbs));
 
             
@@ -277,7 +325,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("        ");
 
             
-            #line 56 "..\..\Views\Master.cshtml"
+            #line 60 "..\..\Views\Master.cshtml"
    Write(RenderBody());
 
             
@@ -288,7 +336,7 @@ WriteLiteral("\r\n    </main>\r\n");
 WriteLiteral("    ");
 
             
-            #line 58 "..\..\Views\Master.cshtml"
+            #line 62 "..\..\Views\Master.cshtml"
 Write(Html.Partial("_Footer"));
 
             
@@ -299,7 +347,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 59 "..\..\Views\Master.cshtml"
+            #line 63 "..\..\Views\Master.cshtml"
 Write(Html.RenderJsHere());
 
             
@@ -308,13 +356,13 @@ Write(Html.RenderJsHere());
 WriteLiteral("\r\n");
 
             
-            #line 60 "..\..\Views\Master.cshtml"
+            #line 64 "..\..\Views\Master.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 60 "..\..\Views\Master.cshtml"
+            #line 64 "..\..\Views\Master.cshtml"
      if (Request.Url.Host != "localhost")
     {
 
@@ -330,7 +378,7 @@ WriteLiteral("\r\n            data-cf-beacon=\'{\"token\": \"4b73271c7ec547e2a9c
 WriteLiteral("></script>\r\n");
 
             
-            #line 64 "..\..\Views\Master.cshtml"
+            #line 68 "..\..\Views\Master.cshtml"
     }
 
             

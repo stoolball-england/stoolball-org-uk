@@ -43,6 +43,10 @@
     <link rel="manifest" href="~/Status/offline.json" />
     <link rel="icon" type="image/svg+xml" href="~/images/logos/stoolball-england-icon.svg" />
     <link rel="alternate icon" href="~/favicon.ico" />
+    <link rel="preload" href="/fonts/mada-v9-latin-regular.woff2" as="font" type="font/woff2" crossorigin="" />
+    <link rel="preload" href="/fonts/mada-v9-latin-700.woff2" as="font" type="font/woff2" crossorigin="" />
+    <link rel="preload" href="/fonts/assistant-v6-latin-600.woff2" as="font" type="font/woff2" crossorigin="" />
+    <link rel="preload" href="/fonts/assistant-v6-latin-700.woff2" as="font" type="font/woff2" crossorigin="" />
     @RenderSection("canonical", required: false)
     @if (!IsSectionDefined("canonical")) {@Html.Partial("_CanonicalUrl", Array.Empty<string>())}
     @RenderSection("head", false)
