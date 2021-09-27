@@ -92,8 +92,12 @@ namespace Stoolball.Web.Teams
                 model.IsInACurrentLeague = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, MatchType.LeagueMatch).Any();
                 model.IsInACurrentKnockoutCompetition = _createMatchSeasonSelector.SelectPossibleSeasons(model.Team.Seasons, MatchType.KnockoutMatch).Any();
 
-                model.FilterDescription = _matchFilterHumanizer.MatchesAndTournamentsMatchingFilter(model.AppliedMatchFilter);
-                model.Metadata.PageTitle = $"{model.FilterDescription} for {model.Team.TeamName} stoolball team";
+                var userFilter = _matchFilterHumanizer.MatchingFilter(model.AppliedMatchFilter);
+                if (!string.IsNullOrWhiteSpace(userFilter))
+                {
+                    model.FilterDescription = _matchFilterHumanizer.MatchesAndTournaments(model.AppliedMatchFilter) + userFilter;
+                }
+                model.Metadata.PageTitle = $"{_matchFilterHumanizer.MatchesAndTournaments(model.AppliedMatchFilter)} for {model.Team.TeamName} stoolball team{userFilter}";
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
                 if (model.Team.Club != null)

@@ -2,7 +2,10 @@
 @using Stoolball.Web.Filtering
 @using System.Globalization
 <div class="filter">
-    <p class="filter__applied">Showing @Model.FilterDescription.ToFirstLower(CultureInfo.CurrentCulture).</p>
+    @if (!string.IsNullOrWhiteSpace(Model.FilterDescription))
+    {
+        <p class="filter__applied">Showing @Model.FilterDescription.ToFirstLower(CultureInfo.CurrentCulture).</p>
+    }
     <form method="get" action="@Request.Url.AbsolutePath" class="filter__edit d-none">
         <div class="form-group">
             @Html.LabelFor(m => Model.from, Model.FilteredItemTypePlural + " from", new { aria_label = Model.FilteredItemTypeSingular + " date is on or after" })

@@ -13,11 +13,6 @@ namespace Stoolball.Statistics
             _dateTimeFormatter = dateTimeFormatter ?? throw new System.ArgumentNullException(nameof(dateTimeFormatter));
         }
 
-        public string StatisticsMatchingUserFilter(StatisticsFilter filter)
-        {
-            return EntitiesMatchingFilter("Statistics", MatchingUserFilter(filter));
-        }
-
         public string MatchingUserFilter(StatisticsFilter filter)
         {
             if (filter == null) return string.Empty;

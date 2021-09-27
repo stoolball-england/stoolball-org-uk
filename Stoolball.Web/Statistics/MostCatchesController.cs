@@ -64,7 +64,7 @@ namespace Stoolball.Web.Statistics
 
             _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.AppliedFilter);
 
-            model.FilterDescription = "Catches" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
+            model.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Catches", _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter));
             model.Metadata.PageTitle = "Most catches" + _statisticsFilterHumanizer.MatchingFixedFilter(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
 
             return CurrentTemplate(model);

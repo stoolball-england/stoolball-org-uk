@@ -4,20 +4,22 @@
 @import "../Content/bootstrap/_variables.scss";
 
 .filter {
-    padding: $table-cell-padding 0 $table-cell-padding $table-cell-padding/2;
+    padding: $table-cell-padding 0 0 $table-cell-padding/2;
     margin: -$spacer 0 $spacer;
-    border-bottom: theme-color("alt-secondary") solid 1px;
 }
 
 .filter__applied {
-    background: no-repeat left center / 15px url(/images/icons/iconmonstr-filter-1-grey.svg);
+    background: no-repeat left .25em / 15px url(/images/icons/iconmonstr-filter-1-grey.svg);
     color: #777;
-    padding: 0 0 0 25px;
+    padding: 0 0 $table-cell-padding 25px;
     margin: 0;
+    border-bottom: theme-color("alt-secondary") solid 1px;
 }
 
 .filter__edit {
-  margin-bottom: 0;
+    margin-bottom: 0;
+    padding: 0 0 $table-cell-padding;
+    border-bottom: theme-color("alt-secondary") solid 1px;
 }
 
 .filter__edit .form-group:last-child {

@@ -91,8 +91,12 @@ namespace Stoolball.Web.Clubs
 
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.Club);
 
-                model.FilterDescription = _matchFilterHumanizer.MatchesAndTournamentsMatchingFilter(model.AppliedMatchFilter);
-                model.Metadata.PageTitle = $"{model.FilterDescription} for {model.Club.ClubName}";
+                var userFilter = _matchFilterHumanizer.MatchingFilter(model.AppliedMatchFilter);
+                if (!string.IsNullOrWhiteSpace(userFilter))
+                {
+                    model.FilterDescription = _matchFilterHumanizer.MatchesAndTournaments(model.AppliedMatchFilter) + userFilter;
+                }
+                model.Metadata.PageTitle = $"{_matchFilterHumanizer.MatchesAndTournaments(model.AppliedMatchFilter)} for {model.Club.ClubName}{userFilter}";
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Teams, Url = new Uri(Constants.Pages.TeamsUrl, UriKind.Relative) });
 

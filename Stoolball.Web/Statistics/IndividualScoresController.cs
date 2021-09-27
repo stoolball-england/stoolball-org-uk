@@ -63,7 +63,7 @@ namespace Stoolball.Web.Statistics
 
             _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.AppliedFilter);
 
-            model.FilterDescription = "Scores" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
+            model.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Scores", _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter));
             model.Metadata.PageTitle = "Highest individual scores" + _statisticsFilterHumanizer.MatchingFixedFilter(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
 
             return CurrentTemplate(model);

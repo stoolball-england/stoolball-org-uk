@@ -62,7 +62,7 @@ namespace Stoolball.Web.Statistics
 
             _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.AppliedFilter);
 
-            model.FilterDescription = "Bowling figures" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
+            model.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Bowling figures", _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter));
             model.Metadata.PageTitle = "Best bowling figures" + _statisticsFilterHumanizer.MatchingFixedFilter(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
 
             return CurrentTemplate(model);

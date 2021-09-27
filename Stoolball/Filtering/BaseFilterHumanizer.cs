@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Text;
 using Stoolball.Dates;
 
@@ -7,17 +6,16 @@ namespace Stoolball.Filtering
 {
     public abstract class BaseFilterHumanizer
     {
-        protected static string EntitiesMatchingFilter(string entities, string matchingFilter)
+        public string EntitiesMatchingFilter(string entities, string matchingFilter)
         {
             if (matchingFilter?.Length == 0)
             {
-                matchingFilter = "All " + entities?.ToLower(CultureInfo.CurrentCulture) + matchingFilter;
+                return string.Empty;
             }
             else
             {
-                matchingFilter = entities + matchingFilter;
+                return entities + matchingFilter;
             }
-            return matchingFilter;
         }
 
         protected static void AppendDateFilter(DateTimeOffset? fromDate, DateTimeOffset? untilDate, StringBuilder description, IDateTimeFormatter dateTimeFormatter)

@@ -70,7 +70,7 @@ namespace Stoolball.Web.Statistics
 
             _statisticsBreadcrumbBuilder.BuildBreadcrumbs(model.Breadcrumbs, model.AppliedFilter);
 
-            model.FilterDescription = "Averages" + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
+            model.FilterDescription = _statisticsFilterHumanizer.EntitiesMatchingFilter("Averages", _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter));
             model.Metadata.PageTitle = "Best batting average" + _statisticsFilterHumanizer.MatchingFixedFilter(model.AppliedFilter) + _statisticsFilterHumanizer.MatchingUserFilter(model.AppliedFilter);
 
             return CurrentTemplate(model);

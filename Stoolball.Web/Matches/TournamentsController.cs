@@ -71,8 +71,16 @@ namespace Stoolball.Web.Matches
             model.AppliedMatchFilter.Paging.Total = await _matchesDataSource.ReadTotalMatches(model.AppliedMatchFilter).ConfigureAwait(false);
             model.Matches = await _matchesDataSource.ReadMatchListings(model.AppliedMatchFilter, MatchSortOrder.MatchDateEarliestFirst).ConfigureAwait(false);
 
-            model.FilterDescription = _matchFilterHumanizer.MatchesAndTournamentsMatchingFilter(model.AppliedMatchFilter);
-            model.Metadata.PageTitle = model.FilterDescription;
+            var userFilter = _matchFilterHumanizer.MatchingFilter(model.AppliedMatchFilter);
+            if (!string.IsNullOrWhiteSpace(userFilter))
+            {
+                model.FilterDescription = _matchFilterHumanizer.MatchesAndTournaments(model.AppliedMatchFilter) + _matchFilterHumanizer.MatchingFilter(model.AppliedMatchFilter);
+                model.Metadata.PageTitle = model.FilterDescription;
+            }
+            else
+            {
+                model.Metadata.PageTitle = _matchFilterHumanizer.MatchesAndTournaments(model.AppliedMatchFilter);
+            }
 
             return CurrentTemplate(model);
         }

@@ -85,8 +85,12 @@ namespace Stoolball.Web.MatchLocations
 
                 model.IsAuthorized = _authorizationPolicy.IsAuthorized(model.MatchLocation);
 
-                model.FilterDescription = _matchFilterHumanizer.MatchesAndTournamentsMatchingFilter(model.AppliedMatchFilter);
-                model.Metadata.PageTitle = $"{model.FilterDescription} at {model.MatchLocation.NameAndLocalityOrTownIfDifferent()}";
+                var userFilter = _matchFilterHumanizer.MatchingFilter(model.AppliedMatchFilter);
+                if (!string.IsNullOrWhiteSpace(userFilter))
+                {
+                    model.FilterDescription = _matchFilterHumanizer.MatchesAndTournaments(model.AppliedMatchFilter) + userFilter;
+                }
+                model.Metadata.PageTitle = $"{_matchFilterHumanizer.MatchesAndTournaments(model.AppliedMatchFilter)} at {model.MatchLocation.NameAndLocalityOrTownIfDifferent()}{userFilter}";
 
                 model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.MatchLocations, Url = new Uri(Constants.Pages.MatchLocationsUrl, UriKind.Relative) });
 

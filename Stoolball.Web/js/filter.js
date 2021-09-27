@@ -14,7 +14,7 @@ function createFilterUI() {
     const toggle = document.querySelector(".nav-link-filter");
     const edit = document.querySelector(".filter__edit");
     const applied = document.querySelector(".filter__applied");
-    if (!toggle || !edit || !applied) {
+    if (!toggle || !edit) {
       return;
     }
 
@@ -23,7 +23,9 @@ function createFilterUI() {
     toggle.addEventListener("click", function () {
       if (edit.classList.contains("d-none")) {
         edit.classList.remove("d-none");
-        applied.classList.add("d-none");
+        if (applied) {
+          applied.classList.add("d-none");
+        }
       }
       edit.querySelector("input").focus();
     });

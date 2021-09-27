@@ -85,15 +85,15 @@ namespace Stoolball.UnitTests.Matches
         }
 
         [Fact]
-        public void No_filter_starts_with_all()
+        public void No_filter_returns_empty_string()
         {
             var filter = new MatchFilter();
             var dateTimeFormatter = new Mock<IDateTimeFormatter>();
             var humanizer = new MatchFilterHumanizer(dateTimeFormatter.Object);
 
-            var result = humanizer.MatchesAndTournamentsMatchingFilter(filter);
+            var result = humanizer.MatchingFilter(filter);
 
-            Assert.StartsWith("All ", result);
+            Assert.Equal(string.Empty, result);
         }
     }
 }

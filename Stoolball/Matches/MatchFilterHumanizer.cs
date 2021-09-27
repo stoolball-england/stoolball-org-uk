@@ -46,10 +46,5 @@ namespace Stoolball.Matches
             }
             return string.Empty;
         }
-
-        public string MatchesAndTournamentsMatchingFilter(MatchFilter filter)
-        {
-            return EntitiesMatchingFilter(MatchesAndTournaments(filter), MatchingFilter(filter));
-        }
     }
 }

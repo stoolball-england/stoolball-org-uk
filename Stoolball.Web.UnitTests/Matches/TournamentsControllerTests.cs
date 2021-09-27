@@ -93,13 +93,14 @@ namespace Stoolball.Web.Tests.Matches
             var matchFilterQueryStringParser = new Mock<IMatchFilterQueryStringParser>();
             matchFilterQueryStringParser.Setup(x => x.ParseQueryString(It.IsAny<MatchFilter>(), It.IsAny<NameValueCollection>())).Returns(filter);
             var matchFilterHumanizer = new Mock<IMatchFilterHumanizer>();
-            matchFilterHumanizer.Setup(x => x.MatchesAndTournamentsMatchingFilter(filter)).Returns("humanized filter");
+            matchFilterHumanizer.Setup(x => x.MatchesAndTournaments(filter)).Returns("tournaments");
+            matchFilterHumanizer.Setup(x => x.MatchingFilter(filter)).Returns(" matching filter");
 
             using (var controller = new TestController(dataSource.Object, matchFilterQueryStringParser.Object, matchFilterHumanizer.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Equal("humanized filter", ((MatchListingViewModel)((ViewResult)result).Model).Metadata.PageTitle);
+                Assert.Equal("tournaments matching filter", ((MatchListingViewModel)((ViewResult)result).Model).Metadata.PageTitle);
             }
         }
     }
