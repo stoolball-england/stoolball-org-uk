@@ -116,8 +116,11 @@ namespace Stoolball.Web.Security
             foreach (var directive in directivesToInclude)
             {
                 if (policy.Length > 0) { policy.Append(DIRECTIVE_SEPARATOR); }
-                policy.Append(directive).Append(SOURCE_SEPARATOR);
-                policy.Append(string.Join(SOURCE_SEPARATOR, _directives[directive]));
+                if (_directives[directive].Count > 0)
+                {
+                    policy.Append(directive).Append(SOURCE_SEPARATOR);
+                    policy.Append(string.Join(SOURCE_SEPARATOR, _directives[directive]));
+                }
             }
             return policy.ToString();
         }
