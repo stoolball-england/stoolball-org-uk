@@ -172,16 +172,24 @@ namespace Stoolball.Web.Security
         private void SetupDirectives()
         {
             _directives = new Dictionary<string, IList<string>>();
-            _directives.Add(DEFAULT_SRC, new List<string>());
-            _directives.Add(STYLE_SRC, new List<string>());
-            _directives.Add(SCRIPT_SRC, new List<string>());
-            _directives.Add(IMG_SRC, new List<string>());
-            _directives.Add(FONT_SRC, new List<string>());
-            _directives.Add(CONNECT_SRC, new List<string>());
-            _directives.Add(TRUSTED_TYPES, new List<string>());
-            _directives.Add(MANIFEST_SRC, new List<string>());
-            _directives.Add(FRAME_SRC, new List<string>());
-            _directives.Add(REPORT_URI, new List<string>());
+            AddDirective(DEFAULT_SRC);
+            AddDirective(STYLE_SRC);
+            AddDirective(SCRIPT_SRC);
+            AddDirective(IMG_SRC);
+            AddDirective(FONT_SRC);
+            AddDirective(CONNECT_SRC);
+            AddDirective(TRUSTED_TYPES);
+            AddDirective(MANIFEST_SRC);
+            AddDirective(FRAME_SRC);
+            AddDirective(REPORT_URI);
+        }
+
+        private void AddDirective(string directive)
+        {
+            if (!_directives.ContainsKey(directive))
+            {
+                _directives.Add(directive, new List<string>());
+            }
         }
     }
 }
