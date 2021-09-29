@@ -243,30 +243,30 @@ WriteLiteral("</guid>\r\n");
 
 WriteLiteral("\t\t<source");
 
-WriteAttribute("url", Tuple.Create(" url=\"", 1808), Tuple.Create("\"", 1954)
+WriteAttribute("url", Tuple.Create(" url=\"", 1815), Tuple.Create("\"", 1961)
             
             #line 36 "..\..\Views\TournamentTweets.cshtml"
-, Tuple.Create(Tuple.Create("", 1814), Tuple.Create<System.Object, System.Int32>(Request.Url.Scheme
+, Tuple.Create(Tuple.Create("", 1821), Tuple.Create<System.Object, System.Int32>(Request.Url.Scheme
             
             #line default
             #line hidden
-, 1814), false)
-, Tuple.Create(Tuple.Create("", 1833), Tuple.Create("://www.stoolball.org.uk", 1833), true)
+, 1821), false)
+, Tuple.Create(Tuple.Create("", 1840), Tuple.Create("://www.stoolball.org.uk", 1840), true)
             
             #line 36 "..\..\Views\TournamentTweets.cshtml"
-, Tuple.Create(Tuple.Create("", 1856), Tuple.Create<System.Object, System.Int32>(Request.Url.AbsolutePath.Substring(0,Request.Url.AbsolutePath.Length-4)
+, Tuple.Create(Tuple.Create("", 1863), Tuple.Create<System.Object, System.Int32>(Request.Url.AbsolutePath.Substring(0,Request.Url.AbsolutePath.Length-4)
             
             #line default
             #line hidden
-, 1856), false)
-, Tuple.Create(Tuple.Create("", 1930), Tuple.Create(".rss", 1930), true)
+, 1863), false)
+, Tuple.Create(Tuple.Create("", 1937), Tuple.Create(".rss", 1937), true)
             
             #line 36 "..\..\Views\TournamentTweets.cshtml"
-                                                              , Tuple.Create(Tuple.Create("", 1934), Tuple.Create<System.Object, System.Int32>(Request.Url.Query
+                                                              , Tuple.Create(Tuple.Create("", 1941), Tuple.Create<System.Object, System.Int32>(Request.Url.Query
             
             #line default
             #line hidden
-, 1934), false)
+, 1941), false)
 );
 
 WriteLiteral(" />\r\n");
