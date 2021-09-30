@@ -7,6 +7,7 @@ namespace Stoolball.Web.Security
     public class ContentSecurityPolicyAttribute : ActionFilterAttribute, IActionFilter
     {
         private Dictionary<string, IList<string>> _directives;
+#pragma warning disable IDE1006 // Naming Styles, intended for private fields rather than constants.
         private const string DEFAULT_SRC = "default-src";
         private const string STYLE_SRC = "style-src";
         private const string SCRIPT_SRC = "script-src";
@@ -19,8 +20,9 @@ namespace Stoolball.Web.Security
         private const string REPORT_URI = "report-uri";
         private const string REPORT_TO = "report-to";
         private const string WORKER_SRC = "worker-src";
-        private const string SOURCE_SEPARATOR = " ";
-        private const string DIRECTIVE_SEPARATOR = ";";
+        private const char SOURCE_SEPARATOR = ' ';
+        private const char DIRECTIVE_SEPARATOR = ';';
+#pragma warning restore IDE1006 // Naming Styles
 
         public bool GoogleMaps { get; set; }
 
@@ -122,7 +124,7 @@ namespace Stoolball.Web.Security
                 if (_directives[directive].Count > 0)
                 {
                     policy.Append(directive).Append(SOURCE_SEPARATOR);
-                    policy.Append(string.Join(SOURCE_SEPARATOR, _directives[directive]));
+                    policy.Append(string.Join(SOURCE_SEPARATOR.ToString(), _directives[directive]));
                 }
             }
             return policy.ToString();
@@ -179,27 +181,20 @@ namespace Stoolball.Web.Security
 
         private void SetupDirectives()
         {
-            _directives = new Dictionary<string, IList<string>>();
-            AddDirective(DEFAULT_SRC);
-            AddDirective(STYLE_SRC);
-            AddDirective(SCRIPT_SRC);
-            AddDirective(IMG_SRC);
-            AddDirective(FONT_SRC);
-            AddDirective(CONNECT_SRC);
-            AddDirective(TRUSTED_TYPES);
-            AddDirective(MANIFEST_SRC);
-            AddDirective(FRAME_SRC);
-            AddDirective(WORKER_SRC);
-            AddDirective(REPORT_URI);
-            AddDirective(REPORT_TO);
-        }
-
-        private void AddDirective(string directive)
-        {
-            if (!_directives.ContainsKey(directive))
-            {
-                _directives.Add(directive, new List<string>());
-            }
+            _directives = new Dictionary<string, IList<string>> {
+                { DEFAULT_SRC, new List<string>() },
+                { STYLE_SRC, new List<string>() },
+                { SCRIPT_SRC, new List<string>() },
+                { IMG_SRC, new List<string>() },
+                { FONT_SRC, new List<string>() },
+                { CONNECT_SRC, new List<string>() },
+                { TRUSTED_TYPES, new List<string>() },
+                { MANIFEST_SRC, new List<string>() },
+                { FRAME_SRC, new List<string>() },
+                { WORKER_SRC, new List<string>() },
+                { REPORT_URI, new List<string>() },
+                { REPORT_TO, new List<string>() }
+            };
         }
     }
 }
