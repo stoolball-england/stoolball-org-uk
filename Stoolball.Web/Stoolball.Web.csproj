@@ -3108,6 +3108,13 @@
       <LastGenOutput>_BowlingStrikeRate.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\Partials\_Filters.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.PasswordField.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.DatePicker.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.DropDownList.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.RadioButtonList.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.CheckBoxList.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.DataConsent.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.FileUpload.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

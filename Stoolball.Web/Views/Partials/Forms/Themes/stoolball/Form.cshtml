@@ -24,10 +24,10 @@
 
             @if (string.IsNullOrEmpty(fs.Caption) == false)
             {
-                <legend>@fs.Caption</legend>
+                <legend class="h3">@fs.Caption</legend>
             }
 
-            <div class="row-fluid">
+            <div class="row">
 
                 @foreach (var c in fs.Containers)
                 {
@@ -85,10 +85,7 @@
             {
                 if (!Model.IsFirstPage)
                 {
-                    <input class="btn "
-                           type="submit"
-                           value="@Model.PreviousCaption"
-                           name="__prev" />
+                    <button class="btn btn-secondary btn-back" name="__prev">@Model.PreviousCaption</button>
                 }
 
                 if (!Model.IsLastPage)

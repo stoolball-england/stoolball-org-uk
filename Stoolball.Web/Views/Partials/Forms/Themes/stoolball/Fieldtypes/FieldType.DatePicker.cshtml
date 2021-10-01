@@ -1,0 +1,18 @@
+@model Umbraco.Forms.Mvc.Models.FieldViewModel        
+@{
+    string val = Model.Values.LastOrDefault()?.ToString() ?? string.Empty;
+    if (Model.ValueAsObject != null && !Equals(Model.ValueAsObject, string.Empty))
+    {
+        try
+        {
+            DateTime d;
+            d = (DateTime) Model.ValueAsObject;
+            val = d.ToString("yyyy-MM-dd");
+        }
+        catch {
+            //ignore
+        }
+    }
+}
+
+<input type="date" name="@Model.Name" id="@(Model.Id)" class="form-control" autocomplete="off" value="@val" @{if (Model.Mandatory) { <text> data-val="true" data-val-required="@Model.RequiredErrorMessage" </text> }} />

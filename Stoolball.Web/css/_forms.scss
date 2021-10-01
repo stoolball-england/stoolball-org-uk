@@ -265,6 +265,11 @@ svg {
     margin: $spacer (-$grid-gutter-width/2)
 }
 
+/* Each group of fields in Umbraco Forms contains a .row with negative margins, so give them something to offset */
+.umbraco-forms-fieldset {
+    padding: 0 $grid-gutter-width/2;
+}
+
 /* Umbraco Forms has a field that would normally be a hidden field. Assuming there is a reason for that, hide it with a class rather than the default inline style. */
 .umbraco-forms-formid {
     display: none;
