@@ -27,7 +27,19 @@ namespace ASP
     using System.Web.UI;
     using System.Web.WebPages;
     using Examine;
+    
+    #line 3 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+    using Stoolball.Web.Forms;
+    
+    #line default
+    #line hidden
     using Umbraco.Core;
+    
+    #line 2 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+    using Umbraco.Core.Composing;
+    
+    #line default
+    #line hidden
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
@@ -43,141 +55,173 @@ namespace ASP
         }
         public override void Execute()
         {
-WriteLiteral("<input");
+            
+            #line 4 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+  
+    var labeller = Current.Factory.GetInstance<IUmbracoFormsLabeller>();
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n<input");
 
 WriteLiteral(" type=\"text\"");
 
-WriteAttribute("name", Tuple.Create(" name=\"", 66), Tuple.Create("\"", 84)
+WriteAttribute("name", Tuple.Create(" name=\"", 206), Tuple.Create("\"", 224)
             
-            #line 2 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
-, Tuple.Create(Tuple.Create("", 73), Tuple.Create<System.Object, System.Int32>(Model.Name
+            #line 7 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+, Tuple.Create(Tuple.Create("", 213), Tuple.Create<System.Object, System.Int32>(Model.Name
             
             #line default
             #line hidden
-, 73), false)
+, 213), false)
 );
 
-WriteAttribute("id", Tuple.Create(" id=\"", 85), Tuple.Create("\"", 99)
+WriteAttribute("id", Tuple.Create(" id=\"", 225), Tuple.Create("\"", 239)
             
-            #line 2 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
-, Tuple.Create(Tuple.Create("", 90), Tuple.Create<System.Object, System.Int32>(Model.Id
+            #line 7 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+, Tuple.Create(Tuple.Create("", 230), Tuple.Create<System.Object, System.Int32>(Model.Id
             
             #line default
             #line hidden
-, 90), false)
+, 230), false)
 );
 
 WriteLiteral(" class=\"form-control text\"");
 
-WriteAttribute("value", Tuple.Create(" value=\"", 126), Tuple.Create("\"", 158)
+WriteAttribute("value", Tuple.Create(" value=\"", 266), Tuple.Create("\"", 298)
             
-            #line 2 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
-       , Tuple.Create(Tuple.Create("", 134), Tuple.Create<System.Object, System.Int32>(Model.ValueAsHtmlString
+            #line 7 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+       , Tuple.Create(Tuple.Create("", 274), Tuple.Create<System.Object, System.Int32>(Model.ValueAsHtmlString
             
             #line default
             #line hidden
-, 134), false)
+, 274), false)
 );
 
 WriteLiteral(" maxlength=\"500\"");
 
+WriteAttribute("aria-describedby", Tuple.Create(" aria-describedby=\"", 315), Tuple.Create("\"", 362)
+            
+            #line 7 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+                                                                   , Tuple.Create(Tuple.Create("", 334), Tuple.Create<System.Object, System.Int32>(labeller.DescribedBy(Model)
+            
+            #line default
+            #line hidden
+, 334), false)
+);
+
 WriteLiteral("\r\n       ");
 
             
-            #line 3 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
-         if(string.IsNullOrEmpty(Model.PlaceholderText) == false){
+            #line 8 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+         if (string.IsNullOrEmpty(Model.PlaceholderText) == false) {
             
             #line default
             #line hidden
-WriteLiteral("placeholder=\"");
+WriteLiteral(" ");
+
+WriteLiteral(" placeholder=\"");
 
             
-            #line 3 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
-                                                                                Write(Model.PlaceholderText);
+            #line 8 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+                                                                                    Write(Model.PlaceholderText);
 
             
             #line default
             #line hidden
-WriteLiteral("\"");
+WriteLiteral("\" ");
+
+WriteLiteral(" ");
 
             
-            #line 3 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
-                                                                                                                   }
+            #line 8 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+                                                                                                                         }
             
             #line default
             #line hidden
 WriteLiteral("\r\n");
 
             
-            #line 4 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+            #line 9 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
        
             
             #line default
             #line hidden
             
-            #line 4 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
-         if(Model.Mandatory || Model.Validate){
+            #line 9 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+         if (Model.Mandatory || Model.Validate) {
             
             #line default
             #line hidden
-WriteLiteral("data-val=\"true\"");
+WriteLiteral(" ");
+
+WriteLiteral(" data-val=\"true\" ");
+
+WriteLiteral(" ");
 
             
-            #line 4 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
-                                                                           }
+            #line 9 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+                                                                                 }
             
             #line default
             #line hidden
 WriteLiteral("\r\n");
 
             
-            #line 5 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+            #line 10 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
        
             
             #line default
             #line hidden
             
-            #line 5 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+            #line 10 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
          if (Model.Mandatory) {
             
             #line default
             #line hidden
+WriteLiteral(" ");
+
 WriteLiteral(" data-val-required=\"");
 
             
-            #line 5 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
-                                                    Write(Model.RequiredErrorMessage);
+            #line 10 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+                                                     Write(Model.RequiredErrorMessage);
 
             
             #line default
             #line hidden
-WriteLiteral("\"");
+WriteLiteral("\" ");
+
+WriteLiteral(" ");
 
             
-            #line 5 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
-                                                                                            }
+            #line 10 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+                                                                                               }
             
             #line default
             #line hidden
 WriteLiteral("\r\n");
 
             
-            #line 6 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+            #line 11 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
        
             
             #line default
             #line hidden
             
-            #line 6 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+            #line 11 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
          if (Model.Validate) {
             
             #line default
             #line hidden
+WriteLiteral(" ");
+
 WriteLiteral(" data-val-regex=\"");
 
             
-            #line 6 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
-                                                Write(Model.InvalidErrorMessage);
+            #line 11 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+                                                 Write(Model.InvalidErrorMessage);
 
             
             #line default
@@ -185,21 +229,23 @@ WriteLiteral(" data-val-regex=\"");
 WriteLiteral("\" data-regex=\"");
 
             
-            #line 6 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
-                                                                                        Write(Html.Raw(Model.Regex));
+            #line 11 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+                                                                                         Write(Html.Raw(Model.Regex));
 
             
             #line default
             #line hidden
-WriteLiteral("\"");
+WriteLiteral("\" ");
+
+WriteLiteral(" ");
 
             
-            #line 6 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
-                                                                                                                           }
+            #line 11 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textfield.cshtml"
+                                                                                                                              }
             
             #line default
             #line hidden
-WriteLiteral("\r\n/>\r\n\r\n\r\n\r\n");
+WriteLiteral(" />\r\n\r\n\r\n\r\n");
 
         }
     }

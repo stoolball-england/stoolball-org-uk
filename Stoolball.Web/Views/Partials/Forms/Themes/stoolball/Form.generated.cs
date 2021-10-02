@@ -37,6 +37,12 @@ namespace ASP
     #line default
     #line hidden
     
+    #line 6 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+    using Umbraco.Forms.Core.Providers.FieldTypes;
+    
+    #line default
+    #line hidden
+    
     #line 3 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
     using Umbraco.Forms.Mvc;
     
@@ -67,7 +73,7 @@ namespace ASP
         }
         public override void Execute()
         {
-WriteLiteral("\r\n\r\n<div");
+WriteLiteral("\r\n<div");
 
 WriteLiteral(" class=\"umbraco-forms-page\"");
 
@@ -153,75 +159,104 @@ WriteLiteral("\r\n\r\n");
      foreach (FieldsetViewModel fs in Model.CurrentPage.Fieldsets)
     {
 
-            
-            #line default
-            #line hidden
-WriteLiteral("        <fieldset");
-
-WriteLiteral(" class=\"umbraco-forms-fieldset\"");
-
-WriteAttribute("id", Tuple.Create(" id=\"", 614), Tuple.Create("\"", 625)
-            
-            #line 23 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-, Tuple.Create(Tuple.Create("", 619), Tuple.Create<System.Object, System.Int32>(fs.Id
-            
-            #line default
-            #line hidden
-, 619), false)
-);
-
-WriteLiteral(">\r\n\r\n");
-
-            
-            #line 25 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-            
-            
-            #line default
-            #line hidden
-            
-            #line 25 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-             if (string.IsNullOrEmpty(fs.Caption) == false)
+            if (!string.IsNullOrEmpty(fs.Caption))
             {
 
             
             #line default
             #line hidden
-WriteLiteral("                <legend");
+WriteLiteral("                ");
+
+WriteLiteral("<section class=\"umbraco-forms-fieldset\" id=\"");
+
+            
+            #line 26 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                                         Write(fs.Id);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\" aria-labelledby=\"");
+
+            
+            #line 26 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                                                                  Write(fs.Id);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("-label\">\r\n");
+
+WriteLiteral("                <p");
 
 WriteLiteral(" class=\"h3\"");
+
+WriteAttribute("id", Tuple.Create(" id=\"", 813), Tuple.Create("\"", 830)
+            
+            #line 27 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+, Tuple.Create(Tuple.Create("", 818), Tuple.Create<System.Object, System.Int32>(fs.Id
+            
+            #line default
+            #line hidden
+, 818), false)
+, Tuple.Create(Tuple.Create("", 824), Tuple.Create("-label", 824), true)
+);
 
 WriteLiteral(">");
 
             
             #line 27 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                              Write(fs.Caption);
+                                           Write(fs.Caption);
 
             
             #line default
             #line hidden
-WriteLiteral("</legend>\r\n");
+WriteLiteral("</p>\r\n");
 
             
             #line 28 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
             }
+            else
+            {
 
             
             #line default
             #line hidden
-WriteLiteral("\r\n            <div");
+WriteLiteral("                ");
+
+WriteLiteral("<div class=\"umbraco-forms-fieldset\" id=\"");
+
+            
+            #line 31 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                                     Write(fs.Id);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\">\r\n");
+
+            
+            #line 32 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            }
+
+
+            
+            #line default
+            #line hidden
+WriteLiteral("            <div");
 
 WriteLiteral(" class=\"row\"");
 
 WriteLiteral(">\r\n\r\n");
 
             
-            #line 32 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 36 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                 
             
             #line default
             #line hidden
             
-            #line 32 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 36 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                  foreach (var c in fs.Containers)
                 {
 
@@ -230,27 +265,27 @@ WriteLiteral(">\r\n\r\n");
             #line hidden
 WriteLiteral("                    <div");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 908), Tuple.Create("\"", 962)
-, Tuple.Create(Tuple.Create("", 916), Tuple.Create("umbraco-forms-container", 916), true)
+WriteAttribute("class", Tuple.Create(" class=\"", 1109), Tuple.Create("\"", 1163)
+, Tuple.Create(Tuple.Create("", 1117), Tuple.Create("umbraco-forms-container", 1117), true)
             
-            #line 34 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-, Tuple.Create(Tuple.Create(" ", 939), Tuple.Create<System.Object, System.Int32>("col-md-" + c.Width
+            #line 38 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+, Tuple.Create(Tuple.Create(" ", 1140), Tuple.Create<System.Object, System.Int32>("col-md-" + c.Width
             
             #line default
             #line hidden
-, 940), false)
+, 1141), false)
 );
 
 WriteLiteral(">\r\n\r\n");
 
             
-            #line 36 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 40 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                         
             
             #line default
             #line hidden
             
-            #line 36 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 40 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                          foreach (FieldViewModel f in c.Fields)
                         {
                             bool hidden = f.HasCondition && f.ConditionActionType == FieldConditionActionType.Show;
@@ -259,31 +294,31 @@ WriteLiteral(">\r\n\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                            <div");
+WriteLiteral("                        <div");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 1211), Tuple.Create("\"", 1289)
-, Tuple.Create(Tuple.Create("", 1219), Tuple.Create("form-group", 1219), true)
+WriteAttribute("class", Tuple.Create(" class=\"", 1408), Tuple.Create("\"", 1486)
+, Tuple.Create(Tuple.Create("", 1416), Tuple.Create("form-group", 1416), true)
             
-            #line 40 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-, Tuple.Create(Tuple.Create(" ", 1229), Tuple.Create<System.Object, System.Int32>(Html.GetFormFieldWrapperClass(f.FieldTypeName)
-            
-            #line default
-            #line hidden
-, 1230), false)
-            
-            #line 40 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                  , Tuple.Create(Tuple.Create(" ", 1277), Tuple.Create<System.Object, System.Int32>(f.CssClass
+            #line 44 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+, Tuple.Create(Tuple.Create(" ", 1426), Tuple.Create<System.Object, System.Int32>(Html.GetFormFieldWrapperClass(f.FieldTypeName)
             
             #line default
             #line hidden
-, 1278), false)
+, 1427), false)
+            
+            #line 44 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+              , Tuple.Create(Tuple.Create(" ", 1474), Tuple.Create<System.Object, System.Int32>(f.CssClass
+            
+            #line default
+            #line hidden
+, 1475), false)
 );
 
 WriteLiteral(" ");
 
             
-            #line 40 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                                                                                                                   if (hidden) {
+            #line 44 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                                                                                               if (hidden) {
             
             #line default
             #line hidden
@@ -291,25 +326,27 @@ WriteLiteral(" ");
 
 WriteLiteral(" style=\"display: none\" ");
 
-WriteLiteral("   ");
+WriteLiteral("  ");
 
             
-            #line 40 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                                                                                                                                                                        } 
+            #line 44 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                                                                                                                                                   } 
             
             #line default
             #line hidden
 WriteLiteral(">\r\n\r\n");
 
             
-            #line 42 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                                
+            #line 46 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                            
             
             #line default
             #line hidden
             
-            #line 42 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                                 if (!f.HideLabel)
+            #line 46 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                             if (f.FieldType.GetType() != typeof(CheckBox) && f.FieldType.GetType() != typeof(RadioButtonList) && f.FieldType.GetType() != typeof(CheckBoxList))
+                            {
+                                if (!f.HideLabel)
                                 {
 
             
@@ -317,14 +354,15 @@ WriteLiteral(">\r\n\r\n");
             #line hidden
 WriteLiteral("                                    <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 1484), Tuple.Create("\"", 1495)
+WriteAttribute("id", Tuple.Create(" id=\"", 1888), Tuple.Create("\"", 1904)
             
-            #line 44 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-, Tuple.Create(Tuple.Create("", 1490), Tuple.Create<System.Object, System.Int32>(f.Id
+            #line 50 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+, Tuple.Create(Tuple.Create("", 1893), Tuple.Create<System.Object, System.Int32>(f.Id
             
             #line default
             #line hidden
-, 1490), false)
+, 1893), false)
+, Tuple.Create(Tuple.Create("", 1898), Tuple.Create("-label", 1898), true)
 );
 
 WriteLiteral(" class=\"umbraco-forms-label\"");
@@ -334,7 +372,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                        ");
 
             
-            #line 45 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 51 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                                    Write(f.Caption);
 
             
@@ -343,22 +381,22 @@ WriteLiteral("                                        ");
 WriteLiteral(" ");
 
             
-            #line 45 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 51 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                                                     if (f.ShowIndicator)
-                                                   {
+                                        {
 
             
             #line default
             #line hidden
-WriteLiteral("                                                       <span");
+WriteLiteral("                                            <span");
 
 WriteLiteral(" class=\"umbraco-forms-indicator\"");
 
 WriteLiteral(">");
 
             
-            #line 47 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                                                                                        Write(Model.Indicator);
+            #line 53 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                                                             Write(Model.Indicator);
 
             
             #line default
@@ -366,8 +404,8 @@ WriteLiteral(">");
 WriteLiteral("</span>\r\n");
 
             
-            #line 48 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                                                   }
+            #line 54 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                        }
 
             
             #line default
@@ -375,23 +413,10 @@ WriteLiteral("</span>\r\n");
 WriteLiteral("                                    </label>\r\n");
 
             
-            #line 50 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 56 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                                 }
 
-            
-            #line default
-            #line hidden
-WriteLiteral("\r\n");
-
-            
-            #line 52 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                                
-            
-            #line default
-            #line hidden
-            
-            #line 52 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                                 if (!string.IsNullOrEmpty(f.ToolTip))
+                                if (!string.IsNullOrEmpty(f.ToolTip))
                                 {
 
             
@@ -401,11 +426,22 @@ WriteLiteral("                                    <p");
 
 WriteLiteral(" class=\"form-text\"");
 
+WriteAttribute("id", Tuple.Create(" id=\"", 2448), Tuple.Create("\"", 2466)
+            
+            #line 60 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+, Tuple.Create(Tuple.Create("", 2453), Tuple.Create<System.Object, System.Int32>(f.Id
+            
+            #line default
+            #line hidden
+, 2453), false)
+, Tuple.Create(Tuple.Create("", 2458), Tuple.Create("-tooltip", 2458), true)
+);
+
 WriteLiteral("><small>");
 
             
-            #line 54 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                                                           Write(f.ToolTip);
+            #line 60 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                                                              Write(f.ToolTip);
 
             
             #line default
@@ -413,23 +449,200 @@ WriteLiteral("><small>");
 WriteLiteral("</small></p>\r\n");
 
             
-            #line 55 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 61 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                                 }
+                            }
 
             
             #line default
             #line hidden
-WriteLiteral("\r\n                                <div");
+WriteLiteral("                            ");
+
+            
+            #line 63 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                             if (f.FieldType.GetType() == typeof(RadioButtonList) || f.FieldType.GetType() == typeof(CheckBoxList))
+                            {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                                ");
+
+WriteLiteral("<fieldset>\r\n");
+
+            
+            #line 66 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                if (!f.HideLabel || !string.IsNullOrEmpty(f.ToolTip))
+                                {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                                    <legend");
+
+WriteAttribute("id", Tuple.Create(" id=\"", 2940), Tuple.Create("\"", 2956)
+            
+            #line 68 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+, Tuple.Create(Tuple.Create("", 2945), Tuple.Create<System.Object, System.Int32>(f.Id
+            
+            #line default
+            #line hidden
+, 2945), false)
+, Tuple.Create(Tuple.Create("", 2950), Tuple.Create("-label", 2950), true)
+);
+
+WriteLiteral(" class=\"umbraco-forms-label\"");
+
+WriteLiteral(">\r\n");
+
+            
+            #line 69 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                    
+            
+            #line default
+            #line hidden
+            
+            #line 69 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                     if (!f.HideLabel)
+                                    {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                                        <p");
+
+WriteAttribute("class", Tuple.Create(" class=\"", 3125), Tuple.Create("\"", 3185)
+            
+            #line 71 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+, Tuple.Create(Tuple.Create("", 3133), Tuple.Create<System.Object, System.Int32>(string.IsNullOrEmpty(f.ToolTip) ? "mb-0" : "mb-2"
+            
+            #line default
+            #line hidden
+, 3133), false)
+);
+
+WriteLiteral(">\r\n");
+
+WriteLiteral("                                            ");
+
+            
+            #line 72 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                       Write(f.Caption);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
+            
+            #line 73 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                            
+            
+            #line default
+            #line hidden
+            
+            #line 73 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                             if (f.ShowIndicator)
+                                            {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                                            <span");
+
+WriteLiteral(" class=\"umbraco-forms-indicator\"");
+
+WriteLiteral(">");
+
+            
+            #line 75 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                                                             Write(Model.Indicator);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</span>\r\n");
+
+            
+            #line 76 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                            }
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                                        </p>\r\n");
+
+            
+            #line 78 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                    }
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                                    ");
+
+            
+            #line 79 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                     if (!string.IsNullOrEmpty(f.ToolTip))
+                                    {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                                        <p");
+
+WriteLiteral(" class=\"form-text\"");
+
+WriteAttribute("id", Tuple.Create(" id=\"", 3773), Tuple.Create("\"", 3791)
+            
+            #line 81 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+, Tuple.Create(Tuple.Create("", 3778), Tuple.Create<System.Object, System.Int32>(f.Id
+            
+            #line default
+            #line hidden
+, 3778), false)
+, Tuple.Create(Tuple.Create("", 3783), Tuple.Create("-tooltip", 3783), true)
+);
+
+WriteLiteral("><small>");
+
+            
+            #line 81 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                                                                  Write(f.ToolTip);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</small></p>\r\n");
+
+            
+            #line 82 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                    }
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                                    </legend>\r\n");
+
+            
+            #line 84 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                }
+                            }
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                            <div");
 
 WriteLiteral(" class=\"umbraco-forms-field-wrapper\"");
 
 WriteLiteral(">\r\n\r\n");
 
-WriteLiteral("                                    ");
+WriteLiteral("                                ");
 
             
-            #line 59 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                               Write(Html.Partial(FormThemeResolver.GetFieldView(Model, f), f));
+            #line 88 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                           Write(Html.Partial(FormThemeResolver.GetFieldView(Model, f), f));
 
             
             #line default
@@ -437,38 +650,65 @@ WriteLiteral("                                    ");
 WriteLiteral("\r\n\r\n");
 
             
-            #line 61 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 90 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                
+            
+            #line default
+            #line hidden
+            
+            #line 90 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                 if (Model.ShowFieldValidaton)
+                                {
                                     
             
             #line default
             #line hidden
             
-            #line 61 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                                     if (Model.ShowFieldValidaton)
-                                    {
-                                        
-            
-            #line default
-            #line hidden
-            
-            #line 63 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                                   Write(Html.ValidationMessage(f.Id));
+            #line 92 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                               Write(Html.ValidationMessage(f.Id));
 
             
             #line default
             #line hidden
             
-            #line 63 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                                                                     
-                                    }
+            #line 92 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                                                                 
+                                }
 
             
             #line default
             #line hidden
-WriteLiteral("\r\n                                </div>\r\n\r\n                            </div>\r\n");
+WriteLiteral("\r\n                            </div>\r\n");
 
             
-            #line 69 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 96 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                            
+            
+            #line default
+            #line hidden
+            
+            #line 96 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                             if (f.FieldType.GetType() == typeof(RadioButtonList) || f.FieldType.GetType() == typeof(CheckBoxList))
+                            {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                                ");
+
+WriteLiteral("</fieldset>\r\n");
+
+            
+            #line 99 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+                            }
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n                        </div>\r\n");
+
+            
+            #line 102 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                         }
 
             
@@ -477,17 +717,43 @@ WriteLiteral("\r\n                                </div>\r\n\r\n                
 WriteLiteral("\r\n                    </div>\r\n");
 
             
-            #line 72 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 105 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                 }
 
             
             #line default
             #line hidden
-WriteLiteral("            </div>\r\n\r\n        </fieldset>\r\n");
+WriteLiteral("            </div>\r\n");
 
             
-            #line 76 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-    }
+            #line 107 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            if (!string.IsNullOrEmpty(fs.Caption))
+            {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                ");
+
+WriteLiteral("</section>\r\n");
+
+            
+            #line 110 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            }
+            else
+            {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                ");
+
+WriteLiteral("</div>\r\n");
+
+            
+            #line 114 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            }
+        }
 
             
             #line default
@@ -496,14 +762,14 @@ WriteLiteral("\r\n    <input");
 
 WriteLiteral(" type=\"text\"");
 
-WriteAttribute("name", Tuple.Create(" name=\"", 2764), Tuple.Create("\"", 2812)
+WriteAttribute("name", Tuple.Create(" name=\"", 4975), Tuple.Create("\"", 5023)
             
-            #line 78 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-, Tuple.Create(Tuple.Create("", 2771), Tuple.Create<System.Object, System.Int32>(Model.FormId.ToString().Replace("-", "")
+            #line 117 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+, Tuple.Create(Tuple.Create("", 4982), Tuple.Create<System.Object, System.Int32>(Model.FormId.ToString().Replace("-", "")
             
             #line default
             #line hidden
-, 2771), false)
+, 4982), false)
 );
 
 WriteLiteral(" class=\"umbraco-forms-formid\"");
@@ -519,13 +785,13 @@ WriteLiteral(" class=\"col-md-12\"");
 WriteLiteral(">\r\n");
 
             
-            #line 84 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 123 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
             
             
             #line default
             #line hidden
             
-            #line 84 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 123 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
              if (Model.IsMultiPage)
             {
                 if (!Model.IsFirstPage)
@@ -543,7 +809,7 @@ WriteLiteral(" name=\"__prev\"");
 WriteLiteral(">");
 
             
-            #line 88 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 127 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                                                                         Write(Model.PreviousCaption);
 
             
@@ -552,7 +818,7 @@ WriteLiteral(">");
 WriteLiteral("</button>\r\n");
 
             
-            #line 89 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 128 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                 }
 
                 if (!Model.IsLastPage)
@@ -570,7 +836,7 @@ WriteLiteral(" name=\"__next\"");
 WriteLiteral(">");
 
             
-            #line 93 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 132 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                                                                     Write(Model.NextCaption);
 
             
@@ -579,7 +845,7 @@ WriteLiteral(">");
 WriteLiteral("</button>\r\n");
 
             
-            #line 94 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 133 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                 }
 
                 if (Model.IsLastPage)
@@ -597,7 +863,7 @@ WriteLiteral(" name=\"__next\"");
 WriteLiteral(">");
 
             
-            #line 98 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 137 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                                                              Write(Model.SubmitCaption);
 
             
@@ -606,7 +872,7 @@ WriteLiteral(">");
 WriteLiteral("</button>\r\n");
 
             
-            #line 99 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 138 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                 }
             }
             else
@@ -624,7 +890,7 @@ WriteLiteral(" name=\"__next\"");
 WriteLiteral(">");
 
             
-            #line 103 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 142 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                                                          Write(Model.SubmitCaption);
 
             
@@ -633,7 +899,7 @@ WriteLiteral(">");
 WriteLiteral("</button>\r\n");
 
             
-            #line 104 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 143 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
             }
 
             
@@ -642,7 +908,7 @@ WriteLiteral("</button>\r\n");
 WriteLiteral("        </div>\r\n    </div>\r\n</div>\r\n\r\n");
 
             
-            #line 109 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 148 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
 Write(Html.Partial("Forms/Themes/default/ScrollToFormScript"));
 
             

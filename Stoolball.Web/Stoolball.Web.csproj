@@ -1363,6 +1363,8 @@
     <Compile Include="Competitions\SeasonsApiController.cs" />
     <Compile Include="ContentPage\CookiesController.cs" />
     <Compile Include="Filtering\FilterViewModel.cs" />
+    <Compile Include="Forms\IUmbracoFormsLabeller.cs" />
+    <Compile Include="Forms\UmbracoFormsLabeller.cs" />
     <Compile Include="Html\HtmlSanitizer.cs" />
     <Compile Include="Matches\EditMatchFormatFormData.cs" />
     <Compile Include="Matches\EditMatchFormatViewModel.cs" />
@@ -3115,6 +3117,8 @@
     <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.CheckBoxList.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.DataConsent.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.FileUpload.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.CheckBox.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textarea.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

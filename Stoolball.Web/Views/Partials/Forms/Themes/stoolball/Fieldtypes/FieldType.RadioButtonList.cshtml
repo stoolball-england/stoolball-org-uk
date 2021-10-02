@@ -3,7 +3,7 @@
   
 @{ var i = 0; }
    
-<div class="@Html.GetFormFieldClass(Model.FieldTypeName)  radiobuttonlist" id="@Model.Id">
+<div class="@Html.GetFormFieldClass(Model.FieldTypeName) radiobuttonlist" id="@Model.Id">
 @foreach (Umbraco.Forms.Mvc.Models.PrevalueViewModel pv in Model.PreValues)  
 {
     <div class="custom-control custom-radio">

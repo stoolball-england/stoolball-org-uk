@@ -27,7 +27,19 @@ namespace ASP
     using System.Web.UI;
     using System.Web.WebPages;
     using Examine;
+    
+    #line 4 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+    using Stoolball.Web.Forms;
+    
+    #line default
+    #line hidden
     using Umbraco.Core;
+    
+    #line 3 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+    using Umbraco.Core.Composing;
+    
+    #line default
+    #line hidden
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     
@@ -49,149 +61,181 @@ namespace ASP
         }
         public override void Execute()
         {
-WriteLiteral("<input");
+            
+            #line 5 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+  
+    var labeller = Current.Factory.GetInstance<IUmbracoFormsLabeller>();
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\n<input");
 
 WriteLiteral(" type=\"email\"");
 
-WriteAttribute("name", Tuple.Create(" \n       name=\"", 91), Tuple.Create("\"", 117)
+WriteAttribute("name", Tuple.Create("\n       name=\"", 226), Tuple.Create("\"", 251)
             
-            #line 4 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
-, Tuple.Create(Tuple.Create("", 106), Tuple.Create<System.Object, System.Int32>(Model.Name
+            #line 9 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+, Tuple.Create(Tuple.Create("", 240), Tuple.Create<System.Object, System.Int32>(Model.Name
             
             #line default
             #line hidden
-, 106), false)
+, 240), false)
 );
 
-WriteAttribute("id", Tuple.Create(" \n       id=\"", 118), Tuple.Create("\"", 140)
+WriteAttribute("id", Tuple.Create("\n       id=\"", 252), Tuple.Create("\"", 273)
             
-            #line 5 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
-, Tuple.Create(Tuple.Create("", 131), Tuple.Create<System.Object, System.Int32>(Model.Id
+            #line 10 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+, Tuple.Create(Tuple.Create("", 264), Tuple.Create<System.Object, System.Int32>(Model.Id
             
             #line default
             #line hidden
-, 131), false)
+, 264), false)
 );
 
-WriteAttribute("class", Tuple.Create(" \n       class=\"", 141), Tuple.Create("\"", 241)
+WriteAttribute("class", Tuple.Create("\n       class=\"", 274), Tuple.Create("\"", 373)
             
-            #line 6 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
-, Tuple.Create(Tuple.Create("", 157), Tuple.Create<System.Object, System.Int32>(Html.GetFormFieldClass(Model.FieldTypeName)
+            #line 11 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+, Tuple.Create(Tuple.Create("", 289), Tuple.Create<System.Object, System.Int32>(Html.GetFormFieldClass(Model.FieldTypeName)
             
             #line default
             #line hidden
-, 157), false)
-, Tuple.Create(Tuple.Create(" ", 201), Tuple.Create("umbraco-forms-field__email", 202), true)
-, Tuple.Create(Tuple.Create(" ", 228), Tuple.Create("form-control", 229), true)
+, 289), false)
+, Tuple.Create(Tuple.Create(" ", 333), Tuple.Create("umbraco-forms-field__email", 334), true)
+, Tuple.Create(Tuple.Create(" ", 360), Tuple.Create("form-control", 361), true)
 );
 
-WriteAttribute("value", Tuple.Create(" \n       value=\"", 242), Tuple.Create("\"", 282)
+WriteAttribute("aria-describedby", Tuple.Create(" aria-describedby=\"", 374), Tuple.Create("\"", 421)
             
-            #line 7 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
-, Tuple.Create(Tuple.Create("", 258), Tuple.Create<System.Object, System.Int32>(Model.ValueAsHtmlString
+            #line 11 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+                                       , Tuple.Create(Tuple.Create("", 393), Tuple.Create<System.Object, System.Int32>(labeller.DescribedBy(Model)
             
             #line default
             #line hidden
-, 258), false)
+, 393), false)
 );
 
-WriteLiteral(" \n       ");
-
+WriteAttribute("value", Tuple.Create("\n       value=\"", 422), Tuple.Create("\"", 461)
             
-            #line 8 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
-         if(string.IsNullOrEmpty(Model.PlaceholderText) == false){
-            
-            #line default
-            #line hidden
-WriteLiteral("placeholder=\"");
-
-            
-            #line 8 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
-                                                                                Write(Model.PlaceholderText);
-
+            #line 12 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+, Tuple.Create(Tuple.Create("", 437), Tuple.Create<System.Object, System.Int32>(Model.ValueAsHtmlString
             
             #line default
             #line hidden
-WriteLiteral("\"");
+, 437), false)
+);
+
+WriteLiteral("\n       ");
 
             
-            #line 8 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
-                                                                                                                   }
+            #line 13 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+         if (string.IsNullOrEmpty(Model.PlaceholderText) == false) {
+            
+            #line default
+            #line hidden
+WriteLiteral(" ");
+
+WriteLiteral(" placeholder=\"");
+
+            
+            #line 13 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+                                                                                    Write(Model.PlaceholderText);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\" ");
+
+WriteLiteral(" ");
+
+            
+            #line 13 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+                                                                                                                         }
             
             #line default
             #line hidden
 WriteLiteral("\n");
 
             
-            #line 9 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+            #line 14 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
        
             
             #line default
             #line hidden
             
-            #line 9 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
-         if(Model.Mandatory || Model.Validate){
+            #line 14 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+         if (Model.Mandatory || Model.Validate) {
             
             #line default
             #line hidden
-WriteLiteral("data-val=\"true\"");
+WriteLiteral(" ");
+
+WriteLiteral(" data-val=\"true\" ");
+
+WriteLiteral(" ");
 
             
-            #line 9 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
-                                                                           }
+            #line 14 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+                                                                                 }
             
             #line default
             #line hidden
 WriteLiteral("\n");
 
             
-            #line 10 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+            #line 15 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
        
             
             #line default
             #line hidden
             
-            #line 10 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+            #line 15 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
          if (Model.Mandatory) {
             
             #line default
             #line hidden
+WriteLiteral(" ");
+
 WriteLiteral(" data-val-required=\"");
 
             
-            #line 10 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
-                                                    Write(Model.RequiredErrorMessage);
+            #line 15 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+                                                     Write(Model.RequiredErrorMessage);
 
             
             #line default
             #line hidden
-WriteLiteral("\"");
+WriteLiteral("\" ");
+
+WriteLiteral(" ");
 
             
-            #line 10 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
-                                                                                            }
+            #line 15 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+                                                                                               }
             
             #line default
             #line hidden
 WriteLiteral("\n");
 
             
-            #line 11 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+            #line 16 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
        
             
             #line default
             #line hidden
             
-            #line 11 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+            #line 16 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
          if (Model.Validate) {
             
             #line default
             #line hidden
+WriteLiteral(" ");
+
 WriteLiteral(" data-val-regex=\"");
 
             
-            #line 11 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
-                                                Write(Model.InvalidErrorMessage);
+            #line 16 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+                                                 Write(Model.InvalidErrorMessage);
 
             
             #line default
@@ -199,21 +243,23 @@ WriteLiteral(" data-val-regex=\"");
 WriteLiteral("\" data-regex=\"");
 
             
-            #line 11 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
-                                                                                        Write(Html.Raw(Model.Regex));
+            #line 16 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+                                                                                         Write(Html.Raw(Model.Regex));
 
             
             #line default
             #line hidden
-WriteLiteral("\"");
+WriteLiteral("\" ");
+
+WriteLiteral(" ");
 
             
-            #line 11 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
-                                                                                                                           }
+            #line 16 "..\..\Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Email.cshtml"
+                                                                                                                              }
             
             #line default
             #line hidden
-WriteLiteral("\n/>\n\n");
+WriteLiteral(" />\n\n");
 
         }
     }

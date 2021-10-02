@@ -3,7 +3,7 @@
 @using Umbraco.Forms.Mvc
 @using Umbraco.Forms.Mvc.Models
 @using Umbraco.Forms.Mvc.BusinessLogic
-
+@using Umbraco.Forms.Core.Providers.FieldTypes
 
 <div class="umbraco-forms-page">
 
@@ -20,11 +20,15 @@
 
     @foreach (FieldsetViewModel fs in Model.CurrentPage.Fieldsets)
     {
-        <fieldset class="umbraco-forms-fieldset" id="@fs.Id">
 
-            @if (string.IsNullOrEmpty(fs.Caption) == false)
+            if (!string.IsNullOrEmpty(fs.Caption))
             {
-                <legend class="h3">@fs.Caption</legend>
+                @:<section class="umbraco-forms-fieldset" id="@fs.Id" aria-labelledby="@fs.Id-label">
+                <p class="h3" id="@fs.Id-label">@fs.Caption</p>
+            }
+            else
+            {
+                @:<div class="umbraco-forms-fieldset" id="@fs.Id">
             }
 
             <div class="row">
@@ -37,43 +41,78 @@
                         {
                             bool hidden = f.HasCondition && f.ConditionActionType == FieldConditionActionType.Show;
 
-                            <div class="form-group @Html.GetFormFieldWrapperClass(f.FieldTypeName) @f.CssClass" @{ if (hidden) { <text> style="display: none" </text>   } }>
+                        <div class="form-group @Html.GetFormFieldWrapperClass(f.FieldTypeName) @f.CssClass" @{ if (hidden) { <text> style="display: none" </text>  } }>
 
-                                @if (!f.HideLabel)
+                            @if (f.FieldType.GetType() != typeof(CheckBox) && f.FieldType.GetType() != typeof(RadioButtonList) && f.FieldType.GetType() != typeof(CheckBoxList))
+                            {
+                                if (!f.HideLabel)
                                 {
-                                    <label for="@f.Id" class="umbraco-forms-label">
+                                    <label id="@f.Id-label" class="umbraco-forms-label">
                                         @f.Caption @if (f.ShowIndicator)
-                                                   {
-                                                       <span class="umbraco-forms-indicator">@Model.Indicator</span>
-                                                   }
+                                        {
+                                            <span class="umbraco-forms-indicator">@Model.Indicator</span>
+                                        }
                                     </label>
                                 }
 
-                                @if (!string.IsNullOrEmpty(f.ToolTip))
+                                if (!string.IsNullOrEmpty(f.ToolTip))
                                 {
-                                    <p class="form-text"><small>@f.ToolTip</small></p>
+                                    <p class="form-text" id="@f.Id-tooltip"><small>@f.ToolTip</small></p>
+                                }
+                            }
+                            @if (f.FieldType.GetType() == typeof(RadioButtonList) || f.FieldType.GetType() == typeof(CheckBoxList))
+                            {
+                                @:<fieldset>
+                                if (!f.HideLabel || !string.IsNullOrEmpty(f.ToolTip))
+                                {
+                                    <legend id="@f.Id-label" class="umbraco-forms-label">
+                                    @if (!f.HideLabel)
+                                    {
+                                        <p class="@(string.IsNullOrEmpty(f.ToolTip) ? "mb-0" : "mb-2")">
+                                            @f.Caption
+                                            @if (f.ShowIndicator)
+                                            {
+                                            <span class="umbraco-forms-indicator">@Model.Indicator</span>
+                                            }
+                                        </p>
+                                    }
+                                    @if (!string.IsNullOrEmpty(f.ToolTip))
+                                    {
+                                        <p class="form-text" id="@f.Id-tooltip"><small>@f.ToolTip</small></p>
+                                    }
+                                    </legend>
+                                }
+                            }
+                            <div class="umbraco-forms-field-wrapper">
+
+                                @Html.Partial(FormThemeResolver.GetFieldView(Model, f), f)
+
+                                @if (Model.ShowFieldValidaton)
+                                {
+                                    @Html.ValidationMessage(f.Id)
                                 }
 
-                                <div class="umbraco-forms-field-wrapper">
-
-                                    @Html.Partial(FormThemeResolver.GetFieldView(Model, f), f)
-
-                                    @if (Model.ShowFieldValidaton)
-                                    {
-                                        @Html.ValidationMessage(f.Id)
-                                    }
-
-                                </div>
-
                             </div>
+                            @if (f.FieldType.GetType() == typeof(RadioButtonList) || f.FieldType.GetType() == typeof(CheckBoxList))
+                            {
+                                @:</fieldset>
+                            }
+
+                        </div>
                         }
 
                     </div>
                 }
             </div>
-
-        </fieldset>
-    }
+            if (!string.IsNullOrEmpty(fs.Caption))
+            {
+                @:</section>
+            }
+            else
+            {
+                @:</div>
+            }
+        }
 
     <input type="text" name="@Model.FormId.ToString().Replace("-", "")" class="umbraco-forms-formid" />
 

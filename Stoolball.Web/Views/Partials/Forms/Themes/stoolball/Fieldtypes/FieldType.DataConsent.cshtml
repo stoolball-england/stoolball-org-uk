@@ -1,13 +1,15 @@
 @model Umbraco.Forms.Mvc.Models.FieldViewModel
+@using Umbraco.Core.Composing
+@using Stoolball.Web.Forms
 @{
-       var acceptCopy = string.Empty;
-       Model.AdditionalSettings.TryGetValue("AcceptCopy", out acceptCopy);
+    var labeller = Current.Factory.GetInstance<IUmbracoFormsLabeller>();
+    Model.AdditionalSettings.TryGetValue("AcceptCopy", out var acceptCopy);
 }
 <div class="custom-control custom-checkbox">
-    <input type="checkbox" name="@Model.Id" id="@Model.Id" value="true" class="custom-control-input"
+    <input type="checkbox" name="@Model.Id" id="@Model.Id" value="true" class="custom-control-input" aria-describedby="@labeller.DescribedBy(Model) @Model.Id-label2"
            @if (Model.Mandatory) { <text> data-rule-required="true" data-val="true" data-msg-required="@Model.RequiredErrorMessage" </text> }
            @if (Model.ContainsValue(true) || Model.ContainsValue("true") || Model.ContainsValue("on")) { <text> checked="checked" </text> } />
     <input type="hidden" name="@Model.Id" value="false" />
 
-    <label for="@Model.Id" class="custom-control-label">@acceptCopy</label>
+    <label class="custom-control-label" id="@Model.Id-label2">@acceptCopy</label>
 </div>
