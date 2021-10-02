@@ -770,10 +770,19 @@ namespace Stoolball.Testing
                 testData.Tournaments.Add(testData.TournamentWithFullDetails);
             }
 
-            testData.Teams = testData.Matches.SelectMany(x => x.Teams).Select(x => x.Team) // teams that got used
-                .Union(testData.Tournaments.SelectMany(x => x.Teams).Select(x => x.Team))
-                .Distinct(new TeamEqualityComparer()).ToList();
-            testData.TeamWithFullDetails = testData.Teams.First(x => x.Club != null && x.MatchLocations.Any() && x.Seasons.Any());
+            var teamsInMatches = testData.Matches.SelectMany(x => x.Teams).Select(x => x.Team);
+            var teamsInTournaments = testData.Tournaments.SelectMany(x => x.Teams).Select(x => x.Team);
+            testData.Teams = teamsInMatches.Union(teamsInTournaments).Distinct(new TeamEqualityComparer()).ToList(); // teams that got used
+
+            // Get a detailed team that's played a match, then make sure it's played in a tournament too
+            testData.TeamWithFullDetails = testData.Teams.First(x =>
+                        x.Club != null &&
+                        x.MatchLocations.Any() &&
+                        x.Seasons.Any() &&
+                        teamsInMatches.Select(t => t.TeamId).Contains(x.TeamId)
+            );
+            testData.TournamentWithFullDetails.Teams.Add(new TeamInTournament { Team = testData.TeamWithFullDetails, TeamRole = TournamentTeamRole.Confirmed });
+
             testData.MatchLocations = testData.Matches.Where(m => m.MatchLocation != null).Select(m => m.MatchLocation)
                 .Union(testData.Tournaments.Where(t => t.TournamentLocation != null).Select(t => t.TournamentLocation))
                 .Union(testData.Teams.SelectMany(x => x.MatchLocations))

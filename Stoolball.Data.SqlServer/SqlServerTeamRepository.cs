@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -181,18 +182,7 @@ namespace Stoolball.Data.SqlServer
                     UntilDate = auditableTeam.UntilYear.HasValue ? new DateTime(auditableTeam.UntilYear.Value, 12, 31).ToUniversalTime() : (DateTime?)null
                 }, transaction).ConfigureAwait(false);
 
-            foreach (var location in auditableTeam.MatchLocations)
-            {
-                await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} (TeamMatchLocationId, TeamId, MatchLocationId, FromDate)
-                                VALUES (@TeamMatchLocationId, @TeamId, @MatchLocationId, @FromDate)",
-                    new
-                    {
-                        TeamMatchLocationId = Guid.NewGuid(),
-                        auditableTeam.TeamId,
-                        location.MatchLocationId,
-                        FromDate = DateTime.UtcNow.Date
-                    }, transaction).ConfigureAwait(false);
-            }
+            await InsertNewMatchLocationsForTeam(auditableTeam, new List<Guid>(), transaction).ConfigureAwait(false);
 
             return auditableTeam;
         }
@@ -284,26 +274,9 @@ namespace Stoolball.Data.SqlServer
                         },
                         transaction).ConfigureAwait(false);
 
-                    await connection.ExecuteAsync($"UPDATE {Tables.TeamMatchLocation} SET UntilDate = @UntilDate WHERE TeamId = @TeamId AND UntilDate IS NULL AND MatchLocationId NOT IN @MatchLocationIds", new { UntilDate = DateTime.UtcNow.Date.AddDays(1), auditableTeam.TeamId, MatchLocationIds = auditableTeam.MatchLocations.Select(x => x.MatchLocationId) }, transaction).ConfigureAwait(false);
+                    await connection.ExecuteAsync($"UPDATE {Tables.TeamMatchLocation} SET UntilDate = @UntilDate WHERE TeamId = @TeamId AND UntilDate IS NULL AND MatchLocationId NOT IN @MatchLocationIds", new { UntilDate = DateTime.UtcNow.Date.AddDays(1).AddSeconds(-1), auditableTeam.TeamId, MatchLocationIds = auditableTeam.MatchLocations.Select(x => x.MatchLocationId) }, transaction).ConfigureAwait(false);
                     var currentLocations = (await connection.QueryAsync<Guid>($"SELECT MatchLocationId FROM {Tables.TeamMatchLocation} tml WHERE TeamId = @TeamId AND tml.UntilDate IS NULL", new { auditableTeam.TeamId }, transaction).ConfigureAwait(false)).ToList();
-                    foreach (var location in auditableTeam.MatchLocations)
-                    {
-                        if (!currentLocations.Contains(location.MatchLocationId.Value))
-                        {
-                            await connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} 
-                                    (TeamMatchLocationId, TeamId, MatchLocationId, FromDate)
-                                    VALUES 
-                                    (@TeamMatchLocationId, @TeamId, @MatchLocationId, @FromDate)",
-                                new
-                                {
-                                    TeamMatchLocationId = Guid.NewGuid(),
-                                    auditableTeam.TeamId,
-                                    location.MatchLocationId,
-                                    FromDate = DateTime.UtcNow.Date
-                                },
-                                transaction).ConfigureAwait(false);
-                        }
-                    }
+                    await InsertNewMatchLocationsForTeam(auditableTeam, currentLocations, transaction).ConfigureAwait(false);
 
                     if (team.TeamRoute != auditableTeam.TeamRoute)
                     {
@@ -329,6 +302,28 @@ namespace Stoolball.Data.SqlServer
             }
 
             return auditableTeam;
+        }
+
+        private static async Task InsertNewMatchLocationsForTeam(Team team, List<Guid> currentMatchLocations, IDbTransaction transaction)
+        {
+            foreach (var location in team.MatchLocations)
+            {
+                if (!currentMatchLocations.Contains(location.MatchLocationId.Value))
+                {
+                    await transaction.Connection.ExecuteAsync($@"INSERT INTO {Tables.TeamMatchLocation} 
+                                    (TeamMatchLocationId, TeamId, MatchLocationId, FromDate)
+                                    VALUES 
+                                    (@TeamMatchLocationId, @TeamId, @MatchLocationId, @FromDate)",
+                        new
+                        {
+                            TeamMatchLocationId = Guid.NewGuid(),
+                            team.TeamId,
+                            location.MatchLocationId,
+                            FromDate = DateTime.UtcNow.Date
+                        },
+                        transaction).ConfigureAwait(false);
+                }
+            }
         }
 
         /// <summary>
@@ -403,8 +398,14 @@ namespace Stoolball.Data.SqlServer
                             auditableTeam.TeamId
                         }, transaction).ConfigureAwait(false);
 
-                    // No need to support changes of name when the team only lasts for a day
-                    await connection.ExecuteAsync($"UPDATE {Tables.TeamVersion} SET TeamName = @TeamName WHERE TeamId = @TeamId", new { auditableTeam.TeamId, auditableTeam.TeamName }, transaction).ConfigureAwait(false);
+                    // No need to support historical record of name changes when the team only lasts for a day
+                    await connection.ExecuteAsync($"UPDATE {Tables.TeamVersion} SET TeamName = @TeamName, ComparableName = @ComparableName WHERE TeamId = @TeamId",
+                        new
+                        {
+                            auditableTeam.TeamId,
+                            auditableTeam.TeamName,
+                            ComparableName = auditableTeam.ComparableName()
+                        }, transaction).ConfigureAwait(false);
 
                     if (team.TeamRoute != auditableTeam.TeamRoute)
                     {

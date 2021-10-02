@@ -225,7 +225,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
             var auditable = new Club
             {
                 ClubId = club.ClubId,
-                ClubName = club.ClubName + " changed",
+                ClubName = club.ClubName + Guid.NewGuid().ToString(),
                 ClubRoute = club.ClubRoute
             };
 
@@ -312,7 +312,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
             var auditable = new Club
             {
                 ClubId = club.ClubId,
-                ClubName = club.ClubName + " changed",
+                ClubName = club.ClubName + Guid.NewGuid(),
                 ClubRoute = club.ClubRoute,
                 Teams = club.Teams.Select(x => new Team { TeamId = x.TeamId }).ToList()
             };
@@ -388,7 +388,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
             var memberKey = Guid.NewGuid();
             var memberName = "Person 1";
 
-            var updatedClub = await repo.UpdateClub(club, memberKey, memberName).ConfigureAwait(false);
+            _ = await repo.UpdateClub(club, memberKey, memberName).ConfigureAwait(false);
 
             redirectsRepository.Verify(x => x.InsertRedirect(club.ClubRoute, club.ClubRoute + "-123", null, It.IsAny<IDbTransaction>()), Times.Once);
         }
@@ -408,7 +408,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Clubs
             var memberKey = Guid.NewGuid();
             var memberName = "Person 1";
 
-            var updatedClub = await repo.UpdateClub(club, memberKey, memberName).ConfigureAwait(false);
+            _ = await repo.UpdateClub(club, memberKey, memberName).ConfigureAwait(false);
 
             redirectsRepository.Verify(x => x.InsertRedirect(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDbTransaction>()), Times.Never);
         }
