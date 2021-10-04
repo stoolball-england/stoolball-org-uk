@@ -11,5 +11,9 @@
            @if (Model.ContainsValue(true) || Model.ContainsValue("true") || Model.ContainsValue("on")) { <text> checked="checked" </text> } />
     <input type="hidden" name="@Model.Id" value="false" />
 
-    <label class="custom-control-label" id="@Model.Id-label2">@acceptCopy</label>
+    <label class="custom-control-label" for="@Model.Id" id="@Model.Id-label2">@acceptCopy</label>
+    @if (!string.IsNullOrEmpty(Model.ToolTip))
+    {
+        <p class="form-text" id="@Model.Id-tooltip"><small>@Model.ToolTip</small></p>
+    }
 </div>

@@ -9,7 +9,7 @@
 
     @if (string.IsNullOrEmpty(Model.CurrentPage.Caption) == false)
     {
-        <h4 class="umbraco-forms-caption">@Model.CurrentPage.Caption</h4>
+        <h2 class="umbraco-forms-caption">@Model.CurrentPage.Caption</h2>
     }
 
     @if (Model.ShowValidationSummary)
@@ -55,7 +55,7 @@
                                     </label>
                                 }
 
-                                if (!string.IsNullOrEmpty(f.ToolTip))
+                                if (!string.IsNullOrEmpty(f.ToolTip) && f.FieldType.GetType() != typeof(DataConsent))
                                 {
                                     <p class="form-text" id="@f.Id-tooltip"><small>@f.ToolTip</small></p>
                                 }

@@ -140,6 +140,11 @@ input.postcode {
     }
 }
 
+/* And for a single checkbox the help text makes more sense below the label */
+.custom-checkbox > .form-text {
+    margin-left: $spacer/2;
+}
+
 /* Make click events on inline SVG images bubble up to parent elements */
 svg {
     pointer-events: none;
@@ -263,6 +268,11 @@ svg {
 /* Umbraco Forms margin support uses Bootstrap, but does not expect the container margins already to be in place, so offset them */
 .umbraco-forms-page {
     margin: $spacer (-$grid-gutter-width/2)
+}
+
+/* A page title in Umbraco Forms */
+.umbraco-forms-caption {
+    padding: 0 $grid-gutter-width/2;
 }
 
 /* Each group of fields in Umbraco Forms contains a .row with negative margins, so give them something to offset */

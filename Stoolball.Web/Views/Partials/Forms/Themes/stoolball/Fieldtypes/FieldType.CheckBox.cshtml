@@ -4,14 +4,14 @@
 @{
     var labeller = Current.Factory.GetInstance<IUmbracoFormsLabeller>();
 }
-@if (!string.IsNullOrEmpty(Model.ToolTip))
-{
-    <p class="form-text" id="@Model.Id-tooltip"><small>@Model.ToolTip</small></p>
-}
 <div class="custom-control custom-checkbox">
     <input type="checkbox" name="@Model.Name" id="@Model.Id" value="true" class="custom-control-input" aria-describedby="@labeller.DescribedBy(Model)"
            @if (Model.Mandatory) { <text> data-val="true" data-val-requiredcb="@Model.RequiredErrorMessage" </text> }
            @if (Model.ContainsValue(true) || Model.ContainsValue("true") || Model.ContainsValue("on")) { <text> checked="checked" </text> } />
     <input type="hidden" name="@Model.Name" value="false" />
-    <label id="@Model.Id-label" class="umbraco-forms-label custom-control-label">@Model.Caption</label>
+    <label id="@Model.Id-label" for="@Model.Id" class="umbraco-forms-label custom-control-label">@Model.Caption</label>
+    @if (!string.IsNullOrEmpty(Model.ToolTip))
+    {
+        <p class="form-text" id="@Model.Id-tooltip"><small>@Model.ToolTip</small></p>
+    }
 </div>
