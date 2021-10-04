@@ -2526,8 +2526,6 @@
     <Content Include="Scripts\popper-utils.js.map" />
     <None Include="Secret-GoogleMapsApiKey.Web.local.xdt.config" />
     <None Include="Secret-GoogleMapsApiKey.Web.live.xdt.config" />
-    <None Include="Secret-DataMigrationApiKey.Web.local.xdt.config" />
-    <None Include="Secret-DataMigrationApiKey.Web.live.xdt.config" />
     <None Include="Secret-Email.Web.live.xdt.config" />
     <Content Include="Views\Master.cshtml">
       <Generator>RazorGenerator</Generator>
