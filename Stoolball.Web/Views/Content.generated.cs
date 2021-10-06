@@ -94,7 +94,32 @@ Write(Html.GetBlockListHtml(Model, "blockList"));
             
             #line default
             #line hidden
-WriteLiteral("\r\n</div>");
+WriteLiteral("\r\n</div>\r\n\r\n");
+
+DefineSection("umbracoforms", () => {
+
+WriteLiteral("\r\n");
+
+            
+            #line 20 "..\..\Views\Content.cshtml"
+    
+            
+            #line default
+            #line hidden
+            
+            #line 20 "..\..\Views\Content.cshtml"
+     if (TempData["UmbracoForms"] != null)
+    {
+        foreach (var form in (List<Guid>)TempData["UmbracoForms"])
+        {
+            Html.RenderAction("RenderFormScripts", "UmbracoForms", new { formid = form, theme = "stoolball" });
+        }
+    }
+
+            
+            #line default
+            #line hidden
+});
 
         }
     }

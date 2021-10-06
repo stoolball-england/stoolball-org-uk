@@ -15,10 +15,7 @@
     Html.AddFormThemeScriptFile(Model, "~/App_Plugins/UmbracoForms/Assets/Themes/Default/umbracoforms.js");
 }
 
-<script>
-    if (typeof umbracoFormsCollection === 'undefined') var umbracoFormsCollection = [];
-    umbracoFormsCollection.push('@Html.Raw(Uri.EscapeUriString(JsonConvert.SerializeObject(formJsObj)))');
-</script>
+<script id="umbraco-forms-collection" data-forms="@Html.Raw(Uri.EscapeUriString(JsonConvert.SerializeObject(formJsObj)))" src="~/Forms/umbraco-forms-collection.js"></script>
 
 @* Only render out scripts on the page if the form has not been submitted yet *@
 @if (Model.SubmitHandled == false)
@@ -43,7 +40,7 @@
         {
             Html.RequiresJs(script.Value, Model.JavaScriptTagAttributes);
         }
-        
+
         foreach (var css in Html.GetThemeCssFiles(Model))
         {
             Html.RequiresCss(css.Value);
@@ -54,5 +51,5 @@
         @Html.RenderFormsScripts(Url, Model, Model.JavaScriptTagAttributes)
         @Html.RenderFormsStylesheets(Url, Model)
     }
-    
+
 }

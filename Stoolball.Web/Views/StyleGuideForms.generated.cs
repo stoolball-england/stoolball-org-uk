@@ -1038,23 +1038,23 @@ WriteLiteral(" type=\"text/x-template\"");
 WriteLiteral(" id=\"team-template\"");
 
 WriteLiteral(@">
-        <table>
-            <tr class=""related-item__selected"">
-                <td class=""related-item__selected__section""><div class=""related-item__animate"">{{value}}</div></td>
-                <td class=""related-item__selected__section""><div class=""related-item__animate"">Extra column</div></td>
-                <td class=""related-item__delete related-item__selected__section"">
-                    <div class=""related-item__animate"">
-                        <button class=""btn-delete-icon"">");
+            <table>
+                <tr class=""related-item__selected"">
+                    <td class=""related-item__selected__section""><div class=""related-item__animate"">{{value}}</div></td>
+                    <td class=""related-item__selected__section""><div class=""related-item__animate"">Extra column</div></td>
+                    <td class=""related-item__delete related-item__selected__section"">
+                        <div class=""related-item__animate"">
+                            <button class=""btn-delete-icon"">");
 
             
             #line 216 "..\..\Views\StyleGuideForms.cshtml"
-                                                   Write(Html.Partial("_DeleteIcon", "Remove {{value}}"));
+                                                       Write(Html.Partial("_DeleteIcon", "Remove {{value}}"));
 
             
             #line default
             #line hidden
-WriteLiteral("</button>\r\n                    </div>\r\n                </td>\r\n            </tr>\r\n" +
-"        </table>\r\n        </script>\r\n        <div");
+WriteLiteral("</button>\r\n                        </div>\r\n                    </td>\r\n           " +
+"     </tr>\r\n            </table>\r\n        </script>\r\n        <div");
 
 WriteLiteral(" class=\"form-group related-item\"");
 
@@ -1089,21 +1089,22 @@ WriteLiteral(" type=\"text/x-template\"");
 WriteLiteral(" id=\"location-template\"");
 
 WriteLiteral(@">
-        <div class=""single-related-item__selected"">
-            <div class=""related-item__selected__section"">
-                <input type=""text"" readonly=""readonly"" value=""{{value}}"" class=""form-control"" id=""Match_MatchLocation_PrimaryAddressableObjectName"" />
-            </div>
-            <div class=""related-item__delete related-item__selected__section"">
-                <button class=""btn-delete-icon"">");
+            <div class=""single-related-item__selected"">
+                <div class=""related-item__selected__section"">
+                    <input type=""text"" readonly=""readonly"" value=""{{value}}"" class=""form-control"" id=""Match_MatchLocation_PrimaryAddressableObjectName"" />
+                </div>
+                <div class=""related-item__delete related-item__selected__section"">
+                    <button class=""btn-delete-icon"">");
 
             
             #line 241 "..\..\Views\StyleGuideForms.cshtml"
-                                           Write(Html.Partial("_DeleteIcon", "Remove {{value}}"));
+                                               Write(Html.Partial("_DeleteIcon", "Remove {{value}}"));
 
             
             #line default
             #line hidden
-WriteLiteral("</button>\r\n            </div>\r\n        </div>\r\n        </script>\r\n        <div");
+WriteLiteral("</button>\r\n                </div>\r\n            </div>\r\n        </script>\r\n       " +
+" <div");
 
 WriteLiteral(" class=\"form-group\"");
 
@@ -1204,7 +1205,32 @@ WriteLiteral(" class=\"btn btn-danger btn-delete\"");
 WriteLiteral(" disabled=\"disabled\"");
 
 WriteLiteral(">Delete button (disabled)</button>\r\n    </form>\r\n    <p>Paragraph below a button " +
-"(outside the form).</p>\r\n</div>");
+"(outside the form).</p>\r\n</div>\r\n\r\n");
+
+DefineSection("umbracoforms", () => {
+
+WriteLiteral("\r\n");
+
+            
+            #line 267 "..\..\Views\StyleGuideForms.cshtml"
+    
+            
+            #line default
+            #line hidden
+            
+            #line 267 "..\..\Views\StyleGuideForms.cshtml"
+     if (TempData["UmbracoForms"] != null)
+    {
+        foreach (var form in (List<Guid>)TempData["UmbracoForms"])
+        {
+            Html.RenderAction("RenderFormScripts", "UmbracoForms", new { formid = form, theme = "stoolball" });
+        }
+    }
+
+            
+            #line default
+            #line hidden
+});
 
         }
     }

@@ -284,3 +284,10 @@ svg {
 .umbraco-forms-formid {
     display: none;
 }
+
+/* Umbraco Forms has to use an input rather than a button, so try to fake the style */
+.umbraco-forms-form input.prev {
+    color: $white;
+    padding-left: 28px;
+    background: 12px center / 8px 12px url(/images/icons/umbraco-forms-previous.png) no-repeat theme-color("secondary");
+}

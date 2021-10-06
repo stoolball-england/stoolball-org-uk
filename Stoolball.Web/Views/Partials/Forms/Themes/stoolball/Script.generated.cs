@@ -79,22 +79,32 @@ WriteLiteral("\r\n");
             
             #line default
             #line hidden
-WriteLiteral("\r\n\r\n<script>\r\n    if (typeof umbracoFormsCollection === \'undefined\') var umbracoF" +
-"ormsCollection = [];\r\n    umbracoFormsCollection.push(\'");
+WriteLiteral("\r\n\r\n<script");
+
+WriteLiteral(" id=\"umbraco-forms-collection\"");
+
+WriteLiteral(" data-forms=\"");
 
             
-            #line 20 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
-                            Write(Html.Raw(Uri.EscapeUriString(JsonConvert.SerializeObject(formJsObj))));
+            #line 18 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
+                                             Write(Html.Raw(Uri.EscapeUriString(JsonConvert.SerializeObject(formJsObj))));
 
             
             #line default
             #line hidden
-WriteLiteral("\');\r\n</script>\r\n\r\n");
+WriteLiteral("\"");
+
+WriteAttribute("src", Tuple.Create(" src=\"", 643), Tuple.Create("\"", 684)
+, Tuple.Create(Tuple.Create("", 649), Tuple.Create<System.Object, System.Int32>(Href("~/Forms/umbraco-forms-collection.js")
+, 649), false)
+);
+
+WriteLiteral("></script>\r\n\r\n");
 
 WriteLiteral("\r\n");
 
             
-            #line 24 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
+            #line 21 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
  if (Model.SubmitHandled == false)
 {
     
@@ -102,7 +112,7 @@ WriteLiteral("\r\n");
             #line default
             #line hidden
             
-            #line 29 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
+            #line 26 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
       
     if (Model.CurrentPage.PartialViewFiles.Any())
     {
@@ -113,14 +123,14 @@ WriteLiteral("\r\n");
             #line default
             #line hidden
             
-            #line 34 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
+            #line 31 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
        Write(Html.Partial(partial.Value));
 
             
             #line default
             #line hidden
             
-            #line 34 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
+            #line 31 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
                                         
         }
     }
@@ -131,7 +141,7 @@ WriteLiteral("\r\n");
             #line default
             #line hidden
             
-            #line 39 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
+            #line 36 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
                                                                                    
     if (Model.UseClientDependency)
     {
@@ -139,7 +149,7 @@ WriteLiteral("\r\n");
         {
             Html.RequiresJs(script.Value, Model.JavaScriptTagAttributes);
         }
-        
+
         foreach (var css in Html.GetThemeCssFiles(Model))
         {
             Html.RequiresCss(css.Value);
@@ -152,31 +162,31 @@ WriteLiteral("\r\n");
             #line default
             #line hidden
             
-            #line 54 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
+            #line 51 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
    Write(Html.RenderFormsScripts(Url, Model, Model.JavaScriptTagAttributes));
 
             
             #line default
             #line hidden
             
-            #line 54 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
+            #line 51 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
                                                                            
         
             
             #line default
             #line hidden
             
-            #line 55 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
+            #line 52 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
    Write(Html.RenderFormsStylesheets(Url, Model));
 
             
             #line default
             #line hidden
             
-            #line 55 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
+            #line 52 "..\..\Views\Partials\Forms\Themes\stoolball\Script.cshtml"
                                                 
     }
-    
+
 }
 
             

@@ -15,3 +15,13 @@
     <h1>@Model.Name</h1>
     @Html.GetBlockListHtml(Model, "blockList")
 </div>
+
+@section umbracoforms {
+    @if (TempData["UmbracoForms"] != null)
+    {
+        foreach (var form in (List<Guid>)TempData["UmbracoForms"])
+        {
+            Html.RenderAction("RenderFormScripts", "UmbracoForms", new { formid = form, theme = "stoolball" });
+        }
+    }
+}

@@ -124,7 +124,10 @@
             {
                 if (!Model.IsFirstPage)
                 {
-                    <button class="btn btn-secondary btn-back" name="__prev">@Model.PreviousCaption</button>
+                    <input class="btn prev cancel"
+                           type="submit"
+                           value="@Model.PreviousCaption"
+                           name="__prev" />
                 }
 
                 if (!Model.IsLastPage)

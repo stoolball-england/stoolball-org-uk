@@ -21,3 +21,13 @@
     <p class="news__date">@(formatter.FormatDate(Model.DisplayDate == DateTime.MinValue ? Model.CreateDate : Model.DisplayDate).Humanize(LetterCasing.Title))</p>
     @Html.GetBlockListHtml(Model, "blockList")
 </div>
+
+@section umbracoforms {
+    @if (TempData["UmbracoForms"] != null)
+    {
+        foreach (var form in (List<Guid>)TempData["UmbracoForms"])
+        {
+            Html.RenderAction("RenderFormScripts", "UmbracoForms", new { formid = form, theme = "stoolball" });
+        }
+    }
+}

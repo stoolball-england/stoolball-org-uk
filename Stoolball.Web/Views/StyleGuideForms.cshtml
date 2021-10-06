@@ -207,17 +207,17 @@
             </tbody>
         </table>
         <script type="text/x-template" id="team-template">
-        <table>
-            <tr class="related-item__selected">
-                <td class="related-item__selected__section"><div class="related-item__animate">{{value}}</div></td>
-                <td class="related-item__selected__section"><div class="related-item__animate">Extra column</div></td>
-                <td class="related-item__delete related-item__selected__section">
-                    <div class="related-item__animate">
-                        <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}}")</button>
-                    </div>
-                </td>
-            </tr>
-        </table>
+            <table>
+                <tr class="related-item__selected">
+                    <td class="related-item__selected__section"><div class="related-item__animate">{{value}}</div></td>
+                    <td class="related-item__selected__section"><div class="related-item__animate">Extra column</div></td>
+                    <td class="related-item__delete related-item__selected__section">
+                        <div class="related-item__animate">
+                            <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}}")</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </script>
         <div class="form-group related-item">
             <label for="Match_MatchLocation_PrimaryAddressableObjectName">Single related item</label>
@@ -233,14 +233,14 @@
           })
         </div>
         <script type="text/x-template" id="location-template">
-        <div class="single-related-item__selected">
-            <div class="related-item__selected__section">
-                <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="Match_MatchLocation_PrimaryAddressableObjectName" />
+            <div class="single-related-item__selected">
+                <div class="related-item__selected__section">
+                    <input type="text" readonly="readonly" value="{{value}}" class="form-control" id="Match_MatchLocation_PrimaryAddressableObjectName" />
+                </div>
+                <div class="related-item__delete related-item__selected__section">
+                    <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}}")</button>
+                </div>
             </div>
-            <div class="related-item__delete related-item__selected__section">
-                <button class="btn-delete-icon">@Html.Partial("_DeleteIcon", "Remove {{value}}")</button>
-            </div>
-        </div>
         </script>
         <div class="form-group">
             <label for="rich-text">Rich text editor</label>
@@ -262,3 +262,13 @@
     </form>
     <p>Paragraph below a button (outside the form).</p>
 </div>
+
+@section umbracoforms {
+    @if (TempData["UmbracoForms"] != null)
+    {
+        foreach (var form in (List<Guid>)TempData["UmbracoForms"])
+        {
+            Html.RenderAction("RenderFormScripts", "UmbracoForms", new { formid = form, theme = "stoolball" });
+        }
+    }
+}

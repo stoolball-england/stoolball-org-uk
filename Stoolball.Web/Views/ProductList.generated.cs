@@ -94,7 +94,7 @@ WriteLiteral(">\r\n    <h1>");
             
             #line default
             #line hidden
-WriteLiteral("</h1>\r\n\r\n    \r\n    <div");
+WriteLiteral("</h1>\r\n\r\n\r\n    <div");
 
 WriteLiteral(" class=\"product-list__intro\"");
 
@@ -111,11 +111,11 @@ WriteLiteral("</div>\r\n        <a");
 
 WriteLiteral(" href=\"https://shop.spreadshirt.co.uk/stoolball\"");
 
-WriteLiteral(">            \r\n            <img");
+WriteLiteral(">\r\n            <img");
 
-WriteAttribute("src", Tuple.Create(" src=\"", 880), Tuple.Create("\"", 915)
-, Tuple.Create(Tuple.Create("", 886), Tuple.Create<System.Object, System.Int32>(Href("~/images/shop/spreadshirt.png")
-, 886), false)
+WriteAttribute("src", Tuple.Create(" src=\"", 864), Tuple.Create("\"", 899)
+, Tuple.Create(Tuple.Create("", 870), Tuple.Create<System.Object, System.Int32>(Href("~/images/shop/spreadshirt.png")
+, 870), false)
 );
 
 WriteLiteral(" alt=\"Products from our gift shop\"");
@@ -206,7 +206,32 @@ WriteLiteral("\r\n");
             
             #line default
             #line hidden
-WriteLiteral("</div>");
+WriteLiteral("</div>\r\n\r\n");
+
+DefineSection("umbracoforms", () => {
+
+WriteLiteral("\r\n");
+
+            
+            #line 41 "..\..\Views\ProductList.cshtml"
+    
+            
+            #line default
+            #line hidden
+            
+            #line 41 "..\..\Views\ProductList.cshtml"
+     if (TempData["UmbracoForms"] != null)
+    {
+        foreach (var form in (List<Guid>)TempData["UmbracoForms"])
+        {
+            Html.RenderAction("RenderFormScripts", "UmbracoForms", new { formid = form, theme = "stoolball" });
+        }
+    }
+
+            
+            #line default
+            #line hidden
+});
 
         }
     }

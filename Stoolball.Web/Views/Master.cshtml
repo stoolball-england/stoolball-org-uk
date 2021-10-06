@@ -61,6 +61,7 @@
     </main>
     @Html.Partial("_Footer")
     @Html.RenderJsHere()
+    @RenderSection("umbracoforms", false)
     @if (Request.Url.Host != "localhost")
     {
         <script defer src='https://static.cloudflareinsights.com/beacon.min.js'

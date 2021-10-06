@@ -134,6 +134,9 @@ namespace Stoolball.Web.Security
         {
             // Used by jQuery validation for valid/invalid icons in the field
             AddSource(IMG_SRC, "data:");
+
+            // For style="display: none" used in conditions
+            AddSource(STYLE_SRC, "'unsafe-inline'");
         }
 
         private void SetupTrustedTypes()

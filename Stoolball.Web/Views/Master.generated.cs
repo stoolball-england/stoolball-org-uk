@@ -355,14 +355,25 @@ Write(Html.RenderJsHere());
             #line hidden
 WriteLiteral("\r\n");
 
+WriteLiteral("    ");
+
             
             #line 64 "..\..\Views\Master.cshtml"
+Write(RenderSection("umbracoforms", false));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
+            
+            #line 65 "..\..\Views\Master.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 64 "..\..\Views\Master.cshtml"
+            #line 65 "..\..\Views\Master.cshtml"
      if (Request.Url.Host != "localhost")
     {
 
@@ -378,7 +389,7 @@ WriteLiteral("\r\n            data-cf-beacon=\'{\"token\": \"4b73271c7ec547e2a9c
 WriteLiteral("></script>\r\n");
 
             
-            #line 68 "..\..\Views\Master.cshtml"
+            #line 69 "..\..\Views\Master.cshtml"
     }
 
             

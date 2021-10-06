@@ -800,25 +800,28 @@ WriteLiteral(">\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                    <button");
+WriteLiteral("                    <input");
 
-WriteLiteral(" class=\"btn btn-secondary btn-back\"");
+WriteLiteral(" class=\"btn prev cancel\"");
 
-WriteLiteral(" name=\"__prev\"");
+WriteLiteral("\r\n                           type=\"submit\"");
 
-WriteLiteral(">");
-
+WriteAttribute("value", Tuple.Create("\r\n                           value=\"", 5403), Tuple.Create("\"", 5461)
             
-            #line 127 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-                                                                        Write(Model.PreviousCaption);
-
+            #line 129 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+, Tuple.Create(Tuple.Create("", 5439), Tuple.Create<System.Object, System.Int32>(Model.PreviousCaption
             
             #line default
             #line hidden
-WriteLiteral("</button>\r\n");
+, 5439), false)
+);
+
+WriteLiteral("\r\n                           name=\"__prev\"");
+
+WriteLiteral(" />\r\n");
 
             
-            #line 128 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 131 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                 }
 
                 if (!Model.IsLastPage)
@@ -836,7 +839,7 @@ WriteLiteral(" name=\"__next\"");
 WriteLiteral(">");
 
             
-            #line 132 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 135 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                                                                     Write(Model.NextCaption);
 
             
@@ -845,7 +848,7 @@ WriteLiteral(">");
 WriteLiteral("</button>\r\n");
 
             
-            #line 133 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 136 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                 }
 
                 if (Model.IsLastPage)
@@ -863,7 +866,7 @@ WriteLiteral(" name=\"__next\"");
 WriteLiteral(">");
 
             
-            #line 137 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 140 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                                                              Write(Model.SubmitCaption);
 
             
@@ -872,7 +875,7 @@ WriteLiteral(">");
 WriteLiteral("</button>\r\n");
 
             
-            #line 138 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 141 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                 }
             }
             else
@@ -890,7 +893,7 @@ WriteLiteral(" name=\"__next\"");
 WriteLiteral(">");
 
             
-            #line 142 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 145 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
                                                          Write(Model.SubmitCaption);
 
             
@@ -899,7 +902,7 @@ WriteLiteral(">");
 WriteLiteral("</button>\r\n");
 
             
-            #line 143 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 146 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
             }
 
             
@@ -908,7 +911,7 @@ WriteLiteral("</button>\r\n");
 WriteLiteral("        </div>\r\n    </div>\r\n</div>\r\n\r\n");
 
             
-            #line 148 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+            #line 151 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
 Write(Html.Partial("Forms/Themes/default/ScrollToFormScript"));
 
             

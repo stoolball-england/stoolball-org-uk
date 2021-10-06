@@ -30,7 +30,6 @@
 
 @if (!alreadyRendered)
 {
-    <script>
-        var umbracoFormsLocale = { name: '@CultureInfo.CurrentUICulture.Name', datePickerYearRange: '@datePickerYearRange', locales: @Html.Raw(JsonConvert.SerializeObject(locales)) };
-    </script>
+    var locale = $"{{ \"name\": \"{CultureInfo.CurrentUICulture.Name}\", \"datePickerYearRange\": \"{datePickerYearRange}\", \"locales\": {JsonConvert.SerializeObject(locales)} }}";
+    <script id="umbraco-forms-locale" data-locale='@Html.Raw(locale)' src="~/Forms/umbraco-forms-locale.js"></script>
 }

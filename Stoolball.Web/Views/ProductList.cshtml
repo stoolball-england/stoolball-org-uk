@@ -15,10 +15,10 @@
 <div class="container-xl">
     <h1>@Model.Name</h1>
 
-    
+
     <div class="product-list__intro">
         <div>@Html.Raw(emailProtector.ProtectEmailAddresses(Model.Introduction.ToHtmlString(), User.Identity.IsAuthenticated))</div>
-        <a href="https://shop.spreadshirt.co.uk/stoolball">            
+        <a href="https://shop.spreadshirt.co.uk/stoolball">
             <img src="~/images/shop/spreadshirt.png" alt="Products from our gift shop" width="600" />
             <p class="btn btn-primary btn-lg">Visit our gift shop</p>
         </a>
@@ -36,3 +36,13 @@
         @Umbraco.RenderMacro("renderUmbracoForm", new { FormGuid = Model.EnquiryForm, FormTheme = "stoolball", ExcludeScripts = "1" })
     }
 </div>
+
+@section umbracoforms {
+    @if (TempData["UmbracoForms"] != null)
+    {
+        foreach (var form in (List<Guid>)TempData["UmbracoForms"])
+        {
+            Html.RenderAction("RenderFormScripts", "UmbracoForms", new { formid = form, theme = "stoolball" });
+        }
+    }
+}

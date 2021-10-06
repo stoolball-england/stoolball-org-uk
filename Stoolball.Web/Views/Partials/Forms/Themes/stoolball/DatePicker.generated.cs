@@ -103,41 +103,35 @@ WriteLiteral("\r\n\r\n");
             #line 31 "..\..\Views\Partials\Forms\Themes\stoolball\DatePicker.cshtml"
  if (!alreadyRendered)
 {
+    var locale = $"{{ \"name\": \"{CultureInfo.CurrentUICulture.Name}\", \"datePickerYearRange\": \"{datePickerYearRange}\", \"locales\": {JsonConvert.SerializeObject(locales)} }}";
 
             
             #line default
             #line hidden
-WriteLiteral("    <script>\r\n        var umbracoFormsLocale = { name: \'");
+WriteLiteral("    <script");
+
+WriteLiteral(" id=\"umbraco-forms-locale\"");
+
+WriteLiteral(" data-locale=\'");
 
             
             #line 34 "..\..\Views\Partials\Forms\Themes\stoolball\DatePicker.cshtml"
-                                     Write(CultureInfo.CurrentUICulture.Name);
+                                              Write(Html.Raw(locale));
 
             
             #line default
             #line hidden
-WriteLiteral("\', datePickerYearRange: \'");
+WriteLiteral("\'");
+
+WriteAttribute("src", Tuple.Create(" src=\"", 1499), Tuple.Create("\"", 1536)
+, Tuple.Create(Tuple.Create("", 1505), Tuple.Create<System.Object, System.Int32>(Href("~/Forms/umbraco-forms-locale.js")
+, 1505), false)
+);
+
+WriteLiteral("></script>\r\n");
 
             
-            #line 34 "..\..\Views\Partials\Forms\Themes\stoolball\DatePicker.cshtml"
-                                                                                                Write(datePickerYearRange);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\', locales: ");
-
-            
-            #line 34 "..\..\Views\Partials\Forms\Themes\stoolball\DatePicker.cshtml"
-                                                                                                                                Write(Html.Raw(JsonConvert.SerializeObject(locales)));
-
-            
-            #line default
-            #line hidden
-WriteLiteral(" };\r\n    </script>\r\n");
-
-            
-            #line 36 "..\..\Views\Partials\Forms\Themes\stoolball\DatePicker.cshtml"
+            #line 35 "..\..\Views\Partials\Forms\Themes\stoolball\DatePicker.cshtml"
 }
             
             #line default
