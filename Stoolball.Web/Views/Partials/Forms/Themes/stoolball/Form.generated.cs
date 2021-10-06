@@ -354,15 +354,25 @@ WriteLiteral(">\r\n\r\n");
             #line hidden
 WriteLiteral("                                    <label");
 
-WriteAttribute("id", Tuple.Create(" id=\"", 1888), Tuple.Create("\"", 1904)
+WriteAttribute("for", Tuple.Create(" for=\"", 1888), Tuple.Create("\"", 1899)
             
             #line 50 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-, Tuple.Create(Tuple.Create("", 1893), Tuple.Create<System.Object, System.Int32>(f.Id
+, Tuple.Create(Tuple.Create("", 1894), Tuple.Create<System.Object, System.Int32>(f.Id
             
             #line default
             #line hidden
-, 1893), false)
-, Tuple.Create(Tuple.Create("", 1898), Tuple.Create("-label", 1898), true)
+, 1894), false)
+);
+
+WriteAttribute("id", Tuple.Create(" id=\"", 1900), Tuple.Create("\"", 1916)
+            
+            #line 50 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
+, Tuple.Create(Tuple.Create("", 1905), Tuple.Create<System.Object, System.Int32>(f.Id
+            
+            #line default
+            #line hidden
+, 1905), false)
+, Tuple.Create(Tuple.Create("", 1910), Tuple.Create("-label", 1910), true)
 );
 
 WriteLiteral(" class=\"umbraco-forms-label\"");
@@ -426,15 +436,15 @@ WriteLiteral("                                    <p");
 
 WriteLiteral(" class=\"form-text\"");
 
-WriteAttribute("id", Tuple.Create(" id=\"", 2496), Tuple.Create("\"", 2514)
+WriteAttribute("id", Tuple.Create(" id=\"", 2508), Tuple.Create("\"", 2526)
             
             #line 60 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-, Tuple.Create(Tuple.Create("", 2501), Tuple.Create<System.Object, System.Int32>(f.Id
+, Tuple.Create(Tuple.Create("", 2513), Tuple.Create<System.Object, System.Int32>(f.Id
             
             #line default
             #line hidden
-, 2501), false)
-, Tuple.Create(Tuple.Create("", 2506), Tuple.Create("-tooltip", 2506), true)
+, 2513), false)
+, Tuple.Create(Tuple.Create("", 2518), Tuple.Create("-tooltip", 2518), true)
 );
 
 WriteLiteral("><small>");
@@ -480,15 +490,15 @@ WriteLiteral("<fieldset>\r\n");
             #line hidden
 WriteLiteral("                                    <legend");
 
-WriteAttribute("id", Tuple.Create(" id=\"", 2988), Tuple.Create("\"", 3004)
+WriteAttribute("id", Tuple.Create(" id=\"", 3000), Tuple.Create("\"", 3016)
             
             #line 68 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-, Tuple.Create(Tuple.Create("", 2993), Tuple.Create<System.Object, System.Int32>(f.Id
+, Tuple.Create(Tuple.Create("", 3005), Tuple.Create<System.Object, System.Int32>(f.Id
             
             #line default
             #line hidden
-, 2993), false)
-, Tuple.Create(Tuple.Create("", 2998), Tuple.Create("-label", 2998), true)
+, 3005), false)
+, Tuple.Create(Tuple.Create("", 3010), Tuple.Create("-label", 3010), true)
 );
 
 WriteLiteral(" class=\"umbraco-forms-label\"");
@@ -511,14 +521,14 @@ WriteLiteral(">\r\n");
             #line hidden
 WriteLiteral("                                        <p");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 3173), Tuple.Create("\"", 3233)
+WriteAttribute("class", Tuple.Create(" class=\"", 3185), Tuple.Create("\"", 3245)
             
             #line 71 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-, Tuple.Create(Tuple.Create("", 3181), Tuple.Create<System.Object, System.Int32>(string.IsNullOrEmpty(f.ToolTip) ? "mb-0" : "mb-2"
+, Tuple.Create(Tuple.Create("", 3193), Tuple.Create<System.Object, System.Int32>(string.IsNullOrEmpty(f.ToolTip) ? "mb-0" : "mb-2"
             
             #line default
             #line hidden
-, 3181), false)
+, 3193), false)
 );
 
 WriteLiteral(">\r\n");
@@ -593,15 +603,15 @@ WriteLiteral("                                        <p");
 
 WriteLiteral(" class=\"form-text\"");
 
-WriteAttribute("id", Tuple.Create(" id=\"", 3821), Tuple.Create("\"", 3839)
+WriteAttribute("id", Tuple.Create(" id=\"", 3833), Tuple.Create("\"", 3851)
             
             #line 81 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-, Tuple.Create(Tuple.Create("", 3826), Tuple.Create<System.Object, System.Int32>(f.Id
+, Tuple.Create(Tuple.Create("", 3838), Tuple.Create<System.Object, System.Int32>(f.Id
             
             #line default
             #line hidden
-, 3826), false)
-, Tuple.Create(Tuple.Create("", 3831), Tuple.Create("-tooltip", 3831), true)
+, 3838), false)
+, Tuple.Create(Tuple.Create("", 3843), Tuple.Create("-tooltip", 3843), true)
 );
 
 WriteLiteral("><small>");
@@ -762,14 +772,14 @@ WriteLiteral("\r\n    <input");
 
 WriteLiteral(" type=\"text\"");
 
-WriteAttribute("name", Tuple.Create(" name=\"", 5023), Tuple.Create("\"", 5071)
+WriteAttribute("name", Tuple.Create(" name=\"", 5035), Tuple.Create("\"", 5083)
             
             #line 117 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-, Tuple.Create(Tuple.Create("", 5030), Tuple.Create<System.Object, System.Int32>(Model.FormId.ToString().Replace("-", "")
+, Tuple.Create(Tuple.Create("", 5042), Tuple.Create<System.Object, System.Int32>(Model.FormId.ToString().Replace("-", "")
             
             #line default
             #line hidden
-, 5030), false)
+, 5042), false)
 );
 
 WriteLiteral(" class=\"umbraco-forms-formid\"");
@@ -806,14 +816,14 @@ WriteLiteral(" class=\"btn prev cancel\"");
 
 WriteLiteral("\r\n                           type=\"submit\"");
 
-WriteAttribute("value", Tuple.Create("\r\n                           value=\"", 5403), Tuple.Create("\"", 5461)
+WriteAttribute("value", Tuple.Create("\r\n                           value=\"", 5415), Tuple.Create("\"", 5473)
             
             #line 129 "..\..\Views\Partials\Forms\Themes\stoolball\Form.cshtml"
-, Tuple.Create(Tuple.Create("", 5439), Tuple.Create<System.Object, System.Int32>(Model.PreviousCaption
+, Tuple.Create(Tuple.Create("", 5451), Tuple.Create<System.Object, System.Int32>(Model.PreviousCaption
             
             #line default
             #line hidden
-, 5439), false)
+, 5451), false)
 );
 
 WriteLiteral("\r\n                           name=\"__prev\"");

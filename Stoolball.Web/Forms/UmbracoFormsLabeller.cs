@@ -12,7 +12,7 @@ namespace Stoolball.Web.Forms
                 throw new ArgumentNullException(nameof(model));
             }
 
-            return ((model.HideLabel ? string.Empty : model.Id + "-label") + (string.IsNullOrEmpty(model.ToolTip) ? string.Empty : " " + model.Id + "-tooltip")).Trim();
+            return (string.IsNullOrEmpty(model.ToolTip) ? string.Empty : " " + model.Id + "-tooltip").Trim();
         }
     }
 }

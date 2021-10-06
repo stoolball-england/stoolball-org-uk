@@ -6,7 +6,7 @@
     Model.AdditionalSettings.TryGetValue("AcceptCopy", out var acceptCopy);
 }
 <div class="custom-control custom-checkbox">
-    <input type="checkbox" name="@Model.Id" id="@Model.Id" value="true" class="custom-control-input" aria-describedby="@labeller.DescribedBy(Model) @Model.Id-label2"
+    <input type="checkbox" name="@Model.Id" id="@Model.Id" value="true" class="custom-control-input" aria-describedby="@labeller.DescribedBy(Model)"
            @if (Model.Mandatory) { <text> data-rule-required="true" data-val="true" data-msg-required="@Model.RequiredErrorMessage" </text> }
            @if (Model.ContainsValue(true) || Model.ContainsValue("true") || Model.ContainsValue("on")) { <text> checked="checked" </text> } />
     <input type="hidden" name="@Model.Id" value="false" />

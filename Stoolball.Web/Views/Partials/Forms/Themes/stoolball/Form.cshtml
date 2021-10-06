@@ -47,7 +47,7 @@
                             {
                                 if (!f.HideLabel)
                                 {
-                                    <label id="@f.Id-label" class="umbraco-forms-label">
+                                    <label for="@f.Id" id="@f.Id-label" class="umbraco-forms-label">
                                         @f.Caption @if (f.ShowIndicator)
                                         {
                                             <span class="umbraco-forms-indicator">@Model.Indicator</span>
