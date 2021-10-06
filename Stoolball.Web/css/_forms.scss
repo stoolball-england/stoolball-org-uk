@@ -291,3 +291,8 @@ svg {
     padding-left: 28px;
     background: 12px center / 8px 12px url(/images/icons/umbraco-forms-previous.png) no-repeat theme-color("secondary");
 }
+
+/* List of files in an Umbraco Forms upload field. Select files then navigate to the next form page and back again to see it. */
+.umbraco-forms-files {
+    padding-top: $spacer;
+}
