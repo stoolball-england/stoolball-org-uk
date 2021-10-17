@@ -132,7 +132,7 @@
   <Target Name="StoolballCopyFilesFromUmbracoCloud" BeforeTargets="AfterBuild">
     <!-- Copy files from the Umbraco Cloud repo to the Stoolball.Web project
          (Mostly secrets and Umbraco Deploy, which is not available on NuGet yet.) -->
-    <Error Text="Before building this project, clone an Umbraco Cloud git repository into a folder called .UmbracoCloud inside the root folder of this repository. This can be an Umbraco Cloud trial account." Condition="!Exists('$(SolutionDir)\.UmbracoCloud\')" />
+    <Error Text="Before building this project, clone an Umbraco Cloud git repository into a folder called .UmbracoCloud inside the root folder of this repository. This can be an Umbraco Cloud trial account." Condition="!Exists('$(SolutionDir)\.UmbracoCloud\') And '$(REQUIRE_CLOUD_REPO)' != 'false'" />
 
     <ItemGroup>
       <UmbracoCloudUsers Include="$(SolutionDir).UmbracoCloud\data\backoffice\**" />
@@ -149,29 +149,33 @@
     <!-- Copy these files if they don't already exist -->
     <Copy SourceFiles="@(UmbracoCloudUsers)"
       DestinationFiles="$(ProjectDir)data\backoffice\%(RecursiveDir)%(Filename)%(Extension)"
-      Condition="!Exists('$(ProjectDir)data\backoffice\%(RecursiveDir)%(Filename)%(Extension)')" />
+      Condition="!Exists('$(ProjectDir)data\backoffice\%(RecursiveDir)%(Filename)%(Extension)') And '$(REQUIRE_CLOUD_REPO)' != 'false'" />
     <Copy SourceFiles="@(UmbracoLanguageConfig)"
       DestinationFiles="$(ProjectDir)umbraco\Config\Lang\%(RecursiveDir)%(Filename)%(Extension)"
-      Condition="!Exists('$(ProjectDir)umbraco\Config\Lang\%(RecursiveDir)%(Filename)%(Extension)')" />
+      Condition="!Exists('$(ProjectDir)umbraco\Config\Lang\%(RecursiveDir)%(Filename)%(Extension)') And '$(REQUIRE_CLOUD_REPO)' != 'false'" />
     <Copy SourceFiles="@(UmbracoLicences)"
       DestinationFiles="$(ProjectDir)App_Plugins\UmbracoLicenses\%(RecursiveDir)%(Filename)%(Extension)"
-      Condition="!Exists('$(ProjectDir)App_Plugins\UmbracoLicenses\%(RecursiveDir)%(Filename)%(Extension)')" />
+      Condition="!Exists('$(ProjectDir)App_Plugins\UmbracoLicenses\%(RecursiveDir)%(Filename)%(Extension)') And '$(REQUIRE_CLOUD_REPO)' != 'false'" />
     <Copy SourceFiles="@(UmbracoConfigFolderSecrets)"
       DestinationFiles="$(ProjectDir)config\%(Filename)%(Extension)"
-      Condition="!Exists('$(ProjectDir)config\%(Filename)%(Extension)')" />
+      Condition="!Exists('$(ProjectDir)config\%(Filename)%(Extension)') And '$(REQUIRE_CLOUD_REPO)' != 'false'" />
     <Copy SourceFiles="@(UmbracoCloudWebConfigSecrets)"
       DestinationFiles="$(ProjectDir)%(Filename)%(Extension)"
-      Condition="!Exists('$(ProjectDir)%(Filename)%(Extension)')" />
+      Condition="!Exists('$(ProjectDir)%(Filename)%(Extension)') And '$(REQUIRE_CLOUD_REPO)' != 'false'" />
 
     <!-- Always overwrite these files with the version from Umbraco Cloud -->
     <Copy SourceFiles="@(UmbracoDeploy)"
-      DestinationFiles="$(ProjectDir)App_Plugins\Deploy\%(RecursiveDir)%(Filename)%(Extension)" />
+      DestinationFiles="$(ProjectDir)App_Plugins\Deploy\%(RecursiveDir)%(Filename)%(Extension)"
+      Condition="'$(REQUIRE_CLOUD_REPO)' != 'false'" />
     <Copy SourceFiles="@(UmbracoDeployDLLs)"
-      DestinationFiles="$(ProjectDir)bin\%(Filename)%(Extension)" />
+      DestinationFiles="$(ProjectDir)bin\%(Filename)%(Extension)"
+      Condition="'$(REQUIRE_CLOUD_REPO)' != 'false'" />
     <Copy SourceFiles="@(UmbracoDeployConfig)"
-      DestinationFiles="$(ProjectDir)config\%(Filename)%(Extension)" />
+      DestinationFiles="$(ProjectDir)config\%(Filename)%(Extension)"
+      Condition="'$(REQUIRE_CLOUD_REPO)' != 'false'" />
     <Copy SourceFiles="@(UmbracoCloudWebConfig)"
-      DestinationFiles="$(ProjectDir)%(Filename)%(Extension)" />
+      DestinationFiles="$(ProjectDir)%(Filename)%(Extension)"
+      Condition="'$(REQUIRE_CLOUD_REPO)' != 'false'" />
   </Target>
 
   <Target Name="StoolballTriggerUmbracoDeploySync" BeforeTargets="AfterBuild" Condition="!Exists('$(ProjectDir)data/deploy')">
@@ -232,7 +236,7 @@
     <Delete Files="$(TempUmbracoFormsConfig)" />
   </Target>
 
-  <Target Name="StoolballTransformWebConfig" AfterTargets="StoolballCopyFilesFromUmbracoCloud">
+  <Target Name="StoolballTransformWebConfig" AfterTargets="StoolballCopyFilesFromUmbracoCloud" Condition="'$(REQUIRE_CLOUD_REPO)' != 'false'">
     <!-- Applies changes to Web.config on build from XDT transforms so that the unaltered Web.config 
          can always be copied from the Umbraco Cloud repository. -->
     <PropertyGroup>

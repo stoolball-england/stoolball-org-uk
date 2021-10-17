@@ -1,0 +1,178 @@
+﻿@inherits UmbracoViewPage<Umbraco.Forms.Core.Models.FormsHtmlModel>
+@{ 
+    var form = global::Umbraco.Web.Composing.Current.Factory.GetInstance<Umbraco.Forms.Core.Services.IFormService>().Get(Model.FormId);
+    var htmlSanitiser = global::Umbraco.Web.Composing.Current.Factory.GetInstance<Ganss.XSS.IHtmlSanitizer>();
+    htmlSanitiser.AllowedTags.Clear();
+    htmlSanitiser.AllowedTags.Add("p");
+    htmlSanitiser.AllowedTags.Add("h2");
+    htmlSanitiser.AllowedTags.Add("strong");
+    htmlSanitiser.AllowedTags.Add("em");
+    htmlSanitiser.AllowedTags.Add("ul");
+    htmlSanitiser.AllowedTags.Add("ol");
+    htmlSanitiser.AllowedTags.Add("li");
+    htmlSanitiser.AllowedTags.Add("a");
+    htmlSanitiser.AllowedTags.Add("br");
+    htmlSanitiser.AllowedAttributes.Clear();
+    htmlSanitiser.AllowedAttributes.Add("href");
+    htmlSanitiser.AllowedCssProperties.Clear();
+    htmlSanitiser.AllowedAtRules.Clear();
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,900" rel="stylesheet">
+    <style type="text/css">
+
+    /* CLIENT-SPECIFIC STYLES */
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; }
+
+    /* RESET STYLES */
+    img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+    table { border-collapse: collapse !important; }
+    body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
+
+    /* iOS BLUE LINKS */
+    a[x-apple-data-detectors] {
+        color: inherit !important;
+        text-decoration: none !important;
+        font-size: inherit !important;
+        font-family: inherit !important;
+        font-weight: inherit !important;
+        line-height: inherit !important;
+    }
+
+	/* MOBILE STYLES */
+	@@media screen and (max-width:600px){
+		h1 {
+			font-size: 32px !important;
+			line-height: 32px !important;
+		}
+	}
+
+    /* ANDROID CENTER FIX */
+    div[style*="margin: 16px 0;"] { margin: 0 !important; }
+    </style>
+</head>
+<body style="background-color: #f4f4f4; margin: 0 !important; padding: 0 !important;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 40px;">
+        <!-- HEADER -->
+        <tr>
+            <td bgcolor="#008000" align="center">
+                <!--[if (gte mso 9)|(IE)]>
+                    <table align="center" border="0" cellspacing="0" cellpadding="0" width="600">
+                    <tr>
+                    <td align="center" valign="top" width="600">
+                <![endif]-->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                    <tr>
+                        <td align="center" valign="top" style="padding: 20px 10px 20px 10px;">
+                        </td>
+                    </tr>
+                </table>
+                <!--[if (gte mso 9)|(IE)]>
+                    </td>
+                    </tr>
+                    </table>
+                <![endif]-->
+            </td>
+        </tr>
+
+        <!-- HERO -->
+        <tr>
+            <td bgcolor="#008000" align="center" style="padding: 0px 10px 0px 10px;">
+                <!--[if (gte mso 9)|(IE)]>
+                    <table align="center" border="0" cellspacing="0" cellpadding="0" width="600">
+                    <tr>
+                    <td align="center" valign="top" width="600">
+                <![endif]-->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                    <tr>
+                        <td bgcolor="#ffffff" align="left" valign="top" style="padding: 40px 20px 20px 20px; color: #000000; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 36px; font-weight: 900; line-height: 48px;">
+                            <h1 style="font-size: 36px; font-weight: 900; margin: 0;">@form.Name</h1>
+                        </td>
+                    </tr>
+                </table>
+                <!--[if (gte mso 9)|(IE)]>
+                    </td>
+                    </tr>
+                    </table>
+                <![endif]-->
+            </td>
+        </tr>
+
+        <!-- COPY BLOCK -->
+        <tr>
+            <td bgcolor="#F3F3F5" align="center" style="padding: 0px 10px 0px 10px;">
+                <!--[if (gte mso 9)|(IE)]>
+                    <table align="center" border="0" cellspacing="0" cellpadding="0" width="600">
+                    <tr>
+                    <td align="center" valign="top" width="600">
+                <![endif]-->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+
+                    <!-- COPY -->
+                    <tr>
+                        <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 20px 30px; color: #303033; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
+
+                            @foreach (var field in Model.Fields)
+                            {
+                                <h4 style="font-weight: 700; margin: 20px 0 0; color: #000000;">@field.Name</h4>
+
+                                switch (field.FieldType)
+                                {
+                                    case "FieldType.FileUpload.cshtml":
+                                        <p style="margin-top: 0;"><a href="@HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority)/@field.GetValue()" target="_blank" style="color: #00AEA2;">@field.GetValue()</a></p>
+                                        break;
+
+                                    case "FieldType.DatePicker.cshtml":
+                                        DateTime dt;
+                                        var fieldValue = field.GetValue();
+                                        var dateValid = DateTime.TryParse(fieldValue != null ? fieldValue.ToString() : string.Empty, out dt);
+                                        var dateStr = dateValid ? dt.ToString("f") : "";
+                                        <p style="margin-top: 0;">@dateStr</p>
+                                        break;
+
+                                    case "FieldType.CheckboxList.cshtml":
+                                        <p style="margin-top: 0;">
+                                            @foreach (var value in field.GetValues())
+                                            {
+                                                @value<br />
+                                            }
+                                        </p>
+                                        break;
+                                    default:
+                                        if (field.FieldType == "FieldType.Textarea.cshtml")
+                                        {
+                                            <div style="margin-top: -20px">@Html.Raw(htmlSanitiser.Sanitize(field.GetValue().ToString()))</div>
+                                        }
+                                        else
+                                        {
+                                            <p style="margin-top: 0;">@field.GetValue()</p>
+                                        }
+                                        break;
+                                }
+                            }
+
+                            <p style="margin-top: 40px; margin-bottom: 0;">Stoolball England</p>
+                            <p style="margin-top: 0; font-size: 14px;">www.stoolball.org.uk</p>
+                            <p style="margin-top: 40px; font-size: 14px;">Please do not reply to this email. It is sent from an account that is not monitored.</p>
+                        </td>
+                    </tr>
+                </table>
+                <!--[if (gte mso 9)|(IE)]>
+                    </td>
+                    </tr>
+                    </table>
+                <![endif]-->
+            </td>
+        </tr>
+
+    </table>
+</body>
+</html>
