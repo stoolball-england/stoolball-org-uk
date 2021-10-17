@@ -13,12 +13,12 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ feature/github-actions ]
-  # pull_request:
+    branches: [ master ]
+  pull_request:
     # The branches below must be a subset of the branches above
-    # branches: [ master ]
-  # schedule:
-  #   - cron: '19 6 * * 5'
+    branches: [ master ]
+  schedule:
+    - cron: '19 6 * * 5'
 
 jobs:
   analyze:
@@ -52,9 +52,6 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.3
 
-    # - name: Setup NuGet
-    #   uses: NuGet/setup-nuget@v1.0.2
-    
     - name: Restore NuGet Packages
       run: nuget restore Stoolball.sln
 
