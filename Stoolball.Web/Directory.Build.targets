@@ -236,7 +236,7 @@
     <Delete Files="$(TempUmbracoFormsConfig)" />
   </Target>
 
-  <Target Name="StoolballTransformWebConfig" AfterTargets="StoolballCopyFilesFromUmbracoCloud">
+  <Target Name="StoolballTransformWebConfig" AfterTargets="StoolballCopyFilesFromUmbracoCloud" Condition="'$(REQUIRE_CLOUD_REPO)' != 'false'">
     <!-- Applies changes to Web.config on build from XDT transforms so that the unaltered Web.config 
          can always be copied from the Umbraco Cloud repository. -->
     <PropertyGroup>
