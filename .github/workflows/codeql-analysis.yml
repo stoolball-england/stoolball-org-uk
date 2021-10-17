@@ -60,6 +60,8 @@ jobs:
 
     - name: Build and Publish Web App
       run: msbuild Stoolball.sln /p:Configuration=Release
+      env:
+          REQUIRE_CLOUD_REPO: false
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
