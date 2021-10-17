@@ -13,17 +13,17 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
+    branches: [ feature/github-actions ]
+  # pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ master ]
-  schedule:
-    - cron: '19 6 * * 5'
+    # branches: [ master ]
+  # schedule:
+  #   - cron: '19 6 * * 5'
 
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     strategy:
       fail-fast: false
@@ -49,9 +49,17 @@ jobs:
 
     # Need to build the code before running CodeQL
 
-    #- run: |
-    #   make bootstrap
-    #   make release
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.3
 
-    # - name: Perform CodeQL Analysis
-    #   uses: github/codeql-action/analyze@v1
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.2
+    
+    - name: Restore NuGet Packages
+      run: nuget restore Stoolball.sln
+
+    - name: Build and Publish Web App
+      run: msbuild Stoolball.sln /p:Configuration=Release
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v1
