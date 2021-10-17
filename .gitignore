@@ -375,13 +375,14 @@ splashes
 !**/App_Plugins/UmbracoForms/Backoffice/Common/FieldTypes
 **/App_Plugins/UmbracoForms/Backoffice/Common/FieldTypes/*
 !**/App_Plugins/UmbracoForms/Backoffice/Common/FieldTypes/EmailField.html
+**/Views/Partials/BlockList/Default.cshtml
 **/Views/Partials/Forms/*
+!**/Views/Partials/Forms/Emails
+**/Views/Partials/Forms/Emails/Example-Template.cshtml
 !**/Views/Partials/Forms/Themes
 **/Views/Partials/Forms/Themes/*
 !**/Views/Partials/Forms/Themes/stoolball
 **/Views/Partials/Grid
-**/Views/Partials/BlockList/*
-!**/Views/Partials/BlockList/Components
 **/Views/MacroPartials
 .UmbracoCloud
 **/data/deploy*
