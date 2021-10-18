@@ -55,7 +55,7 @@ jobs:
     - name: Restore NuGet Packages
       run: nuget restore Stoolball.sln
 
-    - name: Build and Publish Web App
+    - name: Build Solution
       run: msbuild Stoolball.sln /p:Configuration=Release
       env:
           REQUIRE_CLOUD_REPO: false

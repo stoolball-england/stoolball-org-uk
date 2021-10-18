@@ -5,4 +5,4 @@
 [assembly: InternalsVisibleTo("Stoolball.Data.SqlServer.IntegrationTests")]
 [assembly: InternalsVisibleTo("Stoolball.UnitTests")]
 [assembly: InternalsVisibleTo("Stoolball.Web")]
-[assembly: InternalsVisibleTo("Stoolball.Web.Tests")]
+[assembly: InternalsVisibleTo("Stoolball.Web.UnitTests")]

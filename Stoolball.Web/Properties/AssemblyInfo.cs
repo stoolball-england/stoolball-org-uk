@@ -35,4 +35,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 // Allow otherwise private methods to be exposed only for testing
-[assembly: InternalsVisibleTo("Stoolball.Web.Tests")]
+[assembly: InternalsVisibleTo("Stoolball.Web.UnitTests")]
