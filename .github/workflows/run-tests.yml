@@ -29,8 +29,8 @@ jobs:
 
     - name: Run Stoolball.UnitTests 
       run: |
-        "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe" "Stoolball.UnitTests/bin/Release/netcoreapp3.1/Stoolball.UnitTests.dll"
+        & "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe" "Stoolball.UnitTests/bin/Release/netcoreapp3.1/Stoolball.UnitTests.dll"
 
     - name: Run Stoolball.Web.UnitTests 
       run: |
-        "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe" "Stoolball.Web.UnitTests/bin/Release/Stoolball.Web.UnitTests.dll"
+        & "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe" "Stoolball.Web.UnitTests/bin/Release/Stoolball.Web.UnitTests.dll"
