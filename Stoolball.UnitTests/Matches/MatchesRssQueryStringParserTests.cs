@@ -11,33 +11,39 @@ namespace Stoolball.UnitTests.Matches
     public class MatchesRssQueryStringParserTests
     {
         [Fact]
-        public void No_date_in_querystring_returns_default_date_filter()
+        public void No_date_in_querystring_returns_default_date_filter_as_UK_date()
         {
             var parser = new MatchesRssQueryStringParser();
 
             var result = parser.ParseFilterFromQueryString(new NameValueCollection());
 
-            Assert.Equal(((DateTimeOffset)DateTimeOffset.UtcNow.Date), result.FromDate);
-            Assert.Equal(((DateTimeOffset)DateTimeOffset.UtcNow.Date).AddDays(366).AddSeconds(-1), result.UntilDate);
+            var ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+            var ukToday = new DateTimeOffset(DateTimeOffset.UtcNow.Date, ukTimeZone.GetUtcOffset(DateTimeOffset.UtcNow.Date));
+
+            Assert.Equal(ukToday, result.FromDate);
+            Assert.Equal(ukToday.AddDays(366).AddSeconds(-1), result.UntilDate);
         }
 
         [Fact]
-        public void Today_filter_is_parsed_correctly()
+        public void Today_filter_is_parsed_correctly_as_UK_date()
         {
             var parsedQueryString = HttpUtility.ParseQueryString("?format=tweet&today=true");
             var parser = new MatchesRssQueryStringParser();
 
             var result = parser.ParseFilterFromQueryString(parsedQueryString);
 
-            Assert.Equal(DateTimeOffset.UtcNow.Date, result.FromDate);
-            Assert.Equal(((DateTimeOffset)DateTimeOffset.UtcNow.Date).AddDays(1).AddSeconds(-1), result.UntilDate);
+            var ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+            var ukToday = new DateTimeOffset(DateTimeOffset.UtcNow.Date, ukTimeZone.GetUtcOffset(DateTimeOffset.UtcNow.Date));
+
+            Assert.Equal(ukToday, result.FromDate);
+            Assert.Equal(ukToday.AddDays(1).AddSeconds(-1), result.UntilDate);
         }
 
         [Theory]
         [InlineData("?from=2051-02-21", 2051, 2, 21, 0, null, null, null, null)] // far future because dates earlier than today are discarded
         [InlineData("?to=2021-02-21", null, null, null, null, 2021, 2, 21, 0)]
         [InlineData("?from=2050-07-01&to=2050-07-31", 2050, 7, 1, 1, 2050, 7, 31, 1)]
-        public void Date_filters_are_parsed_correctly(string queryString, int? fromYear, int? fromMonth, int? fromDate, int? fromOffsetHours, int? untilYear, int? untilMonth, int? untilDate, int? untilOffsetHours)
+        public void Date_filters_are_parsed_correctly_as_UK_dates(string queryString, int? fromYear, int? fromMonth, int? fromDate, int? fromOffsetHours, int? untilYear, int? untilMonth, int? untilDate, int? untilOffsetHours)
         {
             var parsedQueryString = HttpUtility.ParseQueryString(queryString);
             var parser = new MatchesRssQueryStringParser();
