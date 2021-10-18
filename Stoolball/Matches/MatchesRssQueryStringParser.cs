@@ -33,34 +33,39 @@ namespace Stoolball.Matches
 
         private static void ParseDateFilter(NameValueCollection queryString, MatchFilter filter)
         {
+            // Dates should be assumed to be in the UK time zone since that's where matches are expected to be
+            var ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+            var ukToday = new DateTimeOffset(DateTimeOffset.UtcNow.Date, ukTimeZone.GetUtcOffset(DateTimeOffset.UtcNow.Date));
+
             // Support date filters that were linked from the old website
             if (bool.TryParse(queryString["today"], out var today) && today)
             {
-                filter.FromDate = DateTimeOffset.UtcNow.Date;
-                filter.UntilDate = DateTimeOffset.UtcNow.Date;
+                filter.FromDate = ukToday;
+                filter.UntilDate = ukToday;
             }
             else
             {
-                if (DateTimeOffset.TryParse(queryString["from"], out var from))
+                if (DateTime.TryParse(queryString["from"], out var from))
                 {
-                    filter.FromDate = from.Date > DateTimeOffset.UtcNow.Date ? from.Date : DateTimeOffset.UtcNow.Date;
+                    var ukFrom = new DateTimeOffset(from.Date, ukTimeZone.GetUtcOffset(from.Date));
+                    filter.FromDate = ukFrom > ukToday ? ukFrom : ukToday;
                 }
                 else
                 {
-                    filter.FromDate = DateTimeOffset.UtcNow.Date;
+                    filter.FromDate = ukToday;
                 }
 
-                if (DateTimeOffset.TryParse(queryString["to"], out var to))
+                if (DateTime.TryParse(queryString["to"], out var to))
                 {
-                    filter.UntilDate = to.Date;
+                    filter.UntilDate = new DateTimeOffset(to.Date, ukTimeZone.GetUtcOffset(from.Date));
                 }
                 else if (int.TryParse(queryString["days"], out var daysAhead))
                 {
-                    filter.UntilDate = DateTimeOffset.UtcNow.Date.AddDays(daysAhead);
+                    filter.UntilDate = ukToday.AddDays(daysAhead);
                 }
                 else
                 {
-                    filter.UntilDate = DateTimeOffset.UtcNow.Date.AddDays(365);
+                    filter.UntilDate = ukToday.AddDays(365);
                 }
             }
 
