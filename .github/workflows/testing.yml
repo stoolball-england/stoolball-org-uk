@@ -7,10 +7,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.3
     - name: Debug
       shell: pwsh
       run: |
-        Write-Output $env:PATH
-        gci $env:PATH
+         gci "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow"
