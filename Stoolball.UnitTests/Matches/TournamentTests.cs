@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using Humanizer;
-using Humanizer.Configuration;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
@@ -115,7 +113,6 @@ namespace Stoolball.UnitTests.Matches
         [Fact]
         public void Tournament_description_should_include_match_type_and_multiple_competitions()
         {
-            Configurator.CollectionFormatters.Register(CultureInfo.CurrentCulture.Name, new HumanizerCollectionGrammar());
             var tournament = new Tournament
             {
                 Seasons = new List<Season>{
@@ -145,7 +142,7 @@ namespace Stoolball.UnitTests.Matches
 
             var result = tournament.Description();
 
-            Assert.Equal("Stoolball tournament in Competition one, Competition two and Competition three.", result);
+            Assert.Equal("Stoolball tournament in Competition one, Competition two, and Competition three.", result);
         }
     }
 }
