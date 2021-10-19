@@ -29,8 +29,18 @@ jobs:
 
     - name: Run Stoolball.UnitTests 
       run: |
-        & "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe" "Stoolball.UnitTests/bin/Release/netcoreapp3.1/Stoolball.UnitTests.dll"
+        & dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --settings ./Stoolball.UnitTests/coverlet.runsettings ./Stoolball.UnitTests/Stoolball.UnitTests.csproj
 
-    - name: Run Stoolball.Web.UnitTests 
-      run: |
-        & "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe" "Stoolball.Web.UnitTests/bin/Release/Stoolball.Web.UnitTests.dll"
+    - name: Run codacy-coverage-reporter
+      uses: codacy/codacy-coverage-reporter-action@v1
+      with:
+        project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        coverage-reports: coverage.cobertura.xml
+
+    # - name: Run Stoolball.UnitTests 
+    #   run: |
+    #     & "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe" "Stoolball.UnitTests/bin/Release/netcoreapp3.1/Stoolball.UnitTests.dll"
+
+    # - name: Run Stoolball.Web.UnitTests 
+    #   run: |
+    #     & "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe" "Stoolball.Web.UnitTests/bin/Release/Stoolball.Web.UnitTests.dll"
