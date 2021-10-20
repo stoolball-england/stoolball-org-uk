@@ -25,7 +25,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         {
             var testEnvironmentIsLocalDb = File.Exists(_umbracoDatabasePath);
             _databaseName = databaseName;
-            _dacpacPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{_databaseName}.dacpac");
+            _dacpacPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"..\..\..\{_databaseName}.dacpac");
             string connectionStringForTests;
 
             try
