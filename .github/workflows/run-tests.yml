@@ -70,6 +70,9 @@ jobs:
       run: dotnet build --no-restore ./Stoolball.Data.SqlServer.IntegrationTests/Stoolball.Data.SqlServer.IntegrationTests.csproj
 
     - name: Run integration tests
+      env:
+        SQL_SERVER_USERNAME: ${{ secrets.SQL_SERVER_USERNAME }}
+        SQL_SERVER_PASSWORD: ${{ secrets.SQL_SERVER_PASSWORD }}
       run: dotnet test --no-build --verbosity normal ./Stoolball.Data.SqlServer.IntegrationTests/Stoolball.Data.SqlServer.IntegrationTests.csproj
 
     - name: Download artifact
