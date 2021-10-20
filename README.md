@@ -1,6 +1,8 @@
 # Stoolball England website
 
-![Tests passing](https://github.com/stoolball-england/stoolball-org-uk/actions/workflows/run-tests.yml/badge.svg)
+![tests](https://github.com/stoolball-england/stoolball-org-uk/actions/workflows/run-tests.yml/badge.svg)
+![coverage](https://app.codacy.com/project/badge/Coverage/853fda8557fb4c0c981ee022eb4c739e)
+![code quality](https://app.codacy.com/project/badge/Grade/853fda8557fb4c0c981ee022eb4c739e)
 
 This is a rebuild of the Stoolball England website at www.stoolball.org.uk using .NET Framework and Umbraco Cloud.
 
