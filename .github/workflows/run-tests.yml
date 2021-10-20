@@ -32,8 +32,8 @@ jobs:
 
     - name: Run Stoolball.Web.UnitTests 
       run: |
-        & "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe" "Stoolball.Web.UnitTests/bin/Release/Stoolball.Web.UnitTests.dll"
-    
+        & $env:userprofile\.nuget\packages\opencover\4.7.1221\tools\OpenCover.Console.exe -register:user -target:"$env:userprofile\.nuget\packages\xunit.runner.console\2.4.1\tools\net472\xunit.console.x86.exe" -targetargs:"Stoolball.Web.UnitTests/bin/Release/Stoolball.Web.UnitTests.dll" -output:opencover.xml -filter:"+[Stoolball.Web]* -[Stoolball.Web.UnitTests]*"
+
     - name: Prepare artifact
       shell: pwsh
       run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Copy-Item $_.FullName . }
@@ -42,7 +42,9 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: coverage
-        path: coverage.cobertura.xml
+        path: |
+          coverage.cobertura.xml
+          opencover.xml
 
   coverage:
     runs-on: ubuntu-latest
@@ -59,4 +61,4 @@ jobs:
         CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
       with:
         project-token: ${{ env.CODACY_PROJECT_TOKEN }}
-        coverage-reports: coverage.cobertura.xml
+        coverage-reports: coverage.cobertura.xml,opencover.xml
