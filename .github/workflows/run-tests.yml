@@ -28,20 +28,35 @@ jobs:
           REQUIRE_CLOUD_REPO: false
 
     - name: Run Stoolball.UnitTests 
-      run: dotnet test --verbosity normal --collect:"XPlat Code Coverage" --settings ./Stoolball.UnitTests/coverlet.runsettings ./Stoolball.UnitTests/bin/Release/netcoreapp3.1/Stoolball.UnitTests.dll
+      run: dotnet test --verbosity normal --collect:"XPlat Code Coverage" --settings ./Stoolball.UnitTests/coverlet.runsettings ./Stoolball.UnitTests/bin/Release/netcoreapp3.1/Stoolball.UnitTests.dll --test-adapter-path $env:userprofile\.nuget\packages\coverlet.collector\3.1.0\build\netstandard1.0 
+
+    - name: Run Stoolball.Web.UnitTests 
+      run: |
+        & "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe" "Stoolball.Web.UnitTests/bin/Release/Stoolball.Web.UnitTests.dll"
+    
+    - name: Prepare artifact
+      shell: pwsh
+      run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Copy-Item $_.FullName . }
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage
+        path: coverage.cobertura.xml
+
+  coverage:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: coverage
 
     - name: Run codacy-coverage-reporter
       uses: codacy/codacy-coverage-reporter-action@v1
       env:
         CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
       with:
-        project-token: $env:CODACY_PROJECT_TOKEN
+        project-token: ${{ env.CODACY_PROJECT_TOKEN }}
         coverage-reports: coverage.cobertura.xml
-
-    # - name: Run Stoolball.UnitTests 
-    #   run: |
-    #     & "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe" "Stoolball.UnitTests/bin/Release/netcoreapp3.1/Stoolball.UnitTests.dll"
-
-    # - name: Run Stoolball.Web.UnitTests 
-    #   run: |
-    #     & "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe" "Stoolball.Web.UnitTests/bin/Release/Stoolball.Web.UnitTests.dll"
