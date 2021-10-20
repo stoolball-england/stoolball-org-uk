@@ -59,7 +59,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                         DataSource = _sqlServerContainerInstance,
                         UserID = Environment.GetEnvironmentVariable("SQL_SERVER_USERNAME"),
                         Password = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD"),
-                        InitialCatalog = _databaseName
+                        InitialCatalog = _databaseName,
+                        MultipleActiveResultSets = true
                     }.ToString();
                 }
 
