@@ -8,7 +8,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  windows:
 
     runs-on: windows-latest
 
@@ -38,6 +38,45 @@ jobs:
       shell: pwsh
       run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Move-Item $_.FullName . }
 
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage
+        path: |
+          coverage.cobertura.xml
+          opencover.xml
+
+  linux:
+    runs-on: ubuntu-latest
+    needs: windows
+    steps:
+    - uses: actions/checkout@v2
+  
+    - name: Run SQL Server
+      env:
+        SA_PASSWORD: ${{ secrets.SQL_SERVER_PASSWORD }}
+      run: |
+        docker run --name "integration-tests-sql" -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=${{ env.SA_PASSWORD }}" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest
+  
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.x
+
+    - name: Restore dependencies
+      run: dotnet restore ./Stoolball.Data.SqlServer.IntegrationTests/Stoolball.Data.SqlServer.IntegrationTests.csproj
+
+    - name: Build integration tests
+      run: dotnet build --no-restore ./Stoolball.Data.SqlServer.IntegrationTests/Stoolball.Data.SqlServer.IntegrationTests.csproj
+
+    - name: Run integration tests
+      run: dotnet test --no-build --verbosity normal ./Stoolball.Data.SqlServer.IntegrationTests/Stoolball.Data.SqlServer.IntegrationTests.csproj
+
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: coverage
+
     - name: Publish coverage to CodeCov
       shell: pwsh
       env:
@@ -54,23 +93,6 @@ jobs:
         Remove-Item codecov.exe.SHA256SUM*
         .\codecov.exe -F unittests -f coverage.cobertura.xml -t $env:CODECOV_TOKEN
         .\codecov.exe -F unittests -f opencover.xml -t $env:CODECOV_TOKEN
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: coverage
-        path: |
-          coverage.cobertura.xml
-          opencover.xml
-
-  coverage:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - name: Download artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: coverage
 
     - name: Run codacy-coverage-reporter
       uses: codacy/codacy-coverage-reporter-action@v1
