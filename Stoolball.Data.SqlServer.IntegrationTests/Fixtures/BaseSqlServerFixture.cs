@@ -15,7 +15,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         private const string _localDbInstance = @"(LocalDB)\Umbraco";
         private string _sqlServerContainerInstance;
         private readonly string _databaseName;
-        private readonly string _umbracoDatabasePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\Stoolball.Web\App_Data\Umbraco.mdf"));
+        private readonly string _umbracoDatabasePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../../Stoolball.Web/App_Data/Umbraco.mdf"));
         private readonly string _dacpacPath;
         private bool _isDisposed;
 
@@ -25,7 +25,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         {
             var testEnvironmentIsLocalDb = File.Exists(_umbracoDatabasePath);
             _databaseName = databaseName;
-            _dacpacPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"..\..\..\{_databaseName}.dacpac");
+            _dacpacPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"../../../{_databaseName}.dacpac");
             string connectionStringForTests;
 
             try
