@@ -32,7 +32,23 @@ jobs:
 
     - name: Run Stoolball.Web.UnitTests 
       run: |
-        & $env:userprofile\.nuget\packages\opencover\4.7.1221\tools\OpenCover.Console.exe -register:user -target:"$env:userprofile\.nuget\packages\xunit.runner.console\2.4.1\tools\net472\xunit.console.x86.exe" -targetargs:"Stoolball.Web.UnitTests/bin/Release/Stoolball.Web.UnitTests.dll" -output:opencover.xml -filter:"+[Stoolball.Web]* -[Stoolball.Web.UnitTests]*"
+        & $env:userprofile\.nuget\packages\opencover\4.7.1221\tools\OpenCover.Console.exe -register:user -target:"$env:userprofile\.nuget\packages\xunit.runner.console\2.4.1\tools\net472\xunit.console.x86.exe" -targetargs:"Stoolball.Web.UnitTests/bin/Release/Stoolball.Web.UnitTests.dll -noshadow" -output:opencover.xml -filter:"+[Stoolball.Web]* -[Stoolball.Web.UnitTests]*"
+    
+    - name: Publish coverage to CodeCov
+      shell: pwsh
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      run: |
+        $ProgressPreference = 'SilentlyContinue'
+        Invoke-WebRequest -Uri https://keybase.io/codecovsecurity/pgp_keys.asc -OutFile codecov.asc 
+        gpg.exe --import codecov.asc
+        Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
+        Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM -Outfile codecov.exe.SHA256SUM
+        Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM.sig -Outfile codecov.exe.SHA256SUM.sig
+        gpg.exe --verify codecov.exe.SHA256SUM.sig codecov.exe.SHA256SUM
+        If ($(Compare-Object -ReferenceObject  $(($(certUtil -hashfile codecov.exe SHA256)[1], "codecov.exe") -join "  ") -DifferenceObject $(Get-Content codecov.exe.SHA256SUM)).length -eq 0) { echo "SHASUM verified" } Else {exit 1}
+        Remove-Item codecov.exe.SHA256SUM*
+        .\codecov.exe -t $env:CODECOV_TOKEN
 
     - name: Prepare artifact
       shell: pwsh
