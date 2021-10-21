@@ -20,31 +20,22 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.3
 
     - name: Restore NuGet Packages
-      run: nuget restore Stoolball.sln
+      run: nuget restore Stoolball.Web.UnitTests/Stoolball.Web.UnitTests.csproj
 
-    - name: Build Solution
-      run: msbuild Stoolball.sln /p:Configuration=Release
+    - name: Build Stoolball.Web.UnitTests
+      run: msbuild Stoolball.Web.UnitTests/Stoolball.Web.UnitTests.csproj /p:Configuration=Release
       env:
           REQUIRE_CLOUD_REPO: false
-
-    - name: Run Stoolball.UnitTests 
-      run: dotnet test --verbosity normal --collect:"XPlat Code Coverage" --settings ./Stoolball.UnitTests/coverlet.runsettings ./Stoolball.UnitTests/bin/Release/netcoreapp3.1/Stoolball.UnitTests.dll --test-adapter-path $env:userprofile\.nuget\packages\coverlet.collector\3.1.0\build\netstandard1.0 
 
     - name: Run Stoolball.Web.UnitTests 
       run: |
         & $env:userprofile\.nuget\packages\opencover\4.7.1221\tools\OpenCover.Console.exe -register:user -target:"$env:userprofile\.nuget\packages\xunit.runner.console\2.4.1\tools\net472\xunit.console.x86.exe" -targetargs:"Stoolball.Web.UnitTests/bin/Release/Stoolball.Web.UnitTests.dll -noshadow" -output:opencover.xml -filter:"+[Stoolball.Web]* -[Stoolball.Web.UnitTests]*"
     
-    - name: Move coverage to root
-      shell: pwsh
-      run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Move-Item $_.FullName . }
-
-    - name: Upload artifact
+    - name: Upload OpenCover artifact
       uses: actions/upload-artifact@v2
       with:
         name: coverage
-        path: |
-          coverage.cobertura.xml
-          opencover.xml
+        path: opencover.xml
 
   linux:
     runs-on: ubuntu-latest
@@ -52,17 +43,30 @@ jobs:
     steps:
     - uses: actions/checkout@v2
   
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.x
+
+    - name: Restore dependencies
+      run: dotnet restore ./Stoolball.UnitTests/Stoolball.UnitTests.csproj
+
+    - name: Build integration tests
+      run: dotnet build --no-restore ./Stoolball.UnitTests/Stoolball.UnitTests.csproj
+
+    - name: Run Stoolball.UnitTests 
+      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --settings ./Stoolball.UnitTests/coverlet.runsettings ./Stoolball.UnitTests/Stoolball.UnitTests.csproj
+
+    - name: Move coverage to root
+      shell: pwsh
+      run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Move-Item $_.FullName ./unit-tests.cobertura.xml }
+
     - name: Run SQL Server
       env:
         SA_PASSWORD: ${{ secrets.SQL_SERVER_PASSWORD }}
       run: |
         docker run --name "integration-tests-sql" -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=${{ env.SA_PASSWORD }}" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest
   
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.x
-
     - name: Restore dependencies
       run: dotnet restore ./Stoolball.Data.SqlServer.IntegrationTests/Stoolball.Data.SqlServer.IntegrationTests.csproj
 
@@ -73,9 +77,13 @@ jobs:
       env:
         SQL_SERVER_USERNAME: ${{ secrets.SQL_SERVER_USERNAME }}
         SQL_SERVER_PASSWORD: ${{ secrets.SQL_SERVER_PASSWORD }}
-      run: dotnet test --no-build --verbosity normal ./Stoolball.Data.SqlServer.IntegrationTests/Stoolball.Data.SqlServer.IntegrationTests.csproj
+      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --settings ./Stoolball.Data.SqlServer.IntegrationTests/coverlet.runsettings ./Stoolball.Data.SqlServer.IntegrationTests/Stoolball.Data.SqlServer.IntegrationTests.csproj
 
-    - name: Download artifact
+    - name: Move coverage to root
+      shell: pwsh
+      run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Move-Item $_.FullName ./integration-tests.cobertura.xml }
+
+    - name: Download OpenCover artifact
       uses: actions/download-artifact@v2
       with:
         name: coverage
@@ -94,7 +102,8 @@ jobs:
         gpg.exe --verify codecov.exe.SHA256SUM.sig codecov.exe.SHA256SUM
         If ($(Compare-Object -ReferenceObject  $(($(certUtil -hashfile codecov.exe SHA256)[1], "codecov.exe") -join "  ") -DifferenceObject $(Get-Content codecov.exe.SHA256SUM)).length -eq 0) { echo "SHASUM verified" } Else {exit 1}
         Remove-Item codecov.exe.SHA256SUM*
-        .\codecov.exe -F unittests -f coverage.cobertura.xml -t $env:CODECOV_TOKEN
+        .\codecov.exe -F unittests -f unit-tests.cobertura.xml -t $env:CODECOV_TOKEN
+        .\codecov.exe -F integration -f integration-tests.cobertura.xml -t $env:CODECOV_TOKEN
         .\codecov.exe -F unittests -f opencover.xml -t $env:CODECOV_TOKEN
 
     - name: Run codacy-coverage-reporter
@@ -103,4 +112,4 @@ jobs:
         CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
       with:
         project-token: ${{ env.CODACY_PROJECT_TOKEN }}
-        coverage-reports: coverage.cobertura.xml,opencover.xml
+        coverage-reports: unit-tests.cobertura.xml,integration-tests.cobertura.xml,opencover.xml
