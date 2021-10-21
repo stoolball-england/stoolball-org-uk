@@ -22,13 +22,8 @@ jobs:
     - name: Restore NuGet Packages
       run: nuget restore Stoolball.sln
 
-    - name: Build Stoolball.Web
-      run: msbuild Stoolball.Web/Stoolball.Web.csproj /p:Configuration=Release
-      env:
-          REQUIRE_CLOUD_REPO: false
-
-    - name: Build Stoolball.Web.UnitTests
-      run: msbuild Stoolball.Web.UnitTests/Stoolball.Web.UnitTests.csproj /p:Configuration=Release
+    - name: Build Solution
+      run: msbuild Stoolball.sln /p:Configuration=Release
       env:
           REQUIRE_CLOUD_REPO: false
 
