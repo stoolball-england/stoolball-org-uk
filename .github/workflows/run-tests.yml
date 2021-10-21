@@ -20,7 +20,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.3
 
     - name: Restore NuGet Packages
-      run: nuget restore Stoolball.Web.UnitTests/Stoolball.Web.UnitTests.csproj
+      run: nuget restore Stoolball.sln
 
     - name: Build Stoolball.Web.UnitTests
       run: msbuild Stoolball.Web.UnitTests/Stoolball.Web.UnitTests.csproj /p:Configuration=Release
