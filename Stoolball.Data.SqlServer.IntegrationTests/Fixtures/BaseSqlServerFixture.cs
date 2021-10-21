@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -81,6 +81,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 
             // Configure Dapper
             SqlMapper.AddTypeHandler(new DapperUriTypeHandler());
+
+            // Tell Dapper that dates going into and out of the database are in UTC
+            SqlMapper.AddTypeHandler(new DapperDateTimeHandler());
 
             // Create a connection factory that connects to the database, and is accessible via a protected property by classes being tested
             ConnectionFactory = new IntegrationTestsDatabaseConnectionFactory(connectionStringForTests);

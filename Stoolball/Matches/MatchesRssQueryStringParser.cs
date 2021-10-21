@@ -34,7 +34,7 @@ namespace Stoolball.Matches
         private static void ParseDateFilter(NameValueCollection queryString, MatchFilter filter)
         {
             // Dates should be assumed to be in the UK time zone since that's where matches are expected to be
-            var ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+            var ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById(Constants.UkTimeZone);
             var ukToday = new DateTimeOffset(DateTimeOffset.UtcNow.Date, ukTimeZone.GetUtcOffset(DateTimeOffset.UtcNow.Date));
 
             // Support date filters that were linked from the old website

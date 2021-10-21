@@ -1193,7 +1193,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                 var locationResult = await connection.QuerySingleOrDefaultAsync<(Guid teamMatchLocationId, DateTimeOffset? fromDate)>(
                     $"SELECT TeamMatchLocationId, FromDate FROM {Tables.TeamMatchLocation} WHERE TeamId = @TeamId AND MatchLocationId = @MatchLocationId AND UntilDate IS NULL", new { auditable.TeamId, locationToAdd.MatchLocationId }).ConfigureAwait(false);
 
-                Assert.Equal(DateTimeOffset.UtcNow.Date, locationResult.fromDate.Value);
+                Assert.Equal(DateTimeOffset.UtcNow.Date, locationResult.fromDate.Value.UtcDateTime);
             }
         }
 
@@ -1301,7 +1301,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Teams
                     new { auditable.TeamId, locationToRemove.MatchLocationId }
                 ).ConfigureAwait(false);
 
-                Assert.Equal(DateTimeOffset.UtcNow.Date.AddDays(1).AddSeconds(-1), locationResult.untilDate.Value);
+                Assert.Equal(DateTimeOffset.UtcNow.Date.AddDays(1).AddSeconds(-1), locationResult.untilDate.Value.UtcDateTime);
             }
         }
 

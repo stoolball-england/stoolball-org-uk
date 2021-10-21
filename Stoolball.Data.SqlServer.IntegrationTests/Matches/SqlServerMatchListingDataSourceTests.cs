@@ -319,7 +319,6 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
                 Assert.Equal(listing.MatchId, result.MatchId);
                 Assert.Equal(listing.MatchName, result.MatchName);
                 Assert.Equal(listing.StartTime.AccurateToTheMinute(), result.StartTime.AccurateToTheMinute());
-                Assert.Equal(listing.StartTime.AccurateToTheMinute(), result.StartTime.AccurateToTheMinute());
                 Assert.Equal(listing.StartTimeIsKnown, result.StartTimeIsKnown);
                 Assert.Equal(listing.PlayerType, result.PlayerType);
                 Assert.Equal(listing.PlayersPerTeam, result.PlayersPerTeam);

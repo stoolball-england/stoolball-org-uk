@@ -11,6 +11,7 @@ using Stoolball.MatchLocations;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Testing;
+using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests
 {
@@ -105,7 +106,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                        tournament.TournamentId,
                        tournament.TournamentName,
                        MatchLocationId = tournament.TournamentLocation?.MatchLocationId,
-                       tournament.StartTime,
+                       StartTime = TimeZoneInfo.ConvertTimeToUtc(tournament.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)),
                        tournament.StartTimeIsKnown,
                        PlayerType = tournament.PlayerType.ToString(),
                        tournament.PlayersPerTeam,
@@ -183,7 +184,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 match.UpdateMatchNameAutomatically,
                 MatchType = match.MatchType.ToString(),
                 PlayerType = match.PlayerType.ToString(),
-                match.StartTime,
+                StartTime = TimeZoneInfo.ConvertTimeToUtc(match.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)),
                 match.StartTimeIsKnown,
                 match.MatchRoute,
                 match.MatchLocation?.MatchLocationId,
@@ -429,7 +430,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 SeasonTeamId = Guid.NewGuid(),
                 teamInSeason.Season.SeasonId,
                 teamInSeason.Team.TeamId,
-                teamInSeason.WithdrawnDate
+                WithdrawnDate = teamInSeason.WithdrawnDate.HasValue ? TimeZoneInfo.ConvertTimeToUtc(teamInSeason.WithdrawnDate.Value.Date, TimeZoneInfo.FindSystemTimeZoneById(Constants.UkTimeZone)) : (DateTime?)null
             });
         }
 
@@ -747,7 +748,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                             record.PlayerIdentityName,
                             record.PlayerRoute,
                             record.MatchId,
-                            record.MatchStartTime,
+                            MatchStartTime = record.MatchStartTime.UtcDateTime,
                             MatchType = record.MatchType.ToString(),
                             MatchPlayerType = record.MatchPlayerType.ToString(),
                             record.MatchName,
