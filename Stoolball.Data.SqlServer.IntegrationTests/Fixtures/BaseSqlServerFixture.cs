@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -42,7 +42,13 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     dacServices = new DacServices(new SqlConnectionStringBuilder { DataSource = _localDbInstance, IntegratedSecurity = true, InitialCatalog = _umbracoDatabasePath }.ToString());
                     dacServices.Extract(_dacpacPath, _umbracoDatabasePath, _databaseName, new Version(1, 0, 0));
 
-                    connectionStringForTests = new SqlConnectionStringBuilder { DataSource = _localDbInstance, IntegratedSecurity = true, InitialCatalog = _databaseName }.ToString();
+                    connectionStringForTests = new SqlConnectionStringBuilder
+                    {
+                        DataSource = _localDbInstance,
+                        IntegratedSecurity = true,
+                        InitialCatalog = _databaseName,
+                        MultipleActiveResultSets = true
+                    }.ToString();
                 }
                 else
                 {
