@@ -145,7 +145,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 MatchListings.Add(MatchInThePastWithMinimalDetails.ToMatchListing());
 
                 MatchInTheFutureWithMinimalDetails = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
-                MatchInTheFutureWithMinimalDetails.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow.AddMonths(1), UkTimeZone);
+                MatchInTheFutureWithMinimalDetails.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow.AddMonths(1), UkTimeZone());
                 repo.CreateMatch(MatchInTheFutureWithMinimalDetails);
                 Matches.Add(MatchInTheFutureWithMinimalDetails);
                 MatchListings.Add(MatchInTheFutureWithMinimalDetails.ToMatchListing());
@@ -195,7 +195,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 MatchListings.Add(TournamentInThePastWithMinimalDetails.ToMatchListing());
 
                 TournamentInTheFutureWithMinimalDetails = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
-                TournamentInTheFutureWithMinimalDetails.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow.AddMonths(1), UkTimeZone);
+                TournamentInTheFutureWithMinimalDetails.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow.AddMonths(1), UkTimeZone());
                 repo.CreateTournament(TournamentInTheFutureWithMinimalDetails);
                 Tournaments.Add(TournamentInTheFutureWithMinimalDetails);
                 MatchListings.Add(TournamentInTheFutureWithMinimalDetails.ToMatchListing());
@@ -335,7 +335,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 
                     var match = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
                     match.MatchLocation = matchLocation;
-                    match.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow.AddMonths(i - 15), UkTimeZone);
+                    match.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow.AddMonths(i - 15), UkTimeZone());
                     match.MatchType = i % 2 == 0 ? MatchType.FriendlyMatch : MatchType.LeagueMatch;
                     match.PlayerType = i % 3 == 0 ? PlayerType.Mixed : PlayerType.Ladies;
                     match.Comments = seedDataGenerator.CreateComments(i, members);
@@ -345,7 +345,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 
                     var tournament = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
                     tournament.TournamentLocation = matchLocation;
-                    tournament.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow.AddMonths(i - 20).AddDays(5), UkTimeZone);
+                    tournament.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow.AddMonths(i - 20).AddDays(5), UkTimeZone());
                     tournament.Comments = seedDataGenerator.CreateComments(i, members);
                     repo.CreateTournament(tournament);
                     Tournaments.Add(tournament);

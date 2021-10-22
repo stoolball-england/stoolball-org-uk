@@ -149,7 +149,7 @@ namespace Stoolball.Data.SqlServer
                         PlayerType = auditableTournament.PlayerType.ToString(),
                         auditableTournament.PlayersPerTeam,
                         QualificationType = auditableTournament.QualificationType.ToString(),
-                        StartTime = TimeZoneInfo.ConvertTimeToUtc(auditableTournament.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)),
+                        StartTime = TimeZoneInfo.ConvertTimeToUtc(auditableTournament.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone())),
                         auditableTournament.StartTimeIsKnown,
                         auditableTournament.TournamentNotes,
                         auditableTournament.TournamentRoute,
@@ -301,7 +301,7 @@ namespace Stoolball.Data.SqlServer
                         PlayerType = auditableTournament.PlayerType.ToString(),
                         auditableTournament.PlayersPerTeam,
                         QualificationType = auditableTournament.QualificationType.ToString(),
-                        StartTime = TimeZoneInfo.ConvertTimeToUtc(auditableTournament.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)),
+                        StartTime = TimeZoneInfo.ConvertTimeToUtc(auditableTournament.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone())),
                         auditableTournament.StartTimeIsKnown,
                         auditableTournament.TournamentNotes,
                         auditableTournament.TournamentRoute,
@@ -332,7 +332,7 @@ namespace Stoolball.Data.SqlServer
                             auditableTournament.TournamentLocation?.MatchLocationId,
                             PlayerType = auditableTournament.PlayerType.ToString(),
                             auditableTournament.PlayersPerTeam,
-                            StartTime = TimeZoneInfo.ConvertTimeToUtc(auditableTournament.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)),
+                            StartTime = TimeZoneInfo.ConvertTimeToUtc(auditableTournament.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone())),
                             auditableTournament.TournamentId
                         },
                         transaction).ConfigureAwait(false);
@@ -380,7 +380,7 @@ namespace Stoolball.Data.SqlServer
                                         TeamMatchLocationId = Guid.NewGuid(),
                                         transientTeam.TeamId,
                                         auditableTournament.TournamentLocation.MatchLocationId,
-                                        FromDate = TimeZoneInfo.ConvertTimeToUtc(auditableTournament.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)).Date
+                                        FromDate = TimeZoneInfo.ConvertTimeToUtc(auditableTournament.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone())).Date
                                     }, transaction).ConfigureAwait(false);
                             }
                         }

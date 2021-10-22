@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 
 namespace Stoolball
 {
@@ -85,6 +86,6 @@ namespace Stoolball
             public const int PageSize = 50;
         }
 
-        public const string UkTimeZone = "GMT Standard Time";
+        public static string UkTimeZone() => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "GMT Standard Time" : "Europe/London";
     }
 }

@@ -137,11 +137,11 @@ WriteLiteral("</title>\r\n            <link>https://www.stoolball.org.uk/matches
             string tweetTitle;
             if (Request.QueryString["today"] =="true")
             {
-                if (listing.MatchType == null && TimeZoneInfo.ConvertTimeFromUtc(DateTimeOffset.UtcNow.DateTime, TimeZoneInfo.FindSystemTimeZoneById(Stoolball.Constants.UkTimeZone)).Hour >= 8)
+                if (listing.MatchType == null && TimeZoneInfo.ConvertTimeFromUtc(DateTimeOffset.UtcNow.DateTime, TimeZoneInfo.FindSystemTimeZoneById(Stoolball.Constants.UkTimeZone())).Hour >= 8)
                 {
                     tweetTitle = $"We're off to {listing.MatchName}! #stoolball";
                 }
-                else if (TimeZoneInfo.ConvertTimeFromUtc(DateTimeOffset.UtcNow.DateTime, TimeZoneInfo.FindSystemTimeZoneById(Stoolball.Constants.UkTimeZone)).Hour < 16)
+                else if (TimeZoneInfo.ConvertTimeFromUtc(DateTimeOffset.UtcNow.DateTime, TimeZoneInfo.FindSystemTimeZoneById(Stoolball.Constants.UkTimeZone())).Hour < 16)
                 {
                     continue; // don't tweet tournaments until 8am or matches until 4pm
                 }
@@ -258,30 +258,30 @@ WriteLiteral("</guid>\r\n");
 
 WriteLiteral("                    <source");
 
-WriteAttribute("url", Tuple.Create(" url=\"", 3542), Tuple.Create("\"", 3688)
+WriteAttribute("url", Tuple.Create(" url=\"", 3546), Tuple.Create("\"", 3692)
             
             #line 69 "..\..\Views\MatchTweets.cshtml"
-, Tuple.Create(Tuple.Create("", 3548), Tuple.Create<System.Object, System.Int32>(Request.Url.Scheme
+, Tuple.Create(Tuple.Create("", 3552), Tuple.Create<System.Object, System.Int32>(Request.Url.Scheme
             
             #line default
             #line hidden
-, 3548), false)
-, Tuple.Create(Tuple.Create("", 3567), Tuple.Create("://www.stoolball.org.uk", 3567), true)
+, 3552), false)
+, Tuple.Create(Tuple.Create("", 3571), Tuple.Create("://www.stoolball.org.uk", 3571), true)
             
             #line 69 "..\..\Views\MatchTweets.cshtml"
-, Tuple.Create(Tuple.Create("", 3590), Tuple.Create<System.Object, System.Int32>(Request.Url.AbsolutePath.Substring(0,Request.Url.AbsolutePath.Length-4)
+, Tuple.Create(Tuple.Create("", 3594), Tuple.Create<System.Object, System.Int32>(Request.Url.AbsolutePath.Substring(0,Request.Url.AbsolutePath.Length-4)
             
             #line default
             #line hidden
-, 3590), false)
-, Tuple.Create(Tuple.Create("", 3664), Tuple.Create(".rss", 3664), true)
+, 3594), false)
+, Tuple.Create(Tuple.Create("", 3668), Tuple.Create(".rss", 3668), true)
             
             #line 69 "..\..\Views\MatchTweets.cshtml"
-                                                                          , Tuple.Create(Tuple.Create("", 3668), Tuple.Create<System.Object, System.Int32>(Request.Url.Query
+                                                                          , Tuple.Create(Tuple.Create("", 3672), Tuple.Create<System.Object, System.Int32>(Request.Url.Query
             
             #line default
             #line hidden
-, 3668), false)
+, 3672), false)
 );
 
 WriteLiteral(" />\r\n");

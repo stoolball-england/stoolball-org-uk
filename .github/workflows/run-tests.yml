@@ -51,7 +51,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ./Stoolball.UnitTests/Stoolball.UnitTests.csproj
 
-    - name: Build integration tests
+    - name: Build unit tests
       run: dotnet build --no-restore ./Stoolball.UnitTests/Stoolball.UnitTests.csproj
 
     - name: Run Stoolball.UnitTests 

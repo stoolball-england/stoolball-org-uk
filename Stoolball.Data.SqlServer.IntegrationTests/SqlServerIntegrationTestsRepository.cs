@@ -106,7 +106,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                        tournament.TournamentId,
                        tournament.TournamentName,
                        MatchLocationId = tournament.TournamentLocation?.MatchLocationId,
-                       StartTime = TimeZoneInfo.ConvertTimeToUtc(tournament.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)),
+                       StartTime = TimeZoneInfo.ConvertTimeToUtc(tournament.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone())),
                        tournament.StartTimeIsKnown,
                        PlayerType = tournament.PlayerType.ToString(),
                        tournament.PlayersPerTeam,
@@ -184,7 +184,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 match.UpdateMatchNameAutomatically,
                 MatchType = match.MatchType.ToString(),
                 PlayerType = match.PlayerType.ToString(),
-                StartTime = TimeZoneInfo.ConvertTimeToUtc(match.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)),
+                StartTime = TimeZoneInfo.ConvertTimeToUtc(match.StartTime.DateTime, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone())),
                 match.StartTimeIsKnown,
                 match.MatchRoute,
                 match.MatchLocation?.MatchLocationId,
@@ -430,7 +430,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 SeasonTeamId = Guid.NewGuid(),
                 teamInSeason.Season.SeasonId,
                 teamInSeason.Team.TeamId,
-                WithdrawnDate = teamInSeason.WithdrawnDate.HasValue ? TimeZoneInfo.ConvertTimeToUtc(teamInSeason.WithdrawnDate.Value.Date, TimeZoneInfo.FindSystemTimeZoneById(Constants.UkTimeZone)) : (DateTime?)null
+                WithdrawnDate = teamInSeason.WithdrawnDate.HasValue ? TimeZoneInfo.ConvertTimeToUtc(teamInSeason.WithdrawnDate.Value.Date, TimeZoneInfo.FindSystemTimeZoneById(Constants.UkTimeZone())) : (DateTime?)null
             });
         }
 

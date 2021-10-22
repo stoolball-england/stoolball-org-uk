@@ -1200,7 +1200,7 @@ namespace Stoolball.Testing
 
             // create a date accurate to the minute, otherwise integration tests can fail due to fractions of a second which are never seen in real data
             var randomStartTime = DateTimeOffset.UtcNow.AddMonths(_randomiser.Next(30) * -1 - 1);
-            match.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(new DateTimeOffset(randomStartTime.Year, randomStartTime.Month, randomStartTime.Day, randomStartTime.Hour, randomStartTime.Minute, 0, TimeSpan.Zero), Constants.UkTimeZone);
+            match.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(new DateTimeOffset(randomStartTime.Year, randomStartTime.Month, randomStartTime.Day, randomStartTime.Hour, randomStartTime.Minute, 0, TimeSpan.Zero), Constants.UkTimeZone());
 
             // Some matches should have multiple innings
             if (_randomiser.Next(4) == 0)

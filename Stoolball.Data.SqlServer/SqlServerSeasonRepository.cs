@@ -452,7 +452,7 @@ namespace Stoolball.Data.SqlServer
                                     SeasonTeamId = Guid.NewGuid(),
                                     auditableSeason.SeasonId,
                                     team.Team.TeamId,
-                                    WithdrawnDate = team.WithdrawnDate.HasValue ? TimeZoneInfo.ConvertTimeToUtc(team.WithdrawnDate.Value.Date, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone)) : (DateTime?)null
+                                    WithdrawnDate = team.WithdrawnDate.HasValue ? TimeZoneInfo.ConvertTimeToUtc(team.WithdrawnDate.Value.Date, TimeZoneInfo.FindSystemTimeZoneById(UkTimeZone())) : (DateTime?)null
                                 },
                                 transaction).ConfigureAwait(false);
                     }
