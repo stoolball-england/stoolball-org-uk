@@ -57,7 +57,7 @@ namespace Stoolball.Matches
 
                 if (DateTime.TryParse(queryString["to"], out var to))
                 {
-                    filter.UntilDate = new DateTimeOffset(to.Date, ukTimeZone.GetUtcOffset(from.Date));
+                    filter.UntilDate = new DateTimeOffset(to.Date, ukTimeZone.GetUtcOffset(to.Date));
                 }
                 else if (int.TryParse(queryString["days"], out var daysAhead))
                 {

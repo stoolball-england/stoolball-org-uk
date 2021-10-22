@@ -115,6 +115,8 @@ namespace Stoolball.UnitTests.Matches
         [Fact]
         public void Tournament_description_should_include_match_type_and_multiple_competitions()
         {
+            // Setting the culture changes the default behaviour of Humanizer(), rather than relying on the host machine.
+            // At runtime the culture is set by web.config, but in tests we need to set it explicitly to work both locally and on Github Actions in Ubuntu.
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
 
             var tournament = new Tournament
