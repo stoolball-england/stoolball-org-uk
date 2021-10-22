@@ -17,7 +17,7 @@ namespace Stoolball.UnitTests.Matches
 
             var result = parser.ParseFilterFromQueryString(new NameValueCollection());
 
-            var ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+            var ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById(Constants.UkTimeZone());
             var ukToday = new DateTimeOffset(DateTimeOffset.UtcNow.Date, ukTimeZone.GetUtcOffset(DateTimeOffset.UtcNow.Date));
 
             Assert.Equal(ukToday, result.FromDate);
@@ -32,7 +32,7 @@ namespace Stoolball.UnitTests.Matches
 
             var result = parser.ParseFilterFromQueryString(parsedQueryString);
 
-            var ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+            var ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById(Constants.UkTimeZone());
             var ukToday = new DateTimeOffset(DateTimeOffset.UtcNow.Date, ukTimeZone.GetUtcOffset(DateTimeOffset.UtcNow.Date));
 
             Assert.Equal(ukToday, result.FromDate);

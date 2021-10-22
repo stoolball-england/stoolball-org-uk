@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Threading;
 using Humanizer;
 using Stoolball.Competitions;
 using Stoolball.Matches;
@@ -113,6 +115,8 @@ namespace Stoolball.UnitTests.Matches
         [Fact]
         public void Tournament_description_should_include_match_type_and_multiple_competitions()
         {
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
+
             var tournament = new Tournament
             {
                 Seasons = new List<Season>{

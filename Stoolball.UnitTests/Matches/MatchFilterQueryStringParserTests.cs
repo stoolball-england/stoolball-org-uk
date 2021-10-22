@@ -4,7 +4,7 @@ using System.Web;
 using Stoolball.Matches;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Matches
+namespace Stoolball.Tests.Matches
 {
     public class MatchFilterQueryStringParserTests
     {
