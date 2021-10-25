@@ -722,8 +722,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
             {
                 CompetitionId = competition.CompetitionId,
                 CompetitionName = competition.CompetitionName,
-                CompetitionRoute = competition.CompetitionRoute,
-                Seasons = competition.Seasons.Select(x => new Season { SeasonId = x.SeasonId, SeasonRoute = x.SeasonRoute }).ToList()
+                CompetitionRoute = competition.CompetitionRoute
             };
 
             var updatedRoute = competition.CompetitionRoute + "-updated";
@@ -749,14 +748,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Competitions
 
             using (var connection = _databaseFixture.ConnectionFactory.CreateDatabaseConnection())
             {
-                foreach (var season in competition.Seasons)
+                var seasonRoutes = await connection.QueryAsync<string>($"SELECT SeasonRoute FROM {Tables.Season} WHERE CompetitionId = @CompetitionId", competition).ConfigureAwait(false);
+                foreach (var route in seasonRoutes)
                 {
-                    var updatedSeasonRoute = updatedRoute + season.SeasonRoute.Substring(competition.CompetitionRoute.Length);
+                    Assert.Matches("^" + updatedRoute.Replace("/", @"\/") + @"\/[0-9]{4}(-[0-9]{2,4})?$", route);
 
-                    var seasonRouteResult = await connection.ExecuteScalarAsync<string>($"SELECT SeasonRoute FROM {Tables.Season} WHERE SeasonId = @SeasonId", season).ConfigureAwait(false);
-                    Assert.Equal(updatedSeasonRoute, seasonRouteResult);
-
-                    redirects.Verify(x => x.InsertRedirect(season.SeasonRoute, updatedSeasonRoute, null, It.IsAny<IDbTransaction>()), Times.Once);
+                    redirects.Verify(x => x.InsertRedirect(competition.CompetitionRoute + route.Substring(route.LastIndexOf("/", StringComparison.OrdinalIgnoreCase)), route, null, It.IsAny<IDbTransaction>()), Times.Once);
                 }
             }
         }

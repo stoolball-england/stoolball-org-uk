@@ -304,7 +304,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                   {
                       overBowled.OverId,
                       innings.MatchInningsId,
-                      overBowled.OverSet.OverSetId,
+                      overBowled.OverSet?.OverSetId,
                       BowlerPlayerIdentityId = overBowled.Bowler.PlayerIdentityId,
                       overBowled.OverNumber,
                       overBowled.BallsBowled,
