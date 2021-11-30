@@ -711,7 +711,7 @@ namespace Stoolball.Testing
                     CommentId = Guid.NewGuid(),
                     MemberKey = member.memberId,
                     MemberName = member.memberName,
-                    CommentDate = DateTimeOffset.UtcNow.AddDays(i * -1),
+                    CommentDate = DateTimeOffset.UtcNow.AccurateToTheMinute().AddDays(i * -1),
                     Comment = $"<p>This is comment number <b>{i}</b>.</p>"
                 });
             }

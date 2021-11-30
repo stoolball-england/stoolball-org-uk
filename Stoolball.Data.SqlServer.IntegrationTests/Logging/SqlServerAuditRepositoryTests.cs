@@ -5,6 +5,7 @@ using Dapper;
 using Moq;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Logging;
+using Stoolball.Testing;
 using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Logging
@@ -42,7 +43,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Logging
             {
                 Action = AuditAction.Update,
                 ActorName = "Example actor",
-                AuditDate = DateTime.UtcNow,
+                AuditDate = DateTimeOffset.UtcNow.AccurateToTheMinute(),
                 EntityUri = new Uri("https://example.org/example")
             };
 
@@ -56,7 +57,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Logging
             {
                 Action = AuditAction.Update,
                 ActorName = "Example actor",
-                AuditDate = DateTime.UtcNow,
+                AuditDate = DateTimeOffset.UtcNow.AccurateToTheMinute(),
                 EntityUri = new Uri("https://example.org/example"),
                 MemberKey = Guid.NewGuid(),
                 State = "{ state: true }",
@@ -86,7 +87,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Logging
                     Assert.NotNull(auditResult);
                     Assert.Equal(audit.Action, auditResult.Action);
                     Assert.Equal(audit.ActorName, auditResult.ActorName);
-                    Assert.Equal(audit.AuditDate.AccurateToTheMinute(), auditResult.AuditDate.AccurateToTheMinute());
+                    Assert.Equal(audit.AuditDate, auditResult.AuditDate);
                     Assert.Equal(audit.EntityUri, auditResult.EntityUri);
                     Assert.Equal(audit.MemberKey, auditResult.MemberKey);
                     Assert.Equal(audit.State, auditResult.State);

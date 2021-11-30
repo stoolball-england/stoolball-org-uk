@@ -45,7 +45,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Comments
                     Assert.NotNull(result);
 
                     Assert.Equal(comment.MemberName, result.MemberName);
-                    Assert.Equal(comment.CommentDate.AccurateToTheMinute(), result.CommentDate.AccurateToTheMinute());
+                    Assert.Equal(comment.CommentDate, result.CommentDate);
                     Assert.Equal(comment.Comment, result.Comment);
                 }
             }

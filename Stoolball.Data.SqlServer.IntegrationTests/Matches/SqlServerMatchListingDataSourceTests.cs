@@ -225,7 +225,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
                 Assert.Equal(listing.MatchId, result.MatchId);
                 Assert.Equal(listing.MatchName, result.MatchName);
-                Assert.Equal(listing.StartTime.AccurateToTheMinute(), result.StartTime.AccurateToTheMinute());
+                Assert.Equal(listing.StartTime, result.StartTime);
                 Assert.Equal(listing.StartTimeIsKnown, result.StartTimeIsKnown);
                 Assert.Equal(listing.MatchType, result.MatchType);
                 Assert.Equal(listing.PlayerType, result.PlayerType);
@@ -299,8 +299,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var result = results.SingleOrDefault(x => x.MatchId == _databaseFixture.MatchInThePastWithFullDetails.MatchId);
             Assert.NotNull(result);
-            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.History.First().AuditDate.AccurateToTheMinute(), result.FirstAuditDate.Value.AccurateToTheMinute());
-            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.History.Last().AuditDate.AccurateToTheMinute(), result.LastAuditDate.Value.AccurateToTheMinute());
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.History.First().AuditDate, result.FirstAuditDate.Value);
+            Assert.Equal(_databaseFixture.MatchInThePastWithFullDetails.History.Last().AuditDate, result.LastAuditDate.Value);
         }
 
         [Fact]
@@ -318,7 +318,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
                 Assert.Equal(listing.MatchId, result.MatchId);
                 Assert.Equal(listing.MatchName, result.MatchName);
-                Assert.Equal(listing.StartTime.AccurateToTheMinute(), result.StartTime.AccurateToTheMinute());
+                Assert.Equal(listing.StartTime, result.StartTime);
                 Assert.Equal(listing.StartTimeIsKnown, result.StartTimeIsKnown);
                 Assert.Equal(listing.PlayerType, result.PlayerType);
                 Assert.Equal(listing.PlayersPerTeam, result.PlayersPerTeam);
@@ -375,8 +375,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Matches
 
             var result = results.SingleOrDefault(x => x.MatchId == _databaseFixture.TournamentInThePastWithFullDetails.TournamentId);
             Assert.NotNull(result);
-            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.History.First().AuditDate.AccurateToTheMinute(), result.FirstAuditDate.Value.AccurateToTheMinute());
-            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.History.Last().AuditDate.AccurateToTheMinute(), result.LastAuditDate.Value.AccurateToTheMinute());
+            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.History.First().AuditDate, result.FirstAuditDate.Value);
+            Assert.Equal(_databaseFixture.TournamentInThePastWithFullDetails.History.Last().AuditDate, result.LastAuditDate.Value);
         }
 
         [Fact]

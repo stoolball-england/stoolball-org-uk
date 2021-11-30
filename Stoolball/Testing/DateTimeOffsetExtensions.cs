@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Stoolball.Data.SqlServer.IntegrationTests
+namespace Stoolball.Testing
 {
     public static class DateTimeOffsetExtensions
     {

@@ -50,6 +50,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         public SqlServerDataSourceFixture() : base("StoolballDataSourceIntegrationTests")
         {
             // Populate seed data so that there's a consistent baseline for each test run
+            // Create dates accurate to the minute, otherwise integration tests can fail due to fractions of a second which are never seen in real data
             GenerateSeedData();
         }
 
@@ -145,7 +146,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 MatchListings.Add(MatchInThePastWithMinimalDetails.ToMatchListing());
 
                 MatchInTheFutureWithMinimalDetails = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
-                MatchInTheFutureWithMinimalDetails.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow.AddMonths(1), UkTimeZone());
+                MatchInTheFutureWithMinimalDetails.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(1), UkTimeZone());
                 repo.CreateMatch(MatchInTheFutureWithMinimalDetails);
                 Matches.Add(MatchInTheFutureWithMinimalDetails);
                 MatchListings.Add(MatchInTheFutureWithMinimalDetails.ToMatchListing());
@@ -176,12 +177,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 MatchInThePastWithFullDetails.History.AddRange(new[] { new AuditRecord {
                     Action = AuditAction.Create,
                     ActorName = nameof(SqlServerDataSourceFixture),
-                    AuditDate = DateTimeOffset.UtcNow.AddMonths(-1),
+                    AuditDate = DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(-1),
                     EntityUri = MatchInThePastWithFullDetails.EntityUri
                 }, new AuditRecord {
                     Action = AuditAction.Update,
                     ActorName = nameof(SqlServerDataSourceFixture),
-                    AuditDate = DateTimeOffset.UtcNow,
+                    AuditDate = DateTimeOffset.UtcNow.AccurateToTheMinute(),
                     EntityUri = MatchInThePastWithFullDetails.EntityUri
                 } });
                 foreach (var audit in MatchInThePastWithFullDetails.History)
@@ -195,7 +196,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 MatchListings.Add(TournamentInThePastWithMinimalDetails.ToMatchListing());
 
                 TournamentInTheFutureWithMinimalDetails = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
-                TournamentInTheFutureWithMinimalDetails.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow.AddMonths(1), UkTimeZone());
+                TournamentInTheFutureWithMinimalDetails.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(1), UkTimeZone());
                 repo.CreateTournament(TournamentInTheFutureWithMinimalDetails);
                 Tournaments.Add(TournamentInTheFutureWithMinimalDetails);
                 MatchListings.Add(TournamentInTheFutureWithMinimalDetails.ToMatchListing());
@@ -237,12 +238,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 TournamentInThePastWithFullDetails.History.AddRange(new[] { new AuditRecord {
                     Action = AuditAction.Create,
                     ActorName = nameof(SqlServerDataSourceFixture),
-                    AuditDate = DateTimeOffset.UtcNow.AddMonths(-2),
+                    AuditDate = DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(-2),
                     EntityUri = TournamentInThePastWithFullDetails.EntityUri
                 }, new AuditRecord {
                     Action = AuditAction.Update,
                     ActorName = nameof(SqlServerDataSourceFixture),
-                    AuditDate = DateTimeOffset.UtcNow.AddDays(-7),
+                    AuditDate = DateTimeOffset.UtcNow.AccurateToTheMinute().AddDays(-7),
                     EntityUri = TournamentInThePastWithFullDetails.EntityUri
                 } });
                 foreach (var audit in TournamentInThePastWithFullDetails.History)
@@ -335,7 +336,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 
                     var match = seedDataGenerator.CreateMatchInThePastWithMinimalDetails();
                     match.MatchLocation = matchLocation;
-                    match.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow.AddMonths(i - 15), UkTimeZone());
+                    match.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(i - 15), UkTimeZone());
                     match.MatchType = i % 2 == 0 ? MatchType.FriendlyMatch : MatchType.LeagueMatch;
                     match.PlayerType = i % 3 == 0 ? PlayerType.Mixed : PlayerType.Ladies;
                     match.Comments = seedDataGenerator.CreateComments(i, members);
@@ -345,7 +346,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 
                     var tournament = seedDataGenerator.CreateTournamentInThePastWithMinimalDetails();
                     tournament.TournamentLocation = matchLocation;
-                    tournament.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow.AddMonths(i - 20).AddDays(5), UkTimeZone());
+                    tournament.StartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow.AccurateToTheMinute().AddMonths(i - 20).AddDays(5), UkTimeZone());
                     tournament.Comments = seedDataGenerator.CreateComments(i, members);
                     repo.CreateTournament(tournament);
                     Tournaments.Add(tournament);

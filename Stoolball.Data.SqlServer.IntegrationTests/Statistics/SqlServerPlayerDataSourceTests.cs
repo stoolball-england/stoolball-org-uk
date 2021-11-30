@@ -7,6 +7,7 @@ using Moq;
 using Stoolball.Data.SqlServer.IntegrationTests.Fixtures;
 using Stoolball.Routing;
 using Stoolball.Statistics;
+using Stoolball.Testing;
 using Xunit;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics

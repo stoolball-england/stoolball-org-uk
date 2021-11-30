@@ -266,7 +266,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                         Assert.NotNull(result);
 
                         Assert.Equal(match.MatchRoute, result.Match.MatchRoute);
-                        Assert.Equal(match.StartTime.AccurateToTheMinute(), result.Match.StartTime.AccurateToTheMinute());
+                        Assert.Equal(match.StartTime, result.Match.StartTime);
                         Assert.Equal(match.MatchName, result.Match.MatchName);
                     }
                 }
@@ -530,8 +530,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             var previousStartTime = DateTimeOffset.MaxValue;
             foreach (var result in results)
             {
-                Assert.True(result.Match.StartTime.AccurateToTheMinute() <= previousStartTime);
-                previousStartTime = result.Match.StartTime.AccurateToTheMinute();
+                Assert.True(result.Match.StartTime <= previousStartTime);
+                previousStartTime = result.Match.StartTime;
             }
         }
 
