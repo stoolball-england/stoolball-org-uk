@@ -29,7 +29,7 @@ jobs:
 
     - name: Run Stoolball.Web.UnitTests 
       run: |
-        & $env:userprofile\.nuget\packages\opencover\4.7.1221\tools\OpenCover.Console.exe -register:user -target:"$env:userprofile\.nuget\packages\xunit.runner.console\2.4.1\tools\net472\xunit.console.x86.exe" -targetargs:"Stoolball.Web.UnitTests/bin/Release/Stoolball.Web.UnitTests.dll -noshadow" -output:opencover.xml -filter:"+[Stoolball.Web]* -[Stoolball.Web.UnitTests]*"
+        & $env:userprofile\.nuget\packages\opencover\4.7.1221\tools\OpenCover.Console.exe -register:path32 -target:"$env:userprofile\.nuget\packages\xunit.runner.console\2.4.1\tools\net472\xunit.console.x86.exe" -targetargs:"Stoolball.Web.UnitTests/bin/Release/Stoolball.Web.UnitTests.dll -noshadow" -output:opencover.xml -filter:"+[Stoolball.Web]* -[Stoolball.Web.UnitTests]*"
     
     - name: Upload OpenCover artifact
       uses: actions/upload-artifact@v2
