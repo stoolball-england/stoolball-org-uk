@@ -89,22 +89,19 @@ jobs:
         name: coverage
 
     - name: Publish coverage to CodeCov
-      shell: pwsh
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       run: |
-        $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest -Uri https://keybase.io/codecovsecurity/pgp_keys.asc -OutFile codecov.asc 
-        gpg.exe --import codecov.asc
-        Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
-        Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM -Outfile codecov.exe.SHA256SUM
-        Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM.sig -Outfile codecov.exe.SHA256SUM.sig
-        gpg.exe --verify codecov.exe.SHA256SUM.sig codecov.exe.SHA256SUM
-        If ($(Compare-Object -ReferenceObject  $(($(certUtil -hashfile codecov.exe SHA256)[1], "codecov.exe") -join "  ") -DifferenceObject $(Get-Content codecov.exe.SHA256SUM)).length -eq 0) { echo "SHASUM verified" } Else {exit 1}
-        Remove-Item codecov.exe.SHA256SUM*
-        .\codecov.exe -F unittests -f unit-tests.cobertura.xml -t $env:CODECOV_TOKEN
-        .\codecov.exe -F integration -f integration-tests.cobertura.xml -t $env:CODECOV_TOKEN
-        .\codecov.exe -F unittests -f opencover.xml -t $env:CODECOV_TOKEN
+        curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import
+        curl -Os https://uploader.codecov.io/latest/linux/codecov
+        curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
+        curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig
+        gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
+        shasum -a 256 -c codecov.SHA256SUM
+        chmod +x codecov
+        ./codecov -F unittests -f unit-tests.cobertura.xml -t ${CODECOV_TOKEN}
+        ./codecov -F integration -f integration-tests.cobertura.xml -t ${CODECOV_TOKEN}
+        ./codecov -F unittests -f opencover.xml -t ${CODECOV_TOKEN}
 
     - name: Run codacy-coverage-reporter
       uses: codacy/codacy-coverage-reporter-action@v1
