@@ -51,6 +51,9 @@ stoolball.autocompletePlayer = function (input) {
 
   $(input).autocomplete({
     serviceUrl: "/api/players/autocomplete",
+    // Disable the built-in cache because names added to the new players list are not added to cached results, so
+    // are missing from later lookups on the same page.
+    noCache: true,
     containerClass: "autocomplete-suggestions player-suggestions",
     params: { teams: input.getAttribute("data-team").split(",") },
     formatResult: function (suggestion, currentValue) {
