@@ -3,6 +3,7 @@
 }
 stoolball.autocompletePlayer = function (input) {
   const thisMatch = "this match";
+  stoolball.autocompletePlayer.currentFocus = "";
 
   // Cache suggestions locally to help recognise any name not already suggested as a new player
   if (!stoolball.autocompletePlayer.cachedSuggestions) {
@@ -75,6 +76,12 @@ stoolball.autocompletePlayer = function (input) {
       );
     },
     transformResult: function (response, originalQuery) {
+      // If the user has moved on before the results are returned, don't return the results as the dropdown
+      // can obscure other fields causing a serious usability problem.
+      if (input.id !== stoolball.autocompletePlayer.currentFocus) {
+        return { suggestions: [] };
+      }
+
       response = JSON.parse(response);
 
       // Find new players first mentioned on this page, who match the search term.
@@ -123,5 +130,10 @@ stoolball.autocompletePlayer = function (input) {
     for (let i = 0; i < targetFields.length; i++) {
       stoolball.autocompletePlayer(targetFields[i]);
     }
+
+    // Track current focus so we know if we're still in the field the lookup was for
+    document.body.addEventListener("focusin", function (e) {
+      stoolball.autocompletePlayer.currentFocus = e.target.id;
+    });
   });
 })();
