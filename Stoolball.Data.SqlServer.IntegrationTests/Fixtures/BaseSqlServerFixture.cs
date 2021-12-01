@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Xml.Linq;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.SqlServer.Dac;
@@ -25,7 +27,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         {
             var testEnvironmentIsLocalDb = File.Exists(_umbracoDatabasePath);
             _databaseName = databaseName;
-            _dacpacPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"../../../{_databaseName}.dacpac");
+            _dacpacPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"../../../Dacpac/{_databaseName}");
             string connectionStringForTests;
 
             try
@@ -38,9 +40,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                     RemoveIntegrationTestsDatabaseIfExists();
 
                     // In local dev, connect to the existing Umbraco database, which is named after its full path, and export it as a DACPAC
-                    // The DACPAC is committed and used by CI without needing to connect to an Umbraco database which isn't there.
+                    // The DACPAC is unzipped, committed and used by CI without needing to connect to an Umbraco database which isn't there.
                     dacServices = new DacServices(new SqlConnectionStringBuilder { DataSource = _localDbInstance, IntegratedSecurity = true, InitialCatalog = _umbracoDatabasePath }.ToString());
-                    dacServices.Extract(_dacpacPath, _umbracoDatabasePath, _databaseName, new Version(1, 0, 0));
+                    dacServices.Extract(_dacpacPath + ".dacpac", _umbracoDatabasePath, _databaseName, new Version(1, 0, 0));
+
+                    ReplaceDacPacExtract();
 
                     connectionStringForTests = new SqlConnectionStringBuilder
                     {
@@ -68,10 +72,12 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                         InitialCatalog = _databaseName,
                         MultipleActiveResultSets = true
                     }.ToString();
+
+                    ZipFile.CreateFromDirectory(_dacpacPath, _dacpacPath + ".dacpac");
                 }
 
                 // Import the DACPAC with a new name - and all data cleared down ready for testing
-                var dacpac = DacPackage.Load(_dacpacPath);
+                var dacpac = DacPackage.Load(_dacpacPath + ".dacpac");
                 dacServices.Deploy(dacpac, _databaseName, true, null, new CancellationToken());
             }
             catch (DacServicesException ex)
@@ -89,6 +95,36 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             ConnectionFactory = new IntegrationTestsDatabaseConnectionFactory(connectionStringForTests);
         }
 
+        private void ReplaceDacPacExtract()
+        {
+            // When a .dacpac is regenerated there is a generated id and timestamp for the operation, which causes a git commit even if nothing
+            // else has changed. To prevent that, if there is already an extracted .dacpac grab the old id and timestamp and use them to overwrite the new ones.
+            string identity, start;
+            if (Directory.Exists(_dacpacPath))
+            {
+                var originFile = Path.Join(_dacpacPath, "Origin.xml");
+                var doc = XDocument.Load(originFile);
+                var root = doc.Document.Root;
+                var op = root.Element("{" + root.GetDefaultNamespace() + "}Operation");
+                identity = op.Element("{" + root.GetDefaultNamespace() + "}Identity").Value;
+                start = op.Element("{" + root.GetDefaultNamespace() + "}Start").Value;
+
+                Directory.Delete(_dacpacPath, true);
+
+                ZipFile.ExtractToDirectory(_dacpacPath + ".dacpac", _dacpacPath);
+
+                doc = XDocument.Load(originFile);
+                root = doc.Document.Root;
+                op = root.Element("{" + root.GetDefaultNamespace() + "}Operation");
+                op.Element("{" + root.GetDefaultNamespace() + "}Identity").SetValue(identity);
+                op.Element("{" + root.GetDefaultNamespace() + "}Start").SetValue(start);
+                doc.Save(originFile);
+            }
+            else
+            {
+                ZipFile.ExtractToDirectory(_dacpacPath + ".dacpac", _dacpacPath);
+            }
+        }
 
         private static string GetContainerIpAddress(string containerName)
         {
