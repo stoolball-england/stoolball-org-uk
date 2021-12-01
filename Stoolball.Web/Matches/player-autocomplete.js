@@ -52,9 +52,6 @@ stoolball.autocompletePlayer = function (input) {
 
   $(input).autocomplete({
     serviceUrl: "/api/players/autocomplete",
-    // Disable the built-in cache because the metadata separated in formatResult() can go missing
-    // when you select a suggestion then press backspace and get the suggestions again.
-    noCache: true,
     containerClass: "autocomplete-suggestions player-suggestions",
     params: { teams: input.getAttribute("data-team").split(",") },
     formatResult: function (suggestion, currentValue) {

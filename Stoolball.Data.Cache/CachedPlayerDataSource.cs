@@ -29,7 +29,8 @@ namespace Stoolball.Data.Cache
 
         public async Task<List<PlayerIdentity>> ReadPlayerIdentities(PlayerFilter filter)
         {
-            return await _playerDataSource.ReadPlayerIdentities(filter).ConfigureAwait(false);
+            var cachePolicy = _policyRegistry.Get<IAsyncPolicy>(CacheConstants.StatisticsPolicy);
+            return await cachePolicy.ExecuteAsync(async context => await _playerDataSource.ReadPlayerIdentities(filter).ConfigureAwait(false), new Context(nameof(ReadPlayerIdentities) + _playerFilterSerializer.Serialize(filter)));
         }
 
         public async Task<List<Player>> ReadPlayers(PlayerFilter filter)
