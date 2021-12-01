@@ -20,6 +20,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         private readonly string _umbracoDatabasePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../../Stoolball.Web/App_Data/Umbraco.mdf"));
         private readonly string _dacpacPath;
         private bool _isDisposed;
+        DacServices _dacServices;
 
         public IDatabaseConnectionFactory ConnectionFactory { get; private set; }
 
@@ -27,24 +28,26 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
         {
             var testEnvironmentIsLocalDb = File.Exists(_umbracoDatabasePath);
             _databaseName = databaseName;
-            _dacpacPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"../../../Dacpac/{_databaseName}");
+            _dacpacPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"../../../{_databaseName}.dacpac");
             string connectionStringForTests;
 
             try
             {
-                DacServices dacServices;
-
                 if (testEnvironmentIsLocalDb)
                 {
                     // Clean up from any previous failed test run - not relevant (and causes a Kerberos error) in CI
                     RemoveIntegrationTestsDatabaseIfExists();
 
                     // In local dev, connect to the existing Umbraco database, which is named after its full path, and export it as a DACPAC
-                    // The DACPAC is unzipped, committed and used by CI without needing to connect to an Umbraco database which isn't there.
-                    dacServices = new DacServices(new SqlConnectionStringBuilder { DataSource = _localDbInstance, IntegratedSecurity = true, InitialCatalog = _umbracoDatabasePath }.ToString());
-                    dacServices.Extract(_dacpacPath + ".dacpac", _umbracoDatabasePath, _databaseName, new Version(1, 0, 0));
+                    // The DACPAC is committed and used by CI without needing to connect to an Umbraco database which isn't there.
+                    _dacServices = new DacServices(new SqlConnectionStringBuilder
+                    {
+                        DataSource = _localDbInstance,
+                        IntegratedSecurity = true,
+                        InitialCatalog = _umbracoDatabasePath
+                    }.ToString());
 
-                    ReplaceDacPacExtract();
+                    CreateOrReplaceDacPac();
 
                     connectionStringForTests = new SqlConnectionStringBuilder
                     {
@@ -57,7 +60,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                 else
                 {
                     _sqlServerContainerInstance = GetContainerIpAddress("integration-tests-sql");
-                    dacServices = new DacServices(new SqlConnectionStringBuilder
+                    _dacServices = new DacServices(new SqlConnectionStringBuilder
                     {
                         DataSource = _sqlServerContainerInstance,
                         UserID = Environment.GetEnvironmentVariable("SQL_SERVER_USERNAME"),
@@ -72,13 +75,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
                         InitialCatalog = _databaseName,
                         MultipleActiveResultSets = true
                     }.ToString();
-
-                    ZipFile.CreateFromDirectory(_dacpacPath, _dacpacPath + ".dacpac");
                 }
 
                 // Import the DACPAC with a new name - and all data cleared down ready for testing
-                var dacpac = DacPackage.Load(_dacpacPath + ".dacpac");
-                dacServices.Deploy(dacpac, _databaseName, true, null, new CancellationToken());
+                var dacpac = DacPackage.Load(_dacpacPath);
+                _dacServices.Deploy(dacpac, _databaseName, true, null, new CancellationToken());
             }
             catch (DacServicesException ex)
             {
@@ -95,35 +96,43 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             ConnectionFactory = new IntegrationTestsDatabaseConnectionFactory(connectionStringForTests);
         }
 
-        private void ReplaceDacPacExtract()
+        private void CreateOrReplaceDacPac()
         {
-            // When a .dacpac is regenerated there is a generated id and timestamp for the operation, which causes a git commit even if nothing
-            // else has changed. To prevent that, if there is already an extracted .dacpac grab the old id and timestamp and use them to overwrite the new ones.
-            string identity, start;
-            if (Directory.Exists(_dacpacPath))
+            if (File.Exists(_dacpacPath))
             {
-                var originFile = Path.Join(_dacpacPath, "Origin.xml");
-                var doc = XDocument.Load(originFile);
-                var root = doc.Document.Root;
-                var op = root.Element("{" + root.GetDefaultNamespace() + "}Operation");
-                identity = op.Element("{" + root.GetDefaultNamespace() + "}Identity").Value;
-                start = op.Element("{" + root.GetDefaultNamespace() + "}Start").Value;
+                // When a .dacpac is regenerated there is a generated id and timestamp for the operation, which causes a git commit even if nothing
+                // else has changed. To prevent that, only replace the dacpac if the actual model inside it has changed.
+                var tempDacpacPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".dacpac");
+                _dacServices.Extract(tempDacpacPath, _umbracoDatabasePath, _databaseName, new Version(1, 0, 0));
 
-                Directory.Delete(_dacpacPath, true);
+                var checksumBefore = ReadDacpacModelChecksum(_dacpacPath);
+                var checksumAfter = ReadDacpacModelChecksum(tempDacpacPath);
 
-                ZipFile.ExtractToDirectory(_dacpacPath + ".dacpac", _dacpacPath);
+                if (checksumAfter != checksumBefore)
+                {
+                    File.Copy(tempDacpacPath, _dacpacPath, true);
+                }
 
-                doc = XDocument.Load(originFile);
-                root = doc.Document.Root;
-                op = root.Element("{" + root.GetDefaultNamespace() + "}Operation");
-                op.Element("{" + root.GetDefaultNamespace() + "}Identity").SetValue(identity);
-                op.Element("{" + root.GetDefaultNamespace() + "}Start").SetValue(start);
-                doc.Save(originFile);
+                File.Delete(tempDacpacPath);
             }
             else
             {
-                ZipFile.ExtractToDirectory(_dacpacPath + ".dacpac", _dacpacPath);
+                _dacServices.Extract(_dacpacPath, _umbracoDatabasePath, _databaseName, new Version(1, 0, 0));
             }
+        }
+
+        private static string ReadDacpacModelChecksum(string dacpacPath)
+        {
+            var tempFolder = dacpacPath + "-extract";
+            ZipFile.ExtractToDirectory(dacpacPath, tempFolder);
+
+            var doc = XDocument.Load(Path.Join(tempFolder, "Origin.xml"));
+            var root = doc.Document.Root;
+            var checksum = root.Element("{" + root.GetDefaultNamespace() + "}Checksums").Element("{" + root.GetDefaultNamespace() + "}Checksum").Value;
+
+            Directory.Delete(tempFolder, true);
+
+            return checksum;
         }
 
         private static string GetContainerIpAddress(string containerName)

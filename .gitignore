@@ -410,4 +410,3 @@ Stoolball.Web/Web.live.xdt.config
 umbracoSettings.config
 tinyMceConfig.config
 ApplicationInsights.config
-*.dacpac
