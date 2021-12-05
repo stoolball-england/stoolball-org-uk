@@ -92,14 +92,12 @@ namespace Stoolball.Data.SqlServer
         {
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                var sql = $@"SELECT stats.PlayerIdentityId, stats.PlayerIdentityName, 
+                var sql = $@"SELECT stats.PlayerIdentityId, stats.PlayerIdentityName, stats.Probability, 
                             COUNT(DISTINCT MatchId) AS TotalMatches, MIN(MatchStartTime) AS FirstPlayed,  MAX(MatchStartTime) AS LastPlayed,
-                            COUNT(DISTINCT MatchId) -(SELECT COUNT(DISTINCT MatchId) * 5 FROM {Tables.PlayerInMatchStatistics} WHERE TeamId = stats.TeamId AND MatchStartTime > MAX(stats.MatchStartTime)) AS Probability,
-                            stats.PlayerId, stats.PlayerRoute,
-                            stats.TeamId, stats.TeamName
+                            stats.PlayerId, stats.PlayerRoute, stats.TeamId, stats.TeamName
                             FROM {Tables.PlayerInMatchStatistics} AS stats 
                             <<WHERE>>
-                            GROUP BY stats.PlayerId, stats.PlayerRoute, stats.PlayerIdentityId, stats.PlayerIdentityName, stats.TeamId, stats.TeamName
+                            GROUP BY stats.PlayerId, stats.PlayerRoute, stats.PlayerIdentityId, stats.PlayerIdentityName, stats.TeamId, stats.TeamName, stats.Probability
                             ORDER BY stats.TeamId ASC, Probability DESC, stats.PlayerIdentityName ASC";
 
                 var where = new List<string>();

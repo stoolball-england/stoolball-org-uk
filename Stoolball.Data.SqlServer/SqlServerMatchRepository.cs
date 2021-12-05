@@ -1045,6 +1045,7 @@ namespace Stoolball.Data.SqlServer
                     await _statisticsRepository.DeleteBowlingFigures(auditableInnings.MatchInningsId.Value, transaction).ConfigureAwait(false);
                     await _statisticsRepository.UpdateBowlingFigures(auditableInnings, memberKey, memberName, transaction).ConfigureAwait(false);
                     await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
+                    foreach (var teamId in auditableMatch.Teams.Select(x => x.Team.TeamId)) { await _statisticsRepository.UpdatePlayerProbability(teamId, transaction).ConfigureAwait(false); }
 
                     var serialisedInnings = JsonConvert.SerializeObject(auditableInnings);
                     await _auditRepository.CreateAudit(new AuditRecord
@@ -1204,6 +1205,7 @@ namespace Stoolball.Data.SqlServer
                     await _statisticsRepository.DeleteBowlingFigures(auditableInnings.MatchInningsId.Value, transaction).ConfigureAwait(false);
                     await _statisticsRepository.UpdateBowlingFigures(auditableInnings, memberKey, memberName, transaction).ConfigureAwait(false);
                     await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
+                    await _statisticsRepository.UpdatePlayerProbability(auditableInnings.BowlingTeam.Team.TeamId, transaction).ConfigureAwait(false);
 
                     var serialisedInnings = JsonConvert.SerializeObject(auditableInnings);
                     await _auditRepository.CreateAudit(new AuditRecord
@@ -1326,6 +1328,7 @@ namespace Stoolball.Data.SqlServer
 
                     await _statisticsRepository.DeletePlayerStatistics(auditableMatch.MatchId.Value, transaction).ConfigureAwait(false);
                     await _statisticsRepository.UpdatePlayerStatistics(playerStatistics, transaction).ConfigureAwait(false);
+                    foreach (var teamId in auditableMatch.Teams.Select(x => x.Team.TeamId)) { await _statisticsRepository.UpdatePlayerProbability(teamId, transaction).ConfigureAwait(false); }
 
                     var redacted = CreateRedactedCopy(auditableMatch);
                     await _auditRepository.CreateAudit(new AuditRecord

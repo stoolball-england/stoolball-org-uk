@@ -131,5 +131,6 @@ namespace Stoolball.Statistics
         public int? WonMatch { get; set; }
 
         public bool PlayerOfTheMatch { get; set; }
+        public int? Probability { get; set; }
     }
 }

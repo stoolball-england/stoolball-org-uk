@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using Dapper;
@@ -83,6 +84,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     AddTournamentToSeason(tournament, season);
                 }
             }
+
+            var probabilities = new Dictionary<Guid, int>();
             foreach (var match in data.Matches)
             {
                 CreateMatch(match);
@@ -90,6 +93,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 var statisticsRecords = _playerInMatchStatisticsBuilder.BuildStatisticsForMatch(match);
                 foreach (var record in statisticsRecords)
                 {
+                    var random = new Random();
+                    if (!probabilities.ContainsKey(record.PlayerIdentityId)) { probabilities.Add(record.PlayerIdentityId, random.Next(-999, 999)); }
+                    record.Probability = probabilities[record.PlayerIdentityId];
+
                     CreatePlayerInMatchStatisticsRecord(record);
                 }
             }
@@ -731,7 +738,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                      BowlingFiguresId, OverNumberOfFirstOverBowled, BallsBowled, Overs, Maidens, NoBalls, Wides, RunsConceded, HasRunsConceded, Wickets, WicketsWithBowling, 
                      WonToss, BattedFirst, PlayerInningsNumber, PlayerInningsId, BattingPosition, DismissalType, PlayerWasDismissed, BowledByPlayerIdentityId, BowledByPlayerIdentityName, BowledByPlayerRoute, 
                      CaughtByPlayerIdentityId, CaughtByPlayerIdentityName, CaughtByPlayerRoute, RunOutByPlayerIdentityId, RunOutByPlayerIdentityName, RunOutByPlayerRoute, 
-                     RunsScored, BallsFaced, Catches, RunOuts, WonMatch, PlayerOfTheMatch)
+                     RunsScored, BallsFaced, Catches, RunOuts, WonMatch, PlayerOfTheMatch, Probability)
                     VALUES
                     (@PlayerInMatchStatisticsId, @PlayerId, @PlayerIdentityId, @PlayerIdentityName, @PlayerRoute, @MatchId, @MatchStartTime, @MatchType, @MatchPlayerType, @MatchName, @MatchRoute,
                      @TournamentId, @SeasonId, @CompetitionId, @MatchTeamId, @ClubId, @TeamId, @TeamName, @TeamRoute, @OppositionTeamId, @OppositionTeamName, @OppositionTeamRoute, @MatchLocationId,
@@ -739,7 +746,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                      @BowlingFiguresId, @OverNumberOfFirstOverBowled, @BallsBowled, @Overs, @Maidens, @NoBalls, @Wides, @RunsConceded, @HasRunsConceded, @Wickets, @WicketsWithBowling,
                      @WonToss, @BattedFirst, @PlayerInningsNumber, @PlayerInningsId, @BattingPosition, @DismissalType, @PlayerWasDismissed, @BowledByPlayerIdentityId, @BowledByPlayerIdentityName, @BowledByPlayerRoute,
                      @CaughtByPlayerIdentityId, @CaughtByPlayerIdentityName, @CaughtByPlayerRoute, @RunOutByPlayerIdentityId, @RunOutByPlayerIdentityName, @RunOutByPlayerRoute,
-                     @RunsScored, @BallsFaced, @Catches, @RunOuts, @WonMatch, @PlayerOfTheMatch)",
+                     @RunsScored, @BallsFaced, @Catches, @RunOuts, @WonMatch, @PlayerOfTheMatch, @Probability)",
                         new
                         {
                             PlayerInMatchStatisticsId = Guid.NewGuid(),
@@ -806,7 +813,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                             record.Catches,
                             record.RunOuts,
                             record.WonMatch,
-                            record.PlayerOfTheMatch
+                            record.PlayerOfTheMatch,
+                            record.Probability
                         });
         }
     }

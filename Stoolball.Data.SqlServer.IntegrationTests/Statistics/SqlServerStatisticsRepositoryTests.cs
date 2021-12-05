@@ -526,6 +526,14 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
             }
         }
 
+        [Fact]
+        public async Task UpdatePlayerProbability_throws_ArgumentNullException_if_transaction_is_null()
+        {
+            var repo = new SqlServerStatisticsRepository(Mock.Of<IPlayerRepository>());
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await repo.UpdatePlayerProbability(Guid.NewGuid(), null).ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
         private static async Task AssertPlayerInMatchStatisticsRecord(IDbTransaction transaction, PlayerInMatchStatisticsRecord stats)
         {
             var count = await transaction.Connection.QuerySingleAsync<int>(@$"SELECT COUNT(*) FROM {Tables.PlayerInMatchStatistics} 

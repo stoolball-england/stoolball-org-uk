@@ -70,6 +70,7 @@
     <Compile Include="CompetitionVersionAddTable.cs" />
     <Compile Include="CompetitionVersionTableInitialSchema.cs" />
     <Compile Include="CommentRemoveMemberNameAndMakeMemberKeyNullable.cs" />
+    <Compile Include="StatisticsAddProbability.cs" />
     <Compile Include="TournamentTeamTableInitialSchema.cs" />
     <Compile Include="TournamentTeamAddTable.cs" />
     <Compile Include="TournamentTableInitialSchema.cs" />

@@ -99,7 +99,6 @@ namespace Stoolball.Web.Statistics
 
                         try
                         {
-
                             var match = await _matchDataSource.ReadMatchByRoute(matchListing.MatchRoute).ConfigureAwait(false);
                             if (match != null)
                             {
@@ -131,6 +130,13 @@ namespace Stoolball.Web.Statistics
                             _taskTracker.IncrementErrorsBy(taskId, 1);
                         }
                     }
+
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        await _statisticsRepository.UpdatePlayerProbability(null, transaction).ConfigureAwait(false);
+                        transaction.Commit();
+                    }
+
                     Logger.Info(GetType(), "Completed updating match statistics for all matches in {Type:l}.{Method:l}.", GetType(), nameof(UpdateStatistics));
                 }
             }
