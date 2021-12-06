@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Testing;
@@ -114,7 +115,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var oversBowledBySixthBowler = matchInnings.OversBowled.Where(x => x.Bowler.Player.PlayerId.Value == bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Bowler.Player.PlayerId);
             while (oversBowledBySixthBowler.Count() < bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Overs)
             {
-                bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].MatchInnings.OversBowled.Add(new Over { Bowler = bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Bowler });
+                bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].MatchInnings.OversBowled.Add(new Over { OverId = Guid.NewGuid(), Bowler = bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Bowler });
                 oversBowledBySixthBowler = matchInnings.OversBowled.Where(x => x.Bowler.Player.PlayerId.Value == bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Bowler.Player.PlayerId);
             }
             while (oversBowledBySixthBowler.Count() > bowlingFiguresForPlayerWithAtLeast6BowlingFigures[5].Overs)
