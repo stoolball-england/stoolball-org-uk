@@ -1319,7 +1319,7 @@ namespace Stoolball.Testing
             {
                 noBalls = _randomiser.Next(4) == 0 ? (int?)null : _randomiser.Next(5);
                 wides = _randomiser.Next(4) == 0 ? (int?)null : _randomiser.Next(5);
-                runsConceded = _randomiser.Next(4) == 0 ? (int?)null : _randomiser.Next(20);
+                runsConceded = _randomiser.Next(4) == 0 ? (int?)null : _randomiser.Next(-5, 20); // Can be negative in a match where penalty runs are scored for losing a wicket
             }
 
             return new Over
@@ -1347,7 +1347,7 @@ namespace Stoolball.Testing
             {
                 bowlerOrMissingData = null;
             }
-            var runsScored = _randomiser.Next(2) == 0 ? _randomiser.Next(102) : (int?)null; // simulate missing data;
+            var runsScored = _randomiser.Next(2) == 0 ? _randomiser.Next(-20, 102) : (int?)null; // simulate missing data; can also be negative in a match where penalty runs are awarded if the player is out
             var ballsFaced = _randomiser.Next(2) == 0 ? _randomiser.Next(151) : (int?)null; // simulate missing data
             if (dismissal == DismissalType.DidNotBat || dismissal == DismissalType.TimedOut)
             {

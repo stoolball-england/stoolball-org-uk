@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Stoolball.Matches;
+using Stoolball.Testing;
 using Xunit;
 
 namespace Stoolball.UnitTests.Matches
@@ -94,23 +95,10 @@ namespace Stoolball.UnitTests.Matches
                                  v.ErrorMessage.Contains("no balls", StringComparison.OrdinalIgnoreCase));
         }
 
-
-        [Fact]
-        public void Negative_RunsConceded_fails_validation()
-        {
-            var over = new Over
-            {
-                RunsConceded = -1
-            };
-
-            Assert.Contains(ValidateModel(over),
-                v => v.MemberNames.Contains(nameof(Over.RunsConceded)) &&
-                     v.ErrorMessage.Contains("over total", StringComparison.OrdinalIgnoreCase));
-        }
-
         [Theory]
         [InlineData(null)]
         [InlineData(0)]
+        [InlineData(-10)]
         public void Valid_RunsConceded_passes_validation(int? runs)
         {
             var over = new Over

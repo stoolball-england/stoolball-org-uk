@@ -68,7 +68,7 @@
                 </td>
                 <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__runs" data-stackable="true">
                     @Html.LabelFor(m => Model.CurrentInnings.PlayerInningsSearch[i].RunsScored, "Runs", new { aria_hidden = "true", @class = "table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__runs-label" })
-                    @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].RunsScored, new { autocomplete = "off", type = "number", min = "0", @class = "scorecard__runs" })
+                    @Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].RunsScored, new { autocomplete = "off", type = "number", @class = "scorecard__runs" })
                 </td>
                 <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__balls" data-stackable="true">
                     @Html.LabelFor(m => Model.CurrentInnings.PlayerInningsSearch[i].BallsFaced, "Balls", new { aria_hidden = "true", @class = "table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__balls-label" })
@@ -158,7 +158,7 @@
             </td>
             <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__runs">
                 <label aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__runs-label" for="CurrentInnings_PlayerInningsSearch_[0]__RunsScored">Runs</label>
-                <input autocomplete="off" class="scorecard__runs" min="0" name="CurrentInnings.PlayerInningsSearch[0].RunsScored" id="CurrentInnings_PlayerInningsSearch_[0]__RunsScored" type="number" value="" />
+                <input autocomplete="off" class="scorecard__runs" name="CurrentInnings.PlayerInningsSearch[0].RunsScored" id="CurrentInnings_PlayerInningsSearch_[0]__RunsScored" type="number" value="" />
             </td>
             <td class="batting-scorecard-editor__player-innings-field batting-scorecard-editor__balls">
                 <label aria-hidden="true" class="table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__balls-label" for="CurrentInnings_PlayerInningsSearch_[0]__BallsFaced">Balls</label>

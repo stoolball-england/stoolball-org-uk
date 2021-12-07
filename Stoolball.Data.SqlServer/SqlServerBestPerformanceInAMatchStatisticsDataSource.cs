@@ -24,7 +24,7 @@ namespace Stoolball.Data.SqlServer
         {
             filter = filter ?? new StatisticsFilter();
 
-            return await ReadTotalBestFiguresInAMatch("RunsScored", 0, filter).ConfigureAwait(false);
+            return await ReadTotalBestFiguresInAMatch("RunsScored", null, filter).ConfigureAwait(false);
         }
 
         public async virtual Task<int> ReadTotalBowlingFigures(StatisticsFilter filter)
@@ -34,10 +34,14 @@ namespace Stoolball.Data.SqlServer
             return await ReadTotalBestFiguresInAMatch("Wickets", 0, filter).ConfigureAwait(false);
         }
 
-        private async Task<int> ReadTotalBestFiguresInAMatch(string primaryFieldName, int minimumValue, StatisticsFilter filter)
+        private async Task<int> ReadTotalBestFiguresInAMatch(string primaryFieldName, int? minimumValue, StatisticsFilter filter)
         {
             var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);
-            where = $"WHERE {primaryFieldName} IS NOT NULL AND {primaryFieldName} >= {minimumValue} {where}";
+            where = $"WHERE {primaryFieldName} IS NOT NULL {where}";
+            if (minimumValue != null)
+            {
+                where += $" AND {primaryFieldName} >= {minimumValue}";
+            }
             return await ReadTotalResultsForPagedQuery(where, parameters).ConfigureAwait(false);
         }
 
@@ -68,7 +72,7 @@ namespace Stoolball.Data.SqlServer
                 throw new InvalidOperationException();
             }
 
-            return await ReadBestFiguresInAMatch<PlayerInnings>("RunsScored", "PlayerWasDismissed", new[] { "PlayerInningsId", "DismissalType", "BallsFaced" }, orderByFields, 0, filter).ConfigureAwait(false);
+            return await ReadBestFiguresInAMatch<PlayerInnings>("RunsScored", "PlayerWasDismissed", new[] { "PlayerInningsId", "DismissalType", "BallsFaced" }, orderByFields, null, filter).ConfigureAwait(false);
         }
 
         public async virtual Task<IEnumerable<StatisticsResult<BowlingFigures>>> ReadBowlingFigures(StatisticsFilter filter, StatisticsSortOrder sortOrder)
@@ -101,14 +105,18 @@ namespace Stoolball.Data.SqlServer
         /// <summary> 
         /// Gets best performances in a match based on the specified fields and filters
         /// </summary> 
-        private async Task<IEnumerable<StatisticsResult<T>>> ReadBestFiguresInAMatch<T>(string primaryFieldName, string secondaryFieldNameForMaxResults, IEnumerable<string> selectFields, IEnumerable<string> orderByFields, int minimumValue, StatisticsFilter filter)
+        private async Task<IEnumerable<StatisticsResult<T>>> ReadBestFiguresInAMatch<T>(string primaryFieldName, string secondaryFieldNameForMaxResults, IEnumerable<string> selectFields, IEnumerable<string> orderByFields, int? minimumValue, StatisticsFilter filter)
         {
             var select = $@"SELECT PlayerId, PlayerRoute, PlayerIdentityId, PlayerIdentityName, TeamId, TeamName,
                 OppositionTeamId AS TeamId, OppositionTeamName AS TeamName, MatchRoute, MatchStartTime AS StartTime, MatchName, 
                 {primaryFieldName}, {string.Join(", ", selectFields)}";
 
             var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);
-            where = $"WHERE {primaryFieldName} IS NOT NULL AND {primaryFieldName} >= {minimumValue} {where}";
+            where = $"WHERE {primaryFieldName} IS NOT NULL {where}";
+            if (minimumValue != null)
+            {
+                where += $" AND { primaryFieldName} >= { minimumValue}";
+            }
 
             var orderBy = orderByFields.Any() ? "ORDER BY " + string.Join(", ", orderByFields) : string.Empty;
 

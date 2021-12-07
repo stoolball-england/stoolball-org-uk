@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using Stoolball.MatchLocations;
+using Stoolball.Testing;
 using Xunit;
 
 namespace Stoolball.UnitTests.MatchLocations

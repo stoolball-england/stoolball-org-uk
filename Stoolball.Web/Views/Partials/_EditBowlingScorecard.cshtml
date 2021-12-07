@@ -37,7 +37,7 @@
                 </td>
                 <td data-stackable="true" class="bowling-scorecard-editor__field bowling-scorecard-editor__runs">
                     @Html.LabelFor(m => Model.CurrentInnings.OversBowledSearch[i].RunsConceded, new { @class = "table-as-cards__label bowling-scorecard-editor__runs-label text-nowrap" })
-                    @Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].RunsConceded, new { autocomplete = "off", type = "number", min = "0", @class = "scorecard__runs" })
+                    @Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].RunsConceded, new { autocomplete = "off", type = "number", @class = "scorecard__runs" })
                 </td>
             </tr>
         }
@@ -64,7 +64,7 @@
             </td>
             <td data-stackable="true" class="bowling-scorecard-editor__field bowling-scorecard-editor__runs">
                 <label class="table-as-cards__label bowling-scorecard-editor__runs-label text-nowrap" for="CurrentInnings_OversBowledSearch_[0]__RunsConceded">Over total</label>
-                <input autocomplete="off" class="scorecard__runs" min="0" name="CurrentInnings.OversBowledSearch[0].RunsConceded" id="CurrentInnings_OversBowledSearch_[0]__RunsConceded" type="number" value="" />
+                <input autocomplete="off" class="scorecard__runs" name="CurrentInnings.OversBowledSearch[0].RunsConceded" id="CurrentInnings_OversBowledSearch_[0]__RunsConceded" type="number" value="" />
             </td>
         </tr>
     </table>

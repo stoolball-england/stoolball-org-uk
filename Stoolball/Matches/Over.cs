@@ -27,7 +27,6 @@ namespace Stoolball.Matches
         public int? Wides { get; set; }
 
         [Display(Name = "Over total")]
-        [Range(0, 1000, ErrorMessage = "Over total must be a number, 0 or more.")]
         public int? RunsConceded { get; set; }
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
         public Uri EntityUri {

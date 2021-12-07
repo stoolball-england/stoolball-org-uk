@@ -299,7 +299,7 @@ WriteLiteral("                    ");
 
             
             #line 40 "..\..\Views\Partials\_EditBowlingScorecard.cshtml"
-               Write(Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].RunsConceded, new { autocomplete = "off", type = "number", min = "0", @class = "scorecard__runs" }));
+               Write(Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].RunsConceded, new { autocomplete = "off", type = "number", @class = "scorecard__runs" }));
 
             
             #line default
@@ -359,9 +359,9 @@ WriteLiteral("\" name=\"CurrentInnings.OversBowledSearch[0].Bowler\" id=\"Curren
 "runs\">\r\n                <label class=\"table-as-cards__label bowling-scorecard-ed" +
 "itor__runs-label text-nowrap\" for=\"CurrentInnings_OversBowledSearch_[0]__RunsCon" +
 "ceded\">Over total</label>\r\n                <input autocomplete=\"off\" class=\"scor" +
-"ecard__runs\" min=\"0\" name=\"CurrentInnings.OversBowledSearch[0].RunsConceded\" id=" +
-"\"CurrentInnings_OversBowledSearch_[0]__RunsConceded\" type=\"number\" value=\"\" />\r\n" +
-"            </td>\r\n        </tr>\r\n    </table>\r\n</script>\r\n\r\n<p");
+"ecard__runs\" name=\"CurrentInnings.OversBowledSearch[0].RunsConceded\" id=\"Current" +
+"Innings_OversBowledSearch_[0]__RunsConceded\" type=\"number\" value=\"\" />\r\n        " +
+"    </td>\r\n        </tr>\r\n    </table>\r\n</script>\r\n\r\n<p");
 
 WriteLiteral(" class=\"bowling-scorecard__full-name-tip d-none alert alert-info alert-tip\"");
 

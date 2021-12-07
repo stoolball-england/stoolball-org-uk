@@ -16,7 +16,6 @@ namespace Stoolball.Web.Matches
         public string Bowler { get; set; }
 
         [Display(Name = "Runs")]
-        [Range(0, 1000000, ErrorMessage = "Runs must be a number, 0 or more")]
         public int? RunsScored { get; set; }
 
         [Display(Name = "Balls")]

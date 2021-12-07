@@ -34,7 +34,7 @@ namespace Stoolball.Data.SqlServer
 
             var extraSelectFields = $", (SELECT COUNT(PlayerInMatchStatisticsId) FROM { Tables.PlayerInMatchStatistics } WHERE PlayerId = s.PlayerId AND PlayerWasDismissed = 1 AND RunsScored IS NOT NULL <<WHERE>>) AS TotalDismissals";
 
-            return await ReadBestPlayerTotal("RunsScored", false, extraSelectFields, outerQuery, $"AND RunsScored IS NOT NULL", filter).ConfigureAwait(false);
+            return await ReadBestPlayerTotal("RunsScored", true, false, extraSelectFields, outerQuery, $"AND RunsScored IS NOT NULL", filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
@@ -42,7 +42,7 @@ namespace Stoolball.Data.SqlServer
         {
             filter = filter ?? new StatisticsFilter();
 
-            return await ReadBestPlayerTotal("Wickets", true, null, null, "AND BowlingFiguresId IS NOT NULL", filter).ConfigureAwait(false);
+            return await ReadBestPlayerTotal("Wickets", false, true, null, null, "AND BowlingFiguresId IS NOT NULL", filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
@@ -50,7 +50,7 @@ namespace Stoolball.Data.SqlServer
         {
             filter = filter ?? new StatisticsFilter();
 
-            return await ReadBestPlayerTotal("Catches", true, null, null, string.Empty, filter).ConfigureAwait(false);
+            return await ReadBestPlayerTotal("Catches", false, true, null, null, string.Empty, filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
@@ -58,50 +58,52 @@ namespace Stoolball.Data.SqlServer
         {
             filter = filter ?? new StatisticsFilter();
 
-            return await ReadBestPlayerTotal("RunOuts", true, null, null, string.Empty, filter).ConfigureAwait(false);
+            return await ReadBestPlayerTotal("RunOuts", false, true, null, null, string.Empty, filter).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
         public async Task<int> ReadTotalPlayersWithRunsScored(StatisticsFilter filter)
         {
-            return await ReadTotalPlayersWithData("RunsScored", filter).ConfigureAwait(false);
+            return await ReadTotalPlayersWithData("RunsScored", filter, true).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
         public async Task<int> ReadTotalPlayersWithWickets(StatisticsFilter filter)
         {
-            return await ReadTotalPlayersWithData("Wickets", filter).ConfigureAwait(false);
+            return await ReadTotalPlayersWithData("Wickets", filter, false).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
         public async Task<int> ReadTotalPlayersWithCatches(StatisticsFilter filter)
         {
-            return await ReadTotalPlayersWithData("Catches", filter).ConfigureAwait(false);
+            return await ReadTotalPlayersWithData("Catches", filter, false).ConfigureAwait(false);
         }
 
         ///  <inheritdoc/>
         public async Task<int> ReadTotalPlayersWithRunOuts(StatisticsFilter filter)
         {
-            return await ReadTotalPlayersWithData("RunOuts", filter).ConfigureAwait(false);
+            return await ReadTotalPlayersWithData("RunOuts", filter, false).ConfigureAwait(false);
         }
 
-        private async Task<int> ReadTotalPlayersWithData(string fieldName, StatisticsFilter filter)
+        private async Task<int> ReadTotalPlayersWithData(string fieldName, StatisticsFilter filter, bool fieldValueCanBeNegative)
         {
             var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(filter);
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
-                return await connection.ExecuteScalarAsync<int>($"SELECT COUNT(DISTINCT PlayerId) FROM {Tables.PlayerInMatchStatistics} WHERE {fieldName} > 0 {where}", parameters).ConfigureAwait(false);
+                var minimumRequirement = fieldValueCanBeNegative ? $"{fieldName} IS NOT NULL" : $"{fieldName} > 0";
+                return await connection.ExecuteScalarAsync<int>($"SELECT COUNT(DISTINCT PlayerId) FROM {Tables.PlayerInMatchStatistics} WHERE {minimumRequirement} {where}", parameters).ConfigureAwait(false);
             }
         }
 
-        private async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestPlayerTotal(string fieldName, bool isFieldingStatistic, string extraSelectFields, string outerQueryIncludingOrderBy, string totalInningsFilter, StatisticsFilter filter)
+        private async Task<IEnumerable<StatisticsResult<BestStatistic>>> ReadBestPlayerTotal(string fieldName, bool fieldValueCanBeNegative, bool isFieldingStatistic, string extraSelectFields, string outerQueryIncludingOrderBy, string totalInningsFilter, StatisticsFilter filter)
         {
             var clonedFilter = filter.Clone();
             clonedFilter.SwapBattingFirstFilter = isFieldingStatistic;
             var (where, parameters) = _statisticsQueryBuilder.BuildWhereClause(clonedFilter);
 
             var group = "GROUP BY PlayerId, PlayerRoute";
-            var having = $"HAVING SUM({fieldName}) > 0";
+            var having = fieldValueCanBeNegative ? "HAVING 1=1" : $"HAVING SUM({fieldName}) > 0";
+            var minimumValue = fieldValueCanBeNegative ? string.Empty : $"AND {fieldName} >= 0";
 
             // The result set can be limited in two mutually-exlusive ways:
             // 1. Max results (eg top ten) but where results beyond but equal to the max are also included
@@ -113,7 +115,7 @@ namespace Stoolball.Data.SqlServer
             {
                 // Get the values from what should be the last row according to the maximum number of results.
                 preQuery = $@"DECLARE @MaxResult int;
-                            SELECT @MaxResult = SUM({fieldName}) FROM {Tables.PlayerInMatchStatistics} WHERE {fieldName} IS NOT NULL AND {fieldName} >= 0 {where} {group} {having} ORDER BY SUM({fieldName}) DESC
+                            SELECT @MaxResult = SUM({fieldName}) FROM {Tables.PlayerInMatchStatistics} WHERE {fieldName} IS NOT NULL {minimumValue} {where} {group} {having} ORDER BY SUM({fieldName}) DESC
                             OFFSET {clonedFilter.MaxResultsAllowingExtraResultsIfValuesAreEqual - 1} ROWS FETCH NEXT 1 ROWS ONLY; ";
 
                 // If @MaxResult IS NULL there are fewer rows than the requested maximum, so just fetch all.
@@ -141,7 +143,7 @@ namespace Stoolball.Data.SqlServer
 		                                (SELECT SUM({ fieldName}) FROM { Tables.PlayerInMatchStatistics} WHERE PlayerId = s.PlayerId {where}) AS Total
                                         <<SELECT>>
                                  FROM {Tables.PlayerInMatchStatistics} AS s 
-                                 WHERE {fieldName} IS NOT NULL AND {fieldName} >= 0 {where} 
+                                 WHERE {fieldName} IS NOT NULL {minimumValue} {where} 
                                  {group} 
                                  {having} 
                                  {offsetWithExtraResults} 

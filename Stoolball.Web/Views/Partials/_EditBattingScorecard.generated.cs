@@ -337,7 +337,7 @@ WriteLiteral("                    ");
 
             
             #line 71 "..\..\Views\Partials\_EditBattingScorecard.cshtml"
-               Write(Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].RunsScored, new { autocomplete = "off", type = "number", min = "0", @class = "scorecard__runs" }));
+               Write(Html.TextBoxFor(m => Model.CurrentInnings.PlayerInningsSearch[i].RunsScored, new { autocomplete = "off", type = "number", @class = "scorecard__runs" }));
 
             
             #line default
@@ -593,14 +593,14 @@ WriteLiteral(@""" name=""CurrentInnings.PlayerInningsSearch[0].Batter"" id=""Cur
             #line hidden
 WriteLiteral("                        <option");
 
-WriteAttribute("value", Tuple.Create(" value=\"", 12425), Tuple.Create("\"", 12448)
+WriteAttribute("value", Tuple.Create(" value=\"", 12414), Tuple.Create("\"", 12437)
             
             #line 147 "..\..\Views\Partials\_EditBattingScorecard.cshtml"
-, Tuple.Create(Tuple.Create("", 12433), Tuple.Create<System.Object, System.Int32>(listItem.Value
+, Tuple.Create(Tuple.Create("", 12422), Tuple.Create<System.Object, System.Int32>(listItem.Value
             
             #line default
             #line hidden
-, 12433), false)
+, 12422), false)
 );
 
 WriteLiteral(">");
@@ -651,7 +651,7 @@ WriteLiteral(@""" name=""CurrentInnings.PlayerInningsSearch[0].Bowler"" id=""Cur
             </td>
             <td class=""batting-scorecard-editor__player-innings-field batting-scorecard-editor__runs"">
                 <label aria-hidden=""true"" class=""table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__runs-label"" for=""CurrentInnings_PlayerInningsSearch_[0]__RunsScored"">Runs</label>
-                <input autocomplete=""off"" class=""scorecard__runs"" min=""0"" name=""CurrentInnings.PlayerInningsSearch[0].RunsScored"" id=""CurrentInnings_PlayerInningsSearch_[0]__RunsScored"" type=""number"" value="""" />
+                <input autocomplete=""off"" class=""scorecard__runs"" name=""CurrentInnings.PlayerInningsSearch[0].RunsScored"" id=""CurrentInnings_PlayerInningsSearch_[0]__RunsScored"" type=""number"" value="""" />
             </td>
             <td class=""batting-scorecard-editor__player-innings-field batting-scorecard-editor__balls"">
                 <label aria-hidden=""true"" class=""table-as-cards__label batting-scorecard-editor__label batting-scorecard-editor__balls-label"" for=""CurrentInnings_PlayerInningsSearch_[0]__BallsFaced"">Balls</label>
