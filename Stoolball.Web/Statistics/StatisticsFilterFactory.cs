@@ -61,7 +61,7 @@ namespace Stoolball.Web.Statistics
             }
             else if (entityType == StoolballEntityType.Team)
             {
-                filter.Team = await _teamDataSource.ReadTeamByRoute(_routeNormaliser.NormaliseRouteToEntity(route, "teams"), false).ConfigureAwait(false);
+                filter.Team = await _teamDataSource.ReadTeamByRoute(_routeNormaliser.NormaliseRouteToEntity(route, "teams"), true).ConfigureAwait(false); // true gets a lot of data but we only really want the club
             }
             else if (entityType == StoolballEntityType.MatchLocation)
             {

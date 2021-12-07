@@ -90,6 +90,24 @@ namespace Stoolball.UnitTests.Statistics
         }
 
         [Fact]
+        public void Team_in_club_filter_adds_team_in_club_breadcrumb()
+        {
+            var builder = new StatisticsBreadcrumbBuilder();
+            var breadcrumbs = new List<Breadcrumb>();
+            var team = new Team { TeamRoute = "/teams/example", TeamName = "Example team", Club = new Club { ClubRoute = "/clubs/example", ClubName = "Example club" } };
+
+            builder.BuildBreadcrumbs(breadcrumbs, new StatisticsFilter { Team = team });
+
+            Assert.Equal(3, breadcrumbs.Count);
+            Assert.Equal(Constants.Pages.Teams, breadcrumbs[0].Name);
+            Assert.Equal(Constants.Pages.TeamsUrl, breadcrumbs[0].Url.ToString());
+            Assert.Equal(team.Club.ClubName, breadcrumbs[1].Name);
+            Assert.Equal(team.Club.ClubRoute, breadcrumbs[1].Url.ToString());
+            Assert.Equal(team.TeamName, breadcrumbs[2].Name);
+            Assert.Equal(team.TeamRoute, breadcrumbs[2].Url.ToString());
+        }
+
+        [Fact]
         public void MatchLocation_filter_adds_location_breadcrumb()
         {
             var builder = new StatisticsBreadcrumbBuilder();

@@ -137,14 +137,14 @@ namespace Stoolball.Web.Tests.Statistics
             var routeParser = new Mock<IStoolballEntityRouteParser>();
             routeParser.Setup(x => x.ParseRoute(team.TeamRoute)).Returns(StoolballEntityType.Team);
             _routeNormaliser.Setup(x => x.NormaliseRouteToEntity(team.TeamRoute, "teams")).Returns(team.TeamRoute);
-            _teamDataSource.Setup(x => x.ReadTeamByRoute(team.TeamRoute, false)).Returns(Task.FromResult(team));
+            _teamDataSource.Setup(x => x.ReadTeamByRoute(team.TeamRoute, true)).Returns(Task.FromResult(team));
 
             var filterFactory = new StatisticsFilterFactory(routeParser.Object, _playerDataSource.Object, _clubDataSource.Object, _teamDataSource.Object, _matchLocationDataSource.Object,
                 _competitionDataSource.Object, _seasonDataSource.Object, _routeNormaliser.Object);
 
             var result = await filterFactory.FromRoute(team.TeamRoute).ConfigureAwait(false);
 
-            _teamDataSource.Verify(x => x.ReadTeamByRoute(team.TeamRoute, false), Times.Once);
+            _teamDataSource.Verify(x => x.ReadTeamByRoute(team.TeamRoute, true), Times.Once);
             Assert.Equal(team, result.Team);
         }
 
