@@ -8,10 +8,8 @@ on:
     branches: [ master ]
 
 jobs:
-  windows:
-
+  stoolball-web-unit-tests:
     runs-on: windows-latest
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -33,18 +31,17 @@ jobs:
         regsvr32 $env:userprofile\.nuget\packages\opencover\4.7.1221\tools\x64\OpenCover.Profiler.dll 
         & $env:userprofile\.nuget\packages\opencover\4.7.1221\tools\OpenCover.Console.exe -target:"$env:userprofile\.nuget\packages\xunit.runner.console\2.4.1\tools\net472\xunit.console.x86.exe" -targetargs:"Stoolball.Web.UnitTests/bin/Release/Stoolball.Web.UnitTests.dll -noshadow" -output:opencover.xml -filter:"+[Stoolball.Web]* -[Stoolball.Web.UnitTests]*"
     
-    - name: Upload OpenCover artifact
+    - name: Upload test results
       uses: actions/upload-artifact@v2
       with:
-        name: coverage
+        name: stoolball-web-unit-tests
         path: opencover.xml
 
-  linux:
+  stoolball-unit-tests:
     runs-on: ubuntu-latest
-    needs: windows
     steps:
     - uses: actions/checkout@v2
-  
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
@@ -62,6 +59,17 @@ jobs:
     - name: Move coverage to root
       shell: pwsh
       run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Move-Item $_.FullName ./unit-tests.cobertura.xml }
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v2
+      with:
+        name: stoolball-unit-tests
+        path: unit-tests.cobertura.xml
+
+  stoolball-integration-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
 
     - name: Run SQL Server
       env:
@@ -85,10 +93,30 @@ jobs:
       shell: pwsh
       run: Get-ChildItem -Recurse coverage.cobertura.xml | ForEach-Object { Move-Item $_.FullName ./integration-tests.cobertura.xml }
 
-    - name: Download OpenCover artifact
+    - name: Upload test results
+      uses: actions/upload-artifact@v2
+      with:
+        name: stoolball-integration-tests
+        path: integration-tests.cobertura.xml
+
+  publish-to-codecov:
+    runs-on: ubuntu-latest
+    needs: [stoolball-web-unit-tests, stoolball-unit-tests, stoolball-integration-tests]
+    steps:
+    - name: Download Stoolball.Web.UnitTests results
       uses: actions/download-artifact@v2
       with:
-        name: coverage
+        name: stoolball-web-unit-tests
+
+    - name: Download Stoolball.UnitTests results
+      uses: actions/download-artifact@v2
+      with:
+        name: stoolball-unit-tests
+
+    - name: Download Stoolball.Data.SqlServer.IntegrationTests results
+      uses: actions/download-artifact@v2
+      with:
+        name: stoolball-integration-tests
 
     - name: Publish coverage to CodeCov
       env:
@@ -104,6 +132,25 @@ jobs:
         ./codecov -F unittests -f unit-tests.cobertura.xml -t ${CODECOV_TOKEN}
         ./codecov -F integration -f integration-tests.cobertura.xml -t ${CODECOV_TOKEN}
         ./codecov -F unittests -f opencover.xml -t ${CODECOV_TOKEN}
+
+  publish-to-codacy:
+    runs-on: ubuntu-latest
+    needs: [stoolball-web-unit-tests, stoolball-unit-tests, stoolball-integration-tests]
+    steps:
+    - name: Download Stoolball.Web.UnitTests results
+      uses: actions/download-artifact@v2
+      with:
+        name: stoolball-web-unit-tests
+
+    - name: Download Stoolball.UnitTests results
+      uses: actions/download-artifact@v2
+      with:
+        name: stoolball-unit-tests
+
+    - name: Download Stoolball.Data.SqlServer.IntegrationTests results
+      uses: actions/download-artifact@v2
+      with:
+        name: stoolball-integration-tests
 
     - name: Run codacy-coverage-reporter
       uses: codacy/codacy-coverage-reporter-action@v1
