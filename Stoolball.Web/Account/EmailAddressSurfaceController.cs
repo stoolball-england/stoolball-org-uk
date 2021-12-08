@@ -1,4 +1,5 @@
 ﻿using System.Web.Mvc;
+using System.Web.Security;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
@@ -12,9 +13,19 @@ namespace Stoolball.Web.Account
 {
     public class EmailAddressSurfaceController : SurfaceController
     {
-        public EmailAddressSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services, AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper)
+        private readonly MembershipProvider _membershipProvider;
+
+        public EmailAddressSurfaceController(IUmbracoContextAccessor umbracoContextAccessor,
+            IUmbracoDatabaseFactory databaseFactory,
+            ServiceContext services,
+            AppCaches appCaches,
+            ILogger logger,
+            IProfilingLogger profilingLogger,
+            UmbracoHelper umbracoHelper,
+            MembershipProvider membershipProvider)
         : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper)
         {
+            _membershipProvider = membershipProvider ?? throw new System.ArgumentNullException(nameof(membershipProvider));
         }
 
         [HttpPost]
@@ -23,6 +34,11 @@ namespace Stoolball.Web.Account
         [ContentSecurityPolicy(Forms = true)]
         public ActionResult UpdateEmailAddress([Bind(Prefix = "formData")] EmailAddressFormData model)
         {
+            if (model != null && (string.IsNullOrWhiteSpace(model.Password) || !_membershipProvider.ValidateUser(Members.CurrentUserName, model.Password?.Trim())))
+            {
+                ModelState.AddModelError("formData." + nameof(model.Password), "Your password is incorrect. Enter your current password.");
+            }
+
             if (ModelState.IsValid && model != null)
             {
                 var member = Members.GetCurrentMember();

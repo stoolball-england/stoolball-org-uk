@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.Security;
 using Moq;
 using Stoolball.Web.Account;
 using Stoolball.Web.Security;
@@ -22,6 +23,7 @@ namespace Stoolball.Web.UnitTests.Account
     {
         private readonly Mock<IMember> _currentMember = new Mock<IMember>();
         private readonly Mock<ILogger> _logger = new Mock<ILogger>();
+        private const string VALID_PASSWORD = "validPa$$word";
 
         private class TestEmailAddressSurfaceController : EmailAddressSurfaceController
         {
@@ -32,8 +34,9 @@ namespace Stoolball.Web.UnitTests.Account
                 ILogger logger,
                 IProfilingLogger profilingLogger,
                 UmbracoHelper umbracoHelper,
-                HttpContextBase httpContext)
-            : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper)
+                HttpContextBase httpContext,
+                MembershipProvider membershipProvider)
+            : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper, membershipProvider)
             {
                 ControllerContext = new ControllerContext(httpContext, new RouteData(), this);
             }
@@ -57,6 +60,9 @@ namespace Stoolball.Web.UnitTests.Account
 
         private TestEmailAddressSurfaceController CreateController()
         {
+            var membershipProvider = new Mock<MembershipProvider>();
+            membershipProvider.Setup(x => x.ValidateUser(_currentMember.Object.Name, VALID_PASSWORD)).Returns(true);
+
             return new TestEmailAddressSurfaceController(Mock.Of<IUmbracoContextAccessor>(),
                             Mock.Of<IUmbracoDatabaseFactory>(),
                             base.ServiceContext,
@@ -64,7 +70,8 @@ namespace Stoolball.Web.UnitTests.Account
                             _logger.Object,
                             Mock.Of<IProfilingLogger>(),
                             base.UmbracoHelper,
-                            base.HttpContext.Object);
+                            base.HttpContext.Object,
+                            membershipProvider.Object);
         }
 
         [Fact]
@@ -100,7 +107,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Valid_request_saves()
         {
-            var model = new EmailAddressFormData { RequestedEmail = "new@example.org" };
+            var model = new EmailAddressFormData { RequestedEmail = "new@example.org", Password = VALID_PASSWORD };
             using (var controller = CreateController())
             {
                 var result = controller.UpdateEmailAddress(model);
@@ -112,7 +119,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Valid_request_logs()
         {
-            var model = new EmailAddressFormData();
+            var model = new EmailAddressFormData { Password = VALID_PASSWORD };
             using (var controller = CreateController())
             {
                 var result = controller.UpdateEmailAddress(model);
@@ -124,7 +131,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Valid_request_sets_TempData_for_view()
         {
-            var model = new EmailAddressFormData();
+            var model = new EmailAddressFormData { Password = VALID_PASSWORD };
             using (var controller = CreateController())
             {
                 var result = controller.UpdateEmailAddress(model);
@@ -136,12 +143,29 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Valid_request_returns_RedirectToUmbracoPageResult()
         {
-            var model = new EmailAddressFormData();
+            var model = new EmailAddressFormData { Password = VALID_PASSWORD };
             using (var controller = CreateController())
             {
                 var result = controller.UpdateEmailAddress(model);
 
                 Assert.IsType<RedirectToUmbracoPageResult>(result);
+            }
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData("invalid")]
+        public void Invalid_password_sets_ModelState(string password)
+        {
+            var model = new EmailAddressFormData { Password = password };
+            using (var controller = CreateController())
+            {
+                var result = controller.UpdateEmailAddress(model);
+
+                Assert.True(controller.ModelState.ContainsKey("formData." + nameof(model.Password)));
+                Assert.Equal("Your password is incorrect. Enter your current password.", controller.ModelState["formData." + nameof(model.Password)].Errors[0].ErrorMessage);
             }
         }
 
