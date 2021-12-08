@@ -1,0 +1,16 @@
+{
+  "File": "umb://template-file/MyAccount.cshtml",
+  "Master": null,
+  "Udi": "umb://template/f1f9344ae8b446d38234a58036379504",
+  "Dependencies": [
+    {
+      "Udi": "umb://template-file/MyAccount.cshtml",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "My Account",
+  "Alias": "MyAccount",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.TemplateArtifact",
+  "__version": "4.1.4"
+}

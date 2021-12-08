@@ -1,0 +1,45 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.PersonalDetails>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using ClientDependency.Core.Mvc
+@using System.Web.Mvc.Html
+@using Umbraco.Web
+@using Stoolball.Web.Account
+@using Stoolball.Web.Email
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+}
+<div class="container-xl">
+    <h1>@Model.Name</h1>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        if (TempData["Success"] == null)
+        {
+            using (Html.BeginUmbracoForm<PersonalDetailsSurfaceController>("UpdatePersonalDetails"))
+            {
+                @Html.AntiForgeryToken()
+                var formData = new PersonalDetailsFormData();
+                formData.Name = Members.GetCurrentMember().Name;
+
+                <div class="form-group">
+                    @Html.LabelFor(m => formData.Name)
+                    @Html.TextBoxFor(m => formData.Name, new { @class = "form-control", required = "required", aria_describedby = "form-name", autocomplete="name" })
+                    @Html.ValidationMessageFor(m => formData.Name, null, new { id = "form-name" })
+                </div>
+
+                <button class="btn btn-primary">@Model.Value("saveButton")</button>
+            }
+        }
+        else
+        {
+            @Html.ProtectEmailAddresses(Model.Value<IHtmlString>("saved"))
+        }
+    }
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

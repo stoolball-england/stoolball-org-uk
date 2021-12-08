@@ -4,6 +4,7 @@ using Moq;
 using Stoolball.Security;
 using Stoolball.Web.Account;
 using Stoolball.Web.Email;
+using Stoolball.Web.Tests;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
@@ -16,7 +17,7 @@ using Umbraco.Web.Mvc;
 using Xunit;
 using static Stoolball.Constants;
 
-namespace Stoolball.Web.Tests.Account
+namespace Stoolball.Web.UnitTests.Account
 {
     public class CreateMemberSurfaceControllerTests : UmbracoBaseTest
     {

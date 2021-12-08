@@ -1286,12 +1286,14 @@
     <Compile Include="Account\LoginMemberSurfaceController.cs" />
     <Compile Include="Account\LogoutMember.cs" />
     <Compile Include="Account\LogoutMemberController.cs" />
+    <Compile Include="Account\PersonalDetails.cs" />
     <Compile Include="Account\MyAccount.cs" />
     <Compile Include="Account\MyAccountController.cs" />
-    <Compile Include="Account\MyAccountSurfaceController.cs" />
+    <Compile Include="Account\PersonalDetailsController.cs" />
+    <Compile Include="Account\PersonalDetailsSurfaceController.cs" />
     <Compile Include="Account\GravatarUrl.cs" />
     <Compile Include="Account\LogoutMemberSurfaceController.cs" />
-    <Compile Include="Account\MyAccountUpdate.cs" />
+    <Compile Include="Account\PersonalDetailsFormData.cs" />
     <Compile Include="Account\ResetPassword.cs" />
     <Compile Include="Account\ResetPasswordController.cs" />
     <Compile Include="Account\ResetPasswordRequest.cs" />
@@ -1313,6 +1315,7 @@
     <Compile Include="App_Data\Models\News.generated.cs" />
     <Compile Include="App_Data\Models\NewsStory.generated.cs" />
     <Compile Include="App_Data\Models\NewsStorySettings.generated.cs" />
+    <Compile Include="App_Data\Models\PersonalDetails.generated.cs" />
     <Compile Include="App_Data\Models\ProductList.generated.cs" />
     <Compile Include="App_Data\Models\ProductPreview.generated.cs" />
     <Compile Include="App_Data\Models\ResetPassword.generated.cs" />
@@ -3158,6 +3161,7 @@
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Text.cshtml" />
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Textarea.cshtml" />
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Textfield.cshtml" />
+    <Content Include="Views\PersonalDetails.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

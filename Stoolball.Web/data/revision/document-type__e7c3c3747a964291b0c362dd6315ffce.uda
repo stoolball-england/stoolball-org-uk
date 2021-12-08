@@ -17,7 +17,7 @@
       "umb://document-type/16aa3fb1f5c64b8290cd427098c577e0",
       "umb://document-type/75ff99b6b2d9416ea8c695c0ff36e3d3",
       "umb://document-type/7f362088576942c5a05abf015c074613",
-      "umb://document-type/9d4a4f9e28df449882067990797df794"
+      "umb://document-type/eb801e6fd0974301a35fa9bd4f4da1fb"
     ]
   },
   "Parent": null,
@@ -54,7 +54,7 @@
       "Mode": 0
     },
     {
-      "Udi": "umb://document-type/9d4a4f9e28df449882067990797df794",
+      "Udi": "umb://document-type/eb801e6fd0974301a35fa9bd4f4da1fb",
       "Ordering": false,
       "Mode": 0
     },
@@ -67,5 +67,5 @@
   "Name": "Home",
   "Alias": "home",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.5.2"
+  "__version": "4.1.4"
 }

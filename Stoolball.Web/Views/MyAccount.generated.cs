@@ -21,12 +21,7 @@ namespace ASP
     using System.Web.Helpers;
     using System.Web.Mvc;
     using System.Web.Mvc.Ajax;
-    
-    #line 4 "..\..\Views\MyAccount.cshtml"
     using System.Web.Mvc.Html;
-    
-    #line default
-    #line hidden
     using System.Web.Routing;
     using System.Web.Security;
     using System.Web.UI;
@@ -45,13 +40,13 @@ namespace ASP
     #line hidden
     using Examine;
     
-    #line 8 "..\..\Views\MyAccount.cshtml"
+    #line 4 "..\..\Views\MyAccount.cshtml"
     using Stoolball.Web.Account;
     
     #line default
     #line hidden
     
-    #line 9 "..\..\Views\MyAccount.cshtml"
+    #line 5 "..\..\Views\MyAccount.cshtml"
     using Stoolball.Web.Email;
     
     #line default
@@ -59,24 +54,7 @@ namespace ASP
     using Umbraco.Core;
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
-    
-    #line 5 "..\..\Views\MyAccount.cshtml"
     using Umbraco.Web;
-    
-    #line default
-    #line hidden
-    
-    #line 7 "..\..\Views\MyAccount.cshtml"
-    using Umbraco.Web.Controllers;
-    
-    #line default
-    #line hidden
-    
-    #line 6 "..\..\Views\MyAccount.cshtml"
-    using Umbraco.Web.Models;
-    
-    #line default
-    #line hidden
     using Umbraco.Web.Mvc;
     using Umbraco.Web.PublishedModels;
     
@@ -90,12 +68,8 @@ namespace ASP
         public override void Execute()
         {
             
-            #line 10 "..\..\Views\MyAccount.cshtml"
-  
-    Html.EnableClientValidation();
-    Html.EnableUnobtrusiveJavaScript();
-    Html.RequiresJs("~/scripts/jquery.validate.min.js");
-    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+            #line 6 "..\..\Views\MyAccount.cshtml"
+   
     Html.RequiresCss("~/account/account.min.css");
 
             
@@ -108,7 +82,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 18 "..\..\Views\MyAccount.cshtml"
+            #line 10 "..\..\Views\MyAccount.cshtml"
    Write(Model.Name);
 
             
@@ -117,187 +91,88 @@ WriteLiteral(">\r\n    <h1>");
 WriteLiteral("</h1>\r\n\r\n");
 
             
-            #line 20 "..\..\Views\MyAccount.cshtml"
+            #line 12 "..\..\Views\MyAccount.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 20 "..\..\Views\MyAccount.cshtml"
+            #line 12 "..\..\Views\MyAccount.cshtml"
      if (User.Identity.IsAuthenticated)
     {
-        if (TempData["Success"] == null)
-        {
-            using (Html.BeginUmbracoForm<MyAccountSurfaceController>("UpdateAccount"))
-            {
-                
+        var gravatar = new Gravatar(User.Identity.Name);
+        
             
             #line default
             #line hidden
             
-            #line 26 "..\..\Views\MyAccount.cshtml"
-           Write(Html.AntiForgeryToken());
+            #line 15 "..\..\Views\MyAccount.cshtml"
+   Write(Html.GetBlockListHtml(Model, "blockList"));
 
             
             #line default
             #line hidden
             
-            #line 26 "..\..\Views\MyAccount.cshtml"
-                                        
-                var gravatar = new Gravatar(User.Identity.Name);
-                var accountUpdate = new MyAccountUpdate();
-                accountUpdate.Name = Members.GetCurrentMember().Name;
+            #line 15 "..\..\Views\MyAccount.cshtml"
+                                                  
 
 
             
             #line default
             #line hidden
-WriteLiteral("                <div");
+WriteLiteral("        <h2>Account picture</h2>\r\n");
 
-WriteLiteral(" class=\"form-group\"");
-
-WriteLiteral(">\r\n");
-
-WriteLiteral("                    ");
-
-            
-            #line 32 "..\..\Views\MyAccount.cshtml"
-               Write(Html.LabelFor(m => accountUpdate.Name));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\r\n");
-
-WriteLiteral("                    ");
-
-            
-            #line 33 "..\..\Views\MyAccount.cshtml"
-               Write(Html.TextBoxFor(m => accountUpdate.Name, new { @class = "form-control", required = "required", aria_describedby = "form-name", autocomplete="name" }));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\r\n");
-
-WriteLiteral("                    ");
-
-            
-            #line 34 "..\..\Views\MyAccount.cshtml"
-               Write(Html.ValidationMessageFor(m => accountUpdate.Name, null, new { id = "form-name" }));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\r\n                </div>\r\n");
-
-            
-            #line 36 "..\..\Views\MyAccount.cshtml"
-
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                <div");
-
-WriteLiteral(" class=\"form-group\"");
-
-WriteLiteral(">\r\n                    <p");
-
-WriteLiteral(" class=\"form-label\"");
-
-WriteLiteral(">Account picture</p>\r\n                    <div");
+WriteLiteral("        <div");
 
 WriteLiteral(" class=\"gravatar\"");
 
-WriteLiteral(">\r\n                        <img");
+WriteLiteral(">\r\n            <img");
 
-WriteAttribute("src", Tuple.Create(" src=\"", 1668), Tuple.Create("\"", 1687)
+WriteAttribute("src", Tuple.Create(" src=\"", 571), Tuple.Create("\"", 590)
             
-            #line 40 "..\..\Views\MyAccount.cshtml"
-, Tuple.Create(Tuple.Create("", 1674), Tuple.Create<System.Object, System.Int32>(gravatar.Url
+            #line 19 "..\..\Views\MyAccount.cshtml"
+, Tuple.Create(Tuple.Create("", 577), Tuple.Create<System.Object, System.Int32>(gravatar.Url
             
             #line default
             #line hidden
-, 1674), false)
+, 577), false)
 );
 
 WriteLiteral(" alt=\"Your account picture from gravatar.com\"");
 
-WriteAttribute("width", Tuple.Create(" width=\"", 1733), Tuple.Create("\"", 1755)
+WriteAttribute("width", Tuple.Create(" width=\"", 636), Tuple.Create("\"", 658)
             
-            #line 40 "..\..\Views\MyAccount.cshtml"
-                     , Tuple.Create(Tuple.Create("", 1741), Tuple.Create<System.Object, System.Int32>(gravatar.Size
+            #line 19 "..\..\Views\MyAccount.cshtml"
+          , Tuple.Create(Tuple.Create("", 644), Tuple.Create<System.Object, System.Int32>(gravatar.Size
             
             #line default
             #line hidden
-, 1741), false)
+, 644), false)
 );
 
-WriteAttribute("height", Tuple.Create(" height=\"", 1756), Tuple.Create("\"", 1779)
+WriteAttribute("height", Tuple.Create(" height=\"", 659), Tuple.Create("\"", 682)
             
-            #line 40 "..\..\Views\MyAccount.cshtml"
-                                             , Tuple.Create(Tuple.Create("", 1765), Tuple.Create<System.Object, System.Int32>(gravatar.Size
+            #line 19 "..\..\Views\MyAccount.cshtml"
+                                  , Tuple.Create(Tuple.Create("", 668), Tuple.Create<System.Object, System.Int32>(gravatar.Size
             
             #line default
             #line hidden
-, 1765), false)
+, 668), false)
 );
 
-WriteLiteral(" />\r\n                        <div>");
+WriteLiteral(" />\r\n            <div>");
 
             
-            #line 41 "..\..\Views\MyAccount.cshtml"
-                        Write(Html.ProtectEmailAddresses(Model.Value<IHtmlString>("gravatar")));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</div>\r\n                    </div>\r\n                </div>\r\n");
-
-            
-            #line 44 "..\..\Views\MyAccount.cshtml"
-
+            #line 20 "..\..\Views\MyAccount.cshtml"
+            Write(Html.ProtectEmailAddresses(Model.Value<IHtmlString>("gravatar")));
 
             
             #line default
             #line hidden
-WriteLiteral("                <button");
-
-WriteLiteral(" class=\"btn btn-primary\"");
-
-WriteLiteral(">");
+WriteLiteral("</div>\r\n        </div>\r\n");
 
             
-            #line 45 "..\..\Views\MyAccount.cshtml"
-                                           Write(Model.Value("saveButton"));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</button>\r\n");
-
-            
-            #line 46 "..\..\Views\MyAccount.cshtml"
-            }
-        }
-        else
-        {
-            
-            
-            #line default
-            #line hidden
-            
-            #line 50 "..\..\Views\MyAccount.cshtml"
-       Write(Html.ProtectEmailAddresses(Model.Value<IHtmlString>("saved")));
-
-            
-            #line default
-            #line hidden
-            
-            #line 50 "..\..\Views\MyAccount.cshtml"
-                                                                          
-        }
+            #line 22 "..\..\Views\MyAccount.cshtml"
     }
     else
     {
@@ -306,14 +181,14 @@ WriteLiteral("</button>\r\n");
             #line default
             #line hidden
             
-            #line 55 "..\..\Views\MyAccount.cshtml"
+            #line 25 "..\..\Views\MyAccount.cshtml"
    Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 55 "..\..\Views\MyAccount.cshtml"
+            #line 25 "..\..\Views\MyAccount.cshtml"
                                
     }
 

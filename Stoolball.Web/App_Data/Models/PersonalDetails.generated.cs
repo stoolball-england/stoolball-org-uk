@@ -19,44 +19,44 @@ using Umbraco.ModelsBuilder.Embedded;
 
 namespace Umbraco.Web.PublishedModels
 {
-	/// <summary>My Account</summary>
-	[PublishedModel("myAccount")]
-	public partial class MyAccount : PublishedContentModel, IDesign, IMetadata
+	/// <summary>Personal Details</summary>
+	[PublishedModel("personalDetails")]
+	public partial class PersonalDetails : PublishedContentModel, IDesign, IMetadata
 	{
 		// helpers
 #pragma warning disable 0109 // new is redundant
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.3")]
-		public new const string ModelTypeAlias = "myAccount";
+		public new const string ModelTypeAlias = "personalDetails";
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.3")]
 		public new const PublishedItemType ModelItemType = PublishedItemType.Content;
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.3")]
 		public new static IPublishedContentType GetModelContentType()
 			=> PublishedModelUtility.GetModelContentType(ModelItemType, ModelTypeAlias);
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.3")]
-		public static IPublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<MyAccount, TValue>> selector)
+		public static IPublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<PersonalDetails, TValue>> selector)
 			=> PublishedModelUtility.GetModelPropertyType(GetModelContentType(), selector);
 #pragma warning restore 0109
 
 		// ctor
-		public MyAccount(IPublishedContent content)
+		public PersonalDetails(IPublishedContent content)
 			: base(content)
 		{ }
 
 		// properties
 
 		///<summary>
-		/// Content
+		/// 'Save' button: Label for the form submit button.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.3")]
-		[ImplementPropertyType("blockList")]
-		public global::Umbraco.Core.Models.Blocks.BlockListModel BlockList => this.Value<global::Umbraco.Core.Models.Blocks.BlockListModel>("blockList");
+		[ImplementPropertyType("saveButton")]
+		public string SaveButton => this.Value<string>("saveButton");
 
 		///<summary>
-		/// Gravatar: Displays next to the member's gravatar and explains that it can be changed at gravatar.com.
+		/// Saved: Displays when an update is saved successfully.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.3")]
-		[ImplementPropertyType("gravatar")]
-		public global::System.Web.IHtmlString Gravatar => this.Value<global::System.Web.IHtmlString>("gravatar");
+		[ImplementPropertyType("saved")]
+		public global::System.Web.IHtmlString Saved => this.Value<global::System.Web.IHtmlString>("saved");
 
 		///<summary>
 		/// Header photo: The photo which appears across the site header. Leave blank to use the one from the parent page.

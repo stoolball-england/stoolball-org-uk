@@ -8,6 +8,7 @@ using Stoolball.Security;
 using Stoolball.Web.Account;
 using Stoolball.Web.Email;
 using Stoolball.Web.Routing;
+using Stoolball.Web.Tests;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
@@ -21,7 +22,7 @@ using Umbraco.Web.PublishedModels;
 using Xunit;
 using UmbracoConstants = Umbraco.Core.Constants;
 
-namespace Stoolball.Web.Tests.Account
+namespace Stoolball.Web.UnitTests.Account
 {
     public class LoginMemberSurfaceControllerTests : UmbracoBaseTest
     {

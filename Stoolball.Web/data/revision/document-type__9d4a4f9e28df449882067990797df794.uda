@@ -3,22 +3,16 @@
   "AllowedTemplates": [
     "umb://template/2085112cf5d9471389ea030a78464a13"
   ],
-  "Icon": "icon-male-and-female color-blue",
+  "Icon": "icon-location-near-me color-blue",
   "Thumbnail": "folder.png",
-  "Description": "Allows a member to manage their account settings",
+  "Description": "Allows a member to change their name",
   "IsContainer": false,
   "Permissions": {
     "AllowVaryingByCulture": false,
     "AllowVaryingBySegment": false,
     "AllowedAtRoot": false,
     "IsElementType": false,
-    "AllowedChildContentTypes": [
-      "umb://document-type/0465ea378c16476795b5cd3b96d72381",
-      "umb://document-type/0e4d0122c7a44a458e223be6f2f0e4ca",
-      "umb://document-type/18a88801b9b8403d951be0a5bd2c0687",
-      "umb://document-type/60449f5c60f54153ae5f9ddd4d2c1d15",
-      "umb://document-type/d02eb9b16d4c4bb59f212f5daa4681e7"
-    ]
+    "AllowedChildContentTypes": []
   },
   "Parent": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
   "CompositionContentTypes": [
@@ -41,19 +35,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
-        },
-        {
-          "Key": "9287886b-f3db-4bcd-9171-054a558d6ea2",
-          "Alias": "gravatar",
-          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
-          "Description": "Displays next to the member's gravatar and explains that it can be changed at gravatar.com.",
-          "Mandatory": true,
-          "Name": "Gravatar",
-          "SortOrder": 1,
-          "Validation": null,
-          "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "e8bccbd1-ae65-4bf2-887d-e141b0d9c91d",
@@ -65,7 +51,11 @@
           "SortOrder": 2,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -84,33 +74,8 @@
       "Mode": 0
     },
     {
-      "Udi": "umb://document-type/0465ea378c16476795b5cd3b96d72381",
-      "Ordering": false,
-      "Mode": 0
-    },
-    {
-      "Udi": "umb://document-type/0e4d0122c7a44a458e223be6f2f0e4ca",
-      "Ordering": false,
-      "Mode": 0
-    },
-    {
-      "Udi": "umb://document-type/18a88801b9b8403d951be0a5bd2c0687",
-      "Ordering": false,
-      "Mode": 0
-    },
-    {
       "Udi": "umb://document-type/4669a249dba648a4826ac76d2042af4d",
       "Ordering": true,
-      "Mode": 0
-    },
-    {
-      "Udi": "umb://document-type/60449f5c60f54153ae5f9ddd4d2c1d15",
-      "Ordering": false,
-      "Mode": 0
-    },
-    {
-      "Udi": "umb://document-type/d02eb9b16d4c4bb59f212f5daa4681e7",
-      "Ordering": false,
       "Mode": 0
     },
     {
@@ -129,8 +94,8 @@
       "Mode": 0
     }
   ],
-  "Name": "My Account",
-  "Alias": "myAccount",
+  "Name": "Personal Details",
+  "Alias": "personalDetails",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "3.4.4"
+  "__version": "4.1.4"
 }
