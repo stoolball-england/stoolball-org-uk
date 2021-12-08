@@ -59,6 +59,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Account\EmailAddressSurfaceControllerTests.cs" />
     <Compile Include="Account\PersonalDetailsSurfaceControllerTests.cs" />
     <Compile Include="Account\CreateMemberSurfaceControllerTests.cs" />
     <Compile Include="Account\LoginMemberSurfaceControllerTests.cs" />

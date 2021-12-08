@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Principal;
+using System.Threading;
 using System.Web;
 using System.Web.Security;
 using Moq;
@@ -6,6 +9,7 @@ using Umbraco.Core.Cache;
 using Umbraco.Core.Dictionary;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Mapping;
+using Umbraco.Core.Models;
 using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Core.Services;
 using Umbraco.Web;
@@ -66,6 +70,37 @@ namespace Stoolball.Web.Tests
 
             this.MemberCache = new Mock<IPublishedMemberCache>();
             this.MembershipHelper = new MembershipHelper(this.HttpContext.Object, this.MemberCache.Object, membershipProvider, Mock.Of<RoleProvider>(), MemberService.Object, memberTypeService, Mock.Of<IUserService>(), Mock.Of<IPublicAccessService>(), AppCaches.NoCache, Mock.Of<ILogger>());
+        }
+
+        /// <summary>
+        /// Setup <c>Members.GetCurrentMember()</c> to return the provided Umbraco member
+        /// </summary>
+        /// <param name="currentMember"></param>
+        public void SetupCurrentMember(IMember currentMember)
+        {
+            if (currentMember is null)
+            {
+                throw new ArgumentNullException(nameof(currentMember));
+            }
+
+            // Configure the ASP.NET HttpContext.User property
+            var identity = new Mock<IIdentity>();
+            identity.Setup(x => x.IsAuthenticated).Returns(true);
+            identity.Setup(x => x.Name).Returns(currentMember.Name);
+            var user = new GenericPrincipal(identity.Object, Array.Empty<string>());
+            HttpContext.Setup(x => x.User).Returns(user);
+
+            // Configure Umbraco to get the currently logged-in member based on the same user
+            // by mocking responses to the steps taken internally by MembershipHelper.GetCurrentUser()
+            Thread.CurrentPrincipal = user;
+
+            var memberContent = new Mock<IPublishedContent>();
+            memberContent.Setup(x => x.Name).Returns(currentMember.Name);
+            memberContent.Setup(x => x.Key).Returns(currentMember.Key);
+            MemberService.Setup(x => x.GetByUsername(identity.Object.Name)).Returns(currentMember);
+            MemberCache.Setup(x => x.GetByMember(currentMember)).Returns(memberContent.Object);
+            memberContent.Setup(x => x.Id).Returns(currentMember.Id);
+            MemberService.Setup(x => x.GetById(currentMember.Id)).Returns(currentMember);
         }
 
         public static void SetupPropertyValue(Mock<IPublishedContent> publishedContentMock, string alias, object value, string culture = null, string segment = null)

@@ -19,14 +19,14 @@ using static Stoolball.Constants;
 
 namespace Stoolball.Web.UnitTests.Account
 {
-    public class PersonalDetailsSurfaceControllerTests : UmbracoBaseTest
+    public class EmailAddressSurfaceControllerTests : UmbracoBaseTest
     {
         private readonly Mock<IMember> _currentMember = new Mock<IMember>();
         private readonly Mock<ILogger> _logger = new Mock<ILogger>();
 
-        private class TestPersonalDetailsSurfaceController : PersonalDetailsSurfaceController
+        private class TestEmailAddressSurfaceController : EmailAddressSurfaceController
         {
-            public TestPersonalDetailsSurfaceController(IUmbracoContextAccessor umbracoContextAccessor,
+            public TestEmailAddressSurfaceController(IUmbracoContextAccessor umbracoContextAccessor,
                 IUmbracoDatabaseFactory databaseFactory,
                 ServiceContext services,
                 AppCaches appCaches,
@@ -45,7 +45,7 @@ namespace Stoolball.Web.UnitTests.Account
             }
         }
 
-        public PersonalDetailsSurfaceControllerTests()
+        public EmailAddressSurfaceControllerTests()
         {
             base.Setup();
 
@@ -56,10 +56,9 @@ namespace Stoolball.Web.UnitTests.Account
             SetupCurrentMember(_currentMember.Object);
         }
 
-
-        private TestPersonalDetailsSurfaceController CreateController()
+        private TestEmailAddressSurfaceController CreateController()
         {
-            return new TestPersonalDetailsSurfaceController(Mock.Of<IUmbracoContextAccessor>(),
+            return new TestEmailAddressSurfaceController(Mock.Of<IUmbracoContextAccessor>(),
                             Mock.Of<IUmbracoDatabaseFactory>(),
                             base.ServiceContext,
                             AppCaches.NoCache,
@@ -69,11 +68,10 @@ namespace Stoolball.Web.UnitTests.Account
                             base.HttpContext.Object);
         }
 
-
         [Fact]
-        public void UpdatePersonalDetails_has_content_security_policy_allows_forms()
+        public void UpdateEmailAddress_has_content_security_policy_allows_forms()
         {
-            var method = typeof(PersonalDetailsSurfaceController).GetMethod(nameof(PersonalDetailsSurfaceController.UpdatePersonalDetails));
+            var method = typeof(EmailAddressSurfaceController).GetMethod(nameof(EmailAddressSurfaceController.UpdateEmailAddress));
             var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
 
             Assert.NotNull(attribute);
@@ -86,9 +84,9 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public void UpdatePersonalDetails_has_form_post_attributes()
+        public void UpdateEmailAddress_has_form_post_attributes()
         {
-            var method = typeof(PersonalDetailsSurfaceController).GetMethod(nameof(PersonalDetailsSurfaceController.UpdatePersonalDetails));
+            var method = typeof(EmailAddressSurfaceController).GetMethod(nameof(EmailAddressSurfaceController.UpdateEmailAddress));
 
             var httpPostAttribute = method.GetCustomAttributes(typeof(HttpPostAttribute), false).SingleOrDefault();
             Assert.NotNull(httpPostAttribute);
@@ -101,37 +99,36 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public void Valid_request_updates_name_from_model_and_saves()
+        public void Valid_request_saves()
         {
-            var model = new PersonalDetailsFormData { Name = "Requested name" };
+            var model = new EmailAddressFormData { RequestedEmail = "new@example.org" };
             using (var controller = CreateController())
             {
-                var result = controller.UpdatePersonalDetails(model);
+                var result = controller.UpdateEmailAddress(model);
 
-                _currentMember.VerifySet(x => x.Name = model.Name, Times.Once);
                 base.MemberService.Verify(x => x.Save(_currentMember.Object, true), Times.Once);
             }
         }
 
         [Fact]
-        public void Valid_request_logs_with_original_member_name()
+        public void Valid_request_logs()
         {
-            var model = new PersonalDetailsFormData { Name = "Requested name" };
+            var model = new EmailAddressFormData();
             using (var controller = CreateController())
             {
-                var result = controller.UpdatePersonalDetails(model);
+                var result = controller.UpdateEmailAddress(model);
 
-                _logger.Verify(x => x.Info(typeof(PersonalDetailsSurfaceController), LoggingTemplates.MemberPersonalDetailsUpdated, _currentMember.Object.Name, _currentMember.Object.Key, typeof(PersonalDetailsSurfaceController), nameof(PersonalDetailsSurfaceController.UpdatePersonalDetails)), Times.Once);
+                _logger.Verify(x => x.Info(typeof(EmailAddressSurfaceController), LoggingTemplates.MemberEmailAddressRequested, _currentMember.Object.Name, _currentMember.Object.Key, typeof(EmailAddressSurfaceController), nameof(EmailAddressSurfaceController.UpdateEmailAddress)), Times.Once);
             }
         }
 
         [Fact]
         public void Valid_request_sets_TempData_for_view()
         {
-            var model = new PersonalDetailsFormData();
+            var model = new EmailAddressFormData();
             using (var controller = CreateController())
             {
-                var result = controller.UpdatePersonalDetails(model);
+                var result = controller.UpdateEmailAddress(model);
 
                 Assert.Equal(true, controller.TempData["Success"]);
             }
@@ -140,10 +137,10 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Valid_request_returns_RedirectToUmbracoPageResult()
         {
-            var model = new PersonalDetailsFormData();
+            var model = new EmailAddressFormData();
             using (var controller = CreateController())
             {
-                var result = controller.UpdatePersonalDetails(model);
+                var result = controller.UpdateEmailAddress(model);
 
                 Assert.IsType<RedirectToUmbracoPageResult>(result);
             }
@@ -152,11 +149,11 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Invalid_model_does_not_save_or_set_TempData()
         {
-            var model = new PersonalDetailsFormData();
+            var model = new EmailAddressFormData();
             using (var controller = CreateController())
             {
-                controller.ModelState.AddModelError("Name", "Name is required");
-                var result = controller.UpdatePersonalDetails(model);
+                controller.ModelState.AddModelError(string.Empty, "Something is invalid");
+                var result = controller.UpdateEmailAddress(model);
 
                 base.MemberService.Verify(x => x.Save(_currentMember.Object, true), Times.Never);
                 Assert.False(controller.TempData.ContainsKey("Success"));
@@ -166,11 +163,11 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Invalid_model_returns_UmbracoPageResult()
         {
-            var model = new PersonalDetailsFormData();
+            var model = new EmailAddressFormData();
             using (var controller = CreateController())
             {
-                controller.ModelState.AddModelError("Name", "Name is required");
-                var result = controller.UpdatePersonalDetails(model);
+                controller.ModelState.AddModelError(string.Empty, "Something is invalid");
+                var result = controller.UpdateEmailAddress(model);
 
                 Assert.IsType<UmbracoPageResult>(result);
             }
@@ -181,7 +178,7 @@ namespace Stoolball.Web.UnitTests.Account
         {
             using (var controller = CreateController())
             {
-                var result = controller.UpdatePersonalDetails(null);
+                var result = controller.UpdateEmailAddress(null);
 
                 base.MemberService.Verify(x => x.Save(_currentMember.Object, true), Times.Never);
                 Assert.False(controller.TempData.ContainsKey("Success"));
@@ -193,7 +190,7 @@ namespace Stoolball.Web.UnitTests.Account
         {
             using (var controller = CreateController())
             {
-                var result = controller.UpdatePersonalDetails(null);
+                var result = controller.UpdateEmailAddress(null);
 
                 Assert.IsType<UmbracoPageResult>(result);
             }

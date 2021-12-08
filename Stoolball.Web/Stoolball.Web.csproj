@@ -1270,6 +1270,8 @@
       <LastGenOutput>BowlingStrikeRate.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\EditMatchFormat.cshtml" />
+    <Content Include="Views\EditEmailAddress.cshtml" />
+    <Content Include="Views\EmailAddress.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -1286,10 +1288,14 @@
     <Compile Include="Account\LoginMemberSurfaceController.cs" />
     <Compile Include="Account\LogoutMember.cs" />
     <Compile Include="Account\LogoutMemberController.cs" />
+    <Compile Include="Account\EmailAddress.cs" />
     <Compile Include="Account\PersonalDetails.cs" />
     <Compile Include="Account\MyAccount.cs" />
     <Compile Include="Account\MyAccountController.cs" />
+    <Compile Include="Account\EmailAddressController.cs" />
     <Compile Include="Account\PersonalDetailsController.cs" />
+    <Compile Include="Account\EmailAddressFormData.cs" />
+    <Compile Include="Account\EmailAddressSurfaceController.cs" />
     <Compile Include="Account\PersonalDetailsSurfaceController.cs" />
     <Compile Include="Account\GravatarUrl.cs" />
     <Compile Include="Account\LogoutMemberSurfaceController.cs" />
@@ -1304,6 +1310,7 @@
     <Compile Include="App_Data\Models\Cookies.generated.cs" />
     <Compile Include="App_Data\Models\CreateMember.generated.cs" />
     <Compile Include="App_Data\Models\Design.generated.cs" />
+    <Compile Include="App_Data\Models\EmailAddress.generated.cs" />
     <Compile Include="App_Data\Models\FormattedText.generated.cs" />
     <Compile Include="App_Data\Models\FormattedTextWithImage.generated.cs" />
     <Compile Include="App_Data\Models\FormElementType.generated.cs" />
