@@ -8,6 +8,7 @@ using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Security;
 using Stoolball.Web.MatchLocations;
+using Stoolball.Web.UnitTests;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -16,7 +17,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.MatchLocations
+namespace Stoolball.Web.UnitTests.MatchLocations
 {
     public class DeleteMatchLocationControllerTests : UmbracoBaseTest
     {

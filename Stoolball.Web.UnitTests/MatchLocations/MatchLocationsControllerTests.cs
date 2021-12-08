@@ -1,6 +1,7 @@
 ﻿using Moq;
 using Stoolball.MatchLocations;
 using Stoolball.Web.MatchLocations;
+using Stoolball.Web.UnitTests;
 using System;
 using System.Threading.Tasks;
 using System.Web;
@@ -14,7 +15,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.MatchLocations
+namespace Stoolball.Web.UnitTests.MatchLocations
 {
     public class MatchLocationsControllerTests : UmbracoBaseTest
     {

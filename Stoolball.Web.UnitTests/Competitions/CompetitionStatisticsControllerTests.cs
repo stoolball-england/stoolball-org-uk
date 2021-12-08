@@ -19,7 +19,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Competitions
+namespace Stoolball.Web.UnitTests.Competitions
 {
     public class CompetitionStatisticsControllerTests : UmbracoBaseTest
     {

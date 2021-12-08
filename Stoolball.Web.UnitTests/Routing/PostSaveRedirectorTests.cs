@@ -1,7 +1,7 @@
 ﻿using Stoolball.Web.Routing;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Routing
+namespace Stoolball.Web.UnitTests.Routing
 {
     public class PostSaveRedirectorTests
     {

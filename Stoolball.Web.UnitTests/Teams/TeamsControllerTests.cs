@@ -1,6 +1,7 @@
 ﻿using Moq;
 using Stoolball.Teams;
 using Stoolball.Web.Teams;
+using Stoolball.Web.UnitTests;
 using System;
 using System.Threading.Tasks;
 using System.Web;
@@ -14,7 +15,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Teams
+namespace Stoolball.Web.UnitTests.Teams
 {
     public class TeamsControllerTests : UmbracoBaseTest
     {

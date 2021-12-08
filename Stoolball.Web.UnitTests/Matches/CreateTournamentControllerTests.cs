@@ -2,6 +2,7 @@
 using Stoolball.Competitions;
 using Stoolball.Teams;
 using Stoolball.Web.Matches;
+using Stoolball.Web.UnitTests;
 using System;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Matches
+namespace Stoolball.Web.UnitTests.Matches
 {
     public class CreateTournamentControllerTests : UmbracoBaseTest
     {

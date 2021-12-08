@@ -9,7 +9,7 @@ using Stoolball.Matches;
 using Stoolball.Web.Matches;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Matches
+namespace Stoolball.Web.UnitTests.Matches
 {
     public class MatchValidatorTests
     {

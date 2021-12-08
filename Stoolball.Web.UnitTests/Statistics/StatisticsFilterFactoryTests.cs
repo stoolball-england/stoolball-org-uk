@@ -10,7 +10,7 @@ using Stoolball.Teams;
 using Stoolball.Web.Statistics;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Statistics
+namespace Stoolball.Web.UnitTests.Statistics
 {
     public class StatisticsFilterFactoryTests
     {

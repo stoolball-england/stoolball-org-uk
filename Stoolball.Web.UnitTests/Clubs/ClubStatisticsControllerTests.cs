@@ -11,6 +11,7 @@ using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Web.Clubs;
 using Stoolball.Web.Statistics;
+using Stoolball.Web.UnitTests;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -19,7 +20,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Clubs
+namespace Stoolball.Web.UnitTests.Clubs
 {
     public class ClubStatisticsControllerTests : UmbracoBaseTest
     {

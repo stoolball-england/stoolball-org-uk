@@ -3,6 +3,7 @@ using Stoolball.Competitions;
 using Stoolball.Email;
 using Stoolball.Security;
 using Stoolball.Web.Competitions;
+using Stoolball.Web.UnitTests;
 using System;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Competitions
+namespace Stoolball.Web.UnitTests.Competitions
 {
     public class CompetitionControllerTests : UmbracoBaseTest
     {

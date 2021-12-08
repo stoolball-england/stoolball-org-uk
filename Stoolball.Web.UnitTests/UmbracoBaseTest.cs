@@ -17,7 +17,7 @@ using Umbraco.Web.PublishedCache;
 using Umbraco.Web.Security;
 using Umbraco.Web.Security.Providers;
 
-namespace Stoolball.Web.Tests
+namespace Stoolball.Web.UnitTests
 {
     // Copied from https://our.umbraco.com/documentation/Implementation/Unit-Testing/
     public abstract class UmbracoBaseTest
@@ -35,41 +35,41 @@ namespace Stoolball.Web.Tests
 
         public virtual void Setup()
         {
-            this.SetupHttpContext();
-            this.SetupCultureDictionaries();
-            this.SetupPublishedContentQuerying();
-            this.SetupMembership();
+            SetupHttpContext();
+            SetupCultureDictionaries();
+            SetupPublishedContentQuerying();
+            SetupMembership();
 
-            this.ServiceContext = ServiceContext.CreatePartial(memberService: MemberService.Object);
-            this.UmbracoHelper = new UmbracoHelper(Mock.Of<IPublishedContent>(), Mock.Of<ITagQuery>(), this.CultureDictionaryFactory.Object, Mock.Of<IUmbracoComponentRenderer>(), this.PublishedContentQuery.Object, this.MembershipHelper);
-            this.UmbracoMapper = new UmbracoMapper(new MapDefinitionCollection(new List<IMapDefinition>()));
+            ServiceContext = ServiceContext.CreatePartial(memberService: MemberService.Object);
+            UmbracoHelper = new UmbracoHelper(Mock.Of<IPublishedContent>(), Mock.Of<ITagQuery>(), CultureDictionaryFactory.Object, Mock.Of<IUmbracoComponentRenderer>(), PublishedContentQuery.Object, MembershipHelper);
+            UmbracoMapper = new UmbracoMapper(new MapDefinitionCollection(new List<IMapDefinition>()));
         }
 
         public virtual void SetupHttpContext()
         {
-            this.HttpContext = new Mock<HttpContextBase>();
+            HttpContext = new Mock<HttpContextBase>();
         }
 
         public virtual void SetupCultureDictionaries()
         {
-            this.CultureDictionary = new Mock<ICultureDictionary>();
-            this.CultureDictionaryFactory = new Mock<ICultureDictionaryFactory>();
-            this.CultureDictionaryFactory.Setup(x => x.CreateDictionary()).Returns(this.CultureDictionary.Object);
+            CultureDictionary = new Mock<ICultureDictionary>();
+            CultureDictionaryFactory = new Mock<ICultureDictionaryFactory>();
+            CultureDictionaryFactory.Setup(x => x.CreateDictionary()).Returns(CultureDictionary.Object);
         }
 
         public virtual void SetupPublishedContentQuerying()
         {
-            this.PublishedContentQuery = new Mock<IPublishedContentQuery>();
+            PublishedContentQuery = new Mock<IPublishedContentQuery>();
         }
 
         public virtual void SetupMembership()
         {
-            this.MemberService = new Mock<IMemberService>();
+            MemberService = new Mock<IMemberService>();
             var memberTypeService = Mock.Of<IMemberTypeService>();
             var membershipProvider = new MembersMembershipProvider(MemberService.Object, memberTypeService);
 
-            this.MemberCache = new Mock<IPublishedMemberCache>();
-            this.MembershipHelper = new MembershipHelper(this.HttpContext.Object, this.MemberCache.Object, membershipProvider, Mock.Of<RoleProvider>(), MemberService.Object, memberTypeService, Mock.Of<IUserService>(), Mock.Of<IPublicAccessService>(), AppCaches.NoCache, Mock.Of<ILogger>());
+            MemberCache = new Mock<IPublishedMemberCache>();
+            MembershipHelper = new MembershipHelper(HttpContext.Object, MemberCache.Object, membershipProvider, Mock.Of<RoleProvider>(), MemberService.Object, memberTypeService, Mock.Of<IUserService>(), Mock.Of<IPublicAccessService>(), AppCaches.NoCache, Mock.Of<ILogger>());
         }
 
         /// <summary>

@@ -1,7 +1,7 @@
 ﻿using Stoolball.Web.Forms;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Forms
+namespace Stoolball.Web.UnitTests.Forms
 {
     public class EmailFieldTests
     {

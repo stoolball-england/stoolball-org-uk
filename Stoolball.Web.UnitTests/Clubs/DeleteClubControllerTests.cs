@@ -7,6 +7,7 @@ using Moq;
 using Stoolball.Clubs;
 using Stoolball.Security;
 using Stoolball.Web.Clubs;
+using Stoolball.Web.UnitTests;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -15,7 +16,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Clubs
+namespace Stoolball.Web.UnitTests.Clubs
 {
     public class DeleteClubControllerTests : UmbracoBaseTest
     {

@@ -15,7 +15,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Clubs
+namespace Stoolball.Web.UnitTests.Clubs
 {
     public class ClubActionsControllerTests : UmbracoBaseTest
     {

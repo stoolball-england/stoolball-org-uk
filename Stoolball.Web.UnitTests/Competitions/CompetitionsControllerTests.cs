@@ -6,6 +6,7 @@ using System.Web.Routing;
 using Moq;
 using Stoolball.Competitions;
 using Stoolball.Web.Competitions;
+using Stoolball.Web.UnitTests;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -14,7 +15,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Competitions
+namespace Stoolball.Web.UnitTests.Competitions
 {
     public class CompetitionsControllerTests : UmbracoBaseTest
     {

@@ -4,7 +4,6 @@ using Moq;
 using Stoolball.Web.Account;
 using Stoolball.Web.Metadata;
 using Stoolball.Web.Security;
-using Stoolball.Web.Tests;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;

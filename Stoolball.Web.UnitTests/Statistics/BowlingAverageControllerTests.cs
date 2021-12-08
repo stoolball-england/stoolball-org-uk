@@ -16,7 +16,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Statistics
+namespace Stoolball.Web.UnitTests.Statistics
 {
     public class BowlingAverageControllerTests : UmbracoBaseTest
     {

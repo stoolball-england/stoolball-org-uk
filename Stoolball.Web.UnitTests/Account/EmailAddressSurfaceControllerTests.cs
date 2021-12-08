@@ -6,7 +6,6 @@ using System.Web.Routing;
 using Moq;
 using Stoolball.Web.Account;
 using Stoolball.Web.Security;
-using Stoolball.Web.Tests;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;

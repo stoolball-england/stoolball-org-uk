@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Moq;
 using Stoolball.Statistics;
 using Stoolball.Web.Statistics;
+using Stoolball.Web.UnitTests;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
@@ -14,7 +15,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Statistics
+namespace Stoolball.Web.UnitTests.Statistics
 {
     public class StatisticsControllerTests : UmbracoBaseTest
     {

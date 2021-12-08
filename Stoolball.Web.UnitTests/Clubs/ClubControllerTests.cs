@@ -2,6 +2,7 @@
 using Stoolball.Clubs;
 using Stoolball.Security;
 using Stoolball.Web.Clubs;
+using Stoolball.Web.UnitTests;
 using System;
 using System.Threading.Tasks;
 using System.Web;
@@ -15,7 +16,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
 
-namespace Stoolball.Web.Tests.Clubs
+namespace Stoolball.Web.UnitTests.Clubs
 {
     public class ClubControllerTests : UmbracoBaseTest
     {
