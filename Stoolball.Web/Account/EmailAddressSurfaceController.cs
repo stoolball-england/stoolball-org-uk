@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Security;
+using Stoolball.Security;
 using Stoolball.Web.Email;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -18,6 +19,7 @@ namespace Stoolball.Web.Account
         private readonly MembershipProvider _membershipProvider;
         private readonly IEmailFormatter _emailFormatter;
         private readonly IEmailSender _emailSender;
+        private readonly IVerificationToken _verificationToken;
 
         public EmailAddressSurfaceController(IUmbracoContextAccessor umbracoContextAccessor,
             IUmbracoDatabaseFactory databaseFactory,
@@ -28,12 +30,14 @@ namespace Stoolball.Web.Account
             UmbracoHelper umbracoHelper,
             MembershipProvider membershipProvider,
             IEmailFormatter emailFormatter,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IVerificationToken verificationToken)
         : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper)
         {
             _membershipProvider = membershipProvider ?? throw new System.ArgumentNullException(nameof(membershipProvider));
             _emailFormatter = emailFormatter ?? throw new System.ArgumentNullException(nameof(emailFormatter));
             _emailSender = emailSender ?? throw new System.ArgumentNullException(nameof(emailSender));
+            _verificationToken = verificationToken ?? throw new System.ArgumentNullException(nameof(verificationToken));
         }
 
         [HttpPost]
@@ -52,7 +56,7 @@ namespace Stoolball.Web.Account
                 var member = Members.GetCurrentMember();
 
                 // Check whether the requested email already belongs to another account
-                var alreadyTaken = Members.GetByEmail(model.RequestedEmail);
+                var alreadyTaken = Members.GetByEmail(model.RequestedEmail?.Trim());
                 if (alreadyTaken != null && alreadyTaken.Key != member.Key)
                 {
                     // Send the address already in use email
@@ -64,14 +68,18 @@ namespace Stoolball.Web.Account
                         {"email", model.RequestedEmail},
                         {"domain", GetRequestUrlAuthority()}
                         });
-                    _emailSender.SendEmail(model.RequestedEmail, subject, body);
+                    _emailSender.SendEmail(model.RequestedEmail?.Trim(), subject, body);
 
                     Logger.Info(typeof(EmailAddressSurfaceController), LoggingTemplates.MemberRequestedEmailAddressAlreadyInUse, member.Name, member.Key, typeof(EmailAddressSurfaceController), nameof(UpdateEmailAddress));
                 }
                 else
                 {
+                    // Create an requested email token including the id so we can find the member
+                    var (token, expires) = _verificationToken.TokenFor(member.Id);
                     var editableMember = Services.MemberService.GetById(member.Id);
-
+                    editableMember.SetValue("requestedEmail", model.RequestedEmail?.Trim());
+                    editableMember.SetValue("requestedEmailToken", token);
+                    editableMember.SetValue("requestedEmailTokenExpires", expires);
                     Services.MemberService.Save(editableMember);
 
                     Logger.Info(typeof(EmailAddressSurfaceController), LoggingTemplates.MemberRequestedEmailAddress, member.Name, member.Key, typeof(EmailAddressSurfaceController), nameof(UpdateEmailAddress));

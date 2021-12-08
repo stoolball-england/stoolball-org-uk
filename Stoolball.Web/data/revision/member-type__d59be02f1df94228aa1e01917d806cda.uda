@@ -28,7 +28,11 @@
           "SortOrder": 0,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "0000001d-0000-0000-0000-000000000000",
@@ -40,7 +44,11 @@
           "SortOrder": 1,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "0000001e-0000-0000-0000-000000000000",
@@ -52,7 +60,11 @@
           "SortOrder": 2,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "0000001f-0000-0000-0000-000000000000",
@@ -64,7 +76,11 @@
           "SortOrder": 3,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "00000020-0000-0000-0000-000000000000",
@@ -76,7 +92,11 @@
           "SortOrder": 4,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "00000021-0000-0000-0000-000000000000",
@@ -88,7 +108,11 @@
           "SortOrder": 7,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "00000022-0000-0000-0000-000000000000",
@@ -100,7 +124,11 @@
           "SortOrder": 8,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "00000023-0000-0000-0000-000000000000",
@@ -112,7 +140,11 @@
           "SortOrder": 9,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "00000024-0000-0000-0000-000000000000",
@@ -124,7 +156,27 @@
           "SortOrder": 10,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
+        },
+        {
+          "Key": "4b0fb867-4cd3-4a6c-b488-7c2f61d7583e",
+          "Alias": "requestedEmail",
+          "DataType": "umb://data-type/f0bc4bfbb49940d6ba86058885a5178c",
+          "Description": null,
+          "Mandatory": false,
+          "Name": "Requested Email",
+          "SortOrder": 15,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "4f0b190f-c53d-41f8-9592-0b32cb67d183",
@@ -136,7 +188,27 @@
           "SortOrder": 13,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
+        },
+        {
+          "Key": "4f6ac5f5-09c3-4a6b-917c-c86438af499e",
+          "Alias": "requestedEmailTokenExpires",
+          "DataType": "umb://data-type/0e9794ebf9b54f20a78893acd233a7e4",
+          "Description": "The date and time the requested email token expires.",
+          "Mandatory": false,
+          "Name": "Requested Email Token Expires",
+          "SortOrder": 17,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "71d678b0-c7ed-4f70-a349-d8965d555b1f",
@@ -148,7 +220,27 @@
           "SortOrder": 11,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
+        },
+        {
+          "Key": "97c14a38-4a62-42fd-a67d-ab859d121db6",
+          "Alias": "requestedEmailToken",
+          "DataType": "umb://data-type/f0bc4bfbb49940d6ba86058885a5178c",
+          "Description": "Used when a member requests a change to their email address.",
+          "Mandatory": false,
+          "Name": "Requested Email Token",
+          "SortOrder": 16,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "999f3441-fb77-4f4f-a851-1a19cb382cc8",
@@ -160,7 +252,11 @@
           "SortOrder": 14,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "9c7e4178-bd1c-4abf-8b5a-5db3cd613e90",
@@ -172,7 +268,11 @@
           "SortOrder": 5,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "9d06cd3f-1407-4b2f-9212-13f9da43449f",
@@ -184,7 +284,11 @@
           "SortOrder": 6,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "a3d70221-a92a-4056-aa80-8bf4efc6f6e7",
@@ -193,10 +297,14 @@
           "Description": "For members migrated from the previous website, the id they had on that website.",
           "Mandatory": false,
           "Name": "Migrated Member Id",
-          "SortOrder": 15,
+          "SortOrder": 18,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         },
         {
           "Key": "a665fde5-0cbb-4702-8e43-e4262d0b305b",
@@ -208,7 +316,11 @@
           "SortOrder": 12,
           "Validation": null,
           "VariesByCulture": false,
-          "VariesBySegment": false
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
         }
       ]
     }
@@ -245,5 +357,5 @@
   "Name": "Member",
   "Alias": "Member",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.MemberTypeArtifact",
-  "__version": "3.3.1"
+  "__version": "4.1.4"
 }

@@ -87,6 +87,27 @@ namespace Umbraco.Web.PublishedModels
 		public global::System.DateTime PasswordResetTokenExpires => this.Value<global::System.DateTime>("passwordResetTokenExpires");
 
 		///<summary>
+		/// Requested Email
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.3")]
+		[ImplementPropertyType("requestedEmail")]
+		public string RequestedEmail => this.Value<string>("requestedEmail");
+
+		///<summary>
+		/// Requested Email Token: Used when a member requests a change to their email address.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.3")]
+		[ImplementPropertyType("requestedEmailToken")]
+		public string RequestedEmailToken => this.Value<string>("requestedEmailToken");
+
+		///<summary>
+		/// Requested Email Token Expires: The date and time the requested email token expires.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.3")]
+		[ImplementPropertyType("requestedEmailTokenExpires")]
+		public global::System.DateTime RequestedEmailTokenExpires => this.Value<global::System.DateTime>("requestedEmailTokenExpires");
+
+		///<summary>
 		/// Total Logins: The number of times a member has logged in.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.3")]

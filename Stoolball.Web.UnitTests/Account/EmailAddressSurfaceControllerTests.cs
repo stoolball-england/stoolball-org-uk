@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Security;
 using Moq;
+using Stoolball.Security;
 using Stoolball.Web.Account;
 using Stoolball.Web.Email;
 using Stoolball.Web.Security;
@@ -28,6 +29,7 @@ namespace Stoolball.Web.UnitTests.Account
         private readonly Mock<ILogger> _logger = new Mock<ILogger>();
         private readonly Mock<IEmailFormatter> _emailFormatter = new Mock<IEmailFormatter>();
         private readonly Mock<IEmailSender> _emailSender = new Mock<IEmailSender>();
+        private readonly Mock<IVerificationToken> _verificationToken = new Mock<IVerificationToken>();
         private const string VALID_PASSWORD = "validPa$$word";
         private const string EMAIL_TAKEN_SUBJECT = "Email address already in use subject";
         private const string EMAIL_TAKEN_BODY = "Email address already in use body";
@@ -46,8 +48,9 @@ namespace Stoolball.Web.UnitTests.Account
                 HttpContextBase httpContext,
                 MembershipProvider membershipProvider,
                 IEmailFormatter emailFormatter,
-                IEmailSender emailSender)
-            : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper, membershipProvider, emailFormatter, emailSender)
+                IEmailSender emailSender,
+                IVerificationToken verificationToken)
+            : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper, membershipProvider, emailFormatter, emailSender, verificationToken)
             {
                 _currentPage = new Mock<IPublishedContent>();
                 SetupPropertyValue(_currentPage, "emailTakenSubject", EMAIL_TAKEN_SUBJECT);
@@ -96,7 +99,8 @@ namespace Stoolball.Web.UnitTests.Account
                             base.HttpContext.Object,
                             membershipProvider.Object,
                             _emailFormatter.Object,
-                            _emailSender.Object);
+                            _emailSender.Object,
+                            _verificationToken.Object);
         }
 
         [Fact]
@@ -200,13 +204,20 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public void Valid_request_saves()
+        public void Valid_request_saves_email_and_token()
         {
             var model = new EmailAddressFormData { RequestedEmail = "new@example.org", Password = VALID_PASSWORD };
+            var token = Guid.NewGuid().ToString();
+            var tokenExpiry = DateTime.UtcNow.AddDays(1);
+            _verificationToken.Setup(x => x.TokenFor(_currentMember.Object.Id)).Returns((token, tokenExpiry));
+
             using (var controller = CreateController())
             {
                 var result = controller.UpdateEmailAddress(model);
 
+                _currentMember.Verify(x => x.SetValue("requestedEmail", model.RequestedEmail, null, null), Times.Once);
+                _currentMember.Verify(x => x.SetValue("requestedEmailToken", token, null, null), Times.Once);
+                _currentMember.Verify(x => x.SetValue("requestedEmailTokenExpires", tokenExpiry, null, null), Times.Once);
                 base.MemberService.Verify(x => x.Save(_currentMember.Object, true), Times.Once);
             }
         }
