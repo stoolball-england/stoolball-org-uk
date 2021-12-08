@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -6,10 +7,12 @@ using System.Web.Routing;
 using System.Web.Security;
 using Moq;
 using Stoolball.Web.Account;
+using Stoolball.Web.Email;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
+using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
@@ -23,10 +26,16 @@ namespace Stoolball.Web.UnitTests.Account
     {
         private readonly Mock<IMember> _currentMember = new Mock<IMember>();
         private readonly Mock<ILogger> _logger = new Mock<ILogger>();
+        private readonly Mock<IEmailFormatter> _emailFormatter = new Mock<IEmailFormatter>();
+        private readonly Mock<IEmailSender> _emailSender = new Mock<IEmailSender>();
         private const string VALID_PASSWORD = "validPa$$word";
+        private const string EMAIL_TAKEN_SUBJECT = "Email address already in use subject";
+        private const string EMAIL_TAKEN_BODY = "Email address already in use body";
 
         private class TestEmailAddressSurfaceController : EmailAddressSurfaceController
         {
+            private readonly Mock<IPublishedContent> _currentPage;
+
             public TestEmailAddressSurfaceController(IUmbracoContextAccessor umbracoContextAccessor,
                 IUmbracoDatabaseFactory databaseFactory,
                 ServiceContext services,
@@ -35,10 +44,23 @@ namespace Stoolball.Web.UnitTests.Account
                 IProfilingLogger profilingLogger,
                 UmbracoHelper umbracoHelper,
                 HttpContextBase httpContext,
-                MembershipProvider membershipProvider)
-            : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper, membershipProvider)
+                MembershipProvider membershipProvider,
+                IEmailFormatter emailFormatter,
+                IEmailSender emailSender)
+            : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper, membershipProvider, emailFormatter, emailSender)
             {
+                _currentPage = new Mock<IPublishedContent>();
+                SetupPropertyValue(_currentPage, "emailTakenSubject", EMAIL_TAKEN_SUBJECT);
+                SetupPropertyValue(_currentPage, "emailTakenBody", EMAIL_TAKEN_BODY);
+
                 ControllerContext = new ControllerContext(httpContext, new RouteData(), this);
+            }
+
+            protected override IPublishedContent CurrentPage => _currentPage.Object;
+
+            protected override string GetRequestUrlAuthority()
+            {
+                return "localhost";
             }
 
             protected override RedirectToUmbracoPageResult RedirectToCurrentUmbracoPage()
@@ -63,6 +85,7 @@ namespace Stoolball.Web.UnitTests.Account
             var membershipProvider = new Mock<MembershipProvider>();
             membershipProvider.Setup(x => x.ValidateUser(_currentMember.Object.Name, VALID_PASSWORD)).Returns(true);
 
+
             return new TestEmailAddressSurfaceController(Mock.Of<IUmbracoContextAccessor>(),
                             Mock.Of<IUmbracoDatabaseFactory>(),
                             base.ServiceContext,
@@ -71,7 +94,9 @@ namespace Stoolball.Web.UnitTests.Account
                             Mock.Of<IProfilingLogger>(),
                             base.UmbracoHelper,
                             base.HttpContext.Object,
-                            membershipProvider.Object);
+                            membershipProvider.Object,
+                            _emailFormatter.Object,
+                            _emailSender.Object);
         }
 
         [Fact]
@@ -105,6 +130,76 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
+        public void Request_for_email_already_in_use_sends_email()
+        {
+            var model = new EmailAddressFormData { RequestedEmail = "new@example.org", Password = VALID_PASSWORD };
+
+            var otherMember = new Mock<IPublishedContent>();
+            otherMember.Setup(x => x.Key).Returns(Guid.NewGuid());
+            MemberCache.Setup(x => x.GetByEmail(model.RequestedEmail)).Returns(otherMember.Object);
+
+            _emailFormatter.Setup(x => x.FormatEmailContent(EMAIL_TAKEN_SUBJECT, EMAIL_TAKEN_BODY, It.IsAny<Dictionary<string, string>>())).Returns(("email subject", "email body"));
+
+            using (var controller = CreateController())
+            {
+                var result = controller.UpdateEmailAddress(model);
+
+                _emailSender.Verify(x => x.SendEmail(model.RequestedEmail, "email subject", "email body"), Times.Once);
+            }
+        }
+
+        [Fact]
+        public void Request_for_email_already_in_use_does_not_save()
+        {
+            var model = new EmailAddressFormData { RequestedEmail = "new@example.org", Password = VALID_PASSWORD };
+
+            var otherMember = new Mock<IPublishedContent>();
+            otherMember.Setup(x => x.Key).Returns(Guid.NewGuid());
+            MemberCache.Setup(x => x.GetByEmail(model.RequestedEmail)).Returns(otherMember.Object);
+
+            using (var controller = CreateController())
+            {
+                var result = controller.UpdateEmailAddress(model);
+
+                base.MemberService.Verify(x => x.Save(_currentMember.Object, true), Times.Never);
+            }
+        }
+
+        [Fact]
+        public void Request_for_email_already_in_use_sets_TempData_for_view()
+        {
+            var model = new EmailAddressFormData { RequestedEmail = "new@example.org", Password = VALID_PASSWORD };
+
+            var otherMember = new Mock<IPublishedContent>();
+            otherMember.Setup(x => x.Key).Returns(Guid.NewGuid());
+            MemberCache.Setup(x => x.GetByEmail(model.RequestedEmail)).Returns(otherMember.Object);
+
+            using (var controller = CreateController())
+            {
+                var result = controller.UpdateEmailAddress(model);
+
+                Assert.Equal(true, controller.TempData["Success"]);
+            }
+        }
+
+        [Fact]
+        public void Request_for_email_already_in_use_is_logged()
+        {
+            var model = new EmailAddressFormData { RequestedEmail = "new@example.org", Password = VALID_PASSWORD };
+
+            var otherMember = new Mock<IPublishedContent>();
+            otherMember.Setup(x => x.Key).Returns(Guid.NewGuid());
+            MemberCache.Setup(x => x.GetByEmail(model.RequestedEmail)).Returns(otherMember.Object);
+
+            using (var controller = CreateController())
+            {
+                var result = controller.UpdateEmailAddress(model);
+
+                _logger.Verify(x => x.Info(typeof(EmailAddressSurfaceController), LoggingTemplates.MemberRequestedEmailAddressAlreadyInUse, _currentMember.Object.Name, _currentMember.Object.Key, typeof(EmailAddressSurfaceController), nameof(EmailAddressSurfaceController.UpdateEmailAddress)), Times.Once);
+            }
+        }
+
+        [Fact]
         public void Valid_request_saves()
         {
             var model = new EmailAddressFormData { RequestedEmail = "new@example.org", Password = VALID_PASSWORD };
@@ -117,14 +212,14 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public void Valid_request_logs()
+        public void Valid_request_is_logged()
         {
             var model = new EmailAddressFormData { Password = VALID_PASSWORD };
             using (var controller = CreateController())
             {
                 var result = controller.UpdateEmailAddress(model);
 
-                _logger.Verify(x => x.Info(typeof(EmailAddressSurfaceController), LoggingTemplates.MemberEmailAddressRequested, _currentMember.Object.Name, _currentMember.Object.Key, typeof(EmailAddressSurfaceController), nameof(EmailAddressSurfaceController.UpdateEmailAddress)), Times.Once);
+                _logger.Verify(x => x.Info(typeof(EmailAddressSurfaceController), LoggingTemplates.MemberRequestedEmailAddress, _currentMember.Object.Name, _currentMember.Object.Key, typeof(EmailAddressSurfaceController), nameof(EmailAddressSurfaceController.UpdateEmailAddress)), Times.Once);
             }
         }
 
@@ -165,7 +260,7 @@ namespace Stoolball.Web.UnitTests.Account
                 var result = controller.UpdateEmailAddress(model);
 
                 Assert.True(controller.ModelState.ContainsKey("formData." + nameof(model.Password)));
-                Assert.Equal("Your password is incorrect. Enter your current password.", controller.ModelState["formData." + nameof(model.Password)].Errors[0].ErrorMessage);
+                Assert.Equal("Your password is incorrect or your account is locked.", controller.ModelState["formData." + nameof(model.Password)].Errors[0].ErrorMessage);
             }
         }
 

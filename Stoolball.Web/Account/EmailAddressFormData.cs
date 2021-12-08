@@ -5,7 +5,7 @@ namespace Stoolball.Web.Account
     public class EmailAddressFormData
     {
         [Required]
-        [Display(Name = "Email address")]
+        [Display(Name = "New email address")]
         public string RequestedEmail { get; set; }
 
         [Required]

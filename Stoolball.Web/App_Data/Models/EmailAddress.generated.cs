@@ -45,6 +45,20 @@ namespace Umbraco.Web.PublishedModels
 		// properties
 
 		///<summary>
+		/// Email body: The body of the email. You can use {{NAME}}, {{EMAIL}} and {{DOMAIN}} to insert values.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.3")]
+		[ImplementPropertyType("emailTakenBody")]
+		public global::System.Web.IHtmlString EmailTakenBody => this.Value<global::System.Web.IHtmlString>("emailTakenBody");
+
+		///<summary>
+		/// Email subject: The subject line of the email. You can use {{NAME}} to insert the member's name.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.3")]
+		[ImplementPropertyType("emailTakenSubject")]
+		public string EmailTakenSubject => this.Value<string>("emailTakenSubject");
+
+		///<summary>
 		/// Password help: Explain why the member has to enter their password.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.3")]
