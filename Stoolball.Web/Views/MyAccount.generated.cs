@@ -100,20 +100,35 @@ WriteLiteral("</h1>\r\n\r\n");
             #line 12 "..\..\Views\MyAccount.cshtml"
      if (User.Identity.IsAuthenticated)
     {
+        
+            
+            #line default
+            #line hidden
+            
+            #line 14 "..\..\Views\MyAccount.cshtml"
+   Write(Html.Partial("_ConfirmEmailAddress", Members.GetCurrentMember()));
+
+            
+            #line default
+            #line hidden
+            
+            #line 14 "..\..\Views\MyAccount.cshtml"
+                                                                         
+       
         var gravatar = new Gravatar(User.Identity.Name);
         
             
             #line default
             #line hidden
             
-            #line 15 "..\..\Views\MyAccount.cshtml"
+            #line 17 "..\..\Views\MyAccount.cshtml"
    Write(Html.GetBlockListHtml(Model, "blockList"));
 
             
             #line default
             #line hidden
             
-            #line 15 "..\..\Views\MyAccount.cshtml"
+            #line 17 "..\..\Views\MyAccount.cshtml"
                                                   
 
 
@@ -128,42 +143,42 @@ WriteLiteral(" class=\"gravatar\"");
 
 WriteLiteral(">\r\n            <img");
 
-WriteAttribute("src", Tuple.Create(" src=\"", 571), Tuple.Create("\"", 590)
+WriteAttribute("src", Tuple.Create(" src=\"", 655), Tuple.Create("\"", 674)
             
-            #line 19 "..\..\Views\MyAccount.cshtml"
-, Tuple.Create(Tuple.Create("", 577), Tuple.Create<System.Object, System.Int32>(gravatar.Url
+            #line 21 "..\..\Views\MyAccount.cshtml"
+, Tuple.Create(Tuple.Create("", 661), Tuple.Create<System.Object, System.Int32>(gravatar.Url
             
             #line default
             #line hidden
-, 577), false)
+, 661), false)
 );
 
 WriteLiteral(" alt=\"Your account picture from gravatar.com\"");
 
-WriteAttribute("width", Tuple.Create(" width=\"", 636), Tuple.Create("\"", 658)
+WriteAttribute("width", Tuple.Create(" width=\"", 720), Tuple.Create("\"", 742)
             
-            #line 19 "..\..\Views\MyAccount.cshtml"
-          , Tuple.Create(Tuple.Create("", 644), Tuple.Create<System.Object, System.Int32>(gravatar.Size
+            #line 21 "..\..\Views\MyAccount.cshtml"
+          , Tuple.Create(Tuple.Create("", 728), Tuple.Create<System.Object, System.Int32>(gravatar.Size
             
             #line default
             #line hidden
-, 644), false)
+, 728), false)
 );
 
-WriteAttribute("height", Tuple.Create(" height=\"", 659), Tuple.Create("\"", 682)
+WriteAttribute("height", Tuple.Create(" height=\"", 743), Tuple.Create("\"", 766)
             
-            #line 19 "..\..\Views\MyAccount.cshtml"
-                                  , Tuple.Create(Tuple.Create("", 668), Tuple.Create<System.Object, System.Int32>(gravatar.Size
+            #line 21 "..\..\Views\MyAccount.cshtml"
+                                  , Tuple.Create(Tuple.Create("", 752), Tuple.Create<System.Object, System.Int32>(gravatar.Size
             
             #line default
             #line hidden
-, 668), false)
+, 752), false)
 );
 
 WriteLiteral(" />\r\n            <div>");
 
             
-            #line 20 "..\..\Views\MyAccount.cshtml"
+            #line 22 "..\..\Views\MyAccount.cshtml"
             Write(Html.ProtectEmailAddresses(Model.Value<IHtmlString>("gravatar")));
 
             
@@ -172,7 +187,7 @@ WriteLiteral(" />\r\n            <div>");
 WriteLiteral("</div>\r\n        </div>\r\n");
 
             
-            #line 22 "..\..\Views\MyAccount.cshtml"
+            #line 24 "..\..\Views\MyAccount.cshtml"
     }
     else
     {
@@ -181,14 +196,14 @@ WriteLiteral("</div>\r\n        </div>\r\n");
             #line default
             #line hidden
             
-            #line 25 "..\..\Views\MyAccount.cshtml"
+            #line 27 "..\..\Views\MyAccount.cshtml"
    Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 25 "..\..\Views\MyAccount.cshtml"
+            #line 27 "..\..\Views\MyAccount.cshtml"
                                
     }
 

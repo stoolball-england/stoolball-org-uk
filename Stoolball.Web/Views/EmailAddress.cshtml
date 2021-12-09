@@ -18,6 +18,8 @@
     {
         if (TempData["Success"] == null)
         {
+            @Html.Partial("_ConfirmEmailAddress", Members.GetCurrentMember())
+
             using (Html.BeginUmbracoForm<EmailAddressSurfaceController>("UpdateEmailAddress"))
             {
                 @Html.AntiForgeryToken()

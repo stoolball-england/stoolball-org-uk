@@ -11,6 +11,8 @@
 
     @if (User.Identity.IsAuthenticated)
     {
+        @Html.Partial("_ConfirmEmailAddress", Members.GetCurrentMember())
+       
         var gravatar = new Gravatar(User.Identity.Name);
         @Html.GetBlockListHtml(Model, "blockList")
 
