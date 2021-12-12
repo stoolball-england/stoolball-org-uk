@@ -33,6 +33,9 @@ namespace Stoolball.Web.UnitTests.Account
         private const string VALID_PASSWORD = "validPa$$word";
         private const string EMAIL_TAKEN_SUBJECT = "Email address already in use subject";
         private const string EMAIL_TAKEN_BODY = "Email address already in use body";
+        private const string CONFIRM_EMAIL_SUBJECT = "Please confirm your email address";
+        private const string CONFIRM_EMAIL_BODY = "Confirm your email address body";
+        private const string REQUEST_URL_AUTHORITY = "localhost";
 
         private class TestEmailAddressSurfaceController : EmailAddressSurfaceController
         {
@@ -55,6 +58,8 @@ namespace Stoolball.Web.UnitTests.Account
                 _currentPage = new Mock<IPublishedContent>();
                 SetupPropertyValue(_currentPage, "emailTakenSubject", EMAIL_TAKEN_SUBJECT);
                 SetupPropertyValue(_currentPage, "emailTakenBody", EMAIL_TAKEN_BODY);
+                SetupPropertyValue(_currentPage, "confirmEmailSubject", CONFIRM_EMAIL_SUBJECT);
+                SetupPropertyValue(_currentPage, "confirmEmailBody", CONFIRM_EMAIL_BODY);
 
                 ControllerContext = new ControllerContext(httpContext, new RouteData(), this);
             }
@@ -63,7 +68,7 @@ namespace Stoolball.Web.UnitTests.Account
 
             protected override string GetRequestUrlAuthority()
             {
-                return "localhost";
+                return REQUEST_URL_AUTHORITY;
             }
 
             protected override RedirectToUmbracoPageResult RedirectToCurrentUmbracoPage()
@@ -139,15 +144,22 @@ namespace Stoolball.Web.UnitTests.Account
             var model = new EmailAddressFormData { RequestedEmail = "new@example.org", Password = VALID_PASSWORD };
 
             var otherMember = new Mock<IPublishedContent>();
+            otherMember.Setup(x => x.Name).Returns("Other member");
             otherMember.Setup(x => x.Key).Returns(Guid.NewGuid());
             MemberCache.Setup(x => x.GetByEmail(model.RequestedEmail)).Returns(otherMember.Object);
 
-            _emailFormatter.Setup(x => x.FormatEmailContent(EMAIL_TAKEN_SUBJECT, EMAIL_TAKEN_BODY, It.IsAny<Dictionary<string, string>>())).Returns(("email subject", "email body"));
+            Dictionary<string, string> receivedTokens = null;
+            _emailFormatter.Setup(x => x.FormatEmailContent(EMAIL_TAKEN_SUBJECT, EMAIL_TAKEN_BODY, It.IsAny<Dictionary<string, string>>()))
+                .Callback<string, string, Dictionary<string, string>>((subject, body, tokens) => receivedTokens = tokens)
+                .Returns(("email subject", "email body"));
 
             using (var controller = CreateController())
             {
                 var result = controller.UpdateEmailAddress(model);
 
+                Assert.Equal(otherMember.Object.Name, receivedTokens["name"]);
+                Assert.Equal(model.RequestedEmail, receivedTokens["email"]);
+                Assert.Equal(REQUEST_URL_AUTHORITY, receivedTokens["domain"]);
                 _emailSender.Verify(x => x.SendEmail(model.RequestedEmail, "email subject", "email body"), Times.Once);
             }
         }
@@ -219,6 +231,32 @@ namespace Stoolball.Web.UnitTests.Account
                 _currentMember.Verify(x => x.SetValue("requestedEmailToken", token, null, null), Times.Once);
                 _currentMember.Verify(x => x.SetValue("requestedEmailTokenExpires", tokenExpiry, null, null), Times.Once);
                 base.MemberService.Verify(x => x.Save(_currentMember.Object, true), Times.Once);
+            }
+        }
+
+
+        [Fact]
+        public void Valid_request_sends_email_with_token()
+        {
+            var model = new EmailAddressFormData { RequestedEmail = "new@example.org", Password = VALID_PASSWORD };
+            var token = Guid.NewGuid().ToString();
+            var tokenExpiry = DateTime.UtcNow.AddDays(1);
+            _verificationToken.Setup(x => x.TokenFor(_currentMember.Object.Id)).Returns((token, tokenExpiry));
+
+            Dictionary<string, string> receivedTokens = null;
+            _emailFormatter.Setup(x => x.FormatEmailContent(CONFIRM_EMAIL_SUBJECT, CONFIRM_EMAIL_BODY, It.IsAny<Dictionary<string, string>>()))
+                .Callback<string, string, Dictionary<string, string>>((subject, body, tokens) => receivedTokens = tokens)
+                .Returns(("confirm email subject", "confirm email body"));
+
+            using (var controller = CreateController())
+            {
+                var result = controller.UpdateEmailAddress(model);
+
+                Assert.Equal(_currentMember.Object.Name, receivedTokens["name"]);
+                Assert.Equal(model.RequestedEmail, receivedTokens["email"]);
+                Assert.Equal(REQUEST_URL_AUTHORITY, receivedTokens["domain"]);
+                Assert.Equal(token, receivedTokens["token"]);
+                _emailSender.Verify(x => x.SendEmail(model.RequestedEmail, "confirm email subject", "confirm email body"), Times.Once);
             }
         }
 

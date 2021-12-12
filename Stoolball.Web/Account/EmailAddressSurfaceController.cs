@@ -82,6 +82,18 @@ namespace Stoolball.Web.Account
                     editableMember.SetValue("requestedEmailTokenExpires", expires);
                     Services.MemberService.Save(editableMember);
 
+                    // Send the token by email
+                    var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>("confirmEmailSubject"),
+                        CurrentPage.Value<string>("confirmEmailBody"),
+                        new Dictionary<string, string>
+                        {
+                        {"name", member.Name},
+                        {"email", model.RequestedEmail},
+                        {"domain", GetRequestUrlAuthority()},
+                        {"token", token }
+                        });
+                    _emailSender.SendEmail(model.RequestedEmail?.Trim(), subject, body);
+
                     Logger.Info(typeof(EmailAddressSurfaceController), LoggingTemplates.MemberRequestedEmailAddress, member.Name, member.Key, typeof(EmailAddressSurfaceController), nameof(UpdateEmailAddress));
                 }
                 TempData["Success"] = true;

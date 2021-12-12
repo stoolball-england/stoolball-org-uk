@@ -45,6 +45,20 @@ namespace Umbraco.Web.PublishedModels
 		// properties
 
 		///<summary>
+		/// Email body: The body of the email. You can use {{NAME}}, {{EMAIL}}, {{TOKEN}} and {{DOMAIN}} to insert values.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.3")]
+		[ImplementPropertyType("confirmEmailBody")]
+		public global::System.Web.IHtmlString ConfirmEmailBody => this.Value<global::System.Web.IHtmlString>("confirmEmailBody");
+
+		///<summary>
+		/// Email subject: The subject line of the email. You can use {{NAME}} to insert the member's name.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.3")]
+		[ImplementPropertyType("confirmEmailSubject")]
+		public string ConfirmEmailSubject => this.Value<string>("confirmEmailSubject");
+
+		///<summary>
 		/// Email body: The body of the email. You can use {{NAME}}, {{EMAIL}} and {{DOMAIN}} to insert values.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.3")]
