@@ -30,6 +30,7 @@ namespace Stoolball.Web.UnitTests
         public Mock<ICultureDictionaryFactory> CultureDictionaryFactory { get; set; }
         public Mock<IPublishedContentQuery> PublishedContentQuery { get; set; }
         public Mock<HttpContextBase> HttpContext { get; set; }
+        public Mock<HttpRequestBase> Request { get; set; }
         public Mock<IMemberService> MemberService { get; set; }
         public Mock<IPublishedMemberCache> MemberCache { get; set; }
 
@@ -47,7 +48,11 @@ namespace Stoolball.Web.UnitTests
 
         public virtual void SetupHttpContext()
         {
+            Request = new Mock<HttpRequestBase>();
+            Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString(string.Empty));
+
             HttpContext = new Mock<HttpContextBase>();
+            HttpContext.SetupGet(x => x.Request).Returns(Request.Object);
         }
 
         public virtual void SetupCultureDictionaries()

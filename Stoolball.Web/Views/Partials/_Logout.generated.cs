@@ -66,6 +66,7 @@ namespace ASP
   
     var logoutPage = Umbraco.ContentSingleAtXPath("//logoutMember");
     var loggedIn = !string.IsNullOrEmpty(Model.Value<string>("loggedIn")) ? Model.Value<string>("loggedIn") : logoutPage?.Value<string>("loggedIn");
+    var currentMemberName = Members.GetCurrentMember()?.Name; // GetCurrentMember() returns null when the member has just confirmed their new email address in another tab
 
             
             #line default
@@ -73,16 +74,31 @@ namespace ASP
 WriteLiteral("\r\n\r\n");
 
             
-            #line 10 "..\..\Views\Partials\_Logout.cshtml"
-Write(Html.ProtectEmailAddresses(loggedIn?.Replace("{{NAME}}", Umbraco.MembershipHelper.GetCurrentMember().Name)));
-
+            #line 11 "..\..\Views\Partials\_Logout.cshtml"
+ if (!string.IsNullOrEmpty(currentMemberName)) { 
+    
             
             #line default
             #line hidden
-WriteLiteral("\r\n\r\n");
-
             
             #line 12 "..\..\Views\Partials\_Logout.cshtml"
+Write(Html.ProtectEmailAddresses(loggedIn?.Replace("{{NAME}}", currentMemberName)));
+
+            
+            #line default
+            #line hidden
+            
+            #line 12 "..\..\Views\Partials\_Logout.cshtml"
+                                                                                 
+}
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n");
+
+            
+            #line 15 "..\..\Views\Partials\_Logout.cshtml"
  using (Html.BeginUmbracoForm<LogoutMemberSurfaceController>("HandleLogout"))
 {
     
@@ -90,14 +106,14 @@ WriteLiteral("\r\n\r\n");
             #line default
             #line hidden
             
-            #line 14 "..\..\Views\Partials\_Logout.cshtml"
+            #line 17 "..\..\Views\Partials\_Logout.cshtml"
 Write(Html.AntiForgeryToken());
 
             
             #line default
             #line hidden
             
-            #line 14 "..\..\Views\Partials\_Logout.cshtml"
+            #line 17 "..\..\Views\Partials\_Logout.cshtml"
                             
 
             
@@ -110,7 +126,7 @@ WriteLiteral(" class=\"btn btn-primary\"");
 WriteLiteral(">");
 
             
-            #line 15 "..\..\Views\Partials\_Logout.cshtml"
+            #line 18 "..\..\Views\Partials\_Logout.cshtml"
                                 Write(logoutPage?.Value("logoutButton"));
 
             
@@ -119,7 +135,7 @@ WriteLiteral(">");
 WriteLiteral("</button>\r\n");
 
             
-            #line 16 "..\..\Views\Partials\_Logout.cshtml"
+            #line 19 "..\..\Views\Partials\_Logout.cshtml"
 }
 
             

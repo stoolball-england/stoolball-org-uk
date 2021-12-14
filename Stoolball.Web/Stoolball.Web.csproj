@@ -1272,6 +1272,7 @@
     <Content Include="Views\EditMatchFormat.cshtml" />
     <Content Include="Views\EditEmailAddress.cshtml" />
     <Content Include="Views\EmailAddress.cshtml" />
+    <Content Include="Views\ConfirmEmailAddress.cshtml" />
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -1279,6 +1280,8 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Account\ConfirmEmailAddressController.cs" />
+    <Compile Include="Account\ConfirmEmailAddress.cs" />
     <Compile Include="Account\ApproveMemberController.cs" />
     <Compile Include="Account\ApproveMember.cs" />
     <Compile Include="Account\CreateMember.cs" />
@@ -1305,6 +1308,7 @@
     <Compile Include="Account\ResetPasswordRequest.cs" />
     <Compile Include="Account\ResetPasswordSurfaceController.cs" />
     <Compile Include="Account\ResetPasswordUpdate.cs" />
+    <Compile Include="App_Data\Models\ConfirmEmailAddress.generated.cs" />
     <Compile Include="App_Data\Models\Consent.generated.cs" />
     <Compile Include="App_Data\Models\Content.generated.cs" />
     <Compile Include="App_Data\Models\Cookies.generated.cs" />

@@ -1,0 +1,96 @@
+{
+  "DefaultTemplate": "umb://template/3d736c7583b641e6abb6a534efcd456d",
+  "AllowedTemplates": [
+    "umb://template/3d736c7583b641e6abb6a534efcd456d"
+  ],
+  "Icon": "icon-checkbox color-blue",
+  "Thumbnail": "folder.png",
+  "Description": "Complete a request to edit a member's email address",
+  "IsContainer": false,
+  "Permissions": {
+    "AllowVaryingByCulture": false,
+    "AllowVaryingBySegment": false,
+    "AllowedAtRoot": false,
+    "IsElementType": false,
+    "AllowedChildContentTypes": []
+  },
+  "Parent": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
+  "CompositionContentTypes": [
+    "umb://document-type/4669a249dba648a4826ac76d2042af4d",
+    "umb://document-type/d9999f5ac07b4f379d013f0316d8678c"
+  ],
+  "PropertyGroups": [
+    {
+      "Key": "aa9b2686-1dbb-431a-aeb2-0d7dd8e2c9a6",
+      "Name": "Page content",
+      "SortOrder": 0,
+      "PropertyTypes": [
+        {
+          "Key": "45e8edde-dbaa-4810-81eb-9852344dd3db",
+          "Alias": "confirmationSuccessful",
+          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+          "Description": "Displays when the email address is confirmed. You can use {{NAME}} to insert the member's name and {{EMAIL}} to insert the new email address.",
+          "Mandatory": true,
+          "Name": "Confirmation successful",
+          "SortOrder": 0,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
+        },
+        {
+          "Key": "d0e8033e-6f97-46ff-894f-bbc52e73a561",
+          "Alias": "confirmationFailed",
+          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+          "Description": "Displays when confirmation of a member's email address failed for any reason.",
+          "Mandatory": true,
+          "Name": "Confirmation failed",
+          "SortOrder": 1,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
+        }
+      ]
+    }
+  ],
+  "PropertyTypes": [],
+  "Udi": "umb://document-type/e458e02d6e71404dad19c73036af0f02",
+  "Dependencies": [
+    {
+      "Udi": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/4669a249dba648a4826ac76d2042af4d",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/d9999f5ac07b4f379d013f0316d8678c",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/3d736c7583b641e6abb6a534efcd456d",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "Name": "Confirm Email Address",
+  "Alias": "confirmEmailAddress",
+  "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
+  "__version": "4.1.4"
+}

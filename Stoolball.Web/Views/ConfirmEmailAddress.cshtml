@@ -1,0 +1,15 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.ConfirmEmailAddress>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using Stoolball.Web.Email
+<div class="container-xl">
+    <h1>@Model.Name</h1>
+
+    @if (Model.TokenValid)
+    {
+        @Html.ProtectEmailAddresses(Model.ConfirmationSuccessful.ToHtmlString().Replace("{{NAME}}", Model.MemberName).Replace("{{EMAIL}}", Model.EmailAddress))
+    }
+    else
+    {
+        @Html.ProtectEmailAddresses(Model.ConfirmationFailed)
+    }
+</div>
