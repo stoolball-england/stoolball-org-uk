@@ -125,7 +125,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: stoolball-web-unit-tests-converted
-        path: coveragereport/*.*
+        path: coveragereport/Cobertura.xml
 
   publish-to-codecov:
     runs-on: ubuntu-latest
@@ -159,7 +159,7 @@ jobs:
         chmod +x codecov
         ./codecov -F unittests -f unit-tests.cobertura.xml -t ${CODECOV_TOKEN}
         ./codecov -F integration -f integration-tests.cobertura.xml -t ${CODECOV_TOKEN}
-        ./codecov -F unittests -f cobertura.xml -t ${CODECOV_TOKEN}
+        ./codecov -F unittests -f Cobertura.xml -t ${CODECOV_TOKEN}
 
   publish-to-codacy:
     runs-on: ubuntu-latest
@@ -186,4 +186,4 @@ jobs:
         CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
       with:
         project-token: ${{ env.CODACY_PROJECT_TOKEN }}
-        coverage-reports: unit-tests.cobertura.xml,integration-tests.cobertura.xml,cobertura.xml
+        coverage-reports: unit-tests.cobertura.xml,integration-tests.cobertura.xml,Cobertura.xml
