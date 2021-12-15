@@ -1286,6 +1286,8 @@
     <Compile Include="Account\ApproveMember.cs" />
     <Compile Include="Account\CreateMember.cs" />
     <Compile Include="Account\CreateMemberController.cs" />
+    <Compile Include="Account\CreateMemberExecuter.cs" />
+    <Compile Include="Account\ICreateMemberExecuter.cs" />
     <Compile Include="Account\LoginMember.cs" />
     <Compile Include="Account\LoginMemberController.cs" />
     <Compile Include="Account\LoginMemberSurfaceController.cs" />

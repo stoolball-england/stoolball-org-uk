@@ -22,6 +22,7 @@ using Stoolball.Security;
 using Stoolball.SocialMedia;
 using Stoolball.Statistics;
 using Stoolball.Teams;
+using Stoolball.Web.Account;
 using Stoolball.Web.Caching;
 using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
@@ -107,6 +108,7 @@ namespace Stoolball.Web
             composition.Register<IStatisticsFilterHumanizer, StatisticsFilterHumanizer>();
             composition.Register<IStoolballEntityRouteParser, StoolballEntityRouteParser>();
             composition.Register<IUmbracoFormsLabeller, UmbracoFormsLabeller>();
+            composition.Register<ICreateMemberExecuter, CreateMemberExecuter>();
 
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 
             // be injected anywhere except the one place where it's serving a page of content.

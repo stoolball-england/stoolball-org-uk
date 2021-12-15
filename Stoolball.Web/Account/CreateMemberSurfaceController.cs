@@ -20,16 +20,28 @@ namespace Stoolball.Web.Account
 {
     public class CreateMemberSurfaceController : UmbRegisterController
     {
+        private readonly ICreateMemberExecuter _createMemberExecuter;
         private readonly IEmailFormatter _emailFormatter;
         private readonly IEmailSender _emailSender;
         private readonly IVerificationToken _verificationToken;
 
-        public CreateMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor, IUmbracoDatabaseFactory databaseFactory, ServiceContext services, AppCaches appCaches, ILogger logger, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IEmailFormatter emailFormatter, IEmailSender emailSender, IVerificationToken verificationToken)
+        public CreateMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor,
+            IUmbracoDatabaseFactory databaseFactory,
+            ServiceContext services,
+            AppCaches appCaches,
+            ILogger logger,
+            IProfilingLogger profilingLogger,
+            UmbracoHelper umbracoHelper,
+            ICreateMemberExecuter createMemberExecuter,
+            IEmailFormatter emailFormatter,
+            IEmailSender emailSender,
+            IVerificationToken verificationToken)
             : base(umbracoContextAccessor, databaseFactory, services, appCaches, logger, profilingLogger, umbracoHelper)
         {
-            _emailFormatter = emailFormatter;
-            _emailSender = emailSender;
-            _verificationToken = verificationToken;
+            _createMemberExecuter = createMemberExecuter ?? throw new ArgumentNullException(nameof(createMemberExecuter));
+            _emailFormatter = emailFormatter ?? throw new ArgumentNullException(nameof(emailFormatter));
+            _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
+            _verificationToken = verificationToken ?? throw new ArgumentNullException(nameof(verificationToken));
         }
 
         [HttpPost]
@@ -45,7 +57,7 @@ namespace Stoolball.Web.Account
 
             // Don't login if creating the member succeeds, because we're going to revert approval and ask for validation
             model.LoginOnSuccess = false;
-            var baseResult = CreateMemberInUmbraco(model);
+            var baseResult = _createMemberExecuter.CreateMember(base.HandleRegisterMember, model);
 
             // Put the entered email address in TempData so that it can be accessed in the view
             TempData["Email"] = model.Email;
@@ -81,7 +93,7 @@ namespace Stoolball.Web.Account
                     });
                 _emailSender.SendEmail(model.Email, subject, body);
 
-                Logger.Info(typeof(Umbraco.Core.Security.UmbracoMembershipProviderBase), LoggingTemplates.CreateMember, member.Username, member.Key, GetType(), nameof(CreateMember));
+                Logger.Info(typeof(CreateMemberSurfaceController), LoggingTemplates.CreateMember, member.Username, member.Key, typeof(CreateMemberSurfaceController), nameof(CreateMember));
 
                 return RedirectToCurrentUmbracoPage();
             }
@@ -121,19 +133,11 @@ namespace Stoolball.Web.Account
         /// Gets the authority segment of the request URL
         /// </summary>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1055:Uri return values should not be strings", Justification = "It's only a partial URI")]
-        protected virtual string GetRequestUrlAuthority() => Request.Url.Host == "localhost" ? Request.Url.Authority : "www.stoolball.org.uk";
+        private string GetRequestUrlAuthority() => Request.Url.Host == "localhost" ? Request.Url.Authority : "www.stoolball.org.uk";
 
         /// <summary>
         /// Calls the base <see cref="SurfaceController.RedirectToCurrentUmbracoPage" /> in a way which can be overridden for testing
         /// </summary>
         protected new virtual RedirectToUmbracoPageResult RedirectToCurrentUmbracoPage() => base.RedirectToCurrentUmbracoPage();
-
-        /// <summary>
-        /// Calls the base <see cref="HandleRegisterMember" /> in a way which can be overridden for testing
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        protected virtual ActionResult CreateMemberInUmbraco(RegisterModel model) => base.HandleRegisterMember(model);
     }
 }

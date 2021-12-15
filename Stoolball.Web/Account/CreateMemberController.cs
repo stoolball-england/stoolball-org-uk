@@ -1,6 +1,11 @@
 ﻿using System.Web.Mvc;
 using Stoolball.Metadata;
 using Stoolball.Web.Security;
+using Umbraco.Core.Cache;
+using Umbraco.Core.Configuration;
+using Umbraco.Core.Logging;
+using Umbraco.Core.Services;
+using Umbraco.Web;
 using Umbraco.Web.Models;
 using Umbraco.Web.Mvc;
 using Umbraco.Web.PublishedModels;
@@ -9,6 +14,16 @@ namespace Stoolball.Web.Account
 {
     public class CreateMemberController : RenderMvcController
     {
+        public CreateMemberController(
+            IGlobalSettings globalSettings,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            ServiceContext serviceContext,
+            AppCaches appCaches,
+            IProfilingLogger profilingLogger,
+            UmbracoHelper umbracoHelper) :
+            base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
+        { }
+
         [HttpGet]
         [ContentSecurityPolicy(Forms = true)]
         public override ActionResult Index(ContentModel contentModel)
@@ -20,7 +35,7 @@ namespace Stoolball.Web.Account
                 Description = model.Description
             };
 
-            return CurrentTemplate(model);
+            return View("CreateMember", model);
         }
 
         /// <summary>
@@ -39,7 +54,7 @@ namespace Stoolball.Web.Account
                 Description = model.Description
             };
 
-            return CurrentTemplate(model);
+            return View("CreateMember", model);
         }
     }
 }
