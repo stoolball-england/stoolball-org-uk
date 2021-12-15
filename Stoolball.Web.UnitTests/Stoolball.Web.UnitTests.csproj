@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="Account\ApproveMemberControllerTests.cs" />
     <Compile Include="Account\ConfirmEmailAddressControllerTests.cs" />
+    <Compile Include="Account\LoginMemberControllerTests.cs" />
     <Compile Include="Account\LogoutMemberControllerTests.cs" />
     <Compile Include="Account\CreateMemberControllerTests.cs" />
     <Compile Include="Account\EmailAddressFormDataTests.cs" />

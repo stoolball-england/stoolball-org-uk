@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -8,6 +9,7 @@ using Stoolball.Security;
 using Stoolball.Web.Account;
 using Stoolball.Web.Email;
 using Stoolball.Web.Routing;
+using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
@@ -69,6 +71,37 @@ namespace Stoolball.Web.UnitTests.Account
                 BlockedLoginResultCalled = true;
                 return new UmbracoPageResult(Mock.Of<IProfilingLogger>());
             }
+        }
+
+
+        [Fact]
+        public void Post_handler_has_content_security_policy_allows_forms()
+        {
+            var method = typeof(LoginMemberSurfaceController).GetMethod(nameof(LoginMemberSurfaceController.Login));
+            var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
+
+            Assert.NotNull(attribute);
+            Assert.True(attribute.Forms);
+            Assert.False(attribute.TinyMCE);
+            Assert.False(attribute.YouTube);
+            Assert.False(attribute.GoogleMaps);
+            Assert.False(attribute.GoogleGeocode);
+            Assert.False(attribute.GettyImages);
+        }
+
+        [Fact]
+        public void Post_handler_has_form_post_attributes()
+        {
+            var method = typeof(LoginMemberSurfaceController).GetMethod(nameof(LoginMemberSurfaceController.Login));
+
+            var httpPostAttribute = method.GetCustomAttributes(typeof(HttpPostAttribute), false).SingleOrDefault();
+            Assert.NotNull(httpPostAttribute);
+
+            var antiForgeryTokenAttribute = method.GetCustomAttributes(typeof(ValidateAntiForgeryTokenAttribute), false).SingleOrDefault();
+            Assert.NotNull(antiForgeryTokenAttribute);
+
+            var umbracoRouteAttribute = method.GetCustomAttributes(typeof(ValidateUmbracoFormRouteStringAttribute), false).SingleOrDefault();
+            Assert.NotNull(umbracoRouteAttribute);
         }
 
         [Fact]
