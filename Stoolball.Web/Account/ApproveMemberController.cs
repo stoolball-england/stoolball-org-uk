@@ -19,14 +19,17 @@ namespace Stoolball.Web.Account
     {
         private readonly IVerificationToken _verificationToken;
 
-        public ApproveMemberController(IGlobalSettings globalSettings, IUmbracoContextAccessor umbracoContextAccessor, ServiceContext services, AppCaches appCaches, IProfilingLogger profilingLogger, UmbracoHelper umbracoHelper, IVerificationToken verificationToken) :
+        public ApproveMemberController(IGlobalSettings globalSettings,
+            IUmbracoContextAccessor umbracoContextAccessor,
+            ServiceContext services,
+            AppCaches appCaches,
+            IProfilingLogger profilingLogger,
+            UmbracoHelper umbracoHelper,
+            IVerificationToken verificationToken) :
             base(globalSettings, umbracoContextAccessor, services, appCaches, profilingLogger, umbracoHelper)
         {
-            _verificationToken = verificationToken;
+            _verificationToken = verificationToken ?? throw new ArgumentNullException(nameof(verificationToken));
         }
-
-        // Gets the approval token from the querystring in a way that can be overridden for testing
-        protected virtual string ReadApprovalToken() => Request.QueryString["token"];
 
         [HttpGet]
         [ContentSecurityPolicy]
@@ -41,13 +44,13 @@ namespace Stoolball.Web.Account
 
             try
             {
-                var approvalToken = ReadApprovalToken();
+                var approvalToken = Request.QueryString["token"];
                 var memberId = _verificationToken.ExtractId(approvalToken);
 
                 var memberService = Services.MemberService;
                 var member = memberService.GetById(memberId);
 
-                if (member.GetValue("approvalToken").ToString() == approvalToken && !_verificationToken.HasExpired(member.GetValue<DateTime>("approvalTokenExpires")))
+                if (member != null && member.GetValue("approvalToken")?.ToString() == approvalToken && !_verificationToken.HasExpired(member.GetValue<DateTime>("approvalTokenExpires")))
                 {
                     // Approve the member and expire the token
                     member.IsApproved = true;
@@ -57,7 +60,7 @@ namespace Stoolball.Web.Account
                     model.ApprovalTokenValid = true;
                     model.MemberName = member.Name;
 
-                    Logger.Info(typeof(Umbraco.Core.Security.UmbracoMembershipProviderBase), LoggingTemplates.ApproveMember, member.Username, member.Key, GetType(), nameof(Index));
+                    Logger.Info(typeof(ApproveMemberController), LoggingTemplates.ApproveMember, member.Username, member.Key, typeof(ApproveMemberController), nameof(Index));
                 }
                 else
                 {
@@ -68,7 +71,7 @@ namespace Stoolball.Web.Account
             {
                 model.ApprovalTokenValid = false;
             }
-            return CurrentTemplate(model);
+            return View("ApproveMember", model);
         }
     }
 }

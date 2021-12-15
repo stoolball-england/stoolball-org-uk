@@ -50,7 +50,7 @@ namespace Stoolball.Web.Account
                 var memberService = Services.MemberService;
                 var member = memberService.GetById(memberId);
 
-                if (member.GetValue("requestedEmailToken")?.ToString() == token && !_verificationToken.HasExpired(member.GetValue<DateTime>("requestedEmailTokenExpires")))
+                if (member != null && member.GetValue("requestedEmailToken")?.ToString() == token && !_verificationToken.HasExpired(member.GetValue<DateTime>("requestedEmailTokenExpires")))
                 {
                     // Update the email address and expire the token
                     member.Username = member.Email = member.GetValue("requestedEmail").ToString();
