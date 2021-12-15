@@ -109,6 +109,7 @@ namespace Stoolball.Web
             composition.Register<IStoolballEntityRouteParser, StoolballEntityRouteParser>();
             composition.Register<IUmbracoFormsLabeller, UmbracoFormsLabeller>();
             composition.Register<ICreateMemberExecuter, CreateMemberExecuter>();
+            composition.Register<ILogoutMemberWrapper, LogoutMemberWrapper>();
 
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 
             // be injected anywhere except the one place where it's serving a page of content.

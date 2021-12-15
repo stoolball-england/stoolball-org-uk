@@ -61,9 +61,11 @@
   <ItemGroup>
     <Compile Include="Account\ApproveMemberControllerTests.cs" />
     <Compile Include="Account\ConfirmEmailAddressControllerTests.cs" />
+    <Compile Include="Account\LogoutMemberControllerTests.cs" />
     <Compile Include="Account\CreateMemberControllerTests.cs" />
     <Compile Include="Account\EmailAddressFormDataTests.cs" />
     <Compile Include="Account\EmailAddressSurfaceControllerTests.cs" />
+    <Compile Include="Account\LogoutMemberSurfaceControllerTests.cs" />
     <Compile Include="Account\PersonalDetailsSurfaceControllerTests.cs" />
     <Compile Include="Account\CreateMemberSurfaceControllerTests.cs" />
     <Compile Include="Account\LoginMemberSurfaceControllerTests.cs" />
