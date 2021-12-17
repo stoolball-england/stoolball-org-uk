@@ -69,25 +69,25 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Statistics
                     var expectedLowestRuns = inningsForTeam.Where(x => x.Runs.HasValue).Min(x => x.Runs);
                     var expectedAverageWickets = ((decimal?)inningsForTeam.Where(x => x.Wickets.HasValue).Average(x => x.Wickets))?.AccurateToTwoDecimalPlaces();
 
-                    Assert.Equal(expectedAverageRuns, result.AverageRunsScored.Value.AccurateToTwoDecimalPlaces());
-                    Assert.Equal(expectedHighestRuns, result.HighestRunsScored.Value);
-                    Assert.Equal(expectedLowestRuns, result.LowestRunsScored.Value);
-                    Assert.Equal(expectedAverageWickets, result.AverageWicketsLost.Value.AccurateToTwoDecimalPlaces());
+                    Assert.Equal(expectedAverageRuns, result.AverageRunsScored?.AccurateToTwoDecimalPlaces());
+                    Assert.Equal(expectedHighestRuns, result.HighestRunsScored);
+                    Assert.Equal(expectedLowestRuns, result.LowestRunsScored);
+                    Assert.Equal(expectedAverageWickets, result.AverageWicketsLost?.AccurateToTwoDecimalPlaces());
                 }
 
                 var inningsForOpposition = matchesForTeam.SelectMany(m => m.MatchInnings.Where(x => x.BowlingTeam.Team.TeamId == team.TeamId.Value));
 
                 if (inningsForOpposition.Any())
                 {
-                    var expectedOppositionAverageRuns = ((decimal)inningsForOpposition.Average(x => x.Runs)).AccurateToTwoDecimalPlaces();
+                    var expectedOppositionAverageRuns = ((decimal?)inningsForOpposition.Average(x => x.Runs))?.AccurateToTwoDecimalPlaces();
                     var expectedOppositionHighestRuns = inningsForOpposition.Where(x => x.Runs.HasValue).Max(x => x.Runs);
                     var expectedOppositionLowestRuns = inningsForOpposition.Where(x => x.Runs.HasValue).Min(x => x.Runs);
-                    var expectedOppositionAverageWickets = ((decimal)inningsForOpposition.Where(x => x.Wickets.HasValue).Average(x => x.Wickets)).AccurateToTwoDecimalPlaces();
+                    var expectedOppositionAverageWickets = ((decimal?)inningsForOpposition.Where(x => x.Wickets.HasValue).Average(x => x.Wickets))?.AccurateToTwoDecimalPlaces();
 
-                    Assert.Equal(expectedOppositionAverageRuns, result.AverageRunsConceded.Value.AccurateToTwoDecimalPlaces());
-                    Assert.Equal(expectedOppositionHighestRuns, result.HighestRunsConceded.Value);
-                    Assert.Equal(expectedOppositionLowestRuns, result.LowestRunsConceded.Value);
-                    Assert.Equal(expectedOppositionAverageWickets, result.AverageWicketsTaken.Value.AccurateToTwoDecimalPlaces());
+                    Assert.Equal(expectedOppositionAverageRuns, result.AverageRunsConceded?.AccurateToTwoDecimalPlaces());
+                    Assert.Equal(expectedOppositionHighestRuns, result.HighestRunsConceded);
+                    Assert.Equal(expectedOppositionLowestRuns, result.LowestRunsConceded);
+                    Assert.Equal(expectedOppositionAverageWickets, result.AverageWicketsTaken?.AccurateToTwoDecimalPlaces());
                 }
             }
         }
