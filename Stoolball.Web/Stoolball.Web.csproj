@@ -1269,10 +1269,18 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>BowlingStrikeRate.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\EditMatchFormat.cshtml" />
-    <Content Include="Views\EditEmailAddress.cshtml" />
-    <Content Include="Views\EmailAddress.cshtml" />
-    <Content Include="Views\ConfirmEmailAddress.cshtml" />
+    <Content Include="Views\EditMatchFormat.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditMatchFormat.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\EmailAddress.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EmailAddress.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\ConfirmEmailAddress.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>ConfirmEmailAddress.generated.cs</LastGenOutput>
+    </Content>
     <None Include="Views\Partials\Forms\Emails\Stoolball-England-Email.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Stoolball-England-Email.generated.cs</LastGenOutput>
@@ -1463,6 +1471,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Catches.cshtml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ConfirmEmailAddress.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ConfirmEmailAddress.cshtml</DependentUpon>
+    </Compile>
     <Compile Include="Views\CreateTrainingSession.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1472,6 +1485,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>EconomyRate.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditMatchFormat.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditMatchFormat.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\EditTournamentMatches.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1487,6 +1505,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>EditTrainingSession.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EmailAddress.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EmailAddress.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\Matches.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1538,6 +1561,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Views\Partials\_ConfirmEmailAddress.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_ConfirmEmailAddress.cshtml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Partials\_EconomyRate.generated.cs">
       <DependentUpon>_EconomyRate.cshtml</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1557,6 +1585,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>_Comments.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Partials\_Filters.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_Filters.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\Partials\_MatchListSubscriptions.generated.cs">
       <AutoGen>True</AutoGen>
@@ -1617,6 +1650,11 @@
       <DependentUpon>_CreateOrEditTrainingSession.cshtml</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Views\PersonalDetails.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PersonalDetails.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\PlayerBowling.generated.cs">
       <AutoGen>True</AutoGen>
@@ -3137,7 +3175,10 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_BowlingStrikeRate.generated.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\Partials\_Filters.cshtml" />
+    <Content Include="Views\Partials\_Filters.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_Filters.generated.cs</LastGenOutput>
+    </Content>
     <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.PasswordField.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.DatePicker.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.DropDownList.cshtml" />
@@ -3181,8 +3222,14 @@
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Text.cshtml" />
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Textarea.cshtml" />
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Textfield.cshtml" />
-    <Content Include="Views\PersonalDetails.cshtml" />
-    <Content Include="Views\Partials\_ConfirmEmailAddress.cshtml" />
+    <Content Include="Views\PersonalDetails.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>PersonalDetails.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Partials\_ConfirmEmailAddress.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_ConfirmEmailAddress.generated.cs</LastGenOutput>
+    </Content>
     <Content Include="Views\ResetPasswordComplete.cshtml">
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>ResetPasswordComplete.generated.cs</LastGenOutput>
