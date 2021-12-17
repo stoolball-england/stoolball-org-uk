@@ -70,6 +70,7 @@ namespace Stoolball
             public const string ApproveMember = "Approved member {MemberUsername} {MemberKey} in {Type:l}.{Method:l}.";
             public const string MemberPasswordResetRequested = "Reset password requested for member {MemberUsername} {MemberKey} in {Type:l}.{Method:l}.";
             public const string MemberPasswordReset = "Reset password for member {MemberUsername} {MemberKey} in {Type:l}.{Method:l}.";
+            public const string MemberPasswordResetTokenInvalid = "Password reset token invalid {Token} in {Type:l}.{Method:l}.";
             public const string MemberPersonalDetailsUpdated = "Account updated for member {MemberName} {MemberKey} in {Type:l}.{Method:l}.";
             public const string MemberRequestedEmailAddressAlreadyInUse = "Email address edit to address already in use, requested for member {MemberName} {MemberKey} in {Type:l}.{Method:l}.";
             public const string MemberRequestedEmailAddress = "Email address edit requested for member {MemberName} {MemberKey} in {Type:l}.{Method:l}.";

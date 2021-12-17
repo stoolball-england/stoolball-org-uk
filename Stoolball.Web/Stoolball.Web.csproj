@@ -1633,6 +1633,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>PlayersForTeam.cshtml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ResetPasswordComplete.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ResetPasswordComplete.cshtml</DependentUpon>
+    </Compile>
     <Compile Include="Views\RunOuts.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -3178,6 +3183,10 @@
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Textfield.cshtml" />
     <Content Include="Views\PersonalDetails.cshtml" />
     <Content Include="Views\Partials\_ConfirmEmailAddress.cshtml" />
+    <Content Include="Views\ResetPasswordComplete.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>ResetPasswordComplete.generated.cs</LastGenOutput>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

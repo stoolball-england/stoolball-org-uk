@@ -151,7 +151,7 @@ namespace Stoolball.Web.Account
             if (!ModelState.IsValid || model == null)
             {
                 contentModel.ShowPasswordResetSuccessful = false;
-                return View("ResetPassword", contentModel);
+                return View("ResetPasswordComplete", contentModel);
             }
 
             try
@@ -190,21 +190,21 @@ namespace Stoolball.Web.Account
                     {
                         Logger.Info(GetType(), $"Password reset token invalid {model.PasswordResetToken}");
                         contentModel.ShowPasswordResetSuccessful = false;
-                        return View("ResetPassword", contentModel);
+                        return View("ResetPasswordComplete", contentModel);
                     }
                 }
                 else
                 {
                     Logger.Info(GetType(), $"Password reset token invalid {model.PasswordResetToken}");
                     contentModel.ShowPasswordResetSuccessful = false;
-                    return View("ResetPassword", contentModel);
+                    return View("ResetPasswordComplete", contentModel);
                 }
             }
             catch (FormatException)
             {
                 Logger.Info(GetType(), $"Password reset token invalid {model.PasswordResetToken}");
                 contentModel.ShowPasswordResetSuccessful = false;
-                return View("ResetPassword", contentModel);
+                return View("ResetPasswordComplete", contentModel);
             }
         }
     }

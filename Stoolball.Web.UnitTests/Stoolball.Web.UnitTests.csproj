@@ -67,6 +67,7 @@
     <Compile Include="Account\EmailAddressFormDataTests.cs" />
     <Compile Include="Account\EmailAddressSurfaceControllerTests.cs" />
     <Compile Include="Account\LogoutMemberSurfaceControllerTests.cs" />
+    <Compile Include="Account\ResetPasswordControllerTests.cs" />
     <Compile Include="Account\PersonalDetailsSurfaceControllerTests.cs" />
     <Compile Include="Account\CreateMemberSurfaceControllerTests.cs" />
     <Compile Include="Account\LoginMemberSurfaceControllerTests.cs" />
