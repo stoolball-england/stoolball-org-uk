@@ -11,6 +11,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Theory]
         [InlineData(null)]
         [InlineData("")]
+        [InlineData("invalid")]
         public void Invalid_email_address_fails_validation(string email)
         {
             var formData = new EmailAddressFormData

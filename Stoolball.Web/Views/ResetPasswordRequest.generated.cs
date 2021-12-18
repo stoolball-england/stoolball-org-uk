@@ -129,7 +129,7 @@ WriteLiteral("</h1>\r\n\r\n");
             
             #line 23 "..\..\Views\ResetPasswordRequest.cshtml"
                                                                     
-            using (Html.BeginUmbracoForm<ResetPasswordSurfaceController>("RequestPasswordReset"))
+            using (Html.BeginUmbracoForm<ResetPasswordRequestSurfaceController>("RequestPasswordReset"))
             {
                 
             
@@ -145,7 +145,7 @@ WriteLiteral("</h1>\r\n\r\n");
             
             #line 26 "..\..\Views\ResetPasswordRequest.cshtml"
                                         
-                var resetPasswordRequest = new ResetPasswordRequest();
+                var resetPasswordRequest = new ResetPasswordRequestFormData();
 
 
             

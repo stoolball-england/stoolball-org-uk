@@ -1317,7 +1317,8 @@
     <Compile Include="Account\PersonalDetailsFormData.cs" />
     <Compile Include="Account\ResetPassword.cs" />
     <Compile Include="Account\ResetPasswordController.cs" />
-    <Compile Include="Account\ResetPasswordRequest.cs" />
+    <Compile Include="Account\ResetPasswordRequestFormData.cs" />
+    <Compile Include="Account\ResetPasswordRequestSurfaceController.cs" />
     <Compile Include="Account\ResetPasswordSurfaceController.cs" />
     <Compile Include="Account\ResetPasswordUpdate.cs" />
     <Compile Include="App_Data\Models\ConfirmEmailAddress.generated.cs" />
