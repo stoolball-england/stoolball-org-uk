@@ -46,7 +46,7 @@ jobs:
         verbosity: 'Info' # The verbosity level of the log messages. Values: Verbose, Info, Warning, Error, Off
 
     - name: Fix paths
-      run: (Get-Content .\coveragereport\Cobertura.xml) -Replace "D:\a\stoolball-org-uk\stoolball-org-uk","Stoolball.Web" | Set-Content .\coveragereport\Cobertura.xml
+      run: (Get-Content .\coveragereport\Cobertura.xml) -Replace "D:\\a\\stoolball-org-uk\\stoolball-org-uk","Stoolball.Web" | Set-Content .\coveragereport\Cobertura.xml
 
     - name: Upload test results
       uses: actions/upload-artifact@v2
