@@ -152,7 +152,7 @@ WriteLiteral("</h1>\r\n\r\n");
             
             #line 27 "..\..\Views\ResetPassword.cshtml"
                                         
-                var resetPasswordUpdate = new ResetPasswordUpdate
+                var resetPasswordUpdate = new ResetPasswordFormData
                 {
                     PasswordResetToken = Model.PasswordResetToken
                 };
