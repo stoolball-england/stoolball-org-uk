@@ -232,7 +232,7 @@ WriteLiteral("                    ");
 
             
             #line 38 "..\..\Views\ResetPassword.cshtml"
-               Write(Html.PasswordFor(m => resetPasswordUpdate.NewPassword, new { @class = "form-control", required = "required", aria_describedby = describedBy, autocorrect = "off", autocapitalize = "off" }));
+               Write(Html.PasswordFor(m => resetPasswordUpdate.NewPassword, new { @class = "form-control", required = "required", aria_describedby = describedBy, autocorrect = "off", autocapitalize = "off", autocomplete="new-password" }));
 
             
             #line default

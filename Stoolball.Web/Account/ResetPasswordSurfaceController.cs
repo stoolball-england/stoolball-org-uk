@@ -40,13 +40,19 @@ namespace Stoolball.Web.Account
                 Description = contentModel.Description
             };
 
-            // Assume the token is valid and this will be checked later
-            contentModel.PasswordResetToken = Request.QueryString["token"];
-
-            if (!ModelState.IsValid || model == null)
+            if (model == null)
             {
                 contentModel.ShowPasswordResetSuccessful = false;
                 return View("ResetPasswordComplete", contentModel);
+            }
+
+            // Assume the token is valid and this will be checked later
+            contentModel.PasswordResetToken = Request.QueryString["token"];
+
+            if (!ModelState.IsValid)
+            {
+                contentModel.PasswordResetTokenValid = true;
+                return View("ResetPassword", contentModel);
             }
 
             try

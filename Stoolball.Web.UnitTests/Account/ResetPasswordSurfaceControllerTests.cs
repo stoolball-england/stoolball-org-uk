@@ -154,7 +154,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public void Invalid_ModelState_returns_ResetPasswordComplete_view()
+        public void Invalid_ModelState_returns_ResetPassword_view_and_redisplays_form()
         {
             using (var controller = CreateController())
             {
@@ -162,7 +162,8 @@ namespace Stoolball.Web.UnitTests.Account
 
                 var result = controller.UpdatePassword(new ResetPasswordFormData());
 
-                Assert.Equal("ResetPasswordComplete", ((ViewResult)result).ViewName);
+                Assert.Equal("ResetPassword", ((ViewResult)result).ViewName);
+                Assert.True((((ViewResult)result).Model as ResetPassword)?.PasswordResetTokenValid);
             }
         }
 
@@ -182,13 +183,14 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public void Null_form_data_returns_ResetPassword_ModelsBuilder_model()
+        public void Null_form_data_returns_ResetPassword_ModelsBuilder_model_showing_failure_message()
         {
             using (var controller = CreateController())
             {
                 var result = controller.UpdatePassword(null);
 
                 Assert.IsType<ResetPassword>(((ViewResult)result).Model);
+                Assert.False(((ResetPassword)((ViewResult)result).Model).ShowPasswordResetSuccessful);
             }
         }
 
