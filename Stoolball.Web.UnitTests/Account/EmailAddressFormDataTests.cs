@@ -16,11 +16,11 @@ namespace Stoolball.Web.UnitTests.Account
         {
             var formData = new EmailAddressFormData
             {
-                RequestedEmail = email
+                Requested = email
             };
 
             Assert.Contains(ValidateModel(formData),
-                v => v.MemberNames.Contains(nameof(EmailAddressFormData.RequestedEmail)) &&
+                v => v.MemberNames.Contains(nameof(EmailAddressFormData.Requested)) &&
                      v.ErrorMessage.ToUpperInvariant().Contains("EMAIL"));
         }
 
@@ -29,11 +29,11 @@ namespace Stoolball.Web.UnitTests.Account
         {
             var formData = new EmailAddressFormData
             {
-                RequestedEmail = "email@example.org"
+                Requested = "email@example.org"
             };
 
             Assert.DoesNotContain(ValidateModel(formData),
-                            v => v.MemberNames.Contains(nameof(EmailAddressFormData.RequestedEmail)) &&
+                            v => v.MemberNames.Contains(nameof(EmailAddressFormData.Requested)) &&
                                  v.ErrorMessage.ToUpperInvariant().Contains("EMAIL"));
         }
 

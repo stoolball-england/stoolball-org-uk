@@ -130,7 +130,7 @@ WriteLiteral("</h1>\r\n\r\n");
             #line 21 "..\..\Views\EmailAddress.cshtml"
                                                                              
 
-            using (Html.BeginUmbracoForm<EmailAddressSurfaceController>("UpdateEmailAddress"))
+            using (Html.BeginUmbracoForm<EmailAddressSurfaceController>("UpdateEmailAddress", null, new { id = "calling-it-search-disables-contact-managers" }))
             {
                 
             
@@ -146,8 +146,6 @@ WriteLiteral("</h1>\r\n\r\n");
             
             #line 25 "..\..\Views\EmailAddress.cshtml"
                                         
-                var formData = new EmailAddressFormData();
-                formData.RequestedEmail = Members.CurrentUserName;
 
 
             
@@ -162,8 +160,34 @@ WriteLiteral(">\r\n");
 WriteLiteral("                    ");
 
             
+            #line 28 "..\..\Views\EmailAddress.cshtml"
+               Write(Html.LabelFor(m => Model.FormData.Requested));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n                    <p");
+
+WriteLiteral(" class=\"form-text\"");
+
+WriteLiteral(" id=\"form-email-help\"");
+
+WriteLiteral(">Your email address is currently <strong>");
+
+            
+            #line 29 "..\..\Views\EmailAddress.cshtml"
+                                                                                                 Write(Members.CurrentUserName);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</strong>.</p>\r\n");
+
+WriteLiteral("                    ");
+
+            
             #line 30 "..\..\Views\EmailAddress.cshtml"
-               Write(Html.LabelFor(m => formData.RequestedEmail));
+               Write(Html.TextBoxFor(m => Model.FormData.Requested, new { @class = "form-control", required = "required", aria_describedby = "form-email-help form-email", autocorrect = "off", autocapitalize = "off", autocomplete = "email", type = "email" }));
 
             
             #line default
@@ -174,18 +198,7 @@ WriteLiteral("                    ");
 
             
             #line 31 "..\..\Views\EmailAddress.cshtml"
-               Write(Html.TextBoxFor(m => formData.RequestedEmail, new { @class = "form-control", required = "required", aria_describedby = "form-email", autocorrect = "off", autocapitalize = "off", autocomplete = "email", type = "email" }));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\r\n");
-
-WriteLiteral("                    ");
-
-            
-            #line 32 "..\..\Views\EmailAddress.cshtml"
-               Write(Html.ValidationMessageFor(m => formData.RequestedEmail, null, new { id = "form-email" }));
+               Write(Html.ValidationMessageFor(m => Model.FormData.Requested, null, new { id = "form-email" }));
 
             
             #line default
@@ -193,7 +206,7 @@ WriteLiteral("                    ");
 WriteLiteral("\r\n                </div>\r\n");
 
             
-            #line 34 "..\..\Views\EmailAddress.cshtml"
+            #line 33 "..\..\Views\EmailAddress.cshtml"
 
 
             
@@ -208,8 +221,8 @@ WriteLiteral(">\r\n");
 WriteLiteral("                    ");
 
             
-            #line 36 "..\..\Views\EmailAddress.cshtml"
-               Write(Html.LabelFor(m => formData.Password));
+            #line 35 "..\..\Views\EmailAddress.cshtml"
+               Write(Html.LabelFor(m => Model.FormData.Password));
 
             
             #line default
@@ -217,13 +230,13 @@ WriteLiteral("                    ");
 WriteLiteral("\r\n");
 
             
-            #line 37 "..\..\Views\EmailAddress.cshtml"
+            #line 36 "..\..\Views\EmailAddress.cshtml"
                     
             
             #line default
             #line hidden
             
-            #line 37 "..\..\Views\EmailAddress.cshtml"
+            #line 36 "..\..\Views\EmailAddress.cshtml"
                        var describedBy = "form-password"; 
             
             #line default
@@ -231,13 +244,13 @@ WriteLiteral("\r\n");
 WriteLiteral("\r\n");
 
             
-            #line 38 "..\..\Views\EmailAddress.cshtml"
+            #line 37 "..\..\Views\EmailAddress.cshtml"
                     
             
             #line default
             #line hidden
             
-            #line 38 "..\..\Views\EmailAddress.cshtml"
+            #line 37 "..\..\Views\EmailAddress.cshtml"
                      if (!string.IsNullOrEmpty(Model.PasswordHelp))
                     {
                         describedBy = "form-password form-password-help";
@@ -254,7 +267,7 @@ WriteLiteral(" id=\"form-password-help\"");
 WriteLiteral("><small>");
 
             
-            #line 41 "..\..\Views\EmailAddress.cshtml"
+            #line 40 "..\..\Views\EmailAddress.cshtml"
                                                                        Write(Model.PasswordHelp);
 
             
@@ -263,7 +276,7 @@ WriteLiteral("><small>");
 WriteLiteral("</small></p>\r\n");
 
             
-            #line 42 "..\..\Views\EmailAddress.cshtml"
+            #line 41 "..\..\Views\EmailAddress.cshtml"
                     }
 
             
@@ -272,8 +285,8 @@ WriteLiteral("</small></p>\r\n");
 WriteLiteral("                    ");
 
             
-            #line 43 "..\..\Views\EmailAddress.cshtml"
-               Write(Html.TextBoxFor(m => formData.Password, new { @class = "form-control", required = "required", aria_describedby = describedBy, type = "password", autocorrect = "off", autocapitalize = "off", autocomplete = "current-password" }));
+            #line 42 "..\..\Views\EmailAddress.cshtml"
+               Write(Html.TextBoxFor(m => Model.FormData.Password, new { @class = "form-control", required = "required", aria_describedby = describedBy, type = "password", autocorrect = "off", autocapitalize = "off", autocomplete = "current-password" }));
 
             
             #line default
@@ -283,8 +296,8 @@ WriteLiteral("\r\n");
 WriteLiteral("                    ");
 
             
-            #line 44 "..\..\Views\EmailAddress.cshtml"
-               Write(Html.ValidationMessageFor(m => formData.Password, null, new { id = "form-password" }));
+            #line 43 "..\..\Views\EmailAddress.cshtml"
+               Write(Html.ValidationMessageFor(m => Model.FormData.Password, null, new { id = "form-password" }));
 
             
             #line default
@@ -292,7 +305,7 @@ WriteLiteral("                    ");
 WriteLiteral("\r\n                </div>\r\n");
 
             
-            #line 46 "..\..\Views\EmailAddress.cshtml"
+            #line 45 "..\..\Views\EmailAddress.cshtml"
 
 
             
@@ -305,7 +318,7 @@ WriteLiteral(" class=\"btn btn-primary\"");
 WriteLiteral(">");
 
             
-            #line 47 "..\..\Views\EmailAddress.cshtml"
+            #line 46 "..\..\Views\EmailAddress.cshtml"
                                            Write(Model.Value("saveButton"));
 
             
@@ -314,7 +327,7 @@ WriteLiteral(">");
 WriteLiteral("</button>\r\n");
 
             
-            #line 48 "..\..\Views\EmailAddress.cshtml"
+            #line 47 "..\..\Views\EmailAddress.cshtml"
             }
         }
         else
@@ -324,14 +337,14 @@ WriteLiteral("</button>\r\n");
             #line default
             #line hidden
             
-            #line 52 "..\..\Views\EmailAddress.cshtml"
+            #line 51 "..\..\Views\EmailAddress.cshtml"
        Write(Html.ProtectEmailAddresses(Model.Value<IHtmlString>("requested")));
 
             
             #line default
             #line hidden
             
-            #line 52 "..\..\Views\EmailAddress.cshtml"
+            #line 51 "..\..\Views\EmailAddress.cshtml"
                                                                               
         }
     }
@@ -342,14 +355,14 @@ WriteLiteral("</button>\r\n");
             #line default
             #line hidden
             
-            #line 57 "..\..\Views\EmailAddress.cshtml"
+            #line 56 "..\..\Views\EmailAddress.cshtml"
    Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 57 "..\..\Views\EmailAddress.cshtml"
+            #line 56 "..\..\Views\EmailAddress.cshtml"
                                
     }
 

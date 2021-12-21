@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Stoolball.Metadata;
 using Stoolball.Navigation;
+using Stoolball.Web.Account;
 using Stoolball.Web.Metadata;
 using Umbraco.Core.Models.PublishedContent;
 
@@ -20,5 +21,7 @@ namespace Umbraco.Web.PublishedModels
 
         /// <inheritdoc/>
         public List<Breadcrumb> Breadcrumbs { get; } = new List<Breadcrumb>();
+
+        public EmailAddressFormData FormData { get; set; } = new EmailAddressFormData();
     }
 }

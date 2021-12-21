@@ -20,28 +20,27 @@
         {
             @Html.Partial("_ConfirmEmailAddress", Members.GetCurrentMember())
 
-            using (Html.BeginUmbracoForm<EmailAddressSurfaceController>("UpdateEmailAddress"))
+            using (Html.BeginUmbracoForm<EmailAddressSurfaceController>("UpdateEmailAddress", null, new { id = "calling-it-search-disables-contact-managers" }))
             {
                 @Html.AntiForgeryToken()
-                var formData = new EmailAddressFormData();
-                formData.RequestedEmail = Members.CurrentUserName;
 
                 <div class="form-group">
-                    @Html.LabelFor(m => formData.RequestedEmail)
-                    @Html.TextBoxFor(m => formData.RequestedEmail, new { @class = "form-control", required = "required", aria_describedby = "form-email", autocorrect = "off", autocapitalize = "off", autocomplete = "email", type = "email" })
-                    @Html.ValidationMessageFor(m => formData.RequestedEmail, null, new { id = "form-email" })
+                    @Html.LabelFor(m => Model.FormData.Requested)
+                    <p class="form-text" id="form-email-help">Your email address is currently <strong>@Members.CurrentUserName</strong>.</p>
+                    @Html.TextBoxFor(m => Model.FormData.Requested, new { @class = "form-control", required = "required", aria_describedby = "form-email-help form-email", autocorrect = "off", autocapitalize = "off", autocomplete = "email", type = "email" })
+                    @Html.ValidationMessageFor(m => Model.FormData.Requested, null, new { id = "form-email" })
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(m => formData.Password)
+                    @Html.LabelFor(m => Model.FormData.Password)
                     @{ var describedBy = "form-password"; }
                     @if (!string.IsNullOrEmpty(Model.PasswordHelp))
                     {
                         describedBy = "form-password form-password-help";
                         <p class="form-text" id="form-password-help"><small>@Model.PasswordHelp</small></p>
                     }
-                    @Html.TextBoxFor(m => formData.Password, new { @class = "form-control", required = "required", aria_describedby = describedBy, type = "password", autocorrect = "off", autocapitalize = "off", autocomplete = "current-password" })
-                    @Html.ValidationMessageFor(m => formData.Password, null, new { id = "form-password" })
+                    @Html.TextBoxFor(m => Model.FormData.Password, new { @class = "form-control", required = "required", aria_describedby = describedBy, type = "password", autocorrect = "off", autocapitalize = "off", autocomplete = "current-password" })
+                    @Html.ValidationMessageFor(m => Model.FormData.Password, null, new { id = "form-password" })
                 </div>
 
                 <button class="btn btn-primary">@Model.Value("saveButton")</button>

@@ -18,6 +18,7 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
+using Umbraco.Web.PublishedModels;
 using Xunit;
 using static Stoolball.Constants;
 
@@ -141,12 +142,12 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Request_for_email_already_in_use_sends_email()
         {
-            var model = new EmailAddressFormData { RequestedEmail = "new@example.org", Password = VALID_PASSWORD };
+            var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
 
             var otherMember = new Mock<IPublishedContent>();
             otherMember.Setup(x => x.Name).Returns("Other member");
             otherMember.Setup(x => x.Key).Returns(Guid.NewGuid());
-            MemberCache.Setup(x => x.GetByEmail(model.RequestedEmail)).Returns(otherMember.Object);
+            MemberCache.Setup(x => x.GetByEmail(model.Requested)).Returns(otherMember.Object);
 
             Dictionary<string, string> receivedTokens = null;
             _emailFormatter.Setup(x => x.FormatEmailContent(EMAIL_TAKEN_SUBJECT, EMAIL_TAKEN_BODY, It.IsAny<Dictionary<string, string>>()))
@@ -158,20 +159,20 @@ namespace Stoolball.Web.UnitTests.Account
                 var result = controller.UpdateEmailAddress(model);
 
                 Assert.Equal(otherMember.Object.Name, receivedTokens["name"]);
-                Assert.Equal(model.RequestedEmail, receivedTokens["email"]);
+                Assert.Equal(model.Requested, receivedTokens["email"]);
                 Assert.Equal(REQUEST_URL_AUTHORITY, receivedTokens["domain"]);
-                _emailSender.Verify(x => x.SendEmail(model.RequestedEmail, "email subject", "email body"), Times.Once);
+                _emailSender.Verify(x => x.SendEmail(model.Requested, "email subject", "email body"), Times.Once);
             }
         }
 
         [Fact]
         public void Request_for_email_already_in_use_does_not_save()
         {
-            var model = new EmailAddressFormData { RequestedEmail = "new@example.org", Password = VALID_PASSWORD };
+            var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
 
             var otherMember = new Mock<IPublishedContent>();
             otherMember.Setup(x => x.Key).Returns(Guid.NewGuid());
-            MemberCache.Setup(x => x.GetByEmail(model.RequestedEmail)).Returns(otherMember.Object);
+            MemberCache.Setup(x => x.GetByEmail(model.Requested)).Returns(otherMember.Object);
 
             using (var controller = CreateController())
             {
@@ -184,11 +185,11 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Request_for_email_already_in_use_sets_TempData_for_view()
         {
-            var model = new EmailAddressFormData { RequestedEmail = "new@example.org", Password = VALID_PASSWORD };
+            var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
 
             var otherMember = new Mock<IPublishedContent>();
             otherMember.Setup(x => x.Key).Returns(Guid.NewGuid());
-            MemberCache.Setup(x => x.GetByEmail(model.RequestedEmail)).Returns(otherMember.Object);
+            MemberCache.Setup(x => x.GetByEmail(model.Requested)).Returns(otherMember.Object);
 
             using (var controller = CreateController())
             {
@@ -201,11 +202,11 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Request_for_email_already_in_use_is_logged()
         {
-            var model = new EmailAddressFormData { RequestedEmail = "new@example.org", Password = VALID_PASSWORD };
+            var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
 
             var otherMember = new Mock<IPublishedContent>();
             otherMember.Setup(x => x.Key).Returns(Guid.NewGuid());
-            MemberCache.Setup(x => x.GetByEmail(model.RequestedEmail)).Returns(otherMember.Object);
+            MemberCache.Setup(x => x.GetByEmail(model.Requested)).Returns(otherMember.Object);
 
             using (var controller = CreateController())
             {
@@ -218,7 +219,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Valid_request_saves_email_and_token()
         {
-            var model = new EmailAddressFormData { RequestedEmail = "new@example.org", Password = VALID_PASSWORD };
+            var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
             var token = Guid.NewGuid().ToString();
             var tokenExpiry = DateTime.UtcNow.AddDays(1);
             _verificationToken.Setup(x => x.TokenFor(_currentMember.Object.Id)).Returns((token, tokenExpiry));
@@ -227,7 +228,7 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 var result = controller.UpdateEmailAddress(model);
 
-                _currentMember.Verify(x => x.SetValue("requestedEmail", model.RequestedEmail, null, null), Times.Once);
+                _currentMember.Verify(x => x.SetValue("requestedEmail", model.Requested, null, null), Times.Once);
                 _currentMember.Verify(x => x.SetValue("requestedEmailToken", token, null, null), Times.Once);
                 _currentMember.Verify(x => x.SetValue("requestedEmailTokenExpires", tokenExpiry, null, null), Times.Once);
                 base.MemberService.Verify(x => x.Save(_currentMember.Object, true), Times.Once);
@@ -238,7 +239,7 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Valid_request_sends_email_with_token()
         {
-            var model = new EmailAddressFormData { RequestedEmail = "new@example.org", Password = VALID_PASSWORD };
+            var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
             var token = Guid.NewGuid().ToString();
             var tokenExpiry = DateTime.UtcNow.AddDays(1);
             _verificationToken.Setup(x => x.TokenFor(_currentMember.Object.Id)).Returns((token, tokenExpiry));
@@ -253,10 +254,10 @@ namespace Stoolball.Web.UnitTests.Account
                 var result = controller.UpdateEmailAddress(model);
 
                 Assert.Equal(_currentMember.Object.Name, receivedTokens["name"]);
-                Assert.Equal(model.RequestedEmail, receivedTokens["email"]);
+                Assert.Equal(model.Requested, receivedTokens["email"]);
                 Assert.Equal(REQUEST_URL_AUTHORITY, receivedTokens["domain"]);
                 Assert.Equal(token, receivedTokens["token"]);
-                _emailSender.Verify(x => x.SendEmail(model.RequestedEmail, "confirm email subject", "confirm email body"), Times.Once);
+                _emailSender.Verify(x => x.SendEmail(model.Requested, "confirm email subject", "confirm email body"), Times.Once);
             }
         }
 
@@ -328,7 +329,7 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public void Invalid_model_returns_UmbracoPageResult()
+        public void Invalid_model_returns_EmailAddress_view()
         {
             var model = new EmailAddressFormData();
             using (var controller = CreateController())
@@ -336,7 +337,23 @@ namespace Stoolball.Web.UnitTests.Account
                 controller.ModelState.AddModelError(string.Empty, "Something is invalid");
                 var result = controller.UpdateEmailAddress(model);
 
-                Assert.IsType<UmbracoPageResult>(result);
+                Assert.Equal("EmailAddress", ((ViewResult)result).ViewName);
+            }
+        }
+
+        [Fact]
+        public void Invalid_model_returns_form_data_to_view()
+        {
+            var model = new EmailAddressFormData { Password = "pa$$word", Requested = "new@example.org" };
+            using (var controller = CreateController())
+            {
+                controller.ModelState.AddModelError(string.Empty, "Something is invalid");
+                var result = controller.UpdateEmailAddress(model);
+
+                var returnedFormData = ((EmailAddress)((ViewResult)result).Model).FormData;
+                Assert.NotNull(returnedFormData);
+                Assert.Equal(model.Password, returnedFormData.Password);
+                Assert.Equal(model.Requested, returnedFormData.Requested);
             }
         }
 
@@ -353,13 +370,13 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
-        public void Null_model_returns_UmbracoPageResult()
+        public void Null_model_returns_EmailAddress_view()
         {
             using (var controller = CreateController())
             {
                 var result = controller.UpdateEmailAddress(null);
 
-                Assert.IsType<UmbracoPageResult>(result);
+                Assert.Equal("EmailAddress", ((ViewResult)result).ViewName);
             }
         }
     }

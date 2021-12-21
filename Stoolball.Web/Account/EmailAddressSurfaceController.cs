@@ -10,6 +10,7 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
+using Umbraco.Web.PublishedModels;
 using static Stoolball.Constants;
 
 namespace Stoolball.Web.Account
@@ -56,7 +57,7 @@ namespace Stoolball.Web.Account
                 var member = Members.GetCurrentMember();
 
                 // Check whether the requested email already belongs to another account
-                var alreadyTaken = Members.GetByEmail(model.RequestedEmail?.Trim());
+                var alreadyTaken = Members.GetByEmail(model.Requested?.Trim());
                 if (alreadyTaken != null && alreadyTaken.Key != member.Key)
                 {
                     // Send the address already in use email
@@ -65,10 +66,10 @@ namespace Stoolball.Web.Account
                         new Dictionary<string, string>
                         {
                         {"name", alreadyTaken.Name},
-                        {"email", model.RequestedEmail},
+                        {"email", model.Requested},
                         {"domain", GetRequestUrlAuthority()}
                         });
-                    _emailSender.SendEmail(model.RequestedEmail?.Trim(), subject, body);
+                    _emailSender.SendEmail(model.Requested?.Trim(), subject, body);
 
                     Logger.Info(typeof(EmailAddressSurfaceController), LoggingTemplates.MemberRequestedEmailAddressAlreadyInUse, member.Name, member.Key, typeof(EmailAddressSurfaceController), nameof(UpdateEmailAddress));
                 }
@@ -78,7 +79,7 @@ namespace Stoolball.Web.Account
                     var (token, expires) = _verificationToken.TokenFor(member.Id);
                     var editableMember = Services.MemberService.GetById(member.Id);
 #pragma warning disable CA1308 // Normalize strings to uppercase
-                    editableMember.SetValue("requestedEmail", model.RequestedEmail?.Trim().ToLowerInvariant());
+                    editableMember.SetValue("requestedEmail", model.Requested?.Trim().ToLowerInvariant());
 #pragma warning restore CA1308 // Normalize strings to uppercase
                     editableMember.SetValue("requestedEmailToken", token);
                     editableMember.SetValue("requestedEmailTokenExpires", expires);
@@ -90,11 +91,11 @@ namespace Stoolball.Web.Account
                         new Dictionary<string, string>
                         {
                         {"name", member.Name},
-                        {"email", model.RequestedEmail},
+                        {"email", model.Requested},
                         {"domain", GetRequestUrlAuthority()},
                         {"token", token }
                         });
-                    _emailSender.SendEmail(model.RequestedEmail?.Trim(), subject, body);
+                    _emailSender.SendEmail(model.Requested?.Trim(), subject, body);
 
                     Logger.Info(typeof(EmailAddressSurfaceController), LoggingTemplates.MemberRequestedEmailAddress, member.Name, member.Key, typeof(EmailAddressSurfaceController), nameof(UpdateEmailAddress));
                 }
@@ -103,7 +104,7 @@ namespace Stoolball.Web.Account
             }
             else
             {
-                return CurrentUmbracoPage();
+                return View("EmailAddress", new EmailAddress(CurrentPage) { FormData = model });
             }
         }
 
