@@ -13,6 +13,7 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
 using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Core.Persistence;
+using Umbraco.Core.Persistence.Querying;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
@@ -283,6 +284,24 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
+        public void Fail_to_create_member_does_not_save_additional_properties()
+        {
+            var model = RegisterModel.CreateModel();
+            model.Email = "test@example.org";
+
+            var member = new Mock<IMember>();
+            MemberService.Setup(x => x.GetByEmail(model.Email)).Returns(member.Object);
+
+            using (var controller = CreateController(model, createMemberSucceeds: false))
+            {
+                var result = controller.CreateMember(model);
+
+                base.MemberService.Verify(x => x.GetByEmail(model.Email), Times.Never);
+                base.MemberService.Verify(x => x.Save(member.Object, true), Times.Never);
+            }
+        }
+
+        [Fact]
         public void Duplicate_email_sends_Member_Exists_email()
         {
             var model = RegisterModel.CreateModel();
@@ -306,23 +325,6 @@ namespace Stoolball.Web.UnitTests.Account
             }
         }
 
-        [Fact]
-        public void Fail_to_create_member_does_not_save_additional_properties()
-        {
-            var model = RegisterModel.CreateModel();
-            model.Email = "test@example.org";
-
-            var member = new Mock<IMember>();
-            MemberService.Setup(x => x.GetByEmail(model.Email)).Returns(member.Object);
-
-            using (var controller = CreateController(model, createMemberSucceeds: false))
-            {
-                var result = controller.CreateMember(model);
-
-                base.MemberService.Verify(x => x.GetByEmail(model.Email), Times.Never);
-                base.MemberService.Verify(x => x.Save(member.Object, true), Times.Never);
-            }
-        }
 
         [Fact]
         public void Duplicate_email_returns_RedirectToUmbracoPageResult()
@@ -347,6 +349,114 @@ namespace Stoolball.Web.UnitTests.Account
                 Assert.True((bool)controller.TempData["FormSuccess"]);
             }
         }
+
+        [Fact]
+        public void Email_matching_requested_email_within_expiry_period_sends_Member_Exists_email()
+        {
+            var model = RegisterModel.CreateModel();
+            model.Name = "Member name";
+            model.Email = "test@example.org";
+
+            var otherMember = new Mock<IMember>();
+            var expiryDate = DateTime.Now.AddHours(12);
+            otherMember.Setup(x => x.GetValue<DateTime>("requestedEmailTokenExpires", null, null, false)).Returns(expiryDate);
+            _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(false);
+            base.MemberService.Setup(x => x.GetMembersByPropertyValue("requestedEmail", model.Email, StringPropertyMatchType.Exact)).Returns(new[] { otherMember.Object });
+
+            _emailFormatter.Setup(x => x.FormatEmailContent("Member exists", "Member exists body", It.IsAny<Dictionary<string, string>>()))
+               .Callback<string, string, Dictionary<string, string>>((subject, body, tokens) =>
+               {
+                   Assert.Equal(model.Name, tokens["name"]);
+                   Assert.Equal(model.Email, tokens["email"]);
+                   Assert.Equal(Request.Object.Url.Authority, tokens["domain"]);
+               })
+               .Returns(("Member exists", "Member exists body"));
+
+            using (var controller = CreateController(model))
+            {
+                controller.CreateMember(model);
+
+                _emailSender.Verify(x => x.SendEmail(model.Email, "Member exists", "Member exists body"));
+            }
+        }
+
+        [Fact]
+        public void Email_matching_requested_email_within_expiry_period_returns_RedirectToUmbracoPageResult()
+        {
+            var model = RegisterModel.CreateModel();
+
+            var otherMember = new Mock<IMember>();
+            var expiryDate = DateTime.Now.AddHours(12);
+            otherMember.Setup(x => x.GetValue<DateTime>("requestedEmailTokenExpires", null, null, false)).Returns(expiryDate);
+            _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(false);
+            base.MemberService.Setup(x => x.GetMembersByPropertyValue("requestedEmail", model.Email, StringPropertyMatchType.Exact)).Returns(new[] { otherMember.Object });
+
+            using (var controller = CreateController(model))
+            {
+                var result = controller.CreateMember(model);
+
+                Assert.IsType<RedirectToUmbracoPageResult>(result);
+            }
+        }
+
+        [Fact]
+        public void Email_matching_requested_email_within_expiry_period_sets_ViewData_FormSuccess_to_true()
+        {
+            var model = RegisterModel.CreateModel();
+
+            var otherMember = new Mock<IMember>();
+            var expiryDate = DateTime.Now.AddHours(12);
+            otherMember.Setup(x => x.GetValue<DateTime>("requestedEmailTokenExpires", null, null, false)).Returns(expiryDate);
+            _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(false);
+            base.MemberService.Setup(x => x.GetMembersByPropertyValue("requestedEmail", model.Email, StringPropertyMatchType.Exact)).Returns(new[] { otherMember.Object });
+
+            using (var controller = CreateController(model))
+            {
+                var result = controller.CreateMember(model);
+
+                Assert.True((bool)controller.TempData["FormSuccess"]);
+            }
+        }
+
+        [Fact]
+        public void Email_matching_requested_email_within_expiry_period_does_not_attempt_to_create_member()
+        {
+            var model = RegisterModel.CreateModel();
+
+            var otherMember = new Mock<IMember>();
+            var expiryDate = DateTime.Now.AddHours(12);
+            otherMember.Setup(x => x.GetValue<DateTime>("requestedEmailTokenExpires", null, null, false)).Returns(expiryDate);
+            _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(false);
+            base.MemberService.Setup(x => x.GetMembersByPropertyValue("requestedEmail", model.Email, StringPropertyMatchType.Exact)).Returns(new[] { otherMember.Object });
+
+            using (var controller = CreateController(model))
+            {
+                var result = controller.CreateMember(model);
+
+                _createMemberExecuter.Verify(x => x.CreateMember(controller.HandleRegisterMember, model), Times.Never);
+            }
+        }
+
+        [Fact]
+        public void Email_matching_requested_email_past_expiry_period_attempts_to_create_member()
+        {
+            var model = RegisterModel.CreateModel();
+
+            var otherMember = new Mock<IMember>();
+            var expiryDate = DateTime.Now.AddHours(-12);
+            otherMember.Setup(x => x.GetValue<DateTime>("requestedEmailTokenExpires", null, null, false)).Returns(expiryDate);
+            _tokenReader.Setup(x => x.HasExpired(expiryDate)).Returns(true);
+            base.MemberService.Setup(x => x.GetMembersByPropertyValue("requestedEmail", model.Email, StringPropertyMatchType.Exact)).Returns(new[] { otherMember.Object });
+
+            using (var controller = CreateController(model))
+            {
+                var result = controller.CreateMember(model);
+
+                _tokenReader.Verify(x => x.HasExpired(expiryDate), Times.Once);
+                _createMemberExecuter.Verify(x => x.CreateMember(controller.HandleRegisterMember, model), Times.Once);
+            }
+        }
+
 
         [Fact]
         public void Other_error_is_added_to_ModelState_and_returns_baseResult()

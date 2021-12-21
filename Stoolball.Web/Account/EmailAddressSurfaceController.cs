@@ -77,7 +77,9 @@ namespace Stoolball.Web.Account
                     // Create an requested email token including the id so we can find the member
                     var (token, expires) = _verificationToken.TokenFor(member.Id);
                     var editableMember = Services.MemberService.GetById(member.Id);
-                    editableMember.SetValue("requestedEmail", model.RequestedEmail?.Trim());
+#pragma warning disable CA1308 // Normalize strings to uppercase
+                    editableMember.SetValue("requestedEmail", model.RequestedEmail?.Trim().ToLowerInvariant());
+#pragma warning restore CA1308 // Normalize strings to uppercase
                     editableMember.SetValue("requestedEmailToken", token);
                     editableMember.SetValue("requestedEmailTokenExpires", expires);
                     Services.MemberService.Save(editableMember);

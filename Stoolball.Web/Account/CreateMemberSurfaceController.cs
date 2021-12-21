@@ -9,6 +9,7 @@ using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
+using Umbraco.Core.Persistence.Querying;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Controllers;
@@ -55,9 +56,27 @@ namespace Stoolball.Web.Account
                 return CurrentUmbracoPage();
             }
 
-            // Don't login if creating the member succeeds, because we're going to revert approval and ask for validation
-            model.LoginOnSuccess = false;
-            var baseResult = _createMemberExecuter.CreateMember(base.HandleRegisterMember, model);
+            // Umbraco code will check if a member already exists, but we also need to check if a member exists
+            // that has a different email but has requested this one in the last 24 hours. Treat that the same as if
+            // they'd approved the request and that was already their registered email address, and don't try to
+            // create a member as that would succeed.
+            const string UMBRACO_ERROR_IF_MEMBER_EXISTS = "A member with this username already exists.";
+            ActionResult baseResult;
+#pragma warning disable CA1308 // Normalize strings to uppercase
+            var membersRequestingThisEmail = Services.MemberService.GetMembersByPropertyValue("requestedEmail", model.Email?.Trim().ToLowerInvariant(), StringPropertyMatchType.Exact);
+#pragma warning restore CA1308 // Normalize strings to uppercase
+            if (membersRequestingThisEmail.Any(x => !_verificationToken.HasExpired(x.GetValue<DateTime>("requestedEmailTokenExpires"))))
+            {
+                TempData["FormSuccess"] = false;
+                ModelState.AddModelError(string.Empty, UMBRACO_ERROR_IF_MEMBER_EXISTS);
+                baseResult = new HttpStatusCodeResult(200);
+            }
+            else
+            {
+                // Don't login if creating the member succeeds, because we're going to revert approval and ask for validation
+                model.LoginOnSuccess = false;
+                baseResult = _createMemberExecuter.CreateMember(base.HandleRegisterMember, model);
+            }
 
             // Put the entered email address in TempData so that it can be accessed in the view
             TempData["Email"] = model.Email;
@@ -103,7 +122,7 @@ namespace Stoolball.Web.Account
                 // For security send an email with a link to reset their password.
                 // See https://www.troyhunt.com/everything-you-ever-wanted-to-know/
                 var errorMessage = ModelState.Values.Where(x => x.Errors.Count > 0).Select(x => x.Errors[0].ErrorMessage).FirstOrDefault();
-                if (errorMessage == "A member with this username already exists.")
+                if (errorMessage == UMBRACO_ERROR_IF_MEMBER_EXISTS)
                 {
                     // Send the 'member already exists' email
                     var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>("memberExistsSubject"),
