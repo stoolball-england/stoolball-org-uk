@@ -212,6 +212,26 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
+        public void New_member_is_not_logged_in_automatically()
+        {
+            var model = RegisterModel.CreateModel();
+            model.Email = "test@example.org";
+            var member = new Mock<IMember>();
+            member.SetupGet(x => x.Id).Returns(123);
+            MemberService.Setup(x => x.GetByEmail(model.Email)).Returns(member.Object);
+            using (var controller = CreateController(model, createMemberSucceeds: true))
+            {
+                controller.CreateMember(model);
+
+                _createMemberExecuter.Setup(x => x.CreateMember(controller.HandleRegisterMember, model))
+                    .Callback((Func<RegisterModel, ActionResult> executeFunction, RegisterModel modelToExecute) =>
+                    {
+                        Assert.False(modelToExecute.LoginOnSuccess);
+                    });
+            }
+        }
+
+        [Fact]
         public void New_member_sends_Approve_Member_email()
         {
             var model = RegisterModel.CreateModel();
