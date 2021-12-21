@@ -222,7 +222,7 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 _tokenReader.Setup(x => x.ExtractId(_token)).Throws<FormatException>();
 
-                var result = controller.UpdatePassword(new ResetPasswordFormData { PasswordResetToken = _token });
+                var result = controller.UpdatePassword(new ResetPasswordFormData());
 
                 _logger.Verify(x => x.Info(typeof(ResetPasswordSurfaceController), LoggingTemplates.MemberPasswordResetTokenInvalid, _token, typeof(ResetPasswordSurfaceController), nameof(ResetPasswordSurfaceController.UpdatePassword)), Times.Once);
             }
@@ -277,7 +277,7 @@ namespace Stoolball.Web.UnitTests.Account
                 _tokenReader.Setup(x => x.ExtractId(_token)).Returns(_currentMember.Object.Id);
                 base.MemberService.Setup(x => x.GetById(_currentMember.Object.Id)).Returns((IMember)null);
 
-                var result = controller.UpdatePassword(new ResetPasswordFormData { PasswordResetToken = _token });
+                var result = controller.UpdatePassword(new ResetPasswordFormData());
 
                 _logger.Verify(x => x.Info(typeof(ResetPasswordSurfaceController), LoggingTemplates.MemberPasswordResetTokenInvalid, _token, typeof(ResetPasswordSurfaceController), nameof(ResetPasswordSurfaceController.UpdatePassword)), Times.Once);
             }
@@ -332,13 +332,14 @@ namespace Stoolball.Web.UnitTests.Account
         {
             using (var controller = CreateController())
             {
-                _tokenReader.Setup(x => x.ExtractId(_token)).Returns(_currentMember.Object.Id);
+                var wrongToken = string.Join("", _token.Reverse());
+                base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString($"token={wrongToken}"));
+                _tokenReader.Setup(x => x.ExtractId(wrongToken)).Returns(_currentMember.Object.Id);
                 base.MemberService.Setup(x => x.GetById(_currentMember.Object.Id)).Returns(_currentMember.Object);
-                var model = new ResetPasswordFormData { PasswordResetToken = _token.Reverse().ToString() };
 
-                var result = controller.UpdatePassword(model);
+                var result = controller.UpdatePassword(new ResetPasswordFormData());
 
-                _logger.Verify(x => x.Info(typeof(ResetPasswordSurfaceController), LoggingTemplates.MemberPasswordResetTokenInvalid, model.PasswordResetToken, typeof(ResetPasswordSurfaceController), nameof(ResetPasswordSurfaceController.UpdatePassword)), Times.Once);
+                _logger.Verify(x => x.Info(typeof(ResetPasswordSurfaceController), LoggingTemplates.MemberPasswordResetTokenInvalid, wrongToken, typeof(ResetPasswordSurfaceController), nameof(ResetPasswordSurfaceController.UpdatePassword)), Times.Once);
             }
         }
 
@@ -347,10 +348,12 @@ namespace Stoolball.Web.UnitTests.Account
         {
             using (var controller = CreateController())
             {
-                _tokenReader.Setup(x => x.ExtractId(_token)).Returns(_currentMember.Object.Id);
+                var wrongToken = string.Join("", _token.Reverse());
+                base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString($"token={wrongToken}"));
+                _tokenReader.Setup(x => x.ExtractId(wrongToken)).Returns(_currentMember.Object.Id);
                 base.MemberService.Setup(x => x.GetById(_currentMember.Object.Id)).Returns(_currentMember.Object);
 
-                var result = controller.UpdatePassword(new ResetPasswordFormData { PasswordResetToken = _token.Reverse().ToString() });
+                var result = controller.UpdatePassword(new ResetPasswordFormData());
 
                 Assert.Equal("ResetPasswordComplete", ((ViewResult)result).ViewName);
             }
@@ -361,10 +364,12 @@ namespace Stoolball.Web.UnitTests.Account
         {
             using (var controller = CreateController())
             {
-                _tokenReader.Setup(x => x.ExtractId(_token)).Returns(_currentMember.Object.Id);
+                var wrongToken = string.Join("", _token.Reverse());
+                base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString($"token={wrongToken}"));
+                _tokenReader.Setup(x => x.ExtractId(wrongToken)).Returns(_currentMember.Object.Id);
                 base.MemberService.Setup(x => x.GetById(_currentMember.Object.Id)).Returns(_currentMember.Object);
 
-                var result = controller.UpdatePassword(new ResetPasswordFormData { PasswordResetToken = _token.Reverse().ToString() });
+                var result = controller.UpdatePassword(new ResetPasswordFormData());
 
                 Assert.IsType<ResetPassword>(((ViewResult)result).Model);
                 Assert.False(((ResetPassword)((ViewResult)result).Model).ShowPasswordResetSuccessful);
@@ -376,10 +381,12 @@ namespace Stoolball.Web.UnitTests.Account
         {
             using (var controller = CreateController())
             {
-                _tokenReader.Setup(x => x.ExtractId(_token)).Returns(_currentMember.Object.Id);
+                var wrongToken = string.Join("", _token.Reverse());
+                base.Request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString($"token={wrongToken}"));
+                _tokenReader.Setup(x => x.ExtractId(wrongToken)).Returns(_currentMember.Object.Id);
                 base.MemberService.Setup(x => x.GetById(_currentMember.Object.Id)).Returns(_currentMember.Object);
 
-                var result = controller.UpdatePassword(new ResetPasswordFormData { PasswordResetToken = _token.Reverse().ToString(), NewPassword = "pa$$word" });
+                var result = controller.UpdatePassword(new ResetPasswordFormData { NewPassword = "pa$$word" });
 
                 MemberService.Verify(x => x.Save(_currentMember.Object, true), Times.Never);
                 MemberService.Verify(x => x.SavePassword(_currentMember.Object, It.IsAny<string>()), Times.Never);
@@ -393,10 +400,9 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 SetupExpiredToken();
 
-                var model = new ResetPasswordFormData { PasswordResetToken = _token };
-                var result = controller.UpdatePassword(model);
+                var result = controller.UpdatePassword(new ResetPasswordFormData());
 
-                _logger.Verify(x => x.Info(typeof(ResetPasswordSurfaceController), LoggingTemplates.MemberPasswordResetTokenInvalid, model.PasswordResetToken, typeof(ResetPasswordSurfaceController), nameof(ResetPasswordSurfaceController.UpdatePassword)), Times.Once);
+                _logger.Verify(x => x.Info(typeof(ResetPasswordSurfaceController), LoggingTemplates.MemberPasswordResetTokenInvalid, _token, typeof(ResetPasswordSurfaceController), nameof(ResetPasswordSurfaceController.UpdatePassword)), Times.Once);
             }
         }
 
@@ -407,7 +413,7 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 SetupExpiredToken();
 
-                var result = controller.UpdatePassword(new ResetPasswordFormData { PasswordResetToken = _token });
+                var result = controller.UpdatePassword(new ResetPasswordFormData());
 
                 Assert.Equal("ResetPasswordComplete", ((ViewResult)result).ViewName);
             }
@@ -420,7 +426,7 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 SetupExpiredToken();
 
-                var result = controller.UpdatePassword(new ResetPasswordFormData { PasswordResetToken = _token });
+                var result = controller.UpdatePassword(new ResetPasswordFormData());
 
                 Assert.IsType<ResetPassword>(((ViewResult)result).Model);
                 Assert.False(((ResetPassword)((ViewResult)result).Model).ShowPasswordResetSuccessful);
@@ -434,7 +440,7 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 SetupExpiredToken();
 
-                var result = controller.UpdatePassword(new ResetPasswordFormData { PasswordResetToken = _token, NewPassword = "pa$$word" });
+                var result = controller.UpdatePassword(new ResetPasswordFormData { NewPassword = "pa$$word" });
 
                 MemberService.Verify(x => x.Save(_currentMember.Object, true), Times.Never);
                 MemberService.Verify(x => x.SavePassword(_currentMember.Object, It.IsAny<string>()), Times.Never);
@@ -457,7 +463,7 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 SetupValidTokenScenario();
 
-                var result = controller.UpdatePassword(new ResetPasswordFormData { PasswordResetToken = _token });
+                var result = controller.UpdatePassword(new ResetPasswordFormData());
 
                 Assert.IsType<RedirectToUmbracoPageResult>(result);
                 Assert.Equal($"token={_token}&successful=yes", controller.QuerystringPassedToRedirectToCurrentUmbracoPage);
@@ -471,7 +477,7 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 SetupValidTokenScenario();
 
-                var result = controller.UpdatePassword(new ResetPasswordFormData { PasswordResetToken = _token });
+                var result = controller.UpdatePassword(new ResetPasswordFormData());
 
                 _currentMember.VerifySet(x => x.IsLockedOut = false, Times.Once);
                 base.MemberService.Verify(x => x.Save(_currentMember.Object, true), Times.Once);
@@ -487,7 +493,7 @@ namespace Stoolball.Web.UnitTests.Account
                 var expiryResetTo = DateTime.Now.AddHours(1);
                 _tokenReader.Setup(x => x.ResetExpiryTo()).Returns(expiryResetTo);
 
-                var result = controller.UpdatePassword(new ResetPasswordFormData { PasswordResetToken = _token });
+                var result = controller.UpdatePassword(new ResetPasswordFormData());
 
                 _currentMember.Verify(x => x.SetValue("passwordResetTokenExpires", expiryResetTo, null, null), Times.Once);
                 base.MemberService.Verify(x => x.Save(_currentMember.Object, true), Times.Once);
@@ -501,7 +507,7 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 SetupValidTokenScenario();
 
-                var model = new ResetPasswordFormData { PasswordResetToken = _token, NewPassword = "pa$$word" };
+                var model = new ResetPasswordFormData { NewPassword = "pa$$word" };
                 var result = controller.UpdatePassword(model);
 
                 base.MemberService.Verify(x => x.SavePassword(_currentMember.Object, model.NewPassword), Times.Once);
@@ -515,7 +521,7 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 SetupValidTokenScenario();
 
-                var model = new ResetPasswordFormData { PasswordResetToken = _token, NewPassword = "pa$$word" };
+                var model = new ResetPasswordFormData { NewPassword = "pa$$word" };
                 var result = controller.UpdatePassword(model);
 
                 _logger.Verify(x => x.Info(typeof(ResetPasswordSurfaceController), LoggingTemplates.MemberPasswordReset, _currentMember.Object.Username, _currentMember.Object.Key, typeof(ResetPasswordSurfaceController), nameof(ResetPasswordSurfaceController.UpdatePassword)), Times.Once);
@@ -529,7 +535,7 @@ namespace Stoolball.Web.UnitTests.Account
             {
                 SetupValidTokenScenario();
 
-                var model = new ResetPasswordFormData { PasswordResetToken = _token, NewPassword = "pa$$word" };
+                var model = new ResetPasswordFormData { NewPassword = "pa$$word" };
                 var result = controller.UpdatePassword(model);
 
                 _loginMemberWrapper.Verify(x => x.LoginMember(_currentMember.Object.Username, model.NewPassword), Times.Once);
@@ -544,7 +550,7 @@ namespace Stoolball.Web.UnitTests.Account
                 SetupValidTokenScenario();
                 _currentMember.Setup(x => x.GetValue<bool>("blockLogin", null, null, false)).Returns(true);
 
-                var model = new ResetPasswordFormData { PasswordResetToken = _token, NewPassword = "pa$$word" };
+                var model = new ResetPasswordFormData { NewPassword = "pa$$word" };
                 var result = controller.UpdatePassword(model);
 
                 _loginMemberWrapper.Verify(x => x.LoginMember(_currentMember.Object.Username, model.NewPassword), Times.Never);

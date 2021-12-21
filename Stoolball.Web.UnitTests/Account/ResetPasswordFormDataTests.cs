@@ -9,19 +9,19 @@ namespace Stoolball.Web.UnitTests.Account
     public class ResetPasswordFormDataTests : ValidationBaseTest
     {
         [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("isinvalid")]
-        public void Invalid_password_fails_validation(string password)
+        [InlineData(null, "THE NEW PASSWORD IS REQUIRED.")]
+        [InlineData("", "THE NEW PASSWORD IS REQUIRED.")]
+        [InlineData("isinvalid", "YOUR PASSWORD MUST BE AT LEAST 10 CHARACTERS")]
+        public void Invalid_password_fails_validation(string password, string expectedError)
         {
             var formData = new ResetPasswordFormData
             {
-                PasswordResetToken = password
+                NewPassword = password
             };
 
             Assert.Contains(ValidateModel(formData),
                 v => v.MemberNames.Contains(nameof(ResetPasswordFormData.NewPassword)) &&
-                     v.ErrorMessage.ToUpperInvariant() == "THE NEW PASSWORD IS REQUIRED.");
+                     v.ErrorMessage.ToUpperInvariant() == expectedError);
         }
 
         [Fact]
@@ -35,29 +35,6 @@ namespace Stoolball.Web.UnitTests.Account
             Assert.DoesNotContain(ValidateModel(formData),
                             v => v.MemberNames.Contains(nameof(ResetPasswordFormData.NewPassword)) &&
                                  v.ErrorMessage.ToUpperInvariant() == "THE NEW PASSWORD IS REQUIRED.");
-        }
-
-        [Fact]
-        public void Missing_token_fails_validation()
-        {
-            var formData = new ResetPasswordFormData();
-
-            Assert.Contains(ValidateModel(formData),
-                            v => v.MemberNames.Contains(nameof(ResetPasswordFormData.PasswordResetToken)) &&
-                                 v.ErrorMessage.ToUpperInvariant() == "THE PASSWORDRESETTOKEN FIELD IS REQUIRED.");
-        }
-
-        [Fact]
-        public void Valid_token_passes_validation()
-        {
-            var formData = new ResetPasswordFormData
-            {
-                PasswordResetToken = Guid.NewGuid().ToString()
-            };
-
-            Assert.DoesNotContain(ValidateModel(formData),
-                            v => v.MemberNames.Contains(nameof(ResetPasswordFormData.PasswordResetToken)) &&
-                                 v.ErrorMessage.ToUpperInvariant() == "THE PASSWORD RESET TOKEN IS REQUIRED.");
         }
     }
 }

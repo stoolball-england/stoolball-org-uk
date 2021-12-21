@@ -152,25 +152,8 @@ WriteLiteral("</h1>\r\n\r\n");
             
             #line 27 "..\..\Views\ResetPassword.cshtml"
                                         
-                var resetPasswordUpdate = new ResetPasswordFormData
-                {
-                    PasswordResetToken = Model.PasswordResetToken
-                };
+                var resetPasswordUpdate = new ResetPasswordFormData();
 
-                
-            
-            #line default
-            #line hidden
-            
-            #line 33 "..\..\Views\ResetPassword.cshtml"
-           Write(Html.HiddenFor(m => resetPasswordUpdate.PasswordResetToken));
-
-            
-            #line default
-            #line hidden
-            
-            #line 33 "..\..\Views\ResetPassword.cshtml"
-                                                                            
 
             
             #line default
@@ -184,7 +167,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                    ");
 
             
-            #line 35 "..\..\Views\ResetPassword.cshtml"
+            #line 31 "..\..\Views\ResetPassword.cshtml"
                Write(Html.LabelFor(m => resetPasswordUpdate.NewPassword, "New password"));
 
             
@@ -193,13 +176,13 @@ WriteLiteral("                    ");
 WriteLiteral("\r\n");
 
             
-            #line 36 "..\..\Views\ResetPassword.cshtml"
+            #line 32 "..\..\Views\ResetPassword.cshtml"
                     
             
             #line default
             #line hidden
             
-            #line 36 "..\..\Views\ResetPassword.cshtml"
+            #line 32 "..\..\Views\ResetPassword.cshtml"
                        var describedBy = "form-new-password"; 
             
             #line default
@@ -207,13 +190,13 @@ WriteLiteral("\r\n");
 WriteLiteral("\r\n");
 
             
-            #line 37 "..\..\Views\ResetPassword.cshtml"
+            #line 33 "..\..\Views\ResetPassword.cshtml"
                     
             
             #line default
             #line hidden
             
-            #line 37 "..\..\Views\ResetPassword.cshtml"
+            #line 33 "..\..\Views\ResetPassword.cshtml"
                      if (!string.IsNullOrEmpty(Model.PasswordHelp))
                     {
                         describedBy = "form-new-password form-new-password-help";
@@ -230,7 +213,7 @@ WriteLiteral(" id=\"form-new-password-help\"");
 WriteLiteral("><small>");
 
             
-            #line 40 "..\..\Views\ResetPassword.cshtml"
+            #line 36 "..\..\Views\ResetPassword.cshtml"
                                                                            Write(Model.PasswordHelp);
 
             
@@ -239,7 +222,7 @@ WriteLiteral("><small>");
 WriteLiteral("</small></p>\r\n");
 
             
-            #line 41 "..\..\Views\ResetPassword.cshtml"
+            #line 37 "..\..\Views\ResetPassword.cshtml"
                     }
 
             
@@ -248,7 +231,7 @@ WriteLiteral("</small></p>\r\n");
 WriteLiteral("                    ");
 
             
-            #line 42 "..\..\Views\ResetPassword.cshtml"
+            #line 38 "..\..\Views\ResetPassword.cshtml"
                Write(Html.PasswordFor(m => resetPasswordUpdate.NewPassword, new { @class = "form-control", required = "required", aria_describedby = describedBy, autocorrect = "off", autocapitalize = "off" }));
 
             
@@ -259,7 +242,7 @@ WriteLiteral("\r\n");
 WriteLiteral("                    ");
 
             
-            #line 43 "..\..\Views\ResetPassword.cshtml"
+            #line 39 "..\..\Views\ResetPassword.cshtml"
                Write(Html.ValidationMessageFor(m => resetPasswordUpdate.NewPassword, null, new { id = "form-new-password" }));
 
             
@@ -268,7 +251,7 @@ WriteLiteral("                    ");
 WriteLiteral("\r\n                </div>\r\n");
 
             
-            #line 45 "..\..\Views\ResetPassword.cshtml"
+            #line 41 "..\..\Views\ResetPassword.cshtml"
 
 
             
@@ -281,7 +264,7 @@ WriteLiteral(" class=\"btn btn-primary\"");
 WriteLiteral(">");
 
             
-            #line 46 "..\..\Views\ResetPassword.cshtml"
+            #line 42 "..\..\Views\ResetPassword.cshtml"
                                            Write(Model.UpdatePasswordButton);
 
             
@@ -290,7 +273,7 @@ WriteLiteral(">");
 WriteLiteral("</button>\r\n");
 
             
-            #line 47 "..\..\Views\ResetPassword.cshtml"
+            #line 43 "..\..\Views\ResetPassword.cshtml"
             }
         }
         else
@@ -300,21 +283,21 @@ WriteLiteral("</button>\r\n");
             #line default
             #line hidden
             
-            #line 51 "..\..\Views\ResetPassword.cshtml"
+            #line 47 "..\..\Views\ResetPassword.cshtml"
                                                            
             
             
             #line default
             #line hidden
             
-            #line 52 "..\..\Views\ResetPassword.cshtml"
+            #line 48 "..\..\Views\ResetPassword.cshtml"
        Write(Html.ProtectEmailAddresses(Model.PasswordResetTokenInvalid));
 
             
             #line default
             #line hidden
             
-            #line 52 "..\..\Views\ResetPassword.cshtml"
+            #line 48 "..\..\Views\ResetPassword.cshtml"
                                                                         
         }
     }

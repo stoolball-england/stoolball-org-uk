@@ -58,7 +58,7 @@ namespace Stoolball.Web.Account
 
                 if (member != null)
                 {
-                    if (member.GetValue<string>("passwordResetToken") == model.PasswordResetToken &&
+                    if (member.GetValue<string>("passwordResetToken") == contentModel.PasswordResetToken &&
                         !_verificationToken.HasExpired(member.GetValue<DateTime>("passwordResetTokenExpires")))
                     {
                         // If the user has tried repeatedly they might have locked their account
@@ -79,25 +79,25 @@ namespace Stoolball.Web.Account
                         }
 
                         // Redirect because the login doesn't update the thread identity
-                        return RedirectToCurrentUmbracoPage($"token={model.PasswordResetToken}&successful=yes");
+                        return RedirectToCurrentUmbracoPage($"token={contentModel.PasswordResetToken}&successful=yes");
                     }
                     else
                     {
-                        Logger.Info(typeof(ResetPasswordSurfaceController), LoggingTemplates.MemberPasswordResetTokenInvalid, model.PasswordResetToken, typeof(ResetPasswordSurfaceController), nameof(UpdatePassword));
+                        Logger.Info(typeof(ResetPasswordSurfaceController), LoggingTemplates.MemberPasswordResetTokenInvalid, contentModel.PasswordResetToken, typeof(ResetPasswordSurfaceController), nameof(UpdatePassword));
                         contentModel.ShowPasswordResetSuccessful = false;
                         return View("ResetPasswordComplete", contentModel);
                     }
                 }
                 else
                 {
-                    Logger.Info(typeof(ResetPasswordSurfaceController), LoggingTemplates.MemberPasswordResetTokenInvalid, model.PasswordResetToken, typeof(ResetPasswordSurfaceController), nameof(UpdatePassword));
+                    Logger.Info(typeof(ResetPasswordSurfaceController), LoggingTemplates.MemberPasswordResetTokenInvalid, contentModel.PasswordResetToken, typeof(ResetPasswordSurfaceController), nameof(UpdatePassword));
                     contentModel.ShowPasswordResetSuccessful = false;
                     return View("ResetPasswordComplete", contentModel);
                 }
             }
             catch (FormatException)
             {
-                Logger.Info(typeof(ResetPasswordSurfaceController), LoggingTemplates.MemberPasswordResetTokenInvalid, model.PasswordResetToken, typeof(ResetPasswordSurfaceController), nameof(UpdatePassword));
+                Logger.Info(typeof(ResetPasswordSurfaceController), LoggingTemplates.MemberPasswordResetTokenInvalid, contentModel.PasswordResetToken, typeof(ResetPasswordSurfaceController), nameof(UpdatePassword));
                 contentModel.ShowPasswordResetSuccessful = false;
                 return View("ResetPasswordComplete", contentModel);
             }
