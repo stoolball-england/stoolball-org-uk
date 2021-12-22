@@ -25,6 +25,7 @@ namespace Stoolball.Web.Account
         private readonly IEmailFormatter _emailFormatter;
         private readonly IEmailSender _emailSender;
         private readonly IVerificationToken _verificationToken;
+        private const string UMBRACO_ERROR_IF_MEMBER_EXISTS = "A member with this username already exists.";
 
         public CreateMemberSurfaceController(IUmbracoContextAccessor umbracoContextAccessor,
             IUmbracoDatabaseFactory databaseFactory,
@@ -56,20 +57,17 @@ namespace Stoolball.Web.Account
                 return CurrentUmbracoPage();
             }
 
+            // Put the entered email address in TempData so that it can be accessed in the view
+            TempData["Email"] = model.Email;
+
             // Umbraco code will check if a member already exists, but we also need to check if a member exists
             // that has a different email but has requested this one in the last 24 hours. Treat that the same as if
             // they'd approved the request and that was already their registered email address, and don't try to
             // create a member as that would succeed.
-            const string UMBRACO_ERROR_IF_MEMBER_EXISTS = "A member with this username already exists.";
             ActionResult baseResult;
-#pragma warning disable CA1308 // Normalize strings to uppercase
-            var membersRequestingThisEmail = Services.MemberService.GetMembersByPropertyValue("requestedEmail", model.Email?.Trim().ToLowerInvariant(), StringPropertyMatchType.Exact);
-#pragma warning restore CA1308 // Normalize strings to uppercase
-            if (membersRequestingThisEmail.Any(x => !_verificationToken.HasExpired(x.GetValue<DateTime>("requestedEmailTokenExpires"))))
+            if (AnotherMemberHasRequestedThisEmailAddress(model.Email))
             {
-                TempData["FormSuccess"] = false;
-                ModelState.AddModelError(string.Empty, UMBRACO_ERROR_IF_MEMBER_EXISTS);
-                baseResult = new HttpStatusCodeResult(200);
+                baseResult = WhatUmbracoDoesIfAMemberExistsWithThisEmail();
             }
             else
             {
@@ -78,39 +76,18 @@ namespace Stoolball.Web.Account
                 baseResult = _createMemberExecuter.CreateMember(base.HandleRegisterMember, model);
             }
 
-            // Put the entered email address in TempData so that it can be accessed in the view
-            TempData["Email"] = model.Email;
-
-            // The base Umbraco method populates this TempData key with a boolean we can use to check the result
-            var memberCreated = TempData.ContainsKey("FormSuccess") && Convert.ToBoolean(TempData["FormSuccess"], CultureInfo.InvariantCulture) == true;
-            if (memberCreated)
+            if (NewMemberWasCreated())
             {
                 // Get the newly-created member so that we can set an approval token
                 var member = Services.MemberService.GetByEmail(model.Email);
 
                 // Create an account approval token including the id so we can find the member
-                var (token, expires) = _verificationToken.TokenFor(member.Id);
-                member.SetValue("approvalToken", token);
-                member.SetValue("approvalTokenExpires", expires);
-                member.SetValue("totalLogins", 0);
-                member.IsApproved = false;
-
-                Services.MemberService.Save(member);
+                var token = NewMemberMustAwaitActivation(member);
 
                 // Add to a default group which can be used to assign permissions to all members
                 Services.MemberService.AssignRole(member.Id, Groups.AllMembers);
 
-                // Send the approval validation email
-                var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>("approveMemberSubject"),
-                    CurrentPage.Value<string>("approveMemberBody"),
-                    new Dictionary<string, string>
-                    {
-                        {"name", model.Name},
-                        {"email", model.Email},
-                        {"token", token},
-                        {"domain", GetRequestUrlAuthority()}
-                    });
-                _emailSender.SendEmail(model.Email, subject, body);
+                SendActivateNewMemberEmail(model, token);
 
                 Logger.Info(typeof(CreateMemberSurfaceController), LoggingTemplates.CreateMember, member.Username, member.Key, typeof(CreateMemberSurfaceController), nameof(CreateMember));
 
@@ -124,16 +101,7 @@ namespace Stoolball.Web.Account
                 var errorMessage = ModelState.Values.Where(x => x.Errors.Count > 0).Select(x => x.Errors[0].ErrorMessage).FirstOrDefault();
                 if (errorMessage == UMBRACO_ERROR_IF_MEMBER_EXISTS)
                 {
-                    // Send the 'member already exists' email
-                    var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>("memberExistsSubject"),
-                        CurrentPage.Value<string>("memberExistsBody"),
-                        new Dictionary<string, string>
-                        {
-                            {"name", model.Name},
-                            {"email", model.Email},
-                            {"domain", GetRequestUrlAuthority()}
-                        });
-                    _emailSender.SendEmail(model.Email, subject, body);
+                    SendMemberAlreadyExistsEmail(model);
 
                     // Send back the same status regardless for security
                     TempData["FormSuccess"] = true;
@@ -146,6 +114,70 @@ namespace Stoolball.Web.Account
                     return baseResult;
                 }
             }
+        }
+
+        private void SendMemberAlreadyExistsEmail(RegisterModel model)
+        {
+            // Send the 'member already exists' email
+            var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>("memberExistsSubject"),
+                CurrentPage.Value<string>("memberExistsBody"),
+                new Dictionary<string, string>
+                {
+                            {"name", model.Name},
+                            {"email", model.Email},
+                            {"domain", GetRequestUrlAuthority()}
+                });
+            _emailSender.SendEmail(model.Email, subject, body);
+        }
+
+        private ActionResult WhatUmbracoDoesIfAMemberExistsWithThisEmail()
+        {
+            ActionResult baseResult;
+            TempData["FormSuccess"] = false;
+            ModelState.AddModelError(string.Empty, UMBRACO_ERROR_IF_MEMBER_EXISTS);
+            baseResult = new HttpStatusCodeResult(200);
+            return baseResult;
+        }
+
+        private bool AnotherMemberHasRequestedThisEmailAddress(string email)
+        {
+#pragma warning disable CA1308 // Normalize strings to uppercase
+            var membersRequestingThisEmail = Services.MemberService.GetMembersByPropertyValue("requestedEmail", email?.Trim().ToLowerInvariant(), StringPropertyMatchType.Exact);
+#pragma warning restore CA1308 // Normalize strings to uppercase
+            return membersRequestingThisEmail.Any(x => !_verificationToken.HasExpired(x.GetValue<DateTime>("requestedEmailTokenExpires")));
+        }
+
+        private bool NewMemberWasCreated()
+        {
+
+            // The base Umbraco method populates this TempData key with a boolean we can use to check the result
+            return TempData.ContainsKey("FormSuccess") && Convert.ToBoolean(TempData["FormSuccess"], CultureInfo.InvariantCulture) == true;
+        }
+
+        private void SendActivateNewMemberEmail(RegisterModel model, string token)
+        {
+            var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>("approveMemberSubject"),
+                CurrentPage.Value<string>("approveMemberBody"),
+                new Dictionary<string, string>
+                {
+                        {"name", model.Name},
+                        {"email", model.Email},
+                        {"token", token},
+                        {"domain", GetRequestUrlAuthority()}
+                });
+            _emailSender.SendEmail(model.Email, subject, body);
+        }
+
+        private string NewMemberMustAwaitActivation(Umbraco.Core.Models.IMember member)
+        {
+            var (token, expires) = _verificationToken.TokenFor(member.Id);
+            member.SetValue("approvalToken", token);
+            member.SetValue("approvalTokenExpires", expires);
+            member.SetValue("totalLogins", 0);
+            member.IsApproved = false;
+
+            Services.MemberService.Save(member);
+            return token;
         }
 
         /// <summary>
