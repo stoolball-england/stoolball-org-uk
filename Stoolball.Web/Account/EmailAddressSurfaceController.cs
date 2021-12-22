@@ -56,6 +56,15 @@ namespace Stoolball.Web.Account
             {
                 var member = Members.GetCurrentMember();
 
+                // Create an requested email token including the id so we can find the member.
+
+                // Do this even if the email is already in use, to avoid an enumeration risk where the
+                // result of the request is displayed in the UI differently depending on whether a member exists.
+
+                // It's OK to save the token for an invalid situation as the token will not be sent to the requester,
+                // and in any case the check for an existing member would happen again at confirmation time.
+                var token = SaveConfirmationTokenForMember(model.Requested, member.Id);
+
                 // Check whether the requested email already belongs to another account
                 var alreadyTaken = Members.GetByEmail(model.Requested?.Trim());
                 if (alreadyTaken != null && alreadyTaken.Key != member.Key)
@@ -75,15 +84,6 @@ namespace Stoolball.Web.Account
                 }
                 else
                 {
-                    // Create an requested email token including the id so we can find the member
-                    var (token, expires) = _verificationToken.TokenFor(member.Id);
-                    var editableMember = Services.MemberService.GetById(member.Id);
-#pragma warning disable CA1308 // Normalize strings to uppercase
-                    editableMember.SetValue("requestedEmail", model.Requested?.Trim().ToLowerInvariant());
-#pragma warning restore CA1308 // Normalize strings to uppercase
-                    editableMember.SetValue("requestedEmailToken", token);
-                    editableMember.SetValue("requestedEmailTokenExpires", expires);
-                    Services.MemberService.Save(editableMember);
 
                     // Send the token by email
                     var (subject, body) = _emailFormatter.FormatEmailContent(CurrentPage.Value<string>("confirmEmailSubject"),
@@ -106,6 +106,19 @@ namespace Stoolball.Web.Account
             {
                 return View("EmailAddress", new EmailAddress(CurrentPage) { FormData = model });
             }
+        }
+
+        private string SaveConfirmationTokenForMember(string email, int memberId)
+        {
+            var (token, expires) = _verificationToken.TokenFor(memberId);
+            var editableMember = Services.MemberService.GetById(memberId);
+#pragma warning disable CA1308 // Normalize strings to uppercase
+            editableMember.SetValue("requestedEmail", email?.Trim().ToLowerInvariant());
+#pragma warning restore CA1308 // Normalize strings to uppercase
+            editableMember.SetValue("requestedEmailToken", token);
+            editableMember.SetValue("requestedEmailTokenExpires", expires);
+            Services.MemberService.Save(editableMember);
+            return token;
         }
 
         /// <summary>

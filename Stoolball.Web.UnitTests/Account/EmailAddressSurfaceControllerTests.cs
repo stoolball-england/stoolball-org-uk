@@ -144,10 +144,7 @@ namespace Stoolball.Web.UnitTests.Account
         {
             var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
 
-            var otherMember = new Mock<IPublishedContent>();
-            otherMember.Setup(x => x.Name).Returns("Other member");
-            otherMember.Setup(x => x.Key).Returns(Guid.NewGuid());
-            MemberCache.Setup(x => x.GetByEmail(model.Requested)).Returns(otherMember.Object);
+            var otherMember = SetupAnotherAccountUsingThisEmail(model.Requested);
 
             Dictionary<string, string> receivedTokens = null;
             _emailFormatter.Setup(x => x.FormatEmailContent(EMAIL_TAKEN_SUBJECT, EMAIL_TAKEN_BODY, It.IsAny<Dictionary<string, string>>()))
@@ -165,20 +162,27 @@ namespace Stoolball.Web.UnitTests.Account
             }
         }
 
+        private Mock<IPublishedContent> SetupAnotherAccountUsingThisEmail(string email)
+        {
+            var otherMember = new Mock<IPublishedContent>();
+            otherMember.Setup(x => x.Name).Returns("Other member");
+            otherMember.Setup(x => x.Key).Returns(Guid.NewGuid());
+            MemberCache.Setup(x => x.GetByEmail(email)).Returns(otherMember.Object);
+            return otherMember;
+        }
+
         [Fact]
-        public void Request_for_email_already_in_use_does_not_save()
+        public void Request_for_email_already_in_use_saves_token_anyway()
         {
             var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
 
-            var otherMember = new Mock<IPublishedContent>();
-            otherMember.Setup(x => x.Key).Returns(Guid.NewGuid());
-            MemberCache.Setup(x => x.GetByEmail(model.Requested)).Returns(otherMember.Object);
+            var otherMember = SetupAnotherAccountUsingThisEmail(model.Requested);
 
             using (var controller = CreateController())
             {
                 var result = controller.UpdateEmailAddress(model);
 
-                base.MemberService.Verify(x => x.Save(_currentMember.Object, true), Times.Never);
+                base.MemberService.Verify(x => x.Save(_currentMember.Object, true), Times.Once);
             }
         }
 
@@ -187,9 +191,7 @@ namespace Stoolball.Web.UnitTests.Account
         {
             var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
 
-            var otherMember = new Mock<IPublishedContent>();
-            otherMember.Setup(x => x.Key).Returns(Guid.NewGuid());
-            MemberCache.Setup(x => x.GetByEmail(model.Requested)).Returns(otherMember.Object);
+            var otherMember = SetupAnotherAccountUsingThisEmail(model.Requested);
 
             using (var controller = CreateController())
             {
@@ -204,9 +206,7 @@ namespace Stoolball.Web.UnitTests.Account
         {
             var model = new EmailAddressFormData { Requested = "new@example.org", Password = VALID_PASSWORD };
 
-            var otherMember = new Mock<IPublishedContent>();
-            otherMember.Setup(x => x.Key).Returns(Guid.NewGuid());
-            MemberCache.Setup(x => x.GetByEmail(model.Requested)).Returns(otherMember.Object);
+            var otherMember = SetupAnotherAccountUsingThisEmail(model.Requested);
 
             using (var controller = CreateController())
             {
