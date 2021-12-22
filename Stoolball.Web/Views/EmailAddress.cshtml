@@ -10,6 +10,8 @@
     Html.EnableUnobtrusiveJavaScript();
     Html.RequiresJs("~/scripts/jquery.validate.min.js");
     Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+
+    var currentMemberBypassingCache = Members.GetById(Members.GetCurrentMember().Id);
 }
 <div class="container-xl">
     <h1>@Model.Name</h1>
@@ -18,7 +20,7 @@
     {
         if (TempData["Success"] == null)
         {
-            @Html.Partial("_ConfirmEmailAddress", Members.GetCurrentMember())
+            @Html.Partial("_ConfirmEmailAddress", currentMemberBypassingCache)
 
             using (Html.BeginUmbracoForm<EmailAddressSurfaceController>("UpdateEmailAddress", null, new { id = "calling-it-search-disables-contact-managers" }))
             {
@@ -26,7 +28,7 @@
 
                 <div class="form-group">
                     @Html.LabelFor(m => Model.FormData.Requested)
-                    <p class="form-text" id="form-email-help">Your email address is currently <strong>@Members.CurrentUserName</strong>.</p>
+                    <p class="form-text" id="form-email-help">Your email address is currently <strong>@currentMemberBypassingCache.Value("email")</strong>.</p>
                     @Html.TextBoxFor(m => Model.FormData.Requested, new { @class = "form-control", required = "required", aria_describedby = "form-email-help form-email", autocorrect = "off", autocapitalize = "off", autocomplete = "email", type = "email" })
                     @Html.ValidationMessageFor(m => Model.FormData.Requested, null, new { id = "form-email" })
                 </div>

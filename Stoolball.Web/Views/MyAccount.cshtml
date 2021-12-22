@@ -5,13 +5,14 @@
 @using Stoolball.Web.Email
 @{ 
     Html.RequiresCss("~/account/account.min.css");
+    var currentMemberBypassingCache = Members.GetById(Members.GetCurrentMember().Id);
 }
 <div class="container-xl">
     <h1>@Model.Name</h1>
 
     @if (User.Identity.IsAuthenticated)
     {
-        @Html.Partial("_ConfirmEmailAddress", Members.GetCurrentMember())
+        @Html.Partial("_ConfirmEmailAddress", currentMemberBypassingCache)
        
         var gravatar = new Gravatar(User.Identity.Name);
         @Html.GetBlockListHtml(Model, "blockList")

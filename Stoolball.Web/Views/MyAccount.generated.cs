@@ -71,6 +71,7 @@ namespace ASP
             #line 6 "..\..\Views\MyAccount.cshtml"
    
     Html.RequiresCss("~/account/account.min.css");
+    var currentMemberBypassingCache = Members.GetById(Members.GetCurrentMember().Id);
 
             
             #line default
@@ -82,7 +83,7 @@ WriteLiteral(" class=\"container-xl\"");
 WriteLiteral(">\r\n    <h1>");
 
             
-            #line 10 "..\..\Views\MyAccount.cshtml"
+            #line 11 "..\..\Views\MyAccount.cshtml"
    Write(Model.Name);
 
             
@@ -91,13 +92,13 @@ WriteLiteral(">\r\n    <h1>");
 WriteLiteral("</h1>\r\n\r\n");
 
             
-            #line 12 "..\..\Views\MyAccount.cshtml"
+            #line 13 "..\..\Views\MyAccount.cshtml"
     
             
             #line default
             #line hidden
             
-            #line 12 "..\..\Views\MyAccount.cshtml"
+            #line 13 "..\..\Views\MyAccount.cshtml"
      if (User.Identity.IsAuthenticated)
     {
         
@@ -105,15 +106,15 @@ WriteLiteral("</h1>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 14 "..\..\Views\MyAccount.cshtml"
-   Write(Html.Partial("_ConfirmEmailAddress", Members.GetCurrentMember()));
+            #line 15 "..\..\Views\MyAccount.cshtml"
+   Write(Html.Partial("_ConfirmEmailAddress", currentMemberBypassingCache));
 
             
             #line default
             #line hidden
             
-            #line 14 "..\..\Views\MyAccount.cshtml"
-                                                                         
+            #line 15 "..\..\Views\MyAccount.cshtml"
+                                                                          
        
         var gravatar = new Gravatar(User.Identity.Name);
         
@@ -121,14 +122,14 @@ WriteLiteral("</h1>\r\n\r\n");
             #line default
             #line hidden
             
-            #line 17 "..\..\Views\MyAccount.cshtml"
+            #line 18 "..\..\Views\MyAccount.cshtml"
    Write(Html.GetBlockListHtml(Model, "blockList"));
 
             
             #line default
             #line hidden
             
-            #line 17 "..\..\Views\MyAccount.cshtml"
+            #line 18 "..\..\Views\MyAccount.cshtml"
                                                   
 
 
@@ -143,42 +144,42 @@ WriteLiteral(" class=\"gravatar\"");
 
 WriteLiteral(">\r\n            <img");
 
-WriteAttribute("src", Tuple.Create(" src=\"", 655), Tuple.Create("\"", 674)
+WriteAttribute("src", Tuple.Create(" src=\"", 743), Tuple.Create("\"", 762)
             
-            #line 21 "..\..\Views\MyAccount.cshtml"
-, Tuple.Create(Tuple.Create("", 661), Tuple.Create<System.Object, System.Int32>(gravatar.Url
+            #line 22 "..\..\Views\MyAccount.cshtml"
+, Tuple.Create(Tuple.Create("", 749), Tuple.Create<System.Object, System.Int32>(gravatar.Url
             
             #line default
             #line hidden
-, 661), false)
+, 749), false)
 );
 
 WriteLiteral(" alt=\"Your account picture from gravatar.com\"");
 
-WriteAttribute("width", Tuple.Create(" width=\"", 720), Tuple.Create("\"", 742)
+WriteAttribute("width", Tuple.Create(" width=\"", 808), Tuple.Create("\"", 830)
             
-            #line 21 "..\..\Views\MyAccount.cshtml"
-          , Tuple.Create(Tuple.Create("", 728), Tuple.Create<System.Object, System.Int32>(gravatar.Size
+            #line 22 "..\..\Views\MyAccount.cshtml"
+          , Tuple.Create(Tuple.Create("", 816), Tuple.Create<System.Object, System.Int32>(gravatar.Size
             
             #line default
             #line hidden
-, 728), false)
+, 816), false)
 );
 
-WriteAttribute("height", Tuple.Create(" height=\"", 743), Tuple.Create("\"", 766)
+WriteAttribute("height", Tuple.Create(" height=\"", 831), Tuple.Create("\"", 854)
             
-            #line 21 "..\..\Views\MyAccount.cshtml"
-                                  , Tuple.Create(Tuple.Create("", 752), Tuple.Create<System.Object, System.Int32>(gravatar.Size
+            #line 22 "..\..\Views\MyAccount.cshtml"
+                                  , Tuple.Create(Tuple.Create("", 840), Tuple.Create<System.Object, System.Int32>(gravatar.Size
             
             #line default
             #line hidden
-, 752), false)
+, 840), false)
 );
 
 WriteLiteral(" />\r\n            <div>");
 
             
-            #line 22 "..\..\Views\MyAccount.cshtml"
+            #line 23 "..\..\Views\MyAccount.cshtml"
             Write(Html.ProtectEmailAddresses(Model.Value<IHtmlString>("gravatar")));
 
             
@@ -187,7 +188,7 @@ WriteLiteral(" />\r\n            <div>");
 WriteLiteral("</div>\r\n        </div>\r\n");
 
             
-            #line 24 "..\..\Views\MyAccount.cshtml"
+            #line 25 "..\..\Views\MyAccount.cshtml"
     }
     else
     {
@@ -196,14 +197,14 @@ WriteLiteral("</div>\r\n        </div>\r\n");
             #line default
             #line hidden
             
-            #line 27 "..\..\Views\MyAccount.cshtml"
+            #line 28 "..\..\Views\MyAccount.cshtml"
    Write(Html.Partial("_Login"));
 
             
             #line default
             #line hidden
             
-            #line 27 "..\..\Views\MyAccount.cshtml"
+            #line 28 "..\..\Views\MyAccount.cshtml"
                                
     }
 
