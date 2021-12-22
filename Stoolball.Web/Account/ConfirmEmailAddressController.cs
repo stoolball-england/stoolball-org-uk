@@ -6,6 +6,7 @@ using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
+using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
@@ -45,23 +46,21 @@ namespace Stoolball.Web.Account
             try
             {
                 var token = Request.QueryString["token"];
-                var memberId = _verificationToken.ExtractId(token);
+                var member = FindMemberMatchingThisToken(token);
 
-                var memberService = Services.MemberService;
-                var member = memberService.GetById(memberId);
-
-                if (member != null && member.GetValue("requestedEmailToken")?.ToString() == token && !_verificationToken.HasExpired(member.GetValue<DateTime>("requestedEmailTokenExpires")))
+                if (MemberHasValidEmailToken(member, token))
                 {
-                    // Update the email address and expire the token
-                    member.Username = member.Email = member.GetValue("requestedEmail").ToString();
-                    member.SetValue("requestedEmailTokenExpires", _verificationToken.ResetExpiryTo());
-                    memberService.Save(member);
+                    if (RequestedEmailIsNotUsedByAnotherMember(member))
+                    {
+                        ConfirmNewEmailAddress(member);
 
-                    model.TokenValid = true;
-                    model.MemberName = member.Name;
-                    model.EmailAddress = member.Email;
-
-                    Logger.Info(typeof(ConfirmEmailAddressController), LoggingTemplates.ConfirmEmailAddress, member.Username, member.Key, typeof(ConfirmEmailAddressController), nameof(Index));
+                        AddMemberInfoToViewModel(model, member);
+                        model.TokenValid = true;
+                    }
+                    else
+                    {
+                        model.TokenValid = false;
+                    }
                 }
                 else
                 {
@@ -73,6 +72,38 @@ namespace Stoolball.Web.Account
                 model.TokenValid = false;
             }
             return View("ConfirmEmailAddress", model);
+        }
+
+        private static void AddMemberInfoToViewModel(ConfirmEmailAddress model, IMember member)
+        {
+            model.MemberName = member.Name;
+            model.EmailAddress = member.Email;
+        }
+
+        private void ConfirmNewEmailAddress(IMember member)
+        {
+            // Update the email address and expire the token
+            member.Username = member.Email = member.GetValue("requestedEmail").ToString();
+            member.SetValue("requestedEmailTokenExpires", _verificationToken.ResetExpiryTo());
+            Services.MemberService.Save(member);
+
+            Logger.Info(typeof(ConfirmEmailAddressController), LoggingTemplates.ConfirmEmailAddress, member.Username, member.Key, typeof(ConfirmEmailAddressController), nameof(Index));
+        }
+
+        private bool RequestedEmailIsNotUsedByAnotherMember(IMember member)
+        {
+            return Services.MemberService.GetByEmail(member.GetValue("requestedEmail").ToString()) == null;
+        }
+
+        private bool MemberHasValidEmailToken(IMember member, string token)
+        {
+            return member != null && member.GetValue("requestedEmailToken")?.ToString() == token && !_verificationToken.HasExpired(member.GetValue<DateTime>("requestedEmailTokenExpires"));
+        }
+
+        private IMember FindMemberMatchingThisToken(string token)
+        {
+            var memberId = _verificationToken.ExtractId(token);
+            return Services.MemberService.GetById(memberId);
         }
     }
 }

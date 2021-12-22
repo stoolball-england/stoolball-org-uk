@@ -29,6 +29,7 @@ namespace Stoolball.Web.UnitTests.Account
         private readonly string _token;
         private Mock<IVerificationToken> _tokenReader = new Mock<IVerificationToken>();
         private Mock<IMember> MEMBER = new Mock<IMember>();
+        private Mock<IProfilingLogger> _logger = new Mock<IProfilingLogger>();
         private const string REQUESTED_EMAIL = "new@example.org";
 
         public ConfirmEmailAddressControllerTests()
@@ -52,19 +53,26 @@ namespace Stoolball.Web.UnitTests.Account
             _tokenReader.Setup(x => x.ExtractId(_token)).Returns(MEMBER.Object.Id);
         }
 
+        private ConfirmEmailAddressController CreateController()
+        {
+            var controller = new ConfirmEmailAddressController(Mock.Of<IGlobalSettings>(),
+                                        Mock.Of<IUmbracoContextAccessor>(),
+                                        ServiceContext,
+                                        AppCaches.NoCache,
+                                        _logger.Object,
+                                        UmbracoHelper,
+                                        _tokenReader.Object);
+
+            controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
+
+            return controller;
+        }
+
         [Fact]
         public void Index_sets_name_and_description_from_content()
         {
-            using (var controller = new ConfirmEmailAddressController(Mock.Of<IGlobalSettings>(),
-                            Mock.Of<IUmbracoContextAccessor>(),
-                            ServiceContext,
-                            AppCaches.NoCache,
-                            Mock.Of<IProfilingLogger>(),
-                            UmbracoHelper,
-                            _tokenReader.Object))
+            using (var controller = CreateController())
             {
-
-                controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
                 var result = controller.Index(new ContentModel(_currentPage.Object));
 
                 var meta = ((IHasViewMetadata)((ViewResult)result).Model).Metadata;
@@ -91,15 +99,8 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Member_is_looked_up_based_on_the_id_in_the_token_in_the_querystring()
         {
-            using (var controller = new ConfirmEmailAddressController(Mock.Of<IGlobalSettings>(),
-                            Mock.Of<IUmbracoContextAccessor>(),
-                            ServiceContext,
-                            AppCaches.NoCache,
-                            Mock.Of<IProfilingLogger>(),
-                            UmbracoHelper,
-                            _tokenReader.Object))
+            using (var controller = CreateController())
             {
-                controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
                 var result = controller.Index(new ContentModel(_currentPage.Object));
 
                 _tokenReader.Verify(x => x.ExtractId(_token), Times.Once);
@@ -110,16 +111,9 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Invalid_token_format_returns_invalid_and_does_not_save()
         {
-            using (var controller = new ConfirmEmailAddressController(Mock.Of<IGlobalSettings>(),
-                            Mock.Of<IUmbracoContextAccessor>(),
-                            ServiceContext,
-                            AppCaches.NoCache,
-                            Mock.Of<IProfilingLogger>(),
-                            UmbracoHelper,
-                            _tokenReader.Object))
+            using (var controller = CreateController())
             {
                 _tokenReader.Setup(x => x.ExtractId(_token)).Throws<FormatException>();
-                controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
                 var result = controller.Index(new ContentModel(_currentPage.Object));
 
                 Assert.False(((ConfirmEmailAddress)((ViewResult)result).Model).TokenValid);
@@ -131,16 +125,8 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Mismatched_token_returns_invalid_and_does_not_save()
         {
-            using (var controller = new ConfirmEmailAddressController(Mock.Of<IGlobalSettings>(),
-                            Mock.Of<IUmbracoContextAccessor>(),
-                            ServiceContext,
-                            AppCaches.NoCache,
-                            Mock.Of<IProfilingLogger>(),
-                            UmbracoHelper,
-                            _tokenReader.Object))
+            using (var controller = CreateController())
             {
-                controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
-
                 MEMBER.Setup(x => x.GetValue("requestedEmailToken", null, null, false)).Returns(_token.Reverse());
                 _tokenReader.Setup(x => x.HasExpired(It.IsAny<DateTime>())).Returns(false);
                 var result = controller.Index(new ContentModel(_currentPage.Object));
@@ -153,16 +139,8 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Expired_token_returns_invalid_and_does_not_save()
         {
-            using (var controller = new ConfirmEmailAddressController(Mock.Of<IGlobalSettings>(),
-                            Mock.Of<IUmbracoContextAccessor>(),
-                            ServiceContext,
-                            AppCaches.NoCache,
-                            Mock.Of<IProfilingLogger>(),
-                            UmbracoHelper,
-                            _tokenReader.Object))
+            using (var controller = CreateController())
             {
-                controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
-
                 var expiryDate = DateTime.Now;
                 MEMBER.Setup(x => x.GetValue("requestedEmailToken", null, null, false)).Returns(_token);
                 MEMBER.Setup(x => x.GetValue<DateTime>("requestedEmailTokenExpires", null, null, false)).Returns(expiryDate);
@@ -176,18 +154,27 @@ namespace Stoolball.Web.UnitTests.Account
         }
 
         [Fact]
+        public void Valid_token_does_not_save_if_another_member_exists_with_that_email()
+        {
+            MEMBER.Setup(x => x.GetValue("requestedEmailToken", null, null, false)).Returns(_token);
+            _tokenReader.Setup(x => x.HasExpired(It.IsAny<DateTime>())).Returns(false);
+            base.MemberService.Setup(x => x.GetByEmail(REQUESTED_EMAIL)).Returns(Mock.Of<IMember>());
+
+            using (var controller = CreateController())
+            {
+                var result = controller.Index(new ContentModel(_currentPage.Object));
+
+                base.MemberService.Verify(x => x.GetByEmail(REQUESTED_EMAIL), Times.Once);
+                base.MemberService.Verify(x => x.Save(MEMBER.Object, true), Times.Never);
+                Assert.False(((ConfirmEmailAddress)((ViewResult)result).Model).TokenValid);
+            }
+        }
+
+        [Fact]
         public void Valid_token_updates_member_username_and_email_and_saves()
         {
-            using (var controller = new ConfirmEmailAddressController(Mock.Of<IGlobalSettings>(),
-                            Mock.Of<IUmbracoContextAccessor>(),
-                            ServiceContext,
-                            AppCaches.NoCache,
-                            Mock.Of<IProfilingLogger>(),
-                            UmbracoHelper,
-                            _tokenReader.Object))
+            using (var controller = CreateController())
             {
-                controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
-
                 MEMBER.Setup(x => x.GetValue("requestedEmailToken", null, null, false)).Returns(_token);
                 _tokenReader.Setup(x => x.HasExpired(It.IsAny<DateTime>())).Returns(false);
                 var result = controller.Index(new ContentModel(_currentPage.Object));
@@ -201,16 +188,8 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Valid_token_resets_token_expiry_and_saves()
         {
-            using (var controller = new ConfirmEmailAddressController(Mock.Of<IGlobalSettings>(),
-                            Mock.Of<IUmbracoContextAccessor>(),
-                            ServiceContext,
-                            AppCaches.NoCache,
-                            Mock.Of<IProfilingLogger>(),
-                            UmbracoHelper,
-                            _tokenReader.Object))
+            using (var controller = CreateController())
             {
-                controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
-
                 var resetExpiry = DateTime.Now;
                 MEMBER.Setup(x => x.GetValue("requestedEmailToken", null, null, false)).Returns(_token);
                 _tokenReader.Setup(x => x.HasExpired(It.IsAny<DateTime>())).Returns(false);
@@ -225,38 +204,21 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Valid_token_logs()
         {
-            var logger = new Mock<IProfilingLogger>();
-            using (var controller = new ConfirmEmailAddressController(Mock.Of<IGlobalSettings>(),
-                             Mock.Of<IUmbracoContextAccessor>(),
-                             ServiceContext,
-                             AppCaches.NoCache,
-                             logger.Object,
-                             UmbracoHelper,
-                             _tokenReader.Object))
+            using (var controller = CreateController())
             {
-                controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
-
                 MEMBER.Setup(x => x.GetValue("requestedEmailToken", null, null, false)).Returns(_token);
                 _tokenReader.Setup(x => x.HasExpired(It.IsAny<DateTime>())).Returns(false);
                 var result = controller.Index(new ContentModel(_currentPage.Object));
 
-                logger.Verify(x => x.Info(typeof(ConfirmEmailAddressController), LoggingTemplates.ConfirmEmailAddress, MEMBER.Object.Username, MEMBER.Object.Key, typeof(ConfirmEmailAddressController), nameof(ConfirmEmailAddressController.Index)), Times.Once);
+                _logger.Verify(x => x.Info(typeof(ConfirmEmailAddressController), LoggingTemplates.ConfirmEmailAddress, MEMBER.Object.Username, MEMBER.Object.Key, typeof(ConfirmEmailAddressController), nameof(ConfirmEmailAddressController.Index)), Times.Once);
             }
         }
 
         [Fact]
         public void Valid_token_returns_valid_with_member_name_and_email()
         {
-            using (var controller = new ConfirmEmailAddressController(Mock.Of<IGlobalSettings>(),
-                           Mock.Of<IUmbracoContextAccessor>(),
-                           ServiceContext,
-                           AppCaches.NoCache,
-                           Mock.Of<IProfilingLogger>(),
-                           UmbracoHelper,
-                           _tokenReader.Object))
+            using (var controller = CreateController())
             {
-                controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
-
                 MEMBER.Setup(x => x.GetValue("requestedEmailToken", null, null, false)).Returns(_token);
                 _tokenReader.Setup(x => x.HasExpired(It.IsAny<DateTime>())).Returns(false);
                 var result = controller.Index(new ContentModel(_currentPage.Object));
@@ -271,15 +233,8 @@ namespace Stoolball.Web.UnitTests.Account
         [Fact]
         public void Index_returns_ConfirmEmailAddress_ModelsBuilder_model()
         {
-            using (var controller = new ConfirmEmailAddressController(Mock.Of<IGlobalSettings>(),
-                            Mock.Of<IUmbracoContextAccessor>(),
-                            ServiceContext,
-                            AppCaches.NoCache,
-                            Mock.Of<IProfilingLogger>(),
-                            UmbracoHelper,
-                            _tokenReader.Object))
+            using (var controller = CreateController())
             {
-                controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
                 var result = controller.Index(new ContentModel(_currentPage.Object));
 
                 Assert.IsType<ConfirmEmailAddress>(((ViewResult)result).Model);
