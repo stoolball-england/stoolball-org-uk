@@ -1,16 +1,20 @@
-﻿using Moq;
-using Stoolball.MatchLocations;
-using Stoolball.Web.MatchLocations;
-using Stoolball.Web.UnitTests;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Moq;
+using Stoolball.Listings;
+using Stoolball.MatchLocations;
+using Stoolball.Web.MatchLocations;
+using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
@@ -21,23 +25,19 @@ namespace Stoolball.Web.UnitTests.MatchLocations
     {
         private class TestController : MatchLocationsController
         {
-            public TestController(IMatchLocationDataSource matchLocationDataSource, string queryString = "")
+            public TestController(
+                IMatchLocationDataSource matchLocationDataSource,
+                IListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel> listingsModelBuilder)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, matchLocationDataSource)
+                null,
+                matchLocationDataSource,
+                listingsModelBuilder)
             {
-                var request = new Mock<HttpRequestBase>();
-                request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
-                request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString(queryString));
-
-                var context = new Mock<HttpContextBase>();
-                context.SetupGet(x => x.Request).Returns(request.Object);
-
-                ControllerContext = new ControllerContext(context.Object, new RouteData(), this);
             }
 
             protected override ActionResult CurrentTemplate<T>(T model)
@@ -46,43 +46,109 @@ namespace Stoolball.Web.UnitTests.MatchLocations
             }
         }
 
-        [Fact]
-        public async Task Returns_ClubsViewModel()
+        private readonly NameValueCollection _queryString = new NameValueCollection();
+        private readonly Uri _pageUrl = new Uri("https://example.org/example");
+
+        public MatchLocationsControllerTests()
         {
-            var dataSource = new Mock<IMatchLocationDataSource>();
-
-            using (var controller = new TestController(dataSource.Object))
-            {
-                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
-
-                Assert.IsType<MatchLocationsViewModel>(((ViewResult)result).Model);
-            }
+            base.Setup();
         }
 
-        [Fact]
-        public async Task Reads_query_from_querystring_into_view_model()
+        private TestController CreateController(
+            IMatchLocationDataSource dataSource,
+            IListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel> listingsBuilder)
         {
-            var dataSource = new Mock<IMatchLocationDataSource>();
+            var controller = new TestController(dataSource, listingsBuilder);
 
-            using (var controller = new TestController(dataSource.Object, "q=example"))
-            {
-                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+            base.Request.SetupGet(x => x.Url).Returns(_pageUrl);
+            base.Request.SetupGet(x => x.QueryString).Returns(_queryString);
+            controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
 
-                Assert.Equal("example", ((MatchLocationsViewModel)((ViewResult)result).Model).MatchLocationFilter.Query);
-            }
+            return controller;
         }
 
 
         [Fact]
-        public async Task Reads_query_from_querystring_into_page_title()
+        public void Has_content_security_policy()
         {
-            var dataSource = new Mock<IMatchLocationDataSource>();
+            var method = typeof(MatchLocationsController).GetMethod(nameof(MatchLocationsController.Index));
+            var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
 
-            using (var controller = new TestController(dataSource.Object, "q=example"))
+            Assert.NotNull(attribute);
+            Assert.False(attribute.Forms);
+            Assert.False(attribute.TinyMCE);
+            Assert.False(attribute.YouTube);
+            Assert.False(attribute.GoogleMaps);
+            Assert.False(attribute.GoogleGeocode);
+            Assert.False(attribute.GettyImages);
+        }
+
+        [Fact]
+        public async Task Null_model_throws_ArgumentNullException()
+        {
+            using (var controller = CreateController(Mock.Of<IMatchLocationDataSource>(), Mock.Of<IListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>>()))
+            {
+                await Assert.ThrowsAsync<ArgumentNullException>(async () => await controller.Index(null).ConfigureAwait(false)).ConfigureAwait(false);
+            }
+        }
+
+        [Fact]
+        public async Task Returns_MatchLocationsViewModel_from_builder()
+        {
+            var model = new MatchLocationsViewModel(Mock.Of<IPublishedContent>(), Mock.Of<IUserService>()) { Filter = new MatchLocationFilter() };
+            var dataSource = new Mock<IMatchLocationDataSource>();
+            var listingsBuilder = new Mock<IListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>>();
+            listingsBuilder.Setup(x => x.BuildModel(
+                It.IsAny<Func<MatchLocationsViewModel>>(),
+                dataSource.Object.ReadTotalMatchLocations,
+                dataSource.Object.ReadMatchLocations,
+                Constants.Pages.MatchLocations,
+                _pageUrl,
+                _queryString
+                )).Returns(Task.FromResult(model));
+
+            using (var controller = CreateController(dataSource.Object, listingsBuilder.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Contains("example", ((MatchLocationsViewModel)((ViewResult)result).Model).Metadata.PageTitle, StringComparison.Ordinal);
+                listingsBuilder.Verify(x => x.BuildModel(
+                    It.IsAny<Func<MatchLocationsViewModel>>(),
+                    dataSource.Object.ReadTotalMatchLocations,
+                    dataSource.Object.ReadMatchLocations,
+                    Constants.Pages.MatchLocations,
+                    _pageUrl,
+                    _queryString
+                    ), Times.Once);
+                Assert.Equal(model, ((ViewResult)result).Model);
+            }
+        }
+
+        [Fact]
+        public async Task Index_sets_TeamTypes_filter()
+        {
+            MatchLocationsViewModel model = null;
+            var dataSource = new Mock<IMatchLocationDataSource>();
+            var listingsBuilder = new Mock<IListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>>();
+            listingsBuilder.Setup(x => x.BuildModel(
+                It.IsAny<Func<MatchLocationsViewModel>>(),
+                dataSource.Object.ReadTotalMatchLocations,
+                dataSource.Object.ReadMatchLocations,
+                Constants.Pages.MatchLocations,
+                _pageUrl,
+                _queryString
+                ))
+                .Callback<Func<MatchLocationsViewModel>, Func<MatchLocationFilter, Task<int>>, Func<MatchLocationFilter, Task<List<MatchLocation>>>, string, Uri, NameValueCollection>(
+                    (buildInitialState, totalListings, listings, pageTitle, pageUrl, queryParameters) =>
+                    {
+                        model = buildInitialState();
+                    }
+                );
+
+            using (var controller = CreateController(dataSource.Object, listingsBuilder.Object))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                Assert.True(model.Filter.TeamTypes.Any());
             }
         }
     }

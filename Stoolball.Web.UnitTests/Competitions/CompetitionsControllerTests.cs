@@ -1,16 +1,19 @@
 ﻿using System;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Moq;
 using Stoolball.Competitions;
+using Stoolball.Listings;
 using Stoolball.Web.Competitions;
-using Stoolball.Web.UnitTests;
+using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
@@ -21,23 +24,19 @@ namespace Stoolball.Web.UnitTests.Competitions
     {
         private class TestController : CompetitionsController
         {
-            public TestController(ICompetitionDataSource competitionDataSource, string queryString = "")
+            public TestController(
+                ICompetitionDataSource competitionDataSource,
+                IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel> listingsModelBuilder)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, competitionDataSource)
+                null,
+                competitionDataSource,
+                listingsModelBuilder)
             {
-                var request = new Mock<HttpRequestBase>();
-                request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
-                request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString(queryString));
-
-                var context = new Mock<HttpContextBase>();
-                context.SetupGet(x => x.Request).Returns(request.Object);
-
-                ControllerContext = new ControllerContext(context.Object, new RouteData(), this);
             }
 
             protected override ActionResult CurrentTemplate<T>(T model)
@@ -46,44 +45,82 @@ namespace Stoolball.Web.UnitTests.Competitions
             }
         }
 
-        [Fact]
-        public async Task Returns_CompetitionsViewModel()
+        private readonly NameValueCollection _queryString = new NameValueCollection();
+        private readonly Uri _pageUrl = new Uri("https://example.org/example");
+
+        public CompetitionsControllerTests()
         {
-            var dataSource = new Mock<ICompetitionDataSource>();
-
-            using (var controller = new TestController(dataSource.Object))
-            {
-                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
-
-                Assert.IsType<CompetitionsViewModel>(((ViewResult)result).Model);
-            }
+            base.Setup();
         }
 
-        [Fact]
-        public async Task Reads_query_from_querystring_into_view_model()
+        private TestController CreateController(
+            ICompetitionDataSource dataSource,
+            IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel> listingsBuilder)
         {
-            var dataSource = new Mock<ICompetitionDataSource>();
+            var controller = new TestController(dataSource, listingsBuilder);
 
-            using (var controller = new TestController(dataSource.Object, "q=example"))
-            {
-                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+            base.Request.SetupGet(x => x.Url).Returns(_pageUrl);
+            base.Request.SetupGet(x => x.QueryString).Returns(_queryString);
+            controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
 
-                Assert.Equal("example", ((CompetitionsViewModel)((ViewResult)result).Model).CompetitionFilter.Query);
-            }
+            return controller;
         }
 
 
         [Fact]
-        public async Task Reads_query_from_querystring_into_page_title()
+        public void Has_content_security_policy()
         {
-            var dataSource = new Mock<ICompetitionDataSource>();
+            var method = typeof(CompetitionsController).GetMethod(nameof(CompetitionsController.Index));
+            var attribute = method.GetCustomAttributes(typeof(ContentSecurityPolicyAttribute), false).SingleOrDefault() as ContentSecurityPolicyAttribute;
 
-            using (var controller = new TestController(dataSource.Object, "q=example"))
+            Assert.NotNull(attribute);
+            Assert.False(attribute.Forms);
+            Assert.False(attribute.TinyMCE);
+            Assert.False(attribute.YouTube);
+            Assert.False(attribute.GoogleMaps);
+            Assert.False(attribute.GoogleGeocode);
+            Assert.False(attribute.GettyImages);
+        }
+
+        [Fact]
+        public async Task Null_model_throws_ArgumentNullException()
+        {
+            using (var controller = CreateController(Mock.Of<ICompetitionDataSource>(), Mock.Of<IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>>()))
+            {
+                await Assert.ThrowsAsync<ArgumentNullException>(async () => await controller.Index(null).ConfigureAwait(false)).ConfigureAwait(false);
+            }
+        }
+
+        [Fact]
+        public async Task Returns_CompetitionsViewModel_from_builder()
+        {
+            var model = new CompetitionsViewModel(Mock.Of<IPublishedContent>(), Mock.Of<IUserService>()) { Filter = new CompetitionFilter() };
+            var dataSource = new Mock<ICompetitionDataSource>();
+            var listingsBuilder = new Mock<IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>>();
+            listingsBuilder.Setup(x => x.BuildModel(
+                It.IsAny<Func<CompetitionsViewModel>>(),
+                dataSource.Object.ReadTotalCompetitions,
+                dataSource.Object.ReadCompetitions,
+                Constants.Pages.Competitions,
+                _pageUrl,
+                _queryString
+                )).Returns(Task.FromResult(model));
+
+            using (var controller = CreateController(dataSource.Object, listingsBuilder.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Contains("example", ((CompetitionsViewModel)((ViewResult)result).Model).Metadata.PageTitle, StringComparison.Ordinal);
+                listingsBuilder.Verify(x => x.BuildModel(
+                    It.IsAny<Func<CompetitionsViewModel>>(),
+                    dataSource.Object.ReadTotalCompetitions,
+                    dataSource.Object.ReadCompetitions,
+                    Constants.Pages.Competitions,
+                    _pageUrl,
+                    _queryString
+                    ), Times.Once);
+                Assert.Equal(model, ((ViewResult)result).Model);
             }
         }
+
     }
 }

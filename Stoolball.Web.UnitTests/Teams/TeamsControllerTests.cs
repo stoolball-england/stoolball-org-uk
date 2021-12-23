@@ -1,16 +1,19 @@
-﻿using Moq;
-using Stoolball.Teams;
-using Stoolball.Web.Teams;
-using Stoolball.Web.UnitTests;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Moq;
+using Stoolball.Listings;
+using Stoolball.Teams;
+using Stoolball.Web.Teams;
 using Umbraco.Core.Cache;
 using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.Models;
 using Xunit;
@@ -21,24 +24,19 @@ namespace Stoolball.Web.UnitTests.Teams
     {
         private class TestController : TeamsController
         {
-            public TestController(ITeamListingDataSource teamDataSource, string queryString = "")
+            public TestController(
+                ITeamListingDataSource teamDataSource,
+                IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel> listingsModelBuilder)
            : base(
                 Mock.Of<IGlobalSettings>(),
                 Mock.Of<IUmbracoContextAccessor>(),
                 null,
                 AppCaches.NoCache,
                 Mock.Of<IProfilingLogger>(),
-                null, teamDataSource)
-            {
-                var request = new Mock<HttpRequestBase>();
-                request.SetupGet(x => x.Url).Returns(new Uri("https://example.org"));
-                request.SetupGet(x => x.QueryString).Returns(HttpUtility.ParseQueryString(queryString));
-
-                var context = new Mock<HttpContextBase>();
-                context.SetupGet(x => x.Request).Returns(request.Object);
-
-                ControllerContext = new ControllerContext(context.Object, new RouteData(), this);
-            }
+                null,
+                teamDataSource,
+                listingsModelBuilder)
+            { }
 
             protected override ActionResult CurrentTemplate<T>(T model)
             {
@@ -46,43 +44,79 @@ namespace Stoolball.Web.UnitTests.Teams
             }
         }
 
-        [Fact]
-        public async Task Returns_TeamsViewModel()
+        private readonly NameValueCollection _queryString = new NameValueCollection();
+        private readonly Uri _pageUrl = new Uri("https://example.org/example");
+
+        public TeamsControllerTests()
         {
-            var dataSource = new Mock<ITeamListingDataSource>();
-
-            using (var controller = new TestController(dataSource.Object))
-            {
-                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
-
-                Assert.IsType<TeamsViewModel>(((ViewResult)result).Model);
-            }
+            base.Setup();
         }
 
-        [Fact]
-        public async Task Reads_query_from_querystring_into_view_model()
+        private TestController CreateController(
+            ITeamListingDataSource dataSource,
+            IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel> listingsBuilder)
         {
-            var dataSource = new Mock<ITeamListingDataSource>();
+            var controller = new TestController(dataSource, listingsBuilder);
 
-            using (var controller = new TestController(dataSource.Object, "q=example"))
-            {
-                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+            base.Request.SetupGet(x => x.Url).Returns(_pageUrl);
+            base.Request.SetupGet(x => x.QueryString).Returns(_queryString);
+            controller.ControllerContext = new ControllerContext(base.HttpContext.Object, new RouteData(), controller);
 
-                Assert.Equal("example", ((TeamsViewModel)((ViewResult)result).Model).TeamFilter.Query);
-            }
+            return controller;
         }
 
 
         [Fact]
-        public async Task Reads_query_from_querystring_into_page_title()
+        public async Task Returns_TeamsViewModel_from_builder()
         {
+            var model = new TeamsViewModel(Mock.Of<IPublishedContent>(), Mock.Of<IUserService>()) { Filter = new TeamListingFilter() };
             var dataSource = new Mock<ITeamListingDataSource>();
+            var listingsBuilder = new Mock<IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>>();
+            listingsBuilder.Setup(x => x.BuildModel(
+                It.IsAny<Func<TeamsViewModel>>(),
+                dataSource.Object.ReadTotalTeams,
+                dataSource.Object.ReadTeamListings,
+                Constants.Pages.Teams,
+                _pageUrl,
+                _queryString
+                )).Returns(Task.FromResult(model));
 
-            using (var controller = new TestController(dataSource.Object, "q=example"))
+            using (var controller = CreateController(dataSource.Object, listingsBuilder.Object))
             {
                 var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
 
-                Assert.Contains("example", ((TeamsViewModel)((ViewResult)result).Model).Metadata.PageTitle, StringComparison.Ordinal);
+                Assert.Equal(model, ((ViewResult)result).Model);
+            }
+        }
+
+
+        [Fact]
+        public async Task Index_sets_TeamTypes_filter_including_but_not_only_null()
+        {
+            TeamsViewModel model = null;
+            var dataSource = new Mock<ITeamListingDataSource>();
+            var listingsBuilder = new Mock<IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>>();
+            listingsBuilder.Setup(x => x.BuildModel(
+                It.IsAny<Func<TeamsViewModel>>(),
+                dataSource.Object.ReadTotalTeams,
+                dataSource.Object.ReadTeamListings,
+                Constants.Pages.Teams,
+                _pageUrl,
+                _queryString
+                ))
+                .Callback<Func<TeamsViewModel>, Func<TeamListingFilter, Task<int>>, Func<TeamListingFilter, Task<List<TeamListing>>>, string, Uri, NameValueCollection>(
+                    (buildInitialState, totalListings, listings, pageTitle, pageUrl, queryParameters) =>
+                    {
+                        model = buildInitialState();
+                    }
+                );
+
+            using (var controller = CreateController(dataSource.Object, listingsBuilder.Object))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                Assert.Equal(1, model.Filter.TeamTypes.Count(x => x == null));
+                Assert.True(model.Filter.TeamTypes.Count > 1);
             }
         }
     }

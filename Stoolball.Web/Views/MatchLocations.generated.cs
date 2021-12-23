@@ -90,7 +90,7 @@ WriteLiteral("\r\n");
             #line hidden
             
             #line 8 "..\..\Views\MatchLocations.cshtml"
-         if (!string.IsNullOrEmpty(Model.MatchLocationFilter.Query))
+         if (!string.IsNullOrEmpty(Model.Filter.Query))
         {
 
             
@@ -102,7 +102,7 @@ WriteLiteral(" matching \'");
 
             
             #line 10 "..\..\Views\MatchLocations.cshtml"
-                    Write(Model.MatchLocationFilter.Query);
+                    Write(Model.Filter.Query);
 
             
             #line default
@@ -142,14 +142,14 @@ WriteLiteral(">Add ground or sports centre</a>\r\n        </li>\r\n    </ul>\r\n
 
 WriteLiteral(" method=\"get\"");
 
-WriteAttribute("action", Tuple.Create(" action=\"", 808), Tuple.Create("\"", 842)
+WriteAttribute("action", Tuple.Create(" action=\"", 782), Tuple.Create("\"", 816)
             
             #line 23 "..\..\Views\MatchLocations.cshtml"
-, Tuple.Create(Tuple.Create("", 817), Tuple.Create<System.Object, System.Int32>(Request.Url.AbsolutePath
+, Tuple.Create(Tuple.Create("", 791), Tuple.Create<System.Object, System.Int32>(Request.Url.AbsolutePath
             
             #line default
             #line hidden
-, 817), false)
+, 791), false)
 );
 
 WriteLiteral(" class=\"form-inline form-search\"");
@@ -170,14 +170,14 @@ WriteLiteral(" id=\"location-search\"");
 
 WriteLiteral(" name=\"q\"");
 
-WriteAttribute("value", Tuple.Create(" value=\"", 1039), Tuple.Create("\"", 1079)
+WriteAttribute("value", Tuple.Create(" value=\"", 1013), Tuple.Create("\"", 1040)
             
             #line 25 "..\..\Views\MatchLocations.cshtml"
-       , Tuple.Create(Tuple.Create("", 1047), Tuple.Create<System.Object, System.Int32>(Model.MatchLocationFilter.Query
+       , Tuple.Create(Tuple.Create("", 1021), Tuple.Create<System.Object, System.Int32>(Model.Filter.Query
             
             #line default
             #line hidden
-, 1047), false)
+, 1021), false)
 );
 
 WriteLiteral(" />\r\n        <button");
@@ -196,7 +196,7 @@ WriteLiteral(">Search</button>\r\n    </form>\r\n\r\n    <dl>\r\n");
             #line hidden
             
             #line 30 "..\..\Views\MatchLocations.cshtml"
-         foreach (var location in Model.MatchLocations)
+         foreach (var location in Model.Listings)
         {
 
             
@@ -208,14 +208,14 @@ WriteLiteral(" class=\"list-results__title\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1295), Tuple.Create("\"", 1330)
+WriteAttribute("href", Tuple.Create(" href=\"", 1250), Tuple.Create("\"", 1285)
             
             #line 32 "..\..\Views\MatchLocations.cshtml"
-, Tuple.Create(Tuple.Create("", 1302), Tuple.Create<System.Object, System.Int32>(location.MatchLocationRoute
+, Tuple.Create(Tuple.Create("", 1257), Tuple.Create<System.Object, System.Int32>(location.MatchLocationRoute
             
             #line default
             #line hidden
-, 1302), false)
+, 1257), false)
 );
 
 WriteLiteral(">");
@@ -302,7 +302,7 @@ WriteLiteral("    ");
 
             
             #line 47 "..\..\Views\MatchLocations.cshtml"
-Write(Html.Partial("_Paging", Model.MatchLocationFilter.Paging));
+Write(Html.Partial("_Paging", Model.Filter.Paging));
 
             
             #line default

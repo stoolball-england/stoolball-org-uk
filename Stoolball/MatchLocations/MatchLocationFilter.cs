@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using Stoolball.Listings;
 using Stoolball.Navigation;
 using Stoolball.Teams;
 
 namespace Stoolball.MatchLocations
 {
-    public class MatchLocationFilter
+    public class MatchLocationFilter : IListingsFilter
     {
-        public string Query { get; internal set; }
+        public string Query { get; set; }
         public List<Guid> SeasonIds { get; internal set; } = new List<Guid>();
         public List<Guid> ExcludeMatchLocationIds { get; internal set; } = new List<Guid>();
         public bool? HasActiveTeams { get; set; }

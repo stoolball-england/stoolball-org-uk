@@ -97,7 +97,7 @@ WriteLiteral("\r\n");
             #line hidden
             
             #line 9 "..\..\Views\Teams.cshtml"
-         if (!string.IsNullOrEmpty(Model.TeamFilter.Query))
+         if (!string.IsNullOrEmpty(Model.Filter.Query))
 {
 
             
@@ -109,7 +109,7 @@ WriteLiteral(" matching \'");
 
             
             #line 11 "..\..\Views\Teams.cshtml"
-                    Write(Model.TeamFilter.Query);
+                    Write(Model.Filter.Query);
 
             
             #line default
@@ -143,15 +143,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 657), Tuple.Create("\"", 703)
+WriteAttribute("href", Tuple.Create(" href=\"", 649), Tuple.Create("\"", 695)
             
             #line 20 "..\..\Views\Teams.cshtml"
-, Tuple.Create(Tuple.Create("", 664), Tuple.Create<System.Object, System.Int32>(Stoolball.Constants.Pages.TeamsUrl
+, Tuple.Create(Tuple.Create("", 656), Tuple.Create<System.Object, System.Int32>(Stoolball.Constants.Pages.TeamsUrl
             
             #line default
             #line hidden
-, 664), false)
-, Tuple.Create(Tuple.Create("", 699), Tuple.Create("/map", 699), true)
+, 656), false)
+, Tuple.Create(Tuple.Create("", 691), Tuple.Create("/map", 691), true)
 );
 
 WriteLiteral(">Map</a>\r\n        </li>\r\n        <li");
@@ -230,7 +230,7 @@ WriteLiteral(">Add team</a>\r\n        </li>\r\n    </ul>\r\n\r\n");
             #line hidden
             
             #line 41 "..\..\Views\Teams.cshtml"
-     if (string.IsNullOrEmpty(Model.TeamFilter.Query))
+     if (string.IsNullOrEmpty(Model.Filter.Query))
     {
 
             
@@ -265,14 +265,14 @@ WriteLiteral("    <form");
 
 WriteLiteral(" method=\"get\"");
 
-WriteAttribute("action", Tuple.Create(" action=\"", 2040), Tuple.Create("\"", 2074)
+WriteAttribute("action", Tuple.Create(" action=\"", 2028), Tuple.Create("\"", 2062)
             
             #line 45 "..\..\Views\Teams.cshtml"
-, Tuple.Create(Tuple.Create("", 2049), Tuple.Create<System.Object, System.Int32>(Request.Url.AbsolutePath
+, Tuple.Create(Tuple.Create("", 2037), Tuple.Create<System.Object, System.Int32>(Request.Url.AbsolutePath
             
             #line default
             #line hidden
-, 2049), false)
+, 2037), false)
 );
 
 WriteLiteral(" class=\"form-inline form-search\"");
@@ -293,14 +293,14 @@ WriteLiteral(" id=\"team-search\"");
 
 WriteLiteral(" name=\"q\"");
 
-WriteAttribute("value", Tuple.Create(" value=\"", 2253), Tuple.Create("\"", 2284)
+WriteAttribute("value", Tuple.Create(" value=\"", 2241), Tuple.Create("\"", 2268)
             
             #line 47 "..\..\Views\Teams.cshtml"
-   , Tuple.Create(Tuple.Create("", 2261), Tuple.Create<System.Object, System.Int32>(Model.TeamFilter.Query
+   , Tuple.Create(Tuple.Create("", 2249), Tuple.Create<System.Object, System.Int32>(Model.Filter.Query
             
             #line default
             #line hidden
-, 2261), false)
+, 2249), false)
 );
 
 WriteLiteral(" />\r\n        <button");
@@ -319,7 +319,7 @@ WriteLiteral(">Search</button>\r\n    </form>\r\n\r\n    <dl>\r\n");
             #line hidden
             
             #line 52 "..\..\Views\Teams.cshtml"
-         foreach (var listing in Model.Teams)
+         foreach (var listing in Model.Listings)
         {
             var linkText = listing.ClubOrTeamName;
             var location = listing.MatchLocations.FirstOrDefault()?.LocalityOrTown();
@@ -374,14 +374,14 @@ WriteLiteral(" class=\"list-results__title\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4503), Tuple.Create("\"", 4534)
+WriteAttribute("href", Tuple.Create(" href=\"", 4490), Tuple.Create("\"", 4521)
             
             #line 97 "..\..\Views\Teams.cshtml"
-, Tuple.Create(Tuple.Create("", 4510), Tuple.Create<System.Object, System.Int32>(listing.ClubOrTeamRoute
+, Tuple.Create(Tuple.Create("", 4497), Tuple.Create<System.Object, System.Int32>(listing.ClubOrTeamRoute
             
             #line default
             #line hidden
-, 4510), false)
+, 4497), false)
 );
 
 WriteLiteral(">");
@@ -423,7 +423,7 @@ WriteLiteral("    ");
 
             
             #line 101 "..\..\Views\Teams.cshtml"
-Write(Html.Partial("_Paging", Model.TeamFilter.Paging));
+Write(Html.Partial("_Paging", Model.Filter.Paging));
 
             
             #line default

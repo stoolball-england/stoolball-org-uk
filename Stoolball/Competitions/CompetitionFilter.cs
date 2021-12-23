@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using Stoolball.Listings;
 using Stoolball.Matches;
 using Stoolball.Navigation;
 using Stoolball.Teams;
 
 namespace Stoolball.Competitions
 {
-    public class CompetitionFilter
+    public class CompetitionFilter : IListingsFilter
     {
         public string Query { get; set; }
         public List<MatchType> MatchTypes { get; internal set; } = new List<MatchType>();

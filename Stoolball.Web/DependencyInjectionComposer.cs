@@ -14,6 +14,7 @@ using Stoolball.Data.SqlServer;
 using Stoolball.Dates;
 using Stoolball.Email;
 using Stoolball.Html;
+using Stoolball.Listings;
 using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
@@ -111,6 +112,11 @@ namespace Stoolball.Web
             composition.Register<ICreateMemberExecuter, CreateMemberExecuter>();
             composition.Register<ILoginMemberWrapper, LoginMemberWrapper>();
             composition.Register<ILogoutMemberWrapper, LogoutMemberWrapper>();
+
+            // Listings pages
+            composition.Register<IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>, ListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>>();
+            composition.Register<IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>, ListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>>();
+            composition.Register<IListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>, ListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>>();
 
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 
             // be injected anywhere except the one place where it's serving a page of content.

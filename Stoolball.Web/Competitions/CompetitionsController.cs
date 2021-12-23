@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Competitions;
+using Stoolball.Listings;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -15,6 +16,7 @@ namespace Stoolball.Web.Competitions
     public class CompetitionsController : RenderMvcControllerAsync
     {
         private readonly ICompetitionDataSource _competitionDataSource;
+        private readonly IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel> _listingsModelBuilder;
 
         public CompetitionsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -22,10 +24,12 @@ namespace Stoolball.Web.Competitions
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           ICompetitionDataSource competitionDataSource)
+           ICompetitionDataSource competitionDataSource,
+           IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel> listingsModelBuilder)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _competitionDataSource = competitionDataSource ?? throw new System.ArgumentNullException(nameof(competitionDataSource));
+            _listingsModelBuilder = listingsModelBuilder ?? throw new System.ArgumentNullException(nameof(listingsModelBuilder));
         }
 
         [HttpGet]
@@ -37,26 +41,13 @@ namespace Stoolball.Web.Competitions
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
-            var model = new CompetitionsViewModel(contentModel.Content, Services?.UserService)
-            {
-                CompetitionFilter = new CompetitionFilter
-                {
-                    Query = Request.QueryString["q"]?.Trim()
-                }
-            };
-
-            model.CompetitionFilter.Paging.PageNumber = pageNumber > 0 ? pageNumber : 1;
-            model.CompetitionFilter.Paging.PageSize = Constants.Defaults.PageSize;
-            model.CompetitionFilter.Paging.PageUrl = Request.Url;
-            model.CompetitionFilter.Paging.Total = await _competitionDataSource.ReadTotalCompetitions(model.CompetitionFilter).ConfigureAwait(false);
-            model.Competitions = await _competitionDataSource.ReadCompetitions(model.CompetitionFilter).ConfigureAwait(false);
-
-            model.Metadata.PageTitle = Constants.Pages.Competitions;
-            if (!string.IsNullOrEmpty(model.CompetitionFilter.Query))
-            {
-                model.Metadata.PageTitle += $" matching '{model.CompetitionFilter.Query}'";
-            }
+            var model = await _listingsModelBuilder.BuildModel(
+                () => new CompetitionsViewModel(contentModel.Content, Services?.UserService),
+                _competitionDataSource.ReadTotalCompetitions,
+                _competitionDataSource.ReadCompetitions,
+                Constants.Pages.Competitions,
+                Request.Url,
+                Request.QueryString).ConfigureAwait(false);
 
             return CurrentTemplate(model);
         }

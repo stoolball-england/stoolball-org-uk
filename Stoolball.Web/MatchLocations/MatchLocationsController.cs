@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Listings;
 using Stoolball.MatchLocations;
 using Stoolball.Teams;
 using Stoolball.Web.Routing;
@@ -17,6 +18,7 @@ namespace Stoolball.Web.MatchLocations
     public class MatchLocationsController : RenderMvcControllerAsync
     {
         private readonly IMatchLocationDataSource _matchLocationDataSource;
+        private readonly IListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel> _listingsModelBuilder;
 
         public MatchLocationsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -24,10 +26,12 @@ namespace Stoolball.Web.MatchLocations
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           IMatchLocationDataSource matchLocationDataSource)
+           IMatchLocationDataSource matchLocationDataSource,
+           IListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel> listingsModelBuilder)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _matchLocationDataSource = matchLocationDataSource ?? throw new System.ArgumentNullException(nameof(matchLocationDataSource));
+            _listingsModelBuilder = listingsModelBuilder ?? throw new System.ArgumentNullException(nameof(listingsModelBuilder));
         }
 
         [HttpGet]
@@ -39,27 +43,19 @@ namespace Stoolball.Web.MatchLocations
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
-            var model = new MatchLocationsViewModel(contentModel.Content, Services?.UserService)
+            var model = await _listingsModelBuilder.BuildModel(() => new MatchLocationsViewModel(contentModel.Content, Services?.UserService)
             {
-                MatchLocationFilter = new MatchLocationFilter
+                Filter = new MatchLocationFilter
                 {
-                    Query = Request.QueryString["q"]?.Trim(),
                     TeamTypes = new List<TeamType> { TeamType.LimitedMembership, TeamType.Occasional, TeamType.Regular, TeamType.Representative, TeamType.SchoolAgeGroup, TeamType.SchoolAgeGroup, TeamType.SchoolClub, TeamType.SchoolOther }
                 }
-            };
-
-            model.MatchLocationFilter.Paging.PageNumber = pageNumber > 0 ? pageNumber : 1;
-            model.MatchLocationFilter.Paging.PageSize = Constants.Defaults.PageSize;
-            model.MatchLocationFilter.Paging.PageUrl = Request.Url;
-            model.MatchLocationFilter.Paging.Total = await _matchLocationDataSource.ReadTotalMatchLocations(model.MatchLocationFilter).ConfigureAwait(false);
-            model.MatchLocations = await _matchLocationDataSource.ReadMatchLocations(model.MatchLocationFilter).ConfigureAwait(false);
-
-            model.Metadata.PageTitle = Constants.Pages.MatchLocations;
-            if (!string.IsNullOrEmpty(model.MatchLocationFilter.Query))
-            {
-                model.Metadata.PageTitle += $" matching '{model.MatchLocationFilter.Query}'";
-            }
+            },
+            _matchLocationDataSource.ReadTotalMatchLocations,
+            _matchLocationDataSource.ReadMatchLocations,
+            Constants.Pages.MatchLocations,
+            Request.Url,
+            Request.QueryString
+            ).ConfigureAwait(false);
 
             return CurrentTemplate(model);
         }

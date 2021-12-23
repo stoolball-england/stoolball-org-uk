@@ -6,9 +6,9 @@
     <div class="container-xl">
     <h1>
         @Stoolball.Constants.Pages.Teams
-        @if (!string.IsNullOrEmpty(Model.TeamFilter.Query))
+        @if (!string.IsNullOrEmpty(Model.Filter.Query))
 {
-            @: matching '@Model.TeamFilter.Query'
+            @: matching '@Model.Filter.Query'
         }
     </h1>
 
@@ -38,18 +38,18 @@
         </li>
     </ul>
 
-    @if (string.IsNullOrEmpty(Model.TeamFilter.Query))
+    @if (string.IsNullOrEmpty(Model.Filter.Query))
     {
         <p class="alert alert-info alert-tip">Try searching for <a href="/teams?q=ladies">ladies teams</a>, <a href="/teams?q=mixed">mixed teams</a> or <a href="/teams?q=junior">junior teams</a>.</p>
     }
     <form method="get" action="@Request.Url.AbsolutePath" class="form-inline form-search">
         <label class="sr-only" for="team-search">Team name</label>
-        <input type="search" class="form-control" id="team-search" name="q" value="@Model.TeamFilter.Query" />
+        <input type="search" class="form-control" id="team-search" name="q" value="@Model.Filter.Query" />
         <button type="submit" class="btn btn-primary">Search</button>
     </form>
 
     <dl>
-        @foreach (var listing in Model.Teams)
+        @foreach (var listing in Model.Listings)
         {
             var linkText = listing.ClubOrTeamName;
             var location = listing.MatchLocations.FirstOrDefault()?.LocalityOrTown();
@@ -98,5 +98,5 @@
             <dd class="list-results__detail">@detail</dd>
         }
     </dl>
-    @Html.Partial("_Paging", Model.TeamFilter.Paging)
+    @Html.Partial("_Paging", Model.Filter.Paging)
 </div>

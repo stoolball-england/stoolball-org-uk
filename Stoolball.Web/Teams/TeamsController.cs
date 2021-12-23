@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Stoolball.Listings;
 using Stoolball.Teams;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -16,6 +17,7 @@ namespace Stoolball.Web.Teams
     public class TeamsController : RenderMvcControllerAsync
     {
         private readonly ITeamListingDataSource _teamDataSource;
+        private readonly IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel> _listingsModelBuilder;
 
         public TeamsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
@@ -23,10 +25,12 @@ namespace Stoolball.Web.Teams
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
            UmbracoHelper umbracoHelper,
-           ITeamListingDataSource teamDataSource)
+           ITeamListingDataSource teamDataSource,
+           IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel> listingsModelBuilder)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
             _teamDataSource = teamDataSource ?? throw new System.ArgumentNullException(nameof(teamDataSource));
+            _listingsModelBuilder = listingsModelBuilder ?? throw new System.ArgumentNullException(nameof(listingsModelBuilder));
         }
 
         [HttpGet]
@@ -38,27 +42,18 @@ namespace Stoolball.Web.Teams
                 throw new System.ArgumentNullException(nameof(contentModel));
             }
 
-            _ = int.TryParse(Request.QueryString["page"], out var pageNumber);
-            var model = new TeamsViewModel(contentModel.Content, Services?.UserService)
+            var model = await _listingsModelBuilder.BuildModel(() => new TeamsViewModel(contentModel.Content, Services?.UserService)
             {
-                TeamFilter = new TeamListingFilter
+                Filter = new TeamListingFilter
                 {
-                    Query = Request.QueryString["q"]?.Trim(),
                     TeamTypes = new List<TeamType?> { TeamType.LimitedMembership, TeamType.Occasional, TeamType.Regular, TeamType.Representative, TeamType.SchoolClub, null }
                 }
-            };
-
-            model.TeamFilter.Paging.PageUrl = Request.Url;
-            model.TeamFilter.Paging.PageSize = Constants.Defaults.PageSize;
-            model.TeamFilter.Paging.PageNumber = pageNumber > 0 ? pageNumber : 1;
-            model.TeamFilter.Paging.Total = await _teamDataSource.ReadTotalTeams(model.TeamFilter).ConfigureAwait(false);
-            model.Teams = await _teamDataSource.ReadTeamListings(model.TeamFilter).ConfigureAwait(false);
-
-            model.Metadata.PageTitle = Constants.Pages.Teams;
-            if (!string.IsNullOrEmpty(model.TeamFilter.Query))
-            {
-                model.Metadata.PageTitle += $" matching '{model.TeamFilter.Query}'";
-            }
+            },
+            _teamDataSource.ReadTotalTeams,
+            _teamDataSource.ReadTeamListings,
+            Constants.Pages.Teams,
+            Request.Url,
+            Request.QueryString).ConfigureAwait(false);
 
             return CurrentTemplate(model);
         }

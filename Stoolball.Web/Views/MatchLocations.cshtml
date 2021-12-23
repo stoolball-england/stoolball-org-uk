@@ -5,9 +5,9 @@
 <div class="container-xl">
     <h1>
         @Stoolball.Constants.Pages.MatchLocations
-        @if (!string.IsNullOrEmpty(Model.MatchLocationFilter.Query))
+        @if (!string.IsNullOrEmpty(Model.Filter.Query))
         {
-            @: matching '@Model.MatchLocationFilter.Query'
+            @: matching '@Model.Filter.Query'
         }
     </h1>
 
@@ -22,12 +22,12 @@
 
     <form method="get" action="@Request.Url.AbsolutePath" class="form-inline form-search">
         <label class="sr-only" for="location-search">Match location name</label>
-        <input type="search" class="form-control" id="location-search" name="q" value="@Model.MatchLocationFilter.Query" />
+        <input type="search" class="form-control" id="location-search" name="q" value="@Model.Filter.Query" />
         <button type="submit" class="btn btn-primary">Search</button>
     </form>
 
     <dl>
-        @foreach (var location in Model.MatchLocations)
+        @foreach (var location in Model.Listings)
         {
             <dt class="list-results__title"><a href="@location.MatchLocationRoute">@location.NameAndLocalityOrTownIfDifferent()</a></dt>
             <dd class="list-results__detail">
@@ -44,5 +44,5 @@
             </dd>
         }
     </dl>
-    @Html.Partial("_Paging", Model.MatchLocationFilter.Paging)
+    @Html.Partial("_Paging", Model.Filter.Paging)
 </div>
