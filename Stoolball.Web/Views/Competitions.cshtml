@@ -30,25 +30,28 @@
         <button type="submit" class="btn btn-primary">Search</button>
     </form>
 
-    <dl>
-        @foreach (var competition in Model.Listings)
-        {
-            if (!competition.UntilYear.HasValue && competition.Seasons.Count > 0)
+    @if (Model.Listings.Any())
+    {
+        <dl>
+            @foreach (var competition in Model.Listings)
             {
-                <dt class="list-results__title"><a href="@competition.Seasons.First().SeasonRoute">@competition.CompetitionName</a></dt>
-                <dd class="list-results__detail">@(Regex.Replace((competition.PlayerType.Humanize(LetterCasing.LowerCase) + " team").ToQuantity(competition.Seasons.First().Teams.Count), "^0 ", "No ")).</dd>
+                if (!competition.UntilYear.HasValue && competition.Seasons.Count > 0)
+                {
+                    <dt class="list-results__title"><a href="@competition.Seasons.First().SeasonRoute">@competition.CompetitionName</a></dt>
+                    <dd class="list-results__detail">@(Regex.Replace((competition.PlayerType.Humanize(LetterCasing.LowerCase) + " team").ToQuantity(competition.Seasons.First().Teams.Count), "^0 ", "No ")).</dd>
+                }
+                else if (!competition.UntilYear.HasValue)
+                {
+                    <dt class="list-results__title"><a href="@(competition.CompetitionRoute)">@competition.CompetitionName</a></dt>
+                    <dd class="list-results__detail">@competition.PlayerType.Humanize(LetterCasing.Sentence).</dd>
+                }
+                else
+                {
+                    <dt class="list-results__title"><a href="@(competition.Seasons.Count > 0 ? competition.Seasons.First().SeasonRoute : competition.CompetitionRoute)">@competition.CompetitionName</a></dt>
+                    <dd class="list-results__detail">@competition.PlayerType.Humanize(LetterCasing.Sentence). No longer played.</dd>
+                }
             }
-            else if (!competition.UntilYear.HasValue)
-            {
-                <dt class="list-results__title"><a href="@(competition.CompetitionRoute)">@competition.CompetitionName</a></dt>
-                <dd class="list-results__detail">@competition.PlayerType.Humanize(LetterCasing.Sentence).</dd>
-            }
-            else
-            {
-                <dt class="list-results__title"><a href="@(competition.Seasons.Count > 0 ? competition.Seasons.First().SeasonRoute : competition.CompetitionRoute)">@competition.CompetitionName</a></dt>
-                <dd class="list-results__detail">@competition.PlayerType.Humanize(LetterCasing.Sentence). No longer played.</dd>
-            }
-        }
-    </dl>
+        </dl>
+    }
     @Html.Partial("_Paging", Model.Filter.Paging)
 </div>

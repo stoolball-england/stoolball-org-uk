@@ -3,11 +3,11 @@
 @using System.Globalization
 @using Stoolball.Teams
 @section canonical {@Html.Partial("_CanonicalUrl", new[] { "page","q" })}
-    <div class="container-xl">
+<div class="container-xl">
     <h1>
         @Stoolball.Constants.Pages.Teams
         @if (!string.IsNullOrEmpty(Model.Filter.Query))
-{
+        {
             @: matching '@Model.Filter.Query'
         }
     </h1>
@@ -48,42 +48,33 @@
         <button type="submit" class="btn btn-primary">Search</button>
     </form>
 
-    <dl>
-        @foreach (var listing in Model.Listings)
-        {
-            var linkText = listing.ClubOrTeamName;
-            var location = listing.MatchLocations.FirstOrDefault()?.LocalityOrTown();
-            if (!string.IsNullOrEmpty(location) &&
-                !linkText.Replace("'", string.Empty).ToUpperInvariant().Contains(location.Replace("'", string.Empty).ToUpperInvariant()))
+    @if (Model.Listings.Any())
+    {
+        <dl>
+            @foreach (var listing in Model.Listings)
             {
-                linkText += ", " + location;
-            }
+                var linkText = listing.ClubOrTeamName;
+                var location = listing.MatchLocations.FirstOrDefault()?.LocalityOrTown();
+                if (!string.IsNullOrEmpty(location) &&
+                    !linkText.Replace("'", string.Empty).ToUpperInvariant().Contains(location.Replace("'", string.Empty).ToUpperInvariant()))
+                {
+                    linkText += ", " + location;
+                }
 
-            listing.PlayerTypes.Sort(); // by id, which puts adult teams before junior
-            var playerTypes = $"{listing.PlayerTypes.Select((value, index) => value.Humanize(index > 0 ? LetterCasing.LowerCase : LetterCasing.Sentence)).Humanize()}";
+                listing.PlayerTypes.Sort(); // by id, which puts adult teams before junior
+                var playerTypes = $"{listing.PlayerTypes.Select((value, index) => value.Humanize(index > 0 ? LetterCasing.LowerCase : LetterCasing.Sentence)).Humanize()}";
 
-            var detail = string.Empty;
-            if (listing.TeamType.HasValue)
-            {
-                if (listing.TeamType == TeamType.SchoolClub)
+                var detail = string.Empty;
+                if (listing.TeamType.HasValue)
                 {
-                    detail = playerTypes + " school club. ";
-                }
-                else
-                {
-                    detail = listing.TeamType.Humanize(LetterCasing.Sentence) + $" {playerTypes.ToLower(CultureInfo.CurrentCulture)} team. ";
-                }
-                if (!listing.Active)
-                {
-                    detail += $"No longer active.";
-                }
-            }
-            else
-            {
-                if (listing.PlayerTypes.Count > 0)
-                {
-                    // Don't use Humanizer for conversion to lowercase due to https://github.com/Humanizr/Humanizer/issues/958
-                    detail = $"Club with {(listing.PlayerTypes.Count > 1 ? string.Empty : "one ")}{playerTypes.ToLower(CultureInfo.CurrentCulture)} {(listing.PlayerTypes.Count > 1 ? "teams" : "team")}. ";
+                    if (listing.TeamType == TeamType.SchoolClub)
+                    {
+                        detail = playerTypes + " school club. ";
+                    }
+                    else
+                    {
+                        detail = listing.TeamType.Humanize(LetterCasing.Sentence) + $" {playerTypes.ToLower(CultureInfo.CurrentCulture)} team. ";
+                    }
                     if (!listing.Active)
                     {
                         detail += $"No longer active.";
@@ -91,12 +82,24 @@
                 }
                 else
                 {
-                    detail = "Club with no active teams. ";
+                    if (listing.PlayerTypes.Count > 0)
+                    {
+                        // Don't use Humanizer for conversion to lowercase due to https://github.com/Humanizr/Humanizer/issues/958
+                        detail = $"Club with {(listing.PlayerTypes.Count > 1 ? string.Empty : "one ")}{playerTypes.ToLower(CultureInfo.CurrentCulture)} {(listing.PlayerTypes.Count > 1 ? "teams" : "team")}. ";
+                        if (!listing.Active)
+                        {
+                            detail += $"No longer active.";
+                        }
+                    }
+                    else
+                    {
+                        detail = "Club with no active teams. ";
+                    }
                 }
+                <dt class="list-results__title"><a href="@listing.ClubOrTeamRoute">@linkText</a></dt>
+                <dd class="list-results__detail">@detail</dd>
             }
-            <dt class="list-results__title"><a href="@listing.ClubOrTeamRoute">@linkText</a></dt>
-            <dd class="list-results__detail">@detail</dd>
-        }
-    </dl>
+        </dl>
+    }
     @Html.Partial("_Paging", Model.Filter.Paging)
 </div>

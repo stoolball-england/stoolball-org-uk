@@ -19,6 +19,7 @@ using Stoolball.Logging;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
 using Stoolball.Routing;
+using Stoolball.Schools;
 using Stoolball.Security;
 using Stoolball.SocialMedia;
 using Stoolball.Statistics;
@@ -34,6 +35,7 @@ using Stoolball.Web.Logging;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
 using Stoolball.Web.Routing;
+using Stoolball.Web.Schools;
 using Stoolball.Web.Security;
 using Stoolball.Web.Statistics;
 using Stoolball.Web.Teams;
@@ -117,6 +119,7 @@ namespace Stoolball.Web
             composition.Register<IListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>, ListingsModelBuilder<TeamListing, TeamListingFilter, TeamsViewModel>>();
             composition.Register<IListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>, ListingsModelBuilder<Competition, CompetitionFilter, CompetitionsViewModel>>();
             composition.Register<IListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>, ListingsModelBuilder<MatchLocation, MatchLocationFilter, MatchLocationsViewModel>>();
+            composition.Register<IListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>, ListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>>();
 
             // Controllers for stoolball data pages. Register the concrete class since it'll never need to 
             // be injected anywhere except the one place where it's serving a page of content.
@@ -202,6 +205,7 @@ namespace Stoolball.Web
             composition.Register<ICacheableBestPlayerTotalStatisticsDataSource, SqlServerBestPlayerTotalStatisticsDataSource>();
             composition.Register<IBestPlayerAverageStatisticsDataSource, CachedBestPlayerAverageStatisticsDataSource>();
             composition.Register<ICacheableBestPlayerAverageStatisticsDataSource, SqlServerBestPlayerAverageStatisticsDataSource>();
+            composition.Register<ISchoolDataSource, SqlServerSchoolDataSource>();
 
             // Security checks
             composition.Register<IAuthorizationPolicy<Club>, ClubAuthorizationPolicy>();

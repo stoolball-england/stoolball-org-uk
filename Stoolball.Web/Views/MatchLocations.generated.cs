@@ -186,74 +186,90 @@ WriteLiteral(" type=\"submit\"");
 
 WriteLiteral(" class=\"btn btn-primary\"");
 
-WriteLiteral(">Search</button>\r\n    </form>\r\n\r\n    <dl>\r\n");
+WriteLiteral(">Search</button>\r\n    </form>\r\n\r\n");
 
             
-            #line 30 "..\..\Views\MatchLocations.cshtml"
-        
+            #line 29 "..\..\Views\MatchLocations.cshtml"
+    
             
             #line default
             #line hidden
             
-            #line 30 "..\..\Views\MatchLocations.cshtml"
-         foreach (var location in Model.Listings)
-        {
+            #line 29 "..\..\Views\MatchLocations.cshtml"
+     if (Model.Listings.Any())
+    {
 
             
             #line default
             #line hidden
-WriteLiteral("            <dt");
+WriteLiteral("        <dl>\r\n");
+
+            
+            #line 32 "..\..\Views\MatchLocations.cshtml"
+            
+            
+            #line default
+            #line hidden
+            
+            #line 32 "..\..\Views\MatchLocations.cshtml"
+             foreach (var location in Model.Listings)
+            {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                <dt");
 
 WriteLiteral(" class=\"list-results__title\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 1250), Tuple.Create("\"", 1285)
+WriteAttribute("href", Tuple.Create(" href=\"", 1305), Tuple.Create("\"", 1340)
             
-            #line 32 "..\..\Views\MatchLocations.cshtml"
-, Tuple.Create(Tuple.Create("", 1257), Tuple.Create<System.Object, System.Int32>(location.MatchLocationRoute
+            #line 34 "..\..\Views\MatchLocations.cshtml"
+, Tuple.Create(Tuple.Create("", 1312), Tuple.Create<System.Object, System.Int32>(location.MatchLocationRoute
             
             #line default
             #line hidden
-, 1257), false)
+, 1312), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 32 "..\..\Views\MatchLocations.cshtml"
-                                                                              Write(location.NameAndLocalityOrTownIfDifferent());
+            #line 34 "..\..\Views\MatchLocations.cshtml"
+                                                                                  Write(location.NameAndLocalityOrTownIfDifferent());
 
             
             #line default
             #line hidden
 WriteLiteral("</a></dt>\r\n");
 
-WriteLiteral("            <dd");
+WriteLiteral("                <dd");
 
 WriteLiteral(" class=\"list-results__detail\"");
 
 WriteLiteral(">\r\n");
 
             
-            #line 34 "..\..\Views\MatchLocations.cshtml"
-                
-            
-            #line default
-            #line hidden
-            
-            #line 34 "..\..\Views\MatchLocations.cshtml"
-                 if (location.Teams.Count > 0)
-                {
-                    var playerTypes = location.Teams.Select(x => x.PlayerType).Distinct().ToList();
-                    playerTypes.Sort(); // by id, which puts adult teams before junior
+            #line 36 "..\..\Views\MatchLocations.cshtml"
                     
             
             #line default
             #line hidden
             
-            #line 38 "..\..\Views\MatchLocations.cshtml"
-                Write(playerTypes.Select((value, index) => value.Humanize(index > 0 ? LetterCasing.LowerCase : LetterCasing.Sentence)).Humanize());
+            #line 36 "..\..\Views\MatchLocations.cshtml"
+                     if (location.Teams.Count > 0)
+                    {
+                        var playerTypes = location.Teams.Select(x => x.PlayerType).Distinct().ToList();
+                        playerTypes.Sort(); // by id, which puts adult teams before junior
+                        
+            
+            #line default
+            #line hidden
+            
+            #line 40 "..\..\Views\MatchLocations.cshtml"
+                    Write(playerTypes.Select((value, index) => value.Humanize(index > 0 ? LetterCasing.LowerCase : LetterCasing.Sentence)).Humanize());
 
             
             #line default
@@ -261,8 +277,8 @@ WriteLiteral(">\r\n");
 WriteLiteral(". ");
 
             
-            #line 38 "..\..\Views\MatchLocations.cshtml"
-                                                                                                                                                  Write("team".ToQuantity(location.Teams.Count));
+            #line 40 "..\..\Views\MatchLocations.cshtml"
+                                                                                                                                                      Write("team".ToQuantity(location.Teams.Count));
 
             
             #line default
@@ -270,38 +286,45 @@ WriteLiteral(". ");
 WriteLiteral(".\r\n");
 
             
-            #line 39 "..\..\Views\MatchLocations.cshtml"
-                }
-                else
-                {
+            #line 41 "..\..\Views\MatchLocations.cshtml"
+                    }
+                    else
+                    {
 
             
             #line default
             #line hidden
-WriteLiteral("                    <p>No active teams.</p>\r\n");
-
-            
-            #line 43 "..\..\Views\MatchLocations.cshtml"
-                }
-
-            
-            #line default
-            #line hidden
-WriteLiteral("            </dd>\r\n");
+WriteLiteral("                        <p>No active teams.</p>\r\n");
 
             
             #line 45 "..\..\Views\MatchLocations.cshtml"
-        }
+                    }
 
             
             #line default
             #line hidden
-WriteLiteral("    </dl>\r\n");
-
-WriteLiteral("    ");
+WriteLiteral("                </dd>\r\n");
 
             
             #line 47 "..\..\Views\MatchLocations.cshtml"
+            }
+
+            
+            #line default
+            #line hidden
+WriteLiteral("        </dl>\r\n");
+
+            
+            #line 49 "..\..\Views\MatchLocations.cshtml"
+    }
+
+            
+            #line default
+            #line hidden
+WriteLiteral("    ");
+
+            
+            #line 50 "..\..\Views\MatchLocations.cshtml"
 Write(Html.Partial("_Paging", Model.Filter.Paging));
 
             

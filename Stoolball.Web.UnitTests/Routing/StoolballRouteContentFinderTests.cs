@@ -369,6 +369,8 @@ namespace Stoolball.Web.UnitTests.Routing
         [InlineData("https://example.org/players/example-NAME/RUN-OUts/", StoolballRouteType.RunOuts)]
         [InlineData("https://example.org/players/example-name/", StoolballRouteType.Player)]
         [InlineData("https://example.org/players/example-NAME", StoolballRouteType.Player)]
+        [InlineData("https://example.org/schools/find/", StoolballRouteType.Schools)]
+        [InlineData("https://example.org/schools/FIND", StoolballRouteType.Schools)]
         public void Correct_route_should_match(string route, StoolballRouteType expectedType)
         {
             var requestUrl = new Uri(route);
@@ -395,6 +397,9 @@ namespace Stoolball.Web.UnitTests.Routing
         [InlineData("https://example.org/matches/example-match/edit/innings/1/invalid/")]
         [InlineData("https://example.org/tournaments/invalid/rss")]
         [InlineData("https://example.org/tournaments/invalid/calendar/ics")]
+        [InlineData("https://example.org/schools")]
+        [InlineData("https://example.org/schools/")]
+        [InlineData("https://example.org/schools/invalid")]
         [InlineData("https://example.org/other")]
         [InlineData("https://example.org/other/")]
         public void Other_route_should_not_match(string route)

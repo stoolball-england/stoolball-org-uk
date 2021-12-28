@@ -26,23 +26,26 @@
         <button type="submit" class="btn btn-primary">Search</button>
     </form>
 
-    <dl>
-        @foreach (var location in Model.Listings)
-        {
-            <dt class="list-results__title"><a href="@location.MatchLocationRoute">@location.NameAndLocalityOrTownIfDifferent()</a></dt>
-            <dd class="list-results__detail">
-                @if (location.Teams.Count > 0)
-                {
-                    var playerTypes = location.Teams.Select(x => x.PlayerType).Distinct().ToList();
-                    playerTypes.Sort(); // by id, which puts adult teams before junior
-                    @(playerTypes.Select((value, index) => value.Humanize(index > 0 ? LetterCasing.LowerCase : LetterCasing.Sentence)).Humanize())@:. @("team".ToQuantity(location.Teams.Count)).
-                }
-                else
-                {
-                    <p>No active teams.</p>
-                }
-            </dd>
-        }
-    </dl>
+    @if (Model.Listings.Any())
+    {
+        <dl>
+            @foreach (var location in Model.Listings)
+            {
+                <dt class="list-results__title"><a href="@location.MatchLocationRoute">@location.NameAndLocalityOrTownIfDifferent()</a></dt>
+                <dd class="list-results__detail">
+                    @if (location.Teams.Count > 0)
+                    {
+                        var playerTypes = location.Teams.Select(x => x.PlayerType).Distinct().ToList();
+                        playerTypes.Sort(); // by id, which puts adult teams before junior
+                        @(playerTypes.Select((value, index) => value.Humanize(index > 0 ? LetterCasing.LowerCase : LetterCasing.Sentence)).Humanize())@:. @("team".ToQuantity(location.Teams.Count)).
+                    }
+                    else
+                    {
+                        <p>No active teams.</p>
+                    }
+                </dd>
+            }
+        </dl>
+    }
     @Html.Partial("_Paging", Model.Filter.Paging)
 </div>

@@ -1429,6 +1429,8 @@
     <Compile Include="Matches\OnlySportCsvExportTask.cs" />
     <Compile Include="Matches\OnlySportCsvRecord.cs" />
     <Compile Include="Routing\RedirectBareDomainModule.cs" />
+    <Compile Include="Schools\SchoolsController.cs" />
+    <Compile Include="Schools\SchoolsViewModel.cs" />
     <Compile Include="Statistics\BasePlayerViewModel.cs" />
     <Compile Include="Statistics\BowlingStrikeRateController.cs" />
     <Compile Include="Statistics\BattingStrikeRateController.cs" />
@@ -3237,6 +3239,7 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>ResetPasswordComplete.generated.cs</LastGenOutput>
     </Content>
+    <Content Include="Views\Schools.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -11,6 +11,7 @@
     "umb://template/0e91f8c950fc49bdb885c844dc58e6ca",
     "umb://template/0f52b305ec8140ccac40056ef18b76a9",
     "umb://template/120b2463988a40b886de1036b758087d",
+    "umb://template/15aeb712cd3d498cb575bb381c342f9c",
     "umb://template/18d4bbdabcad454e9df615feacb65451",
     "umb://template/19b067bfa44940cc94c9709af58fedc3",
     "umb://template/1c032dc7ae3240a986f47b00bcaa4a5a",
@@ -167,6 +168,11 @@
     },
     {
       "Udi": "umb://template/120b2463988a40b886de1036b758087d",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/15aeb712cd3d498cb575bb381c342f9c",
       "Ordering": true,
       "Mode": 0
     },
@@ -594,5 +600,5 @@
   "Name": "Stoolball router",
   "Alias": "stoolballRouter",
   "__type": "Umbraco.Deploy,Umbraco.Deploy.Artifacts.ContentType.DocumentTypeArtifact",
-  "__version": "4.1.2"
+  "__version": "4.1.4"
 }

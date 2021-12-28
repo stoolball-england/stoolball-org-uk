@@ -96,6 +96,7 @@
         BowlingAverage,
         EconomyRate,
         BattingStrikeRate,
-        BowlingStrikeRate
+        BowlingStrikeRate,
+        Schools
     }
 }

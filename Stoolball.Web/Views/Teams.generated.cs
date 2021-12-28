@@ -72,7 +72,7 @@ DefineSection("canonical", () => {
             #line hidden
 });
 
-WriteLiteral("    <div");
+WriteLiteral("<div");
 
 WriteLiteral(" class=\"container-xl\"");
 
@@ -98,7 +98,7 @@ WriteLiteral("\r\n");
             
             #line 9 "..\..\Views\Teams.cshtml"
          if (!string.IsNullOrEmpty(Model.Filter.Query))
-{
+        {
 
             
             #line default
@@ -143,15 +143,15 @@ WriteLiteral(">\r\n            <a");
 
 WriteLiteral(" class=\"nav-link\"");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 649), Tuple.Create("\"", 695)
+WriteAttribute("href", Tuple.Create(" href=\"", 653), Tuple.Create("\"", 699)
             
             #line 20 "..\..\Views\Teams.cshtml"
-, Tuple.Create(Tuple.Create("", 656), Tuple.Create<System.Object, System.Int32>(Stoolball.Constants.Pages.TeamsUrl
+, Tuple.Create(Tuple.Create("", 660), Tuple.Create<System.Object, System.Int32>(Stoolball.Constants.Pages.TeamsUrl
             
             #line default
             #line hidden
-, 656), false)
-, Tuple.Create(Tuple.Create("", 691), Tuple.Create("/map", 691), true)
+, 660), false)
+, Tuple.Create(Tuple.Create("", 695), Tuple.Create("/map", 695), true)
 );
 
 WriteLiteral(">Map</a>\r\n        </li>\r\n        <li");
@@ -265,14 +265,14 @@ WriteLiteral("    <form");
 
 WriteLiteral(" method=\"get\"");
 
-WriteAttribute("action", Tuple.Create(" action=\"", 2028), Tuple.Create("\"", 2062)
+WriteAttribute("action", Tuple.Create(" action=\"", 2032), Tuple.Create("\"", 2066)
             
             #line 45 "..\..\Views\Teams.cshtml"
-, Tuple.Create(Tuple.Create("", 2037), Tuple.Create<System.Object, System.Int32>(Request.Url.AbsolutePath
+, Tuple.Create(Tuple.Create("", 2041), Tuple.Create<System.Object, System.Int32>(Request.Url.AbsolutePath
             
             #line default
             #line hidden
-, 2037), false)
+, 2041), false)
 );
 
 WriteLiteral(" class=\"form-inline form-search\"");
@@ -293,14 +293,14 @@ WriteLiteral(" id=\"team-search\"");
 
 WriteLiteral(" name=\"q\"");
 
-WriteAttribute("value", Tuple.Create(" value=\"", 2241), Tuple.Create("\"", 2268)
+WriteAttribute("value", Tuple.Create(" value=\"", 2245), Tuple.Create("\"", 2272)
             
             #line 47 "..\..\Views\Teams.cshtml"
-   , Tuple.Create(Tuple.Create("", 2249), Tuple.Create<System.Object, System.Int32>(Model.Filter.Query
+   , Tuple.Create(Tuple.Create("", 2253), Tuple.Create<System.Object, System.Int32>(Model.Filter.Query
             
             #line default
             #line hidden
-, 2249), false)
+, 2253), false)
 );
 
 WriteLiteral(" />\r\n        <button");
@@ -309,51 +309,56 @@ WriteLiteral(" type=\"submit\"");
 
 WriteLiteral(" class=\"btn btn-primary\"");
 
-WriteLiteral(">Search</button>\r\n    </form>\r\n\r\n    <dl>\r\n");
+WriteLiteral(">Search</button>\r\n    </form>\r\n\r\n");
 
             
-            #line 52 "..\..\Views\Teams.cshtml"
-        
+            #line 51 "..\..\Views\Teams.cshtml"
+    
             
             #line default
             #line hidden
             
-            #line 52 "..\..\Views\Teams.cshtml"
-         foreach (var listing in Model.Listings)
-        {
-            var linkText = listing.ClubOrTeamName;
-            var location = listing.MatchLocations.FirstOrDefault()?.LocalityOrTown();
-            if (!string.IsNullOrEmpty(location) &&
-                !linkText.Replace("'", string.Empty).ToUpperInvariant().Contains(location.Replace("'", string.Empty).ToUpperInvariant()))
-            {
-                linkText += ", " + location;
-            }
+            #line 51 "..\..\Views\Teams.cshtml"
+     if (Model.Listings.Any())
+    {
 
-            listing.PlayerTypes.Sort(); // by id, which puts adult teams before junior
-            var playerTypes = $"{listing.PlayerTypes.Select((value, index) => value.Humanize(index > 0 ? LetterCasing.LowerCase : LetterCasing.Sentence)).Humanize()}";
+            
+            #line default
+            #line hidden
+WriteLiteral("        <dl>\r\n");
 
-            var detail = string.Empty;
-            if (listing.TeamType.HasValue)
+            
+            #line 54 "..\..\Views\Teams.cshtml"
+            
+            
+            #line default
+            #line hidden
+            
+            #line 54 "..\..\Views\Teams.cshtml"
+             foreach (var listing in Model.Listings)
             {
-                if (listing.TeamType == TeamType.SchoolClub)
+                var linkText = listing.ClubOrTeamName;
+                var location = listing.MatchLocations.FirstOrDefault()?.LocalityOrTown();
+                if (!string.IsNullOrEmpty(location) &&
+                    !linkText.Replace("'", string.Empty).ToUpperInvariant().Contains(location.Replace("'", string.Empty).ToUpperInvariant()))
                 {
-                    detail = playerTypes + " school club. ";
+                    linkText += ", " + location;
                 }
-                else
+
+                listing.PlayerTypes.Sort(); // by id, which puts adult teams before junior
+                var playerTypes = $"{listing.PlayerTypes.Select((value, index) => value.Humanize(index > 0 ? LetterCasing.LowerCase : LetterCasing.Sentence)).Humanize()}";
+
+                var detail = string.Empty;
+                if (listing.TeamType.HasValue)
                 {
-                    detail = listing.TeamType.Humanize(LetterCasing.Sentence) + $" {playerTypes.ToLower(CultureInfo.CurrentCulture)} team. ";
-                }
-                if (!listing.Active)
-                {
-                    detail += $"No longer active.";
-                }
-            }
-            else
-            {
-                if (listing.PlayerTypes.Count > 0)
-                {
-                    // Don't use Humanizer for conversion to lowercase due to https://github.com/Humanizr/Humanizer/issues/958
-                    detail = $"Club with {(listing.PlayerTypes.Count > 1 ? string.Empty : "one ")}{playerTypes.ToLower(CultureInfo.CurrentCulture)} {(listing.PlayerTypes.Count > 1 ? "teams" : "team")}. ";
+                    if (listing.TeamType == TeamType.SchoolClub)
+                    {
+                        detail = playerTypes + " school club. ";
+                    }
+                    else
+                    {
+                        detail = listing.TeamType.Humanize(LetterCasing.Sentence) + $" {playerTypes.ToLower(CultureInfo.CurrentCulture)} team. ";
+                    }
                     if (!listing.Active)
                     {
                         detail += $"No longer active.";
@@ -361,49 +366,60 @@ WriteLiteral(">Search</button>\r\n    </form>\r\n\r\n    <dl>\r\n");
                 }
                 else
                 {
-                    detail = "Club with no active teams. ";
+                    if (listing.PlayerTypes.Count > 0)
+                    {
+                        // Don't use Humanizer for conversion to lowercase due to https://github.com/Humanizr/Humanizer/issues/958
+                        detail = $"Club with {(listing.PlayerTypes.Count > 1 ? string.Empty : "one ")}{playerTypes.ToLower(CultureInfo.CurrentCulture)} {(listing.PlayerTypes.Count > 1 ? "teams" : "team")}. ";
+                        if (!listing.Active)
+                        {
+                            detail += $"No longer active.";
+                        }
+                    }
+                    else
+                    {
+                        detail = "Club with no active teams. ";
+                    }
                 }
-            }
 
             
             #line default
             #line hidden
-WriteLiteral("            <dt");
+WriteLiteral("                <dt");
 
 WriteLiteral(" class=\"list-results__title\"");
 
 WriteLiteral("><a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 4490), Tuple.Create("\"", 4521)
+WriteAttribute("href", Tuple.Create(" href=\"", 4713), Tuple.Create("\"", 4744)
             
-            #line 97 "..\..\Views\Teams.cshtml"
-, Tuple.Create(Tuple.Create("", 4497), Tuple.Create<System.Object, System.Int32>(listing.ClubOrTeamRoute
+            #line 99 "..\..\Views\Teams.cshtml"
+, Tuple.Create(Tuple.Create("", 4720), Tuple.Create<System.Object, System.Int32>(listing.ClubOrTeamRoute
             
             #line default
             #line hidden
-, 4497), false)
+, 4720), false)
 );
 
 WriteLiteral(">");
 
             
-            #line 97 "..\..\Views\Teams.cshtml"
-                                                                          Write(linkText);
+            #line 99 "..\..\Views\Teams.cshtml"
+                                                                              Write(linkText);
 
             
             #line default
             #line hidden
 WriteLiteral("</a></dt>\r\n");
 
-WriteLiteral("            <dd");
+WriteLiteral("                <dd");
 
 WriteLiteral(" class=\"list-results__detail\"");
 
 WriteLiteral(">");
 
             
-            #line 98 "..\..\Views\Teams.cshtml"
-                                        Write(detail);
+            #line 100 "..\..\Views\Teams.cshtml"
+                                            Write(detail);
 
             
             #line default
@@ -411,18 +427,25 @@ WriteLiteral(">");
 WriteLiteral("</dd>\r\n");
 
             
-            #line 99 "..\..\Views\Teams.cshtml"
-        }
+            #line 101 "..\..\Views\Teams.cshtml"
+            }
 
             
             #line default
             #line hidden
-WriteLiteral("    </dl>\r\n");
+WriteLiteral("        </dl>\r\n");
 
+            
+            #line 103 "..\..\Views\Teams.cshtml"
+    }
+
+            
+            #line default
+            #line hidden
 WriteLiteral("    ");
 
             
-            #line 101 "..\..\Views\Teams.cshtml"
+            #line 104 "..\..\Views\Teams.cshtml"
 Write(Html.Partial("_Paging", Model.Filter.Paging));
 
             

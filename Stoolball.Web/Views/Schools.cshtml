@@ -1,0 +1,30 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Schools.SchoolsViewModel>
+@using Humanizer
+@using System.Text.RegularExpressions
+@section canonical {@Html.Partial("_CanonicalUrl", new[] { "page", "q" })}
+<div class="container-xl">
+    <h1>
+        @Stoolball.Constants.Pages.Schools
+        @if (!string.IsNullOrEmpty(Model.Filter.Query))
+        {
+            @: matching '@Model.Filter.Query'
+        }
+    </h1>
+
+    <form method="get" action="@Request.Url.AbsolutePath" class="form-inline form-search">
+        <label class="sr-only" for="school-search">School name, town or village</label>
+        <input type="search" class="form-control" id="school-search" name="q" value="@Model.Filter.Query" />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    @if (Model.Listings.Any())
+    {
+        <dl>
+            @foreach (var school in Model.Listings)
+            {
+                <dt class="list-results__title">@school.SchoolName</dt>
+            }
+        </dl>
+    }
+    @Html.Partial("_Paging", Model.Filter.Paging)
+</div>

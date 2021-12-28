@@ -4,6 +4,7 @@ using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
+using Stoolball.Web.Schools;
 using Stoolball.Web.Statistics;
 using Stoolball.Web.Teams;
 
@@ -103,7 +104,8 @@ namespace Stoolball.Web.Routing
             { StoolballRouteType.BowlingAverage, typeof(BowlingAverageController) },
             { StoolballRouteType.EconomyRate, typeof(EconomyRateController) },
             { StoolballRouteType.BattingStrikeRate, typeof(BattingStrikeRateController) },
-            { StoolballRouteType.BowlingStrikeRate, typeof(BowlingStrikeRateController) }
+            { StoolballRouteType.BowlingStrikeRate, typeof(BowlingStrikeRateController) },
+            { StoolballRouteType.Schools, typeof(SchoolsController) }
         };
 
         public Type MapRouteTypeToController(string unparsedRouteType)
