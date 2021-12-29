@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
+using Stoolball.Schools;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 
@@ -28,5 +29,6 @@ namespace Stoolball.Testing
         public Match MatchInThePastWithFullDetails { get; internal set; }
         public Tournament TournamentWithFullDetails { get; internal set; }
         public List<Tournament> Tournaments { get; internal set; } = new List<Tournament>();
+        public List<School> Schools { get; internal set; } = new List<School>();
     }
 }

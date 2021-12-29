@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Stoolball.Logging;
+using Stoolball.Teams;
 
 namespace Stoolball.Schools
 {
@@ -28,6 +29,8 @@ namespace Stoolball.Schools
         public Guid? MemberGroupKey { get; set; }
         public string MemberGroupName { get; set; }
         public string SchoolRoute { get; set; }
+        public List<Team> Teams { get; internal set; } = new List<Team>();
+
         public List<AuditRecord> History { get; internal set; } = new List<AuditRecord>();
 
         public Uri EntityUri {
