@@ -38,9 +38,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Schools
         {
             return _databaseFixture.TestData.Schools.Where(x =>
                 x.SchoolName.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-                x.Teams.Any(t => t.MatchLocations.Any(ml => ml.Locality.Contains(query, StringComparison.OrdinalIgnoreCase))) ||
-                x.Teams.Any(t => t.MatchLocations.Any(ml => ml.Town.Contains(query, StringComparison.OrdinalIgnoreCase))) ||
-                x.Teams.Any(t => t.MatchLocations.Any(ml => ml.AdministrativeArea.Contains(query, StringComparison.OrdinalIgnoreCase)))
+                x.Teams.Any(t => t.MatchLocations.Any(ml => ml.Locality != null && ml.Locality.Contains(query, StringComparison.OrdinalIgnoreCase))) ||
+                x.Teams.Any(t => t.MatchLocations.Any(ml => ml.Town != null && ml.Town.Contains(query, StringComparison.OrdinalIgnoreCase))) ||
+                x.Teams.Any(t => t.MatchLocations.Any(ml => ml.AdministrativeArea != null && ml.AdministrativeArea.Contains(query, StringComparison.OrdinalIgnoreCase)))
             ).ToList();
         }
         private string PartialNameOfAnySchool()
@@ -142,7 +142,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Schools
 
             foreach (var school in _databaseFixture.TestData.Schools)
             {
-                Assert.NotNull(result.Single(x => x.SchoolId == school.SchoolId));
+                Assert.NotNull(result.SingleOrDefault(x => x.SchoolId == school.SchoolId));
             }
         }
 

@@ -44,6 +44,11 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                 CreatePlayer(player);
             }
 
+            foreach (var school in data.Schools)
+            {
+                CreateSchool(school);
+            }
+
             foreach (var team in data.Teams)
             {
                 if (team.Club != null)
@@ -60,6 +65,15 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             {
                 CreateMatchLocation(location);
             }
+
+            foreach (var team in data.Teams)
+            {
+                foreach (var location in team.MatchLocations)
+                {
+                    AddTeamToMatchLocation(team, location);
+                }
+            }
+
             foreach (var competition in data.Competitions)
             {
                 CreateCompetition(competition);
@@ -100,6 +114,40 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                     CreatePlayerInMatchStatisticsRecord(record);
                 }
             }
+        }
+
+        private void CreateSchool(Stoolball.Schools.School school)
+        {
+            _connection.Execute($@"INSERT INTO {Tables.School} 
+                    (SchoolId, Website, Twitter, Facebook, Instagram, YouTube, MemberGroupKey, MemberGroupName, SchoolRoute)
+                    VALUES
+                    (@SchoolId, @Website, @Twitter, @Facebook, @Instagram, @YouTube, @MemberGroupKey, @MemberGroupName, @SchoolRoute)",
+                 new
+                 {
+                     school.SchoolId,
+                     school.Website,
+                     school.Twitter,
+                     school.Facebook,
+                     school.Instagram,
+                     school.YouTube,
+                     school.MemberGroupKey,
+                     school.MemberGroupName,
+                     school.SchoolRoute
+                 });
+
+            _connection.Execute($@"INSERT INTO {Tables.SchoolVersion}
+                    (SchoolVersionId, SchoolId, SchoolName, ComparableName, FromDate, UntilDate)
+                    VALUES
+                    (@SchoolVersionId, @SchoolId, @SchoolName, @ComparableName, @FromDate, @UntilDate)",
+                    new
+                    {
+                        SchoolVersionId = Guid.NewGuid(),
+                        school.SchoolId,
+                        school.SchoolName,
+                        ComparableName = school.ComparableName(),
+                        FromDate = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero),
+                        UntilDate = (DateTimeOffset?)null
+                    });
         }
 
         public void CreateTournament(Tournament tournament)

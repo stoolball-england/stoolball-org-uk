@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Stoolball.Routing;
 using Stoolball.Schools;
+using Stoolball.Teams;
 
 namespace Stoolball.Data.SqlServer
 {
@@ -33,9 +34,12 @@ namespace Stoolball.Data.SqlServer
             using (var connection = _databaseConnectionFactory.CreateDatabaseConnection())
             {
                 var (where, parameters) = BuildWhereClause(schoolQuery);
-                return await connection.ExecuteScalarAsync<int>($@"SELECT COUNT(sc.SchoolId)
+                return await connection.ExecuteScalarAsync<int>($@"SELECT COUNT(DISTINCT sc.SchoolId)
                             FROM {Tables.School} AS sc
                             INNER JOIN {Tables.SchoolVersion} AS sv ON sc.SchoolId = sv.SchoolId
+                            LEFT JOIN {Tables.Team} t ON sc.SchoolId = t.SchoolId
+                            LEFT JOIN {Tables.TeamMatchLocation} tml ON t.TeamId = tml.TeamId
+                            LEFT JOIN {Tables.MatchLocation} ml ON tml.MatchLocationid = ml.MatchLocationId
                             {where}
                             AND sv.SchoolVersionId = (SELECT TOP 1 SchoolVersionId FROM {Tables.SchoolVersion} WHERE SchoolId = sc.SchoolId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)",
                             new DynamicParameters(parameters)).ConfigureAwait(false);
@@ -54,17 +58,24 @@ namespace Stoolball.Data.SqlServer
             {
                 var (where, parameters) = BuildWhereClause(filter);
 
-                var sql = $@"SELECT sc2.SchoolId, sv2.SchoolName, sc2.SchoolRoute
+                var sql = $@"SELECT sc2.SchoolId, sv2.SchoolName, sc2.SchoolRoute,
+                            t.TeamId
                             FROM {Tables.School} AS sc2
                             INNER JOIN {Tables.SchoolVersion} AS sv2 ON sc2.SchoolId = sv2.SchoolId
-                            WHERE sc2.SchoolId IN(
-                                SELECT sc.SchoolId
-                                FROM {Tables.School} AS sc
-                                INNER JOIN {Tables.SchoolVersion} AS sv ON sc.SchoolId = sv.SchoolId
-                                {where}
-                                AND sv.SchoolVersionId = (SELECT TOP 1 SchoolVersionId FROM {Tables.SchoolVersion} WHERE SchoolId = sc.SchoolId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
-                                ORDER BY CASE WHEN sv.UntilDate IS NULL THEN 0 ELSE 1 END, sv.ComparableName
-                                OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY
+                            LEFT JOIN {Tables.Team} t ON sc2.SchoolId = t.SchoolId
+                            WHERE sc2.SchoolId IN (
+                                SELECT SchoolId FROM (
+                                    SELECT DISTINCT sc.SchoolId, CASE WHEN sv.UntilDate IS NULL THEN 1 ELSE 0 END AS Active, sv.ComparableName
+                                    FROM {Tables.School} AS sc
+                                    INNER JOIN {Tables.SchoolVersion} AS sv ON sc.SchoolId = sv.SchoolId
+                                    LEFT JOIN {Tables.Team} t ON sc.SchoolId = t.SchoolId
+                                    LEFT JOIN {Tables.TeamMatchLocation} tml ON t.TeamId = tml.TeamId
+                                    LEFT JOIN {Tables.MatchLocation} ml ON tml.MatchLocationid = ml.MatchLocationId
+                                    {where}
+                                    AND sv.SchoolVersionId = (SELECT TOP 1 SchoolVersionId FROM {Tables.SchoolVersion} WHERE SchoolId = sc.SchoolId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                                    ORDER BY Active, sv.ComparableName
+                                    OFFSET @PageOffset ROWS FETCH NEXT @PageSize ROWS ONLY
+                                ) AS SchoolIds
                             )
                             AND sv2.SchoolVersionId = (SELECT TOP 1 SchoolVersionId FROM {Tables.SchoolVersion} WHERE SchoolId = sc2.SchoolId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
                             ORDER BY CASE WHEN sv2.UntilDate IS NULL THEN 0 ELSE 1 END, sv2.ComparableName";
@@ -72,13 +83,13 @@ namespace Stoolball.Data.SqlServer
                 parameters.Add("@PageOffset", (filter.Paging.PageNumber - 1) * filter.Paging.PageSize);
                 parameters.Add("@PageSize", filter.Paging.PageSize);
 
-                var schools = await connection.QueryAsync<School, School, School>(sql,
+                var schools = await connection.QueryAsync<School, Team, School>(sql,
                     (school, dummyForNow) =>
                     {
                         return school;
                     },
                     new DynamicParameters(parameters),
-                    splitOn: "SchoolRoute").ConfigureAwait(false);
+                    splitOn: "TeamId").ConfigureAwait(false);
 
                 var resolvedSchools = schools.GroupBy(school => school.SchoolId).Select(copiesOfSchool =>
                 {
@@ -97,7 +108,7 @@ namespace Stoolball.Data.SqlServer
 
             if (!string.IsNullOrEmpty(filter?.Query))
             {
-                where.Add("(sv.SchoolName LIKE @Query)");
+                where.Add("(sv.SchoolName LIKE @Query OR ml.Locality LIKE @Query OR ml.Town LIKE @Query OR ml.AdministrativeArea LIKE @Query)");
                 parameters.Add("@Query", $"%{filter.Query}%");
             }
 
