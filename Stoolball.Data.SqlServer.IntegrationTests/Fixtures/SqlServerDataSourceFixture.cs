@@ -9,6 +9,7 @@ using Stoolball.MatchLocations;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Testing;
+using Stoolball.Testing.Fakers;
 using static Stoolball.Constants;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
@@ -59,7 +60,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var oversHelper = new OversHelper();
             var playerIdentityFinder = new PlayerIdentityFinder();
             var playerInMatchStatisticsBuilder = new PlayerInMatchStatisticsBuilder(playerIdentityFinder, oversHelper);
-            var seedDataGenerator = new SeedDataGenerator(oversHelper, new BowlingFiguresCalculator(oversHelper), playerIdentityFinder);
+            var seedDataGenerator = new SeedDataGenerator(oversHelper, new BowlingFiguresCalculator(oversHelper), playerIdentityFinder,
+                new TeamFakerFactory(), new MatchLocationFakerFactory(), new SchoolFakerFactory());
             using (var connection = ConnectionFactory.CreateDatabaseConnection())
             {
                 connection.Open();

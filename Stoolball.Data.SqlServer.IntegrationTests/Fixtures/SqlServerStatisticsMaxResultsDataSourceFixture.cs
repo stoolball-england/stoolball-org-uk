@@ -3,6 +3,7 @@ using System.Linq;
 using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Testing;
+using Stoolball.Testing.Fakers;
 
 namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
 {
@@ -19,7 +20,8 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var bowlingFiguresCalculator = new BowlingFiguresCalculator(oversHelper);
             var playerIdentityFinder = new PlayerIdentityFinder();
             var playerInMatchStatisticsBuilder = new PlayerInMatchStatisticsBuilder(playerIdentityFinder, oversHelper);
-            var seedDataGenerator = new SeedDataGenerator(oversHelper, bowlingFiguresCalculator, playerIdentityFinder);
+            var seedDataGenerator = new SeedDataGenerator(oversHelper, bowlingFiguresCalculator, playerIdentityFinder,
+                new TeamFakerFactory(), new MatchLocationFakerFactory(), new SchoolFakerFactory());
             TestData = seedDataGenerator.GenerateTestData();
             PlayerWithFifthAndSixthBowlingFiguresTheSame = ForceFifthAndSixthBowlingFiguresToBeTheSame(TestData);
             PlayerWithFifthAndSixthInningsTheSame = ForceFifthAndSixthPlayerInningsToBeTheSame(TestData, bowlingFiguresCalculator);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bogus;
 using Humanizer;
 using Stoolball.Awards;
 using Stoolball.Clubs;
@@ -8,8 +9,10 @@ using Stoolball.Comments;
 using Stoolball.Competitions;
 using Stoolball.Matches;
 using Stoolball.MatchLocations;
+using Stoolball.Schools;
 using Stoolball.Statistics;
 using Stoolball.Teams;
+using Stoolball.Testing.Fakers;
 
 namespace Stoolball.Testing
 {
@@ -18,16 +21,23 @@ namespace Stoolball.Testing
         private readonly Random _randomiser = new Random();
         private readonly IBowlingFiguresCalculator _bowlingFiguresCalculator;
         private readonly IPlayerIdentityFinder _playerIdentityFinder;
+        private readonly IFakerFactory<Team> _teamFakerFactory;
+        private readonly IFakerFactory<MatchLocation> _matchLocationFakerFactory;
+        private readonly IFakerFactory<School> _schoolFakerFactory;
         private readonly IOversHelper _oversHelper;
         private List<(Team team, List<PlayerIdentity> identities)> _teams;
         private List<MatchLocation> _matchLocations = new List<MatchLocation>();
         private List<Competition> _competitions = new List<Competition>();
 
-        public SeedDataGenerator(IOversHelper oversHelper, IBowlingFiguresCalculator bowlingFiguresCalculator, IPlayerIdentityFinder playerIdentityFinder)
+        public SeedDataGenerator(IOversHelper oversHelper, IBowlingFiguresCalculator bowlingFiguresCalculator, IPlayerIdentityFinder playerIdentityFinder,
+            IFakerFactory<Team> teamFakerFactory, IFakerFactory<MatchLocation> matchLocationFakerFactory, IFakerFactory<School> schoolFakerFactory)
         {
             _oversHelper = oversHelper ?? throw new ArgumentNullException(nameof(oversHelper));
             _bowlingFiguresCalculator = bowlingFiguresCalculator ?? throw new ArgumentNullException(nameof(bowlingFiguresCalculator));
             _playerIdentityFinder = playerIdentityFinder ?? throw new ArgumentNullException(nameof(playerIdentityFinder));
+            _teamFakerFactory = teamFakerFactory ?? throw new ArgumentNullException(nameof(teamFakerFactory));
+            _matchLocationFakerFactory = matchLocationFakerFactory ?? throw new ArgumentNullException(nameof(matchLocationFakerFactory));
+            _schoolFakerFactory = schoolFakerFactory ?? throw new ArgumentNullException(nameof(schoolFakerFactory));
         }
 
         public Club CreateClubWithMinimalDetails()
@@ -835,7 +845,66 @@ namespace Stoolball.Testing
             ForceTheFifthAndSixthRunOutsResultsToBeEqual(testData);
             ForceTheFifthAndSixthMostWicketsResultsToBeEqual(testData);
 
+            // Create schools data, with extra separate teams and locations
+            var schoolFaker = _schoolFakerFactory.Create();
+            testData.Schools = schoolFaker.Generate(20);
+
+            CreateSchoolTeamsForSchools(testData.Schools, _teamFakerFactory.Create, _matchLocationFakerFactory.Create);
+
+            testData.Teams.AddRange(testData.Schools.SelectMany(x => x.Teams));
+            testData.MatchLocations.AddRange(testData.Schools.SelectMany(x => x.Teams).SelectMany(x => x.MatchLocations).Distinct(new MatchLocationEqualityComparer()));
+
             return testData;
+        }
+
+
+
+        private void CreateSchoolTeamsForSchools(List<School> schools, Func<Faker<Team>> teamFakerMaker, Func<Faker<MatchLocation>> locationFakerMaker)
+        {
+            var schoolTeamFaker = teamFakerMaker()
+                .RuleFor(x => x.TeamType, faker => faker.Random.ListItem<TeamType>(new List<TeamType> { TeamType.SchoolAgeGroup, TeamType.SchoolClub, TeamType.SchoolOther }));
+            var locationFaker = locationFakerMaker();
+
+            for (var i = 3; i < schools.Count; i++)
+            {
+                // First 3 schools have no teams therefore the school should be inactive.
+                // Then even indexes get one team, odd get multiple.
+                schools[i].Teams = schoolTeamFaker.Generate((i % 2) + 1);
+                schools[i].Teams.ForEach(t => t.School = schools[i]);
+
+                // Up to 7 they don't get a match location. Above that they do.
+                // At index 9 the school with two teams gets the same location twice. 
+                // At index 11 the school gets multiple teams with different locations AND multiple locations for a team.
+                if (i == 9)
+                {
+                    // handle special case
+                    var location = locationFaker.Generate(1).First();
+                    schools[i].Teams.ForEach(x => x.MatchLocations.Add(location));
+                }
+                else if (i == 11)
+                {
+                    // handle special case
+                    schools[i].Teams[0].MatchLocations.AddRange(locationFaker.Generate(2));
+                    schools[i].Teams[1].MatchLocations.Add(locationFaker.Generate(1).First());
+                }
+                else if (i > 7)
+                {
+                    // add a match location to each team
+                    schools[i].Teams.ForEach(x => x.MatchLocations.Add(locationFaker.Generate(1).First()));
+                }
+
+                // Up to 11, all teams are active.
+                // Above 11, one team in multiple is inactive.
+                // Above 15, both teams are inactive therefore the school should be inactive.
+                if (i > 15 && schools[i].Teams.Count > 1)
+                {
+                    schools[i].Teams.ForEach(t => t.UntilYear = DateTimeOffset.UtcNow.AddYears(-1).Year);
+                }
+                else if (i > 11 && schools[i].Teams.Count > 1)
+                {
+                    schools[i].Teams[0].UntilYear = DateTimeOffset.UtcNow.AddYears(-2).Year;
+                }
+            }
         }
 
         private class PlayerTotal

@@ -225,6 +225,10 @@
       <Project>{99803072-9098-430a-a2f5-20efac92134d}</Project>
       <Name>Stoolball.Data.SqlServer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Stoolball.Testing\Stoolball.Testing.csproj">
+      <Project>{b230b6cf-4fd3-4c44-8894-5ed789bff191}</Project>
+      <Name>Stoolball.Testing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Stoolball.Web\Stoolball.Web.csproj">
       <Project>{f66102a7-55a0-423a-aad3-19d89147b5c7}</Project>
       <Name>Stoolball.Web</Name>

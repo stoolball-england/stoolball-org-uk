@@ -6,6 +6,7 @@ using Stoolball.Matches;
 using Stoolball.Statistics;
 using Stoolball.Teams;
 using Stoolball.Testing;
+using Stoolball.Testing.Fakers;
 
 namespace Stoolball.UnitTests.Statistics
 {
@@ -22,7 +23,8 @@ namespace Stoolball.UnitTests.Statistics
         {
             var bowlingFiguresCalculator = new BowlingFiguresCalculator(_oversHelper);
             var playerIdentityFinder = new PlayerIdentityFinder();
-            var seedDataGenerator = new SeedDataGenerator(_oversHelper, bowlingFiguresCalculator, playerIdentityFinder);
+            var seedDataGenerator = new SeedDataGenerator(_oversHelper, bowlingFiguresCalculator, playerIdentityFinder,
+                new TeamFakerFactory(), new MatchLocationFakerFactory(), new SchoolFakerFactory());
 
             var homeTeam = new TeamInMatch
             {

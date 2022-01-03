@@ -87,7 +87,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Data.SqlServer", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Data.SqlServer.IntegrationTests", "Stoolball.Data.SqlServer.IntegrationTests\Stoolball.Data.SqlServer.IntegrationTests.csproj", "{6D674132-E075-4A6E-86E5-88771B6E3A25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Data.Cache", "Stoolball.Data.Cache\Stoolball.Data.Cache.csproj", "{1C2F2523-9D88-4289-BB2B-22611AC50D81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stoolball.Data.Cache", "Stoolball.Data.Cache\Stoolball.Data.Cache.csproj", "{1C2F2523-9D88-4289-BB2B-22611AC50D81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stoolball.Testing", "Stoolball.Testing\Stoolball.Testing.csproj", "{B230B6CF-4FD3-4C44-8894-5ED789BFF191}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -136,6 +138,10 @@ Global
 		{1C2F2523-9D88-4289-BB2B-22611AC50D81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C2F2523-9D88-4289-BB2B-22611AC50D81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C2F2523-9D88-4289-BB2B-22611AC50D81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B230B6CF-4FD3-4C44-8894-5ED789BFF191}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B230B6CF-4FD3-4C44-8894-5ED789BFF191}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B230B6CF-4FD3-4C44-8894-5ED789BFF191}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B230B6CF-4FD3-4C44-8894-5ED789BFF191}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
