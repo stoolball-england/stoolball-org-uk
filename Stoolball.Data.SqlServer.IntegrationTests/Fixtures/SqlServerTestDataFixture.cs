@@ -22,10 +22,10 @@ namespace Stoolball.Data.SqlServer.IntegrationTests.Fixtures
             var matchLocationFakerFactory = new MatchLocationFakerFactory();
             var schoolFakerFactory = new SchoolFakerFactory();
             var randomSeedDataGenerator = new SeedDataGenerator(oversHelper, bowlingFiguresCalculator, playerIdentityFinder, teamFakerFactory, matchLocationFakerFactory, schoolFakerFactory);
-            TestData = randomSeedDataGenerator.GenerateTestData();
 
             // Use Bogus to generate Schools data
             Randomizer.Seed = new Random(85437684);
+            TestData = randomSeedDataGenerator.GenerateTestData();
 
             using (var connection = ConnectionFactory.CreateDatabaseConnection())
             {

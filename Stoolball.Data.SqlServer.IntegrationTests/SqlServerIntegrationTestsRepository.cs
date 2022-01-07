@@ -460,6 +460,9 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
 
         public void AddTeamToMatchLocation(Team team, MatchLocation matchLocation)
         {
+            var teamMatchLocationId = _connection.QuerySingleOrDefault<Guid?>($"SELECT TeamMatchLocationId FROM {Tables.TeamMatchLocation} WHERE TeamId = @TeamId AND MatchLocationId = @MatchLocationId", new { team.TeamId, matchLocation.MatchLocationId });
+            if (teamMatchLocationId.HasValue) { return; }
+
             _connection.Execute($@"INSERT INTO {Tables.TeamMatchLocation} 
                     (TeamMatchLocationId, MatchLocationId, TeamId, FromDate, UntilDate)
                     VALUES
@@ -590,18 +593,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
             {
                 CreateTeam(team);
 
-                _connection.Execute($@"INSERT INTO {Tables.TeamMatchLocation} 
-                    (TeamMatchLocationId, TeamId, MatchLocationId, FromDate, UntilDate)
-                    VALUES
-                    (@TeamMatchLocationId, @TeamId, @MatchLocationId, @FromDate, @UntilDate)",
-                    new
-                    {
-                        TeamMatchLocationId = Guid.NewGuid(),
-                        team.TeamId,
-                        matchLocation.MatchLocationId,
-                        FromDate = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero),
-                        UntilDate = (DateTimeOffset?)null
-                    });
+                AddTeamToMatchLocation(team, matchLocation);
             }
         }
 
