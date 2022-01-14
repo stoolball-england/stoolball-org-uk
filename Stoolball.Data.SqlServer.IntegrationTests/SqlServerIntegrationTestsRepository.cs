@@ -146,7 +146,7 @@ namespace Stoolball.Data.SqlServer.IntegrationTests
                         school.SchoolName,
                         ComparableName = school.ComparableName(),
                         FromDate = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero),
-                        UntilDate = (DateTimeOffset?)null
+                        UntilDate = school.UntilYear.HasValue ? new DateTimeOffset(school.UntilYear.Value, 12, 31, 23, 59, 59, TimeSpan.Zero) : (DateTimeOffset?)null
                     });
         }
 

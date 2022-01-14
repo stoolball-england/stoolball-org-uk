@@ -865,9 +865,15 @@ namespace Stoolball.Testing
                 .RuleFor(x => x.TeamType, faker => faker.Random.ListItem<TeamType>(new List<TeamType> { TeamType.SchoolAgeGroup, TeamType.SchoolClub, TeamType.SchoolOther }));
             var locationFaker = locationFakerMaker();
 
-            for (var i = 3; i < schools.Count; i++)
+            for (var i = 0; i < schools.Count; i++)
             {
                 // First 3 schools have no teams therefore the school should be inactive.
+                if (i < 3)
+                {
+                    schools[i].UntilYear = 2019;
+                    continue;
+                }
+
                 // Then even indexes get one team, odd get multiple.
                 schools[i].Teams = schoolTeamFaker.Generate((i % 2) + 1);
                 schools[i].Teams.ForEach(t => t.School = schools[i]);

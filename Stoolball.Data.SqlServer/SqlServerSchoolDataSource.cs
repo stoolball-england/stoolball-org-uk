@@ -58,11 +58,12 @@ namespace Stoolball.Data.SqlServer
             {
                 var (where, parameters) = BuildWhereClause(filter);
 
-                var sql = $@"SELECT sc2.SchoolId, sv2.SchoolName, sc2.SchoolRoute,
-                            t.TeamId
+                var sql = $@"SELECT sc2.SchoolId, sv2.SchoolName, sc2.SchoolRoute, YEAR(sv2.UntilDate) as UntilYear,
+                            t2.TeamId, t2.TeamType, t2.PlayerType, YEAR(tv2.UntilDate) AS UntilYear
                             FROM {Tables.School} AS sc2
                             INNER JOIN {Tables.SchoolVersion} AS sv2 ON sc2.SchoolId = sv2.SchoolId
-                            LEFT JOIN {Tables.Team} t ON sc2.SchoolId = t.SchoolId
+                            LEFT JOIN {Tables.Team} t2 ON sc2.SchoolId = t2.SchoolId
+                            LEFT JOIN {Tables.TeamVersion} tv2 ON t2.TeamId = tv2.TeamId
                             WHERE sc2.SchoolId IN (
                                 SELECT SchoolId FROM (
                                     SELECT DISTINCT sc.SchoolId, CASE WHEN sv.UntilDate IS NULL THEN 1 ELSE 0 END AS Active, sv.ComparableName
@@ -78,14 +79,16 @@ namespace Stoolball.Data.SqlServer
                                 ) AS SchoolIds
                             )
                             AND sv2.SchoolVersionId = (SELECT TOP 1 SchoolVersionId FROM {Tables.SchoolVersion} WHERE SchoolId = sc2.SchoolId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC)
+                            AND (tv2.TeamVersionId IS NULL OR tv2.TeamVersionId = (SELECT TOP 1 TeamVersionId FROM {Tables.TeamVersion} WHERE TeamId = t2.TeamId ORDER BY ISNULL(UntilDate, '{SqlDateTime.MaxValue.Value.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}') DESC))
                             ORDER BY CASE WHEN sv2.UntilDate IS NULL THEN 0 ELSE 1 END, sv2.ComparableName";
 
                 parameters.Add("@PageOffset", (filter.Paging.PageNumber - 1) * filter.Paging.PageSize);
                 parameters.Add("@PageSize", filter.Paging.PageSize);
 
                 var schools = await connection.QueryAsync<School, Team, School>(sql,
-                    (school, dummyForNow) =>
+                    (school, team) =>
                     {
+                        if (team != null) { school.Teams.Add(team); }
                         return school;
                     },
                     new DynamicParameters(parameters),
@@ -94,6 +97,7 @@ namespace Stoolball.Data.SqlServer
                 var resolvedSchools = schools.GroupBy(school => school.SchoolId).Select(copiesOfSchool =>
                 {
                     var resolvedSchool = copiesOfSchool.First();
+                    resolvedSchool.Teams = copiesOfSchool.SelectMany(x => x.Teams).Distinct(new TeamEqualityComparer()).ToList();
                     return resolvedSchool;
                 }).ToList();
 

@@ -7,6 +7,7 @@ using System.Web.Routing;
 using Moq;
 using Stoolball.Listings;
 using Stoolball.Schools;
+using Stoolball.Web.Routing;
 using Stoolball.Web.Schools;
 using Stoolball.Web.Security;
 using Umbraco.Core.Cache;
@@ -122,5 +123,30 @@ namespace Stoolball.Web.UnitTests.Schools
             }
         }
 
+        [Fact]
+        public async Task Sets_schools_breadcrumb()
+        {
+            var model = new SchoolsViewModel(Mock.Of<IPublishedContent>(), Mock.Of<IUserService>()) { Filter = new SchoolFilter() };
+            var dataSource = new Mock<ISchoolDataSource>();
+            var listingsBuilder = new Mock<IListingsModelBuilder<School, SchoolFilter, SchoolsViewModel>>();
+            listingsBuilder.Setup(x => x.BuildModel(
+                It.IsAny<Func<SchoolsViewModel>>(),
+                dataSource.Object.ReadTotalSchools,
+                dataSource.Object.ReadSchools,
+                Constants.Pages.Schools,
+                _pageUrl,
+                _queryString
+                )).Returns(Task.FromResult(model));
+
+            using (var controller = CreateController(dataSource.Object, listingsBuilder.Object))
+            {
+                var result = await controller.Index(new ContentModel(Mock.Of<IPublishedContent>())).ConfigureAwait(false);
+
+                var breadcrumbs = (((ViewResult)result).Model as BaseViewModel).Breadcrumbs;
+                Assert.Equal(2, breadcrumbs.Count);
+                Assert.Equal(Constants.Pages.Home, breadcrumbs[0].Name);
+                Assert.Equal(Constants.Pages.Schools, breadcrumbs[1].Name);
+            }
+        }
     }
 }

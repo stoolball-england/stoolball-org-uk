@@ -1,6 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Schools.SchoolsViewModel>
 @using Humanizer
-@using System.Text.RegularExpressions
+@using System.Linq
+@using Stoolball.Teams
 @section canonical {@Html.Partial("_CanonicalUrl", new[] { "page", "q" })}
 <div class="container-xl">
     <h1>
@@ -19,12 +20,47 @@
 
     @if (Model.Listings.Any())
     {
-        <dl>
-            @foreach (var school in Model.Listings)
+<dl>
+    @foreach (var school in Model.Listings)
+    {
+        var detail = string.Empty;
+
+        var playerTypes = school.Teams.Select(x => x.PlayerType).Distinct().ToList();
+        playerTypes.Sort(); // by id, which is consistent with Teams.cshtml
+        var playerTypeText = $"{playerTypes.Select((value, index) => value.ToString().Replace("Junior", string.Empty).Humanize(LetterCasing.LowerCase)).Humanize()}";
+
+        var active = school.ActiveTeams();
+        if (active.Count == 0)
+        {
+            detail = "No active teams or clubs.";
+        }
+        else if (active.Count == 1)
+        {
+            detail = $"One {playerTypeText} {(active.First().TeamType == TeamType.SchoolClub ? "club" : "team")}.";
+        }
+        else
+        {
+            var clubCount = active.Count(x => x.TeamType == TeamType.SchoolClub);
+            var teamsOrClubs = string.Empty;
+            if (clubCount == 0)
             {
-                <dt class="list-results__title">@school.SchoolName</dt>
+                teamsOrClubs = "teams";
             }
-        </dl>
+            else if (clubCount < active.Count)
+            {
+                teamsOrClubs = "teams and clubs";
+            }
+            else
+            {
+                teamsOrClubs = "clubs";
+            }
+            detail = $"{active.Count.ToWords().Humanize(LetterCasing.Sentence)} {playerTypeText} {teamsOrClubs}.";
+        }
+
+        <dt class="list-results__title">@school.SchoolName</dt>
+        <dd class="list-results__detail">@detail</dd>
+    }
+</dl>
     }
     @Html.Partial("_Paging", Model.Filter.Paging)
 </div>

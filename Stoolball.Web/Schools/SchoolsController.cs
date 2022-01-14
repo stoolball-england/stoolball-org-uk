@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Stoolball.Listings;
+using Stoolball.Navigation;
 using Stoolball.Schools;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -48,6 +50,9 @@ namespace Stoolball.Web.Schools
                 Constants.Pages.Schools,
                 Request.Url,
                 Request.QueryString).ConfigureAwait(false);
+
+            model.Breadcrumbs.RemoveAt(model.Breadcrumbs.Count - 1);
+            model.Breadcrumbs.Add(new Breadcrumb { Name = Constants.Pages.Schools, Url = new Uri(Constants.Pages.SchoolsUrl, UriKind.Relative) });
 
             return CurrentTemplate(model);
         }
