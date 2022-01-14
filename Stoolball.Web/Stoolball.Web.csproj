@@ -374,17 +374,17 @@
     <Reference Include="Umbraco.Examine, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\UmbracoCms.Web.8.11.3\lib\net472\Umbraco.Examine.dll</HintPath>
     </Reference>
-    <Reference Include="Umbraco.Forms.Core, Version=8.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UmbracoForms.Core.8.8.0\lib\net472\Umbraco.Forms.Core.dll</HintPath>
+    <Reference Include="Umbraco.Forms.Core, Version=8.10.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\UmbracoForms.Core.8.10.0\lib\net472\Umbraco.Forms.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Umbraco.Forms.Core.Providers, Version=8.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UmbracoForms.Core.8.8.0\lib\net472\Umbraco.Forms.Core.Providers.dll</HintPath>
+    <Reference Include="Umbraco.Forms.Core.Providers, Version=8.10.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\UmbracoForms.Core.8.10.0\lib\net472\Umbraco.Forms.Core.Providers.dll</HintPath>
     </Reference>
-    <Reference Include="Umbraco.Forms.Web, Version=8.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UmbracoForms.Core.8.8.0\lib\net472\Umbraco.Forms.Web.dll</HintPath>
+    <Reference Include="Umbraco.Forms.Web, Version=8.10.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\UmbracoForms.Core.8.10.0\lib\net472\Umbraco.Forms.Web.dll</HintPath>
     </Reference>
     <Reference Include="Umbraco.Licensing, Version=2.0.33.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UmbracoForms.Core.8.8.0\lib\net472\Umbraco.Licensing.dll</HintPath>
+      <HintPath>..\packages\UmbracoForms.Core.8.10.0\lib\net472\Umbraco.Licensing.dll</HintPath>
     </Reference>
     <Reference Include="Umbraco.ModelsBuilder.Embedded, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\UmbracoCms.Web.8.11.3\lib\net472\Umbraco.ModelsBuilder.Embedded.dll</HintPath>
@@ -494,6 +494,7 @@
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\RenderTypes\date.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\RenderTypes\file.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\RenderTypes\member.html" />
+    <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\RenderTypes\number.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\RenderTypes\text.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\SettingTypes\checkbox.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\SettingTypes\documentmapper.html" />
@@ -511,6 +512,7 @@
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\SettingTypes\pickers.datatype.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\SettingTypes\pickers.documenttype.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\SettingTypes\range.html" />
+    <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\SettingTypes\standardfieldmapper.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\SettingTypes\textarea.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\SettingTypes\textfield.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Common\SettingTypes\textfieldnoautocomplete.html" />
@@ -536,6 +538,7 @@
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Form\overlays\fieldsettings\field-settings.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Form\overlays\fieldtypepicker\field-type-picker.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Form\overlays\formpicker\formpicker.html" />
+    <Content Include="App_Plugins\UmbracoForms\Backoffice\Form\overlays\pagesettings\page-settings.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Form\overlays\themepicker\themepicker.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Form\overlays\workflows\submit-message-workflow-settings.html" />
     <Content Include="App_Plugins\UmbracoForms\Backoffice\Form\overlays\workflows\workflow-settings.html" />
@@ -568,24 +571,12 @@
     <Content Include="App_Plugins\UmbracoForms\Images\succes-green.png" />
     <Content Include="App_Plugins\UmbracoForms\Images\workflows\slack\icon.svg" />
     <Content Include="App_Plugins\UmbracoForms\js\umbraco.forms.js" />
-    <Content Include="App_Plugins\UmbracoForms\lang\cs-CZ.xml" />
-    <Content Include="App_Plugins\UmbracoForms\lang\da-DK.xml" />
-    <Content Include="App_Plugins\UmbracoForms\lang\de-DE.xml" />
-    <Content Include="App_Plugins\UmbracoForms\lang\en-GB.xml" />
-    <Content Include="App_Plugins\UmbracoForms\lang\en-US.xml" />
-    <Content Include="App_Plugins\UmbracoForms\lang\es-ES.xml" />
-    <Content Include="App_Plugins\UmbracoForms\lang\fr-FR.xml" />
-    <Content Include="App_Plugins\UmbracoForms\lang\he-IL.xml" />
-    <Content Include="App_Plugins\UmbracoForms\lang\it-IT.xml" />
-    <Content Include="App_Plugins\UmbracoForms\lang\ja-JP.xml" />
-    <Content Include="App_Plugins\UmbracoForms\lang\ko-KR.xml" />
-    <Content Include="App_Plugins\UmbracoForms\lang\nb-NO.xml" />
-    <Content Include="App_Plugins\UmbracoForms\lang\nl-NL.xml" />
-    <Content Include="App_Plugins\UmbracoForms\lang\pl-PL.xml" />
-    <Content Include="App_Plugins\UmbracoForms\lang\pt-BR.xml" />
-    <Content Include="App_Plugins\UmbracoForms\lang\ru-RU.xml" />
-    <Content Include="App_Plugins\UmbracoForms\lang\sv-SE.xml" />
-    <Content Include="App_Plugins\UmbracoForms\lang\zh-CN.xml" />
+    <Content Include="App_Plugins\UmbracoForms\lang\en-gb.xml" />
+    <Content Include="App_Plugins\UmbracoForms\lang\en-us.xml" />
+    <Content Include="App_Plugins\UmbracoForms\lang\es-es.xml" />
+    <Content Include="App_Plugins\UmbracoForms\lang\fr-fr.xml" />
+    <Content Include="App_Plugins\UmbracoForms\lang\it-it.xml" />
+    <Content Include="App_Plugins\UmbracoForms\lang\pl-pl.xml" />
     <Content Include="App_Plugins\UmbracoForms\Xslt\DataTables_json.xslt" />
     <Content Include="App_Plugins\UmbracoForms\Xslt\DataTables_json_medtrust.xslt" />
     <Content Include="App_Plugins\UmbracoForms\Xslt\excel.xslt" />
@@ -3193,18 +3184,6 @@
     <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.FileUpload.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.CheckBox.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\stoolball\Fieldtypes\FieldType.Textarea.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\DatePicker.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.CheckBox.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.CheckBoxList.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.DataConsent.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.DatePicker.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.DropDownList.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.FileUpload.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.HiddenField.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.PasswordField.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.RadioButtonList.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\Fieldtype.Recaptcha2.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\Fieldtype.Recaptcha3.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.Text.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.Textarea.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.Textfield.cshtml" />
@@ -3212,18 +3191,6 @@
     <Content Include="Views\Partials\Forms\Themes\default\Render.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\Script.cshtml" />
     <Content Include="Views\Partials\Forms\Themes\default\ScrollToFormScript.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\Submitted.cshtml" />
-    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.CheckBox.cshtml" />
-    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.CheckBoxList.cshtml" />
-    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.DataConsent.cshtml" />
-    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.DatePicker.cshtml" />
-    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.DropDownList.cshtml" />
-    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.FileUpload.cshtml" />
-    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.HiddenField.cshtml" />
-    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.PasswordField.cshtml" />
-    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.RadioButtonList.cshtml" />
-    <Content Include="Views\Partials\Forms\Fieldtypes\Fieldtype.Recaptcha2.cshtml" />
-    <Content Include="Views\Partials\Forms\Fieldtypes\Fieldtype.Recaptcha3.cshtml" />
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Text.cshtml" />
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Textarea.cshtml" />
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.Textfield.cshtml" />
@@ -3240,6 +3207,30 @@
       <LastGenOutput>ResetPasswordComplete.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\Schools.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\default\Submitted.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\Fieldtype.Recaptcha3.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\Fieldtype.Recaptcha2.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.RadioButtonList.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.PasswordField.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.HiddenField.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.FileUpload.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.DropDownList.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.DatePicker.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.DataConsent.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.CheckBoxList.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.CheckBox.cshtml" />
+    <Content Include="Views\Partials\Forms\Themes\default\DatePicker.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\Fieldtype.Recaptcha3.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\Fieldtype.Recaptcha2.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.RadioButtonList.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.PasswordField.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.HiddenField.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.FileUpload.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.DropDownList.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.DatePicker.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.DataConsent.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.CheckBoxList.cshtml" />
+    <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.CheckBox.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
