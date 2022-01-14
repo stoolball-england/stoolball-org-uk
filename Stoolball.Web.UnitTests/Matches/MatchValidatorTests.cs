@@ -110,8 +110,10 @@ namespace Stoolball.Web.UnitTests.Matches
         [Fact]
         public void AtLeastOneTeamInMatch_clears_existing_MatchTeams_errors()
         {
-            var model = new List<TeamInMatch>();
-            model.Add(new TeamInMatch());
+            var model = new List<TeamInMatch>
+            {
+                new TeamInMatch()
+            };
             var modelState = new ModelStateDictionary();
             modelState.AddModelError("Match.Teams", "Error text");
             modelState.AddModelError("Match.Teams.AnyProperty", "Error text");
@@ -137,8 +139,10 @@ namespace Stoolball.Web.UnitTests.Matches
         [Fact]
         public void AtLeastOneTeamInMatch_is_valid_with_at_least_one_team()
         {
-            var model = new List<TeamInMatch>();
-            model.Add(new TeamInMatch());
+            var model = new List<TeamInMatch>
+            {
+                new TeamInMatch()
+            };
             var modelState = new ModelStateDictionary();
 
             new MatchValidator(Mock.Of<ISeasonEstimator>()).AtLeastOneTeamInMatch(model, modelState);
@@ -255,6 +259,7 @@ namespace Stoolball.Web.UnitTests.Matches
         }
 
 
+        [Fact]
         public void DateIsWithinTheSeason_throws_NullReferenceException_if_date_Func_is_null()
         {
             var modelState = new ModelStateDictionary();

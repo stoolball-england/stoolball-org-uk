@@ -59,7 +59,6 @@ namespace Stoolball.Web.Routing
 
         public string Name => _contentModel.Name;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1056:Uri properties should not be strings", Justification = "Implementing the IPublishedContent interface")]
         public string UrlSegment => _contentModel.UrlSegment;
 
         public int SortOrder => _contentModel.SortOrder;
@@ -82,7 +81,6 @@ namespace Stoolball.Web.Routing
 
         public DateTime UpdateDate => _contentModel.UpdateDate;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1056:Uri properties should not be strings", Justification = "Implementing the IPublishedContent interface")]
         public string Url => _contentModel.Url();
 
         public IReadOnlyDictionary<string, PublishedCultureInfo> Cultures => _contentModel.Cultures;

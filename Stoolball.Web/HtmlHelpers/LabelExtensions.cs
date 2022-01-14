@@ -31,7 +31,7 @@ namespace Stoolball.Web.HtmlHelpers
 
         public static MvcHtmlString LabelFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, string labelText, RequiredFieldStatus required, IDictionary<string, object> htmlAttributes)
         {
-            ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
+            ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html?.ViewData);
             string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
             string finalLabelText = labelText ?? metadata.DisplayName ?? metadata.PropertyName ?? htmlFieldName.Split('.').Last();
             if (String.IsNullOrEmpty(finalLabelText))
@@ -41,7 +41,7 @@ namespace Stoolball.Web.HtmlHelpers
 
             TagBuilder tag = new TagBuilder("label");
             tag.MergeAttributes(htmlAttributes);
-            tag.Attributes.Add("for", html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldId(htmlFieldName));
+            tag.Attributes.Add("for", html?.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldId(htmlFieldName));
             tag.InnerHtml = finalLabelText;
 
             if (required != RequiredFieldStatus.Required)

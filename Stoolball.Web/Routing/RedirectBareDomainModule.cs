@@ -9,7 +9,7 @@ namespace Stoolball.Web.Routing
     {
         public void Init(HttpApplication context)
         {
-            context.BeginRequest += Context_BeginRequest;
+            if (context != null) { context.BeginRequest += Context_BeginRequest; }
         }
 
         private void Context_BeginRequest(object sender, System.EventArgs e)

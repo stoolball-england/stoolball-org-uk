@@ -31,7 +31,7 @@ namespace Stoolball.Web.Teams
 
         [HttpGet]
         [ContentSecurityPolicy(GoogleMaps = true)]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public override Task<ActionResult> Index(ContentModel contentModel)
         {
             if (contentModel is null)
             {
@@ -45,7 +45,7 @@ namespace Stoolball.Web.Teams
 
             model.Metadata.PageTitle = "Map of " + Constants.Pages.Teams.ToLower(CultureInfo.CurrentCulture);
 
-            return CurrentTemplate(model);
+            return Task.FromResult(CurrentTemplate(model));
         }
     }
 }

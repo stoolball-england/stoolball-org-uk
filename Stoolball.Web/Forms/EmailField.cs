@@ -45,12 +45,15 @@ namespace Stoolball.Web.Forms
         {
             var errorMessages = new List<string>(base.ValidateField(form, field, postedValues, context, formStorage));
 
-            foreach (string value in postedValues)
+            if (postedValues != null)
             {
-                if (!ValidateEmailAddress(value))
+                foreach (string value in postedValues)
                 {
-                    errorMessages.Add("Please enter a valid email address");
-                    break;
+                    if (!ValidateEmailAddress(value))
+                    {
+                        errorMessages.Add("Please enter a valid email address");
+                        break;
+                    }
                 }
             }
 
@@ -65,7 +68,7 @@ namespace Stoolball.Web.Forms
         public bool ValidateEmailAddress(string emailAddress)
         {
             // this is not a required field validator
-            if (string.IsNullOrEmpty(emailAddress)) return true;
+            if (string.IsNullOrEmpty(emailAddress)) { return true; }
 
             // Do the regex validation
             if (!Regex.IsMatch(emailAddress, @"^[a-zA-Z0-9'_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"))
@@ -76,7 +79,9 @@ namespace Stoolball.Web.Forms
             // But that doesn't catch everything so try the Microsoft one
             try
             {
+#pragma warning disable CA1806 // Do not ignore method results
                 new MailAddress(emailAddress);
+#pragma warning restore CA1806 // Do not ignore method results
             }
             catch (FormatException)
             {
@@ -118,7 +123,7 @@ namespace Stoolball.Web.Forms
                 return false;
             }
 
-            if (domain.StartsWith("."))
+            if (domain.StartsWith(".", StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }

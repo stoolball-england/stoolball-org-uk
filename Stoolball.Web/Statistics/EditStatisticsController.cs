@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Stoolball.Data.SqlServer;
 using Stoolball.Security;
 using Stoolball.Web.Routing;
 using Stoolball.Web.Security;
@@ -17,23 +16,19 @@ namespace Stoolball.Web.Statistics
 {
     public class EditStatisticsController : RenderMvcControllerAsync
     {
-        private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
-
         public EditStatisticsController(IGlobalSettings globalSettings,
            IUmbracoContextAccessor umbracoContextAccessor,
            ServiceContext serviceContext,
            AppCaches appCaches,
            IProfilingLogger profilingLogger,
-           UmbracoHelper umbracoHelper,
-           IDatabaseConnectionFactory databaseConnectionFactory)
+           UmbracoHelper umbracoHelper)
            : base(globalSettings, umbracoContextAccessor, serviceContext, appCaches, profilingLogger, umbracoHelper)
         {
-            _databaseConnectionFactory = databaseConnectionFactory ?? throw new ArgumentNullException(nameof(databaseConnectionFactory));
         }
 
         [HttpGet]
         [ContentSecurityPolicy]
-        public async override Task<ActionResult> Index(ContentModel contentModel)
+        public override Task<ActionResult> Index(ContentModel contentModel)
         {
             if (contentModel is null)
             {
@@ -45,7 +40,7 @@ namespace Stoolball.Web.Statistics
 
             model.Metadata.PageTitle = "Update statistics";
 
-            return CurrentTemplate(model);
+            return Task.FromResult(CurrentTemplate(model));
         }
     }
 }
