@@ -8,6 +8,6 @@ namespace Stoolball.Web.Matches
     /// </remarks>
     public class OverViewModel : Over
     {
-        public string Bowler { get; set; }
+        public string BowledBy { get; set; }
     }
 }

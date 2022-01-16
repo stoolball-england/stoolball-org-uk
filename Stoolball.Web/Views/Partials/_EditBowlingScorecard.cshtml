@@ -20,8 +20,8 @@
         {
             <tr>
                 <th scope="row" data-stackable="true" class="bowling-scorecard-editor__field bowling-scorecard-editor__bowler">
-                    @Html.LabelFor(m => Model.CurrentInnings.OversBowledSearch[i].Bowler, $"{(i + 1).Ordinalize(CultureInfo.CurrentCulture)} bowler", new { @class = "table-as-cards__label bowling-scorecard-editor__bowler-label" })
-                    @Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].Bowler, new { autocomplete = "off", data_lpignore = "true", @class = "scorecard__player-name", data_team = Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString() })
+                    @Html.LabelFor(m => Model.CurrentInnings.OversBowledSearch[i].BowledBy, $"{(i + 1).Ordinalize(CultureInfo.CurrentCulture)} bowler", new { @class = "table-as-cards__label bowling-scorecard-editor__bowler-label" })
+                    @Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].BowledBy, new { autocomplete = "off", data_lpignore = "true", @class = "scorecard__player-name", data_team = Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString() })
                 </th>
                 <td data-stackable="true" class="bowling-scorecard-editor__field bowling-scorecard-editor__balls">
                     <label for="CurrentInnings_OversBowledSearch_@(i)__BallsBowled" class="table-as-cards__label bowling-scorecard-editor__balls-label">Balls bowled <small class="text-nowrap">(excluding extras)</small></label>
@@ -47,8 +47,8 @@
     <table>
         <tr>
             <th scope="row" data-stackable="true" class="bowling-scorecard-editor__field bowling-scorecard-editor__bowler">
-                <label class="table-as-cards__label bowling-scorecard-editor__bowler-label" for="CurrentInnings_OversBowledSearch_[0]__Bowler">[0th] bowler</label>
-                <input autocomplete="off" data-lpignore="true" class="scorecard__player-name" data-team="@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString()" name="CurrentInnings.OversBowledSearch[0].Bowler" id="CurrentInnings_OversBowledSearch_[0]__Bowler" type="text" value="" />
+                <label class="table-as-cards__label bowling-scorecard-editor__bowler-label" for="CurrentInnings_OversBowledSearch_[0]__BowledBy">[0th] bowler</label>
+                <input autocomplete="off" data-lpignore="true" class="scorecard__player-name" data-team="@Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString()" name="CurrentInnings.OversBowledSearch[0].BowledBy" id="CurrentInnings_OversBowledSearch_[0]__Bowler" type="text" value="" />
             </th>
             <td data-stackable="true" class="bowling-scorecard-editor__field bowling-scorecard-editor__balls">
                 <label for="CurrentInnings_OversBowledSearch_[0]__BallsBowled" class="table-as-cards__label bowling-scorecard-editor__balls-label">Balls bowled <small class="text-nowrap">(excluding extras)</small></label>

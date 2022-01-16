@@ -794,7 +794,7 @@ WriteLiteral(">Map of Maresfield Recreation Ground, Maresfield on Google Maps</a
         });
         innings.CurrentInnings.OversBowledSearch.Add(new OverViewModel
         {
-            Bowler = "Player Two",
+            BowledBy = "Player Two",
             BallsBowled = 8,
             Wides = 2,
             NoBalls = 4,

@@ -74,7 +74,7 @@ namespace Stoolball.Web.Matches
             var i = 0;
             foreach (var over in postedData.OversBowledSearch)
             {
-                if (string.IsNullOrWhiteSpace(over.Bowler) &&
+                if (string.IsNullOrWhiteSpace(over.BowledBy) &&
                     (over.BallsBowled.HasValue ||
                      over.Wides.HasValue ||
                      over.NoBalls.HasValue ||
@@ -93,11 +93,11 @@ namespace Stoolball.Web.Matches
                 Autofocus = true
             };
             model.CurrentInnings.MatchInnings = model.Match.MatchInnings.Single(x => x.InningsOrderInMatch == model.InningsOrderInMatch);
-            model.CurrentInnings.MatchInnings.OversBowled = postedData.OversBowledSearch.Where(x => x.Bowler?.Trim().Length > 0).Select((x, index) => new Over
+            model.CurrentInnings.MatchInnings.OversBowled = postedData.OversBowledSearch.Where(x => x.BowledBy?.Trim().Length > 0).Select((x, index) => new Over
             {
                 Bowler = new PlayerIdentity
                 {
-                    PlayerIdentityName = x.Bowler.Trim(),
+                    PlayerIdentityName = x.BowledBy.Trim(),
                     Team = model.CurrentInnings.MatchInnings.BowlingTeam.Team
                 },
                 OverNumber = index + 1,

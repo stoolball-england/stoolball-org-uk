@@ -169,7 +169,7 @@ WriteLiteral("                    ");
 
             
             #line 23 "..\..\Views\Partials\_EditBowlingScorecard.cshtml"
-               Write(Html.LabelFor(m => Model.CurrentInnings.OversBowledSearch[i].Bowler, $"{(i + 1).Ordinalize(CultureInfo.CurrentCulture)} bowler", new { @class = "table-as-cards__label bowling-scorecard-editor__bowler-label" }));
+               Write(Html.LabelFor(m => Model.CurrentInnings.OversBowledSearch[i].BowledBy, $"{(i + 1).Ordinalize(CultureInfo.CurrentCulture)} bowler", new { @class = "table-as-cards__label bowling-scorecard-editor__bowler-label" }));
 
             
             #line default
@@ -180,7 +180,7 @@ WriteLiteral("                    ");
 
             
             #line 24 "..\..\Views\Partials\_EditBowlingScorecard.cshtml"
-               Write(Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].Bowler, new { autocomplete = "off", data_lpignore = "true", @class = "scorecard__player-name", data_team = Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString() }));
+               Write(Html.TextBoxFor(m => Model.CurrentInnings.OversBowledSearch[i].BowledBy, new { autocomplete = "off", data_lpignore = "true", @class = "scorecard__player-name", data_team = Model.CurrentInnings.MatchInnings.BowlingTeam.Team.TeamId.ToString() }));
 
             
             #line default
@@ -193,16 +193,16 @@ WriteLiteral(" class=\"bowling-scorecard-editor__field bowling-scorecard-editor_
 
 WriteLiteral(">\r\n                    <label");
 
-WriteAttribute("for", Tuple.Create(" for=\"", 2047), Tuple.Create("\"", 2103)
-, Tuple.Create(Tuple.Create("", 2053), Tuple.Create("CurrentInnings_OversBowledSearch_", 2053), true)
+WriteAttribute("for", Tuple.Create(" for=\"", 2051), Tuple.Create("\"", 2107)
+, Tuple.Create(Tuple.Create("", 2057), Tuple.Create("CurrentInnings_OversBowledSearch_", 2057), true)
             
             #line 27 "..\..\Views\Partials\_EditBowlingScorecard.cshtml"
-, Tuple.Create(Tuple.Create("", 2086), Tuple.Create<System.Object, System.Int32>(i
+, Tuple.Create(Tuple.Create("", 2090), Tuple.Create<System.Object, System.Int32>(i
             
             #line default
             #line hidden
-, 2086), false)
-, Tuple.Create(Tuple.Create("", 2090), Tuple.Create("__BallsBowled", 2090), true)
+, 2090), false)
+, Tuple.Create(Tuple.Create("", 2094), Tuple.Create("__BallsBowled", 2094), true)
 );
 
 WriteLiteral(" class=\"table-as-cards__label bowling-scorecard-editor__balls-label\"");
@@ -323,7 +323,7 @@ WriteLiteral(@">
     <table>
         <tr>
             <th scope=""row"" data-stackable=""true"" class=""bowling-scorecard-editor__field bowling-scorecard-editor__bowler"">
-                <label class=""table-as-cards__label bowling-scorecard-editor__bowler-label"" for=""CurrentInnings_OversBowledSearch_[0]__Bowler"">[0th] bowler</label>
+                <label class=""table-as-cards__label bowling-scorecard-editor__bowler-label"" for=""CurrentInnings_OversBowledSearch_[0]__BowledBy"">[0th] bowler</label>
                 <input autocomplete=""off"" data-lpignore=""true"" class=""scorecard__player-name"" data-team=""");
 
             
@@ -333,35 +333,35 @@ WriteLiteral(@">
             
             #line default
             #line hidden
-WriteLiteral("\" name=\"CurrentInnings.OversBowledSearch[0].Bowler\" id=\"CurrentInnings_OversBowle" +
-"dSearch_[0]__Bowler\" type=\"text\" value=\"\" />\r\n            </th>\r\n            <td" +
-" data-stackable=\"true\" class=\"bowling-scorecard-editor__field bowling-scorecard-" +
-"editor__balls\">\r\n                <label for=\"CurrentInnings_OversBowledSearch_[0" +
-"]__BallsBowled\" class=\"table-as-cards__label bowling-scorecard-editor__balls-lab" +
-"el\">Balls bowled <small class=\"text-nowrap\">(excluding extras)</small></label>\r\n" +
-"                <span><input autocomplete=\"off\" class=\"scorecard__balls\" min=\"1\"" +
-" max=\"12\" name=\"CurrentInnings.OversBowledSearch[0].BallsBowled\" id=\"CurrentInni" +
-"ngs_OversBowledSearch_[0]__BallsBowled\" type=\"number\" value=\"\" /></span>\r\n      " +
-"      </td>\r\n            <td data-stackable=\"true\" class=\"bowling-scorecard-edit" +
-"or__field bowling-scorecard-editor__wides\">\r\n                <label class=\"table" +
-"-as-cards__label bowling-scorecard-editor__wides-label\" for=\"CurrentInnings_Over" +
-"sBowledSearch_[0]__Wides\">Wides</label>\r\n                <input autocomplete=\"of" +
-"f\" class=\"scorecard__wides\" min=\"0\" name=\"CurrentInnings.OversBowledSearch[0].Wi" +
-"des\" id=\"CurrentInnings_OversBowledSearch_[0]__Wides\" type=\"number\" value=\"\" />\r" +
-"\n            </td>\r\n            <td data-stackable=\"true\" class=\"bowling-scoreca" +
-"rd-editor__field bowling-scorecard-editor__no-balls\">\r\n                <label cl" +
-"ass=\"table-as-cards__label bowling-scorecard-editor__no-balls-label text-nowrap\"" +
-" for=\"CurrentInnings_OversBowledSearch_[0]__NoBalls\">No balls</label>\r\n         " +
-"       <input autocomplete=\"off\" class=\"scorecard__no-balls\" min=\"0\" name=\"Curre" +
-"ntInnings.OversBowledSearch[0].NoBalls\" id=\"CurrentInnings_OversBowledSearch_[0]" +
-"__NoBalls\" type=\"number\" value=\"\" />\r\n            </td>\r\n            <td data-st" +
-"ackable=\"true\" class=\"bowling-scorecard-editor__field bowling-scorecard-editor__" +
-"runs\">\r\n                <label class=\"table-as-cards__label bowling-scorecard-ed" +
-"itor__runs-label text-nowrap\" for=\"CurrentInnings_OversBowledSearch_[0]__RunsCon" +
-"ceded\">Over total</label>\r\n                <input autocomplete=\"off\" class=\"scor" +
-"ecard__runs\" name=\"CurrentInnings.OversBowledSearch[0].RunsConceded\" id=\"Current" +
-"Innings_OversBowledSearch_[0]__RunsConceded\" type=\"number\" value=\"\" />\r\n        " +
-"    </td>\r\n        </tr>\r\n    </table>\r\n</script>\r\n\r\n<p");
+WriteLiteral("\" name=\"CurrentInnings.OversBowledSearch[0].BowledBy\" id=\"CurrentInnings_OversBow" +
+"ledSearch_[0]__Bowler\" type=\"text\" value=\"\" />\r\n            </th>\r\n            <" +
+"td data-stackable=\"true\" class=\"bowling-scorecard-editor__field bowling-scorecar" +
+"d-editor__balls\">\r\n                <label for=\"CurrentInnings_OversBowledSearch_" +
+"[0]__BallsBowled\" class=\"table-as-cards__label bowling-scorecard-editor__balls-l" +
+"abel\">Balls bowled <small class=\"text-nowrap\">(excluding extras)</small></label>" +
+"\r\n                <span><input autocomplete=\"off\" class=\"scorecard__balls\" min=\"" +
+"1\" max=\"12\" name=\"CurrentInnings.OversBowledSearch[0].BallsBowled\" id=\"CurrentIn" +
+"nings_OversBowledSearch_[0]__BallsBowled\" type=\"number\" value=\"\" /></span>\r\n    " +
+"        </td>\r\n            <td data-stackable=\"true\" class=\"bowling-scorecard-ed" +
+"itor__field bowling-scorecard-editor__wides\">\r\n                <label class=\"tab" +
+"le-as-cards__label bowling-scorecard-editor__wides-label\" for=\"CurrentInnings_Ov" +
+"ersBowledSearch_[0]__Wides\">Wides</label>\r\n                <input autocomplete=\"" +
+"off\" class=\"scorecard__wides\" min=\"0\" name=\"CurrentInnings.OversBowledSearch[0]." +
+"Wides\" id=\"CurrentInnings_OversBowledSearch_[0]__Wides\" type=\"number\" value=\"\" /" +
+">\r\n            </td>\r\n            <td data-stackable=\"true\" class=\"bowling-score" +
+"card-editor__field bowling-scorecard-editor__no-balls\">\r\n                <label " +
+"class=\"table-as-cards__label bowling-scorecard-editor__no-balls-label text-nowra" +
+"p\" for=\"CurrentInnings_OversBowledSearch_[0]__NoBalls\">No balls</label>\r\n       " +
+"         <input autocomplete=\"off\" class=\"scorecard__no-balls\" min=\"0\" name=\"Cur" +
+"rentInnings.OversBowledSearch[0].NoBalls\" id=\"CurrentInnings_OversBowledSearch_[" +
+"0]__NoBalls\" type=\"number\" value=\"\" />\r\n            </td>\r\n            <td data-" +
+"stackable=\"true\" class=\"bowling-scorecard-editor__field bowling-scorecard-editor" +
+"__runs\">\r\n                <label class=\"table-as-cards__label bowling-scorecard-" +
+"editor__runs-label text-nowrap\" for=\"CurrentInnings_OversBowledSearch_[0]__RunsC" +
+"onceded\">Over total</label>\r\n                <input autocomplete=\"off\" class=\"sc" +
+"orecard__runs\" name=\"CurrentInnings.OversBowledSearch[0].RunsConceded\" id=\"Curre" +
+"ntInnings_OversBowledSearch_[0]__RunsConceded\" type=\"number\" value=\"\" />\r\n      " +
+"      </td>\r\n        </tr>\r\n    </table>\r\n</script>\r\n\r\n<p");
 
 WriteLiteral(" class=\"bowling-scorecard__full-name-tip d-none alert alert-info alert-tip\"");
 
