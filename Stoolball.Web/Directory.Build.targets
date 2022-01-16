@@ -260,7 +260,6 @@
     <Warning Text="$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config not found. Google maps will not load. This is probably because you're using an Umbraco Cloud trial account." Condition="!Exists('$(ProjectDir)\Secret-GoogleMapsApiKey.Web.local.xdt.config')"/>
 
     <TransformXml Source="$(TemplateAppInsightsConfig)" Transform="$(ProjectDir)\Secret-InstrumentationKey.ApplicationInsights.local.xdt.config" Destination="$(ActualAppInsightsConfig)" StackTrace="true" Condition="Exists('$(ProjectDir)\Secret-InstrumentationKey.ApplicationInsights.local.xdt.config')"  />
-    <Warning Text="$(ProjectDir)\Secret-InstrumentationKey.ApplicationInsights.local.xdt.config not found. To set up reporting to Application Insights copy ApplicationInsights.xdt.template.config to Secret-InstrumentationKey.ApplicationInsights.local.xdt.config and add your instrumentation key." Condition="!Exists('$(ProjectDir)\Secret-InstrumentationKey.ApplicationInsights.local.xdt.config')"/>
 
     <!-- Replace tokens that appear in the generated Web.config, to avoid duplication in the XDT file -->
     <ReplaceFileText

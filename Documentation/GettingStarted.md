@@ -51,6 +51,10 @@ You can now use `View > Command Palette > IIS Express: Start Website` to open th
 
 Begin the filename with `Secret-` (for example `Secret-MyPassword.{config file name}.{environment}.xdt.config`) and commit it to the `.UmbracoCloud` repository, which is private. It will be copied into this application when you build.
 
+## Set up Application Insights locally
+
+To set up reporting to Application Insights from your development machine, copy `ApplicationInsights.xdt.template.config` to `Secret-InstrumentationKey.ApplicationInsights.local.xdt.config` and add your instrumentation key.
+
 ## Managing redirects
 
 Redirects are managed using the [Skybrud.Umbraco.Redirects](https://github.com/skybrud/Skybrud.Umbraco.Redirects) package, which appears as a dashboard named 'Redirects' in the Content section of the Umbraco back office.
