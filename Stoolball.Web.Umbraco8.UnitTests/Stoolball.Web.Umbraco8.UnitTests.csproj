@@ -232,7 +232,7 @@
       <Project>{b230b6cf-4fd3-4c44-8894-5ed789bff191}</Project>
       <Name>Stoolball.Testing</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Stoolball.Web\Stoolball.Web.csproj">
+    <ProjectReference Include="..\Stoolball.Web.Umbraco8\Stoolball.Web.Umbraco8.csproj">
       <Project>{f66102a7-55a0-423a-aad3-19d89147b5c7}</Project>
       <Name>Stoolball.Web</Name>
     </ProjectReference>
