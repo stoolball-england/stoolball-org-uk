@@ -2,10 +2,6 @@
   <Import Project="..\packages\UmbracoCms.8.17.0\build\UmbracoCms.props" Condition="Exists('..\packages\UmbracoCms.8.17.0\build\UmbracoCms.props')" />
   <Import Project="..\packages\Microsoft.CodeAnalysis.NetAnalyzers.6.0.0\build\Microsoft.CodeAnalysis.NetAnalyzers.props" Condition="Exists('..\packages\Microsoft.CodeAnalysis.NetAnalyzers.6.0.0\build\Microsoft.CodeAnalysis.NetAnalyzers.props')" />
   <Import Project="..\packages\uSync.8.8.3\build\uSync.props" Condition="Exists('..\packages\uSync.8.8.3\build\uSync.props')" />
-  <Import Project="..\packages\Microsoft.NetFramework.Analyzers.3.3.2\build\Microsoft.NetFramework.Analyzers.props" Condition="Exists('..\packages\Microsoft.NetFramework.Analyzers.3.3.2\build\Microsoft.NetFramework.Analyzers.props')" />
-  <Import Project="..\packages\Microsoft.NetCore.Analyzers.3.3.2\build\Microsoft.NetCore.Analyzers.props" Condition="Exists('..\packages\Microsoft.NetCore.Analyzers.3.3.2\build\Microsoft.NetCore.Analyzers.props')" />
-  <Import Project="..\packages\Microsoft.CodeQuality.Analyzers.3.3.2\build\Microsoft.CodeQuality.Analyzers.props" Condition="Exists('..\packages\Microsoft.CodeQuality.Analyzers.3.3.2\build\Microsoft.CodeQuality.Analyzers.props')" />
-  <Import Project="..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.3.2\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props" Condition="Exists('..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.3.2\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
   <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -3281,15 +3277,6 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.NetAnalyzers.6.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.NetAnalyzers.6.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.NetAnalyzers.dll" />
-    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.3.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.VersionCheckAnalyzer.resources.dll" />
-    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.3.2\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />
-    <Analyzer Include="..\packages\Microsoft.CodeQuality.Analyzers.3.3.2\analyzers\dotnet\cs\Humanizer.dll" />
-    <Analyzer Include="..\packages\Microsoft.CodeQuality.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.CodeQuality.Analyzers.dll" />
-    <Analyzer Include="..\packages\Microsoft.CodeQuality.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.CodeQuality.CSharp.Analyzers.dll" />
-    <Analyzer Include="..\packages\Microsoft.NetCore.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.NetCore.Analyzers.dll" />
-    <Analyzer Include="..\packages\Microsoft.NetCore.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.NetCore.CSharp.Analyzers.dll" />
-    <Analyzer Include="..\packages\Microsoft.NetFramework.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.NetFramework.Analyzers.dll" />
-    <Analyzer Include="..\packages\Microsoft.NetFramework.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup />
   <PropertyGroup>
@@ -3325,14 +3312,6 @@
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
     <Error Condition="!Exists('..\packages\Umbraco.SqlServerCE.4.0.0.1\build\Umbraco.SqlServerCE.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Umbraco.SqlServerCE.4.0.0.1\build\Umbraco.SqlServerCE.targets'))" />
     <Error Condition="!Exists('..\packages\BuildWebCompiler.1.12.405\build\BuildWebCompiler.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\BuildWebCompiler.1.12.405\build\BuildWebCompiler.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.3.2\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.3.2\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.3.2\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.3.2\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.CodeQuality.Analyzers.3.3.2\build\Microsoft.CodeQuality.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeQuality.Analyzers.3.3.2\build\Microsoft.CodeQuality.Analyzers.props'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.CodeQuality.Analyzers.3.3.2\build\Microsoft.CodeQuality.Analyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeQuality.Analyzers.3.3.2\build\Microsoft.CodeQuality.Analyzers.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.NetCore.Analyzers.3.3.2\build\Microsoft.NetCore.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.NetCore.Analyzers.3.3.2\build\Microsoft.NetCore.Analyzers.props'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.NetCore.Analyzers.3.3.2\build\Microsoft.NetCore.Analyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.NetCore.Analyzers.3.3.2\build\Microsoft.NetCore.Analyzers.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.NetFramework.Analyzers.3.3.2\build\Microsoft.NetFramework.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.NetFramework.Analyzers.3.3.2\build\Microsoft.NetFramework.Analyzers.props'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.NetFramework.Analyzers.3.3.2\build\Microsoft.NetFramework.Analyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.NetFramework.Analyzers.3.3.2\build\Microsoft.NetFramework.Analyzers.targets'))" />
     <Error Condition="!Exists('..\packages\uSync.8.8.3\build\uSync.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\uSync.8.8.3\build\uSync.props'))" />
     <Error Condition="!Exists('..\packages\uSync.8.8.3\build\uSync.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\uSync.8.8.3\build\uSync.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.ApplicationInsights.DependencyCollector.2.17.0\build\Microsoft.ApplicationInsights.DependencyCollector.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ApplicationInsights.DependencyCollector.2.17.0\build\Microsoft.ApplicationInsights.DependencyCollector.targets'))" />
@@ -3354,10 +3333,6 @@
   </Target>
   -->
   <Import Project="..\packages\BuildWebCompiler.1.12.405\build\BuildWebCompiler.targets" Condition="Exists('..\packages\BuildWebCompiler.1.12.405\build\BuildWebCompiler.targets')" />
-  <Import Project="..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.3.2\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.targets" Condition="Exists('..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.3.2\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.targets')" />
-  <Import Project="..\packages\Microsoft.CodeQuality.Analyzers.3.3.2\build\Microsoft.CodeQuality.Analyzers.targets" Condition="Exists('..\packages\Microsoft.CodeQuality.Analyzers.3.3.2\build\Microsoft.CodeQuality.Analyzers.targets')" />
-  <Import Project="..\packages\Microsoft.NetCore.Analyzers.3.3.2\build\Microsoft.NetCore.Analyzers.targets" Condition="Exists('..\packages\Microsoft.NetCore.Analyzers.3.3.2\build\Microsoft.NetCore.Analyzers.targets')" />
-  <Import Project="..\packages\Microsoft.NetFramework.Analyzers.3.3.2\build\Microsoft.NetFramework.Analyzers.targets" Condition="Exists('..\packages\Microsoft.NetFramework.Analyzers.3.3.2\build\Microsoft.NetFramework.Analyzers.targets')" />
   <Import Project="..\packages\uSync.8.8.3\build\uSync.targets" Condition="Exists('..\packages\uSync.8.8.3\build\uSync.targets')" />
   <Import Project="..\packages\Microsoft.ApplicationInsights.DependencyCollector.2.17.0\build\Microsoft.ApplicationInsights.DependencyCollector.targets" Condition="Exists('..\packages\Microsoft.ApplicationInsights.DependencyCollector.2.17.0\build\Microsoft.ApplicationInsights.DependencyCollector.targets')" />
   <Import Project="..\packages\Microsoft.ApplicationInsights.PerfCounterCollector.2.17.0\build\Microsoft.ApplicationInsights.PerfCounterCollector.targets" Condition="Exists('..\packages\Microsoft.ApplicationInsights.PerfCounterCollector.2.17.0\build\Microsoft.ApplicationInsights.PerfCounterCollector.targets')" />
