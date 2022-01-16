@@ -30,7 +30,6 @@ using Stoolball.Web.Clubs;
 using Stoolball.Web.Competitions;
 using Stoolball.Web.Configuration;
 using Stoolball.Web.Forms;
-using Stoolball.Web.Html;
 using Stoolball.Web.Logging;
 using Stoolball.Web.Matches;
 using Stoolball.Web.MatchLocations;
@@ -102,7 +101,8 @@ namespace Stoolball.Web
             composition.Register<IStoolballEntityCopier, StoolballEntityCopier>();
             composition.Register<IPlayerNameFormatter, PlayerNameFormatter>();
             composition.Register<IMatchInningsFactory, MatchInningsFactory>();
-            composition.Register<IHtmlSanitizer, HtmlSanitizer>();
+            composition.Register<Stoolball.Html.IHtmlSanitizer, Stoolball.Web.Html.HtmlSanitizer>();
+            composition.Register<Ganss.XSS.IHtmlSanitizer, Ganss.XSS.HtmlSanitizer>();
             composition.Register<IUrlFormatter, UrlFormatter>();
             composition.Register<ISocialMediaAccountFormatter, SocialMediaAccountFormatter>();
             composition.Register<IMatchFilterQueryStringParser, MatchFilterQueryStringParser>();
