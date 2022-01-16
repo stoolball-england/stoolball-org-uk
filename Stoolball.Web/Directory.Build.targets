@@ -242,6 +242,8 @@
     <PropertyGroup>
       <OriginalWebConfig>$(ProjectDir)Web.config</OriginalWebConfig>
       <TempWebConfig>$(ProjectDir)Web.temp.config</TempWebConfig>
+      <TemplateDevelopmentTransform>$(ProjectDir)Web.development.xdt.template.config</TemplateDevelopmentTransform>
+      <ActualDevelopmentTransform>$(ProjectDir)Web.development.xdt.config</ActualDevelopmentTransform>
       <TemplateProductionTransform>$(ProjectDir)Web.live.xdt.template.config</TemplateProductionTransform>
       <ActualProductionTransform>$(ProjectDir)Web.live.xdt.config</ActualProductionTransform>
       <PermissionsPolicy>accelerometer=(),ambient-light-sensor=(),autoplay=(),battery=(),camera=(),cross-origin-isolated=(),display-capture=(),document-domain=(),encrypted-media=(),execution-while-not-rendered=(),execution-while-out-of-viewport=(),fullscreen=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),midi=(),navigation-override=(),payment=(),picture-in-picture=(),publickey-credentials-get=(),screen-wake-lock=(),sync-xhr=(),usb=(),web-share=(),xr-spatial-tracking=()</PermissionsPolicy>
@@ -266,6 +268,16 @@
       OutputFilename="$(OriginalWebConfig)"
       MatchExpression="__PERMISSIONS_POLICY__"
       ReplacementText="$(PermissionsPolicy)" />
+
+    <!-- Create $(ActualDevelopmentTransform) file from $(TemplateDevelopmentTransform), 
+         replacing tokens in the template, again to avoid duplication in the XDT file -->
+    <Copy SourceFiles="$(TemplateDevelopmentTransform)" DestinationFiles="$(ActualDevelopmentTransform)" />
+
+    <ReplaceFileText
+          InputFilename="$(ActualDevelopmentTransform)"
+          OutputFilename="$(ActualDevelopmentTransform)"
+          MatchExpression="__PERMISSIONS_POLICY__"
+          ReplacementText="$(PermissionsPolicy)" />
 
     <!-- Create $(ActualProductionTransform) file from $(TemplateProductionTransform), 
          replacing tokens in the template, again to avoid duplication in the XDT file -->

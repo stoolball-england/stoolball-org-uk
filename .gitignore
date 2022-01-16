@@ -406,6 +406,7 @@ Secret-*
 *.courier
 
 # Exclude generated files
+Stoolball.Web/Web.development.xdt.config
 Stoolball.Web/Web.live.xdt.config
 umbracoSettings.config
 tinyMceConfig.config

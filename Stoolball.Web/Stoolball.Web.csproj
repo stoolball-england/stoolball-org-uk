@@ -721,6 +721,8 @@
     <Content Include="App_Plugins\UmbracoForms\Data\Templates\contactform.json" />
     <Content Include="App_Plugins\UmbracoForms\Data\Templates\commentform.json" />
     <Content Include="config\BackOfficeTours\getting-started.json" />
+    <Content Include="config\tinyMceConfig.development.xdt.config" />
+    <Content Include="config\umbracoSettings.development.xdt.config" />
     <None Include="config\uSync8.local.xdt.config" />
     <Content Include="css\rules.page.css">
       <DependentUpon>rules.page.scss</DependentUpon>
@@ -1031,6 +1033,8 @@
     <Content Include="Matches\edit-tournament-matches.scss" />
     <Content Include="Matches\matches.scss" />
     <Content Include="Media\Web.config" />
+    <None Include="Secret-Email.Web.development.xdt.config" />
+    <None Include="Secret-GoogleMapsApiKey.Web.development.xdt.config" />
     <None Include="Secret-StoolballApiKeys.Web.live.xdt.config" />
     <None Include="Status\offline.json" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
@@ -3246,6 +3250,7 @@
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <None Include="Web.development.xdt.template.config" />
     <None Include="Web.live.xdt.template.config" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
