@@ -5,7 +5,8 @@
 @using Stoolball.Web.Email
 @{ 
     Html.RequiresCss("~/account/account.min.css");
-    var currentMemberBypassingCache = Members.GetById(Members.GetCurrentMember().Id);
+    var currentMember = Members.GetCurrentMember();
+    var currentMemberBypassingCache = currentMember != null ? Members.GetById(Members.GetCurrentMember().Id) : null;
 }
 <div class="container-xl">
     <h1>@Model.Name</h1>
