@@ -1,0 +1,57 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<SeasonViewModel>
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.Competitions
+@using Stoolball.Security
+@{
+    var the = Model.Season.Competition.CompetitionName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase) ? string.Empty : "the ";
+}
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+
+    Html.RequiresJs("/umbraco/lib/tinymce/tinymce.min.js", 90);
+    Html.RequiresJs("/js/tinymce.js");
+}
+<div class="container-xl">
+    <h1>Add a season in @the@Model.Season.Competition.CompetitionName</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.EditCompetition])
+    {
+        using (Html.BeginUmbracoForm<CreateSeasonSurfaceController>
+                ("CreateSeason"))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+            <div class="form-group">
+                @Html.LabelFor(m => Model.Season.FromYear)
+                @Html.TextBoxFor(m => Model.Season.FromYear, new { @class = "form-control", aria_describedby = "from-year", @type = "number" })
+                @Html.ValidationMessageFor(m => Model.Season.FromYear, null, new { id = "from-year" })
+            </div>
+
+            <fieldset class="form-group">
+                <legend>What year does it end?</legend>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Season.UntilYear, 0, new { @class = "custom-control-input", @id = "end-year-1", aria_describedby = "end-year-validation" })
+                    <label for="end-year-1" id="end-year-1-label" class="custom-control-label">The same year (for example, April to September)</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    @Html.RadioButtonFor(m => Model.Season.UntilYear, 1, new { @class = "custom-control-input", @id = "end-year-2", aria_describedby = "end-year-validation" })
+                    <label for="end-year-2" class="custom-control-label">The next year (for example, October to March)</label>
+                </div>
+                @Html.ValidationMessageFor(m => Model.Season.UntilYear, null, new { id = "end-year-validation" })
+            </fieldset>
+
+            @Html.Partial("_CreateOrEditSeason")
+        }
+    }
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

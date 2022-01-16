@@ -1,0 +1,57 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<MatchViewModel>
+@using Stoolball.Matches
+@using Stoolball.Web.Matches
+@using Stoolball.Security
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+<div class="container-xl">
+    <h1>Edit @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false))</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.EditMatch] || Model.IsAuthorized[AuthorizedAction.EditMatchResult] || Model.IsAuthorized[AuthorizedAction.DeleteMatch])
+    {
+        <dl>
+            @if (Model.IsAuthorized[AuthorizedAction.EditMatch] && Model.Match.StartTime > DateTime.UtcNow && Model.Match.Tournament == null)
+            {
+                switch (Model.Match.MatchType)
+                {
+                    case MatchType.FriendlyMatch:
+                        <dt><a href="@Model.Match.MatchRoute/edit/friendly">Edit @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false))</a></dt>
+                        break;
+                    case MatchType.LeagueMatch:
+                        <dt><a href="@Model.Match.MatchRoute/edit/league">Edit @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false))</a></dt>
+                        break;
+                    case MatchType.KnockoutMatch:
+                        <dt><a href="@Model.Match.MatchRoute/edit/knockout">Edit @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false))</a></dt>
+                        break;
+                    case MatchType.TrainingSession:
+                        <dt><a href="@Model.Match.MatchRoute/edit/training">Edit @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false))</a></dt>
+                        break;
+                }
+                <dd>Set the date and time, teams, location and notes.</dd>
+            }
+            @if (Model.IsAuthorized[AuthorizedAction.EditMatch] && Model.Match.MatchType != MatchType.TrainingSession && Model.Match.Tournament == null)
+            {
+                <dt><a href="@Model.Match.MatchRoute/edit/format">Match format</a></dt>
+                <dd>Set the number of innings, and overs per innings.</dd>
+            }
+            @if (Model.IsAuthorized[AuthorizedAction.EditMatchResult] && Model.Match.StartTime <= DateTime.UtcNow && Model.Match.Tournament == null)
+            {
+                if (Model.Match.MatchType == MatchType.LeagueMatch || Model.Match.MatchType == MatchType.KnockoutMatch || Model.Match.MatchType == MatchType.FriendlyMatch)
+                {
+                    <dt><a href="@Model.Match.MatchRoute/edit/start-of-play">Edit the result of @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false))</a></dt>
+                    <dd>Enter scorecards, set who won the toss and their decision, or say why the match didn't happen.</dd>
+                }
+            }
+            @if (Model.IsAuthorized[AuthorizedAction.DeleteMatch])
+            {
+                <dt><a href="@Model.Match.MatchRoute/delete">Delete @Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false))</a></dt>
+                <dd>Match statistics will be lost. Competition results may be changed. Players that only feature in this match will be deleted.</dd>
+            }
+        </dl>
+    }
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

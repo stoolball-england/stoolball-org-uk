@@ -1,0 +1,76 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.DeleteSeasonViewModel>
+@using Humanizer
+@using ClientDependency.Core.Mvc
+@using Stoolball.Competitions
+@using Stoolball.Matches
+@using Stoolball.Web.Competitions
+@using Stoolball.Security
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+}
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+<div class="container-xl">
+    <h1>Delete @Model.Season.SeasonFullName()</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.DeleteCompetition])
+    {
+        if (!Model.Deleted)
+        {
+            <p>If you delete @Model.Season.SeasonFullName() you will:</p>
+            <ul>
+                @if (!string.IsNullOrEmpty(Model.Season.Results) || Model.Season.ResultsTableType != ResultsTableType.None)
+                {
+                    <li>lose the results of this season</li>
+                }
+                @if (Model.TotalMatches > 0)
+                {
+                    <li>remove @("match".ToQuantity(Model.TotalMatches)) from the @Model.Season.Competition.CompetitionName competition</li>
+                    <li>change statistics for the competition, @("team".ToQuantity(Model.Season.Teams.Count)) and all their players who played this season</li>
+                }
+                else
+                {
+                    <li>not affect any matches</li>
+                    <li>not affect any statistics</li>
+                }
+                @if (Model.Season.Teams.Count > 0)
+                {
+                    <li>change the history of @Model.Season.Teams.Humanize(x => x.Team.TeamName)</li>
+                }
+                else
+                {
+                    <li>not affect any teams</li>
+                }
+            </ul>
+            <p><strong><strong>You cannot undo this.</strong></strong></p>
+
+            using (Html.BeginUmbracoForm<DeleteSeasonSurfaceController>
+                   ("DeleteSeason"))
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Season.SeasonFullName()}' into this box:")
+                    @Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck = "false" })
+                    @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
+                </div>
+
+                <button class="btn btn-danger btn-delete">Delete @Model.Season.SeasonName()</button>
+            }
+        }
+        else
+        {
+            <p>@Model.Season.SeasonFullName() has been deleted.</p>
+            <p><a class="btn btn-primary btn-back" href="@Model.Season.Competition.CompetitionRoute">Back to @Model.Season.Competition.CompetitionName</a></p>
+        }
+    }
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

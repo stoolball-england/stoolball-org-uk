@@ -1,0 +1,77 @@
+﻿@model ScorecardViewModel
+@using Stoolball.Web.Matches
+@using Stoolball.Statistics
+@using Umbraco.Core.Composing
+@using Humanizer
+@{
+    var calculator = Current.Factory.GetInstance<IBowlingFiguresCalculator>();
+}
+@if (Model.MatchInnings.BowlingFigures.Count > 0)
+{
+    <table class="bowling-scorecard bowling-figures table-hover table-as-cards table-as-cards-reset-sm">
+        <caption>@Model.MatchInnings.BowlingTeam.Team.TeamName's bowling@(Model.TotalInningsInMatch > 2 ? $" ({(Model.MatchInnings.InningsOrderInMatch/2+Model.MatchInnings.InningsOrderInMatch%2).Ordinalize()} innings)" : null)</caption>
+        <thead>
+            <tr>
+                <th scope="col">Bowler</th>
+                <th scope="col" class="numeric">Overs</th>
+                <th scope="col" class="numeric">Maidens</th>
+                <th scope="col" class="numeric">Runs</th>
+                <th scope="col" class="numeric">Wickets</th>
+                <th scope="col" class="numeric">Economy</th>
+                <th scope="col" class="numeric">Average</th>
+                <th scope="col" class="numeric">Strike rate</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var bowler in Model.MatchInnings.BowlingFigures)
+            {
+                <tr>
+                    <th scope="row" class="player-name"><a href="@bowler.Bowler.Player.PlayerRoute">@bowler.Bowler.PlayerIdentityName</a></th>
+                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Overs</span><span class="scorecard__numeric-value">@bowler.Overs</span></td>
+                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Maidens</span><span class="scorecard__numeric-value">@(bowler.Maidens?.ToString() ?? "–")</span></td>
+                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Runs</span><span class="scorecard__numeric-value">@(bowler.RunsConceded?.ToString() ?? "–")</span></td>
+                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Wickets</span><span class="scorecard__numeric-value">@bowler.Wickets</span></td>
+                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Economy</span><span class="scorecard__numeric-value">@(calculator.BowlingEconomy(bowler)?.ToString() ?? "–")</span></td>
+                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Average</span><span class="scorecard__numeric-value">@(calculator.BowlingAverage(bowler)?.ToString() ?? "–")</span></td>
+                    <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Strike rate</span><span class="scorecard__numeric-value">@(calculator.BowlingStrikeRate(bowler)?.ToString() ?? "–")</span></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@if (Model.MatchInnings.OversBowled.Count > 0)
+{
+    <table class="bowling-scorecard overs table-hover table-as-cards table-as-cards-reset-sm">
+        <caption>@Model.MatchInnings.BowlingTeam.Team.TeamName's bowling, over-by-over</caption>
+        <thead>
+            <tr>
+                <th scope="col">Bowler</th>
+                <th scope="col" class="numeric">Balls</th>
+                <th scope="col" class="numeric">Wides</th>
+                <th scope="col" class="numeric">No balls</th>
+                <th scope="col" class="numeric">Runs</th>
+                <th scope="col" class="numeric">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                var total = 0;
+                foreach (var over in Model.MatchInnings.OversBowled)
+                {
+                    if (over.RunsConceded.HasValue)
+                    {
+                        total += over.RunsConceded.Value;
+                    }
+                    <tr>
+                        <th scope="row" class="player-name"><a href="@over.Bowler.Player.PlayerRoute">@over.Bowler.PlayerIdentityName</a></th>
+                        <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Balls</span><span class="scorecard__numeric-value">@over.BallsBowled</span></td>
+                        <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Wides</span><span class="scorecard__numeric-value">@over.Wides</span></td>
+                        <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">No balls</span><span class="scorecard__numeric-value">@over.NoBalls</span></td>
+                        <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Runs</span><span class="scorecard__numeric-value">@over.RunsConceded</span></td>
+                        <td class="numeric" data-stackable="true"><span class="table-as-cards__label" aria-hidden="true">Total</span><span class="scorecard__numeric-value">@total</span></td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}

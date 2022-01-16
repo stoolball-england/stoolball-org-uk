@@ -1,0 +1,21 @@
+﻿@model Stoolball.Web.Matches.ExtrasRowViewModel
+@{ 
+    var uniqueId = Guid.NewGuid().ToString();
+}
+<tr class="@Model.CssClass">
+    <th scope="row" colspan="@(Model.IsMinimalScorecard ? 1 : 3)" id="@uniqueId">@Model.RowLabel</th>
+    <td class="@("numeric-sm") runs" headers="@uniqueId">
+        @if (Model.RowValue == "all out")
+        {
+            @Model.RowValue
+        } 
+        else
+        {
+            <span class="scorecard__numeric-value">@Model.RowValue</span>
+        }
+    </td>
+    @if (!Model.IsMinimalScorecard)
+    {
+        <td class="d-none d-sm-table-cell"></td>
+    }
+</tr>

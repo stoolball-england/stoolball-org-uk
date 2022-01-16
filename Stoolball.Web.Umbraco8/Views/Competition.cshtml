@@ -1,0 +1,55 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.CompetitionViewModel>
+@using Stoolball.Web.Competitions
+@using Stoolball.Security
+@{ 
+    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditCompetition] || Model.IsAuthorized[AuthorizedAction.DeleteCompetition];
+}
+<div class="container-xl">
+    <h1>@Model.Competition.CompetitionNameAndPlayerType()</h1>
+
+    @if (Model.Competition.UntilYear.HasValue)
+    {
+        <p class="alert alert-info"><strong>This competition isn't played any more.</strong></p>
+    }
+
+    <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-add nav-tabs-has-edit" : string.Empty)">
+        <li class="nav-item">
+            <em class="nav-link active">Summary</em>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.Competition.CompetitionRoute/statistics">Statistics</a>
+        </li>
+        @if (authorizedToEdit)
+        {
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-add" href="@Model.Competition.CompetitionRoute/add">Add season</a>
+            </li>
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-edit" href="@Model.Competition.CompetitionRoute/edit">Edit competition</a>
+            </li>
+        }
+    </ul>
+
+    @Html.Raw(Model.Competition.Introduction)
+
+    <h2>Seasons</h2>
+    @if (Model.Competition.Seasons.Count > 0)
+    {
+        var seasonListModel = new SeasonListViewModel
+        {
+            ShowCompetitionHeading = false
+        };
+        seasonListModel.Competitions.Add(Model.Competition);
+        @Html.Partial("_SeasonList", seasonListModel)
+    }
+    else
+    {
+        <p>No seasons have been added for this competition.</p>
+        if (authorizedToEdit)
+        {
+            <p><a class="btn btn-secondary btn-add" href="@Model.Competition.CompetitionRoute/add">Add season</a></p>
+        }
+    }
+
+    @Html.Partial("_CompetitionContactDetails", Model.Competition)
+</div>

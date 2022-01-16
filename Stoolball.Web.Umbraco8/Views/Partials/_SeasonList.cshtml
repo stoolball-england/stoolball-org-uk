@@ -1,0 +1,14 @@
+﻿@model Stoolball.Web.Competitions.SeasonListViewModel
+@foreach (var competition in Model.Competitions)
+{
+    if (Model.ShowCompetitionHeading)
+    {
+        <h2>@competition.CompetitionName</h2>
+    }
+    <ul class="list-columns">
+        @foreach (var season in competition.Seasons)
+        {
+            <li><a href="@season.SeasonRoute">@(Model.ShowSeasonFullName ? season.SeasonFullName() : season.SeasonName())</a></li>
+        }
+    </ul>
+}

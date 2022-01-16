@@ -1,0 +1,97 @@
+﻿@model CompetitionViewModel
+@using Stoolball.Teams
+@using Stoolball.Web.Competitions
+@using Stoolball.Web.HtmlHelpers
+@Html.ValidationSummary(true)
+
+@Html.HiddenFor(m => Model.UrlReferrer)
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.Competition.CompetitionName)
+    @Html.TextBoxFor(m => Model.Competition.CompetitionName, new { @class = "form-control", required = "required", aria_describedby = "competition-name" })
+    @Html.ValidationMessageFor(m => Model.Competition.CompetitionName, null, new { id = "competition-name" })
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.Competition.UntilYear, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+    <p class="form-text" id="until-help"><small>If you're not sure, an estimate is fine.</small></p>
+    @Html.TextBoxFor(m => Model.Competition.UntilYear, new { @class = "form-control", aria_describedby = "until-year until-help", @type = "number" })
+    @Html.ValidationMessageFor(m => Model.Competition.UntilYear, null, new { id = "until-year" })
+</div>
+
+<fieldset class="form-group">
+    <legend>Who can play?</legend>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.Mixed, new { @class = "custom-control-input", @id = "player-type-1", aria_describedby= "player-type-validation" })
+        <label for="player-type-1" class="custom-control-label">Mixed</label>
+    </div>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.Ladies, new { @class = "custom-control-input", @id = "player-type-2", aria_describedby = "player-type-validation" })
+        <label for="player-type-2" class="custom-control-label">Ladies</label>
+    </div>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.JuniorMixed, new { @class = "custom-control-input", @id = "player-type-3", aria_describedby = "player-type-validation" })
+        <label for="player-type-3" class="custom-control-label">Junior mixed</label>
+    </div>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.JuniorGirls, new { @class = "custom-control-input", @id = "player-type-4", aria_describedby = "player-type-validation" })
+        <label for="player-type-4" class="custom-control-label">Junior girls</label>
+    </div>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.JuniorBoys, new { @class = "custom-control-input", @id = "player-type-5", aria_describedby = "player-type-validation" })
+        <label for="player-type-5" class="custom-control-label">Junior boys</label>
+    </div>
+    <div class="custom-control custom-radio">
+        @Html.RadioButtonFor(m => Model.Competition.PlayerType, PlayerType.Men, new { @class = "custom-control-input", @id = "player-type-6", aria_describedby = "player-type-validation" })
+        <label for="player-type-6" class="custom-control-label">Men</label>
+    </div>
+    @Html.ValidationMessageFor(m => Model.Competition.PlayerType, null, new { id = "player-type-validation" })
+</fieldset>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.Competition.Introduction, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+    @Html.TextAreaFor(m => Model.Competition.Introduction, new { @class = "form-control", aria_describedby = "intro-validation" })
+    @Html.ValidationMessageFor(m => Model.Competition.Introduction, null, new { id = "intro-validation" })
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.Competition.PublicContactDetails, RequiredFieldStatus.Recommended, new { @class = "has-form-text" })
+    <p class="form-text" id="public-help"><small>Publish a phone number and email so new teams and players can get in touch. Don't include your home address. Make sure you have consent to share any personal details and read our <a href="/privacy/privacy-notice-public-and-private-contact-details" target="_blank">privacy notice</a>.</small></p>
+    @Html.TextAreaFor(m => Model.Competition.PublicContactDetails, new { @class = "form-control", aria_describedby = "public-validation public-help" })
+    @Html.ValidationMessageFor(m => Model.Competition.PublicContactDetails, null, new { id = "public-validation" })
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.Competition.Facebook, RequiredFieldStatus.Optional, new { @class = "form-control__facebook has-form-text" })
+    @Html.TextBoxFor(m => Model.Competition.Facebook, new { @class = "form-control", aria_describedby = "facebook" })
+    @Html.ValidationMessageFor(m => Model.Competition.Facebook, null, new { id = "facebook" })
+</div>
+<div class="form-group">
+    @Html.LabelFor(m => Model.Competition.Twitter, RequiredFieldStatus.Optional, new { @class = "form-control__twitter has-form-text" })
+    @Html.TextBoxFor(m => Model.Competition.Twitter, new { @class = "form-control", aria_describedby = "twitter" })
+    @Html.ValidationMessageFor(m => Model.Competition.Twitter, null, new { id = "twitter" })
+</div>
+<div class="form-group">
+    @Html.LabelFor(m => Model.Competition.Instagram, RequiredFieldStatus.Optional, new { @class = "form-control__instagram has-form-text" })
+    @Html.TextBoxFor(m => Model.Competition.Instagram, new { @class = "form-control", aria_describedby = "instagram" })
+    @Html.ValidationMessageFor(m => Model.Competition.Instagram, null, new { id = "instagram" })
+</div>
+<div class="form-group">
+    @Html.LabelFor(m => Model.Competition.YouTube, RequiredFieldStatus.Optional, new { @class = "form-control__youtube has-form-text" })
+    @Html.TextBoxFor(m => Model.Competition.YouTube, new { @class = "form-control", aria_describedby = "youtube" })
+    @Html.ValidationMessageFor(m => Model.Competition.YouTube, null, new { id = "youtube" })
+</div>
+<div class="form-group">
+    @Html.LabelFor(m => Model.Competition.Website, RequiredFieldStatus.Optional, new { @class = "has-form-text" })
+    @Html.TextBoxFor(m => Model.Competition.Website, new { @class = "form-control", aria_describedby = "website" })
+    @Html.ValidationMessageFor(m => Model.Competition.Website, null, new { id = "website" })
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(m => Model.Competition.PrivateContactDetails, RequiredFieldStatus.Recommended, new { @class = "has-form-text" })
+    <p class="form-text" id="private-help"><small>Please provide a phone number and email, if different from above. We won't share this with anyone else. Make sure you have consent to share any personal details and read our <a href="/privacy/privacy-notice-public-and-private-contact-details" target="_blank">privacy notice</a>.</small></p>
+    @Html.TextAreaFor(m => Model.Competition.PrivateContactDetails, new { @class = "form-control", aria_describedby = "private-validation private-help" })
+    @Html.ValidationMessageFor(m => Model.Competition.PrivateContactDetails, null, new { id = "private-validation" })
+</div>
+
+<button class="btn btn-primary">Save competition</button>

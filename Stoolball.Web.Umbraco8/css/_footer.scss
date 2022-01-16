@@ -1,0 +1,61 @@
+﻿@import "_theme.scss";
+@import "_mixins.scss";
+@import "../Content/bootstrap/_functions.scss";
+@import "../Content/bootstrap/_mixins.scss";
+@import "../Content/bootstrap/_variables.scss";
+
+/* Skew the footer border to match the header, and create space around the top to prevent the skewed border overlapping. 
+   Use rotate() though because skew is not supported in a pseudo-element.    
+*/
+footer {
+    margin-top: 60px;
+}
+footer::before {
+    border-top: theme-color("primary") solid 5px;
+    display: block;
+    content: "";
+    transform: rotate($skew);
+    padding-top: 30px;
+}
+
+// Use Flexbox to arrange the links horizontally and space them out
+.footer__links {
+    display: flex;
+    margin-bottom: $spacer*.5;
+}
+
+.footer__links > * {
+    margin-right: $spacer*1.5;
+    padding: 0;
+}
+.footer__links > :last-child {
+    margin-right: 0;
+}
+
+.footer__recognised a {
+    @include remove-link-underline;
+}
+
+// Pad the image to create space between it and the leading text
+.footer__recognised img {
+    margin: 3px;
+}
+
+// When moving to two columns, align the Sport England logo to the right,
+// rather than floating in space at the left of the second column
+@include media-breakpoint-up(sm) {
+    .footer__recognised {
+        text-align: right;
+    }
+}
+
+// Add extra white-space as the footer gets bigger
+@include media-breakpoint-up(md) {
+    footer::before {
+        padding-top: 40px;
+    }
+
+    .footer__links {
+        margin-bottom: $spacer*1;
+    }
+}

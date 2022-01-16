@@ -1,0 +1,45 @@
+﻿// Colours
+// Secondary is the WCAG AA lightest brown when used with white text
+$theme-colors: ( "primary": #008000, "secondary": #8c7256, "alt-secondary": #8fbc8f, "info": #b5d498);
+$black: #222;
+$grey: #767676; // WCAG AA lightest grey when used with white text
+
+// Adjust alert colours to be AA accessible text and have greater contrast against the page background.
+$alert-bg-level: -7;
+$alert-border-level: -6;
+$alert-color-level: 8;
+
+// Don't use opacity for disabled buttons, as it'll break AA accessibility. Use grey instead.
+$btn-disabled-opacity: 1;
+.btn {
+    &.disabled, &:disabled {
+        background-color: $grey;
+        border-color: $grey;
+    }
+}
+
+// UI element sizes
+$minimum-clickable-size: 44px;
+
+// Brand elements
+$skew: -1deg;
+
+// Assistant = Preferred heading font from Google Fonts, similar to Futura at 600
+// Calibri = Windows system font with the most similar x-height & width & style to reduce text shifting as the font loads. Also on some Macs, perhaps with MS Office.
+// Trebuchet MS is next best, and available on both Windows and Mac. 
+// Don't use Futura on Mac even though it's there and we're trying to look like it, because at this weight it's extra-bold and very different.
+$headings-font-family: Assistant, Calibri, 'Trebuchet MS', sans-serif;
+$headings-font-weight: 600;
+$h3-font-size: 1.5rem;
+$h4-font-size: 1.25rem;
+
+// Mada = Preferred body font from Google Fonts
+// Candara = Windows and Mac system font with the most similar x-height & width to reduce text shifting as the font loads.
+// 'Apple SD Gothic Neo' = Apple system font since Catalina June 2019, and also a good match.
+$font-family-sans-serif: Mada, Candara, 'Apple SD Gothic Neo', sans-serif;
+
+// Firefox won't render web fonts in option elements due to https://bugzilla.mozilla.org/show_bug.cgi?id=1536148
+// The first fallback, Candara, is a very different style and only chosen for its similar width and x-height, but layout
+// shift while loading web fonts is not an issue for option elements, which are hidden by default when the fonts are loading,
+// so remove that and replace it with a better fallback. Chrome/Edge will just use Mada as they should.
+$options-font-family: Mada, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif

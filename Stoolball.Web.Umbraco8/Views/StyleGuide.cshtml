@@ -1,0 +1,138 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.StyleGuide>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using Stoolball.Web.Matches
+@using ClientDependency.Core.Mvc;
+@{
+    Html.RequiresCss("~/css/news.min.css");
+    Html.RequiresCss("~/css/shop.page.min.css");
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
+}
+<div class="container-xl">
+    <h1 data-show-consent="true">@Model.Name</h1>
+    <h2>Heading above tabs</h2>
+    <ul class="nav nav-tabs nav-tabs-has-add nav-tabs-has-edit">
+        <li class="nav-item">
+            <em class="nav-link active">Umbraco content</em>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Umbraco.AssignedContentItem.Url()?alttemplate=styleguideforms">Forms</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Umbraco.AssignedContentItem.Url()?alttemplate=styleguidestoolballdata">Stoolball data</a>
+        </li>
+        <li class="nav-item nav-item-admin">
+            <div class="dropdown">
+                <button class="btn nav-link nav-link-add" type="button" id="add-menu__button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Add a thing
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="add-menu__button">
+                    <li class="dropdown-item"><a href="https://example.org">Add a thing</a></li>
+                    <li class="dropdown-item"><a href="https://example.org">Add another thing</a></li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item nav-item-admin d-none d-md-flex">
+            <a class="nav-link nav-link-add" href="https://example.org">Add another thing</a>
+        </li>
+        <li class="nav-item nav-item-admin">
+            <a class="nav-link nav-link-edit" href="https://example.org">Edit a thing</a>
+        </li>
+    </ul>
+    <p>Text below tabs.</p>
+    <ul class="nav nav-tabs">
+        <li class="nav-item nav-item-admin">
+            <a class="nav-link nav-link-edit" href="https://example.org">Admin only</a>
+        </li>
+    </ul>
+    <ul class="nav nav-tabs nav-tabs-has-add nav-tabs-has-edit">
+        <li class="nav-item">
+            <em class="nav-link active">Tabs with filter</em>
+        </li>
+        <li class="nav-item nav-item-admin">
+            <button type="button" class="nav-link nav-link-filter">Edit filter</button>
+        </li>
+        <li class="nav-item nav-item-admin">
+            <a class="nav-link nav-link-add" href="https://example.org">Add a thing</a>
+        </li>
+    </ul>
+    @Html.Partial("_Filters", new MatchFilterViewModel
+    {
+        FilterDescription = "a description of the applied filter"
+    })
+    @Html.GetBlockListHtml(Model, "blockList")
+    <p>A paragraph followed by a table.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Table heading</th>
+                <th>Table heading</th>
+                <th>Table heading</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Table heading</th>
+                <td>Table data</td>
+                <td>Table data</td>
+            </tr>
+            <tr class="text-muted">
+                <td>Table data (muted style)</td>
+                <td>Table data (muted style)</td>
+                <td>Table data (muted style)</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>A paragraph following a table.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Table heading</th>
+                <th>Table heading</th>
+                <th>Table heading</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Table heading</th>
+                <td>Table data</td>
+                <td>Table data</td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="table-small-print"><small>Small print following a table</small></p>
+
+    <dl>
+        <dt><a href="https://example.org">Definition list title</a></dt>
+        <dd>Definition list detail.</dd>
+        <dt><a href="https://example.org">Definition list title</a> @Html.Partial("_AdminOnly")</dt>
+        <dd>Definition list detail.</dd>
+    </dl>
+    <article>
+        <h2><a href="#">News story (listing)</a></h2>
+        <p class="news__date">Monday 7 December 2020</p>
+        <div class="umb-block-list">
+            <p>Stoolball England’s aim is to develop a team of freelance Coaching Trainers who will deliver exciting, creative and inclusive stoolball sessions. The training programme will enable Coaching Trainers to deliver course content in a classroom environment as well as practical coaching on the ground. Coaches will develop and deliver stoolball sessions at their own pace and fitting-in with their work-life balance. Coaches’ own continuing professional development (CPD) will be expected and encouraged by Stoolball England. Coaching Trainers will help develop this exciting, new programme.</p>
+        </div>
+    </article>
+    <article>
+        <h2><a href="#">News story (next listing)</a></h2>
+        <p class="news__date">Monday 7 December 2020</p>
+        <div class="umb-block-list">
+            <p>Stoolball England’s aim is to develop a team of freelance Coaching Trainers who will deliver exciting, creative and inclusive stoolball sessions. The training programme will enable Coaching Trainers to deliver course content in a classroom environment as well as practical coaching on the ground. Coaches will develop and deliver stoolball sessions at their own pace and fitting-in with their work-life balance. Coaches’ own continuing professional development (CPD) will be expected and encouraged by Stoolball England. Coaching Trainers will help develop this exciting, new programme.</p>
+        </div>
+    </article>
+
+    <h1>News story (full page)</h1>
+    <p class="news__date">Monday 7 December 2020</p>
+    <div class="umb-block-list">
+        <p>Stoolball England’s aim is to develop a team of freelance Coaching Trainers who will deliver exciting, creative and inclusive stoolball sessions. The training programme will enable Coaching Trainers to deliver course content in a classroom environment as well as practical coaching on the ground. Coaches will develop and deliver stoolball sessions at their own pace and fitting-in with their work-life balance. Coaches’ own continuing professional development (CPD) will be expected and encouraged by Stoolball England. Coaching Trainers will help develop this exciting, new programme.</p>
+    </div>
+    <ul class="tiles product-list">
+        @Html.GetBlockListHtml(Model, "productBlockList", "BlockList")
+    </ul>
+    @Html.GetBlockListHtml(Model, "cookiesBlockList")
+
+
+</div>

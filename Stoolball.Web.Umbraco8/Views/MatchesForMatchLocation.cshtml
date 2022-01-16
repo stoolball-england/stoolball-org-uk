@@ -1,0 +1,45 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.MatchLocations.MatchLocationViewModel>
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.Matches
+@{
+    Html.RequiresJs("/js/filter.js");
+    Html.RequiresCss("/css/filter.min.css");
+}
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+<div class="container-xl">
+    <h1>@Model.MatchLocation.NameAndLocalityOrTownIfDifferent()</h1>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute">Summary</a>
+        </li>
+        <li class="nav-item">
+            <em class="nav-link active">Matches</em>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Model.MatchLocation.MatchLocationRoute/statistics">Statistics</a>
+        </li>
+        <li class="nav-item nav-item-admin">
+            <button type="button" class="nav-link nav-link-filter">Edit filter</button>
+        </li>
+    </ul>
+    @Html.Partial("_Filters", new MatchFilterViewModel
+{
+    FilterDescription = Model.FilterDescription,
+    from = Model.AppliedMatchFilter.FromDate,
+    to = Model.AppliedMatchFilter.UntilDate
+})
+
+    @if (Model.Matches.Matches.Count > 0)
+    {
+        @Html.Partial("_MatchList", Model.Matches)
+    }
+    else
+    {
+        <p>There are no matches at this location matching this filter.</p>
+        <p>Find out how to <a href="/organise/website/">add matches and results to our website</a>.</p>
+    }
+    @Html.Partial("_MatchListSubscriptions", new MatchListSubscriptionsViewModel { BaseRoute = Model.MatchLocation.MatchLocationRoute, DefaultMatchFilter = Model.DefaultMatchFilter, AppliedMatchFilter = Model.AppliedMatchFilter })
+</div>

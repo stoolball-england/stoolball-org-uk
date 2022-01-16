@@ -1,0 +1,95 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Matches.DeleteTournamentViewModel>
+@using Humanizer
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.Matches
+@using Stoolball.Teams
+@using Stoolball.Security
+@using Constants = Stoolball.Constants
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+}
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+<div class="container-xl">
+    <h1>Delete @Html.TournamentFullNameAndPlayerType(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x, false))</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.DeleteTournament])
+    {
+        if (!Model.Deleted)
+        {
+            <p>If you delete @Html.TournamentFullName(Model.Tournament, x => Model.DateTimeFormatter.FormatDate(x, false)) you will:</p>
+            <ul>
+                @if (Model.Tournament.Teams.Count > 0)
+                {
+                    var transientTeams = Model.Tournament.Teams.Where(x => x.Team.TeamType == TeamType.Transient);
+                    var longLivedTeams = Model.Tournament.Teams.Where(x => x.Team.TeamType != TeamType.Transient);
+                    if (transientTeams.Any())
+                    {
+                        <li>delete @transientTeams.Humanize(x => x.Team.TeamName), which only ever played in this tournament</li>
+                    }
+                    if (longLivedTeams.Any())
+                    {
+                        <li>remove this tournament from match listings for @longLivedTeams.Humanize(x => x.Team.TeamName)</li>
+                    }
+                }
+                else
+                {
+                    <li>not affect any teams</li>
+                }
+                @if (Model.Tournament.Seasons.Count > 0)
+                {
+                    <li>remove this tournament from @Model.Tournament.Seasons.Select(x => x.Competition.CompetitionName).Humanize()</li>
+                }
+                else
+                {
+                    <li>not affect any competitions</li>
+                }
+                @if (Model.Matches.Matches.Count > 0)
+                {
+                    <li>delete @("match".ToQuantity(Model.Matches.Matches.Count)), changing batting, bowling and fielding statistics for all teams and players involved</li>
+                }
+                else
+                {
+                    <li>not affect any matches, players or statistics</li>
+                }
+                @if (Model.TotalComments > 0)
+                {
+                    <li>delete @("comment".ToQuantity(Model.TotalComments)), which may include records of outstanding performances</li>
+                }
+                else
+                {
+                    <li>not affect any comments</li>
+                }
+            </ul>
+            <p><strong><strong>You cannot undo this.</strong></strong></p>
+
+            using (Html.BeginUmbracoForm<DeleteTournamentSurfaceController>
+                       ("DeleteTournament"))
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.HiddenFor(m => Model.ConfirmDeleteRequest.RequiredText)
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.ConfirmDeleteRequest.ConfirmationText, $"If you're sure you wish to continue, type '{Model.Tournament.TournamentName}' into this box:")
+                    @Html.TextBoxFor(m => Model.ConfirmDeleteRequest.ConfirmationText, new { @class = "form-control", required = "required", aria_describedby = "validation", autocorrect = "off", autocapitalize = "off", autocomplete = "off", spellcheck = "false" })
+                    @Html.ValidationMessageFor(m => Model.ConfirmDeleteRequest.ConfirmationText, null, new { id = "validation" })
+                </div>
+
+                <button class="btn btn-danger btn-delete">Delete @Model.Tournament.TournamentName</button>
+            }
+        }
+        else
+        {
+            <p>@Model.Tournament.TournamentName has been deleted.</p>
+            <p><a class="btn btn-primary btn-back" href="@Constants.Pages.TournamentsUrl">Back to @Constants.Pages.Tournaments</a></p>
+        }
+    }
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

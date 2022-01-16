@@ -1,0 +1,22 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.LoginMember>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using System.Web.Mvc.Html
+@using ClientDependency.Core.Mvc
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+}
+<div class="container-xl">
+    <h1>@Model.Name</h1>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        @Html.Partial("_Logout")
+    }
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

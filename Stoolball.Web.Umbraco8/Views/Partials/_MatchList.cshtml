@@ -1,0 +1,95 @@
+﻿@model MatchListingViewModel
+@using Humanizer
+@using Stoolball.Matches
+@using Stoolball.Web.Matches
+@using System.Text
+
+@if (Model.Matches.Any())
+{
+    DateTimeOffset? dateOfNextMatch = null;
+<ol class="@(Model.ShowMatchDate ? "list-unstyled" : "match-list-minimal")">
+    @foreach (var match in Model.Matches)
+    {
+        if (match.MatchType == null)
+        {
+            var playerType = string.Empty;
+            if (!match.MatchName.Replace("'", string.Empty).ToUpperInvariant().Contains(match.PlayerType.ToString().Replace("'", string.Empty).ToUpperInvariant()))
+            {
+                playerType = $" ({match.PlayerType.Humanize(LetterCasing.Sentence)})";
+            }
+
+            var fullstop = false;
+            var tournamentDetail = new StringBuilder(match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(match.StartTime) : Model.DateTimeFormatter.FormatDate(match.StartTime));
+            if (match.TournamentQualificationType == TournamentQualificationType.OpenTournament)
+            {
+                tournamentDetail.Append(". ");
+                fullstop = true;
+                tournamentDetail.Append("Open. ");
+            }
+            else if (match.TournamentQualificationType == TournamentQualificationType.ClosedTournament)
+            {
+                tournamentDetail.Append(". ");
+                fullstop = true;
+                tournamentDetail.Append("Invited teams only. ");
+            }
+
+            var showSpaces = false;
+            if (match.SpacesInTournament > 0 && match.StartTime > DateTime.UtcNow && match.TournamentQualificationType != TournamentQualificationType.ClosedTournament)
+            {
+                if (!fullstop)
+                {
+                    tournamentDetail.Append(". ");
+                    fullstop = true;
+                }
+                showSpaces = true;
+            }
+
+            string matchClass = null;
+            if (Model.ShowMatchDate)
+            {
+                matchClass = "match-list__match ";
+                matchClass += (match.StartTime <= DateTime.UtcNow.AddHours(-6)) ? "match-list__past" : "match-list__future";
+                if (!dateOfNextMatch.HasValue && matchClass.Contains("match-list__future")) { dateOfNextMatch = match.StartTime.Date; }
+                if (dateOfNextMatch == match.StartTime.Date && Model.HighlightNextMatch && Model.AppliedMatchFilter.Paging.PageNumber == 1) { matchClass += " match-list__next"; }
+            }
+
+            <li class="@matchClass">
+                <a href="@match.MatchRoute" class="@(Model.ShowMatchDate ? "list-results__title" : null)">@match.MatchName@playerType</a>
+                <p class="@(Model.ShowMatchDate ? "list-results__detail" : null)">
+                    @tournamentDetail@if (showSpaces)
+                    {
+                        @:<strong>@match.SpacesInTournament spaces.</strong>
+                    }
+                </p>
+            </li>
+        }
+        else
+        {
+            string matchClass = null;
+            if (Model.ShowMatchDate)
+            {
+                matchClass = "match-list__match ";
+                matchClass += (match.StartTime <= DateTime.UtcNow.AddHours(-2)) ? "match-list__past" : "match-list__future";
+                if (!dateOfNextMatch.HasValue && matchClass.Contains("match-list__future")) { dateOfNextMatch = match.StartTime.Date; }
+                if (dateOfNextMatch == match.StartTime.Date && Model.HighlightNextMatch && Model.AppliedMatchFilter.Paging.PageNumber == 1) { matchClass += " match-list__next"; }
+            }
+
+            string matchType = null;
+            if (Model.MatchTypesToLabel.Count > 0 && Model.MatchTypesToLabel.Contains(match.MatchType.Value) && !match.MatchName.Replace("'", string.Empty).ToUpperInvariant().Contains(match.MatchType.Humanize(LetterCasing.AllCaps)))
+            {
+                matchType = $"({match.MatchType.Humanize(LetterCasing.LowerCase)})";
+            }
+
+            <li class="@matchClass">
+                <p class="@(Model.ShowMatchDate ? "list-results__title" : null)"><a href="@match.MatchRoute">@match.MatchName</a>
+                @if (!string.IsNullOrEmpty(matchType)) { <span class="match-list__match-type">@matchType</span> }
+                </p>
+                @if (Model.ShowMatchDate)
+                {
+                    <p class="list-results__detail">@(match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(match.StartTime) : Model.DateTimeFormatter.FormatDate(match.StartTime))</p>
+                }
+            </li>
+        }
+    }
+</ol>
+}

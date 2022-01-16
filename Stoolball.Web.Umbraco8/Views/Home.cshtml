@@ -1,0 +1,136 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.Home>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using ClientDependency.Core.Mvc
+@{
+    Html.RequiresCss("~/homepage/home.min.css");
+}
+<h1 class="sr-only">@Model.Name</h1>
+
+<div class="container-xl">
+    <a href="/rules/what-is-stoolball" class="home__what-is-stoolball">
+        <div class="home__what-is-stoolball__content">
+            <h2>What is stoolball?</h2>
+            <ul>
+                <li>A fast, exciting sport over 500 years old</li>
+                <li>Play outdoors or indoors on any surface</li>
+                <li>A family game with junior, ladies & <span class="text-nowrap">mixed teams</span></li>
+                <li>Perfect for schools: <span class="text-nowrap">quick setup & easy to learn</span></li>
+                <li>Village teams up to England matches</li>
+                <li>Walking stoolball for those less mobile</li>
+            </ul>
+            <p class="btn btn-primary btn-lg">Read more about stoolball</p>
+        </div>
+    </a>
+</div>
+
+<article class="home__team-finder">
+    <form method="get" action="/teams" class="container-xl">
+        <h2>Find your team</h2>
+        <label for="team-search">Enter your town, village or team name…</label>
+        <div class="form-inline form-search">
+            <input type="search" class="form-control" id="team-search" name="q" />
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+</article>
+
+<div class="container-xl">
+    <h2 class="sr-only">Ways to take part in stoolball</h2>
+    <ul class="tiles roles">
+        <li class="tile roles__organise">
+            <a href="/organise" class="tile__link">
+                <div>
+                    <p class="tile__header roles__header">Organise</p>
+                    <div class="tile__footer roles__footer">
+                        <p class="btn btn-success">Get some tips</p>
+                    </div>
+                </div>
+            </a>
+        </li>
+        <li class="tile roles__coach">
+            <a href="/play/coaching" class="tile__link">
+                <div>
+                    <p class="tile__header roles__header">Coach</p>
+                    <div class="tile__footer roles__footer">
+                        <p class="btn btn-danger">Share your skills</p>
+                    </div>
+                </div>
+            </a>
+        </li>
+        <li class="tile roles__play">
+            <a href="/play" class="tile__link">
+                <div>
+                    <p class="tile__header roles__header">Play</p>
+                    <div class="tile__footer roles__footer">
+                        <p class="btn btn-success">Find your team</p>
+                    </div>
+                </div>
+            </a>
+        </li>
+        <li class="tile roles__volunteer">
+            <a href="/about/volunteer-in-stoolball/" class="tile__link">
+                <div>
+                    <p class="tile__header roles__header">Volunteer</p>
+                    <div class="tile__footer roles__footer">
+                        <p class="btn btn-danger">Be a part of it</p>
+                    </div>
+                </div>
+            </a>
+        </li>
+    </ul>
+
+    <article class="shop">
+        <h2>Buy equipment from Stoolball England</h2>
+        <a href="/shop">
+            <ul class="tiles">
+                <li class="tile shop__tile">
+                    <figure class="tile__link">
+                        <img src="~/images/shop/bat.jpg" alt="A stoolball bat" width="366" height="261" />
+                        <figcaption class="tile__footer shop__footer">
+                            <div class="shop__footer-text">Gray-Nicolls stoolball bats</div>
+                        </figcaption>
+                        <div class="shop__price">£50</div>
+                    </figure>
+                </li>
+                <li class="tile shop__tile">
+                    <figure class="tile__link">
+                        <img src="~/images/shop/ball.jpg" alt="A stoolball" width="366" height="261" />
+                        <figcaption class="tile__footer shop__footer">
+                            <div class="shop__footer-text">Stoolballs</div>
+                        </figcaption>
+                        <div class="shop__price">£7</div>
+                    </figure>
+                </li>
+                <li class="tile shop__tile">
+                    <figure class="tile__link">
+                        <img src="~/images/shop/wicket.jpg" alt="A stoolball wicket" width="366" height="261" />
+                        <figcaption class="tile__footer shop__footer">
+                            <div class="shop__footer-text">Pair of stoolball wickets</div>
+                        </figcaption>
+                        <div class="shop__price">£150</div>
+                    </figure>
+                </li>
+            </ul>
+            <p class="btn btn-primary btn-lg shop__button">Get everything you need to play stoolball</p>
+        </a>
+    </article>
+
+    <article>
+        <a class="shop__spreadshirt" href="https://shop.spreadshirt.co.uk/stoolball">
+            <h2>Stoolball gifts for you…</h2>
+            <div>
+                <img src="~/images/shop/spreadshirt.png" alt="Products from our gift shop" width="600" />
+            </div>
+            <p class="btn btn-danger btn-lg">Buy now!</p>
+        </a>
+    </article>
+
+    <article class="history">
+        <h2><a href="/history">Stoolball stories</a></h2>
+        <ul class="tiles">
+            <li class="tile history__tile history__glynde"><a href="/history/story/glynde-butterflies" class="tile__link"><div class="tile__header">Gertrude Brand: </div><div class="history__subtitle">stoolball's first centurion</div></a></li>
+            <li class="tile history__tile history__baseball"><a href="/history/baseballs-origins-in-stoolball" class="tile__link"><div class="tile__header">Baseball: </div><div class="history__subtitle">a child of stoolball</div></a></li>
+            <li class="tile history__tile history__grantham"><a href="/history/story/major-w-w-grantham" class="tile__link"><div class="tile__header history__title">Grantham</div><span class="sr-only">:</span> <div class="tile__footer history__subtitle">the man who took stoolball around the world</div></a></li>
+        </ul>
+    </article>
+</div>

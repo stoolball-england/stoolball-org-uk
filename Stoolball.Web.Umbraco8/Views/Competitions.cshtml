@@ -1,0 +1,57 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Competitions.CompetitionsViewModel>
+@using Humanizer
+@using System.Text.RegularExpressions
+@section canonical {@Html.Partial("_CanonicalUrl", new[] { "page", "q" })}
+<div class="container-xl">
+    <h1>
+        @Stoolball.Constants.Pages.Competitions
+        @if (!string.IsNullOrEmpty(Model.Filter.Query))
+        {
+            @: matching '@Model.Filter.Query'
+        }
+    </h1>
+
+    <ul class="nav nav-tabs nav-tabs-has-add">
+        <li class="nav-item">
+            <em class="nav-link active">Search</em>
+        </li>
+        <li class="nav-item nav-item-admin">
+            <a class="nav-link nav-link-add" href="/competitions/add">Add competition</a>
+        </li>
+    </ul>
+
+    @if (string.IsNullOrEmpty(Model.Filter.Query))
+    {
+        <p class="alert alert-info alert-tip">Try searching for <a href="/competitions?q=ladies">ladies competitions</a>, <a href="/competitions?q=mixed">mixed competitions</a> or <a href="/competitions?q=junior">junior competitions</a>.</p>
+    }
+    <form method="get" action="@Request.Url.AbsolutePath" class="form-inline form-search">
+        <label class="sr-only" for="competition-search">Competition name</label>
+        <input type="search" class="form-control" id="competition-search" name="q" value="@Model.Filter.Query" />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    @if (Model.Listings.Any())
+    {
+        <dl>
+            @foreach (var competition in Model.Listings)
+            {
+                if (!competition.UntilYear.HasValue && competition.Seasons.Count > 0)
+                {
+                    <dt class="list-results__title"><a href="@competition.Seasons.First().SeasonRoute">@competition.CompetitionName</a></dt>
+                    <dd class="list-results__detail">@(Regex.Replace((competition.PlayerType.Humanize(LetterCasing.LowerCase) + " team").ToQuantity(competition.Seasons.First().Teams.Count), "^0 ", "No ")).</dd>
+                }
+                else if (!competition.UntilYear.HasValue)
+                {
+                    <dt class="list-results__title"><a href="@(competition.CompetitionRoute)">@competition.CompetitionName</a></dt>
+                    <dd class="list-results__detail">@competition.PlayerType.Humanize(LetterCasing.Sentence).</dd>
+                }
+                else
+                {
+                    <dt class="list-results__title"><a href="@(competition.Seasons.Count > 0 ? competition.Seasons.First().SeasonRoute : competition.CompetitionRoute)">@competition.CompetitionName</a></dt>
+                    <dd class="list-results__detail">@competition.PlayerType.Humanize(LetterCasing.Sentence). No longer played.</dd>
+                }
+            }
+        </dl>
+    }
+    @Html.Partial("_Paging", Model.Filter.Paging)
+</div>

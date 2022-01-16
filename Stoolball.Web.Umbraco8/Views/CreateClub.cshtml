@@ -1,0 +1,37 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ClubViewModel>
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.Clubs
+@using Stoolball.Security
+@section head {
+    <meta name="robots" content="noindex,follow" />
+}
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("~/scripts/jquery.validate.min.js");
+    Html.RequiresJs("~/scripts/jquery.validate.unobtrusive.min.js");
+
+    Html.RequiresJs("~/js/libs/jquery.autocomplete.min.js", 50);
+    Html.RequiresCss("~/css/autocomplete.min.css");
+
+    Html.RequiresCss("~/css/related-items.min.css");
+    Html.RequiresJs("~/js/related-items.js");
+}
+<div class="container-xl">
+    <h1>Add a club</h1>
+
+    @if (Model.IsAuthorized[AuthorizedAction.CreateClub])
+    {
+        using (Html.BeginUmbracoForm<CreateClubSurfaceController>
+            ("CreateClub"))
+        {
+            @Html.AntiForgeryToken()
+            <p class="alert alert-info alert-tip">A club links teams together. Do you need to <a href="/teams/add">add a team</a> instead?</p>
+            @Html.Partial("_CreateOrEditClub")
+        }
+    }
+    else
+    {
+        @Html.Partial("_Login")
+    }
+</div>

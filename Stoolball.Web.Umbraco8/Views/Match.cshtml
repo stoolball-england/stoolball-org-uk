@@ -1,0 +1,166 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Stoolball.Web.Matches.MatchViewModel>
+@using ClientDependency.Core.Mvc
+@using Stoolball.Web.Matches
+@using Stoolball.Matches
+@using Humanizer
+@using Innovative.SolarCalculator
+@using Stoolball.Security
+@{
+    Html.RequiresCss("~/matches/match.min.css");
+    Html.RequiresCss("~/matches/scorecards.min.css");
+    Html.RequiresJs("~/matches/match.js");
+    Html.RequiresCss("~/css/comments.min.css");
+    var authorizedToEdit = Model.IsAuthorized[AuthorizedAction.EditMatch] || Model.IsAuthorized[AuthorizedAction.DeleteMatch];
+}
+@functions{
+    private string ResultDescription()
+    {
+        var description = Model.Match.MatchResultType?.Humanize(LetterCasing.Sentence);
+        if (Model.Match.MatchResultType == MatchResultType.HomeWin || Model.Match.MatchResultType == MatchResultType.HomeWinByForfeit)
+        {
+            var homeTeam = Model.Match.Teams.Where(x => x.TeamRole == TeamRole.Home).FirstOrDefault()?.Team;
+            if (homeTeam != null)
+            {
+                description = description.Replace("Home", homeTeam.TeamName);
+            }
+        }
+        if (Model.Match.MatchResultType == MatchResultType.AwayWin || Model.Match.MatchResultType == MatchResultType.AwayWinByForfeit)
+        {
+            var awayTeam = Model.Match.Teams.Where(x => x.TeamRole == TeamRole.Away).FirstOrDefault()?.Team;
+            if (awayTeam != null)
+            {
+                description = description.Replace("Away", awayTeam.TeamName);
+            }
+        }
+        if (!Model.Match.MatchResultType.HasValue)
+        {
+            description = "Unknown";
+        }
+        return description;
+    }
+}
+<div class="container-xl">
+    <h1>@Html.MatchFullName(Model.Match, x => Model.DateTimeFormatter.FormatDate(x, false))</h1>
+
+    @* authorizedToEdit only needs to protect the edit tab, but there's no point having only one tab *@
+    @if (authorizedToEdit)
+    {
+        <ul class="nav nav-tabs@(authorizedToEdit ? " nav-tabs-has-edit" : string.Empty)">
+            <li class="nav-item">
+                <em class="nav-link active">Summary</em>
+            </li>
+            <li class="nav-item nav-item-admin">
+                <a class="nav-link nav-link-edit" href="@Model.Match.MatchRoute/edit">Edit match</a>
+            </li>
+        </ul>
+    }
+
+    <p>
+        @Model.Match.MatchType.Humanize(LetterCasing.Sentence)
+        @if (Model.Match.Teams.Count > 0)
+        {
+            @(Model.Match.MatchType == MatchType.TrainingSession ? "for " : (Model.Match.Teams.Count > 1 ? "between " : "involving "))
+            @Html.Raw(Model.Match.Teams.Select(x => x.Team).ToList().Humanize(x => $"<a href=\"{Html.Encode(x.TeamRoute)}\">{Html.Encode(x.TeamName)}</a>"))
+        }
+        @if (Model.Match.Tournament != null)
+        {
+            @((Model.Match.Tournament.TournamentName.StartsWith("THE ", StringComparison.OrdinalIgnoreCase)) ? " in " : " in the ")
+            <a href="@Model.Match.Tournament.TournamentRoute">@Model.Match.Tournament.TournamentName</a>@:.
+        }
+    </p>
+
+    <p>
+        When: @(Model.Match.StartTimeIsKnown ? Model.DateTimeFormatter.FormatDateTime(Model.Match.StartTime) : Model.DateTimeFormatter.FormatDate(Model.Match.StartTime))
+        @if (Model.Match.MatchLocation?.Latitude != null && Model.Match.MatchLocation?.Longitude != null)
+        {
+            var solarTimes = new SolarTimes(Model.Match.StartTime, Model.Match.MatchLocation.Latitude, Model.Match.MatchLocation.Longitude);
+            @: (sunset @Model.DateTimeFormatter.FormatTime(solarTimes.Sunset))
+        }
+        @if (Model.Match.StartTime > DateTimeOffset.UtcNow && Model.Match.Tournament == null)
+        {
+            <a type="text/calendar" href="webcal://@(Request.Url.Host == "localhost" ? Request.Url.Authority : "www.stoolball.org.uk")@(Model.Match.MatchRoute).ics" rel="nofollow" class="calendar__inline">Add to calendar</a>
+        }
+    </p>
+
+
+    @if (Model.Match.MatchLocation != null)
+    {
+        <p>Where: <a href="@Model.Match.MatchLocation.MatchLocationRoute">@Model.Match.MatchLocation.NameAndLocalityOrTown()</a></p>
+    }
+
+    @if (Model.Match.StartTime <= DateTimeOffset.UtcNow && Model.Match.MatchType != MatchType.TrainingSession)
+    {
+        <p class="match-result"><strong>Result: @ResultDescription()</strong></p>
+
+        var resultRequired = !Model.Match.MatchResultType.HasValue || !Model.Match.HasCompleteScorecard();
+        if (Model.Match.Tournament == null) {
+        <div class="update-result">
+            <a class="btn btn-secondary@(resultRequired ? " btn-lg" : null)" href="@Model.Match.MatchRoute/edit/start-of-play">Edit result</a>
+        </div>
+        }
+
+        var tossWinners = Model.Match.Teams.FirstOrDefault(x => x.WonToss.HasValue && x.WonToss.Value);
+        if (tossWinners != null)
+        {
+            var tossResult = tossWinners.Team.TeamName + " won the toss";
+            if (Model.Match.InningsOrderIsKnown)
+            {
+                var choseTo = (tossWinners.MatchTeamId == Model.Match.MatchInnings.First().BattingTeam.MatchTeamId) ? "bat" : "bowl";
+                tossResult += " and chose to " + choseTo;
+            }
+            <p>@tossResult.</p>
+        }
+
+        if (Model.Match.HasScorecard())
+        {
+            foreach (var innings in Model.Match.MatchInnings)
+            {
+                var scorecardViewModel = new ScorecardViewModel { MatchInnings = innings, TotalInningsInMatch = Model.Match.MatchInnings.Count };
+                @Html.Partial("_BattingScorecard", scorecardViewModel)
+                @Html.Partial("_BowlingScorecard", scorecardViewModel)
+            }
+        }
+        else
+        {
+            if (Model.Match.InningsOrderIsKnown && tossWinners == null)
+            {
+                // Show the batting order, since it's not stated as part of the toss result and not implied by showing scorecards in order.
+                var firstToBat = Model.Match.Teams.FirstOrDefault(x => x.MatchTeamId == Model.Match.MatchInnings.First().BattingTeam?.MatchTeamId);
+                if (firstToBat != null)
+                {
+                    <p>@firstToBat.Team.TeamName batted first.</p>
+                }
+            }
+        }
+
+        if (Model.Match.Awards.Any())
+        {
+            var currentAwardName = string.Empty;
+            <dl class="list-results__detail award-list">
+                @foreach (var award in Model.Match.Awards)
+                {
+                    if (award.Award.AwardName != currentAwardName)
+                    {
+                        <dt>@award.Award.AwardName</dt>
+                        currentAwardName = award.Award.AwardName;
+                    }
+                    <dd>
+                        <a href="@award.PlayerIdentity.Player.PlayerRoute">@award.PlayerIdentity.PlayerIdentityName</a> (@Model.Match.Teams.First(x => x.Team.TeamId == award.PlayerIdentity.Team.TeamId).Team.TeamName)
+                        @if (!string.IsNullOrWhiteSpace(award.Reason))
+                        {
+                            @: – @award.Reason.Humanize(LetterCasing.Sentence)
+                        }
+                    </dd>
+                }
+            </dl>
+        }
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.Match.MatchNotes))
+    {
+        <h2>Notes</h2>
+        @Html.Raw(Model.Match.MatchNotes)
+    }
+
+    @Html.Partial("_Comments", Model.Match.Comments)
+</div>

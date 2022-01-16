@@ -1,0 +1,57 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<IPublishedContent>
+@using Umbraco.Web
+@using Umbraco.Web.Models
+@using Stoolball.Web.Account
+@using Stoolball.Web.Email
+@{
+    var loginPage = Umbraco.ContentSingleAtXPath("//loginMember");
+    var loginModel = new LoginModel();
+    loginModel.RedirectUrl = Request.QueryString["ReturnUrl"] ?? "/";
+    if (!loginModel.RedirectUrl.StartsWith("/"))
+    {
+        loginModel.RedirectUrl = "/";
+    }
+}
+
+@if (Model.Key != loginPage?.Key)
+{
+    if (Members.IsLoggedIn())
+    {
+        var permissionRequired = loginPage.Value<IHtmlString>("permissionRequired").ToHtmlString().Replace("{{NAME}}", Members.GetCurrentMember().Name);
+        @Html.ProtectEmailAddresses(permissionRequired)
+    }
+    else
+    {
+        @Html.ProtectEmailAddresses(loginPage.Value<IHtmlString>("loginRequired"))
+    }
+    loginModel.RedirectUrl = Request.Url.AbsolutePath;
+}
+
+@using (Html.BeginUmbracoForm<LoginMemberSurfaceController>("Login"))
+{
+    @Html.HiddenFor(m => loginModel.RedirectUrl)
+    @Html.ValidationSummary("loginModel", true)
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(m => loginModel.Username, "Email")
+        @Html.TextBoxFor(m => loginModel.Username, new { @class = "form-control", type = "email", required = "required", aria_describedby = "form-email", autocorrect = "off", autocapitalize = "off", autocomplete="username" })
+        @Html.ValidationMessageFor(m => loginModel.Username, "The email field is required", new { id = "form-email" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => loginModel.Password)
+        @Html.PasswordFor(m => loginModel.Password, new { @class = "form-control", required = "required", aria_describedby = "form-password", autocorrect = "off", autocapitalize = "off", autocomplete="current-password" })
+        @Html.ValidationMessageFor(m => loginModel.Password, "The password field is required", new { id = "form-password" })
+    </div>
+
+    <button class="btn btn-primary">@loginPage.Value("loginButton")</button>
+}
+
+@Html.ProtectEmailAddresses(loginPage?.Value<IHtmlString>("resetPassword"))
+
+@if (loginPage != null && loginPage.HasValue("migratedMemberAccounts"))
+{
+    <div class="alert alert-info">
+        @Html.ProtectEmailAddresses(loginPage?.Value<IHtmlString>("migratedMemberAccounts"))
+    </div>
+}
