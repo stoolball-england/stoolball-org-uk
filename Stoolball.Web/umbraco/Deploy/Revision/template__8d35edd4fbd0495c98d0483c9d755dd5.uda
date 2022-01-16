@@ -1,0 +1,10 @@
+{
+  "Name": "Statistics",
+  "Alias": "Statistics",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/8d35edd4fbd0495c98d0483c9d755dd5",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

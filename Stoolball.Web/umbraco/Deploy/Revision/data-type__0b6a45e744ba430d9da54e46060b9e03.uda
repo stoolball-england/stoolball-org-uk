@@ -1,0 +1,12 @@
+{
+  "Name": "Dropdown",
+  "Alias": null,
+  "EditorAlias": "Umbraco.DropDown.Flexible",
+  "DatabaseType": 1,
+  "Configuration": {"multiple":false,"items":[]},
+  "Parent": null,
+  "Udi": "umb://data-type/0b6a45e744ba430d9da54e46060b9e03",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
+  "__version": "9.2.1"
+}

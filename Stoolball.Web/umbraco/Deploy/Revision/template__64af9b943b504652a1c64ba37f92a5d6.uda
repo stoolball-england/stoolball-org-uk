@@ -1,0 +1,10 @@
+{
+  "Name": "Email Address",
+  "Alias": "EmailAddress",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/64af9b943b504652a1c64ba37f92a5d6",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

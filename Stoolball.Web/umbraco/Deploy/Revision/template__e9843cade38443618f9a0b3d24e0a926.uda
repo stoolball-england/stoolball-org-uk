@@ -1,0 +1,10 @@
+{
+  "Name": "Delete Competition",
+  "Alias": "deleteCompetition",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/e9843cade38443618f9a0b3d24e0a926",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

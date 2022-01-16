@@ -1,0 +1,10 @@
+{
+  "Name": "Delete Team",
+  "Alias": "deleteTeam",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/e82bf961049b4c05a02375bf9bc24cb1",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

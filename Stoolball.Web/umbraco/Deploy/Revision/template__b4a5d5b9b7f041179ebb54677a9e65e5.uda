@@ -1,0 +1,10 @@
+{
+  "Name": "Edit Club",
+  "Alias": "editClub",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/b4a5d5b9b7f041179ebb54677a9e65e5",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

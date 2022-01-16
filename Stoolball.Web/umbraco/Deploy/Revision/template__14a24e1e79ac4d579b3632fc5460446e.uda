@@ -1,0 +1,10 @@
+{
+  "Name": "Content",
+  "Alias": "Content",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/14a24e1e79ac4d579b3632fc5460446e",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

@@ -1,0 +1,10 @@
+{
+  "Name": "Create League Match",
+  "Alias": "createLeagueMatch",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/a24fa40a100448cb8292c6adf98961a1",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

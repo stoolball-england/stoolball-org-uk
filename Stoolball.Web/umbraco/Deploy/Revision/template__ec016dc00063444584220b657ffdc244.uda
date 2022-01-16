@@ -1,0 +1,10 @@
+{
+  "Name": "Player Fielding",
+  "Alias": "PlayerFielding",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/ec016dc00063444584220b657ffdc244",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

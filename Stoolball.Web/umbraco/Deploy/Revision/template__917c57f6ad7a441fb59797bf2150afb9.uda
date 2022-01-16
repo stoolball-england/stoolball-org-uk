@@ -1,0 +1,10 @@
+{
+  "Name": "Bowling Figures",
+  "Alias": "BowlingFigures",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/917c57f6ad7a441fb59797bf2150afb9",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

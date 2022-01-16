@@ -1,0 +1,10 @@
+{
+  "Name": "Confirm Email Address",
+  "Alias": "ConfirmEmailAddress",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/3d736c7583b641e6abb6a534efcd456d",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

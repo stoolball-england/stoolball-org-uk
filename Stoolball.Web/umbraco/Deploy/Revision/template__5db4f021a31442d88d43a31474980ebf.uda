@@ -1,0 +1,10 @@
+{
+  "Name": "Competitions",
+  "Alias": "competitions",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/5db4f021a31442d88d43a31474980ebf",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

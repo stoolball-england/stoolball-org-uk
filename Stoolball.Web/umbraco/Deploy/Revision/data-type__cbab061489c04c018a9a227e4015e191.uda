@@ -1,0 +1,12 @@
+{
+  "Name": "Header photo picker",
+  "Alias": null,
+  "EditorAlias": "Umbraco.MediaPicker",
+  "DatabaseType": 0,
+  "Configuration": {"multiPicker":false,"onlyImages":true,"disableFolderSelect":true,"startNodeId":"umb://media/2026709983554234a4e04c08d2908441","ignoreUserStartNodes":true},
+  "Parent": null,
+  "Udi": "umb://data-type/cbab061489c04c018a9a227e4015e191",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
+  "__version": "9.2.1"
+}

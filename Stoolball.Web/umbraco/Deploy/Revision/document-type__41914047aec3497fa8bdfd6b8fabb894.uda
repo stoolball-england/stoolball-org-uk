@@ -1,0 +1,67 @@
+{
+  "Name": "Formatted text",
+  "Alias": "formattedText",
+  "DefaultTemplate": null,
+  "AllowedTemplates": [],
+  "HistoryCleanup": {
+    "PreventCleanup": false,
+    "KeepAllVersionsNewerThanDays": null,
+    "KeepLatestVersionPerDayForDays": null
+  },
+  "Icon": "icon-font color-black",
+  "Thumbnail": "folder.png",
+  "Description": null,
+  "IsContainer": false,
+  "Permissions": {
+    "AllowVaryingByCulture": false,
+    "AllowVaryingBySegment": false,
+    "AllowedAtRoot": false,
+    "IsElementType": true,
+    "AllowedChildContentTypes": []
+  },
+  "Parent": "umb://document-type-container/5be42d3707a847e7b9b7d51af38bdac2",
+  "CompositionContentTypes": [],
+  "PropertyGroups": [
+    {
+      "Key": "9b1eb17d-5d30-40ac-85a1-89e1fef4acf6",
+      "Name": "Content",
+      "SortOrder": 0,
+      "Type": 0,
+      "Alias": "content",
+      "PropertyTypes": [
+        {
+          "Key": "9f23c736-6325-4474-88f3-960adab84673",
+          "Alias": "text",
+          "DataType": "umb://data-type/9d05dd71568f45798916f4f25bbf8322",
+          "Description": null,
+          "Mandatory": false,
+          "Name": "Text",
+          "SortOrder": 0,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
+        }
+      ]
+    }
+  ],
+  "PropertyTypes": [],
+  "Udi": "umb://document-type/41914047aec3497fa8bdfd6b8fabb894",
+  "Dependencies": [
+    {
+      "Udi": "umb://data-type/9d05dd71568f45798916f4f25bbf8322",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type-container/5be42d3707a847e7b9b7d51af38bdac2",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.ContentType.DocumentTypeArtifact",
+  "__version": "9.2.1"
+}

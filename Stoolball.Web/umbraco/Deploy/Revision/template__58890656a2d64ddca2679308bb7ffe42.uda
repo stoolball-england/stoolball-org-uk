@@ -1,0 +1,10 @@
+{
+  "Name": "Create Team",
+  "Alias": "createTeam",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/58890656a2d64ddca2679308bb7ffe42",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

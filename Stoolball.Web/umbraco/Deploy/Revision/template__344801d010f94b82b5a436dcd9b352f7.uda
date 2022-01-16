@@ -1,0 +1,10 @@
+{
+  "Name": "Economy Rate",
+  "Alias": "EconomyRate",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/344801d010f94b82b5a436dcd9b352f7",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

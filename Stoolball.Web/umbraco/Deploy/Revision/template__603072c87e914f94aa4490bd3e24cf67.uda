@@ -1,0 +1,10 @@
+{
+  "Name": "Player",
+  "Alias": "Player",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/603072c87e914f94aa4490bd3e24cf67",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

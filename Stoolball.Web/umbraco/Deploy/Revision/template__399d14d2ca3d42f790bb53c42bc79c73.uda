@@ -1,0 +1,10 @@
+{
+  "Name": "Edit Competition",
+  "Alias": "editCompetition",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/399d14d2ca3d42f790bb53c42bc79c73",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

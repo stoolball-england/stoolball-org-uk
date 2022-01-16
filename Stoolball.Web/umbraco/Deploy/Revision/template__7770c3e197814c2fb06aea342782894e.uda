@@ -1,0 +1,10 @@
+{
+  "Name": "Create Season",
+  "Alias": "createSeason",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/7770c3e197814c2fb06aea342782894e",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

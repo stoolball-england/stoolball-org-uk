@@ -1,0 +1,10 @@
+{
+  "Name": "Individual Scores",
+  "Alias": "IndividualScores",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/b3168e245f3d485d9e91ab928b3d82f0",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

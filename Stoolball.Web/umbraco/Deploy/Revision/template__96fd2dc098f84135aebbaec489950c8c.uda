@@ -1,0 +1,10 @@
+{
+  "Name": "Delete Season",
+  "Alias": "deleteSeason",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/96fd2dc098f84135aebbaec489950c8c",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

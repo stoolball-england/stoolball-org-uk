@@ -1,0 +1,10 @@
+{
+  "Name": "Tournament Actions",
+  "Alias": "tournamentActions",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/9be1c73c2a224370afd64f78738e0703",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

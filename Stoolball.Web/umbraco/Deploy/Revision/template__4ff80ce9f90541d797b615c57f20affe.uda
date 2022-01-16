@@ -1,0 +1,10 @@
+{
+  "Name": "Create Competition",
+  "Alias": "createCompetition",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/4ff80ce9f90541d797b615c57f20affe",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

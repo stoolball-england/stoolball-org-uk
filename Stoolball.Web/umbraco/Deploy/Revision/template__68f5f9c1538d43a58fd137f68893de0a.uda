@@ -1,0 +1,10 @@
+{
+  "Name": "Catches",
+  "Alias": "Catches",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/68f5f9c1538d43a58fd137f68893de0a",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

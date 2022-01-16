@@ -1,0 +1,10 @@
+{
+  "Name": "Edit Season Results Table",
+  "Alias": "editSeasonResultsTable",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/18d4bbdabcad454e9df615feacb65451",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

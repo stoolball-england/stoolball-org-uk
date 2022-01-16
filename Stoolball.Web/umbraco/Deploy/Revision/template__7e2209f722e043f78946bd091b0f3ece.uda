@@ -1,0 +1,10 @@
+{
+  "Name": "Competition Statistics",
+  "Alias": "CompetitionStatistics",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/7e2209f722e043f78946bd091b0f3ece",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

@@ -1,0 +1,10 @@
+{
+  "Name": "Teams Map",
+  "Alias": "TeamsMap",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/7e20e79a091e4213924cdc4784b1152b",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

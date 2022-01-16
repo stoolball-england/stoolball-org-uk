@@ -1,0 +1,10 @@
+{
+  "Name": "Season Statistics",
+  "Alias": "SeasonStatistics",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/d2f0ef3469fb454181fa67b498d354a8",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

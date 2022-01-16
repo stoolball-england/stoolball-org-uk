@@ -1,0 +1,10 @@
+{
+  "Name": "Style guide",
+  "Alias": "StyleGuide",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/edb47a3c34b0473b8473a2ebcbf05a00",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

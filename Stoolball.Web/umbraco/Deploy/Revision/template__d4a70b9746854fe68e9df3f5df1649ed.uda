@@ -1,0 +1,10 @@
+{
+  "Name": "Create Knockout Match",
+  "Alias": "createKnockoutMatch",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/d4a70b9746854fe68e9df3f5df1649ed",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

@@ -1,0 +1,10 @@
+{
+  "Name": "Club Actions",
+  "Alias": "clubActions",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/842af0b889ea48c38e429b41b86eef3a",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

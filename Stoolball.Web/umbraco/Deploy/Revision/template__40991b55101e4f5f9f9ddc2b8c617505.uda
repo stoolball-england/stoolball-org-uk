@@ -1,0 +1,10 @@
+{
+  "Name": "Edit Match Location",
+  "Alias": "editMatchLocation",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/40991b55101e4f5f9f9ddc2b8c617505",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

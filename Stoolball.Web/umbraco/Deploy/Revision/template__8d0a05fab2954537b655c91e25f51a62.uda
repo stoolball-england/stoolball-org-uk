@@ -1,0 +1,10 @@
+{
+  "Name": "Approve Member",
+  "Alias": "ApproveMember",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/8d0a05fab2954537b655c91e25f51a62",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

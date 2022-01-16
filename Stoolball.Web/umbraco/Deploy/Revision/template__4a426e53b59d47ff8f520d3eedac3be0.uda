@@ -1,0 +1,10 @@
+{
+  "Name": "Edit Tournament Teams",
+  "Alias": "editTournamentTeams",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/4a426e53b59d47ff8f520d3eedac3be0",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

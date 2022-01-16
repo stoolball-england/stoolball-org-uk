@@ -1,0 +1,10 @@
+{
+  "Name": "Edit Team",
+  "Alias": "editTeam",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/4257e91b77ec4d2f9e2fe76db4a417d6",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

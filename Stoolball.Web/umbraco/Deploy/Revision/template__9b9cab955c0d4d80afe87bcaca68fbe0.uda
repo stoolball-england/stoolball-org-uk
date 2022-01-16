@@ -1,0 +1,10 @@
+{
+  "Name": "Create Training Session",
+  "Alias": "CreateTrainingSession",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/9b9cab955c0d4d80afe87bcaca68fbe0",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

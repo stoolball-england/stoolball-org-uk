@@ -1,0 +1,10 @@
+{
+  "Name": "Match Locations",
+  "Alias": "matchLocations",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/f53a93e2526f4501a067365c41d83432",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

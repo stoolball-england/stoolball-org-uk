@@ -1,0 +1,157 @@
+{
+  "Name": "My Account",
+  "Alias": "myAccount",
+  "DefaultTemplate": "umb://template/f1f9344ae8b446d38234a58036379504",
+  "AllowedTemplates": [
+    "umb://template/f1f9344ae8b446d38234a58036379504"
+  ],
+  "HistoryCleanup": {
+    "PreventCleanup": false,
+    "KeepAllVersionsNewerThanDays": null,
+    "KeepLatestVersionPerDayForDays": null
+  },
+  "Icon": "icon-male-and-female color-blue",
+  "Thumbnail": "folder.png",
+  "Description": "A list of settings for a member account",
+  "IsContainer": false,
+  "Permissions": {
+    "AllowVaryingByCulture": false,
+    "AllowVaryingBySegment": false,
+    "AllowedAtRoot": false,
+    "IsElementType": false,
+    "AllowedChildContentTypes": [
+      "umb://document-type/18a88801b9b8403d951be0a5bd2c0687",
+      "umb://document-type/0e4d0122c7a44a458e223be6f2f0e4ca",
+      "umb://document-type/d02eb9b16d4c4bb59f212f5daa4681e7",
+      "umb://document-type/0465ea378c16476795b5cd3b96d72381",
+      "umb://document-type/60449f5c60f54153ae5f9ddd4d2c1d15",
+      "umb://document-type/9d4a4f9e28df449882067990797df794",
+      "umb://document-type/ba46bc9a8c5f4b34970840ba99b93049",
+      "umb://document-type/e458e02d6e71404dad19c73036af0f02"
+    ]
+  },
+  "Parent": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
+  "CompositionContentTypes": [
+    "umb://document-type/4669a249dba648a4826ac76d2042af4d",
+    "umb://document-type/d9999f5ac07b4f379d013f0316d8678c"
+  ],
+  "PropertyGroups": [
+    {
+      "Key": "af44ff4f-efa9-4069-b8cc-afd9a8faaa59",
+      "Name": "Content",
+      "SortOrder": 0,
+      "Type": 0,
+      "Alias": "content",
+      "PropertyTypes": [
+        {
+          "Key": "62770a74-e12c-4be2-8ca1-f20869cdb39d",
+          "Alias": "blockList",
+          "DataType": "umb://data-type/2f04fb1082db453ea0481789d5b6666a",
+          "Description": null,
+          "Mandatory": false,
+          "Name": "Content",
+          "SortOrder": 0,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
+        },
+        {
+          "Key": "ad4a166c-4f07-4d05-b38d-f50bfce88017",
+          "Alias": "gravatar",
+          "DataType": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+          "Description": "Displays next to the member's gravatar and explains that it can be changed at gravatar.com.",
+          "Mandatory": true,
+          "Name": "Gravatar",
+          "SortOrder": 1,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
+        }
+      ]
+    }
+  ],
+  "PropertyTypes": [],
+  "Udi": "umb://document-type/eb801e6fd0974301a35fa9bd4f4da1fb",
+  "Dependencies": [
+    {
+      "Udi": "umb://data-type/2f04fb1082db453ea0481789d5b6666a",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://data-type/ca90c9500aff4e72b976a30b1ac57dad",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type-container/615dfe33247a4efd8dccd7210ed49831",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/0465ea378c16476795b5cd3b96d72381",
+      "Ordering": false,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/0e4d0122c7a44a458e223be6f2f0e4ca",
+      "Ordering": false,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/18a88801b9b8403d951be0a5bd2c0687",
+      "Ordering": false,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/4669a249dba648a4826ac76d2042af4d",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/60449f5c60f54153ae5f9ddd4d2c1d15",
+      "Ordering": false,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/9d4a4f9e28df449882067990797df794",
+      "Ordering": false,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/ba46bc9a8c5f4b34970840ba99b93049",
+      "Ordering": false,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/d02eb9b16d4c4bb59f212f5daa4681e7",
+      "Ordering": false,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/d9999f5ac07b4f379d013f0316d8678c",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/e458e02d6e71404dad19c73036af0f02",
+      "Ordering": false,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/f1f9344ae8b446d38234a58036379504",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.ContentType.DocumentTypeArtifact",
+  "__version": "9.2.1"
+}

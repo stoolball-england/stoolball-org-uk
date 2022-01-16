@@ -1,0 +1,12 @@
+{
+  "Name": "Products Block List",
+  "Alias": null,
+  "EditorAlias": "Umbraco.BlockList",
+  "DatabaseType": 0,
+  "Configuration": {"blocks":[{"backgroundColor":null,"iconColor":null,"thumbnail":null,"contentElementTypeKey":"94d3ec07-639e-433d-ac15-bc037fa2f6c4","view":null,"stylesheet":null,"label":"{{productName}}","editorSize":"medium","forceHideContentEditorInOverlay":false}],"validationLimit":{},"useLiveEditing":false,"useInlineEditingAsDefault":false,"maxPropertyWidth":null},
+  "Parent": null,
+  "Udi": "umb://data-type/212ad3db330d4c8db1a40131338f479c",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
+  "__version": "9.2.1"
+}

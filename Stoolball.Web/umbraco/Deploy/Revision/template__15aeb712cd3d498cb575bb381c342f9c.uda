@@ -1,0 +1,10 @@
+{
+  "Name": "Schools",
+  "Alias": "Schools",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/15aeb712cd3d498cb575bb381c342f9c",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

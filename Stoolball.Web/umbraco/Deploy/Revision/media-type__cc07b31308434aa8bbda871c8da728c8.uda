@@ -1,0 +1,134 @@
+{
+  "Name": "Image",
+  "Alias": "Image",
+  "Icon": "icon-picture",
+  "Thumbnail": "icon-picture",
+  "Description": null,
+  "IsContainer": false,
+  "Permissions": {
+    "AllowVaryingByCulture": false,
+    "AllowVaryingBySegment": false,
+    "AllowedAtRoot": true,
+    "IsElementType": false,
+    "AllowedChildContentTypes": []
+  },
+  "Parent": null,
+  "CompositionContentTypes": [],
+  "PropertyGroups": [
+    {
+      "Key": "79ed4d07-254a-42cf-8fa9-ebe1c116a596",
+      "Name": "Image",
+      "SortOrder": 1,
+      "Type": 0,
+      "Alias": "image",
+      "PropertyTypes": [
+        {
+          "Key": "00000006-0000-0000-0000-000000000000",
+          "Alias": "umbracoFile",
+          "DataType": "umb://data-type/1df9f033e6d4451fb8d2e0cbc50a836f",
+          "Description": null,
+          "Mandatory": true,
+          "Name": "Upload image",
+          "SortOrder": 0,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
+        },
+        {
+          "Key": "00000007-0000-0000-0000-000000000000",
+          "Alias": "umbracoWidth",
+          "DataType": "umb://data-type/8e7f995cbd8146279932c40e568ec788",
+          "Description": "in pixels",
+          "Mandatory": false,
+          "Name": "Width",
+          "SortOrder": 1,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
+        },
+        {
+          "Key": "00000008-0000-0000-0000-000000000000",
+          "Alias": "umbracoHeight",
+          "DataType": "umb://data-type/8e7f995cbd8146279932c40e568ec788",
+          "Description": "in pixels",
+          "Mandatory": false,
+          "Name": "Height",
+          "SortOrder": 2,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
+        },
+        {
+          "Key": "00000009-0000-0000-0000-000000000000",
+          "Alias": "umbracoBytes",
+          "DataType": "umb://data-type/930861bfe2624eada704f99453565708",
+          "Description": "in bytes",
+          "Mandatory": false,
+          "Name": "Size",
+          "SortOrder": 3,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
+        },
+        {
+          "Key": "0000000a-0000-0000-0000-000000000000",
+          "Alias": "umbracoExtension",
+          "DataType": "umb://data-type/f0bc4bfbb49940d6ba86058885a5178c",
+          "Description": null,
+          "Mandatory": false,
+          "Name": "Type",
+          "SortOrder": 4,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
+        }
+      ]
+    }
+  ],
+  "PropertyTypes": [],
+  "Udi": "umb://media-type/cc07b31308434aa8bbda871c8da728c8",
+  "Dependencies": [
+    {
+      "Udi": "umb://data-type/1df9f033e6d4451fb8d2e0cbc50a836f",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://data-type/8e7f995cbd8146279932c40e568ec788",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://data-type/930861bfe2624eada704f99453565708",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://data-type/f0bc4bfbb49940d6ba86058885a5178c",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.ContentType.MediaTypeArtifact",
+  "__version": "9.2.1"
+}

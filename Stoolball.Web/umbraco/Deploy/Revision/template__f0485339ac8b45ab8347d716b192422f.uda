@@ -1,0 +1,10 @@
+{
+  "Name": "Create Member",
+  "Alias": "CreateMember",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/f0485339ac8b45ab8347d716b192422f",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

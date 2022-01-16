@@ -1,0 +1,10 @@
+{
+  "Name": "Tournament Tweets",
+  "Alias": "TournamentTweets",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/a53e955461fb4991a5d444d39b2abfbb",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

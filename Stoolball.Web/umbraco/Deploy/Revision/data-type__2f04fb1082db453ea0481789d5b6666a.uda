@@ -1,0 +1,12 @@
+{
+  "Name": "My Account Block List",
+  "Alias": null,
+  "EditorAlias": "Umbraco.BlockList",
+  "DatabaseType": 0,
+  "Configuration": {"blocks":[{"backgroundColor":null,"iconColor":null,"thumbnail":null,"contentElementTypeKey":"41914047-aec3-497f-a8bd-fd6b8fabb894","view":"~/App_Plugins/Stoolball.BlockEditors/FormattedText.html","stylesheet":"~/css/base.min.css","label":null,"editorSize":"medium","forceHideContentEditorInOverlay":false}],"validationLimit":{},"useLiveEditing":false,"useInlineEditingAsDefault":false,"maxPropertyWidth":null},
+  "Parent": null,
+  "Udi": "umb://data-type/2f04fb1082db453ea0481789d5b6666a",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.DataTypeArtifact",
+  "__version": "9.2.1"
+}

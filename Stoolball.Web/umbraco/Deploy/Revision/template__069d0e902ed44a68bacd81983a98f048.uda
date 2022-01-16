@@ -1,0 +1,10 @@
+{
+  "Name": "Matches Calendar",
+  "Alias": "MatchesCalendar",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/069d0e902ed44a68bacd81983a98f048",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

@@ -1,0 +1,10 @@
+{
+  "Name": "Delete Club",
+  "Alias": "deleteClub",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/007d4a7a068f4dd8b8a693271d5bb5f4",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

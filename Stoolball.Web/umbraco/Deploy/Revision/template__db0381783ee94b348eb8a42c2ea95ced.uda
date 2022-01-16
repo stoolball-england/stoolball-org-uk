@@ -1,0 +1,10 @@
+{
+  "Name": "Transient Team",
+  "Alias": "transientTeam",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/db0381783ee94b348eb8a42c2ea95ced",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

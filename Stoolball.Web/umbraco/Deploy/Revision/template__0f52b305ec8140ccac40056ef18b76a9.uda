@@ -1,0 +1,10 @@
+{
+  "Name": "Edit Start of Play",
+  "Alias": "editStartOfPlay",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/0f52b305ec8140ccac40056ef18b76a9",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

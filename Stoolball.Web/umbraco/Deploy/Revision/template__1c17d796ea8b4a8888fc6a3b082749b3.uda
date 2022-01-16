@@ -1,0 +1,10 @@
+{
+  "Name": "Matches for Season",
+  "Alias": "matchesForSeason",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/1c17d796ea8b4a8888fc6a3b082749b3",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

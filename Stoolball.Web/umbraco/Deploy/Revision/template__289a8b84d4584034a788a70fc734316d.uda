@@ -1,0 +1,10 @@
+{
+  "Name": "Reset Password Complete",
+  "Alias": "ResetPasswordComplete",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/289a8b84d4584034a788a70fc734316d",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

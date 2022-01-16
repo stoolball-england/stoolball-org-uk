@@ -1,0 +1,10 @@
+{
+  "Name": "Tournaments RSS",
+  "Alias": "TournamentsRSS",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/eb7bae71ca404a2e9432019b3f40a9bf",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

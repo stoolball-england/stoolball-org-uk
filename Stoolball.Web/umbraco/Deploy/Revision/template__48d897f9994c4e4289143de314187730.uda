@@ -1,0 +1,10 @@
+{
+  "Name": "Match",
+  "Alias": "match",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/48d897f9994c4e4289143de314187730",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

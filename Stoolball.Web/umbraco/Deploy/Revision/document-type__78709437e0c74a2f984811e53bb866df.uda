@@ -1,0 +1,95 @@
+{
+  "Name": "Cookies",
+  "Alias": "cookies",
+  "DefaultTemplate": "umb://template/14a24e1e79ac4d579b3632fc5460446e",
+  "AllowedTemplates": [
+    "umb://template/14a24e1e79ac4d579b3632fc5460446e"
+  ],
+  "HistoryCleanup": {
+    "PreventCleanup": false,
+    "KeepAllVersionsNewerThanDays": null,
+    "KeepLatestVersionPerDayForDays": null
+  },
+  "Icon": "icon-settings-alt color-blue-grey",
+  "Thumbnail": "folder.png",
+  "Description": "A cookie policy with options to control cookies by category",
+  "IsContainer": false,
+  "Permissions": {
+    "AllowVaryingByCulture": false,
+    "AllowVaryingBySegment": false,
+    "AllowedAtRoot": false,
+    "IsElementType": false,
+    "AllowedChildContentTypes": [
+      "umb://document-type/0995cb4def7043a89fc628e65d15f5d1",
+      "umb://document-type/75ff99b6b2d9416ea8c695c0ff36e3d3"
+    ]
+  },
+  "Parent": null,
+  "CompositionContentTypes": [
+    "umb://document-type/4669a249dba648a4826ac76d2042af4d",
+    "umb://document-type/d9999f5ac07b4f379d013f0316d8678c"
+  ],
+  "PropertyGroups": [
+    {
+      "Key": "1e6d774e-a189-499b-827a-160047d72bdf",
+      "Name": "Content",
+      "SortOrder": 0,
+      "Type": 0,
+      "Alias": "content",
+      "PropertyTypes": [
+        {
+          "Key": "9122f5c8-af8d-484c-8560-711a67a1de8f",
+          "Alias": "blockList",
+          "DataType": "umb://data-type/b9a93649aff4442688e7dd2249b53e7d",
+          "Description": null,
+          "Mandatory": false,
+          "Name": "Content",
+          "SortOrder": 0,
+          "Validation": null,
+          "VariesByCulture": false,
+          "VariesBySegment": false,
+          "LabelOnTop": false,
+          "MemberCanEdit": false,
+          "ViewOnProfile": false,
+          "IsSensitive": false
+        }
+      ]
+    }
+  ],
+  "PropertyTypes": [],
+  "Udi": "umb://document-type/78709437e0c74a2f984811e53bb866df",
+  "Dependencies": [
+    {
+      "Udi": "umb://data-type/b9a93649aff4442688e7dd2249b53e7d",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/0995cb4def7043a89fc628e65d15f5d1",
+      "Ordering": false,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/4669a249dba648a4826ac76d2042af4d",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/75ff99b6b2d9416ea8c695c0ff36e3d3",
+      "Ordering": false,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://document-type/d9999f5ac07b4f379d013f0316d8678c",
+      "Ordering": true,
+      "Mode": 0
+    },
+    {
+      "Udi": "umb://template/14a24e1e79ac4d579b3632fc5460446e",
+      "Ordering": true,
+      "Mode": 0
+    }
+  ],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.ContentType.DocumentTypeArtifact",
+  "__version": "9.2.1"
+}

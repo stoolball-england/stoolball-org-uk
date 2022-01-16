@@ -1,0 +1,10 @@
+{
+  "Name": "My Account",
+  "Alias": "MyAccount",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/f1f9344ae8b446d38234a58036379504",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

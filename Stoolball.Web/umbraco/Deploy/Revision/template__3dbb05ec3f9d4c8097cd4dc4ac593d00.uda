@@ -1,0 +1,10 @@
+{
+  "Name": "Delete Match Location",
+  "Alias": "deleteMatchLocation",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/3dbb05ec3f9d4c8097cd4dc4ac593d00",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

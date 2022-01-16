@@ -1,0 +1,10 @@
+{
+  "Name": "Personal Details",
+  "Alias": "PersonalDetails",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/2085112cf5d9471389ea030a78464a13",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}

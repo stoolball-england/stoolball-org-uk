@@ -1,0 +1,10 @@
+{
+  "Name": "Edit Friendly Match",
+  "Alias": "editFriendlyMatch",
+  "File": null,
+  "Master": null,
+  "Udi": "umb://template/2183e1e287844d96b2c4676607c4a30e",
+  "Dependencies": [],
+  "__type": "Umbraco.Deploy.Infrastructure,Umbraco.Deploy.Infrastructure.Artifacts.TemplateArtifact",
+  "__version": "9.2.1"
+}
