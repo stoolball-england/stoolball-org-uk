@@ -11,6 +11,7 @@ using Umbraco.Core.Logging;
 using Umbraco.Core.Mapping;
 using Umbraco.Core.Models;
 using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Core.Scoping;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using Umbraco.Web.PublishedCache;
@@ -43,7 +44,7 @@ namespace Stoolball.Web.UnitTests
 
             ServiceContext = ServiceContext.CreatePartial(memberService: MemberService.Object);
             UmbracoHelper = new UmbracoHelper(Mock.Of<IPublishedContent>(), Mock.Of<ITagQuery>(), CultureDictionaryFactory.Object, Mock.Of<IUmbracoComponentRenderer>(), PublishedContentQuery.Object, MembershipHelper);
-            UmbracoMapper = new UmbracoMapper(new MapDefinitionCollection(new List<IMapDefinition>()));
+            UmbracoMapper = new UmbracoMapper(new MapDefinitionCollection(new List<IMapDefinition>()), Mock.Of<IScopeProvider>());
         }
 
         public virtual void SetupHttpContext()
